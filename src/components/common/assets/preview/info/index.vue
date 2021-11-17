@@ -19,6 +19,30 @@
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
 
+        <div
+            class="flex flex-col"
+            v-if="
+                isGTC(selectedAsset) || selectedAsset.typeName === 'Connection'
+            "
+        >
+            <Shortcut shortcutKey="n" action="set description" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Name</span>
+                </div>
+            </Shortcut>
+
+            <Name
+                v-model="localName"
+                class="mx-4"
+                @change="handleChangeName"
+                ref="nameRef"
+            />
+        </div>
+
+        <Connection v-if="selectedAsset.typeName === 'Connection'"></Connection>
+
         <div class="px-5" v-if="webURL(selectedAsset)">
             <a-button
                 block
@@ -141,22 +165,6 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col" v-if="isGTC(selectedAsset)">
-            <Shortcut shortcutKey="n" action="set description" placement="left">
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-                >
-                    <span> Name</span>
-                </div>
-            </Shortcut>
-
-            <Name
-                v-model="localName"
-                class="mx-4"
-                @change="handleChangeName"
-                ref="nameRef"
-            />
-        </div>
 
         <div class="flex flex-col">
             <Shortcut shortcutKey="d" action="set description" placement="left">
@@ -199,9 +207,11 @@
 
         <div
             v-if="
-                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
-                    selectedAsset.typeName
-                )
+                ![
+                    'AtlasGlossary',
+                    'AtlasGlossaryCategory',
+                    'Connection',
+                ].includes(selectedAsset.typeName)
             "
             class="flex flex-col"
         >
@@ -232,6 +242,7 @@
                     'AtlasGlossary',
                     'AtlasGlossaryTerm',
                     'AtlasGlossaryCategory',
+                    'Connection',
                 ].includes(selectedAsset.typeName)
             "
             class="flex flex-col"
@@ -303,9 +314,12 @@
     import confetti from '~/utils/confetti'
     import Shortcut from '@/common/popover/shortcut.vue'
 
+    import Connection from './connection.vue'
+
     export default defineComponent({
         name: 'AssetDetails',
         components: {
+            Connection,
             // Experts,
             Description,
             Name,

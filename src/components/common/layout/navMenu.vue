@@ -18,12 +18,14 @@
                 <p class="font-bold text-md" v-else>{{ logoName }}</p>
             </router-link>
         </div>
-        <div class="flex items-center justify-self-end">
+        <div
+            class="flex items-center h-full pl-3 border-l cursor-pointer  justify-self-end"
+        >
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" /> -->
             <!-- <AtlanIcon icon="Notification" class="h-5 mr-3" /> -->
-            <UserPersonalAvatar class="self-center pl-3 border-l" />
+            <UserPersonalAvatar class="self-center" />
         </div>
     </div>
 </template>

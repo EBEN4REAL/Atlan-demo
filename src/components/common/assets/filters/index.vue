@@ -36,6 +36,8 @@
                 >
                     <Panel
                         :item="item"
+                        :componentParentKey="`${item.id}_${componentState}`"
+                        :activeKey="localActiveKeyValue"
                         v-model="localValue"
                         @change="handleChange"
                     ></Panel>
@@ -152,7 +154,14 @@
                     }
                 }
 
-                return Object.keys(localValue.value).length
+                let count = 0
+                Object.keys(localValue.value).forEach((key) => {
+                    console.log(key)
+                    if (localValue.value[key]) {
+                        count += 1
+                    }
+                })
+                return count
             })
 
             const handleChange = () => {
@@ -191,7 +200,7 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-b border-gray-200 !important;
+            @apply border-b border-gray-light !important;
         }
 
         :global(.ant-collapse-item-active) {

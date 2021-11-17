@@ -71,13 +71,12 @@
                         <div class="flex items-center mr-1">
                             <a-tooltip
                                 placement="left"
-                                v-if="connectionName(item)"
+                                v-if="connectorName(item)"
                             >
                                 <template #title>
-                                    <span>{{
-                                        `${connectorName(
-                                            item
-                                        )}/${connectionName(item)}`
+                                    <span>{{ connectorName(item) }} </span>
+                                    <span v-if="connectionName(item)">{{
+                                        `/${connectionName(item)}`
                                     }}</span>
                                 </template>
                                 <img
@@ -85,6 +84,7 @@
                                     class="h-3 mr-1 mb-0.5"
                                 />
                             </a-tooltip>
+
                             <AtlanIcon
                                 icon="Category"
                                 v-if="
@@ -389,6 +389,26 @@
                             </a-tooltip>
                         </div>
                     </div>
+
+                    <div
+                        class="flex"
+                        v-if="
+                            list.length > 0 &&
+                            preference?.display?.includes('classifications')
+                        "
+                    >
+                        <template
+                            v-for="classification in list"
+                            :key="classification.guid"
+                        >
+                            <ClassificationPill
+                                :name="classification.name"
+                                :displayName="classification?.displayName"
+                                :isPropagated="isPropagated(classification)"
+                                :allowDelete="false"
+                            ></ClassificationPill>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
@@ -399,11 +419,15 @@
     import { defineComponent, PropType, toRefs, computed } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { mergeArray } from '~/utils/array'
+    import ClassificationPill from '@/common/pills/classification.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
+            ClassificationPill,
         },
         props: {
             item: {
@@ -465,6 +489,7 @@
                 isGTC,
                 categories,
                 parentCategory,
+                classifications,
             } = useAssetInfo()
 
             const assetURL = (asset) => ({
@@ -480,6 +505,29 @@
                     return true
                 }
                 return false
+            })
+
+            const { classificationList } = useTypedefData()
+
+            const isPropagated = (classification) => {
+                if (!item?.value?.guid?.value) {
+                    return false
+                }
+                if (item?.value?.guid === classification.entityGuid) {
+                    return false
+                }
+                return true
+            }
+
+            const list = computed(() => {
+                console.log(classifications(item.value))
+                const { matchingIdsResult } = mergeArray(
+                    classificationList.value,
+                    classifications(item.value),
+                    'name',
+                    'typeName'
+                )
+                return matchingIdsResult
             })
 
             return {
@@ -516,6 +564,9 @@
                 getAnchorName,
                 categories,
                 parentCategory,
+                isPropagated,
+                list,
+                classifications,
             }
         },
     })

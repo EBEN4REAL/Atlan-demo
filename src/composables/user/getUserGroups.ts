@@ -12,9 +12,10 @@ export default function getUserGroups(groupListAPIParams: {
   const localGroupsList: Ref<any[]> = ref([]);
   const {
     data,
-    error,
     mutate: getUserGroupList,
     isValidating,
+    error,
+    isLoading,
   } = Users.ListUserGroups(groupListAPIParams.params, groupListAPIParams.userId, {
     cacheKey: GET_USER_GROUPS,
     cacheOptions: {
@@ -48,5 +49,6 @@ export default function getUserGroups(groupListAPIParams: {
     getUserGroupList,
     state,
     STATES,
+    error, isLoading,
   };
 }

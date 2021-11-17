@@ -4,7 +4,7 @@
             <AtlanButton icon="Loader" class="h-5 animate-spin" />
         </div>
         <div
-            v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+            v-if="error"
             class="flex flex-col items-center justify-center h-full bg-white"
         >
             <ErrorView>
@@ -135,16 +135,15 @@
                 filterObj = {
                     $and: [{ email_verified: true }, { id: userId.value }],
                 }
-            const { userList, getUserList, isLoading, state, STATES } =
-                useUsers(
-                    {
-                        limit: 1,
-                        offset: 0,
-                        sort: 'first_name',
-                        filter: filterObj,
-                    },
-                    'USE_USERS_PREVIEW'
-                )
+            const { userList, getUserList, isLoading, error } = useUsers(
+                {
+                    limit: 1,
+                    offset: 0,
+                    sort: 'first_name',
+                    filter: filterObj,
+                },
+                'USE_USERS_PREVIEW'
+            )
             const userObj = computed(() =>
                 userList && userList.value && userList.value.length
                     ? userList.value[0]
@@ -170,8 +169,7 @@
                 tabs: finalTabs,
                 handleUserUpdate,
                 isLoading,
-                state,
-                STATES,
+                error,
                 activeKey,
                 getUserList,
             }

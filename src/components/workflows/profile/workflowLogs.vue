@@ -6,6 +6,13 @@
         class="drawer-workflow-logs"
         @close="$emit('close')"
     >
+        <div :class="`close-icon ${!isOpen && 'closed'}`" @click="$emit('close')">      
+            <AtlanIcon
+                class="mt-2 ml-2"
+                icon="ChevronRight"
+                style="width: 24px; height: 24px"
+            />
+          </div>
         <div class="flex items-center justify-between p-4" style="height: 60px">
             <div class="flex items-center">
                 <AtlanIcon
@@ -254,6 +261,24 @@
 </style>
 <style lang="less">
     .drawer-workflow-logs {
+        .close-icon{
+          &.closed{
+            display: none;
+          }
+          background-color: white;  
+          position: fixed;
+          height: 70px;
+          width: 25px;
+          top: 100px;
+          margin-left: -25px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: -5px 1px 6px 0px #0000000D;
+          border-top-left-radius: 6px;
+          border-bottom-left-radius: 6px;
+          cursor: pointer;
+        }
         .ant-drawer-body {
             height: 100%;
         }

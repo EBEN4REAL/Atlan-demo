@@ -18,7 +18,7 @@
                     {{ name }}
                 </div>
             </div>
-            <div><AtlanIcon class="h-3 ml-1" icon="ChevronDown" /></div>
+            <div><AtlanIcon class="flex h-3 ml-1" icon="ChevronDown" /></div>
         </div>
         <!-- <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
               Hover me <a-icon type="down" />

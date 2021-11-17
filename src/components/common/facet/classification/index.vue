@@ -121,6 +121,9 @@
                 if (!localValue.value.empty) {
                     delete localValue.value.empty
                 }
+                if (localValue.value.classifications?.length === 0) {
+                    delete localValue.value.classifications
+                }
                 modelValue.value = localValue.value
                 emit('change')
             })

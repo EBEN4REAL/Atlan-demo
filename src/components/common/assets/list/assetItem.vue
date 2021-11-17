@@ -391,11 +391,11 @@
                     </div>
 
                     <div
-                        class="flex"
                         v-if="
                             list.length > 0 &&
                             preference?.display?.includes('classifications')
                         "
+                        class="flex"
                     >
                         <template
                             v-for="classification in list"
@@ -520,7 +520,6 @@
             }
 
             const list = computed(() => {
-                console.log(classifications(item.value))
                 const { matchingIdsResult } = mergeArray(
                     classificationList.value,
                     classifications(item.value),

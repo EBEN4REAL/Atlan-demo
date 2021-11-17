@@ -153,6 +153,7 @@
                         :loaded-keys="per_loadedKeys"
                         :selected-keys="per_selectedKeys"
                         :expanded-keys="per_expandedKeys"
+                        :showEmptyState="showEmptyState"
                     />
                 </div>
                 <div
@@ -240,7 +241,6 @@
                             :loaded-keys="all_loadedKeys"
                             :selected-keys="all_selectedKeys"
                             :expanded-keys="all_expandedKeys"
-                            :showEmptyState="showEmptyState"
                         />
                     </div>
                 </div>
@@ -253,12 +253,7 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="
-                            my-2
-                            mb-0 mb-6
-                            text-base text-center text-gray-700
-                            max-width-text
-                        "
+                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
                     >
                         Sorry, we couldn’t find
                         <br />the query you were looking for

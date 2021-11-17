@@ -1,5 +1,5 @@
 <template>
-    <a-select
+    <!-- <a-select
         :value="modelValue"
         style="width: 100%; border-radius: 8px"
         :class="$style.connector"
@@ -31,32 +31,45 @@
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
         </template>
     </a-select>
-    <div></div>
+    <div></div> -->
 
-    <!-- <a-tree-select
+    <a-select
+        :placeholder="placeholder"
         :value="modelValue"
+        :allowClear="true"
+        :showSearch="true"
+        notFoundContent="No data available"
         style="width: 100%; border-radius: 8px"
         :class="$style.connector"
         @change="handleChange"
-        :placeholder="placeholder"
         :disabled="disabled"
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-        :tree-data="dropdownOption"
         dropdownClassName="connectorDropdown"
-        :allowClear="true"
         :loading="isLoading"
-    > -->
-    <!-- <template #title="node">
+    >
+        <!-- <template #title="node">
             <div class="flex items-center">
                 <AtlanIcon :icon="typeName + `Gray`" class="h-4 mr-1.5" />
                 <span class="">{{ node.label }}</span>
             </div>
-        </template> -->
-
-    <!-- <template #suffixIcon>
-            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
         </template>
-    </a-tree-select> -->
+
+        <template #suffixIcon>
+            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
+        </template> -->
+        <template v-for="item in dropdownOption" :key="item.label">
+            <a-select-option :value="item.value">
+                <div class="flex items-center">
+                    <!-- <img :src="item.image" class="w-auto h-4 mr-1" /> -->
+                    <AtlanIcon
+                        :icon="typeName + `Gray`"
+                        class="w-auto h-4 mr-1"
+                    />
+                    {{ item.label }}
+                </div></a-select-option
+            >
+        </template>
+    </a-select>
 </template>
 
 <script lang="ts">
@@ -114,6 +127,7 @@
                 { immediate: true }
             )
             const handleChange = (checkedValues: string) => {
+                console.log('checkedValue: ', checkedValues)
                 emit('update:modelValue', checkedValues)
                 emit('change', checkedValues)
             }
@@ -150,6 +164,7 @@
                 // console.log('data here: ', data)
                 return data
             })
+
             return {
                 typeName,
                 list,

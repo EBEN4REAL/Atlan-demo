@@ -229,6 +229,12 @@ import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
 
+//source list
+import Snowflake from '~/assets/images/source/svg/Snowflake.svg';
+import Athena from '~/assets/images/source/svg/Athena.svg';
+import Tableau from '~/assets/images/source/svg/Tableau.svg';
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg';
+
 export default {
     Times,
     ExclaimCircle,
@@ -451,9 +457,14 @@ export default {
     Number,
     NoAvatar,
     Enter,
+    FormatText,
+
+    Snowflake,
+    Athena,
+    PowerBI,
+    Tableau,
     SSO,
     SMTP,
     APIKey,
-    Camera,
-    FormatText,
+    Camera
 }

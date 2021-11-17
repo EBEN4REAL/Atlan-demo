@@ -30,11 +30,49 @@
                             showGtcCrud &&
                             entity?.typeName !== 'AtlasGlossaryTerm'
                         "
+                        key="addCat"
+                        @click="closeMenu"
+                        ><a-menu-item
+                            v-if="
+                                showGtcCrud &&
+                                entity?.typeName !== 'AtlasGlossaryTerm'
+                            "
+                            key="add"
+                            @click="closeMenu"
+                        >
+                            <AddGtcModal
+                                entityType="AtlasGlossaryCategory"
+                                :glossaryName="glossaryName"
+                                :categoryName="categoryName"
+                                :glossary-qualified-name="glossaryQualifiedName"
+                                :categoryGuid="categoryGuid"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Category"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">
+                                            Create New Category
+                                        </p>
+                                    </div>
+                                </template>
+                            </AddGtcModal>
+                        </a-menu-item>
+                    </a-menu-item>
+                    <a-menu-item
+                        v-if="
+                            showGtcCrud &&
+                            entity?.typeName !== 'AtlasGlossaryTerm'
+                        "
                         key="add"
                         @click="closeMenu"
                     >
                         <AddGtcModal
                             entityType="AtlasGlossaryTerm"
+                            :glossaryName="glossaryName"
+                            :categoryName="categoryName"
                             :glossary-qualified-name="glossaryQualifiedName"
                             :categoryGuid="categoryGuid"
                         >
@@ -46,6 +84,21 @@
                             </template>
                         </AddGtcModal>
                     </a-menu-item>
+                    <!-- <a-menu-item
+                        v-if="showGtcCrud"
+                        key="archive"
+                        class="text-red-700"
+                        @click="closeMenu"
+                    >
+                        <AddGtcModal>
+                            <template #trigger>
+                                <div class="flex items-center text-red-700">
+                                    <AtlanIcon icon="Trash" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Archive</p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
+                    </a-menu-item> -->
                 </a-menu>
             </template>
         </a-dropdown>
@@ -70,6 +123,7 @@
     // import Owners from './owners.vue'
     // import Status from './status.vue'
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
+    import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
     // import Categories from '@/glossary/common/categories.vue'
     import ModalHeader from '@/glossary/modal/modalHeader.vue'
     // import BulkModal from '@/glossary/gtcCrud/bulkModal.vue'
@@ -92,6 +146,7 @@
             StatusBadge,
             AddGtcModal,
             // Categories,
+            RemoveGTCModal,
             ModalHeader,
             // BulkModal,
         },
@@ -102,6 +157,16 @@
                 default: () => {},
             },
             glossaryQualifiedName: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
+            glossaryName: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
+            categoryName: {
                 type: String,
                 required: false,
                 default: () => '',
@@ -141,8 +206,13 @@
         emits: ['unlinkAsset'],
         setup(props, context) {
             // data
-            const { entity, glossaryQualifiedName, categoryGuid } =
-                toRefs(props)
+            const {
+                entity,
+                glossaryQualifiedName,
+                categoryGuid,
+                glossaryName,
+                categoryName,
+            } = toRefs(props)
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
@@ -294,6 +364,8 @@
                 entity,
                 glossaryQualifiedName,
                 categoryGuid,
+                glossaryName,
+                categoryName,
             }
         },
     })

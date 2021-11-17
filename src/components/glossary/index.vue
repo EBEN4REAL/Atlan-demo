@@ -31,7 +31,7 @@
                                 <template #trigger>
                                     <div class="flex items-center">
                                         <AtlanIcon icon="Term" class="mr-1" />
-                                        Term
+                                        New Term
                                     </div>
                                 </template>
                             </AddGTCModal>
@@ -48,7 +48,7 @@
                                             icon="Category"
                                             class="mr-1"
                                         />
-                                        Category
+                                        New Category
                                     </div>
                                 </template>
                             </AddGTCModal>
@@ -64,7 +64,7 @@
                                             icon="Glossary"
                                             class="mr-1"
                                         />
-                                        Glossary
+                                        New Glossary
                                     </div>
                                 </template>
                             </AddGTCModal>
@@ -190,9 +190,7 @@
     import AssetList from '@/common/assets/list/index.vue'
     import GlossaryItem from '~/components/common/assets/list/glossaryAssetItem.vue'
     import AddGTCModal from './modal/addGtcModal.vue'
-    import GlossaryTree from '@/common/tree/glossary/glossaryTree2.vue'
-
-    // import GlossarySelect from '@/common/select/glossary.vue'
+    import GlossaryTree from '@/common/tree/glossary/glossaryTree.vue'
 
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
 

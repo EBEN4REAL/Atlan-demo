@@ -1,9 +1,9 @@
 <template>
-    <div @click="showModal"></div>
+    <!-- <div @click="showModal"></div>
         <slot name="trigger" @click="showModal" />
-    </div>
+    </div> -->
 
-    <a-modal
+    <!-- <a-modal
         v-model:visible="visible"
         :class="$style.input"
         width="50%"
@@ -22,7 +22,7 @@
                 >Delete</a-button
             >
         </div>
-    </a-modal>
+    </a-modal> -->
 </template>
 
 <script lang="ts">
@@ -40,16 +40,10 @@
         reactive,
     } from 'vue'
 
-    
     import { useVModels, whenever } from '@vueuse/core'
     import updateAsset from '~/composables/discovery/updateAsset'
     import { generateUUID } from '~/utils/helper/generator'
     import { message } from 'ant-design-vue'
-
-    import { mutate } from 'swrv'
-    import useGlossaryData from '~/composables/glossary/useGlossaryData'
-    import useGlossary from '~/composables/glossary2/useGlossary'
-    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     export default defineComponent({
         name: 'AddGtcModal',
@@ -65,99 +59,90 @@
                     return ''
                 },
             },
+            guid: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
-            const { entityType } = toRefs(props)
-
-            const visible = ref(false)
-
-            const entity = reactive({
-                attributes: {
-                    userDescription: '',
-                    name: '',
-                    qualifiedName: '',
-                },
-                typeName: entityType.value,
-            })
-
-          
-
-            const showModal = async () => {
-                visible.value = true
-            }
-
-            const body = ref({
-                entities: [],
-            })
-
-            const {
-                mutate: mutateAsset,
-                isLoading,
-                isReady,
-                guidUpdatedMaps,
-                error,
-            } = updateAsset(body)
-
-
-            const typeNameTitle = computed(() => {
-                switch (entityType.value) {
-                    case 'AtlasGlossary':
-                        return 'Glossary'
-                    case 'AtlasGlossaryCategory':
-                        return 'Category'
-                    case 'AtlasGlossaryTerm':
-                        return 'Term'
-                    default:
-                        return 'Glossary'
-                }
-            })
-
-            const handleSave = () => {
-                if (typeNameTitle.value === 'Glossary') {
-                    entity.attributes.qualifiedName = generateUUID()
-                }
-                body.value = {
-                    entities: [entity],
-                }
-                mutateAsset()
-            }
-
-            whenever(isReady, () => {
-                if (error.value) {
-                    console.error(error.value)
-                } else {
-                    visible.value = false
-                    message.success(`${typeNameTitle.value} created`)
-                    if (guidUpdatedMaps.value?.length > 0) {
-                        guid.value = guidUpdatedMaps.value[0]
-                    }
-                    setTimeout(() => mutateUpdate(), 1000)
-                }
-            })
-
-            whenever(isUpdateReady, () => {
-                if (error.value) {
-                } else {
-                    emit('delete', asset.value)
-                }
-            })
-
-            return {
-                visible,
-                showModal,
-               
-                entityType,
-                typeNameTitle,
-                handleSave,
-               
-              
-
-                entity,
-                isLoading,
-                isReady,
-                error,
-            }
+            // const { entityType, guid } = toRefs(props)
+            // const visible = ref(false)
+            // const entity = reactive({
+            //     attributes: {
+            //         userDescription: '',
+            //         name: '',
+            //         qualifiedName: '',
+            //     },
+            //     typeName: entityType.value,
+            // })
+            // const showModal = async () => {
+            //     visible.value = true
+            // }
+            // const body = ref({
+            //     entities: [],
+            // })
+            // const {
+            //     mutate: mutateAsset,
+            //     isLoading,
+            //     isReady,
+            //     guidUpdatedMaps,
+            //     error,
+            // } = updateAsset(body)
+            // const typeNameTitle = computed(() => {
+            //     switch (entityType.value) {
+            //         case 'AtlasGlossary':
+            //             return 'Glossary'
+            //         case 'AtlasGlossaryCategory':
+            //             return 'Category'
+            //         case 'AtlasGlossaryTerm':
+            //             return 'Term'
+            //         default:
+            //             return 'Glossary'
+            //     }
+            // })
+            // const handleSave = () => {
+            //     if (typeNameTitle.value === 'Glossary') {
+            //         entity.attributes.qualifiedName = generateUUID()
+            //     }
+            //     body.value = {
+            //         entities: [entity],
+            //     }
+            //     mutateAsset()
+            // }
+            // whenever(isReady, () => {
+            //     if (error.value) {
+            //         console.error(error.value)
+            //     } else {
+            //         visible.value = false
+            //         message.success(`${typeNameTitle.value} created`)
+            //         if (guidUpdatedMaps.value?.length > 0) {
+            //             guid.value = guidUpdatedMaps.value[0]
+            //         }
+            //         setTimeout(() => mutateUpdate(), 1000)
+            //     }
+            // })
+            // whenever(isUpdateReady, () => {
+            //     if (error.value) {
+            //     } else {
+            //         emit('delete', asset.value)
+            //     }
+            // })
+            // return {
+            //     visible,
+            //     showModal,
+            //     entityType,
+            //     typeNameTitle,
+            //     handleSave,
+            //     guid,
+            //     entity,
+            //     isLoading,
+            //     isReady,
+            //     error,
+            // }
         },
     })
 </script>

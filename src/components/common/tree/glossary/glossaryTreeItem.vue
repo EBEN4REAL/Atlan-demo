@@ -1,59 +1,35 @@
 <template>
-    <div
-        v-if="entity.title === 'Load more'"
-        class="flex flex-row w-full text-sm font-bold leading-5 text-primary"
-        @click="entity.click()"
-    >
-        <span v-if="entity.isLoading">
-            <!-- <LoadingView
-            size="small"
-            class="w-1 h-1 mr-4"
-        /> -->
-        </span>
-        <span v-else>{{ entity.title }}</span>
-    </div>
-    <div class="flex min-w-full" v-else>
-        <div
-            class="min-w-full"
-            @click="() => redirectToProfile(entity.typeName, entity.key)"
-        >
-            <div class="flex justify-between mr-2 group">
-                <div class="flex m-0">
-                    <span
-                        v-if="entity.type === 'glossary'"
-                        class="p-0 my-auto mr-2"
-                    >
-                        <AtlanIcon icon="Glossary" class="h-5" />
-                    </span>
-                    <span v-else class="p-0 my-auto mr-1.5">
-                        <AtlanIcon
-                            :icon="
-                                getEntityStatusIcon(
-                                    entity.type,
-                                    entity.certificateStatus
-                                )
-                            "
-                        />
-                    </span>
-                    <span class="my-auto text-sm leading-5 text-gray-700">{{
-                        entity.title
-                    }}</span>
-                </div>
-                <ThreeDotMenu
-                    :entity="entity"
-                    :visible="false"
-                    showLinks
-                    showGtcCrud
-                    treeMode
-                />
-            </div>
+    <div class="flex items-center justify-between w-full py-0 m-0 group">
+        <div class="flex items-center">
+            <AtlanIcon
+                :icon="
+                    getEntityStatusIcon(item.typeName, certificateStatus(item))
+                "
+                :style="iconSize"
+                class="self-center"
+            />
+
+            <span class="ml-1 text-sm" :class="textClass">{{
+                title(item)
+            }}</span>
         </div>
+
+        <Actions
+            :treeMode="true"
+            :glossaryName="getAnchorName(item) || title(item)"
+            :categoryName="title(item)"
+            :glossaryQualifiedName="getAnchorQualifiedName(item)"
+            :categoryGuid="item.guid"
+            :entity="item"
+        ></Actions>
     </div>
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, PropType, toRefs } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import Actions from './actions.vue'
 
     import {
         Glossary,
@@ -61,33 +37,55 @@
         Category,
     } from '~/types/glossary/glossary.interface'
 
-    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
-    import redirect from '@/glossary/utils/redirectToProfile'
-
-    import ThreeDotMenu from '@/glossary/threeDotMenu.vue'
-
     export default defineComponent({
-        name: 'GlossaryTreeItem',
+        components: { Actions },
         props: {
-            entity: {
+            item: {
                 type: Object as PropType<Glossary | Term | Category>,
                 required: false,
                 default: () => {},
             },
         },
-        components: {
-            ThreeDotMenu,
-        },
+
         setup(props, { emit }) {
             // data
-            const { entity } = toRefs(props)
-            const router = useRouter()
-            const redirectToProfile = redirect(router)
+            const { item } = toRefs(props)
+
+            const { getEntityStatusIcon } = useGlossaryData()
+            const {
+                certificateStatus,
+                title,
+                getAnchorQualifiedName,
+                getAnchorName,
+            } = useAssetInfo()
+
+            const iconSize = computed(() => {
+                if (item.value.typeName === 'AtlasGlossary') {
+                    return 'height: 18px !important'
+                }
+
+                return 'height: 16px !important'
+            })
+
+            const textClass = computed(() => {
+                if (item.value.typeName === 'AtlasGlossary') {
+                    return 'text-sm text-gray-700'
+                }
+                if (item.value.typeName === 'AtlasGlossaryCategory') {
+                    return 'text-sm text-gray-500'
+                }
+
+                return 'text-sm text-gray-700'
+            })
 
             return {
-                entity,
                 getEntityStatusIcon,
-                redirectToProfile,
+                certificateStatus,
+                title,
+                iconSize,
+                textClass,
+                getAnchorQualifiedName,
+                getAnchorName,
             }
         },
     })

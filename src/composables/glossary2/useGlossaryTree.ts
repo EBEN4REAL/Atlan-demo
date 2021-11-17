@@ -51,7 +51,7 @@ const useGlossaryTree = ({
     const postFacets = ref({})
     const dependentKey = ref(null)
     const attributes = ref([...InternalAttributes, ...AssetAttributes])
-    const relationAttributes = ref([])
+    const relationAttributes = ref(['name'])
     const preference = ref({
         sort: 'name.keyword-asc',
     })
@@ -242,7 +242,6 @@ const useGlossaryTree = ({
 
     const { getAnchorQualifiedName } = useAssetInfo()
 
-    let parentStack: string[]
     const addNode = (asset): TreeDataItem => {
         if (asset.typeName === 'AtlasGlossary') {
             treeData.value.unshift({
@@ -279,35 +278,6 @@ const useGlossaryTree = ({
             })
         }
     }
-
-    // watch(data, () => {
-    //     console.log(data.value?.entities)
-    //     if (data.value?.entities) {
-    //         let map = data.value?.entities.map((i) => ({
-    //             ...i,
-    //             id: i.attributes?.qualifiedName,
-    //             key: i.guid,
-
-    //             isLeaf: false,
-    //         }))
-    //         baseTreeData.value.push(...map)
-    //     }
-
-    //     baseTreeData.value = [...baseTreeData.value]
-
-    //     console.log(baseTreeData)
-    //     // if (offset?.value > 0) {
-    //     //     if (data.value?.entities) {
-    //     //         list.value.push(...data.value?.entities)
-    //     //     }
-    //     // } else {
-    //     //     if (data.value?.entities) {
-    //     //         list.value = [...data?.value?.entities]
-    //     //     } else {
-    //     //         list.value = []
-    //     //     }
-    //     // }
-    // })
 
     return {
         onLoadData,

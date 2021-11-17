@@ -14,7 +14,7 @@
                     :avatar-shape="'circle'"
                 />
 
-                <div class="ml-1 text-sm text-gray-700 capitalize">
+                <div class="self-center ml-1 text-sm text-gray-700 capitalize">
                     {{ name }}
                 </div>
             </div>

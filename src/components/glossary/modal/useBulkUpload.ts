@@ -4,7 +4,7 @@ import {
     updateWorkflowByName,
     runWorkflowByName,
     createWorkflow,
-} from '~/composables/workflow/useWorkFlowList'
+} from '~/composables/workflow/useWorkflowList'
 import workflow from '~/mixins/workflow'
 
 const useBulkUpload = ({ guid, fileS3Key }) => {

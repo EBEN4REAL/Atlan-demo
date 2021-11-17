@@ -200,7 +200,7 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-b border-gray-200 !important;
+            @apply border-b border-gray-light !important;
         }
 
         :global(.ant-collapse-item-active) {

@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center flex-none">
-        <div v-if="imageRequired" class="mr-2">
+        <div v-if="imageRequired">
             <img
                 :src="logoSrc"
                 class="flex-none w-auto"

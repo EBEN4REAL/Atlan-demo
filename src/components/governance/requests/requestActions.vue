@@ -21,23 +21,26 @@
             </template>
             Accept
         </AtlanButton>
-        <AtlanButton
+        <!-- <AtlanButton
             color="secondary"
             @click.stop="$emit('more')"
             padding="compact"
             size="sm"
             ><template #label><AtlanIcon icon="KebabMenu" /> </template>
-        </AtlanButton>
+        </AtlanButton> -->
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
     import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'RequestActions',
         emits: ['accept', 'reject', 'more'],
         components: { AtlanButton },
+        setup(props, { emit }) {
+            return {}
+        },
     })
 </script>

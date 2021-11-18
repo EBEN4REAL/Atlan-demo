@@ -83,12 +83,12 @@ export const getFormattedUser = (user: any) => {
     return localUser
 }
 export const useUsers = (
-    userListAPIParams: {
+    userListAPIParams: Ref<{
         limit: number
         offset: number
         filter?: any
         sort?: string
-    },
+    }>,
     cacheKey?: string
 ) => {
     const {

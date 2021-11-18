@@ -252,7 +252,6 @@
                 setUserUniqueAttribute,
             } = useUserPreview()
             const showUserPreviewDrawer = (user: any) => {
-                console.log('showUserPreviewDrawer', user)
                 setUserUniqueAttribute(user.id)
                 openPreview()
                 selectedUserId.value = user.id

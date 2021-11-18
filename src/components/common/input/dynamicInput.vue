@@ -76,7 +76,7 @@
             <div v-if="allowCreate">
                 <a-divider style="margin: 4px 0" />
                 <div
-                    style="padding: 4px 8px; cursor: pointer"
+                    style="padding: 4px 8px; cursor: copy"
                     @mousedown="(e) => e.preventDefault()"
                     @click="handleCreateNew"
                 >
@@ -88,12 +88,11 @@
     <a-modal
         v-model:visible="createNewVisibility"
         title="Create Credential"
-        width="60%"
+        width="40%"
         :closable="false"
+        :body-style="{ overflowY: 'scroll', height: '65vh' }"
     >
-        <div class="overflow-y-scroll" style="height: 65vh">
-            <FormGenerator :config="newConfig" />
-        </div>
+        <FormGenerator :config="newConfig" />
         <template #footer>
             <a-button @click="handleClose">Close</a-button>
         </template>

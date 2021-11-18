@@ -1,5 +1,5 @@
 <template>
-    <a-popover overlayClassName="properties-popover">
+    <a-popover overlayClassName="propertiesPopover">
         <template #title>
             <div class="flex items-center justify-between gap-x-4">
                 <div class="flex flex-col">
@@ -126,14 +126,19 @@
 </script>
 
 <style lang="less">
-    .properties-popover {
+    .propertiesPopover {
+        .ant-popover-content {
+            box-shadow: 0px 9px 32px 0px #0000001f;
+        }
         .ant-popover-title {
             @apply shadow-sm;
         }
+        .ant-popover-inner {
+            width: 250px !important;
+        }
         .ant-popover-inner-content {
             max-height: 200px;
-            width: 250px;
-            max-width: 400px !important;
+
             overflow-y: auto;
         }
     }

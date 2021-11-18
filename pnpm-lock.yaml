@@ -57,6 +57,7 @@ specifiers:
   chartjs-plugin-datalabels: ^2.0.0
   clusterize.js: ^0.18.1
   cron-parser: ^4.1.0
+  dagrejs: ^0.2.1
   dayjs: ^1.10.7
   dotenv: ^10.0.0
   emoji-mart-vue-fast: ^10.0.1
@@ -151,6 +152,7 @@ dependencies:
   chartjs-plugin-datalabels: 2.0.0_chart.js@3.6.0
   clusterize.js: 0.18.1
   cron-parser: 4.1.0
+  dagrejs: 0.2.1
   dayjs: 1.10.7
   emoji-mart-vue-fast: 10.0.1_vue@3.2.21
   event-source-polyfill: 1.0.25
@@ -183,7 +185,7 @@ dependencies:
 devDependencies:
   '@babel/core': 7.16.0
   '@babel/eslint-parser': 7.16.3_@babel+core@7.16.0+eslint@8.2.0
-  '@intlify/vite-plugin-vue-i18n': 3.1.0_eslint@8.2.0+vite@2.6.14
+  '@intlify/vite-plugin-vue-i18n': 3.1.0_vite@2.6.14
   '@rollup/plugin-strip': 2.1.0
   '@tailwindcss/line-clamp': 0.2.2_tailwindcss@2.2.19
   '@typescript-eslint/eslint-plugin': 5.4.0_b983626bd16070d34b18187cb6bde052
@@ -1489,7 +1491,7 @@ packages:
     resolution: {integrity: sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==}
     dev: true
 
-  /@intlify/bundle-utils/2.1.0_eslint@8.2.0:
+  /@intlify/bundle-utils/2.1.0:
     resolution: {integrity: sha512-ogvmAjbSq0su4ijQbwqRfb0yimizZSK+HHV0SF3XCHSCtL+PDdRIDkkeNpNdPxNmdahORHXknC06Umehz4nTnQ==}
     engines: {node: '>= 12'}
     peerDependencies:
@@ -1503,11 +1505,9 @@ packages:
     dependencies:
       '@intlify/message-compiler': 9.2.0-beta.19
       '@intlify/shared': 9.2.0-beta.19
-      jsonc-eslint-parser: 1.3.0_eslint@8.2.0
+      jsonc-eslint-parser: 1.4.1
       source-map: 0.6.1
       yaml-eslint-parser: 0.3.2
-    transitivePeerDependencies:
-      - eslint
     dev: true
 
   /@intlify/message-compiler/9.2.0-beta.19:
@@ -1523,7 +1523,7 @@ packages:
     engines: {node: '>= 12'}
     dev: true
 
-  /@intlify/vite-plugin-vue-i18n/3.1.0_eslint@8.2.0+vite@2.6.14:
+  /@intlify/vite-plugin-vue-i18n/3.1.0_vite@2.6.14:
     resolution: {integrity: sha512-cZttcRleYbbHq+DcohyIzFQE10pgNrkZPG1CIeNggjx5gqpoWfDd2N1782+IegxQAHpuvFeE4h9rYalu37YxRA==}
     engines: {node: '>= 12'}
     peerDependencies:
@@ -1536,14 +1536,13 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/bundle-utils': 2.1.0_eslint@8.2.0
+      '@intlify/bundle-utils': 2.1.0
       '@intlify/shared': 9.2.0-beta.19
       '@rollup/pluginutils': 4.1.1
       debug: 4.3.2
       fast-glob: 3.2.7
       vite: 2.6.14_less@4.1.2
     transitivePeerDependencies:
-      - eslint
       - supports-color
     dev: true
 
@@ -3529,6 +3528,13 @@ packages:
     resolution: {integrity: sha512-rpw6JPxK6Rfg1zLOYCSwle2GFOOsnjmDYDaBwEcwoOg4qlsIVCN789VkBZDJAGi4T07gI4YSutR43t9Zz4Lzuw==}
     dev: false
 
+  /dagrejs/0.2.1:
+    resolution: {integrity: sha512-4bb1y+4aM1xtkK7ieP0V7Xn/34GQfnCapl0yubrOMX8Qb/PIwM1Dii2uUBv/KtuzrQtxPliSP4r5MQBsnP6gNg==}
+    dependencies:
+      graphlib: 2.1.8
+      lodash: 4.17.21
+    dev: false
+
   /dayjs/1.10.7:
     resolution: {integrity: sha512-P6twpd70BcPK34K26uJ1KT3wlhpuOAPoMwJzpsIWUxHZ7wpmbdZL/hQqBDfz7hGurYSa5PhzdhDHtt319hL3ig==}
     dev: false
@@ -4140,6 +4146,13 @@ packages:
       estraverse: 5.2.0
     dev: true
 
+  /eslint-utils/2.1.0:
+    resolution: {integrity: sha512-w94dQYoauyvlDc43XnGB8lU3Zt713vNChgt4EWwhXAP2XkBvndfxF0AgIqKOOasjPIPzj9JqgwkwbCYD0/V3Zg==}
+    engines: {node: '>=6'}
+    dependencies:
+      eslint-visitor-keys: 1.3.0
+    dev: true
+
   /eslint-utils/3.0.0_eslint@8.2.0:
     resolution: {integrity: sha512-uuQC43IGctw68pJA1RgbQS8/NP7rch6Cwd4j3ZBtgo4/8Flj4eGE7ZYSZRN3iq5pVUv6GPdW5Z1RFleo84uLDA==}
     engines: {node: ^10.0.0 || ^12.0.0 || >= 14.0.0}
@@ -4212,9 +4225,9 @@ packages:
       - supports-color
     dev: true
 
-  /espree/7.3.1:
-    resolution: {integrity: sha512-v3JCNCE64umkFpmkFGqzVKsOT0tN1Zr+ueqLZfpV1Ob8e+CEgPWa+OxCoGH3tnhimMKIaBm4m/vaRpJ/krRz2g==}
-    engines: {node: ^10.12.0 || >=12.0.0}
+  /espree/6.2.1:
+    resolution: {integrity: sha512-ysCxRQY3WaXJz9tdbWOwuWr5Y/XrPTGX9Kiz3yoUXwW0VZ4w30HTkQLaGx/+ttFjF8i+ACbArnB4ce68a9m5hw==}
+    engines: {node: '>=6.0.0'}
     dependencies:
       acorn: 7.4.1
       acorn-jsx: 5.3.2_acorn@7.4.1
@@ -4661,6 +4674,12 @@ packages:
 
   /graceful-fs/4.2.8:
     resolution: {integrity: sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==}
+
+  /graphlib/2.1.8:
+    resolution: {integrity: sha512-jcLLfkpoVGmH7/InMC/1hIvOPSUh38oJtGhvrOFGzioE1DZ+0YW16RgmOJhHiuWTvGiJQ9Z1Ik43JvkRPRvE+A==}
+    dependencies:
+      lodash: 4.17.21
+    dev: false
 
   /handle-thing/2.0.1:
     resolution: {integrity: sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==}
@@ -5253,16 +5272,15 @@ packages:
       minimist: 1.2.5
     dev: true
 
-  /jsonc-eslint-parser/1.3.0_eslint@8.2.0:
-    resolution: {integrity: sha512-+xXdr4lCtRpeOKFl+v64QgVUcz3z0XvcUZSKspAARII3zPKt53zGPPsSjepydtJifKzeOpqf46CaI8LvSxLHyA==}
+  /jsonc-eslint-parser/1.4.1:
+    resolution: {integrity: sha512-hXBrvsR1rdjmB2kQmUjf1rEIa+TqHBGMge8pwi++C+Si1ad7EjZrJcpgwym+QGK/pqTx+K7keFAtLlVNdLRJOg==}
     engines: {node: '>=8.10.0'}
     dependencies:
-      eslint-utils: 3.0.0_eslint@8.2.0
-      eslint-visitor-keys: 3.0.0
-      espree: 7.3.1
+      acorn: 7.4.1
+      eslint-utils: 2.1.0
+      eslint-visitor-keys: 1.3.0
+      espree: 6.2.1
       semver: 6.3.0
-    transitivePeerDependencies:
-      - eslint
     dev: true
 
   /jsonc-parser/2.3.1:

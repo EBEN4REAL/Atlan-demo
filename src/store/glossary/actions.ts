@@ -4,16 +4,18 @@ export interface Actions extends State {
     setList(value: any): void
     setTermsCount(value: any): void
     setCategoryCount(value: any): void
-    setSelectedGlossary(value: any): void
+    setSelectedGTC(value: any): void
     setActivePanel(value: any): void
     setPreferences(value: any): void
     setActiveFacet(value: any): void
     setActivePostFacet(value: any): void
+    addGlossary(value: any): void
+    setActiveGlossaryQualifiedName(value: any): void
 }
 
 export const actions: Actions = {
-    setSelectedGlossary(value) {
-        this.selectedGlossary = value
+    setSelectedGTC(value) {
+        this.selectedGTC = value
     },
     setList(value) {
         this.list = value.map((i) => ({
@@ -21,6 +23,9 @@ export const actions: Actions = {
             id: i.attributes.qualifiedName,
             label: i.attributes.name,
         }))
+    },
+    addGlossary(value) {
+        this.list.unshift(value)
     },
     setTermsCount(buckets) {
         this.list.forEach((element, index) => {
@@ -57,5 +62,8 @@ export const actions: Actions = {
     },
     setActivePostFacet(value) {
         this.activePostFacet = value
+    },
+    setActiveGlossaryQualifiedName(value) {
+        this.activeGlossaryQualifiedName = value
     },
 }

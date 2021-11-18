@@ -5,6 +5,7 @@
             overlayClassName="certificatePopover"
             @visibleChange="handleVisibleChange"
             v-model:visible="isEdit"
+            :trigger="['click']"
         >
             <template #content>
                 <CertificateFacet

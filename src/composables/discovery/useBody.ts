@@ -439,6 +439,7 @@ export function useBody(
             'Query',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
+            'Connection',
         ])
     }
 

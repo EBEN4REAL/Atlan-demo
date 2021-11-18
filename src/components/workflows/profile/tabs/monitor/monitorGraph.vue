@@ -1,10 +1,21 @@
 <template>
     <div ref="monitorContainer" class="monitor">
-        <!-- Graph Container -->
-        <div
-            ref="graphContainer"
-            style="width: calc(100vw + 45px); height: 1000px"
-        ></div>
+        <!-- Parent Container for Graph and Spinner -->
+        <div class="relative">
+            <!-- Graph Container -->
+            <div
+                ref="graphContainer"
+                style="width: calc(100vw + 45px); height: 1000px"
+            >
+            </div>
+            <!-- Spinner -->
+            <div
+                v-if="!isGraphRendered"
+                class="bg-gray-100 bg-opacity-50 absolute flex items-center justify-center w-full h-full top-0 left-0"
+            >
+                <a-spin />
+            </div>
+        </div>
 
         <!-- Monitor Controls -->
         <div
@@ -184,6 +195,10 @@
             const isLoadingRefresh = ref(false)
             const firstNode = ref({})
 
+            // Ref indicating if the all the nodes and edges of the graph
+            // have been rendered or not.
+            const isGraphRendered = ref(false)
+
             /** METHODS */
             // controls
             const { retry, stop } = useControlGraph()
@@ -205,6 +220,7 @@
             const initialize = (reload = false) => {
                 if (reload) graph.value.dispose()
                 isLoadingRefresh.value = true
+                isGraphRendered.value = false
                 // useGraph
                 const { graphLayout } = useCreateGraph(
                     graph,
@@ -238,6 +254,13 @@
                 })
                 graph.value.on('cell:mousewheel', () => {
                     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+                })
+
+                // The graph is rendered asynchronously, so any synchronous
+                // interactions need to take place after the render is complete.
+                // Once it is complete, change the value of the ref.
+                graph.value.on('render:done', () => {
+                    isGraphRendered.value = true;
                 })
                 isLoadingRefresh.value = false
             }
@@ -276,6 +299,7 @@
                 initialize,
                 isLoadingRefresh,
                 handleRefresh,
+                isGraphRendered,
                 handleRecenter
             }
         },

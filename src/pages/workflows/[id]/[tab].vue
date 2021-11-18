@@ -8,6 +8,7 @@
                 :workflow="data.asset"
                 :creator="creator"
                 class="px-5 pt-3 bg-white"
+                :logo="logo"
                 @open-logs="workflowLogsIsOpen = true"
             />
             <a-tabs
@@ -45,6 +46,7 @@
                         @setSelectedPod="setSelectedPod"
                         @setSelectedGraph="setSelectedGraph"
                         @set-loading-fetch-pod="setLoadingFetchPod"
+                        @handleSetLogo="handleSetLogo"
                     />
                     <!-- <EmptyView
                         v-if="!workflowTemplate && !data?.isLoading"
@@ -152,7 +154,7 @@
             /** DATA */
             const graphRef: Ref<Element | null> = ref(null)
             provide('graphRef', graphRef)
-
+            const logo = ref("")
             const activeKey = ref(1)
             const data = ref({})
             const selectedRunName = ref(null)
@@ -164,7 +166,7 @@
             const selectedPod = ref({})
             const selectedGraph = ref({})
             const loadingFetchPod = ref(true)
-            const userId = ref('')
+            const creator = ref({})
             const tabs = [
                 {
                     id: 1,
@@ -211,7 +213,9 @@
                     data.value?.asset?.workflowtemplate.spec.templates[0].dag
                         .tasks[0].templateRef.name || ''
             )
-
+            const handleSetLogo = (prop) => {
+              logo.value = prop
+            }
             /** METHODS */
             // selectTab
             const selectTab = (val: number) => {
@@ -283,6 +287,34 @@
                 })
             }
 
+            const handleGetUser = (userId) => {
+              const params: ComputedRef<{
+                 limit?: number
+                 offset?: number
+                 filter?: any
+                 sort?: string
+             }> = {
+                  limit: 1,
+                  offset: 0,
+                  sort: 'first_name',
+                  filter: {
+                      $and: [
+                          {
+                              $or: [
+                                  {
+                                      email_verified: true,
+                                      id: userId,
+                                  },
+                              ],
+                          },
+                      ],
+                  },
+              }
+              const { userList } = useUsers(params, null, {})
+              watch(userList, (newVal) => {
+                creator.value = newVal[0]
+              })
+            }
             // fetch
             const fetch = () => {
                 if (selected.value) {
@@ -298,11 +330,8 @@
 
                 watch(response, (v) => {
                     // useWorkflowByName
-                    const usrId =
-                        v?.records[0]?.labels['workflows.argoproj.io/creator']
-                    if (usrId) {
-                        userId.value = usrId
-                    }
+                    const usrId = v?.records[0]?.labels['workflows.argoproj.io/creator']
+                    handleGetUser(usrId)
                     // getUserList()
                     // watch(userList, (newVal) => {
                     //   console.log(newVal, '<<<sdshdsgdgsdhjs')
@@ -321,43 +350,6 @@
             watch(id, (n, o) => {
                 if (n && !o) fetch()
             })
-
-            const params: ComputedRef<{
-                limit?: number
-                offset?: number
-                filter?: any
-                sort?: string
-            }> = computed(() =>
-                userId.value
-                    ? {
-                          limit: 1,
-                          offset: 0,
-                          sort: 'first_name',
-                          filter: {
-                              $and: [
-                                  {
-                                      $or: [
-                                          {
-                                              email_verified: true,
-                                              id: userId.value,
-                                          },
-                                      ],
-                                  },
-                              ],
-                          },
-                      }
-                    : {}
-            )
-
-            const { userList, getUserList } = useUsers(params)
-            watch(userId, () => {
-                if (userId.value) {
-                    getUserList()
-                }
-            })
-            const creator = computed(() =>
-                userList.value.length > 1 ? {} : userList.value[0]
-            )
 
             watch(tab, (n, o) => {
                 if (!n) return
@@ -411,6 +403,8 @@
                 setLoadingFetchPod,
                 id,
                 creator,
+                logo,
+                handleSetLogo
             }
         },
     })

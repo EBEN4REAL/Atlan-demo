@@ -77,12 +77,13 @@
         getArchivedRunList,
     } from '~/composables/workflow/useWorkflowList'
 
-    import WorkflowMixin from '~/mixins/workflow'
+    // import WorkflowMixin from '~/mixins/workflow'
+    import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
         components: { MonitorGraph, EmptyView },
-        mixins: [WorkflowMixin],
+        // mixins: [WorkflowMixin],
         props: {
             selectedRunName: {
                 type: String,
@@ -166,7 +167,8 @@
                     records.value = list.value
 
                     if (!selectedRunName.value) {
-                        graphData.value = list.value[0]
+                        const idMonitoring = route.query.idmonitoring
+                        graphData.value = list.value.find((el) => el.uid === idMonitoring) || list.value[0]
                         emit('setSelectedGraph', graphData.value)
                     }
                     loadingGeneral.value = false
@@ -197,6 +199,7 @@
                 selectedPod,
                 loadingGeneral,
                 handleRefresh,
+                ...useWorkFlowHelper()
             }
         },
     })

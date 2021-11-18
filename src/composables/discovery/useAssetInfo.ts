@@ -182,6 +182,9 @@ export default function useAssetInfo() {
         ) {
             let tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+        } else if(assetType(asset) === 'Query') {
+            // console.log('assetType: ', asset.guid)
+            queryPath = `/insights?id=${asset.guid}`
         } else {
             queryPath = `/insights`
         }
@@ -489,7 +492,7 @@ export default function useAssetInfo() {
     const glossaryStore = useGlossaryStore()
 
     const selectedGlossary = computed(() => {
-        return glossaryStore.selectedGlossary
+        return glossaryStore.selectedGTC
     })
 
     const isGTCByType = (typeName) => {
@@ -766,6 +769,7 @@ export default function useAssetInfo() {
     }
 
     return {
+        attributes,
         title,
         getConnectorImage,
         getConnectorName,

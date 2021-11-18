@@ -9,20 +9,17 @@
         @click="$emit('select')"
     >
         <div class="flex items-center col-span-4 overflow-hidden">
+            <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <AtlanIcon
-                class="flex-none mr-4 text-gray-500"
-                :icon="requestTypeIcon[request.request_type]"
-            />
             <AssetPiece
                 v-if="request.destination_qualified_name"
                 :asset-qf-name="request.destination_qualified_name"
+                :entityType="request?.entity_type"
             />
             <span v-else class="text-sm overflow-ellipsis">
                 {{ primaryText[request.request_type](request) }}
             </span>
         </div>
-        <!-- RHS -->
         <div class="flex items-center col-span-3">
             <ClassificationPiece
                 v-if="
@@ -36,19 +33,18 @@
                 :typeName="request.payload.typeName"
             />
 
-            <!-- <TermPiece
+            <TermPiece
                 v-else-if="
-                    request.request_type === 'create_term' && request.payload
+                    request?.request_type === 'create_term' && request?.payload
                 "
                 :data="request.payload"
             />
 
             <TermPiece
                 v-else-if="request.request_type === 'term_link'"
-                :data="request.sourceEntity.attributes"
+                :data="request?.sourceEntity?.attributes"
             />
-  -->
-            <!-- v-else-if="request.destination_attribute" -->
+
             <AttrPiece
                 v-else-if="request.destination_attribute"
                 :name="request.destination_attribute"
@@ -58,6 +54,7 @@
             <AssetPiece
                 v-else-if="request.source_qualified_name"
                 :asset-qf-name="request.source_qualified_name"
+                :entityType="request?.entity_type"
             />
         </div>
 
@@ -70,7 +67,7 @@
             <!-- <div v-else-if="selected"> -->
             <template v-else>
                 <div
-                    class="items-center justify-around hidden group-hover:flex"
+                    class="items-center justify-center hidden w-full font-bold  group-hover:flex"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
@@ -90,13 +87,25 @@
                         Rejected
                     </div>
                 </div>
-                <div class="flex flex-col w-1/2 gap-x-2 group-hover:hidden">
-                    <UserPiece :user="request.createdByUser" :is-pill="false" />
-                    <DatePiece
-                        label="Created At"
-                        :date="request.created_at"
-                        class="text-gray-500"
+                <div class="flex w-1/2 gap-x-2 group-hover:hidden">
+                    <Avatar
+                        :allow-upload="false"
+                        :avatar-name="request.createdByUser?.username"
+                        avatar-size="24"
+                        :avatar-shape="'circle'"
                     />
+
+                    <div class="flex flex-col">
+                        <UserPiece
+                            :user="request.createdByUser"
+                            :is-pill="false"
+                        />
+                        <DatePiece
+                            label="Created At"
+                            :date="request.created_at"
+                            class="text-gray-500"
+                        />
+                    </div>
                 </div>
             </template>
         </div>
@@ -104,19 +113,21 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, reactive, toRefs } from 'vue'
+    import { defineComponent, PropType, reactive, toRefs, inject } from 'vue'
     import { message } from 'ant-design-vue'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     import RequestActions from './requestActions.vue'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
     import AttrPiece from './pieces/attributeUpdate.vue'
     import UserPiece from './pieces/user.vue'
     import DatePiece from './pieces/date.vue'
-    // import TermPiece from './pieces/term.vue'
+    import TermPiece from './pieces/term.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
@@ -135,7 +146,8 @@
             AttrPiece,
             UserPiece,
             DatePiece,
-            // TermPiece,
+            TermPiece,
+            Avatar,
         },
         props: {
             request: {
@@ -156,6 +168,7 @@
         emits: ['select', 'action'],
         setup(props, { emit }) {
             const { request } = toRefs(props)
+
             const state = reactive({
                 isLoading: false,
                 message: '',
@@ -192,7 +205,6 @@
                 }
                 state.isLoading = false
             }
-
             return {
                 handleApproval,
                 handleRejection,

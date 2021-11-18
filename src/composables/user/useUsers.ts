@@ -82,14 +82,19 @@ export const getFormattedUser = (user: any) => {
     }
     return localUser
 }
+
+const defaultCacheOption = {
+    cacheOptions: {
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+        cache: new LocalStorageCache(),
+        dedupingInterval: 1,
+    }
+}
 export const useUsers = (
-    userListAPIParams: Ref<{
-        limit: number
-        offset: number
-        filter?: any
-        sort?: string
-    }>,
-    cacheKey?: string
+    userListAPIParams,
+    cacheKey?: string,
+    cacheOption = defaultCacheOption
 ) => {
     const {
         data,
@@ -98,12 +103,7 @@ export const useUsers = (
         isValidating,
         error,
     } = Users.List(userListAPIParams, {
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
-        },
+        ...cacheOption,
         cacheKey: cacheKey ?? LIST_USERS,
     })
 

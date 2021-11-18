@@ -119,11 +119,18 @@
                     return []
                 },
             },
+            componentParentKey: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { item } = toRefs(props)
+            const { item, activeKey, componentParentKey } = toRefs(props)
             const { getConnectorImageMap } = useAssetInfo()
             const componentState = ref(0)
             const forceRender = () => {
@@ -154,7 +161,7 @@
             })
 
             const isActive = computed(() =>
-                props.activeKey.includes(item.value.id)
+                activeKey.value.includes(componentParentKey?.value)
             )
 
             const handleChange = () => {
@@ -246,14 +253,12 @@
                         usersLength > 0
                     ) {
                         val = facetMap.value[id]?.ownerUsers?.join(', ')
-                    } else if (usersLength + groupsLength > 2) {
+                    } else if (usersLength + groupsLength >= 2) {
                         val = `${getOwnerFilterAppliedString(
                             usersLength,
                             groupsLength
                         )}`
                     }
-
-                    console.log(val)
 
                     if (facetMap.value[id].empty) {
                         if (val !== '') {
@@ -300,6 +305,8 @@
                 forceRender,
                 componentKey,
                 imageUrl,
+                activeKey,
+                componentParentKey,
             }
         },
     })

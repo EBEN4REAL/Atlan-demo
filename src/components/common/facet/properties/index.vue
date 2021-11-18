@@ -2,7 +2,7 @@
     <div class="w-full">
         <div
             class="flex items-center justify-between px-4"
-            v-if="filteredAttributeList.length > 5"
+            v-if="filteredAttributeList.length > 5 || queryText"
         >
             <SearchAdvanced
                 ref="classificationSearchRef"
@@ -14,7 +14,16 @@
             </SearchAdvanced>
         </div>
 
-        <div class="flex flex-col w-full px-2 mt-1 gap-y-1">
+        <div class="flex flex-col w-full h-full px-2 mt-1">
+            <div
+                v-if="filteredAttributeList.length == 0"
+                class="flex flex-col items-center justify-center h-full"
+                style="min-height: 100px"
+            >
+                <div class="flex flex-col items-center">
+                    <span class="text-gray-500">No properties found</span>
+                </div>
+            </div>
             <Popover
                 v-for="attribute in filteredAttributeList"
                 :key="attribute.name"

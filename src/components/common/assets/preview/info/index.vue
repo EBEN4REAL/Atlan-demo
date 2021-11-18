@@ -19,6 +19,30 @@
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
 
+        <div
+            class="flex flex-col"
+            v-if="
+                isGTC(selectedAsset) || selectedAsset.typeName === 'Connection'
+            "
+        >
+            <Shortcut shortcutKey="n" action="set description" placement="left">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span> Name</span>
+                </div>
+            </Shortcut>
+
+            <Name
+                v-model="localName"
+                class="mx-4"
+                @change="handleChangeName"
+                ref="nameRef"
+            />
+        </div>
+
+        <Connection v-if="selectedAsset.typeName === 'Connection'"></Connection>
+
         <div class="px-5" v-if="webURL(selectedAsset)">
             <a-button
                 block
@@ -68,9 +92,12 @@
             <div
                 v-if="rowCount(selectedAsset) > 0"
                 class="flex flex-col text-sm cursor-pointer"
+                @click="showSampleDataModal"
             >
                 <span class="mb-2 text-sm text-gray-500">Rows</span>
-                <span class="text-gray-700">{{ rowCount(selectedAsset) }}</span>
+                <span class="font-semibold text-primary">{{
+                    rowCount(selectedAsset)
+                }}</span>
             </div>
             <!-- </RowInfoHoverCard> -->
             <div
@@ -141,22 +168,6 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col" v-if="isGTC(selectedAsset)">
-            <Shortcut shortcutKey="n" action="set description" placement="left">
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
-                >
-                    <span> Name</span>
-                </div>
-            </Shortcut>
-
-            <Name
-                v-model="localName"
-                class="mx-4"
-                @change="handleChangeName"
-                ref="nameRef"
-            />
-        </div>
 
         <div class="flex flex-col">
             <Shortcut shortcutKey="d" action="set description" placement="left">
@@ -199,9 +210,11 @@
 
         <div
             v-if="
-                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
-                    selectedAsset.typeName
-                )
+                ![
+                    'AtlasGlossary',
+                    'AtlasGlossaryCategory',
+                    'Connection',
+                ].includes(selectedAsset.typeName)
             "
             class="flex flex-col"
         >
@@ -232,6 +245,7 @@
                     'AtlasGlossary',
                     'AtlasGlossaryTerm',
                     'AtlasGlossaryCategory',
+                    'Connection',
                 ].includes(selectedAsset.typeName)
             "
             class="flex flex-col"
@@ -268,6 +282,15 @@
                 @change="handleChangeCertificate"
             />
         </div>
+        <a-modal
+            v-model:visible="sampleDataVisible"
+            :footer="null"
+            :closable="false"
+            width="1000px"
+            :class="$style.sampleDataModal"
+        >
+            <SampleDataTable :asset="selectedAsset" />
+        </a-modal>
     </div>
 </template>
 
@@ -275,7 +298,7 @@
     import {
         computed,
         defineComponent,
-        PropType,
+        defineAsyncComponent,
         toRefs,
         inject,
         ref,
@@ -303,9 +326,12 @@
     import confetti from '~/utils/confetti'
     import Shortcut from '@/common/popover/shortcut.vue'
 
+    import Connection from './connection.vue'
+
     export default defineComponent({
         name: 'AssetDetails',
         components: {
+            Connection,
             // Experts,
             Description,
             Name,
@@ -319,12 +345,24 @@
             SQL,
             Terms,
             Shortcut,
+            SampleDataTable: defineAsyncComponent(
+                () =>
+                    import(
+                        '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
+                    )
+            ),
         },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
             const isConfetti = ref(false)
+
+            const sampleDataVisible = ref<boolean>(false)
+
+            const showSampleDataModal = () => {
+                sampleDataVisible.value = true
+            }
 
             const {
                 title,
@@ -675,7 +713,17 @@
                 handleChangeDescription,
                 nameRef,
                 descriptionRef,
+                sampleDataVisible,
+                showSampleDataModal,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .sampleDataModal {
+        :global(.ant-modal-body) {
+            @apply p-2 !important;
+        }
+    }
+</style>

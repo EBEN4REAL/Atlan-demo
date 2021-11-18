@@ -4,7 +4,12 @@
             <div
                 class="flex items-center flex-1 px-5 pt-2 pb-3 transition-all duration-300  hover:bg-gray-100 hover:border-none"
             >
-                <AssetLogo :asset="item" :textRequired="false" variant="lg" />
+                <AssetLogo
+                    :asset="item"
+                    :textRequired="false"
+                    variant="lg"
+                    class="mr-2"
+                />
                 <div class="flex flex-col flex-1 overflow-hidden lg:pr-16">
                     <!-- Title bar -->
                     <div
@@ -40,7 +45,7 @@
                         <AssetLogo
                             :asset="item"
                             :imageRequired="false"
-                            class="text-xs"
+                            class="mr-2 text-xs"
                         />
                         <HierarchyBar :selected-asset="item" class="text-xs" />
                         <span style="color: #c4c4c4"> • </span>

@@ -41,6 +41,7 @@ export default function useProject() {
                     dataIndex: col.columnName,
                     width: 'fit-content',
                     key: col.columnName,
+                    type: col.type.name
                 })
             })
 

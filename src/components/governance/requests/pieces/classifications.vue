@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col">
-        <span class="pb-1 pr-2 text-gray-500">Link classifications</span>
+        <span class="pb-1 pr-2 text-gray-500">CLASSIFICATION</span>
         <!-- !typeName && data.length
                     ? formattedClassifications
                     : localClassification -->
@@ -43,8 +43,6 @@
         setup(props) {
             const { data, typeName } = toRefs(props)
             const { classificationList } = useTypedefData()
-            console.log(classificationList.value)
-            console.log(data.value)
 
             const formattedClassifications = computed(() =>
                 data.value.map((clsf) => ({

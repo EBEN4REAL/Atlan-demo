@@ -1,17 +1,18 @@
-import { computed, Ref, ComputedRef } from 'vue'
+import { computed, Ref, ComputedRef, ref } from 'vue'
 import { getLineageOptions, lineageServiceAPI } from './lineage_api'
 
 export default function useLineageService() {
     function useFetchLineage(
-        config: Ref<getLineageOptions> | getLineageOptions | ComputedRef<getLineageOptions>
+        config:
+            | Ref<getLineageOptions>
+            | getLineageOptions
+            | ComputedRef<getLineageOptions>
     ) {
-        const {
-            data,
-            error,
-            isLoading,
-            isReady,
-            mutate: reFetch,
-        } = lineageServiceAPI.getLineage(config)
+        const asyncOptions = {
+            resetOnExecute: false,
+        }
+        const { data, error, isLoading, isReady, mutate } =
+            lineageServiceAPI.getLineage(config, asyncOptions)
 
         const guidEntityMap = computed(() => data.value.guidEntityMap)
         const relations = computed(() => data.value.relations)
@@ -21,7 +22,7 @@ export default function useLineageService() {
             error,
             isLoading,
             isReady,
-            reFetch,
+            mutate,
             guidEntityMap,
             relations,
         }

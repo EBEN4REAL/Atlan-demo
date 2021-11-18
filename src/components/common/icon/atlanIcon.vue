@@ -1,14 +1,15 @@
 <template>
     <component
+        :is="svgIcon"
         :style="{ height: '1rem' }"
         class="inline w-auto"
-        :is="svgIcon"
     />
 </template>
 
 <script lang="ts">
     import { toRefs, defineComponent, computed, PropType } from 'vue'
     import iconMap from './iconMap'
+
     export default defineComponent({
         name: 'AtlanIcons',
         props: {
@@ -20,7 +21,7 @@
         setup(props) {
             const { icon } = toRefs(props)
             const svgIcon = computed(() => iconMap[icon.value] || 'div')
-            return { svgIcon }
+            return { svgIcon, icon }
         },
     })
 </script>

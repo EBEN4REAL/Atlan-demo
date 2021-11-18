@@ -20,7 +20,14 @@
                 <AtlanIcon class icon="KebabMenu" />
             </div>
             <template #overlay>
-                <a-menu style="min-width: 264px" :class="$style.menu_class">
+                <a-menu
+                    style="
+                        min-width: 264px;
+                        margin-right: 10px !important;
+                        margin-top: 2px !important;
+                    "
+                    :class="$style.menu_class"
+                >
                     <a-sub-menu key="themes">
                         <template #title>
                             <div
@@ -40,7 +47,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2 text-gray-500"
+                                    class="ml-2 text-gray-500 -mt-0.5 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -51,7 +58,7 @@
                                 :key="themeObj.name"
                             >
                                 <a-menu-item
-                                    class="px-4 text-sm"
+                                    class="px-4 py-2 text-sm"
                                     :class="
                                         isThisThemeActive(
                                             editorConfig,
@@ -104,7 +111,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2 text-gray-500"
+                                    class="ml-2 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -112,7 +119,7 @@
                         <div class="text-gray-700" style="min-width: 200px">
                             <a-menu-item
                                 key="2"
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 :class="
                                     isThisTabActive(editorConfig, 2)
                                         ? 'bg-primary-light'
@@ -134,7 +141,7 @@
                                 </div>
                             </a-menu-item>
                             <a-menu-item
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 key="4"
                                 :class="
                                     isThisTabActive(editorConfig, 3)
@@ -157,7 +164,7 @@
                                 </div>
                             </a-menu-item>
                             <a-menu-item
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 key="6"
                                 :class="
                                     isThisTabActive(editorConfig, 4)
@@ -196,7 +203,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2 text-gray-500"
+                                    class="ml-2 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -204,7 +211,7 @@
                         <div class="text-gray-700" style="min-width: 200px">
                             <a-menu-item
                                 key="12"
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 :class="
                                     isThisFontSizeActive(editorConfig, 12)
                                         ? 'bg-primary-light'
@@ -234,7 +241,7 @@
                                 </div>
                             </a-menu-item>
                             <a-menu-item
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 key="14"
                                 :class="
                                     isThisFontSizeActive(editorConfig, 14)
@@ -265,7 +272,7 @@
                                 </div>
                             </a-menu-item>
                             <a-menu-item
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 key="16"
                                 :class="
                                     isThisFontSizeActive(editorConfig, 16)
@@ -309,11 +316,15 @@
                                     class="flex items-center justify-between w-full "
                                 >
                                     <span class="text-gray-700">Cursor</span>
-                                    <span>{{ editorConfig.cursorStyle }}</span>
+                                    <span>{{
+                                        capitalizeFirstLetter(
+                                            editorConfig.cursorStyle
+                                        )
+                                    }}</span>
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2 text-gray-500"
+                                    class="ml-2 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -321,7 +332,7 @@
                         <div class="text-gray-700" style="min-width: 200px">
                             <a-menu-item
                                 key="line"
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 :class="
                                     isThisCursorActive(editorConfig, 'line')
                                         ? 'bg-primary-light'
@@ -353,7 +364,7 @@
 
                             <a-menu-item
                                 key="block"
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 :class="
                                     isThisCursorActive(editorConfig, 'block')
                                         ? 'bg-primary-light'
@@ -385,7 +396,7 @@
 
                             <a-menu-item
                                 key="underline"
-                                class="text-sm"
+                                class="px-4 py-2 text-sm"
                                 :class="
                                     isThisCursorActive(
                                         editorConfig,
@@ -429,19 +440,20 @@
                     <hr />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
-                        <a-menu-item @click="duplicateQuery"
+                        <a-menu-item @click="duplicateQuery" class="px-4 py-2"
                             >Duplicate query</a-menu-item
                         >
-                        <a-menu-item>Edit saved query</a-menu-item>
-                        <a-menu-item class="text-red-600"
+                        <a-menu-item class="px-4 py-2"
+                            >Edit saved query</a-menu-item
+                        >
+                        <a-menu-item class="px-4 py-2 text-red-600"
                             >Delete query</a-menu-item
                         >
                         <hr />
                     </div>
-                    <a-menu-item @click="openCommandPallete"
+                    <a-menu-item @click="openCommandPallete" class="px-4 py-2"
                         >Open command pallete</a-menu-item
                     >
-                    <a-menu-item>Keyboard shortcuts</a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
@@ -465,6 +477,7 @@
     import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
     import { useRouter } from 'vue-router'
     import { themes } from '~/components/insights/playground/editor/monaco/themeLoader'
+    import { capitalizeFirstLetter } from '~/utils/string'
 
     export default defineComponent({
         components: {},
@@ -641,14 +654,17 @@
                 cursorChange,
                 cursorHoverChange,
                 isThisCursorActive,
+                capitalizeFirstLetter,
             }
         },
     })
 </script>
 <style lang="less" module>
     .menu_class {
+        // font-family: 'Avenir LT Pro' !important;
         :global(.ant-dropdown-menu-submenu-title) {
             @apply px-4 !important;
+            @apply py-2 !important;
         }
     }
 </style>

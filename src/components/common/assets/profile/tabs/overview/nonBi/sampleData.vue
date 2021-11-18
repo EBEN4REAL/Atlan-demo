@@ -15,17 +15,15 @@
                     <thead>
                         <tr>
                             <th
-                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                                style="z-index: 4"
+                                class="truncate bg-gray-100 border  border-gray-light"
                             >
                                 #
-                                <span class="resize-handle"></span>
+                                <!-- <span class="resize-handle"></span> -->
                             </th>
                             <th
                                 v-for="(col, index) in tableColumns"
                                 :key="index"
-                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                                style="z-index: 3"
+                                class="bg-gray-100 border border-gray-light"
                             >
                                 <div class="flex items-center">
                                     <a-tooltip>
@@ -34,13 +32,19 @@
                                         }}</template>
                                         <component
                                             :is="images[col.data_type]"
-                                            class="w-4 h-4 mr-1 cursor-pointer"
+                                            class="
+                                                w-4
+                                                h-4
+                                                mr-1
+                                                cursor-pointer
+                                                -mt-0.5
+                                            "
                                         ></component>
                                     </a-tooltip>
 
                                     <Tooltip :tooltip-text="`${col.title}`" />
                                 </div>
-                                <span class="resize-handle"></span>
+                                <!-- <span class="resize-handle"></span> -->
                             </th>
                         </tr>
                     </thead>

@@ -236,12 +236,15 @@ import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import NoWf from '~/assets/images/icons/no-wf.svg'
 
 // source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
 import Athena from '~/assets/images/source/svg/Athena.svg'
 import Tableau from '~/assets/images/source/svg/Tableau.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Schema2Active from '~/assets/images/icons/schema2Active.svg'
+import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 
 export default {
     CreateGroups,
@@ -482,4 +485,7 @@ export default {
     CustomSaml,
     Struct,
     Geography,
+    NoWf,
+    Schema2Active,
+    QueriesActive,
 }

@@ -58,7 +58,7 @@
                 required: true,
             },
         },
-        emits: ['change', 'openLog'],
+        emits: ['change', 'openLog', 'handleSetLogo'],
         setup(props, { emit }) {
             const graphRef = inject('graphRef')
             const tasks = ref([])
@@ -104,7 +104,9 @@
             })
 
             watch(data, (newVal) => {
-                const entrypoint = newVal.workflowtemplate.spec.entrypoint
+              const urlLogo = newVal?.workflowtemplate?.metadata?.annotations["com.atlan.orchestration/logo"]
+              emit("handleSetLogo", urlLogo)
+                const {entrypoint} = newVal.workflowtemplate.spec
                 tasks.value = newVal.workflowtemplate.spec.templates.find(
                     (t) => t.name === entrypoint
                 ).dag.tasks

@@ -217,8 +217,8 @@
 
             /** WATCHERS */
             watch([depth, guid], () => {
-                UpStreamLineage.reFetch()
-                DownStreamLineage.reFetch()
+                UpStreamLineage.mutate()
+                DownStreamLineage.mutate()
             })
 
             /** LIFECYCLE */

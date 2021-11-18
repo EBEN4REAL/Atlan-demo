@@ -24,13 +24,11 @@ export default function useHighlight(
     emit
 ) {
     const previewedNode = ref('')
-
     const getCell = (guid) => graph.value.getCellById(guid)
     const cell = getCell(baseEntityGuid)
     const { entity: defaultEntity } = cell.store.data
 
     const getHighlights = async (guid) => {
-        console.log('guid:', guid)
         await getPredecessors(graph, guid, showProcess)
         await getSuccessors(graph, guid, showProcess)
     }

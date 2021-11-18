@@ -1,6 +1,6 @@
 <template>
     <Loader v-if="isLoading"></Loader>
-    <AssetProfile :asset="selectedAsset" v-else></AssetProfile>
+    <AssetProfile :asset="selectedAsset" @preview="emit('preview', $event)" v-else></AssetProfile>
 </template>
 
 <script lang="ts">
@@ -30,7 +30,7 @@
                 required: true,
             },
         },
-        setup(props) {
+        setup(props, {emit}) {
             useHead({
                 title: 'Assets',
             })
@@ -76,6 +76,7 @@
             return {
                 fetchKey,
                 isLoading,
+                emit
             }
         },
     })

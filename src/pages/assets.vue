@@ -1,7 +1,11 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex-1 border-r border-gray-200">
-            <router-view :selected-asset="selectedAsset" v-if="isItem" />
+            <router-view
+                v-if="isItem"
+                :selected-asset="selectedAsset"
+                @preview="setSelectedAsset($event)"
+            />
 
             <keep-alive>
                 <AssetDiscovery
@@ -12,7 +16,9 @@
         </div>
 
         <div class="relative hidden bg-white asset-preview-container md:block">
-            <AssetPreview :selected-asset="selectedAsset"></AssetPreview>
+            <AssetPreview
+                :selected-asset="selectedAssetFromEmit || selectedAsset"
+            ></AssetPreview>
         </div>
     </div>
 </template>
@@ -41,6 +47,12 @@
 
             const assetdiscovery = ref()
 
+            const selectedAssetFromEmit = ref(null)
+
+            const setSelectedAsset = (e) => {
+                selectedAssetFromEmit.value = e
+            }
+
             const updateList = (asset) => {
                 console.log('updateList')
                 console.log(asset)
@@ -54,6 +66,8 @@
             return {
                 isItem,
                 selectedAsset,
+                selectedAssetFromEmit,
+                setSelectedAsset,
                 assetdiscovery,
             }
         },

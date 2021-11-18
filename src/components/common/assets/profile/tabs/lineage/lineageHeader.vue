@@ -1,59 +1,135 @@
 <template>
     <div class="lineage-control header">
-        <div>
-            <AtlanIcon icon="Search" class="mr-5"></AtlanIcon>
-        </div>
-        <div>
-            <AtlanIcon icon="Filter" class="mr-5"></AtlanIcon>
-        </div>
-        <a-dropdown>
-            <a class="flex items-center mr-3 text-gray-500" @click.prevent>
-                {{ currDepth }}
-                <AtlanIcon
-                    icon="CaretRight"
-                    class="ml-1 transform rotate-90"
-                ></AtlanIcon>
-            </a>
-            <template #overlay>
-                <a-menu>
-                    <a-menu-item v-for="item in lineageDepths" :key="item.id">
-                        <a href="javascript:;">{{ item.label }}</a>
-                    </a-menu-item>
-                </a-menu>
-            </template>
-        </a-dropdown>
-        <a-divider type="vertical" />
-        <div>
-            <AtlanIcon icon="ImpactedAssets" class="ml-3"></AtlanIcon>
+        <div class="controls">
+            <div class="flex items-center cursor-pointer">
+                <a-tooltip placement="top">
+                    <template #title>
+                        <span>search graph</span>
+                    </template>
+                    <AtlanIcon
+                        icon="Search"
+                        :class="showSearch ? 'mr-2' : 'mr-5'"
+                        class="outline-none"
+                        @click="showSearch = !showSearch"
+                    ></AtlanIcon>
+                </a-tooltip>
+                <LineageSearch v-if="showSearch" />
+            </div>
+            <div class="cursor-pointer">
+                <a-tooltip placement="top">
+                    <template #title>
+                        <span>filter graph</span>
+                    </template>
+                    <a-dropdown :trigger="['click']">
+                        <AtlanIcon
+                            icon="Filter"
+                            class="mr-5 outline-none"
+                        ></AtlanIcon>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    v-for="item in lineageDirections"
+                                    :key="item.id"
+                                >
+                                    <a-radio
+                                        :value="item.id"
+                                        :checked="direction === item.id"
+                                        @change="onChangeDirection"
+                                    >
+                                        {{ item.label }}</a-radio
+                                    >
+                                </a-menu-item>
+
+                                <a-menu-divider />
+
+                                <a-menu-item>
+                                    <a-checkbox
+                                        v-model:checked="showProcess"
+                                        @change="onShowProcess"
+                                        >Show Process</a-checkbox
+                                    >
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </a-tooltip>
+            </div>
+            <div class="cursor-pointer">
+                <a-tooltip placement="top">
+                    <template #title>
+                        <span>change depth</span>
+                    </template>
+                    <a-dropdown :trigger="['click']">
+                        <span
+                            class="flex items-center inline-block mr-3 text-gray-500 "
+                        >
+                            {{ currDepth }}
+                            <AtlanIcon
+                                icon="CaretRight"
+                                class="ml-1 transform rotate-90 outline-none"
+                            ></AtlanIcon>
+                        </span>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    v-for="item in lineageDepths"
+                                    :key="item.id"
+                                    @click="onChangeDepth(item.id)"
+                                >
+                                    {{ item.label }}
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </a-tooltip>
+            </div>
+            <a-divider type="vertical" />
+            <div class="cursor-pointer" @click="onShowImpactedAssets()">
+                <a-tooltip placement="top">
+                    <template v-if="selectedNodeType" #title>
+                        <span> show impacted assets </span>
+                    </template>
+                    <AtlanIcon
+                        icon="ImpactedAssets"
+                        class="ml-3 outline-none"
+                        :class="
+                            selectedNodeType
+                                ? 'text-primary'
+                                : 'text-gray-500 cursor-not-allowed'
+                        "
+                    ></AtlanIcon>
+                </a-tooltip>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, watch, inject, computed } from 'vue'
+    import { defineComponent, ref, inject, computed, toRefs } from 'vue'
+
     // Components
-    // import LineageSearch from './lineageSearch.vue'
-    // import AtlanBtn from '@/UI/button.vue'
+    import LineageSearch from './lineageSearch.vue'
 
     export default defineComponent({
         name: 'LineageHeader',
-        // components: {
-        //     LineageSearch,
-        //     AtlanBtn,
-        // },
+        components: { LineageSearch },
         props: {
             selectedNodeType: {
                 type: String,
                 required: true,
             },
         },
-        emits: ['showProcess', 'showImpactedAssets', 'showAddLineage'],
-        setup(_, { emit }) {
-            const depth = inject('depth')
+        emits: ['show-process', 'show-impacted-assets', 'show-add-lineage'],
+        setup(props, { emit }) {
+            /** INJECTIONS */
+            const depth = inject('depth') // TODO:
             const direction = inject('direction')
             const control = inject('control')
 
+            /** DATA */
+            const { selectedNodeType } = toRefs(props)
+            const showSearch = ref(false)
             const showProcess = ref(false)
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },
@@ -70,9 +146,27 @@
                 () => lineageDepths.find((x) => x.id === depth.value)?.label
             )
 
-            watch(showProcess, (val) => {
-                emit('showProcess', val)
-            })
+            /** METHODS */
+            // onShowImpactedAssets
+            const onShowImpactedAssets = () => {
+                if (!selectedNodeType.value) return
+                emit('show-impacted-assets')
+            }
+
+            // onShowProcess
+            const onShowProcess = () => {
+                emit('show-process', showProcess.value)
+            }
+
+            // onChangeDirection
+            const onChangeDirection = (e) => {
+                control('direction', e.target.value)
+            }
+
+            // onChangeDepth
+            const onChangeDepth = (depth) => {
+                control('depth', depth)
+            }
 
             return {
                 emit,
@@ -80,31 +174,15 @@
                 depth,
                 direction,
                 control,
+                showSearch,
                 showProcess,
                 lineageDepths,
                 lineageDirections,
+                onShowImpactedAssets,
+                onShowProcess,
+                onChangeDirection,
+                onChangeDepth,
             }
         },
     })
 </script>
-
-<style lang="less">
-    @primary: #428bca;
-
-    //  Ant design
-    .ant-select-selection:hover {
-        border-color: @primary !important;
-    }
-
-    .ant-select-focused .ant-select-selection,
-    .ant-select-selection:focus,
-    .ant-select-selection:active {
-        border-color: @primary !important;
-        box-shadow: 0 0 0 2px lighten(@primary, 30%) !important;
-    }
-
-    .ant-dropdown-menu-item:hover,
-    .ant-dropdown-menu-submenu-title:hover {
-        background-color: unset;
-    }
-</style>

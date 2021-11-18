@@ -16,7 +16,8 @@ export const map = {
         getAPIPath('meta', `/entity/${guid}/audit`),
     [ENTITY_SET_CLASSIFICATIONS]: () =>
         getAPIPath(BASE_PATH, '/entity/bulk/setClassifications'),
-    [GET_ENTITY]: ({ guid }: PathParams) => getAPIPath(BASE_PATH, `/entity/guid/${guid}`),
+    [GET_ENTITY]: ({ guid }: PathParams) =>
+        getAPIPath(BASE_PATH, `/entity/guid/${guid}`),
     [GET_ASSET_RELATIONSHIP]: () =>
         getAPIPath(BASE_PATH, '/search/relationship'),
 }

@@ -7,8 +7,8 @@
     >
         <div class="flex flex-col">
             <div class="flex items-start flex-1 px-3 py-3">
-                <div class="flex flex-col flex-1 gap-y-1 lg:pr-16">
-                    <div class="flex items-center mb-0 overflow-hidden">
+                <div class="flex flex-col flex-1 lg:pr-16">
+                    <div class="flex items-center overflow-hidden">
                         <div
                             v-if="
                                 ['column'].includes(
@@ -56,7 +56,7 @@
                         ></CertificateBadge>
                     </div>
 
-                    <div class="flex" v-if="description(item)">
+                    <div class="flex mt-0.5" v-if="description(item)">
                         <span
                             class="text-xs text-gray-500"
                             v-if="preference?.display?.includes('description')"
@@ -65,7 +65,7 @@
                     </div>
 
                     <!-- Info bar -->
-                    <div class="flex flex-wrap items-center">
+                    <div class="flex flex-wrap items-center mt-1">
                         <div class="flex items-center mr-2">
                             <a-tooltip
                                 placement="left"
@@ -402,7 +402,7 @@
                             list.length > 0 &&
                             preference?.display?.includes('classifications')
                         "
-                        class="flex"
+                        class="flex flex-wrap mt-1 gap-x-1"
                     >
                         <template
                             v-for="classification in list"

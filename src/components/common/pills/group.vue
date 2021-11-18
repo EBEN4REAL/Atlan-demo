@@ -1,6 +1,17 @@
 <template>
     <div
-        class="flex items-center py-1 pl-1 pr-2 bg-white border border-gray-200 rounded-full cursor-pointer "
+        class="
+            flex
+            items-center
+            py-0.5
+            pl-1
+            pr-2
+            bg-white
+            border border-gray-200
+            rounded-full
+            cursor-pointer
+            group
+        "
         :class="
             enableHover ? ' hover:bg-primary group hover:border-primary' : ''
         "
@@ -14,13 +25,12 @@
             {{ name }}
         </div>
 
-        <div
-            :class="enableHover ? ' group-hover:text-white' : ''"
-            class="flex text-gray-500"
-            @click="handleDelete"
-            v-if="allowDelete"
-        >
-            <AtlanIcon icon="Cross" class="h-3 ml-2"></AtlanIcon>
+        <div class="flex" @click="handleDelete" v-if="allowDelete">
+            <AtlanIcon
+                icon="Cross"
+                class="h-3 ml-2 text-gray-500"
+                :class="enableHover ? ' group-hover:text-white' : ''"
+            ></AtlanIcon>
         </div>
     </div>
 </template>

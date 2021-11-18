@@ -84,7 +84,7 @@
                     ? 'There are no runs for this workflow. '
                     : 'Sorry, we couldn’t find the workflow you were looking for.'
             "
-            empty-screen="NoRuns"
+            empty-screen="NoWf"
             desc-class="w-56 text-center"
             button-icon="ArrowRight"
         />

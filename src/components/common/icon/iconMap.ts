@@ -480,5 +480,8 @@ export default {
     SMTP,
     APIKey,
     Camera,
-    CustomSaml
+    CustomSaml,
+    NoWf,
+    Schema2Active,
+    QueriesActive
 }

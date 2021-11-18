@@ -25,8 +25,8 @@
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
                     <div class="flex items-center">
-                        <div style="width: 44px">
-                            <AtlanIcon class="h-4 mx-auto" icon="MoveItem" />
+                        <div style="width: 44px" class="text-center">
+                            <AtlanIcon class="h-4 inlline" icon="MoveItem" />
                         </div>
                         <!-- <div style="width: 44px">
                             {{ index + 1 }}

@@ -66,11 +66,13 @@
                 <PropertyList
                     :metadata="localBm"
                     :properties="searchedAttributeList"
-                    @changeOrder="localBm.attributeDefs = $event"
-                    @removeProperty="handleRemoveAttribute"
-                    @openEditDrawer="
+                    @change-order="localBm.attributeDefs = $event"
+                    @remove-property="handleRemoveAttribute"
+                    @open-edit-drawer="
                         addPropertyDrawer.open(
-                            $event.property,
+                            cleanLocalBm.attributeDefs.find(
+                                (x) => x.name === $event.property.name
+                            ),
                             true,
                             $event.index
                         )
@@ -221,12 +223,22 @@
             const cleanLocalBm = computed(() => {
                 const tempBM = JSON.parse(JSON.stringify(localBm.value))
                 tempBM.attributeDefs.forEach((x, index) => {
+                    // clean attribute defs
                     if (typeof x.options.applicableEntityTypes === 'string') {
-                        tempBM.attributeDefs[index].options.applicableEntityTypes =
-                            JSON.parse(x.options.applicableEntityTypes)
+                        tempBM.attributeDefs[
+                            index
+                        ].options.applicableEntityTypes = JSON.parse(
+                            x.options.applicableEntityTypes
+                        )
                     }
+                    // clean allowFiltering, allowSearch, allowMultiple
+                    tempBM.attributeDefs[index].options.allowSearch =
+                        x.options.allowSearch === 'true'
+                    tempBM.attributeDefs[index].options.allowFiltering =
+                        x.options.allowFiltering === 'true'
+                    tempBM.attributeDefs[index].options.multiValueSelect =
+                        x.options.multiValueSelect === 'true'
                 })
-                // console.log('done:', tempBM.attributeDefs)
                 return tempBM
             })
 

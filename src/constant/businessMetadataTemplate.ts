@@ -32,9 +32,9 @@ export const DEFAULT_ATTRIBUTE = {
     isEnum: false,
     enumType: "",
     // new options 
-    multiValueSelect: true,
-    showInFilter: true,
-    allowSearch: true,
+    multiValueSelect: false,
+    allowFiltering: true,
+    allowSearch: false,
     // customType:'url' // added on submit for user, link or group
 
   },
@@ -84,14 +84,14 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
         trigger: "change"
       }
     ],
-    applicableEntityTypes: [
-      {
-        required: true,
-        type: 'array',
-        message: "Please add applicable asset types for this attribute.",
-        trigger: "change"
-      }
-    ],
+    // applicableEntityTypes: [
+    //   {
+    //     required: true,
+    //     type: 'array',
+    //     message: "Please add applicable asset types for this attribute.",
+    //     trigger: "change"
+    //   }
+    // ],
   },
   typeName: [
     {

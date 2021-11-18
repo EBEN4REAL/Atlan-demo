@@ -27,6 +27,7 @@
             <div class="px-3 py-4">
                 <a-form
                     ref="formRef"
+                    class="ant-form-right-asterix"
                     layout="vertical"
                     :rules="rules"
                     :model="form"
@@ -105,7 +106,7 @@
                                     <a-divider style="margin: 4px 0" />
 
                                     <p
-                                        class="mt-3 text-center cursor-pointer  text-primary"
+                                        class="mt-3 text-center cursor-pointer text-primary"
                                         @click="
                                             () => {
                                                 form.options.enumType = null
@@ -163,7 +164,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center  w-60"
+                                                class="flex flex-col items-center w-60"
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still
@@ -648,3 +649,12 @@
         },
     })
 </script>
+
+<style lang="less">
+    .ant-form-right-asterix {
+        .ant-form-item-required::before {
+            position: absolute;
+            right: -12px;
+        }
+    }
+</style>

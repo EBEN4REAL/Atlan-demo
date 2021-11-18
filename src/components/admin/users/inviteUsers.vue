@@ -144,22 +144,17 @@
         onMounted,
         nextTick,
         reactive,
-        ComputedRef,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import { Users } from '~/services/service/users/index'
     import useRoles from '~/composables/roles/useRoles'
     import useGroups from '~/composables/group/useGroups'
-    import { useTenantStore } from '~/store/tenant'
 
     export default defineComponent({
         name: 'InviteUsersModal',
+        props: { tenantName: { type: String, required: false, default: '' } },
         emits: ['close', 'handleInviteSent'],
         setup(props, context) {
-            const tenantStore = useTenantStore()
-            const tenantName: ComputedRef<string> = computed(
-                () => tenantStore.getTenant?.displayName ?? ''
-            )
             const defaultRoleOnAdd = ref('member')
             const { roleList } = useRoles()
             const emails = ref([
@@ -316,7 +311,6 @@
                 string ? string.charAt(0).toUpperCase() + string.slice(1) : ''
 
             return {
-                tenantName,
                 capitalize,
                 roleList,
                 emails,

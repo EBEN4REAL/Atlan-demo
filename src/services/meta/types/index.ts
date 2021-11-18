@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+import { Ref } from 'vue'
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
 

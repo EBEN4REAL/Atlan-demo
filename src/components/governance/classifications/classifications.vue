@@ -143,7 +143,7 @@
             const { classificationList } = useTypedefData()
             const searchQuery = ref('')
             const selectedClassificationName = ref('')
-            const createClassificationModalVisible = ref(false)
+            const createClassificationModalVisible = ref(true)
 
             const filteredClassificationList = computed(() => {
                 if (searchQuery.value) {

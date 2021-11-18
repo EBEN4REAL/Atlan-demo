@@ -1,40 +1,54 @@
 <template>
     <a-modal
         :visible="modalVisible"
-        title="Add"
+        width="50%"
         @cancel="closeModal"
-        :destroyOnClose="true"
+        :class="$style.modal"
+        :destroy-on-close="true"
+        :closable="false"
+        okText="Save"
+        cancelText=""
         :footer="null"
     >
-        <a-form
-            ref="createClassificationFormRef"
-            :model="formState"
-            :rules="rules"
-            layout="vertical"
-        >
-            <a-form-item ref="name" label="Name" name="name">
-                <a-input v-model:value="formState.name" />
-            </a-form-item>
-            <a-form-item
-                ref="description"
-                label="Description"
-                name="description"
-            >
-                <a-textarea v-model:value="formState.description" />
-            </a-form-item>
-
-            <div class="flex justify-end w-full">
-                <a-button class="mr-4" @click="closeModal">Cancel</a-button>
-                <a-button
-                    type="primary"
-                    @click="createClassification"
-                    >Create</a-button
-                >
+        <template #title>
+            <div class="flex justify-between">
+                <div class="px-3 flex items-center justify-between w-full text-base leading-6">
+                    <div class="font-bold text-gray-700">New Classification</div>
+                </div>
+                <div class="flex space-x-1 p-1 rounded bg-indigo-50">
+                    <AtlanIcon icon="Shield" class="text-blue-700 self-center"/>
+                    <span class="text-xs self-center">Blue</span>
+                </div>
             </div>
-        </a-form>
-        <p v-if="createErrorText" class="mt-4 mb-0 text-sm text-red-500">
-            {{ createErrorText }}
-        </p>
+        </template>
+
+        <div
+            class="p-3 pt-0"
+        >
+            <a-input
+                ref="titleBar"
+                v-model:value="formState.name"
+                :placeholder="`Untitled Classification`"
+                class="text-lg pt-0 font-bold text-gray-700 border-0 shadow-none outline-none "
+                :class="$style.placeholder"
+            />
+            <a-textarea
+                v-model:value="formState.description"
+                placeholder="Add description..."
+                class="text-gray-500 border-0 shadow-none outline-none"
+                :maxlength="140"
+                :rows="2"
+            />
+        </div>
+        <div class="flex items-center justify-end space-x-3 border-gray-200">
+            <a-button @click="closeModal" class="border-0 shadow-none">Cancel</a-button>
+            <a-button
+                type="primary"
+                @click="createClassification"
+            >
+                Create
+            </a-button>
+        </div>
     </a-modal>
 </template>
 
@@ -77,52 +91,30 @@
                 formState.description = '';
             }
 
-            const urlValidationRegex = new RegExp(
-                '^[a-zA-Z][a-zA-Z0-9\s_]*',
-                'g'
-            )
-            const rules = {
-                name: [
-                    {
-                        required: true,
-
-                        pattern: urlValidationRegex,
-                        message:
-                            'Names must consist of a letter followed by a sequence of letter, number, space, or _ characters',
-
-                        trigger: 'blur',
-                    },
-                ],
-            }
-
             const createClassification = () => {
-                createClassificationFormRef.value.validate()
-                    .then(() => {
-                        const { data, error, isLoading }  = useCreateTypedefs({
-                            classificationDefs: [
-                                {
-                                    attributeDefs: [],
-                                    displayName: formState.name,
-                                    description: formState.description,
-                                    superTypes: []
-                                }
-                            ]
-                        })
+                const { data, error, isLoading }  = useCreateTypedefs({
+                    classificationDefs: [
+                        {
+                            attributeDefs: [],
+                            displayName: formState.name,
+                            description: formState.description,
+                            superTypes: []
+                        }
+                    ]
+                })
 
-                        watch(data, () => {
-                            closeModal()
-                        })
-                        watch(error, (newError) => {
-                            createErrorText.value = newError
-                        })
-                    })
+                watch(data, () => {
+                    closeModal()
+                })
+                watch(error, (newError) => {
+                    createErrorText.value = newError
+                })
             }
 
             return {
                 selectedClassification,
                 modalVisible,
                 closeModal,
-                rules,
                 formState,
                 createClassificationFormRef,
                 createClassification,
@@ -132,6 +124,26 @@
     })
 </script>
 
-<style lang="less">
 
+<style lang="less" module>
+    .modal {
+        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
+        :global(.ant-modal-header) {
+            @apply border-0 px-4  !important;
+        }
+        :global(.ant-modal-body) {
+            @apply p-4 pt-0 !important;
+        }
+    }
+    .placeholder {
+        :global(.ant-input::-webkit-input-placeholder) {
+            @apply font-bold text-gray-500 !important;
+        }
+    }
 </style>
+

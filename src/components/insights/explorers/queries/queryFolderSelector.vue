@@ -231,9 +231,14 @@
                         dataRef: {
                             ...rootData,
                         },
+                        selectedFolderType: savedQueryType2.value,
+                    }
+                    if (savedQueryType2.value === 'all') {
+                        selectedFolder.value = "Altan's public folder"
+                    } else {
+                        selectedFolder.value = 'Your personal folder'
                     }
                     selectedKey.value = [rootData.guid]
-                    selectedFolder.value = 'Root'
                     dropdownVisible.value = false
 
                     emit('folderChange', data)
@@ -247,7 +252,10 @@
                         selectedFolder.value = event?.node?.dataRef.title
                         dropdownVisible.value = false
                     }
-                    emit('folderChange', event.node)
+                    emit('folderChange', {
+                        dataRef: event.node,
+                        selectedFolderType: savedQueryType2.value,
+                    })
                 }
             }
 
@@ -343,8 +351,8 @@
             })
 
             const folderOpened = ref({
-                all: false,
-                personal: false,
+                all: true,
+                personal: true,
             })
 
             const toggleFolder = (type) => {

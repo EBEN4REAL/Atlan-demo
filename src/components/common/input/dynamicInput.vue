@@ -76,7 +76,7 @@
             <div v-if="allowCreate">
                 <a-divider style="margin: 4px 0" />
                 <div
-                    style="padding: 4px 8px; cursor: pointer"
+                    style="padding: 4px 8px; cursor: copy"
                     @mousedown="(e) => e.preventDefault()"
                     @click="handleCreateNew"
                 >

@@ -167,7 +167,7 @@ export default async function useComputeGraph(
             attrs: {
                 line: {
                     stroke,
-                    strokeWidth: 2,
+                    strokeWidth: 1.7,
                     targetMarker: {
                         name: 'block',
                         stroke,

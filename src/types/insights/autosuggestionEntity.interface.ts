@@ -13,6 +13,7 @@ export interface autosuggestionEntityColumn {
     qualifiedName: string
 }
 export interface autosuggestionEntity {
+    attributes: any;
     name: string
     tableQN?: string
     columns?: autosuggestionEntityColumn

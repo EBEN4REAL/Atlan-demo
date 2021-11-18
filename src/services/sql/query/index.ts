@@ -5,16 +5,18 @@ import { useAPI } from '~/services/api/useAPI'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { useOptions } from '~/services/api/common'
 import { autosuggestionResponse } from '~/types/insights/autosuggestionEntity.interface'
+import { map as IndexMap } from '~/services/meta/search/key'
 
 const GetAutoSuggestions = (
     body: Record<string, any>,
     cancelTokenSource: Ref<any>
-) => useAPIPromise(map.insights.GET_AUTO_SUGGESTIONS(), 'POST', {
+) => useAPIPromise(IndexMap.INDEX_SEARCH(), 'POST', {
     body,
     options: {
         cancelToken: cancelTokenSource.value.token,
     },
 }) as Promise<autosuggestionResponse>
+
 
 const AbortQuery = (body: Record<string, any>) => useAPIPromise(map.insights.ABORT_QUERY(), 'POST', {
     body,

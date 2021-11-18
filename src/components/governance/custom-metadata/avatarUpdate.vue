@@ -1,6 +1,7 @@
 <template>
     <div class="flex">
         <a-popover
+            overlay-class-name="cm-avatar-update-modal"
             :visible="popOverVisible"
             :trigger="['click']"
             placement="bottom"
@@ -11,33 +12,38 @@
                 }
             "
         >
-            <div
-                v-if="metadata?.options?.imagePath"
-                class="overflow-hidden bg-gray-100 rounded cursor-pointer"
-                style="width: 28px; height: 28px"
-                @click="popOverVisible = !popOverVisible"
-            >
-                <img
-                    :src="imageUrl"
-                    alt=""
-                    class="object-cover w-full"
-                    style="height: 28px"
-                />
-            </div>
-            <div
-                v-else
-                class="flex items-center justify-center bg-gray-100 rounded cursor-pointer "
-                style="width: 28px; height: 28px"
-                @click="popOverVisible = !popOverVisible"
-            >
-                <a-spin v-if="isUpdating" />
-                <AtlanIcon v-else icon="NoAvatar" />
-            </div>
+            <CustomMetadataAvatar
+                :metadata="metadata"
+                :is-updating="isUpdating"
+            />
             <template #content>
                 <div style="width: 314px"></div>
+
                 <a-tabs default-active-key="1" size="small">
-                    <a-tab-pane key="1" tab="Upload Image" force-render>
-                        <div class="p-1">
+                    <template #rightExtra>
+                        <a-button class="border-0">
+                            <AtlanIcon
+                                icon="Delete"
+                                class="inline mr-1 text-gray-500"
+                            />
+                            <span class="text-gray-500 align-middle"
+                                >Remove</span
+                            >
+                        </a-button>
+                    </template>
+                    <a-tab-pane key="1" tab="Emoji">
+                        <Picker
+                            :data="emojiIndex"
+                            set="twitter"
+                            auto-focus
+                            :show-preview="false"
+                            :emoji-tooltip="false"
+                            :infinite-scroll="true"
+                            @select="handleEmojiSelect"
+                        />
+                    </a-tab-pane>
+                    <a-tab-pane key="2" tab="Upload Image" force-render>
+                        <div class="p-3">
                             <div
                                 class="p-3 text-center border border-dashed rounded "
                             >
@@ -47,7 +53,8 @@
                                     accept="image/*"
                                     :multiple="false"
                                     :file-list="fileList"
-                                    :custom-request="uploadImage"
+                                    :show-upload-list="false"
+                                    :custom-request="handleUploadImage"
                                 >
                                     <a-button
                                         :loading="isUploading"
@@ -67,9 +74,6 @@
                             </div>
                         </div>
                     </a-tab-pane>
-                    <!-- <a-tab-pane key="1" tab="Emoji">
-                        Emoji library here
-                    </a-tab-pane> -->
                 </a-tabs>
                 <!-- <pre>{{ metadata }}</pre> -->
             </template>
@@ -78,21 +82,23 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        toRefs,
-        ref,
-        watch,
-        computed,
-        onMounted,
-    } from 'vue'
-    import { message, Modal } from 'ant-design-vue'
-    import useUploadImage from '~/composables/image/uploadImage'
-    import { Types } from '~/services/meta/types'
+    import { defineComponent, toRefs } from 'vue'
 
-    import { useTypedefStore } from '~/store/typedef'
+    // Emoji
+    import data from 'emoji-mart-vue-fast/data/twitter.json'
+    import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
+    import 'emoji-mart-vue-fast/css/emoji-mart.css'
+
+    import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
+
+    import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
+    const emojiIndex = new EmojiIndex(data)
 
     export default defineComponent({
+        components: {
+            Picker,
+            CustomMetadataAvatar,
+        },
         props: {
             metadata: {
                 required: true,
@@ -101,101 +107,59 @@
             },
         },
         setup(props) {
-            const fileList = ref([])
-            const popOverVisible = ref(false)
-            const isUploading = ref(false)
-            const isUpdating = ref(false)
-            const imageResponse = ref({})
-            const apiResponse = ref({})
-            const store = useTypedefStore()
+            /**
+             * Store options as form
+             * After image upload or emoji set, update form value
+             * Watch form value update and if changed, update CM
+             */
 
-            //  image upload composable
+            const { metadata } = toRefs(props)
+
             const {
-                data: imageUploadData,
-                error: imageUploadError,
-                upload,
-            } = useUploadImage()
-
-            const uploadImage = (payload: { file: File }) => {
-                if (!popOverVisible.value) return
-                const { file } = payload
-                isUploading.value = true
-                upload(file)
-            }
-
-            const handleBmUpdateSuccess = (serviceResponse: any[]) =>
-                store.updateCustomMetadata(serviceResponse[0])
-
-            const handleUpdateBM = (newImage) => {
-                isUpdating.value = true
-                const tempBM = { ...props.metadata }
-                tempBM.options.imagePath = `/images/${newImage.id}?ContentDisposition=inline&name=${newImage.id}`
-                tempBM.options.logoType = 'image'
-                apiResponse.value = Types.updateCustomMetadata(
-                    {
-                        businessMetadataDefs: [tempBM],
-                    },
-                    {
-                        options: {
-                            params: { type: 'BUSINESS_METADATA' },
-                        },
-                    }
-                )
-
-                watch(
-                    () => apiResponse.value.data,
-                    () => {
-                        if (
-                            apiResponse.value?.data?.businessMetadataDefs
-                                ?.length
-                        ) {
-                            handleBmUpdateSuccess(
-                                apiResponse.value.data.businessMetadataDefs
-                            )
-                            message.success('Metadata updated.')
-                            isUpdating.value = false
-                        }
-                    }
-                )
-            }
-
-            watch(
-                [imageUploadData, imageUploadError],
-                ([newImage, newError]) => {
-                    if (newImage) {
-                        imageResponse.value = newImage
-                        isUploading.value = false
-                        popOverVisible.value = false
-                        message.success('Image uploaded.')
-                        handleUpdateBM(newImage)
-                    }
-                    if (newError) {
-                        message.error(' Error updating image.')
-                    }
-                }
-            )
-
-            const imageUrl = computed(
-                () =>
-                    `${window.location.origin}/api/service${props.metadata.options.imagePath}`
-            )
-
-            return {
-                fileList,
                 popOverVisible,
                 isUploading,
                 imageUrl,
                 isUpdating,
-                uploadImage,
+                fileList,
+                handleUploadImage,
+                handleEmojiSelect,
+            } = useCustomMetadataAvatar(metadata)
+
+            return {
+                emojiIndex,
+                popOverVisible,
+                isUploading,
+                isUpdating,
+                imageUrl,
+                handleUploadImage,
+                handleEmojiSelect,
             }
         },
     })
 </script>
 
 <style lang="less">
+    .cm-avatar-update-modal {
+        .ant-popover-inner-content {
+            padding: 0px;
+        }
+
+        .emoji-mart {
+            border: unset;
+        }
+
+        .ant-tabs-nav {
+            padding-left: 15px;
+            margin-bottom: 0;
+        }
+    }
     .metadata-avatar-uploader {
         .ant-upload.ant-upload-select {
             display: block;
         }
+    }
+    button.emoji-mart-emoji,
+    .emoji-mart-category .emoji-mart-emoji span {
+        cursor: pointer;
     }
 </style>

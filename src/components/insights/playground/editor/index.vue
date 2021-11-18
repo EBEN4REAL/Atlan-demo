@@ -34,7 +34,7 @@
                                 "
                                 @click="formatDocument"
                             >
-                                <AtlanIcon icon="Readme" class="w-5 h-5" />
+                                <AtlanIcon icon="FormatText" class="w-5 h-5" />
                             </div>
                         </a-tooltip>
 
@@ -316,9 +316,9 @@
                             >Col:&nbsp; {{ editorPos.column }}</span
                         >
                     </div>
-                    <span class="ml-2 mr-4"
+                    <!-- <span class="ml-2 mr-4"
                         >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
-                    >
+                    > -->
                     <div class="flex items-center justify-center">
                         <div class @click="togglePane">
                             <a-tooltip color="#363636">
@@ -406,8 +406,12 @@
             EditorContext,
             WarehouseConnector,
         },
-        props: {},
-        setup() {
+        props: {
+            refreshQueryTree: {
+                type: Function,
+            },
+        },
+        setup(props) {
             const router = useRouter()
             const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
@@ -557,6 +561,30 @@
                     )
                 }
             }
+            const runQuery = () => {
+                const queryId =
+                    activeInlineTab.value.playground.resultsPane.result
+                        .runQueryId
+                const currState = !queryId ? 'run' : 'abort'
+                if (currState === 'run') {
+                    /* Get selected Text from editor */
+                    const selectedText = toRaw(editorInstance.value)
+                        .getModel()
+                        .getValueInRange(
+                            toRaw(editorInstance.value).getSelection()
+                        )
+
+                    useAddEvent('insights', 'query', 'run', undefined)
+                    queryRun(
+                        activeInlineTab,
+                        getData,
+                        limitRows,
+                        onRunCompletion,
+                        onQueryIdGeneration,
+                        selectedText
+                    )
+                }
+            }
 
             const setInstance = (
                 editorInstanceParam: editor.IStandaloneCodeEditor,
@@ -583,6 +611,7 @@
             const toggleCustomToolbar = () => {
                 showcustomToolBar.value = !showcustomToolBar.value
             }
+
             const saveQuery = (saveQueryData: any, assetTerms: any) => {
                 console.log('assetTerms from editor: ', assetTerms)
                 saveQueryToDatabaseWithTerms(
@@ -595,7 +624,8 @@
                     'personal',
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,
-                    activeInlineTab.value
+                    activeInlineTab.value,
+                    props.refreshQueryTree
                 )
             }
             const formatDocument = () => {
@@ -643,6 +673,7 @@
                 editorPos: editorPos,
                 editorFocused: editorFocused,
                 toggleRun: toggleRun,
+                runQuery: runQuery,
                 saveOrUpdate: saveOrUpdate,
             }
             useProvide(provideData)
@@ -661,7 +692,15 @@
                 if (e.key === 'Enter') {
                     if (e.metaKey || e.ctrlKey) {
                         e.preventDefault()
-                        toggleRun()
+                        // toggleRun()
+                        // console.log('running: ', isQueryRunning.value)
+                        if (
+                            isQueryRunning.value == '' ||
+                            isQueryRunning.value == 'success' ||
+                            isQueryRunning.value == 'error'
+                        ) {
+                            runQuery()
+                        }
                     }
                     //prevent the default action
                 }

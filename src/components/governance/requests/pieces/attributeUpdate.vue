@@ -1,7 +1,11 @@
 <template>
     <template v-if="name === 'certificateStatus'">
-        <span class="mr-2 text-sm text-gray-500"> Change status to </span>
-        <StatusBadge :status-id="value" show-no-status show-label />
+        <div class="flex flex-col">
+            <span class="pb-1 mr-2 text-sm text-gray-500">
+                Update Certificate</span
+            >
+            <StatusBadge :status-id="value" show-no-status show-label />
+        </div>
     </template>
     <template v-else>
         <div class="flex flex-col">

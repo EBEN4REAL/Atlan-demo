@@ -9,9 +9,12 @@
                 >
                     <AtlanIcon
                         v-if="tab?.icon"
-                        :icon="tab.icon"
+                        :icon="
+                            activeTabId === tab.id
+                                ? `${tab.icon}Active`
+                                : `${tab.icon}`
+                        "
                         class="w-6 h-6"
-                        :class="activeTabId === tab.id ? 'text-primary' : ''"
                     />
                     <!-- <p
                         class="mt-1 mb-0 text-xs text-gray"
@@ -50,7 +53,10 @@
                     :class="activeTab.component === 'queries' ? 'z-30' : 'z-10'"
                     class="absolute h-full full-width"
                 >
-                    <Queries />
+                    <Queries
+                        :reset="resetTree"
+                        :resetQueryTree="resetQueryTree"
+                    />
                 </div>
                 <!--explorer pane end -->
             </pane>
@@ -66,7 +72,10 @@
                 "
                 :style="{ marginLeft: explorerPaneSize === 0 ? '-1px' : '0px' }"
             >
-                <Playground :activeInlineTabKey="activeInlineTabKey" />
+                <Playground
+                    :activeInlineTabKey="activeInlineTabKey"
+                    :refreshQueryTree="refreshQueryTree"
+                />
             </pane>
             <pane
                 :max-size="activeInlineTab?.assetSidebar?.isVisible ? 25 : 0"
@@ -433,6 +442,20 @@
                 window.removeEventListener('keydown', _keyListener)
             })
 
+            let resetTree = ref(false)
+            const refreshQueryTree = () => {
+                resetTree.value = true
+                // console.log('QueryTree refresh: ', resetTree.value)
+            }
+            const resetQueryTree = () => {
+                resetTree.value = false
+
+                // console.log('QueryTree reset: ', resetTree.value)
+            }
+
+            // provide('refreshQueryTree', refreshQueryTree)
+            // provide('resetQueryTree', resetQueryTree)
+
             return {
                 editorConfig,
                 activeTab,
@@ -445,6 +468,9 @@
                 assetSidebarPaneSize,
                 paneResize,
                 changeTab,
+                resetTree,
+                refreshQueryTree,
+                resetQueryTree,
             }
         },
     })

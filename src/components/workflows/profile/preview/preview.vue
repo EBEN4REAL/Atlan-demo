@@ -24,6 +24,7 @@
                     />
                 </div>
                 <AtlanButton
+                    v-auth="access.UPDATE_WORKFLOW"
                     class="m-2"
                     size="sm"
                     color="primary"
@@ -63,20 +64,10 @@
 
             <div
                 class="relative flex flex-col"
-                :style="{ height: 'calc(100vh - 0.8rem)' }"
+                :style="{ height: 'calc(100vh - 3rem)' }"
             >
                 <div
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        px-4
-                        pt-2
-                        mt-2
-                        text-lg
-                        font-semibold
-                        text-gray-700
-                    "
+                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
                 >
                     {{ tab.name }}
                 </div>
@@ -103,12 +94,14 @@
         watch,
         computed,
         onErrorCaptured,
+        provide
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
 
     import StatusBadge from '@common/badge/status/index.vue'
     import { useRoute } from 'vue-router'
     import { message } from 'ant-design-vue'
+    import access from '~/constant/accessControl/map'
     import EmptyState from '~/components/common/empty/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import AtlanButton from '@/UI/button.vue'
@@ -169,12 +162,12 @@
             const selectedPreviewTab = computed(() => route?.query?.tab || '')
 
             const filteredTabs = [
-                {
-                    name: 'Overview',
-                    component: 'info',
-                    icon: 'Overview',
-                    tooltip: 'Overview',
-                },
+                // {
+                //     name: 'Overview',
+                //     component: 'info',
+                //     icon: 'Overview',
+                //     tooltip: 'Overview',
+                // },
                 {
                     name: 'Run History',
                     component: 'runs',
@@ -185,7 +178,7 @@
 
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
-
+            provide("creatorDetails", {})
             if (selectedPreviewTab.value === 'runs') activeKey.value = 1
 
             watch(selectedPreviewTab, (n) => {
@@ -292,6 +285,7 @@
             })
 
             return {
+                access,
                 defaultValues,
                 updateWorkflow,
                 isReady,
@@ -305,7 +299,6 @@
                 activeKey,
                 filteredTabs,
                 emit,
-                loadingFetchPod,
             }
         },
     })

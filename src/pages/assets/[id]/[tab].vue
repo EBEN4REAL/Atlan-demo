@@ -8,7 +8,7 @@
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
-    import AssetProfile from '@/assets/profile/index.vue'
+    import AssetProfile from '@/common/assets/profile/index.vue'
     import Loader from '@/common/loaders/page.vue'
 
     import {

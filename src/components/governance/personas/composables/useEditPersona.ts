@@ -1,5 +1,5 @@
 import { Ref, ref, watch } from 'vue'
-import { IPersona } from '~/types/accessPolicies/personas'
+import { IPurpose } from '~/types/accessPolicies/purposes'
 import usePersonaService from './usePersonaService'
 import {
     selectedPersona,
@@ -12,7 +12,7 @@ const { updatePersona, deletePersona } = usePersonaService()
 export type PolicyType = 'meta' | 'data'
 
 export const isEditing = ref(false)
-export const selectedPersonaDirty: Ref<IPersona | undefined> = ref(undefined)
+export const selectedPersonaDirty: Ref<IPurpose | undefined> = ref(undefined)
 
 watch(
     () => selectedPersona.value?.id,
@@ -56,7 +56,7 @@ export function removeEditFlag(type: PolicyType, idx: string) {
     else if (type === 'data') policyEditMap.value.dataPolicies[idx] = false
 }
 
-export async function savePersona(persona: IPersona) {
+export async function savePersona(persona: IPurpose) {
     return updatePersona(persona)
 }
 
@@ -219,7 +219,8 @@ export function discardPolicy(type: PolicyType, id: string) {
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
                 const policy =
                     selectedPersona.value?.metadataPolicies?.[policyIndex]
-                selectedPersonaDirty[dirtyPolicyIndex] = policy
+                selectedPersonaDirty.value.metadataPolicies[dirtyPolicyIndex] =
+                    policy
             }
 
             policyEditMap.value.metadataPolicies[id] = false
@@ -243,7 +244,8 @@ export function discardPolicy(type: PolicyType, id: string) {
             ) {
                 const policy =
                     selectedPersona.value?.dataPolicies?.[policyIndex]
-                selectedPersonaDirty[dirtyPolicyIndex] = policy
+                selectedPersonaDirty.value.dataPolicies[dirtyPolicyIndex] =
+                    policy
             }
             policyEditMap.value.dataPolicies[id] = false
         }

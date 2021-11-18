@@ -31,17 +31,22 @@
                     <div>Back to Workflows</div>
                 </div>
             </AtlanBtn>
-            <WorkflowFilters
-                :ref="
-                    (el) => {
-                        workflowFilterRef = el
-                    }
-                "
-                :filters-list="listOfFilters"
-                :initial-filters="AllFilters"
-                @refresh="handleFilterChange"
-                @initialize="handleFilterInit"
-            ></WorkflowFilters>
+            <div
+                v-auth="[access.LIST_WORKFLOWTEMPLATE, access.LIST_CONFIGMAPS]"
+                class=""
+            >
+                <WorkflowFilters
+                    :ref="
+                        (el) => {
+                            workflowFilterRef = el
+                        }
+                    "
+                    :filters-list="listOfFilters"
+                    :initial-filters="AllFilters"
+                    @refresh="handleFilterChange"
+                    @initialize="handleFilterInit"
+                ></WorkflowFilters>
+            </div>
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
@@ -83,34 +88,33 @@
                     />
                 </div> -->
 
-                <div class="">
-                    <div
-                        class="overflow-y-auto"
-                        :style="
-                            queryText || true
-                                ? `height: calc(100vh - 9.5rem)`
-                                : `height: calc(100vh - 29rem)`
-                        "
-                    >
-                        <EmptyState
-                            v-if="workflowList.length === 0 && !isLoading"
-                            desc="Sorry! We couldn’t find any workflow templates. try resetting your filters."
-                            button-text="Reset filters"
-                            empty-screen="EmptyDiscover"
-                            @event="handleClearFiltersFromList"
-                        />
-                        <WorkflowList
-                            v-else
-                            v-model:autoSelect="autoSelect"
-                            class="pt-2 bg-white"
-                            :list="workflowList"
-                            :is-loading="isLoading"
-                            :is-load-more="isLoadMore"
-                            :selected-item-id="selectedItemId"
-                            @preview="handlePreview"
-                            @loadMore="loadMore"
-                        ></WorkflowList>
-                    </div>
+                <div
+                    v-auth="access.LIST_WORKFLOWTEMPLATE"
+                    class="overflow-y-auto"
+                    :style="
+                        queryText || true
+                            ? `height: calc(100vh - 9.5rem)`
+                            : `height: calc(100vh - 29rem)`
+                    "
+                >
+                    <EmptyState
+                        v-if="workflowList.length === 0 && !isLoading"
+                        desc="Sorry! We couldn’t find any workflow templates. try resetting your filters."
+                        button-text="Reset filters"
+                        empty-screen="EmptyDiscover"
+                        @event="handleClearFiltersFromList"
+                    />
+                    <WorkflowList
+                        v-else
+                        v-model:autoSelect="autoSelect"
+                        class="pt-2 bg-white"
+                        :list="workflowList"
+                        :is-loading="isLoading"
+                        :is-load-more="isLoadMore"
+                        :selected-item-id="selectedItemId"
+                        @preview="handlePreview"
+                        @loadMore="loadMore"
+                    ></WorkflowList>
                 </div>
             </div>
         </div>
@@ -145,6 +149,7 @@
     import SetupPreview from '@/workflows/new/preview/preview.vue'
 
     import { List as listOfFilters } from '@/workflows/new/filters/filters' // own filter list
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'WorkflowSetupPage',
@@ -304,6 +309,7 @@
             }
 
             return {
+                access,
                 autoSelect,
                 isFilterAppplied,
                 handleClearFiltersFromList,
@@ -350,3 +356,10 @@
         max-width: 420px !important;
     }
 </style>
+
+<route lang="yaml">
+meta:
+    layout: default
+    requiresAuth: true
+    permissions: [LIST_WORKFLOWTEMPLATE]
+</route>

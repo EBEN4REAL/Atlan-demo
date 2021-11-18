@@ -1,10 +1,10 @@
 import { computed, ComputedRef, Ref, watch, reactive, ref } from 'vue'
 import { getFormattedUser } from '~/composables/user/useUsers'
 // import { IUser } from '~/services/heracles/apis/users'
-import { IPersona, IUser } from '~/types/accessPolicies/personas'
+import { IPurpose, IUser } from '~/types/accessPolicies/purposes'
 import { useUsers } from '~/composables/user/useUsers'
 
-function usePersonaUserList(persona: Ref<IPersona>) {
+function usePersonaUserList(persona: Ref<IPurpose>) {
     const userListAPIParams: any = {
         limit: 15,
         offset: 0,
@@ -30,13 +30,13 @@ function usePersonaUserList(persona: Ref<IPersona>) {
             userList.value = []
             let data: IUser[] = []
             list.value.forEach((t) => {
-                persona.value.users?.forEach((username) => {
-                    if (t.username === username) {
+                persona.value.users?.forEach((userIds) => {
+                    if (t.id === userIds) {
                         data.push(t)
                     }
                 })
             })
-            console.log(list.value, 'personaUser', persona)
+            console.log(data, 'personaUser', persona)
 
             userList.value = data
         },

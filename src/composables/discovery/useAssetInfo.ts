@@ -12,10 +12,11 @@ import { dataTypeCategoryList } from '~/constant/dataType'
 import { previewTabs } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
 import { formatDateTime } from '~/utils/date'
-import useDiscoveryStore from '~/store/discovery'
+import useAssetStore from '~/store/asset'
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
+import useGlossaryStore from '~/store/glossary'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -27,6 +28,12 @@ export default function useAssetInfo() {
     const attributes = (asset: assetInterface) => asset?.attributes
     const anchorAttributes = (asset: Term | Category) =>
         asset?.attributes?.anchor?.attributes
+
+    const parentCategory = (asset: assetInterface) =>
+        asset?.attributes?.parentCategory
+
+    const categories = (asset: assetInterface) => asset?.attributes?.categories
+
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
 
@@ -153,15 +160,19 @@ export default function useAssetInfo() {
     }
 
     const getAssetQueryPath = (asset) => {
-        let queryPath='/insights'
-        let databaseQualifiedName = attributes(asset).connectionQualifiedName + '/' + attributes(asset).databaseName
+        let queryPath = '/insights'
+        let databaseQualifiedName =
+            attributes(asset).connectionQualifiedName +
+            '/' +
+            attributes(asset).databaseName
         let schema = attributes(asset).schemaName
 
         if (assetType(asset) === 'Column') {
             // let tableName =
             //     attributes(asset).tableName
 
-            let name = tableName(asset).length>0 ? tableName(asset) : viewName(asset)
+            let name =
+                tableName(asset).length > 0 ? tableName(asset) : viewName(asset)
             let columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
@@ -171,6 +182,9 @@ export default function useAssetInfo() {
         ) {
             let tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+        } else if(assetType(asset) === 'Query') {
+            // console.log('assetType: ', asset.guid)
+            queryPath = `/insights?id=${asset.guid}`
         } else {
             queryPath = `/insights`
         }
@@ -179,7 +193,14 @@ export default function useAssetInfo() {
     }
 
     const getAnchorName = (asset: assetInterface) =>
-        attributes(asset)?.anchor?.attributes.name
+        anchorAttributes(asset)?.name
+
+    const getAnchorGuid = (asset: assetInterface) =>
+        attributes(asset)?.anchor?.guid
+
+    const getAnchorQualifiedName = (asset: assetInterface) => {
+        return attributes(asset)?.anchor?.uniqueAttributes?.qualifiedName
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -275,6 +296,16 @@ export default function useAssetInfo() {
 
     const dataTypeCategoryImage = (asset: assetInterface) => {
         return dataTypeCategory(asset)?.image
+    }
+
+    const compiledQuery = (asset: assetInterface) => {
+        if (
+            attributes(asset)?.compiledQuery &&
+            attributes(asset)?.compiledQuery !== ''
+        ) {
+            return attributes(asset)?.compiledQuery
+        }
+        return '~'
     }
 
     const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
@@ -445,11 +476,44 @@ export default function useAssetInfo() {
         return attributes(asset)?.webUrl
     }
 
-    const discoveryStore = useDiscoveryStore()
+    const isBiAsset = (asset: assetInterface) => {
+        return (
+            assetType(asset).includes('Tableau') ||
+            assetType(asset).includes('BI')
+        )
+    }
+
+    const discoveryStore = useAssetStore()
 
     const selectedAsset = computed(() => {
         return discoveryStore.selectedAsset
     })
+
+    const glossaryStore = useGlossaryStore()
+
+    const selectedGlossary = computed(() => {
+        return glossaryStore.selectedGlossary
+    })
+
+    const isGTCByType = (typeName) => {
+        if (
+            [
+                'AtlasGlossary',
+                'AtlasGlossaryTerm',
+                'AtlasGlossaryCategory',
+            ].includes(typeName)
+        ) {
+            return true
+        }
+        return false
+    }
+
+    const isGTC = (asset: assetInterface) => {
+        if (isGTCByType(asset.typeName)) {
+            return true
+        }
+        return false
+    }
 
     const getHierarchy = (asset: assetInterface) => {
         const assetType_ = assetTypeList.find((a) => a.id == asset?.typeName)
@@ -705,6 +769,7 @@ export default function useAssetInfo() {
     }
 
     return {
+        attributes,
         title,
         getConnectorImage,
         getConnectorName,
@@ -721,6 +786,7 @@ export default function useAssetInfo() {
         isPrimary,
         isPartition,
         isDist,
+        compiledQuery,
         definition,
         description,
         classifications,
@@ -757,6 +823,7 @@ export default function useAssetInfo() {
         getTableauHierarchy,
         qualifiedName,
         getAnchorName,
+        getAnchorGuid,
         connectionQualifiedName,
         getConnectorImageMap,
         anchorAttributes,
@@ -768,5 +835,12 @@ export default function useAssetInfo() {
         getActions,
         getAssetQueryPath,
         webURL,
+        isBiAsset,
+        selectedGlossary,
+        categories,
+        parentCategory,
+        isGTC,
+        isGTCByType,
+        getAnchorQualifiedName,
     }
 }

@@ -6,7 +6,7 @@ import { useAPIPromise } from '~/services/api/useAPIPromise'
 
 import { useOptions } from '~/services/api/common'
 
-import { IPersona } from '~/types/accessPolicies/personas'
+import { IPersona } from '~/types/accessPolicies/purposes'
 
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PERSONAS, 'GET', { params }, options || {})
@@ -19,7 +19,6 @@ const listPersonas = () =>
         {}
         // { resetOnExecute: false }
     )
-
 
 const Create = (body: IPersona, options?: useOptions) =>
     useAPI<IPersona>(map.CREATE_PERSONA, 'POST', { body }, options || {})
@@ -43,29 +42,16 @@ const Update = (body: IPersona, options?: useOptions) =>
     )
 
 const updatePersona = (body: IPersona) =>
-    useAPIPromise(
-        map.UPDATE_PERSONA({ guid: body.id! }),
-        'POST',
-        {
-            body: body,
-        }
-    )
+    useAPIPromise(map.UPDATE_PERSONA({ guid: body.id! }), 'POST', {
+        body: body,
+    })
 const updatePersonaUsers = ({ personaId, users, groups }) =>
-    useAPIPromise(
-        map.UPDATE_PERSONA_USERS({ guid: personaId! }),
-        'POST',
-        {
-            body: { users, groups },
-        }
-    )
+    useAPIPromise(map.UPDATE_PERSONA_USERS({ guid: personaId! }), 'POST', {
+        body: { users, groups },
+    })
 
 const deletePersona = (id: string): Promise<IPersona> =>
-    useAPIPromise(
-        map.DELETE_PERSONA({ guid: id }),
-        'DELETE',
-        {}
-    )
-
+    useAPIPromise(map.DELETE_PERSONA({ guid: id }), 'DELETE', {})
 
 export const Persona = {
     List,
@@ -77,7 +63,3 @@ export const Persona = {
     updatePersona,
     deletePersona,
 }
-
-
-
-

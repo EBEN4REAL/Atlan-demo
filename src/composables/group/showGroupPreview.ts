@@ -1,4 +1,5 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { allTabs } from '~/constant/groups'
 
 const showPreview = ref(false)
@@ -17,6 +18,14 @@ const finalTabs = computed(() => {
 })
 
 export function useGroupPreview() {
+
+
+    const closePreview = () => {
+        blacklistedTabs.value = []
+        allowedTabs.value = []
+        showPreview.value = false
+    }
+
     const showGroupPreview = (config?: {
         allowed?: any
         blacklisted?: any
@@ -25,11 +34,8 @@ export function useGroupPreview() {
         allowedTabs.value = [...(config?.allowed || [])]
         showPreview.value = true
     }
-    const closePreview = () => {
-        blacklistedTabs.value = []
-        allowedTabs.value = []
-        showPreview.value = false
-    }
+
+
     const setGroupAlias = (id: string) => {
         console.log('setting user id', id)
         groupAlias.value = id
@@ -60,6 +66,14 @@ export function useGroupPreview() {
     const setDefaultTab = (tab) => {
         defaultTab.value = tab
     }
+
+    const route = useRoute()
+
+    watch(route, () => {
+        blacklistedTabs.value = []
+        allowedTabs.value = []
+        showPreview.value = false
+    })
 
     return {
         showPreview,

@@ -15,7 +15,7 @@
                         }
                     "
                 >
-                    <fa icon="fal sync" class="mr-2"></fa>
+                    <AtlanIcon icon="Refresh" class="mr-2" />
                     Try again
                 </a-button>
             </div>
@@ -96,7 +96,7 @@
         props: {
             selectedUser: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
         },
         setup(props, context) {

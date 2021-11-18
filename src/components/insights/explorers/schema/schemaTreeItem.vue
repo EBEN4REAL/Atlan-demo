@@ -1,8 +1,8 @@
 <template>
     <div
         :data-test-id="item?.guid"
-        class="w-full group py-1.5"
-        :class="assetType(item) == 'Column' && hoverActions ? '-ml-3.5' : ''"
+        class="flex items-center w-full group"
+        :style="{ height: assetType(item) == 'Column' ? '34px' : '32px' }"
     >
         <div class="flex justify-between w-full overflow-hidden">
             <!-- Popover Allowed -->
@@ -38,8 +38,10 @@
                                 ></component>
                                 <span
                                     class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                                    >{{ title(item) }}</span
-                                >
+                                    >{{ title(item) }}
+                                    <!-- <span> {{ childCount(item) }}</span> -->
+                                </span>
+
                                 <StatusBadge
                                     v-if="certificateStatus(item)"
                                     :key="item?.guid"
@@ -171,19 +173,11 @@
 
                             <span
                                 class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                                >{{ title(item) }}</span
-                            >
-                            <!-- <StatusBadge
-                                v-if="certificateStatus(item)"
-                                :key="item?.guid"
-                                :show-no-status="false"
-                                :status-id="certificateStatus(item)"
-                                class="
-                                    ml-1.5
-                                    -mt-0.5
-                                    parent-ellipsis-container-extension
-                                "
-                            ></StatusBadge> -->
+                                >{{ title(item) }}
+                                <span class="count-box">
+                                    {{ childCount(item) }}</span
+                                >
+                            </span>
 
                             <div
                                 v-if="hoverActions"
@@ -287,6 +281,8 @@
                     </div>
                 </a-popover>
             </div>
+
+            <!-- FOR DB AND SCHMA -->
             <div
                 v-if="!isPopoverAllowed(item?.typeName) && hoverActions"
                 class="flex w-full m-0"
@@ -294,7 +290,6 @@
                 <div
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
-                    <!--For Others -->
                     <div class="parent-ellipsis-container">
                         <AtlanIcon
                             :icon="assetType(item)"
@@ -309,8 +304,12 @@
 
                         <span
                             class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >{{ title(item) }}</span
-                        >
+                            >{{ title(item) }}
+                            <span class="count-box">
+                                {{ childCount(item) }}</span
+                            >
+                        </span>
+
                         <StatusBadge
                             v-if="certificateStatus(item)"
                             :key="item?.guid"
@@ -353,15 +352,15 @@
                             </div>
                         </div>
                     </div>
-                    <!------------------------------->
                 </div>
             </div>
+            <!--  -->
+
             <!-- For others component which does not need hoverActions -->
-            <div v-if="item?.typeName === 'Column' && !hoverActions">
+            <!-- <div v-if="item?.typeName === 'Column' && !hoverActions">
                 <div
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
-                    <!--For Column-->
                     <div
                         v-if="assetType(item) == 'Column'"
                         class="relative flex items-center justify-between w-full "
@@ -377,9 +376,12 @@
                                 text-gray-500
                             "
                         ></component>
-                        <span class="mb-0 text-sm text-gray-700">{{
-                            title(item)
-                        }}</span>
+                        <span class="mb-0 text-sm text-gray-700"
+                            >{{ title(item)
+                            }}<span class="count-box">
+                                {{ childCount(item) }}</span
+                            >
+                        </span>
                         <StatusBadge
                             v-if="certificateStatus(item)"
                             :key="item?.guid"
@@ -388,8 +390,6 @@
                             class="ml-1.5 mb-1"
                         ></StatusBadge>
                     </div>
-                    <!------------------------------->
-                    <!--For Others -->
                     <div v-else class="parent-ellipsis-container">
                         <AtlanIcon
                             :icon="
@@ -408,24 +408,15 @@
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >{{ title(item) }}</span
-                        >
-                        <!-- <StatusBadge
-                                v-if="certificateStatus(item)"
-                                :key="item?.guid"
-                                :show-no-status="false"
-                                :status-id="certificateStatus(item)"
-                                class="
-                                    ml-1.5
-                                    -mt-0.5
-                                    parent-ellipsis-container-extension
-                                "
-                            ></StatusBadge> -->
-
+                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                            >{{ title(item) }}
+                            <span class="count-box">
+                                {{ childCount(item) }}</span
+                            >
+                        </span>
                         <div
                             v-if="hoverActions"
-                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             @click.stop="() => {}"
                             :class="
                                 item?.selected
@@ -479,7 +470,6 @@
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
-                            <!-- Add pr-2 for next icon -->
                             <div
                                 :data-test-id="'run-table-query'"
                                 class
@@ -499,39 +489,18 @@
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
-                            <!-- <div
-                                    class="bg-gray-light"
-                                    @click.stop="
-                                        () => actionClick('bookmark', item)
-                                    "
-                                >
-                                    <a-tooltip color="#363636"  placement="top">
-                                        <template #title>Bookmark</template>
-
-                                        <AtlanIcon
-                                            icon="BookmarkOutlined"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>-->
+                           
                         </div>
                     </div>
-                    <!------------------------------->
                 </div>
-            </div>
-            <div
+            </div> -->
+            <!-- <div
                 v-if="item?.typeName !== 'Column' && !hoverActions"
                 class="flex w-full m-0"
             >
                 <div
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
-                    <!--For Others -->
                     <div class="parent-ellipsis-container">
                         <AtlanIcon
                             :icon="assetType(item)"
@@ -545,9 +514,12 @@
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >{{ title(item) }}</span
-                        >
+                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                            >{{ title(item) }}
+                            <span class="count-box">
+                                ({{ childCount(item) }})</span
+                            >
+                        </span>
                         <StatusBadge
                             v-if="certificateStatus(item)"
                             :key="item?.guid"
@@ -560,11 +532,8 @@
                             "
                         ></StatusBadge>
                     </div>
-                    <!------------------------------->
                 </div>
-            </div>
-
-            <!-- ---------------- -->
+            </div> -->
         </div>
     </div>
 </template>
@@ -599,7 +568,7 @@
         nextKeywords,
     } from '~/components/insights/playground/editor/common/composables/useMapping'
     // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
-    import getEntityStatusIcon from '@/glossary/utils/getEntityStatusIcon'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
         components: { SchemaTreeItemPopover, StatusBadge },
@@ -623,7 +592,7 @@
             ) as ComputedRef<activeInlineTabInterface>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
-            const popoverAllowed = ['Column', 'Table']
+            const popoverAllowed = ['Column', 'Table', 'View']
             const isPopoverAllowed = (typeName: string) => {
                 return popoverAllowed.includes(typeName)
             }
@@ -727,7 +696,7 @@
                                     'keyboard',
                                     'type',
                                     {
-                                        text: `${title(t)}, `,
+                                        text: `"${title(t)}", `,
                                     }
                                 )
                             } else {
@@ -735,7 +704,7 @@
                                     'keyboard',
                                     'type',
                                     {
-                                        text: `${title(t)}`,
+                                        text: `"${title(t)}"`,
                                     }
                                 )
                             }
@@ -744,7 +713,7 @@
                                 'keyboard',
                                 'type',
                                 {
-                                    text: `${title(t)}`,
+                                    text: `"${title(t)}"`,
                                 }
                             )
                         }
@@ -818,6 +787,27 @@
                 }
             }
 
+            let childCount = (item) => {
+                if (assetType(item) === 'Database') {
+                    return item.attributes.schemaCount
+                } else if (assetType(item) === 'Schema') {
+                    return (
+                        item.attributes.tableCount ??
+                        0 + item.attributes.viewCount ??
+                        0
+                    )
+                } else if (
+                    assetType(item) === 'Table' ||
+                    assetType(item) === 'View'
+                ) {
+                    return item.attributes.columnCount
+                }
+            }
+
+            // watch(item, () => {
+            //     console.log('schema tree item: ', item.value)
+            // })
+
             return {
                 hoverActions,
                 isPopoverAllowed,
@@ -832,6 +822,7 @@
                 dataTypeImageForColumn,
                 getEntityStatusIcon,
                 item,
+                childCount,
             }
         },
     })
@@ -876,6 +867,32 @@
     }
     .tree-select-full {
         width: 120%;
+    }
+
+    .count-box {
+        justify-content: center;
+        align-items: center;
+        // padding: 4px;
+        margin: 4px;
+        display: inline-flex;
+        width: 18px;
+        height: 18px;
+
+        /* Blues/primary-light */
+
+        background: #f4f6fd;
+        border-radius: 4px;
+
+        font-family: Avenir LT Pro;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        // line-height: 16px;
+        /* identical to box height, or 133% */
+
+        /* Blues/primary */
+
+        color: #5277d7;
     }
 
     /* ------------------------------- */

@@ -1,24 +1,21 @@
 <template>
-    <div class="flex w-full h-full bg-white">
-        <div class="flex-1 border-r border-gray-300 item-stretch">
-            <div class="flex w-full h-full">
-                <transition name="fade" v-if="isItem">
-                    <router-view
-                        :selected-asset="selectedAsset"
-                        @preview="setSelectedAsset($event)"
-                    />
-                </transition>
-                <keep-alive>
-                    <AssetDiscovery
-                        :style="isItem ? 'display: none !important;' : ''"
-                    ></AssetDiscovery>
-                </keep-alive>
-            </div>
+    <div class="flex w-full h-full overflow-x-hidden bg-white">
+        <div class="flex-1 border-r border-gray-200">
+            <router-view
+                v-if="isItem"
+                :selected-asset="selectedAsset"
+                @preview="setSelectedAsset($event)"
+            />
+
+            <keep-alive>
+                <AssetDiscovery
+                    ref="assetdiscovery"
+                    :style="isItem ? 'display: none !important;' : ''"
+                ></AssetDiscovery>
+            </keep-alive>
         </div>
 
-        <div
-            class="relative bg-white  asset-preview-container xs:hidden sm:hidden md:block lg:block"
-        >
+        <div class="relative hidden bg-white asset-preview-container md:block">
             <AssetPreview
                 :selected-asset="selectedAssetFromEmit || selectedAsset"
             ></AssetPreview>
@@ -27,12 +24,12 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue'
+    import { computed, defineComponent, provide, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
     import AssetDiscovery from '@/assets/index.vue'
-    import AssetPreview from '@/assets/preview/index.vue'
+    import AssetPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
@@ -47,23 +44,38 @@
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
             const { selectedAsset } = useAssetInfo()
+
+            const assetdiscovery = ref()
+
             const selectedAssetFromEmit = ref(null)
 
             const setSelectedAsset = (e) => {
                 selectedAssetFromEmit.value = e
             }
+
+            const updateList = (asset) => {
+                console.log('updateList')
+                console.log(asset)
+                if (assetdiscovery.value) {
+                    assetdiscovery.value.updateCurrentList(asset)
+                }
+            }
+
+            provide('updateList', updateList)
+
             return {
                 isItem,
                 selectedAsset,
                 selectedAssetFromEmit,
                 setSelectedAsset,
+                assetdiscovery,
             }
         },
     })
 </script>
 <style scoped>
     .asset-preview-container {
-        width: 420px !important;
+        min-width: 420px !important;
         max-width: 420px !important;
     }
 </style>

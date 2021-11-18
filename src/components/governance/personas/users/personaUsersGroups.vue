@@ -15,6 +15,7 @@
                 placement="left"
                 v-model:visible="popoverVisible"
                 trigger="click"
+                :destroyTooltipOnHide="true"
             >
                 <AtlanBtn
                     color="secondary"
@@ -29,15 +30,17 @@
                         class="flex flex-col items-center py-1 bg-white rounded"
                         style="width: 270px"
                     >
-                        <!-- <UserSelector
+                        <!-- <OwnersSelector
                             :no-owners-assigned="false"
                             :enableTabs="enableTabs"
                             :data="userGroupData"
                             @change="handleUsersChange"
                         /> -->
-                        <UserSelector
-                            :showNoOwners="false"
+                        <OwnersSelector
+                            :showNone="false"
                             :enableTabs="enableTabs"
+                            selectGroupKey="id"
+                            selectUserKey="id"
                             v-model:modelValue="userGroupData"
                             @change="handleUsersChange"
                         />
@@ -103,102 +106,115 @@
                 </template>
             </a-popover>
         </div>
-        <!-- USER TABLE START -->
-        <a-table
-            v-if="filteredList && listType === 'users'"
-            id="userList"
-            class="border rounded border-300"
-            :key="persona.id"
-            :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :table-layout="'fixed'"
-            :data-source="filteredList"
-            :columns="userColumns"
-            :row-key="(user) => user.id"
-            :class="$style.table"
-            :loading="
-                [USER_STATES.PENDING].includes(userState) ||
-                [USER_STATES.VALIDATING].includes(userState)
-            "
-            @change="handleUsersTableChange"
-        >
-            <template #headerCell="{ title, column }">
-                <div class="flex justify-center">
-                    <span>{{ title }}</span>
-                </div>
-            </template>
-            <template #name="{ text: user }">
-                <div class="flex items-center align-middle">
-                    <avatar
-                        :image-url="imageUrl(user.username)"
-                        :allow-upload="false"
-                        :avatar-name="
-                            user.name ||
-                            user.username ||
-                            user.email ||
-                            user.first_name + user.last_name
-                        "
-                        :avatar-size="40"
-                        class="mr-2"
-                    />
-                    <div
-                        class="truncate cursor-pointer"
-                        @click="
-                            () => {
-                                showUserPreviewDrawer(user)
-                            }
-                        "
-                    >
-                        <span class="text-primary">{{ user.name || '-' }}</span>
-                        <p class="mb-0 truncate text-gray">
-                            @{{ user.username || '-' }}
-                        </p>
-                    </div>
-                </div>
-            </template>
-            <template #role="{ text: user }">
-                <div
-                    class="
-                        inline-flex
-                        items-center
-                        px-2
-                        py-0.5
-                        rounded
-                        text-gray-500
-                    "
-                >
-                    <div>{{ user.role_object.name || '-' }}</div>
-                </div>
-            </template>
-            <template #actions="{ text: user }">
-                <a-button-group>
-                    <a-tooltip placement="top">
-                        <template #title>
-                            <span>Remove User</span>
-                        </template>
-                        <a-popconfirm
-                            placement="leftTop"
-                            :title="getPopoverContent(user, 'remove', 'user')"
-                            ok-text="Yes"
-                            :ok-type="'default'"
-                            cancel-text="Cancel"
-                            @confirm="confirmPopover(user, 'user')"
-                        >
-                            <a-button
-                                size="small"
-                                class="ml-3.5 w-8 h-8 rounded"
-                            >
-                                <AtlanIcon
-                                    icon="RemoveUser"
-                                ></AtlanIcon> </a-button
-                        ></a-popconfirm>
-                    </a-tooltip>
-                </a-button-group>
-            </template>
-        </a-table>
         <div
             v-if="
-                [USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
+                ![USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
                     userState
+                )
+            "
+        >
+            <!-- USER TABLE START -->
+            <a-table
+                v-if="filteredList && listType === 'users'"
+                id="userList"
+                class="border rounded border-300"
+                :key="persona.id"
+                :scroll="{ y: 'calc(100vh - 20rem)' }"
+                :table-layout="'fixed'"
+                :data-source="filteredList"
+                :columns="userColumns"
+                :row-key="(user) => user.id"
+                :class="$style.table"
+                :loading="
+                    [USER_STATES.PENDING].includes(userState) ||
+                    [USER_STATES.VALIDATING].includes(userState)
+                "
+                @change="handleUsersTableChange"
+            >
+                <template #headerCell="{ title, column }">
+                    <div class="flex justify-center">
+                        <span>{{ title }}</span>
+                    </div>
+                </template>
+                <template #name="{ text: user }">
+                    <div class="flex items-center align-middle">
+                        <avatar
+                            :image-url="imageUrl(user.username)"
+                            :allow-upload="false"
+                            :avatar-name="
+                                user.name ||
+                                user.username ||
+                                user.email ||
+                                user.first_name + user.last_name
+                            "
+                            :avatar-size="40"
+                            class="mr-2"
+                        />
+                        <div
+                            class="truncate cursor-pointer"
+                            @click="
+                                () => {
+                                    showUserPreviewDrawer(user)
+                                }
+                            "
+                        >
+                            <span class="text-primary">{{
+                                user.name || '-'
+                            }}</span>
+                            <p class="mb-0 truncate text-gray">
+                                @{{ user.username || '-' }}
+                            </p>
+                        </div>
+                    </div>
+                </template>
+                <template #role="{ text: user }">
+                    <div
+                        class="
+                            inline-flex
+                            items-center
+                            px-2
+                            py-0.5
+                            rounded
+                            text-gray-500
+                        "
+                    >
+                        <div>{{ user.role_object.name || '-' }}</div>
+                    </div>
+                </template>
+                <template #actions="{ text: user }">
+                    <a-button-group>
+                        <a-tooltip placement="top">
+                            <template #title>
+                                <span>Remove User</span>
+                            </template>
+                            <a-popconfirm
+                                placement="leftTop"
+                                :title="
+                                    getPopoverContent(user, 'remove', 'user')
+                                "
+                                ok-text="Yes"
+                                :ok-type="'default'"
+                                cancel-text="Cancel"
+                                @confirm="confirmPopover(user, 'user')"
+                            >
+                                <a-button
+                                    size="small"
+                                    class="ml-3.5 w-8 h-8 rounded"
+                                >
+                                    <AtlanIcon
+                                        icon="RemoveUser"
+                                    ></AtlanIcon> </a-button
+                            ></a-popconfirm>
+                        </a-tooltip>
+                    </a-button-group>
+                </template>
+            </a-table>
+        </div>
+        <div
+            v-else-if="
+                listType === 'users' &&
+                [GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
+                    groupState
                 )
             "
             class="flex flex-col items-center h-full align-middle bg-white"
@@ -209,13 +225,7 @@
                         size="large"
                         type="primary"
                         ghost
-                        @click="
-                            () => {
-                                listType === 'users'
-                                    ? getUserList()
-                                    : getGroupList()
-                            }
-                        "
+                        @click="getUserList()"
                     >
                         <fa icon="fal sync" class="mr-2"></fa>Try again
                     </a-button>
@@ -224,80 +234,112 @@
         </div>
 
         <!-- USER TABLE END -->
-        <a-table
-            v-if="filteredList && listType === 'groups'"
-            id="groupList"
-            :key="persona.id"
-            :class="$style.table"
-            :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :table-layout="'fixed'"
-            :data-source="filteredList"
-            :columns="groupColumns"
-            :row-key="(group) => group.id"
-            :loading="
-                [GROUP_STATES.PENDING].includes(groupState) ||
-                [GROUP_STATES.VALIDATING].includes(groupState)
+        <div
+            v-if="
+                ![GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
+                    groupState
+                )
             "
-            @change="handleGroupsTableChange"
         >
-            <template #headerCell="{ title, column }">
-                <div class="flex justify-center">
-                    <span>{{ title }}</span>
-                </div>
-            </template>
-            <template #group="{ text: group }">
-                <div class="flex items-center align-middle">
-                    <avatar
-                        :image-url="imageUrl(group.alias)"
-                        :allow-upload="false"
-                        :avatar-name="group.alias"
-                        :avatar-size="40"
-                        class="mr-2"
-                    />
-                    <div
-                        class="truncate cursor-pointer"
-                        @click="
-                            () => {
-                                showGroupPreviewDrawer(group)
-                            }
-                        "
-                    >
-                        <span class="text-primary">{{
-                            group.alias || '-'
-                        }}</span>
-                        <p class="mb-0 truncate text-gray">
-                            @{{ group.alias || '-' }}
-                        </p>
+            <a-table
+                v-if="filteredList && listType === 'groups'"
+                id="groupList"
+                :key="persona.id"
+                :class="$style.table"
+                :scroll="{ y: 'calc(100vh - 20rem)' }"
+                :table-layout="'fixed'"
+                :data-source="filteredList"
+                :columns="groupColumns"
+                :row-key="(group) => group.id"
+                :loading="
+                    [GROUP_STATES.PENDING].includes(groupState) ||
+                    [GROUP_STATES.VALIDATING].includes(groupState)
+                "
+                @change="handleGroupsTableChange"
+            >
+                <template #headerCell="{ title, column }">
+                    <div class="flex justify-center">
+                        <span>{{ title }}</span>
                     </div>
-                </div>
-            </template>
-
-            <template #actions="{ text: group }">
-                <a-button-group>
-                    <a-tooltip placement="top">
-                        <template #title>
-                            <span>Remove group</span>
-                        </template>
-                        <a-popconfirm
-                            placement="leftTop"
-                            :title="getPopoverContent(group, 'remove', 'group')"
-                            ok-text="Yes"
-                            :ok-type="'default'"
-                            cancel-text="Cancel"
-                            @confirm="confirmPopover(group, 'group')"
+                </template>
+                <template #group="{ text: group }">
+                    <div class="flex items-center align-middle">
+                        <avatar
+                            :image-url="imageUrl(group.alias)"
+                            :allow-upload="false"
+                            :avatar-name="group.alias"
+                            :avatar-size="40"
+                            class="mr-2"
+                        />
+                        <div
+                            class="truncate cursor-pointer"
+                            @click="
+                                () => {
+                                    showGroupPreviewDrawer(group)
+                                }
+                            "
                         >
-                            <a-button
-                                size="small"
-                                class="ml-3.5 w-8 h-8 rounded"
+                            <span class="text-primary">{{
+                                group.alias || '-'
+                            }}</span>
+                            <p class="mb-0 truncate text-gray">
+                                @{{ group.alias || '-' }}
+                            </p>
+                        </div>
+                    </div>
+                </template>
+
+                <template #actions="{ text: group }">
+                    <a-button-group>
+                        <a-tooltip placement="top">
+                            <template #title>
+                                <span>Remove group</span>
+                            </template>
+                            <a-popconfirm
+                                placement="leftTop"
+                                :title="
+                                    getPopoverContent(group, 'remove', 'group')
+                                "
+                                ok-text="Yes"
+                                :ok-type="'default'"
+                                cancel-text="Cancel"
+                                @confirm="confirmPopover(group, 'group')"
                             >
-                                <AtlanIcon
-                                    icon="RemoveUser"
-                                ></AtlanIcon> </a-button
-                        ></a-popconfirm>
-                    </a-tooltip>
-                </a-button-group>
-            </template>
-        </a-table>
+                                <a-button
+                                    size="small"
+                                    class="ml-3.5 w-8 h-8 rounded"
+                                >
+                                    <AtlanIcon
+                                        icon="RemoveUser"
+                                    ></AtlanIcon> </a-button
+                            ></a-popconfirm>
+                        </a-tooltip>
+                    </a-button-group>
+                </template>
+            </a-table>
+        </div>
+        <div
+            v-else-if="
+                listType === 'groups' &&
+                [GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
+                    groupState
+                )
+            "
+            class="flex flex-col items-center h-full align-middle bg-white"
+        >
+            <ErrorView>
+                <div class="mt-3">
+                    <a-button
+                        size="large"
+                        type="primary"
+                        ghost
+                        @click="getGroupList()"
+                    >
+                        <fa icon="fal sync" class="mr-2"></fa>Try again
+                    </a-button>
+                </div>
+            </ErrorView>
+        </div>
     </div>
 </template>
 
@@ -317,9 +359,9 @@
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import UserSelector from '@common/facet/owners/index.vue'
+    import OwnersSelector from '@common/facet/owners/index.vue'
 
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import usePersonaUsers from '../composables/usePersonaUsers'
     import usePersonaGroups from '../composables/usePersonaGroups'
@@ -339,11 +381,11 @@
             AtlanBtn,
             RaisedTab,
             SearchAndFilter,
-            UserSelector,
+            OwnersSelector,
         },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },
@@ -362,17 +404,11 @@
             const queryText = ref('')
             const popoverVisible = ref(false)
             const addUsersLoading = ref(false)
-            const selectedUsernameToUserMap: Ref<Record<string, Object>> = ref(
-                {}
-            )
-            const selectedGroupnameToGroupMap: Ref<Record<string, Object>> =
-                ref({})
 
             const { usePersonaUserList, userColumns } = usePersonaUsers
             const { usePersonaGroupList, groupColumns } = usePersonaGroups
             const { updateUsers } = usePersonaService()
             const {
-                list: allUsers,
                 getUserList,
                 userListAPIParams,
                 STATES: USER_STATES,
@@ -380,7 +416,6 @@
                 userList,
             } = usePersonaUserList(persona)
             const {
-                list: allGroups,
                 getGroupList,
                 STATES: GROUP_STATES,
                 state: groupState,
@@ -428,32 +463,11 @@
                 showUserPreview()
             }
 
-            // const userGroupData = computed({
-            //     get: () => ({
-            //         userValue: selectedPersonaDirty.value!.users,
-            //         groupValue: selectedPersonaDirty.value!.groups,
-            //     }),
-            //     set: (val) => {
-            //         console.log(val, 'value')
-            //         selectedPersonaDirty.value!.users = val.userValue
-            //         selectedPersonaDirty.value!.groups = val.groupValue
-            //     },
-            // })
-
-            const getIds = (users: Object) => {
-                let res: string[] = []
-                let k = Object.keys(users)
-                k.forEach((e) => {
-                    res.push(users[e].id as string)
-                })
-                return res
-            }
-
             const handleUpdate = () => {
                 if (persona.value?.id) {
                     addUsersLoading.value = true
-                    const userIds = getIds(selectedUsernameToUserMap.value)
-                    const groupIds = getIds(selectedGroupnameToGroupMap.value)
+                    const userIds = userGroupData.value.ownerUsers
+                    const groupIds = userGroupData.value.ownerGroups
                     updateUsers({
                         id: persona.value.id,
                         users: userIds,
@@ -489,36 +503,6 @@
                 ownerGroups: persona.value.groups ?? [],
             })
 
-            const insertUserstoMap = (
-                usernames: string[],
-                usersList: any[]
-            ) => {
-                usernames.forEach((username: string) => {
-                    usersList.forEach((e: any) => {
-                        if (e.username === username) {
-                            selectedUsernameToUserMap.value[username] = e
-                        }
-                    })
-                })
-                console.log(
-                    selectedUsernameToUserMap.value,
-                    usernames,
-                    usersList
-                )
-            }
-            const insertGroupstoMap = (
-                groupnames: string[],
-                usersList: any[]
-            ) => {
-                groupnames.forEach((groupname: string) => {
-                    usersList.forEach((e: any) => {
-                        if (e.name === groupname) {
-                            selectedGroupnameToGroupMap.value[groupname] = e
-                        }
-                    })
-                })
-            }
-
             const getPopoverContent = (
                 user: any,
                 action: 'remove',
@@ -529,60 +513,38 @@
                 }?`
             }
 
-            const getUsersFromUsername = (usernames: string[]) => {
-                let res: Object[] = []
-                usernames.forEach((username) => {
-                    userList.value.forEach((e) => {
-                        if (e.username === username) res.push(e)
-                    })
-                })
-                return res
-            }
-            const getGroupsFromGroupname = (aliases: string[]) => {
-                let res: Object[] = []
-                aliases.forEach((alias) => {
-                    groupList.value.forEach((e) => {
-                        if (e.alias === alias) res.push(e)
-                    })
-                })
-                return res
-            }
-
             const confirmPopover = (
                 userOrGroup: any,
                 type: 'user' | 'group'
             ) => {
                 addUsersLoading.value = true
-                let users = getUsersFromUsername(persona.value.users ?? [])
-                let groups = getGroupsFromGroupname(persona.value.groups ?? [])
 
                 // console.log(persona.value, 'persona')
-
+                let updatedUsersIds = userGroupData.value.ownerUsers
+                let updatedGroupIds = userGroupData.value.ownerGroups
                 if (type === 'user') {
-                    users = users.filter((user) => user.id !== userOrGroup.id)
+                    updatedUsersIds = userGroupData.value.ownerUsers.filter(
+                        (userId) => userId !== userOrGroup.id
+                    )
                 } else {
-                    groups = groups.filter(
-                        (group) => group.id !== userOrGroup.id
+                    updatedGroupIds = userGroupData.value.ownerGroups.filter(
+                        (groupId) => groupId !== userOrGroup.id
                     )
                 }
-                const usernames = users.map((user) => user.username)
-                persona.value.users = usernames
-                selectedPersonaDirty.value.users = usernames
-                const groupaliases = groups.map((group) => group.alias)
-                persona.value.groups = groupaliases
-                selectedPersonaDirty.value.groups = groupaliases
-                let userIds = users.map((user) => user.id)
-                let groupIds = groups.map((group) => group.id)
+                persona.value.users = updatedUsersIds
+                selectedPersonaDirty.value.users = updatedUsersIds
+                persona.value.groups = updatedGroupIds
+                selectedPersonaDirty.value.groups = updatedGroupIds
 
                 updateUsers({
                     id: persona.value.id,
-                    users: userIds,
-                    groups: groupIds,
+                    users: updatedUsersIds,
+                    groups: updatedGroupIds,
                 })
                     .then(() => {
                         addUsersLoading.value = false
-                        userGroupData.value.ownerUsers = usernames
-                        userGroupData.value.ownerGroups = groupaliases
+                        userGroupData.value.ownerUsers = updatedUsersIds
+                        userGroupData.value.ownerGroups = updatedGroupIds
 
                         getUserList()
                         getGroupList()
@@ -609,10 +571,7 @@
                 ownerUsers: string[]
                 ownerGroups: string[]
             }) => {
-                insertUserstoMap(data?.ownerUsers ?? [], allUsers.value)
                 persona.value.users = data?.ownerUsers ?? []
-
-                insertGroupstoMap(data?.ownerGroups ?? [], allGroups.value)
                 persona.value.groups = data?.ownerGroups ?? []
                 return
             }
@@ -652,9 +611,12 @@
                 showGroupPreview()
             }
 
+            watch(persona, () => {
+                userGroupData.value.ownerUsers = persona.value.users ?? []
+                userGroupData.value.ownerGroups = persona.value.groups ?? []
+            })
+
             return {
-                selectedGroupnameToGroupMap,
-                selectedUsernameToUserMap,
                 showGroupPreviewDrawer,
                 getGroupList,
                 getUserList,

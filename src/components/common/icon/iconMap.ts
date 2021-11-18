@@ -201,6 +201,7 @@ import Strike from '~/assets/images/readme/text-strike.svg'
 import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
 import Running from '~/assets/images/icons/running.svg'
+import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
 import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
 import CreateWF from '~/assets/images/workflows/createWF.svg'
@@ -221,8 +222,33 @@ import Number from '~/assets/images/icons/number.svg'
 
 import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 import Enter from '~/assets/images/icons/enter.svg'
+import Times from '~/assets/images/icons/times.svg'
+import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
+import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
+import SSO from '~/assets/images/icons/sso.svg'
+import SMTP from '~/assets/images/icons/smtp.svg'
+import APIKey from '~/assets/images/icons/apikey.svg'
+import Camera from '~/assets/images/icons/camera.svg'
+import FormatText from '~/assets/images/icons/formatText.svg'
+import NoUsers from '~/assets/images/illustrations/no-users.svg'
+import NoGroups from '~/assets/images/illustrations/no-groups.svg'
+import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
+import CustomSaml from '~/assets/images/icons/customSaml.svg'
+
+// source list
+import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
+import Athena from '~/assets/images/source/svg/Athena.svg'
+import Tableau from '~/assets/images/source/svg/Tableau.svg'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Schema2Active from '~/assets/images/icons/schema2Active.svg'
+import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 
 export default {
+    CreateGroups,
+    NoGroups,
+    NoUsers,
+    Times,
+    ExclaimCircle,
     RemoveUser,
     NoRuns,
     CreateWF,
@@ -442,4 +468,18 @@ export default {
     Number,
     NoAvatar,
     Enter,
+    NoRequestFound,
+    NoLinkedAssets,
+    FormatText,
+    Snowflake,
+    Athena,
+    PowerBI,
+    Tableau,
+    SSO,
+    SMTP,
+    APIKey,
+    Camera,
+    CustomSaml,
+    Schema2Active,
+    QueriesActive
 }

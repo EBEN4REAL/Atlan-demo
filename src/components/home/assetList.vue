@@ -38,8 +38,8 @@
                                 ? item.displayText === selectedAssetId
                                 : item.guid === selectedAssetId
                         "
-                        :projection="[]"
-                        @click="handleCardClicked(item)"
+                        :preference="[]"
+                        @preview="handleCardClicked"
                     ></ListItem>
                 </template>
             </VirtualList>
@@ -62,7 +62,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, PropType } from 'vue'
-    import ListItem from '~/components/assets/list/assetItem.vue'
+    import ListItem from '@common/assets/list/assetItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAssetListing } from '~/composables/home/useHomeDSL'
@@ -72,8 +72,8 @@
     export default defineComponent({
         name: 'AssetList',
         components: {
-            ListItem,
             VirtualList,
+            ListItem,
         },
         props: {
             typeNames: {
@@ -134,11 +134,11 @@
             }
 
             const handleCardClicked = (item: any) => {
-                // add event
+                /*  // add event
                 const idx = list.value.findIndex((el) => el.guid === item.guid)
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: idx,
-                })
+                }) */
                 handlePreview(item)
             }
 

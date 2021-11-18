@@ -8,29 +8,28 @@
                     icon="ChevronLeft"
                     @click="$emit('showGroupMembers')"
                 />
-                <a-input-search
+                <SearchAndFilter
                     v-model:value="searchText"
                     placeholder="Search users"
-                    :allow-clear="true"
                     class="mr-1"
+                    size="minimal"
                     @change="handleSearch"
-                ></a-input-search>
+                />
             </div>
-            <div v-if="showHeaderButtons">
+            <template v-if="showHeaderButtons">
                 <a-button
                     type="primary"
                     :loading="addMemberLoading"
-                    :disabled="addMemberLoading"
+                    :disabled="addMemberLoading || !selectedIds.length"
                     class="flex items-center text-sm"
                     @click="$emit('addMembersToGroup')"
                 >
-                    <AtlanIcon icon="Add" class="mr-2" />
-                    Add
+                    Done
                 </a-button>
-            </div>
+            </template>
         </div>
         <div
-            v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+            v-if="error"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -49,65 +48,63 @@
                 </div>
             </ErrorView>
         </div>
-        <div v-else class="pl-4 mt-2 overflow-auto">
-            <a-checkbox-group class="w-full">
-                <div class="flex flex-col w-full" :style="userListStyle">
-                    <template v-for="user in userList" :key="user.id">
-                        <a-checkbox
-                            :value="user.id"
-                            class="flex items-center w-full py-2 border-b border-gray-100 "
-                            @change="handleChange"
-                        >
-                            <span class="flex justify-between ml-3">
-                                <div class="flex items-center">
-                                    <Avatar
-                                        :image-url="imageUrl(user.username)"
-                                        :allow-upload="false"
-                                        :avatar-name="
-                                            user.name ||
-                                            user.uername ||
-                                            user.email
-                                        "
-                                        :avatar-size="minimal ? 30 : 40"
-                                        class="mr-2"
-                                    />
-                                    <div class="ml-2">
-                                        <div class="text-gray">
-                                            <div class="mr-2 font-bold">
-                                                {{ user.name }}
-                                            </div>
-                                            <div
-                                                v-if="!minimal"
-                                                class="mr-2 text-gray"
-                                            >
-                                                {{ user.email }}
+        <template v-else>
+            <div class="pl-4 mt-2 overflow-auto">
+                <a-checkbox-group class="w-full">
+                    <div class="flex flex-col w-full" :style="userListStyle">
+                        <template v-for="user in userList" :key="user.id">
+                            <a-checkbox
+                                :value="user.id"
+                                class="flex items-center w-full py-2 border-b border-gray-100 "
+                                @change="handleChange"
+                            >
+                                <span class="flex justify-between ml-3">
+                                    <div class="flex items-center">
+                                        <Avatar
+                                            avatarShape="circle"
+                                            :image-url="imageUrl(user.username)"
+                                            :allow-upload="false"
+                                            :avatar-name="
+                                                user.name ||
+                                                user.uername ||
+                                                user.email
+                                            "
+                                            :avatar-size="minimal ? 30 : 40"
+                                            class="mr-2"
+                                        />
+                                        <div class="ml-2">
+                                            <div class="text-gray">
+                                                <div class="mr-2 font-bold">
+                                                    {{ user.name }}
+                                                </div>
+                                                <div
+                                                    v-if="!minimal"
+                                                    class="mr-2 text-gray"
+                                                >
+                                                    {{ user.email }}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </span>
-                        </a-checkbox>
-                    </template>
+                                </span>
+                            </a-checkbox>
+                        </template>
+                    </div>
+                </a-checkbox-group>
+                <div v-if="isLoading" class="flex justify-center mt-3">
+                    <AtlanIcon icon="Loader" class="h-10 animate-spin" />
                 </div>
-            </a-checkbox-group>
-            <div
-                v-if="
-                    [STATES.PENDING].includes(state) ||
-                    [STATES.VALIDATING].includes(state)
-                "
-                class="flex justify-center mt-3"
-            >
-                <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
-            <div
-                v-else-if="showLoadMore"
-                class="absolute flex justify-center w-full mt-3"
-            >
-                <AtlanButton color="secondary" @click="handleLoadMore"
+            <div v-if="showLoadMore" class="flex justify-center w-full mt-3">
+                <AtlanButton
+                    color="secondary"
+                    padding="compact"
+                    size="sm"
+                    @click="handleLoadMore"
                     >load more
                 </AtlanButton>
             </div>
-        </div>
+        </template>
     </div>
 </template>
 <script lang="ts">
@@ -118,6 +115,7 @@
     import { useUsers } from '~/composables/user/useUsers'
     import Avatar from '~/components/common/avatar/index.vue'
     import AtlanButton from '@/UI/button.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
         name: 'UsersList',
@@ -125,6 +123,7 @@
             ErrorView,
             Avatar,
             AtlanButton,
+            SearchAndFilter,
         },
         props: {
             addMemberLoading: {
@@ -168,8 +167,8 @@
                 usersListConcatenated: userList,
                 filteredUserCount,
                 getUserList,
-                state,
-                STATES,
+                isLoading,
+                error,
             } = useUsers(userListAPIParams)
 
             const handleSearch = useDebounceFn(() => {
@@ -239,8 +238,8 @@
                 filteredUserCount,
                 getUserList,
                 handleSearch,
-                state,
-                STATES,
+                isLoading,
+                error,
                 handleLoadMore,
                 handleChange,
                 selectedIds,

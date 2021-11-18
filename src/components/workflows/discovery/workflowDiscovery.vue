@@ -1,14 +1,7 @@
 <template>
     <div class="flex w-full">
         <div
-            class="
-                flex flex-col
-                h-full
-                overflow-y-auto
-                bg-white
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
             <AtlanBtn
                 class="m-2"
@@ -82,7 +75,6 @@
 </template>
 
 <script lang="ts">
-    import EmptyView from '@common/empty/discover.vue'
     import workflowPagination from '@common/pagination/index.vue'
 
     import { useDebounceFn } from '@vueuse/core'

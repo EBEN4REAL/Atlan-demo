@@ -1,4 +1,4 @@
-import { useGlossaryStore } from '~/store/glossary'
+import useGlossaryStore from '~/store/glossary'
 
 import { computed } from 'vue'
 
@@ -24,6 +24,14 @@ export default function useGlossaryData() {
                 : 0
         )
     )
+
+    const getGlossaryByQF = (qf) =>
+        glossaryList.value.find((i) => i.attributes.qualifiedName === qf)
+
+    const getFirstGlossaryQF = () =>
+        glossaryList.value.length > 0
+            ? glossaryList.value[0].attributes.qualifiedName
+            : ''
 
     const handleSelectedGlossary = (item) => {
         glossaryStore.setSelectedGlossary(item)
@@ -63,32 +71,16 @@ export default function useGlossaryData() {
         return `${typeName}${status}`
     }
 
-    const initTree = () => {
-        return glossaryList.value.map((i) => {
-            let isLeafFlag = false
-            if (i.termsCount === 0 && i.categoryCount === 0) {
-                isLeafFlag = true
-            }
-            return {
-                ...i,
-                id: i.attributes?.qualifiedName,
-                key: i.attributes?.qualifiedName,
-                isLeaf: isLeafFlag,
-            }
-        })
-    }
-
-    const selectedGlossary = computed(() => {
-        return glossaryStore.selectedGlossary
-    })
+    const selectedGlossary = computed(() => glossaryStore.selectedGlossary)
 
     return {
         glossaryList,
         list: glossaryStore.list,
         getGlossary,
         getEntityStatusIcon,
-        initTree,
         handleSelectedGlossary,
         selectedGlossary,
+        getGlossaryByQF,
+        getFirstGlossaryQF,
     }
 }

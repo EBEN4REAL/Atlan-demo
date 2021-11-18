@@ -635,7 +635,7 @@ const useTree = ({
         onLoadFolderData,
         expandNode,
         selectNode,
-        refetchNode,
+        refetchNode
     }
 }
 

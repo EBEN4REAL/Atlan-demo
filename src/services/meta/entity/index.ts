@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { Ref } from 'vue'
+import { Ref, ref } from 'vue'
 
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
@@ -39,10 +39,27 @@ const fetchAudits = (params: any, guid: string) =>
         {}
     )
 
+const fetchRelatedAssets = <T>(
+    params: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) => useAPI<T>(map.GET_ASSET_RELATIONSHIP, 'GET', { params }, options || {})
+
 const SetClassifications = <T>(
     body: Ref<Record<string, any>> | Record<string, any>,
     options?: useOptions
 ) => useAPI<T>(map.ENTITY_SET_CLASSIFICATIONS, 'POST', { body }, options || {})
+
+const GetEntity = <T>(guid: String,
+    options?: useOptions) =>
+    useAPI<T>(
+        map.GET_ENTITY,
+        'GET',
+        {
+            pathVariables: { guid },
+
+        },
+        options || {}
+    )
 
 export const Entity = {
     fetchAudits,
@@ -50,4 +67,6 @@ export const Entity = {
     EntityUpdate,
     fetchMoreAudits,
     SetClassifications,
+    fetchRelatedAssets,
+    GetEntity,
 }

@@ -2,6 +2,7 @@
     <div class="flex flex-col py-1 rounded gap-y-3">
         <div class="flex items-center justify-between">
             <p class="mb-1 text-sm text-gray-500">Sort By</p>
+
             <Sorting
                 v-model="localValue.sort"
                 @change="handleChangeSort"
@@ -24,9 +25,8 @@
 
 <script lang="ts">
     import { defineComponent, Ref, ref, toRefs } from 'vue'
-
-    import Sorting from '@/common/select/sorting.vue'
     import { useVModels } from '@vueuse/core'
+    import Sorting from '@/common/select/sorting.vue'
 
     import { displayProperties } from '~/constant/displayProperties'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'

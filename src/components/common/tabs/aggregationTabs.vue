@@ -9,13 +9,39 @@
         >
             <a-tab-pane v-for="item in localList" :key="item.id">
                 <template #tab>
-                    <div :class="{ active: item.id === localValue }">
-                        <span>{{ item.label }}</span>
-                        <span
+                    <div
+                        :class="{ active: item.id === localValue }"
+                        class="flex items-center"
+                    >
+                        <AtlanIcon
+                            :icon="icon"
+                            class="self-center mr-1"
+                            v-if="icon"
+                        ></AtlanIcon>
+
+                        <AtlanIcon
+                            v-if="item.label == 'All'"
+                            icon="Globe"
+                            class="self-center mr-1"
+                        ></AtlanIcon>
+
+                        <div class="self-center text-sm" v-else>
+                            {{ item.label }}
+                        </div>
+                        <div
                             :class="$style.chip"
-                            class="ml-1 text-xs font-bold tracking-wide text-gray-400 "
-                            >{{ getCountString(item.count) }}</span
+                            class="
+                                self-center
+                                text-xs
+                                font-bold
+                                tracking-wide
+                                text-gray-400
+                                mt-0.5
+                                ml-1
+                            "
                         >
+                            {{ getCountString(item.count) }}
+                        </div>
                     </div>
                 </template>
             </a-tab-pane>
@@ -48,10 +74,17 @@
                     return []
                 },
             },
+            icon: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { list } = toRefs(props)
+            const { list, icon } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
@@ -110,6 +143,7 @@
                 localValue,
                 getCountString,
                 handleChange,
+                icon,
             }
         },
     })
@@ -117,9 +151,6 @@
 
 <style lang="less" module>
     .assetbar {
-        .chip {
-        }
-
         .active {
             .chip {
                 @apply text-primary;
@@ -154,6 +185,7 @@
         }
 
         :global(.ant-tabs-tab:first-child) {
+            border-top-left-radius: 4px !important;
         }
 
         :global(.ant-tabs-nav-container-scrolling) {

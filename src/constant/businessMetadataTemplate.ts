@@ -5,11 +5,10 @@ const inApplicableTypeName = ['Connection']
 const otherTypes = [{ title: 'Glossary Term', value: 'AtlasGlossaryTerm', key: 'AtlasGlossaryTerm' }]
 
 
-export const applicableEntityTypes = [
+export const applicableEntityTypesOptions = [
   ...assetCategories.map(t => ({ title: t.label, value: t.id, key: t.id, children: t.children?.map(a => ({ title: a.label, value: a.id, key: a.id })) }))
 ]
 
-// export const applicableEntityTypes = ['Catalog', 'AtlasGlossaryTerm']
 
 /**
  * @desc default template for new BM attribute
@@ -24,7 +23,8 @@ export const DEFAULT_ATTRIBUTE = {
   displayName: "",
   options: {
     /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas hold this here: [JSON.stringify(applicableEntityTypes)] */
-    applicableEntityTypes: [],
+    applicableEntityTypes: JSON.stringify(['Asset']),
+    customApplicableEntityTypes: [],
     customEntityTypes: JSON.stringify([]),
     maxStrLength: "100000000",
     isBadge: false,
@@ -84,7 +84,7 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
         trigger: "change"
       }
     ],
-    // applicableEntityTypes: [
+    // customApplicableEntityTypes: [
     //   {
     //     required: true,
     //     type: 'array',

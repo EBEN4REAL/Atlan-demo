@@ -32,7 +32,13 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="mr-4">
                         <div
-                            class="relative flex items-stretch w-full overflow-hidden "
+                            class="
+                                relative
+                                flex
+                                items-stretch
+                                w-full
+                                overflow-hidden
+                            "
                         >
                             <a-input
                                 v-model:value="attrsearchText"
@@ -219,16 +225,19 @@
                     localBm.value = JSON.parse(JSON.stringify(props.selectedBm))
             })
 
-            // converts applicableEntityTypes from string to array so they can be set on the a-tree component
+            // converts customApplicableEntityTypes from string to array so they can be set on the a-tree component
             const cleanLocalBm = computed(() => {
                 const tempBM = JSON.parse(JSON.stringify(localBm.value))
                 tempBM.attributeDefs.forEach((x, index) => {
                     // clean attribute defs
-                    if (typeof x.options.applicableEntityTypes === 'string') {
+                    if (
+                        typeof x.options.customApplicableEntityTypes ===
+                        'string'
+                    ) {
                         tempBM.attributeDefs[
                             index
-                        ].options.applicableEntityTypes = JSON.parse(
-                            x.options.applicableEntityTypes
+                        ].options.customApplicableEntityTypes = JSON.parse(
+                            x.options.customApplicableEntityTypes
                         )
                     }
                     // clean allowFiltering, allowSearch, allowMultiple

@@ -76,7 +76,6 @@
         getRunList,
         getArchivedRunList,
     } from '~/composables/workflow/useWorkflowList'
-
     import WorkflowMixin from '~/mixins/workflow'
 
     export default defineComponent({
@@ -166,7 +165,8 @@
                     records.value = list.value
 
                     if (!selectedRunName.value) {
-                        graphData.value = list.value[0]
+                        const idMonitoring = route.query.idmonitoring
+                        graphData.value = list.value.find((el) => el.uid === idMonitoring) || list.value[0]
                         emit('setSelectedGraph', graphData.value)
                     }
                     loadingGeneral.value = false

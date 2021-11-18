@@ -101,12 +101,13 @@
                                 :options="finalEnumsList"
                                 @change="updateEnumValues"
                             >
+                                <template #notFoundContent><p></p></template>
                                 <template #dropdownRender="{ menuNode: menu }">
                                     <v-nodes :vnodes="menu" />
                                     <a-divider style="margin: 4px 0" />
 
                                     <p
-                                        class="mt-3 text-center cursor-pointer text-primary"
+                                        class="px-3 cursor-pointer text-primary"
                                         @click="
                                             () => {
                                                 form.options.enumType = null
@@ -164,7 +165,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center w-60"
+                                                class="flex flex-col items-center  w-60"
                                             >
                                                 Applicable asset type once saved
                                                 cannot be removed, you can still

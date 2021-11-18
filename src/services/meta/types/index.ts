@@ -16,6 +16,10 @@ const CreateTypedefs = (
   options?: useOptions
 ) => useAPI<TypedefsInterface>(map.CREATE_TYPEDEFS, 'POST', { body }, options || {})
 
+const EditTypedefs = (
+  body: Record<string, any>,
+  options?: useOptions
+) => useAPI<TypedefsInterface>(map.CREATE_TYPEDEFS, 'PUT', { body }, options || {})
 
 const updateCustomMetadata = (
   body: Record<string, any>,
@@ -27,5 +31,6 @@ const updateCustomMetadata = (
 export const Types = {
   GetTypedefs,
   CreateTypedefs,
+  EditTypedefs,
   updateCustomMetadata
 }

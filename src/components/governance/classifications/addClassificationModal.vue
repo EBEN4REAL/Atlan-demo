@@ -16,7 +16,7 @@
                     <div class="font-bold text-gray-700">New Classification</div>
                 </div>
                 <div class="flex space-x-1 p-1 rounded bg-indigo-50">
-                    <AtlanIcon icon="Shield" class="text-blue-700 self-center"/>
+                    <AtlanIcon icon="ShieldFilled" class="text-blue-600 self-center"/>
                     <span class="text-xs self-center">Blue</span>
                 </div>
             </div>
@@ -27,13 +27,13 @@
         >
             <a-input
                 ref="titleBar"
-                v-model:value="formState.name"
+                v-model:value="name"
                 :placeholder="`Untitled Classification`"
                 class="text-lg pt-0 font-bold text-gray-700 border-0 shadow-none outline-none "
                 :class="$style.placeholder"
             />
             <a-textarea
-                v-model:value="formState.description"
+                v-model:value="description"
                 placeholder="Add description..."
                 class="text-gray-500 border-0 shadow-none outline-none"
                 :maxlength="140"
@@ -44,9 +44,10 @@
             <a-button @click="closeModal" class="border-0 shadow-none">Cancel</a-button>
             <a-button
                 type="primary"
-                @click="createClassification"
+                @click="handleOk"
+                :loading="mode === 'create' ? createLoading : editLoading"
             >
-                Create
+                {{ mode === 'create' ? 'Create' : 'Edit' }}
             </a-button>
         </div>
     </a-modal>
@@ -54,11 +55,13 @@
 
 <script lang="ts">
     import { defineComponent, reactive, watch, ref, PropType, toRefs } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import { useVModels, whenever } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     import useCreateTypedefs from '~/composables/typedefs/useCreateTypedefs'
+    import useEditTypedefs from '~/composables/typedefs/useEditTypedefs'
 
     export default defineComponent({
         name: 'AddClassificationModal',
@@ -72,53 +75,107 @@
             modalVisible: {
                 type: Boolean,
                 required: true
+            },
+            mode: {
+                type: String as PropType<'create' | 'edit' >,
+                required: false,
+                default: 'create'
             }
         },
         emits: ['update:modalVisible'],
         setup(props, { emit }) {
             const { classification: selectedClassification } = toRefs(props)
             const { modalVisible } = useVModels(props, emit)
-            const createClassificationFormRef = ref()
-            const createErrorText = ref('')
-            const formState = reactive({
-                name: '',
-                description: '',
-            })
+
+            const name =  ref(selectedClassification.value?.displayName ?? '');
+            const description =  ref(selectedClassification.value?.description ?? '');
+
+            const body = ref<Record<string, any>>({})
+            const { data:createData, error:createError, isLoading:createLoading, mutate:mutateCreate, isReady:isCreateReady }  = useCreateTypedefs(body)
+            const { data:editData, error:editError, isLoading:editLoading, mutate:mutateEdit, isReady:isUpdateReady }  = useEditTypedefs(body)
 
             const closeModal = () => {
                 modalVisible.value = false
-                formState.name = '';
-                formState.description = '';
+                if(props.mode === 'create') {
+                    name.value = '';
+                    description.value = '';
+                } else {
+                    name.value = selectedClassification.value?.displayName ?? '';
+                    description.value = selectedClassification.value?.description ?? '';                    
+                }
             }
 
             const createClassification = () => {
-                const { data, error, isLoading }  = useCreateTypedefs({
+                body.value = {
                     classificationDefs: [
                         {
                             attributeDefs: [],
-                            displayName: formState.name,
-                            description: formState.description,
+                            displayName: name.value,
+                            description: description.value,
                             superTypes: []
                         }
                     ]
-                })
-
-                watch(data, () => {
-                    closeModal()
-                })
-                watch(error, (newError) => {
-                    createErrorText.value = newError
-                })
+                }
+                mutateCreate();
             }
+
+            const editClassification = () => {
+                body.value = {
+                    classificationDefs: [
+                        {
+                            ...selectedClassification.value,
+                            displayName: name.value,
+                            description: description.value,
+                        }
+                    ]
+                }
+                mutateEdit()
+            }
+
+            const handleOk = () => {
+                if(props.mode === 'create') {
+                    createClassification()
+                } else {
+                    editClassification()
+                }
+            }
+
+            watch(selectedClassification, (newSelectedClassification) => {
+                if(newSelectedClassification) {
+                    name.value = newSelectedClassification.displayName
+                    description.value = newSelectedClassification?.description ?? ''
+                }
+            })
+            
+            whenever(isCreateReady, () => {
+                if(createError.value) {
+                    message.error(createError.value.errorMessage)
+                } else {
+                    message.success(`${name.value} Created!`)
+                    closeModal()
+                }
+            })
+
+            whenever(isUpdateReady, () => {
+                if(editError.value) {
+                    message.error(editError.value.errorMessage)
+                } else {
+                    message.success(`${name.value} Updated!`)
+                    closeModal()
+                }
+            })
 
             return {
                 selectedClassification,
                 modalVisible,
                 closeModal,
-                formState,
-                createClassificationFormRef,
+                name,
+                description,
                 createClassification,
-                createErrorText
+                createLoading,
+                editClassification,
+                editLoading,
+                handleOk
             }
         },
     })

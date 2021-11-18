@@ -14,19 +14,15 @@ export default function useCreateTypedefs(body: Record<string, any>) {
         },
     })
 
-    const { data, error, isLoading, isReady, mutate } = Types.CreateTypedefs(body, options)
+    const { data, error, isLoading, mutate, isReady } = Types.EditTypedefs(body, options)
 
     const typedefStore = useTypedefStore()
 
     watch(data, () => {
         if(data.value?.classificationDefs?.length) {
-            typedefStore.appendClassificationList(data.value?.classificationDefs)
-        }
-        if(data.value?.enumDefs?.length) {
-            typedefStore.appendEnumList(data.value?.enumDefs)
-        }
-        if(data.value?.businessMetadataDefs?.length) {
-            typedefStore.appendCustomMetadata(data.value?.businessMetadataDefs)
+            data.value?.classificationDefs.forEach((classification) => {
+                typedefStore.updateSingleClassification(classification)
+            })
         }
     })
     return {

@@ -52,48 +52,6 @@
         <AddClassificationModal
             v-model:modalVisible="createClassificationModalVisible"
         />
-        <!-- <a-modal
-            :visible="modalVisible"
-            title="Add"
-            @cancel="closeModal"
-            :destroyOnClose="true"
-            :footer="null"
-        >
-            <a-form
-                ref="createClassificationFormRef"
-                :model="formState"
-                :rules="rules"
-                layout="vertical"
-            >
-                <a-form-item ref="name" label="Name" name="name">
-                    <a-input v-model:value="formState.name" />
-                </a-form-item>
-                <a-form-item
-                    ref="description"
-                    label="Description"
-                    name="description"
-                >
-                    <a-textarea v-model:value="formState.description" />
-                </a-form-item>
-
-                <div class="flex justify-end w-full">
-                    <a-button class="mr-4" @click="closeModal">Cancel</a-button>
-                    <a-button
-                        type="primary"
-                        :loading="
-                            createClassificationStatus === 'loading'
-                                ? true
-                                : false
-                        "
-                        @click="createClassification"
-                        >Create</a-button
-                    >
-                </div>
-            </a-form>
-            <p v-if="createErrorText" class="mt-4 mb-0 text-sm text-red-500">
-                {{ createErrorText }}
-            </p>
-        </a-modal> -->
     </ExplorerLayout>
     <!-- <NoAcces v-else /> -->
 </template>

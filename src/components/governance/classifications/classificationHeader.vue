@@ -21,28 +21,20 @@
                 selectedClassification?.description
             }}</span>
         </div>
-
-        <!-- <UpdateClassificationModal
-            :classification="{ ...selectedClassification }"
-            :open="isEditClassificationModalOpen"
-            @close="closeEditClassificationModal"
+        <AddClassificationModal
+            v-model:modalVisible="isEditClassificationModalOpen"
+            :classification="classification"
+            mode="edit"
         />
-
-        <DeleteClassificationModal
-            :classification="{ ...selectedClassification }"
-            :open="isDeleteClassificationModalOpen"
-            @close="closeDeleteClassificationModal"
-        /> -->
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, ref, PropType } from 'vue'
 
-    // import UpdateClassificationModal from './updateClassificationModal.vue'
-    // import DeleteClassificationModal from './deleteClassificationModal.vue'
     // import { useUserPreview } from '~/composables/user/showUserPreview'
     import Dropdown from '@/UI/dropdown.vue'
+    import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
@@ -50,8 +42,7 @@
         name: 'ClassificationHeader',
         components: {
             Dropdown,
-            // UpdateClassificationModal,
-            // DeleteClassificationModal,
+            AddClassificationModal,
         },
         props: {
             classification: {

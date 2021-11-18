@@ -15,6 +15,11 @@
     >
         <div class="p-3">
             <div class="flex items-center mb-1">
+                <GTCSelect
+                    class="p-1 mr-3 bg-gray-100 rounded"
+                    v-model="localEntityType"
+                ></GTCSelect>
+
                 <div v-if="glossaryName" class="flex items-center mr-2">
                     <AtlanIcon
                         icon="Glossary"
@@ -34,12 +39,13 @@
                 </div>
 
                 <GlossaryPopoverSelect
-                    v-else-if="localQualifiedName"
+                    v-else-if="
+                        !localQualifiedName &&
+                        (localEntityType === 'AtlasGlossaryTerm' ||
+                            localEntityType === 'AtlasGlossaryCategory')
+                    "
                     class="p-1 bg-gray-100 rounded"
                     v-model="localQualifiedName"
-                    v-if="
-                        typeNameTitle === 'Term' || typeNameTitle === 'Category'
-                    "
                 ></GlossaryPopoverSelect>
             </div>
 
@@ -108,10 +114,13 @@
 
     import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
 
+    import GTCSelect from '@/common/popover/gtcSelect/index.vue'
+
     export default defineComponent({
         name: 'AddGtcModal',
         components: {
             GlossaryPopoverSelect,
+            GTCSelect,
             // AddGtcModalOwners,
             // Categories,
         },
@@ -162,6 +171,12 @@
                 glossaryName,
                 categoryName,
             } = toRefs(props)
+
+            const localEntityType = ref(entityType.value)
+            watch(entityType, () => {
+                localEntityType.value = entityType.value
+            })
+
             const { getGlossaryByQF, getFirstGlossaryQF } = useGlossaryData()
 
             const localQualifiedName = ref(
@@ -235,7 +250,7 @@
             }
 
             const typeNameTitle = computed(() => {
-                switch (entityType.value) {
+                switch (localEntityType.value) {
                     case 'AtlasGlossary':
                         return 'Glossary'
                     case 'AtlasGlossaryCategory':
@@ -263,7 +278,7 @@
                     entity.relationshipAttributes = {
                         anchor: {
                             typeName: 'AtlasGlossary',
-                            guid: getGlossaryByQF(localQualfiendName.value)
+                            guid: getGlossaryByQF(localQualifiedName.value)
                                 ?.guid,
                         },
                     }
@@ -340,6 +355,7 @@
                 categoryGuid,
                 glossaryName,
                 categoryName,
+                localEntityType,
             }
         },
     })

@@ -1,7 +1,7 @@
 import dagre from 'dagrejs'
-import { Edge, OutNode, DagreLayoutOptions } from './types.ts'
-import { isArray, isNumber, isObject, getEdgeTerminal } from './util/index.ts'
-import { Base } from './base.ts'
+import { Edge, OutNode, DagreLayoutOptions } from './types'
+import { isArray, isNumber, isObject, getEdgeTerminal } from './util/index'
+import { Base } from './base'
 
 export class DagreLayout extends Base {
     public rankdir: 'TB' | 'BT' | 'LR' | 'RL' = 'TB'
@@ -114,7 +114,7 @@ export class DagreLayout extends Base {
                 const size = nodeSizeFunc(node)
                 const verti = vertisep(node)
                 const hori = horisep(node)
-                const width = node.isProcess ? 60 : size[0] + 2 * hori
+                const width = node?.isProcess ? 60 : size[0] + 2 * hori
                 const height = size[1] + 2 * verti
                 const layer = node.layer
                 if (isNumber(layer)) {
@@ -177,7 +177,7 @@ export class DagreLayout extends Base {
             const i = nodes.findIndex((it) => it.id === node)
             if (!nodes[i]) return
             nodes[i].x = coord.x
-            if (nodes[i].isProcess) nodes[i].x = coord.x + 110
+            if (nodes[i]?.isProcess) nodes[i].x = coord.x + 110
             nodes[i].y = coord.y
             nodes[i]._order = coord._order
         })

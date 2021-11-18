@@ -1,4 +1,4 @@
-import { Node, Edge, Combo, Model, PointTuple } from './types.ts'
+import { Node, Edge, Combo, Model, PointTuple } from './types'
 
 export class Base {
     public nodes: Node[] | null = []

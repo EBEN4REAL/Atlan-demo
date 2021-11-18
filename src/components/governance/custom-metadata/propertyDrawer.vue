@@ -86,7 +86,7 @@
                                 form.options.isEnum === true) &&
                             !isEdit
                         "
-                        class="p-3 mb-4 border rounded"
+                        class="relative p-3 mb-4 border rounded"
                     >
                         <a-form-item
                             class="mb-3"
@@ -100,6 +100,7 @@
                                 placeholder="Select enum"
                                 :options="finalEnumsList"
                                 @change="updateEnumValues"
+                                @search="handleEnumSearch"
                             >
                                 <template #notFoundContent><p></p></template>
                                 <template #dropdownRender="{ menuNode: menu }">
@@ -108,12 +109,7 @@
 
                                     <p
                                         class="px-3 cursor-pointer text-primary"
-                                        @click="
-                                            () => {
-                                                form.options.enumType = null
-                                                newEnumMode = !newEnumMode
-                                            }
-                                        "
+                                        @click="handleClickCreateNewEnum"
                                     >
                                         <AtlanIcon
                                             class="inline h-4"
@@ -121,6 +117,9 @@
                                         />
 
                                         Create new enum
+                                        <span v-if="enumSearchValue"
+                                            >"{{ enumSearchValue }}"</span
+                                        >
                                     </p>
                                 </template>
                             </a-select>
@@ -144,8 +143,16 @@
                             <NewEnumForm
                                 v-if="newEnumMode"
                                 ref="newEnumFormRef"
+                                :enum-search-value="oldEnumSeardValue"
+                                @changed-loading="isCreatingEnum = $event"
                                 @success="handleEnumCreateSuccess"
                             />
+                        </div>
+                        <div
+                            v-if="isCreatingEnum"
+                            class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
+                        >
+                            <a-spin size="large" />
                         </div>
                     </div>
                     <!-- <pre>{{ finalEnumsList }}</pre> -->
@@ -358,10 +365,13 @@
             const loading = ref<boolean>(false)
             const isEdit = ref<boolean>(false)
             const newEnumMode = ref<boolean>(false)
+            const isCreatingEnum = ref<boolean>(false)
             const formRef = ref(null)
             const newEnumFormRef = ref(null)
             const propertyIndex = ref(null)
             const typeTreeSelect = ref(null)
+            const enumSearchValue = ref('')
+            const oldEnumSeardValue = ref('')
             const { metadata } = toRefs(props)
 
             const attributesTypes = reactive(
@@ -380,6 +390,7 @@
 
             // methods
             const open = (theProperty, makeEdit, index) => {
+                enumSearchValue.value = ''
                 // when open we send the property value and if is undefined, means we creating new prioperty
                 if (theProperty !== undefined) {
                     const applicableEntityTypes =
@@ -615,6 +626,32 @@
                 form.value.options.applicableEntityTypes = childrenExtracted
             }
 
+            const handleClickCreateNewEnum = () => {
+                if (!enumSearchValue.value) oldEnumSeardValue.value = ''
+                form.value.options.enumType = null
+                newEnumMode.value = true
+            }
+
+            const handleEnumSearch = (searchValue) => {
+                if (searchValue) {
+                    newEnumMode.value = false
+                }
+                const foundEnum = finalEnumsList.value.filter((theEnum) =>
+                    theEnum.value
+                        .toUpperCase()
+                        .includes(searchValue.toUpperCase())
+                )
+                if (foundEnum.length === 0) enumSearchValue.value = searchValue
+                else enumSearchValue.value = ''
+            }
+
+            // fix cause: enumSearchValue resets when select dropdown closes
+            watch(enumSearchValue, (newValue, oldValue) => {
+                if (newValue) {
+                    oldEnumSeardValue.value = newValue
+                } else oldEnumSeardValue.value = oldValue
+            })
+
             return {
                 visible,
                 form,
@@ -631,6 +668,9 @@
                 newEnumMode,
                 formRef,
                 newEnumFormRef,
+                isCreatingEnum,
+                enumSearchValue,
+                oldEnumSeardValue,
                 // methods
                 open,
                 initializeForm,
@@ -640,6 +680,8 @@
                 updateEnumValues,
                 handleEnumCreateSuccess,
                 handleApplicableEntityTypeChange,
+                handleEnumSearch,
+                handleClickCreateNewEnum,
             }
         },
         data() {

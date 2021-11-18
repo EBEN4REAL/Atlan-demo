@@ -130,9 +130,9 @@
                 <div class="flex">
                     <component
                         :is="dataTypeCategoryImage(selectedAsset)"
-                        class="h-4 text-gray-500"
+                        class="h-4 text-gray-500 mr-0.5 mb-0.5"
                     />
-                    <span class="ml-1 text-sm text-gray-700">{{
+                    <span class="text-sm tracking-wider text-gray-700">{{
                         dataType(selectedAsset)
                     }}</span>
                 </div>

@@ -12,13 +12,12 @@
         <div :class="enableHover ? ' group-hover:text-white' : ''">
             {{ username }}
         </div>
-        <div
-            :class="enableHover ? ' group-hover:text-white' : ''"
-            class="flex text-gray-500"
-            @click="handleDelete"
-            v-if="allowDelete"
-        >
-            <AtlanIcon icon="Cross" class="h-3 ml-2"></AtlanIcon>
+        <div class="flex" @click="handleDelete" v-if="allowDelete">
+            <AtlanIcon
+                icon="Cross"
+                class="h-3 ml-2 text-gray-500"
+                :class="enableHover ? ' group-hover:text-white' : ''"
+            ></AtlanIcon>
         </div>
     </div>
 </template>

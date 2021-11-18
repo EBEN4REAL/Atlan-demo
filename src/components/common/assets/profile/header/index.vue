@@ -50,7 +50,7 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-tight text-gray-500 uppercase "
+                            class="text-sm tracking-wider text-gray-500 uppercase "
                         >
                             {{ item.typeName }}
                         </div>
@@ -80,11 +80,12 @@
                         <div class="flex">
                             <component
                                 :is="dataTypeCategoryImage(item)"
-                                class="h-4 text-gray-500"
+                                class="h-4 text-gray-500 mr-0.5 mb-0.5"
                             />
-                            <span class="ml-1 text-sm text-gray-500">{{
-                                dataType(item)
-                            }}</span>
+                            <span
+                                class="text-sm tracking-wider text-gray-500"
+                                >{{ dataType(item) }}</span
+                            >
                         </div>
                         <div
                             class="flex"

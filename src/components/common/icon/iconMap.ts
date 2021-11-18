@@ -234,6 +234,7 @@ import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import NoWf from '~/assets/images/icons/no-wf.svg'
 
 // source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
@@ -479,7 +480,5 @@ export default {
     SMTP,
     APIKey,
     Camera,
-    CustomSaml,
-    Schema2Active,
-    QueriesActive
+    CustomSaml
 }

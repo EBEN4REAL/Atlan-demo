@@ -19,7 +19,7 @@
                 </div>
                 <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton
-                        v-if="loginWithEmail || true"
+                        v-if="loginWithEmail"
                         type="primary"
                         class="rounded-md"
                         @click="handleInviteUsers"
@@ -105,6 +105,7 @@
         >
             <InviteUsers
                 @close="closeInviteUserModal"
+                :tenantName="tenantName"
                 @handleInviteSent="handleInviteSent"
             />
         </a-modal>
@@ -144,7 +145,7 @@
         },
 
         setup() {
-            const { loginWithEmailAllowed } = useTenantData()
+            const { loginWithEmailAllowed, name: tenantName } = useTenantData()
 
             const loginWithEmail = ref(loginWithEmailAllowed)
 
@@ -406,6 +407,7 @@
             }
 
             return {
+                tenantName,
                 map,
                 resendInvite,
                 showRevokeInvitePopover,

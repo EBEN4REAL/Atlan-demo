@@ -9,9 +9,12 @@
                 >
                     <AtlanIcon
                         v-if="tab?.icon"
-                        :icon="tab.icon"
+                        :icon="
+                            activeTabId === tab.id
+                                ? `${tab.icon}Active`
+                                : `${tab.icon}`
+                        "
                         class="w-6 h-6"
-                        :class="activeTabId === tab.id ? 'text-primary' : ''"
                     />
                     <!-- <p
                         class="mt-1 mb-0 text-xs text-gray"

@@ -12,14 +12,19 @@ const GetTypedefs = (
 ) => useAPI(map.GET_TYPEDEFS, 'GET', { params }, options || {})
 
 const CreateTypedefs = (
-  body: Record<string, any>,
+  body: Ref<Record<string, any>> | Record<string, any>,
   options?: useOptions
 ) => useAPI<TypedefsInterface>(map.CREATE_TYPEDEFS, 'POST', { body }, options || {})
 
 const EditTypedefs = (
-  body: Record<string, any>,
+  body: Ref<Record<string, any>> | Record<string, any>,
   options?: useOptions
-) => useAPI<TypedefsInterface>(map.CREATE_TYPEDEFS, 'PUT', { body }, options || {})
+) => useAPI<TypedefsInterface>(map.EDIT_TYPEDEFS, 'PUT', { body }, options || {})
+
+const DeleteTypedefs = (
+  name: string,
+  options?: useOptions
+) => useAPI<TypedefsInterface>(map.DELETE_TYPEDEF, 'DELETE', { pathVariables: { name } }, options || {})
 
 const updateCustomMetadata = (
   body: Record<string, any>,
@@ -32,5 +37,6 @@ export const Types = {
   GetTypedefs,
   CreateTypedefs,
   EditTypedefs,
+  DeleteTypedefs,
   updateCustomMetadata
 }

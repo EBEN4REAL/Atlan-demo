@@ -30,13 +30,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, PropType } from 'vue'
+    import { defineComponent, computed, ref, PropType, toRefs, watch } from 'vue'
+    import { message, Modal } from 'ant-design-vue'
+    import { whenever } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
 
     // import { useUserPreview } from '~/composables/user/showUserPreview'
     import Dropdown from '@/UI/dropdown.vue'
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
 
+    import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
+
+    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         name: 'ClassificationHeader',
@@ -53,10 +59,13 @@
         setup(props) {
             const isDeleteClassificationModalOpen = ref(false)
             const isEditClassificationModalOpen = ref(false)
+            const typedefStore = useTypedefStore()
 
-            const selectedClassification = computed(
-                (): ClassificationInterface => props.classification
-            )
+            const { classification: selectedClassification} = toRefs(props)
+            const { error:deleteError, isLoading:deleteLoading, mutate: mutateDelete, isReady:isDeleteReady }  = useDeleteTypedefs(selectedClassification.value.name)
+
+            const router = useRouter()
+            
             const displayName = computed(
                 () => selectedClassification.value.displayName
             )
@@ -77,7 +86,16 @@
                 return options
             })
             const deleteClassification = () => {
-                isDeleteClassificationModalOpen.value = true
+                Modal.confirm({
+                    title: 'Delete Classification',
+                    content: 'Are you sure to delete this Classification?',
+                    okType: 'danger',
+                    okText: 'Yes',
+                    cancelText: 'No',
+                    async onOk() {
+                        mutateDelete()
+                    },
+                })
             }
             const editClassification = () => {
                 isEditClassificationModalOpen.value = true
@@ -88,6 +106,26 @@
             const closeDeleteClassificationModal = () => {
                 isDeleteClassificationModalOpen.value = false
             }
+
+            whenever(isDeleteReady, () => {
+                console.log(deleteError.value, 'bruh')
+                if(typedefStore.classificationList.length) {
+                    const name = typedefStore.classificationList[0].name;
+                    router.push(`/governance/classifications/${name}`)
+                } else {
+                    router.push('/governance/classifications')
+                }
+            })
+
+            watch(deleteError, (newError) => {
+                if(newError) {
+                    if(newError.response.data.errorCode === "ATLAS-409-00-002") {
+                        message.error(`Classification ${selectedClassification.value.displayName} has references!`)
+                    } else {
+                        message.error(newError.response.data.errorMessage)
+                    }
+                }
+            })
             // user preview drawer
             // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
             // const handleClickUser = (username: string) => {
@@ -103,8 +141,6 @@
                 deleteClassification,
                 selectedClassification,
                 displayName,
- 
-                // handleClickUser,
             }
         },
     })

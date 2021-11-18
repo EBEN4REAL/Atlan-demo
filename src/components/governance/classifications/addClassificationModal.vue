@@ -91,8 +91,8 @@
             const description =  ref(selectedClassification.value?.description ?? '');
 
             const body = ref<Record<string, any>>({})
-            const { data:createData, error:createError, isLoading:createLoading, mutate:mutateCreate, isReady:isCreateReady }  = useCreateTypedefs(body)
-            const { data:editData, error:editError, isLoading:editLoading, mutate:mutateEdit, isReady:isUpdateReady }  = useEditTypedefs(body)
+            const { isLoading:createLoading, mutate:mutateCreate, isReady:isCreateReady }  = useCreateTypedefs(body)
+            const { isLoading:editLoading, mutate:mutateEdit, isReady:isUpdateReady }  = useEditTypedefs(body)
 
             const closeModal = () => {
                 modalVisible.value = false
@@ -148,21 +148,13 @@
             })
             
             whenever(isCreateReady, () => {
-                if(createError.value) {
-                    message.error(createError.value.errorMessage)
-                } else {
-                    message.success(`${name.value} Created!`)
-                    closeModal()
-                }
+                message.success(`${name.value} Created!`)
+                closeModal()
             })
 
             whenever(isUpdateReady, () => {
-                if(editError.value) {
-                    message.error(editError.value.errorMessage)
-                } else {
-                    message.success(`${name.value} Updated!`)
-                    closeModal()
-                }
+                message.success(`${name.value} Updated!`)
+                closeModal()
             })
 
             return {
@@ -175,7 +167,7 @@
                 createLoading,
                 editClassification,
                 editLoading,
-                handleOk
+                handleOk,
             }
         },
     })

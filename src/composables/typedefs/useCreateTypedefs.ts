@@ -1,11 +1,12 @@
-import { watch, ref } from 'vue'
+import { watch, ref, Ref } from 'vue'
+import { message } from 'ant-design-vue'
 
 import { useTypedefStore } from '~/store/typedef'
 import { useOptions } from '~/services/api/common'
 
 import { Types } from '~/services/meta/types'
 
-export default function useCreateTypedefs(body: Record<string, any>) {
+export default function useCreateTypedefs(body: Ref<Record<string, any>>) {
     const options: useOptions = {}
     options.asyncOptions = ref({
         immediate: false,
@@ -27,6 +28,12 @@ export default function useCreateTypedefs(body: Record<string, any>) {
         }
         if(data.value?.businessMetadataDefs?.length) {
             typedefStore.appendCustomMetadata(data.value?.businessMetadataDefs)
+        }
+    })
+
+    watch(error, (newError) => {
+        if(newError) {
+            message.error(newError.response.data.errorMessage)
         }
     })
     return {

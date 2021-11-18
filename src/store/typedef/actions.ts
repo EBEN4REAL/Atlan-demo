@@ -13,6 +13,7 @@ export interface Actions extends State {
   setIsLoading(value: boolean): void
   setError(value: object | null): void
   updateSingleClassification(value: ClassificationInterface): void
+  removeClassificationByName(name: string): void
 }
 
 export const actions: Actions = {
@@ -30,6 +31,9 @@ export const actions: Actions = {
       }
       return classification
     })
+  },
+  removeClassificationByName(name: string) {
+    this.classificationList = this.classificationList.filter((classification) => classification.name !== name)
   },
   // enum list
   appendEnumList(value) {

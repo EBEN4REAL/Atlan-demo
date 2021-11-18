@@ -76,18 +76,19 @@
                 </div>
             </template>
         </VirtualList>
-
-        <EmptyView
-            v-if="list.length === 0 && !isLoading"
-            :desc="
-                !error
-                    ? 'There are no runs for this workflow. '
-                    : 'Sorry, we couldn’t find the workflow you were looking for.'
-            "
-            empty-screen="NoWf"
-            desc-class="w-56 text-center"
-            button-icon="ArrowRight"
-        />
+        <div class="no-wf">
+          <EmptyView
+              v-if="list.length === 0 && !isLoading"
+              :desc="
+                  !error
+                      ? 'There are no runs for this workflow. '
+                      : 'Sorry, we couldn’t find the workflow you were looking for.'
+              "
+              empty-screen="NoWf"
+              desc-class="w-56 text-center"
+              button-icon="ArrowRight"
+          />
+        </div>
     </div>
 </template>
 
@@ -259,6 +260,13 @@
     })
 </script>
 
+<style lang="less">
+  .no-wf{
+    // svg {
+    //   height: auto!important;
+    // }
+  }
+</style>
 <style lang="less" scoped>
     .ant-timeline-item {
         margin-bottom: 0 !important;

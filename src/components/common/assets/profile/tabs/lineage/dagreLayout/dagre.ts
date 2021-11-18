@@ -1,7 +1,7 @@
 import dagre from 'dagrejs'
-import { Edge, OutNode, DagreLayoutOptions } from './types.ts'
-import { isArray, isNumber, isObject, getEdgeTerminal } from './util/index.ts'
-import { Base } from './base.ts'
+import { Edge, OutNode, DagreLayoutOptions } from './types'
+import { isArray, isNumber, isObject, getEdgeTerminal } from './util/index'
+import { Base } from './base'
 
 export class DagreLayout extends Base {
     public rankdir: 'TB' | 'BT' | 'LR' | 'RL' = 'TB'

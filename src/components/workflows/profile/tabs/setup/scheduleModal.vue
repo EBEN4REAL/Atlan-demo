@@ -305,10 +305,9 @@
 
     /** COMPONENTS */
     import EmptyView from '@common/empty/index.vue'
-    import timezone from "dayjs/plugin/timezone"
+    import timezoneDayJs from "dayjs/plugin/timezone"
     import utc from 'dayjs/plugin/utc'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-
     /** ASSETS */
 
     /** COMPOSABLES */
@@ -322,6 +321,9 @@
     import { timezones, formRules, frequencyOptions } from './scheduleUtils.js'
 
     import access from '~/constant/accessControl/map'
+
+    dayjs.extend(utc)
+    dayjs.extend(timezoneDayJs)
 
     /** TYPE DEF */
     interface FormState {
@@ -452,11 +454,12 @@
             const go = (m, s = '') => {
                 mode.value = m
                 if (['add', 'list'].includes(m)) {
+                    const timeZoneUser = dayjs.tz.guess() 
                     suspend.value = false
                     formState.scheduleName = ''
                     formState.time = '23:00'
                     frequency.value = 'daily'
-                    timezone.value = 'Africa/Lagos'
+                    timezone.value = timeZoneUser
                     selectedSchedule.value = ''
                     selectDays()
                 } else if (m === 'update') selectedSchedule.value = s
@@ -599,13 +602,6 @@
             watch(mode, (x) => {
                 if (x === 'list') selectedSchedule.value = ''
             })
-            const handleGetGmt = () => {
-              // dayjs.extend(utc)
-              // dayjs.extend(timezone)
-              console.log(new Date().getTimezoneOffset() / 60, 'skdjshkdjhsjkdh', new Date().toLocaleString())
-              // console.log(dayjs.tz.guess())
-            }
-            handleGetGmt()
 
             return {
                 access,

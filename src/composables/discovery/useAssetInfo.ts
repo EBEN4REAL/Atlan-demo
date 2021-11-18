@@ -182,7 +182,7 @@ export default function useAssetInfo() {
         ) {
             let tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
-        } else if(assetType(asset) === 'Query') {
+        } else if (assetType(asset) === 'Query') {
             // console.log('assetType: ', asset.guid)
             queryPath = `/insights?id=${asset.guid}`
         } else {
@@ -272,7 +272,7 @@ export default function useAssetInfo() {
     const columnCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset).columnCount)
+            : getCountString(attributes(asset)?.columnCount)
 
     const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -478,8 +478,8 @@ export default function useAssetInfo() {
 
     const isBiAsset = (asset: assetInterface) => {
         return (
-            assetType(asset).includes('Tableau') ||
-            assetType(asset).includes('BI')
+            assetType(asset)?.includes('Tableau') ||
+            assetType(asset)?.includes('BI')
         )
     }
 

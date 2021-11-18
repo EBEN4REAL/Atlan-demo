@@ -82,12 +82,12 @@
 
             const handleClickUser = (username: string) => {
                 setUserUniqueAttribute(username, 'username')
-                showUserPreview({ allowed: ['about'] })
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
 
             const handleClickGroup = (groupAlias: string) => {
                 setGroupUniqueAttribute(groupAlias, 'groupAlias')
-                showGroupPreview({ allowed: ['about'] })
+                showGroupPreview({ allowed: ['about', 'assets', 'members'] })
             }
             return {
                 handleClickUser,

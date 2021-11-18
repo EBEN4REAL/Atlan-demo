@@ -20,19 +20,19 @@
                     :id="`prop-${property.name}`"
                     :key="index"
                     :data-property="property"
-                    class="relative flex items-center justify-between last:rounded-b"
+                    class="relative flex items-center justify-between  last:rounded-b"
                     style="height: 44px"
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
-                    <div class="flex">
-                        <div style="width: 44px">
-                            <AtlanIcon class="h-4 mx-auto" icon="MoveItem" />
+                    <div class="flex items-center">
+                        <div style="width: 44px" class="text-center">
+                            <AtlanIcon class="h-4 inlline" icon="MoveItem" />
                         </div>
                         <!-- <div style="width: 44px">
                             {{ index + 1 }}
                         </div> -->
                         <div
-                            class="cursor-pointer text-primary"
+                            class="leading-none cursor-pointer  text-primary align-center"
                             style="width: 248px"
                             @click="
                                 $emit('openEditDrawer', { property, index })
@@ -42,6 +42,9 @@
                         </div>
                         <div class="capitalize" style="width: 248px">
                             <AtlanIcon
+                                v-if="
+                                    mapTypeToIcon(property.typeName, property)
+                                "
                                 class="inline h-4 mr-2"
                                 :icon="
                                     mapTypeToIcon(property.typeName, property)
@@ -54,10 +57,47 @@
                     <div style="width: 130px">
                         <a-button
                             class="px-1 py-0 border-0"
-                            @click="copyAPI(property.displayName)"
+                            @click="
+                                copyAPI(property.displayName, 'Name Copied!')
+                            "
                         >
                             <AtlanIcon icon="CopyOutlined" />
                         </a-button>
+                        <a-dropdown :trigger="['click']">
+                            <a-button class="border-0 rounded" size="small">
+                                <AtlanIcon icon="KebabMenu"></AtlanIcon>
+                            </a-button>
+                            <template #overlay>
+                                <a-menu
+                                    ><a-menu-item
+                                        @click="
+                                            copyAPI(
+                                                property.displayName,
+                                                'Name Copied!'
+                                            )
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="CopyOutlined"
+                                            class="mr-2"
+                                        />Copy Name</a-menu-item
+                                    >
+                                    <a-menu-item
+                                        @click="
+                                            copyAPI(
+                                                property.name,
+                                                'GUID Copied!'
+                                            )
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="CopyOutlined"
+                                            class="mr-2"
+                                        />Copy GUID</a-menu-item
+                                    >
+                                </a-menu></template
+                            >
+                        </a-dropdown>
                         <!-- <a-button
                             class="px-1 py-0 border-0"
                             @click="handleRemoveProperty(index, property)"
@@ -68,7 +108,7 @@
                 </div>
                 <div
                     v-if="isSorting"
-                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
+                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
                 >
                     <a-spin size="large" />
                 </div>
@@ -118,10 +158,10 @@
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
 
-            const copyAPI = (text: string) => {
+            const copyAPI = (text: string, theMessage: String) => {
                 copyToClipboard(text)
                 message.success({
-                    content: 'Name copied!',
+                    content: theMessage,
                 })
             }
 

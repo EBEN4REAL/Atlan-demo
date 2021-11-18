@@ -173,9 +173,15 @@
             const deleteSSO = async () => {
                 try {
                     isDeleting.value = true
-                    await Identity.deleteIDP(alias.value as string)
-                    if (defaultSSO.value)
-                        await Identity.deleteDefaultIDP(alias.value as string)
+                    const { mutate: deleteIDP } = Identity.deleteIDP(
+                        alias.value as string
+                    )
+                    await deleteIDP()
+                    if (defaultSSO.value) {
+                        const { mutate: deleteDefaultIDP } =
+                            Identity.deleteDefaultIDP(alias.value as string)
+                        await deleteDefaultIDP()
+                    }
                     message.success({
                         content: 'Provider removed.',
                     })

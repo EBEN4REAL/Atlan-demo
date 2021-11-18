@@ -1,12 +1,21 @@
-import { useAPI } from "./useAPI";
+import { useAPI } from './useAPI'
 import { getAPIPath } from './common'
 
-const genericAPI = async (path, method, reqOptions) => {
+const genericAPI = async (path, method, reqOptions, reqConfig = {}) => {
     const { data: response, mutate } = useAPI(
         () => getAPIPath('', path),
         method,
         reqOptions,
-        { asyncOptions: { immediate: false, onError: e => { throw e } } })
+        {
+            options: reqConfig,
+            asyncOptions: {
+                immediate: false,
+                onError: (e) => {
+                    throw e
+                },
+            },
+        }
+    )
     await mutate()
     return response.value
 }

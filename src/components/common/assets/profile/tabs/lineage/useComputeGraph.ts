@@ -1,6 +1,8 @@
 import { ref } from 'vue'
 import { getNodeSourceImage, getNodeTypeText } from './util.js'
 import useUpdateGraph from './useUpdateGraph'
+import { useAPIPromise } from '~/services/api/useAPIPromise'
+import { map as entityMap } from '~/services/meta/entity/key'
 
 const { updateEdgesStroke } = useUpdateGraph()
 
@@ -11,16 +13,19 @@ const getSource = (entity) => {
     return item[0]
 }
 
-export default function useComputeGraph(
+
+export default async function useComputeGraph(
     graph,
     graphLayout,
     lineageData,
     showProcess,
     searchItems,
+    currZoom,
     reload
 ) {
     const edges = ref([])
     const nodes = ref([])
+    searchItems.value = []
 
     if (reload) {
         nodes.value = []
@@ -28,17 +33,38 @@ export default function useComputeGraph(
     }
 
     const model = ref(null)
-    const { baseEntityGuid, relations } = lineageData.value
-    const guidEntityMap = Object.values(lineageData.value.guidEntityMap)
+    const { relations, baseEntityGuid } = lineageData.value
+    let baseEntity = null
+
+    if (!relations.length) {
+        const { entity } = await useAPIPromise(
+            entityMap.GET_ENTITY({ guid: baseEntityGuid }),
+            'GET',
+            {}
+        )
+        baseEntity = entity
+    }
+
+    const guidEntityMap = !relations.length
+        ? [baseEntity]
+        : Object.values(lineageData.value.guidEntityMap)
 
     /* Nodes ( Sources and Targets ) */
     guidEntityMap.forEach((entity) => {
-        const { guid, displayText } = entity
+        const { guid, attributes } = entity
+        let { displayText } = entity
         const source = getSource(entity)
         const type = getType(entity)
         const isBase = guid === baseEntityGuid
         const isProcess = type === 'Process'
         const img = getNodeSourceImage[source]
+
+        if (!displayText) displayText = attributes.name
+
+        let displayTextTrunc
+        if (displayText.length > 25)
+            displayTextTrunc = `${displayText.slice(0, 25)}...`
+        else displayTextTrunc = displayText
 
         if (isProcess && !showProcess.value) return
 
@@ -51,11 +77,9 @@ export default function useComputeGraph(
             source,
             isBase,
             entity,
-
-            x: 40,
-            y: 40,
-            width: isProcess ? 32 : 220,
-            height: 32,
+            isProcess,
+            width: isProcess ? 60 : 270,
+            height: 60,
             shape: 'html',
             data: {
                 id: guid,
@@ -65,36 +89,34 @@ export default function useComputeGraph(
                     const data = node.getData() as any
 
                     return !isProcess
-                        ? `<div class="lineage-node ${
-                              data?.isHighlightedNode === data?.id
-                                  ? 'isHighlightedNode'
-                                  : ''
-                          }
-                          ${
-                              data?.isHighlightedNodePath === data?.id
-                                  ? 'isHighlightedNodePath'
-                                  : ''
-                          }">
-                                    <span class="node-type">
-                                        <span class="node-type__item">${type}</span>
-                                    </span>
-                                    <span class=" ${
-                                        isBase ? 'node-isbase' : 'hidden'
-                                    }">
-                                        <span class="node-isbase__item">BASE</span>
-                                    </span>
+                        ? `<div class="lineage-node ${data?.isHighlightedNode === data?.id
+                            ? 'isHighlightedNode'
+                            : ''
+                        }
+                          ${data?.isHighlightedNodePath === data?.id
+                            ? 'isHighlightedNodePath'
+                            : ''
+                        }
+                          ${isBase ? 'isBase' : ''}
+                          ">
                                     <img class="node-source" src="${img}" />
-                                    <span class="node-text">${displayText}</span>
+                                    <div>
+                                        <div class="node-text">${displayTextTrunc}</div>
+                                        <div class="node-text type">${type}</div>
+                                    </div>
                                 </div>`
-                        : `<div class="lineage-process ${
-                              data?.isHighlightedNode === data?.id
-                                  ? 'isHighlightedNode'
-                                  : ''
-                          } ${
-                              data?.isHighlightedNodePath === data?.id
-                                  ? 'isHighlightedNodePath'
-                                  : ''
-                          }"> P </div>`
+                        : `<div class="lineage-process ${data?.isHighlightedNode === data?.id
+                            ? 'isHighlightedNode'
+                            : ''
+                        } ${data?.isHighlightedNodePath === data?.id
+                            ? 'isHighlightedNodePath'
+                            : ''
+                        }"> <svg width="20" height="20" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 3.4375L0.625 5L2.5 6.5625" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M7.5 3.4375L9.375 5L7.5 6.5625" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M6.25 1.5625L3.75 8.4375" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>`
                 },
                 shouldComponentUpdate(node: Cell) {
                     return node.hasChanged('data')
@@ -143,7 +165,7 @@ export default function useComputeGraph(
             attrs: {
                 line: {
                     stroke,
-                    strokeWidth: 2,
+                    strokeWidth: 1.7,
                     targetMarker: {
                         name: 'block',
                         stroke,
@@ -155,9 +177,6 @@ export default function useComputeGraph(
         }
         edges.value.push(edge)
     })
-
-    console.log('edges:', edges.value)
-    console.log('nodes:', nodes.value)
 
     /* Render */
     model.value = graphLayout.value.layout({
@@ -177,15 +196,10 @@ export default function useComputeGraph(
         true
     )
 
-    if (!reload) {
-        /* Center Base */
-        const cell = graph.value.getCellById(baseEntityGuid)
-        if (cell) graph.value.centerCell(cell)
-        graph.value.centerPoint(null, 600, { padding: { right: 400 } })
-    }
-
     /* Zoom */
-    graph.value.zoom(-0.4)
+    graph.value.zoomToFit({ padding: 12 })
+    graph.value.scale(0.7)
+    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
     return { model, edges, nodes, baseEntityGuid }
 }

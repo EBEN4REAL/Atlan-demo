@@ -10,6 +10,7 @@
             <a-form-item label="Enum name" name="name">
                 <a-input
                     id="name-input"
+                    ref="nameRef"
                     v-model:value="form.name"
                     placeholder="Name the label"
                 ></a-input>
@@ -17,6 +18,7 @@
 
             <a-form-item label="Values" name="elementDefs">
                 <a-select
+                    ref="valuesRef"
                     mode="tags"
                     placeholder="Enter enum values"
                     :value="form.elementDefs"
@@ -24,32 +26,49 @@
                     @change="form.elementDefs = $event"
                 />
             </a-form-item>
-            <div
-                v-if="isLoading"
-                class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
-            >
-                <a-spin size="large" />
-            </div>
         </a-form>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, DefineComponent, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        DefineComponent,
+        computed,
+        toRefs,
+        onMounted,
+    } from 'vue'
     import { message } from 'ant-design-vue'
 
     import { useAddEnums } from '@/governance/enums/composables/useModifyEnums'
 
     export default defineComponent({
-        emits: ['success'],
-        setup(props, context) {
+        props: { enumSearchValue: { type: String, default: '' } },
+        emits: ['success', 'changedLoading'],
+        setup(props, { emit }) {
             const enumDetailsComponent = ref<DefineComponent>()
             const formRef = ref(null)
-            const form = ref({
+            const nameRef = ref(null)
+            const valuesRef = ref(null)
+            const initializeForm = () => ({
                 elementDefs: [],
                 category: 'ENUM',
                 description: null,
                 name: null,
+            })
+            const form = ref(initializeForm())
+            // set form name if enumSearchValue
+            const { enumSearchValue } = toRefs(props)
+
+            onMounted(() => {
+                if (enumSearchValue.value) {
+                    form.value.name = enumSearchValue.value
+                    valuesRef.value.focus()
+                } else {
+                    nameRef.value.focus()
+                }
             })
 
             const { newEnum, addEnum, reset } = useAddEnums()
@@ -68,11 +87,15 @@
 
             const isLoading = computed(() => !isReady.value)
 
+            watch(isLoading, (n) => {
+                emit('changedLoading', n)
+            })
+
             // FIXME: May be simplified
             watch([updateError, isReady], () => {
                 if (isReady && state.value.enumDefs.length) {
                     message.success('Enumeration added.')
-                    context.emit('success', state.value.enumDefs[0])
+                    emit('success', state.value.enumDefs[0])
                 }
                 if (updateError.value) {
                     message.error('Failed to add your enum.')
@@ -109,6 +132,8 @@
                 isLoading,
                 rules,
                 formRef,
+                nameRef,
+                valuesRef,
             }
         },
     })

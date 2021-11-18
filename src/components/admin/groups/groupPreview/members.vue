@@ -1,26 +1,27 @@
 <template>
     <div class="my-3">
-        <div v-if="showGroupMembers">
-            <div class="flex flex-row justify-between gap-x-1">
-                <div>
-                    <a-input-search
-                        v-model:value="searchText"
-                        placeholder="Search Members"
-                        :allow-clear="true"
-                        class="mr-2"
-                        @change="handleSearch"
-                    ></a-input-search>
-                </div>
-                <div v-auth="map.ADD_USER_GROUP">
-                    <a-button type="primary" ghost @click="handleAddMember"
-                        ><AtlanIcon icon="Add" class="inline-block mr-2" />Add
-                        Member
-                    </a-button>
-                </div>
+        <template v-if="showGroupMembers">
+            <div
+                v-auth="map.ADD_USER_GROUP"
+                class="flex items-center justify-between mb-3"
+            >
+                <div class="text-lg font-bold">Members</div>
+                <a-button type="primary" ghost @click="handleAddMember">
+                    <AtlanIcon icon="Add" class="inline-block mr-2" />Add Member
+                </a-button>
+            </div>
+            <div class="flex flex-row items-center justify-between gap-x-1">
+                <SearchAndFilter
+                    v-model:value="searchText"
+                    placeholder="Search Members"
+                    class="mr-2"
+                    size="minimal"
+                    @change="handleSearch"
+                />
             </div>
             <div
                 v-if="!selectedGroup.memberCount"
-                class="flex flex-col items-center justify-center"
+                class="flex flex-col items-center justify-center  member-list-height"
             >
                 <div class="mt-6 text-center">
                     <p class="text-lg">No members are present in the group.</p>
@@ -53,44 +54,23 @@
             <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
                 {{ `No member with name ${searchText} found.` }}
             </div>
-            <div v-else class="mt-4 overflow-y-auto member-list-height">
+            <div
+                v-else-if="memberList?.length"
+                class="mt-4 overflow-y-auto member-list-height"
+            >
                 <div
                     v-for="user in memberList"
                     :key="user.id"
-                    class="py-2 border-b border-gray-100"
+                    class="relative py-2 border-b border-gray-100 group"
                 >
-                    <div class="flex justify-between cursor-pointer">
-                        <div
-                            class="flex items-center"
-                            @click="() => handleClickUser(user.username)"
-                        >
-                            <a-avatar
-                                shape="circle"
-                                class="mr-1 ant-tag-blue text-gray avatars"
-                                :size="40"
-                            >
-                                {{
-                                    getNameInitials(
-                                        getNameInTitleCase(
-                                            `${getUserName(user)}`
-                                        )
-                                    )
-                                }}
-                            </a-avatar>
-                            <div class="ml-2">
-                                <div class="text-gray">
-                                    <span class="mr-2 font-bold">{{
-                                        getUserName(user)
-                                    }}</span>
-                                    <!-- <span class="font-normal"
-                    >({{ pluralizeString("group", user.group_count) }})</span
-                  > -->
-                                </div>
-                                <div class="text-gray">
-                                    @{{ user.username }}
-                                </div>
-                            </div>
-                        </div>
+                    <UserCard
+                        :user="{ user, name: getUserName(user) }"
+                        :minimal="true"
+                    />
+
+                    <div
+                        class="absolute right-0 flex justify-between cursor-pointer  top-3"
+                    >
                         <div class="font-bold">
                             <div
                                 v-if="removeMemberLoading[user.id]"
@@ -106,7 +86,7 @@
                             <div
                                 v-else
                                 v-auth="map.REMOVE_USER_GROUP"
-                                class="cursor-pointer text-error"
+                                class="hidden text-sm font-normal cursor-pointer  text-error group-hover:block"
                                 @click="() => removeUserFromGroup(user.id)"
                             >
                                 Remove
@@ -128,16 +108,20 @@
                     <a-button @click="handleLoadMore">load more</a-button>
                 </div>
             </div>
-        </div>
-        <div v-else-if="!showGroupMembers">
+        </template>
+        <template v-else-if="!showGroupMembers">
+            <div class="mb-3 text-lg font-bold">Members</div>
+
             <UserList
+                :userListStyle="'max-height: calc(100vh - 17rem);'"
                 :add-member-loading="addMemberLoading"
                 :show-header-buttons="true"
+                :minimal="true"
                 @updateSelectedUsers="updateSelectedUsers"
                 @showGroupMembers="handleShowGroupMembers"
                 @addMembersToGroup="addMembersToGroup"
             />
-        </div>
+        </template>
     </div>
 </template>
 
@@ -156,15 +140,17 @@
         getNameInTitleCase,
     } from '~/utils/string'
     import { getIsLoadMore } from '~/utils/isLoadMore'
-    import AddGroupMembers from '~/components/admin/groups/groupPreview/about/members/addGroupMembers.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import map from '~/constant/accessControl/map'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import UserCard from '@/admin/groups/common/userCard.vue'
 
     export default defineComponent({
         name: 'GroupMembers',
         components: {
+            SearchAndFilter,
+            UserCard,
             ErrorView,
-            AddGroupMembers,
             UserList,
         },
         props: {
@@ -325,7 +311,12 @@
             const updateSelectedUsers = (userList) => {
                 selectedUserIds.value = [...userList]
             }
+
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
+
             return {
+                imageUrl,
                 map,
                 searchText,
                 showLoadMore,
@@ -359,6 +350,6 @@
 
 <style lang="less" scoped>
     .member-list-height {
-        max-height: 68vh;
+        height: 68vh;
     }
 </style>

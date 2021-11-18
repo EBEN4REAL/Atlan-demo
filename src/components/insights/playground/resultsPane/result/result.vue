@@ -3,23 +3,10 @@
         <div class="flex flex-col h-full rounded">
             <Loading v-if="isQueryRunning === 'loading'" />
 
-            <!-- <LoadingView v-if="isQueryRunning === 'loading'" size="small" class="w-1 h-1 mr-4" /> -->
-            <!-- <AtlanTable
-                :columnsData="activeInlineTab.playground.editor.columnList"
-                rowClassNames=""
-                v-else-if="
-                    activeInlineTab.playground.editor.columnList.length > 0 &&
-                    isQueryRunning === 'success'
-                        ? true
-                        : false
-                "
-                :dataList="activeInlineTab.playground.editor.dataList"
-                :showLoading="false"
-            /> -->
-
             <AtlanTable
                 v-if="
                     activeInlineTab.playground.editor.columnList.length > 0 &&
+                    activeInlineTab.playground.editor.dataList.length > 0 &&
                     isQueryRunning === 'success'
                         ? true
                         : false
@@ -30,27 +17,57 @@
                     <thead>
                         <tr>
                             <th
-                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                                style="z-index: 4"
+                                class="truncate bg-gray-100 border  border-gray-light"
                             >
                                 #
-                                <span class="resize-handle"></span>
+                                <!-- <span class="resize-handle"></span> -->
                             </th>
 
                             <th
                                 v-for="(col, index) in activeInlineTab
                                     .playground.editor.columnList"
                                 :key="index"
-                                class="px-4 py-2 text-sm font-normal text-gray-700 truncate bg-gray-100 border  border-gray-light"
-                                style="z-index: 3"
+                                class="truncate bg-gray-100 border  border-gray-light"
                             >
-                                {{ col.title }}
-                                <span class="resize-handle"></span>
+                                <div class="flex items-center">
+                                    <a-tooltip>
+                                        <template #title>{{
+                                            col.type
+                                        }}</template>
+                                        <component
+                                            :is="images[getDataType(col.type)]"
+                                            class="
+                                                w-4
+                                                h-4
+                                                mr-1.5
+                                                cursor-pointer
+                                                -mt-0.5
+                                            "
+                                        ></component>
+                                    </a-tooltip>
+                                    <!-- {{ col.type }} -->
+                                    <Tooltip :tooltip-text="`${col.title}`" />
+                                </div>
+                                <!-- <span class="resize-handle"></span> -->
                             </th>
                         </tr>
                     </thead>
                 </template>
             </AtlanTable>
+
+            <div
+                v-else-if="
+                    (activeInlineTab.playground.editor.columnList.length ===
+                        0 ||
+                        activeInlineTab.playground.editor.dataList.length ===
+                            0) &&
+                    isQueryRunning === 'success'
+                "
+                class="flex flex-col items-center justify-center w-full h-full"
+            >
+                <img :src="ResultsImg" class="text-white" :draggable="false" />
+                <p class="mt-4 mb-0 text-base text-gray-700">No Rows/Columns</p>
+            </div>
 
             <!-- --------------- -->
 
@@ -149,6 +166,7 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import AtlanTable from '~/components/UI/table.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import { images, dataTypeCategoryList } from '~/constant/dataType'
 
     export default defineComponent({
         components: {
@@ -219,6 +237,13 @@
                 )
                 // isQueryAborted.value = true
             }
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeCategoryList.forEach((i) => {
+                    if (i.type.includes(type.toUpperCase())) label = i.label
+                })
+                return label
+            }
 
             return {
                 errorDecorations,
@@ -233,6 +258,8 @@
 
                 abortRunningQuery,
                 isQueryAborted,
+                getDataType,
+                images,
                 // printData
             }
         },

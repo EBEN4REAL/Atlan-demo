@@ -25,4 +25,5 @@ export const actions: Actions = {
     setSMTPConfig(payload) {
         this.smtpServer = payload
     },
+
 }

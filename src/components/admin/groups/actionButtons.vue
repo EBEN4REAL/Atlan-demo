@@ -4,15 +4,26 @@
             <template #title>
                 <span>Add users</span>
             </template>
-            <a-button
+            <div
                 v-auth="map.ADD_USER_GROUP"
                 size="small"
                 type="secondary"
-                class="mr-3.5 rounded"
+                class="
+                    flex
+                    mr-3.5
+                    items-center
+                    justify-center
+                    w-8
+                    h-8
+                    border
+                    rounded
+                    shadow
+                    cursor-pointer
+                "
                 @click="$emit('addMembers')"
             >
-                <AtlanIcon icon="AddUser"></AtlanIcon>
-            </a-button>
+                <AtlanIcon icon="AddUser" class="text-gray-500"></AtlanIcon>
+            </div>
         </a-tooltip>
         <a-dropdown
             v-auth="[map.UPDATE_GROUP]"
@@ -20,9 +31,11 @@
             :visible="dropDownOpened"
             @visibleChange="handleVisibleChange"
         >
-            <a-button size="small" type="secondary" class="rounded">
-                <AtlanIcon icon="KebabMenu"></AtlanIcon>
-            </a-button>
+            <div
+                class="flex items-center justify-center w-8 h-8 border rounded shadow cursor-pointer "
+            >
+                <AtlanIcon icon="KebabMenu" class="text-gray-500"></AtlanIcon>
+            </div>
             <template #overlay>
                 <a-menu>
                     <a-menu-item

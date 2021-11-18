@@ -132,7 +132,7 @@ export function entitiesToEditorKeyword(
     const turndownService = new TurndownService()
     return new Promise((resolve) => {
         response.then((res) => {
-            const entities = res.entities
+            const entities = res.entities ?? 0
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
             for (let i = 0; i < len; i++) {

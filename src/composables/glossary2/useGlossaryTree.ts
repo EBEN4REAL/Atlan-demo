@@ -20,6 +20,7 @@ import { AssetAttributes, InternalAttributes } from '~/constant/projection'
 import { useBody } from '../discovery/useBody'
 import useIndexSearch from '../discovery/useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 interface UseTreeParams {
     emit?: any
@@ -50,7 +51,7 @@ const useGlossaryTree = ({
     const postFacets = ref({})
     const dependentKey = ref(null)
     const attributes = ref([...InternalAttributes, ...AssetAttributes])
-    const relationAttributes = ref([])
+    const relationAttributes = ref(['name'])
     const preference = ref({
         sort: 'name.keyword-asc',
     })
@@ -78,17 +79,18 @@ const useGlossaryTree = ({
         }
     }
 
-    const { data, mutate } = useIndexSearch<assetInterface>(
-        defaultBody,
-        dependentKey,
-        false,
-        false,
-        1
-    )
+    const { data, mutate, isLoading, error, isReady } =
+        useIndexSearch<assetInterface>(
+            defaultBody,
+            dependentKey,
+            false,
+            false,
+            1
+        )
 
     const onLoadData = async (treeNode: any) => {
-        treeNode.dataRef.isOpen = true
-
+        treeNode.dataRef.isLoading = true
+        treeNode.dataRef.isError = null
         if (treeNode.typeName === 'AtlasGlossary') {
             facets.value = {
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
@@ -96,26 +98,40 @@ const useGlossaryTree = ({
                 isRootTerm: true,
                 isRootCategory: true,
             }
-
             generateBody()
             try {
                 await mutate()
-                if (!treeNode.dataRef.children) {
-                    treeNode.dataRef.children = []
-                }
 
-                let map = data.value?.entities.map((i) => ({
-                    ...i,
-                    id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                    key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                    isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                }))
-                if (map) {
-                    treeNode.dataRef.children.push(...map)
+                if (error) {
                     loadedKeys.value.push(treeNode.dataRef.key)
+                    treeNode.dataRef.isLoading = false
+                    treeNode.dataRef.isError = error
+                } else {
+                    if (!treeNode.dataRef.children) {
+                        treeNode.dataRef.children = []
+                    }
+                    let map = data.value?.entities?.map((i) => ({
+                        ...i,
+                        id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                        key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                        isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                    }))
+                    if (map) {
+                        treeNode.dataRef.children.push(...map)
+                        loadedKeys.value.push(treeNode.dataRef.key)
+                    } else {
+                        loadedKeys.value.push(treeNode.dataRef.key)
+                    }
+                    treeNode.dataRef.isLoading = false
+                    treeNode.dataRef.isError = null
                 }
             } catch (e) {
-                console.log(e)
+                console.log('dd')
+                loadedKeys.value.push(treeNode.dataRef.key)
+                treeNode.dataRef.isLoading = false
+                treeNode.dataRef.isError = e
+                return
+                // return
             }
         } else if (treeNode.typeName === 'AtlasGlossaryCategory') {
             facets.value = {
@@ -129,27 +145,39 @@ const useGlossaryTree = ({
             generateBody()
             try {
                 await mutate()
-                if (!treeNode.dataRef.children) {
-                    treeNode.dataRef.children = []
-                }
-
-                if (data.value?.entities) {
-                    let map = data.value?.entities?.map((i) => ({
-                        ...i,
-                        id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                        key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                        isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                    }))
-                    if (map) {
-                        treeNode.dataRef.children.push(...map)
-                        loadedKeys.value.push(treeNode.dataRef.key)
-                    }
+                if (error) {
+                    loadedKeys.value.push(treeNode.dataRef.key)
+                    treeNode.dataRef.isLoading = false
+                    treeNode.dataRef.isError = error
                 } else {
-                    treeNode.dataRef.children = null
-                    treeNode.dataRef.isLeaf = true
+                    if (!treeNode.dataRef.children) {
+                        treeNode.dataRef.children = []
+                    }
+
+                    if (data.value?.entities) {
+                        let map = data.value?.entities?.map((i) => ({
+                            ...i,
+                            id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                            key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                            isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                        }))
+                        if (map) {
+                            treeNode.dataRef.children.push(...map)
+                            loadedKeys.value.push(treeNode.dataRef.key)
+                        } else {
+                            loadedKeys.value.push(treeNode.dataRef.key)
+                        }
+                    } else {
+                        treeNode.dataRef.children = null
+                        treeNode.dataRef.isLeaf = true
+                    }
+                    treeNode.dataRef.isLoading = false
+                    treeNode.dataRef.isError = null
                 }
             } catch (e) {
                 console.log(e)
+                treeNode.dataRef.isLoading = false
+                treeNode.dataRef.isError = e
             }
         }
     }
@@ -192,59 +220,90 @@ const useGlossaryTree = ({
         )
     )
 
-    const initTreeData = () => {
-        treeData.value = glossaryList.value.map((i) => {
-            let isLeafFlag = false
-            if (i.termsCount === 0 && i.categoryCount === 0) {
-                isLeafFlag = true
+    const initTreeData = async (defaultGlossaryQf) => {
+        let glossaryFound = null
+        if (defaultGlossaryQf !== '') {
+            glossaryFound = glossaryList.value.find(
+                (i) => i.attributes.qualifiedName === defaultGlossaryQf
+            )
+            if (glossaryFound) {
+                facets.value = {
+                    typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                    glossary: defaultGlossaryQf,
+                    isRootTerm: true,
+                    isRootCategory: true,
+                }
+                generateBody()
+                try {
+                    await mutate()
+                    treeData.value = []
+                    if (data.value?.entities) {
+                        treeData.value = data.value?.entities.map((i) => ({
+                            ...i,
+                            id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
+                            key: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
+                            isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                        }))
+                    }
+                } catch (e) {
+                    console.log(e)
+                    treeData.value = []
+                }
             }
-            return {
-                ...i,
-                id: i.attributes?.qualifiedName,
-                key: i.attributes?.qualifiedName,
-                isLeaf: isLeafFlag,
-            }
-        })
+        } else {
+            treeData.value = glossaryList.value.map((i) => {
+                let isLeafFlag = false
+                if (i.termsCount === 0 && i.categoryCount === 0) {
+                    isLeafFlag = true
+                }
+                return {
+                    ...i,
+                    id: i.attributes?.qualifiedName,
+                    key: i.attributes?.qualifiedName,
+                    isLeaf: isLeafFlag,
+                }
+            })
+        }
     }
 
-    let parentStack: string[]
+    const { getAnchorQualifiedName } = useAssetInfo()
+
     const addNode = (asset): TreeDataItem => {
-        treeData.value.unshift({
-            ...asset,
-            id: asset.attributes?.qualifiedName,
-            key: asset.attributes?.qualifiedName,
-            isLeaf: true,
-        })
+        if (asset.typeName === 'AtlasGlossary') {
+            treeData.value.unshift({
+                ...asset,
+                id: asset.attributes?.qualifiedName,
+                key: asset.attributes?.qualifiedName,
+                isLeaf: false,
+            })
+        }
+
+        if (asset.typeName === 'AtlasGlossaryTerm') {
+            treeData.value.unshift({
+                ...asset,
+                id: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                key: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                isLeaf: true,
+            })
+        }
+
+        if (asset.typeName === 'AtlasGlossaryCategory') {
+            treeData.value.unshift({
+                ...asset,
+                id: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                key: `${getAnchorQualifiedName(asset)}_${
+                    asset.attributes?.qualifiedName
+                }`,
+                isLeaf: false,
+            })
+        }
     }
-
-    // watch(data, () => {
-    //     console.log(data.value?.entities)
-    //     if (data.value?.entities) {
-    //         let map = data.value?.entities.map((i) => ({
-    //             ...i,
-    //             id: i.attributes?.qualifiedName,
-    //             key: i.guid,
-
-    //             isLeaf: false,
-    //         }))
-    //         baseTreeData.value.push(...map)
-    //     }
-
-    //     baseTreeData.value = [...baseTreeData.value]
-
-    //     console.log(baseTreeData)
-    //     // if (offset?.value > 0) {
-    //     //     if (data.value?.entities) {
-    //     //         list.value.push(...data.value?.entities)
-    //     //     }
-    //     // } else {
-    //     //     if (data.value?.entities) {
-    //     //         list.value = [...data?.value?.entities]
-    //     //     } else {
-    //     //         list.value = []
-    //     //     }
-    //     // }
-    // })
 
     return {
         onLoadData,
@@ -259,6 +318,10 @@ const useGlossaryTree = ({
         initTreeData,
         treeData,
         addNode,
+        isLoading,
+        error,
+        isReady,
+        getAnchorQualifiedName,
     }
 }
 

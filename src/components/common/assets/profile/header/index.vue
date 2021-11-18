@@ -50,7 +50,7 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-tight text-gray-500 uppercase "
+                            class="text-sm tracking-wider text-gray-500 uppercase "
                         >
                             {{ item.typeName }}
                         </div>
@@ -80,11 +80,12 @@
                         <div class="flex">
                             <component
                                 :is="dataTypeCategoryImage(item)"
-                                class="h-4 text-gray-500"
+                                class="h-4 text-gray-500 mr-0.5 mb-0.5"
                             />
-                            <span class="ml-1 text-sm text-gray-500">{{
-                                dataType(item)
-                            }}</span>
+                            <span
+                                class="text-sm tracking-wider text-gray-500"
+                                >{{ dataType(item) }}</span
+                            >
                         </div>
                         <div
                             class="flex"
@@ -130,41 +131,6 @@
                         "
                         class="flex text-sm text-gray-500 gap-x-2"
                     >
-                        <a-tooltip placement="bottomLeft">
-                            <div
-                                class="flex items-center text-gray-500"
-                                v-if="databaseName(item)"
-                            >
-                                <AtlanIcon
-                                    icon="DatabaseGray"
-                                    class="mr-1 mb-0.5"
-                                />
-                                <div class="tracking-tight text-gray-500">
-                                    {{ databaseName(item) }}
-                                </div>
-                            </div>
-                            <template #title>
-                                <span>Database - {{ databaseName(item) }}</span>
-                            </template>
-                        </a-tooltip>
-                        <a-tooltip placement="bottomLeft">
-                            <div
-                                v-if="schemaName(item)"
-                                class="flex items-center text-gray-500"
-                            >
-                                <AtlanIcon
-                                    icon="SchemaGray"
-                                    class="mr-1 mb-0.5"
-                                />
-                                <div class="tracking-tight text-gray-500">
-                                    {{ schemaName(item) }}
-                                </div>
-                            </div>
-                            <template #title>
-                                <span>Schema - {{ schemaName(item) }}</span>
-                            </template>
-                        </a-tooltip>
-
                         <a-tooltip
                             placement="bottomLeft"
                             v-if="tableName(item)"
@@ -202,6 +168,40 @@
                                 <span>View - {{ viewName(item) }}</span>
                             </template>
                         </a-tooltip>
+                        <a-tooltip placement="bottomLeft">
+                            <div
+                                v-if="schemaName(item)"
+                                class="flex items-center text-gray-500"
+                            >
+                                <AtlanIcon
+                                    icon="SchemaGray"
+                                    class="mr-1 mb-0.5"
+                                />
+                                <div class="tracking-tight text-gray-500">
+                                    {{ schemaName(item) }}
+                                </div>
+                            </div>
+                            <template #title>
+                                <span>Schema - {{ schemaName(item) }}</span>
+                            </template>
+                        </a-tooltip>
+                        <a-tooltip placement="bottomLeft">
+                            <div
+                                class="flex items-center text-gray-500"
+                                v-if="databaseName(item)"
+                            >
+                                <AtlanIcon
+                                    icon="DatabaseGray"
+                                    class="mr-1 mb-0.5"
+                                />
+                                <div class="tracking-tight text-gray-500">
+                                    {{ databaseName(item) }}
+                                </div>
+                            </div>
+                            <template #title>
+                                <span>Database - {{ databaseName(item) }}</span>
+                            </template>
+                        </a-tooltip>
                     </div>
                 </div>
             </div>
@@ -223,11 +223,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, PropType } from 'vue'
+    import { defineComponent, inject, PropType, watch } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AssetMenu from './assetMenu.vue'
+    import { useMagicKeys } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -322,6 +324,13 @@
             const assetURL = (asset) => {
                 return `/assets/${asset.guid}`
             }
+
+            const { Escape /* keys you want to monitor */ } = useMagicKeys()
+
+            const router = useRouter()
+            watch(Escape, (v) => {
+                if (v) router.back()
+            })
 
             return {
                 title,

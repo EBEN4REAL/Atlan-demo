@@ -28,6 +28,7 @@
                 :username="username"
                 :allowDelete="!readOnly"
                 @delete="handleDeleteUser"
+                @click="handleClickUser(username)"
                 :enableHover="enableHover"
             ></UserPill>
         </template>
@@ -37,6 +38,7 @@
                 :name="name"
                 :allowDelete="!readOnly"
                 @delete="handleDeleteGroup"
+                @click="handleClickGroup(name)"
                 :enableHover="enableHover"
             ></GroupPill>
         </template>
@@ -44,13 +46,26 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
 
+    // Components
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-    import { useMagicKeys, useVModels } from '@vueuse/core'
+
+    // Composables
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
+
+    // Utils
+    import {
+        and,
+        useActiveElement,
+        useMagicKeys,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
 
     export default defineComponent({
         name: 'OwnersWidget',
@@ -80,6 +95,20 @@
 
             const isEdit = ref(false)
 
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const { showGroupPreview, setGroupUniqueAttribute } =
+                useGroupPreview()
+
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+            }
+
+            const handleClickGroup = (groupAlias: string) => {
+                setGroupUniqueAttribute(groupAlias, 'groupAlias')
+                showGroupPreview({ allowed: ['about', 'assets', 'members'] })
+            }
+
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -101,6 +130,26 @@
 
                 handleChange()
             }
+
+            const activeElement = useActiveElement()
+            const notUsingInput = computed(
+                () =>
+                    activeElement.value?.tagName !== 'INPUT' &&
+                    activeElement.value?.tagName !== 'TEXTAREA'
+            )
+            const { o, Escape } = useMagicKeys()
+            whenever(and(o, notUsingInput), () => {
+                if (!isEdit.value) {
+                    isEdit.value = true
+                }
+            })
+
+            whenever(and(Escape), () => {
+                if (isEdit.value) {
+                    handleChange()
+                    isEdit.value = false
+                }
+            })
 
             // const { o, Escape, d } = useMagicKeys()
 
@@ -137,6 +186,8 @@
             return {
                 enableHover,
                 readOnly,
+                handleClickUser,
+                handleClickGroup,
                 localValue,
                 handleChange,
                 handleDeleteUser,

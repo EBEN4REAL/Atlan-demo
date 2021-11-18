@@ -16,33 +16,6 @@ export const selectedPersona = computed(() => {
     if (selectedPersonaId.value) {
         let t = personaList.value.find((ps) => ps.id == selectedPersonaId.value)
         if (!t) return undefined
-        /* Hardcoding classification */
-        if (t) {
-            t.tag = 'TyT6ITTnmwzIe74TMEE4r5'
-            t.dataPolicies = []
-            t.metadataPolicies = [
-                {
-                    actions: ['entity-create', 'entity-update'],
-                    allow: true,
-                    description: '',
-                    id: 'cee15bea-dfbe-4c93-81cc-d2a9fa8ce643',
-                    name: 'test',
-                    type: 'metadata',
-                    groups: ['123', 'abc', 'cde'],
-                    users: ['chawlatanya31', 'admin1', 'admin'],
-                },
-                {
-                    actions: ['entity-create', 'entity-update'],
-                    allow: true,
-                    description: '',
-                    id: 'cee15bea-dfbe-4c93-81cc-d2a9fa8ce646',
-                    name: 'test',
-                    type: 'metadata',
-                    groups: ['123', 'abc', 'cde'],
-                    users: ['chawlatanya31', 'admin1', 'admin'],
-                },
-            ]
-        }
         return t
     }
     return undefined

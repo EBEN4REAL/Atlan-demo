@@ -120,7 +120,7 @@
     import Connector from './connector.vue'
     import MetadataScopes from './metadataScopes.vue'
     import Owners from '~/components/common/input/owner/index.vue'
-    import { MetadataPolicies } from '~/types/accessPolicies/personas'
+    import { ResourcePolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
 
     export default defineComponent({
@@ -135,7 +135,7 @@
         },
         props: {
             policy: {
-                type: Object as PropType<MetadataPolicies>,
+                type: Object as PropType<ResourcePolicies>,
                 required: true,
             },
         },

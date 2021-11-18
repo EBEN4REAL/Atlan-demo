@@ -1,6 +1,20 @@
 <template>
     <div
-        class="flex items-center py-1 pl-1 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-pink-400 group hover:border-pink-400"
+        class="
+            flex
+            items-center
+            py-0.5
+            pl-1
+            pr-2
+            text-sm text-gray-700
+            bg-white
+            border border-gray-200
+            rounded-full
+            cursor-pointer
+            hover:bg-pink-400
+            group
+            hover:border-pink-400
+        "
     >
         <AtlanIcon
             icon="ShieldFilled"
@@ -16,12 +30,12 @@
         <div class="ml-1 group-hover:text-white">
             {{ displayName || name }}
         </div>
-        <div
-            class="flex group-hover:text-white"
-            @click="handleRemove"
-            v-if="allowDelete"
-        >
-            <AtlanIcon icon="Cross" class="h-3 ml-1"></AtlanIcon>
+
+        <div class="flex" @click="handleDelete" v-if="allowDelete">
+            <AtlanIcon
+                icon="Cross"
+                class="h-3 ml-2 text-gray-500 group-hover:text-white"
+            ></AtlanIcon>
         </div>
     </div>
 </template>

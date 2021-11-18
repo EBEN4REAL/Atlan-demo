@@ -4,7 +4,7 @@
             <AtlanButton icon="Loader" class="h-5 animate-spin" />
         </div>
         <div
-            v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+            v-if="error"
             class="flex flex-col items-center justify-center h-full bg-white"
         >
             <ErrorView>
@@ -91,7 +91,13 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, computed, defineAsyncComponent } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        defineAsyncComponent,
+        watch,
+    } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -123,28 +129,31 @@
                 defaultTab,
             } = useUserPreview()
             const activeKey = defaultTab
-            let filterObj = {}
-            if (uniqueAttribute.value === 'username')
-                filterObj = {
-                    $and: [
-                        { email_verified: true },
-                        { username: userUsername.value },
-                    ],
-                }
-            else
-                filterObj = {
-                    $and: [{ email_verified: true }, { id: userId.value }],
-                }
-            const { userList, getUserList, isLoading, state, STATES } =
-                useUsers(
-                    {
-                        limit: 1,
-                        offset: 0,
-                        sort: 'first_name',
-                        filter: filterObj,
-                    },
-                    'USE_USERS_PREVIEW'
-                )
+
+            const params = computed(() => ({
+                limit: 1,
+                offset: 0,
+                // sort: "alias",
+                filter:
+                    uniqueAttribute.value === 'username'
+                        ? {
+                              $and: [
+                                  { email_verified: true },
+                                  { username: userUsername.value },
+                              ],
+                          }
+                        : {
+                              $and: [
+                                  { email_verified: true },
+                                  { id: userId.value },
+                              ],
+                          },
+            }))
+
+            const { userList, getUserList, isLoading, error } = useUsers(
+                params,
+                'USE_USERS_PREVIEW'
+            )
             const userObj = computed(() =>
                 userList && userList.value && userList.value.length
                     ? userList.value[0]
@@ -162,6 +171,11 @@
             const handleUserUpdate = async () => {
                 await getUserList()
             }
+
+            watch([userId, username], () => {
+                getUserList()
+            })
+
             return {
                 imageUrl,
                 isCurrentUser,
@@ -170,8 +184,7 @@
                 tabs: finalTabs,
                 handleUserUpdate,
                 isLoading,
-                state,
-                STATES,
+                error,
                 activeKey,
                 getUserList,
             }

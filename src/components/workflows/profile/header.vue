@@ -26,7 +26,8 @@
                 <div class="flex text-sm text-gray-500">
                     <div class="mr-2">
                         <img
-                            src="/src/assets/images/source/snowflake.png"
+                            v-if="logo"
+                            :src="logo"
                             class="flex-none w-auto h-3.5 mb-0.5"
                         />
                     </div>
@@ -95,6 +96,11 @@
             creator: {
                 type: Object,
                 requred: true,
+            },
+            logo: {
+                type: String,
+                requred: false,
+                default: ""
             },
         },
         setup(props) {

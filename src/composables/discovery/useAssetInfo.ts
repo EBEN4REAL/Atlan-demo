@@ -182,6 +182,9 @@ export default function useAssetInfo() {
         ) {
             let tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+        } else if(assetType(asset) === 'Query') {
+            // console.log('assetType: ', asset.guid)
+            queryPath = `/insights?id=${asset.guid}`
         } else {
             queryPath = `/insights`
         }
@@ -190,10 +193,14 @@ export default function useAssetInfo() {
     }
 
     const getAnchorName = (asset: assetInterface) =>
-        attributes(asset)?.anchor?.attributes.name
+        anchorAttributes(asset)?.name
 
     const getAnchorGuid = (asset: assetInterface) =>
         attributes(asset)?.anchor?.guid
+
+    const getAnchorQualifiedName = (asset: assetInterface) => {
+        return attributes(asset)?.anchor?.uniqueAttributes?.qualifiedName
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -289,6 +296,16 @@ export default function useAssetInfo() {
 
     const dataTypeCategoryImage = (asset: assetInterface) => {
         return dataTypeCategory(asset)?.image
+    }
+
+    const compiledQuery = (asset: assetInterface) => {
+        if (
+            attributes(asset)?.compiledQuery &&
+            attributes(asset)?.compiledQuery !== ''
+        ) {
+            return attributes(asset)?.compiledQuery
+        }
+        return '~'
     }
 
     const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
@@ -459,6 +476,13 @@ export default function useAssetInfo() {
         return attributes(asset)?.webUrl
     }
 
+    const isBiAsset = (asset: assetInterface) => {
+        return (
+            assetType(asset).includes('Tableau') ||
+            assetType(asset).includes('BI')
+        )
+    }
+
     const discoveryStore = useAssetStore()
 
     const selectedAsset = computed(() => {
@@ -468,7 +492,7 @@ export default function useAssetInfo() {
     const glossaryStore = useGlossaryStore()
 
     const selectedGlossary = computed(() => {
-        return glossaryStore.selectedGlossary
+        return glossaryStore.selectedGTC
     })
 
     const isGTCByType = (typeName) => {
@@ -745,6 +769,7 @@ export default function useAssetInfo() {
     }
 
     return {
+        attributes,
         title,
         getConnectorImage,
         getConnectorName,
@@ -761,6 +786,7 @@ export default function useAssetInfo() {
         isPrimary,
         isPartition,
         isDist,
+        compiledQuery,
         definition,
         description,
         classifications,
@@ -809,10 +835,12 @@ export default function useAssetInfo() {
         getActions,
         getAssetQueryPath,
         webURL,
+        isBiAsset,
         selectedGlossary,
         categories,
         parentCategory,
         isGTC,
         isGTCByType,
+        getAnchorQualifiedName,
     }
 }

@@ -187,7 +187,7 @@
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isWorkflowRunning = ref(false)
-            const showScheduleModal = ref(true)
+            const showScheduleModal = ref(false)
             const nodesShared = ref([])
             const emitSelectionShared = ref(null)
 

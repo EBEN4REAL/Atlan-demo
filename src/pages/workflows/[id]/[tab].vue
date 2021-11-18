@@ -8,6 +8,7 @@
                 :workflow="data.asset"
                 :creator="creator"
                 class="px-5 pt-3 bg-white"
+                :logo="logo"
                 @open-logs="workflowLogsIsOpen = true"
             />
             <a-tabs
@@ -45,6 +46,7 @@
                         @setSelectedPod="setSelectedPod"
                         @setSelectedGraph="setSelectedGraph"
                         @set-loading-fetch-pod="setLoadingFetchPod"
+                        @handleSetLogo="handleSetLogo"
                     />
                     <!-- <EmptyView
                         v-if="!workflowTemplate && !data?.isLoading"
@@ -152,7 +154,7 @@
             /** DATA */
             const graphRef: Ref<Element | null> = ref(null)
             provide('graphRef', graphRef)
-
+            const logo = ref("")
             const activeKey = ref(1)
             const data = ref({})
             const selectedRunName = ref(null)
@@ -211,7 +213,9 @@
                     data.value?.asset?.workflowtemplate.spec.templates[0].dag
                         .tasks[0].templateRef.name || ''
             )
-
+            const handleSetLogo = (prop) => {
+              logo.value = prop
+            }
             /** METHODS */
             // selectTab
             const selectTab = (val: number) => {
@@ -399,6 +403,8 @@
                 setLoadingFetchPod,
                 id,
                 creator,
+                logo,
+                handleSetLogo
             }
         },
     })

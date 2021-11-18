@@ -84,20 +84,15 @@ export const getFormattedUser = (user: any) => {
 }
 
 const defaultCacheOption = {
-  cacheOptions: {
-    shouldRetryOnError: false,
-    revalidateOnFocus: false,
-    cache: new LocalStorageCache(),
-    dedupingInterval: 1,
-  }
+    cacheOptions: {
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+        cache: new LocalStorageCache(),
+        dedupingInterval: 1,
+    }
 }
 export const useUsers = (
-    userListAPIParams: {
-        limit: number
-        offset: number
-        filter?: any
-        sort?: string
-    },
+    userListAPIParams,
     cacheKey?: string,
     cacheOption = defaultCacheOption
 ) => {

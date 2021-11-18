@@ -26,7 +26,7 @@
                         </div>
                     </a-popover>
                 </div>
-                <div v-else @click="$emit('selectAPIKey', apikey)">
+                <div v-else @click="$emit('selectAPIKey', apikey)" class="cursor-pointer">
                     {{ apikey.attributes.displayName }}
                 </div>
             </template>

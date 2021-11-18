@@ -38,20 +38,7 @@
                 ></AtlanIcon>
                 <router-link
                     :to="assetURL(selectedAsset)"
-                    class="
-                        flex-shrink
-                        mb-0
-                        mr-1
-                        overflow-hidden
-                        font-bold
-                        truncate
-                        cursor-pointer
-                        text-md text-primary
-                        hover:underline
-                        overflow-ellipsis
-                        whitespace-nowrap
-                        leadiing-none
-                    "
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -101,7 +88,7 @@
                         class="h-4 mb-0.5 mr-1"
                     ></AtlanIcon>
 
-                    <div class="text-sm tracking-tight uppercase text-gray">
+                    <div class="text-sm tracking-wider uppercase text-gray">
                         {{
                             assetTypeLabel(selectedAsset) ||
                             selectedAsset.typeName

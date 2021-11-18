@@ -55,7 +55,7 @@
                 <div
                     v-for="(s, index) in data.items"
                     :key="index"
-                    class="flex items-center px-2 py-3 text-base cursor-pointer  hover:bg-primary-light"
+                    class="flex items-center px-2 py-3 text-base cursor-pointer hover:bg-primary-light"
                 >
                     <div class="w-full mr-3">
                         <!-- Name -->
@@ -108,7 +108,7 @@
                         >
                             <template #content>
                                 <div
-                                    class="px-4 py-2 cursor-pointer  hover:bg-primary-light"
+                                    class="px-4 py-2 cursor-pointer hover:bg-primary-light"
                                     @click="setSuspend(s)"
                                 >
                                     {{
@@ -119,14 +119,14 @@
                                 </div>
                                 <div
                                     v-auth="access.UPDATE_WORKFLOW_SCHEDULES"
-                                    class="px-4 py-2 cursor-pointer  hover:bg-primary-light"
+                                    class="px-4 py-2 cursor-pointer hover:bg-primary-light"
                                     @click="setUpdate(s)"
                                 >
                                     Edit
                                 </div>
                                 <div
                                     v-auth="access.DELETE_WORKFLOW_SCHEDULES"
-                                    class="px-4 py-2 cursor-pointer  text-error hover:bg-primary-light"
+                                    class="px-4 py-2 cursor-pointer text-error hover:bg-primary-light"
                                     @click="onDeleteSchedule(s.metadata.name)"
                                 >
                                     Delete
@@ -305,8 +305,9 @@
 
     /** COMPONENTS */
     import EmptyView from '@common/empty/index.vue'
+    import timezoneDayJs from "dayjs/plugin/timezone"
+    import utc from 'dayjs/plugin/utc'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-
     /** ASSETS */
 
     /** COMPOSABLES */
@@ -320,6 +321,9 @@
     import { timezones, formRules, frequencyOptions } from './scheduleUtils.js'
 
     import access from '~/constant/accessControl/map'
+
+    dayjs.extend(utc)
+    dayjs.extend(timezoneDayJs)
 
     /** TYPE DEF */
     interface FormState {
@@ -343,7 +347,7 @@
         emits: ['cancel'],
         setup(props, { emit }) {
             /** DATA */
-            const { workflowName } = toRefs(props)
+            const { workflowName, visible } = toRefs(props)
             const mode = ref('list')
             const scheduleFormRef = ref()
             const selectedSchedule = ref()
@@ -450,11 +454,12 @@
             const go = (m, s = '') => {
                 mode.value = m
                 if (['add', 'list'].includes(m)) {
+                    const timeZoneUser = dayjs.tz.guess() 
                     suspend.value = false
                     formState.scheduleName = ''
                     formState.time = '23:00'
                     frequency.value = 'daily'
-                    timezone.value = 'Africa/Lagos'
+                    timezone.value = timeZoneUser
                     selectedSchedule.value = ''
                     selectDays()
                 } else if (m === 'update') selectedSchedule.value = s

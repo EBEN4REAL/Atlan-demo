@@ -169,9 +169,7 @@ export function useSmtp() {
                     data: saveSmtpConfigReqData,
                     error: saveSmtpConfigReqError,
                     isLoading,
-                } = Tenant.UpdateSmtpConfig(
-                    { smtpServer: smtpServer.value }
-                )
+                } = Tenant.UpdateSmtpConfig({ smtpServer: smtpServer.value })
                 watch([isLoading], () => {
                     if (!saveSmtpConfigReqError.value) {
                         saveSmtpConfigState.value = 'SUCCESS'

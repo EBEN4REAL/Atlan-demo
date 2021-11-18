@@ -77,21 +77,36 @@
             const { selectedWorkflow: item } = toRefs(props)
             const searchText = ref('')
             const list = ref([])
+            const error = ref("")
+            const isLoading = ref(false)
+            const filterList = ref([])
+            const archivedList = ref([])
 
             // getArchivedRunList
-            const { archivedList, error, isLoading, filterList } =
-                getArchivedRunList(item.value.name, true)
+            const handleGetDataRun = () => {
+              isLoading.value = true
+              const { archivedList: archivedListW, error: errorW, isLoading: isLoadingW, filterList: filterListW } =
+                  getArchivedRunList(item.value.name, true)
+              // watcher
+              watch(isLoadingW, (newVal) => isLoading.value = newVal)
+              watch(errorW, (newVal) => error = newVal)
+              watch(filterListW, (newVal) => filterList.value = newVal)
+              watch(archivedListW, (newVal) => {
+                  archivedList.value = newVal
+                  if (newVal) {
+                      let archivedRunItems = []
 
-            // watcher
-            watch(archivedList, (newVal) => {
-                if (newVal) {
-                    let archivedRunItems = []
+                      if (newVal?.records?.length)
+                          archivedRunItems = newVal.records
 
-                    if (newVal?.records?.length)
-                        archivedRunItems = newVal.records
-
-                    list.value = [...archivedRunItems]
-                }
+                      list.value = [...archivedRunItems]
+                  }
+              })
+            } 
+            // for first Time Run
+            handleGetDataRun()           
+            watch(item, () => {
+              handleGetDataRun()
             })
             const handleClickRunCard = (prop) => {
               const {name} = item.value

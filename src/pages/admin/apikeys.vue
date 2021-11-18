@@ -4,7 +4,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useHead } from '@vueuse/head'
-import ApiKeysView from '@/governance/apikeys/apiKeysView.vue'
+import ApiKeysView from '@/admin/apikeys/apiKeysView.vue'
 
 export default defineComponent({
     components: { ApiKeysView },

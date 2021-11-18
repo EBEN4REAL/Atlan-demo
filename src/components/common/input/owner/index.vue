@@ -28,6 +28,7 @@
                 :username="username"
                 :allowDelete="!readOnly"
                 @delete="handleDeleteUser"
+                @click="handleClickUser(username)"
                 :enableHover="enableHover"
             ></UserPill>
         </template>
@@ -37,6 +38,7 @@
                 :name="name"
                 :allowDelete="!readOnly"
                 @delete="handleDeleteGroup"
+                @click="handleClickGroup(name)"
                 :enableHover="enableHover"
             ></GroupPill>
         </template>
@@ -46,10 +48,17 @@
 <script lang="ts">
     import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
 
+    // Components
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
+
+    // Composables
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
+
+    // Utils
     import {
         and,
         useActiveElement,
@@ -85,6 +94,20 @@
             const localValue = ref(modelValue.value)
 
             const isEdit = ref(false)
+
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const { showGroupPreview, setGroupUniqueAttribute } =
+                useGroupPreview()
+
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+            }
+
+            const handleClickGroup = (groupAlias: string) => {
+                setGroupUniqueAttribute(groupAlias, 'groupAlias')
+                showGroupPreview({ allowed: ['about', 'assets', 'members'] })
+            }
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -163,6 +186,8 @@
             return {
                 enableHover,
                 readOnly,
+                handleClickUser,
+                handleClickGroup,
                 localValue,
                 handleChange,
                 handleDeleteUser,

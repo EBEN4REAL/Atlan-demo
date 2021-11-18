@@ -322,12 +322,12 @@
         // Process Nodes
         &-process {
             border: 2px solid #e6e6eb;
-            border-radius: 10px;
+            border-radius: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: #fafafa;
-            width: 270px;
+            width: 60px;
             height: 60px;
 
             &.isHighlightedNode,

@@ -91,7 +91,13 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, computed, defineAsyncComponent } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        defineAsyncComponent,
+        watch,
+    } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -123,25 +129,29 @@
                 defaultTab,
             } = useUserPreview()
             const activeKey = defaultTab
-            let filterObj = {}
-            if (uniqueAttribute.value === 'username')
-                filterObj = {
-                    $and: [
-                        { email_verified: true },
-                        { username: userUsername.value },
-                    ],
-                }
-            else
-                filterObj = {
-                    $and: [{ email_verified: true }, { id: userId.value }],
-                }
+
+            const params = computed(() => ({
+                limit: 1,
+                offset: 0,
+                // sort: "alias",
+                filter:
+                    uniqueAttribute.value === 'username'
+                        ? {
+                              $and: [
+                                  { email_verified: true },
+                                  { username: userUsername.value },
+                              ],
+                          }
+                        : {
+                              $and: [
+                                  { email_verified: true },
+                                  { id: userId.value },
+                              ],
+                          },
+            }))
+
             const { userList, getUserList, isLoading, error } = useUsers(
-                {
-                    limit: 1,
-                    offset: 0,
-                    sort: 'first_name',
-                    filter: filterObj,
-                },
+                params,
                 'USE_USERS_PREVIEW'
             )
             const userObj = computed(() =>
@@ -161,6 +171,11 @@
             const handleUserUpdate = async () => {
                 await getUserList()
             }
+
+            watch([userId, username], () => {
+                getUserList()
+            })
+
             return {
                 imageUrl,
                 isCurrentUser,

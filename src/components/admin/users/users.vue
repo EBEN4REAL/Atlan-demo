@@ -97,12 +97,15 @@
         <a-modal
             :visible="showInviteUserModal"
             :destroy-on-close="true"
-            title="Invite User"
             :footer="null"
+            :closable="false"
+            :width="550"
+            wrapClassName="inviteModal"
             @cancel="closeInviteUserModal"
         >
             <InviteUsers
                 @close="closeInviteUserModal"
+                :tenantName="tenantName"
                 @handleInviteSent="handleInviteSent"
             />
         </a-modal>
@@ -142,7 +145,7 @@
         },
 
         setup() {
-            const { loginWithEmailAllowed } = useTenantData()
+            const { loginWithEmailAllowed, name: tenantName } = useTenantData()
 
             const loginWithEmail = ref(loginWithEmailAllowed)
 
@@ -252,7 +255,6 @@
                 setUserUniqueAttribute,
             } = useUserPreview()
             const showUserPreviewDrawer = (user: any) => {
-                console.log('showUserPreviewDrawer', user)
                 setUserUniqueAttribute(user.id)
                 openPreview()
                 selectedUserId.value = user.id
@@ -405,6 +407,7 @@
             }
 
             return {
+                tenantName,
                 map,
                 resendInvite,
                 showRevokeInvitePopover,

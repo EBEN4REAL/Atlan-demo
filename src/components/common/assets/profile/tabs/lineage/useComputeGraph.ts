@@ -13,6 +13,7 @@ const getSource = (entity) => {
     return item[0]
 }
 
+
 export default async function useComputeGraph(
     graph,
     graphLayout,
@@ -76,7 +77,8 @@ export default async function useComputeGraph(
             source,
             isBase,
             entity,
-            width: 270,
+            isProcess,
+            width: isProcess ? 60 : 270,
             height: 60,
             shape: 'html',
             data: {
@@ -87,16 +89,14 @@ export default async function useComputeGraph(
                     const data = node.getData() as any
 
                     return !isProcess
-                        ? `<div class="lineage-node ${
-                              data?.isHighlightedNode === data?.id
-                                  ? 'isHighlightedNode'
-                                  : ''
-                          }
-                          ${
-                              data?.isHighlightedNodePath === data?.id
-                                  ? 'isHighlightedNodePath'
-                                  : ''
-                          }
+                        ? `<div class="lineage-node ${data?.isHighlightedNode === data?.id
+                            ? 'isHighlightedNode'
+                            : ''
+                        }
+                          ${data?.isHighlightedNodePath === data?.id
+                            ? 'isHighlightedNodePath'
+                            : ''
+                        }
                           ${isBase ? 'isBase' : ''}
                           ">
                                     <img class="node-source" src="${img}" />
@@ -105,15 +105,13 @@ export default async function useComputeGraph(
                                         <div class="node-text type">${type}</div>
                                     </div>
                                 </div>`
-                        : `<div class="lineage-process ${
-                              data?.isHighlightedNode === data?.id
-                                  ? 'isHighlightedNode'
-                                  : ''
-                          } ${
-                              data?.isHighlightedNodePath === data?.id
-                                  ? 'isHighlightedNodePath'
-                                  : ''
-                          }"> <svg width="23" height="23" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        : `<div class="lineage-process ${data?.isHighlightedNode === data?.id
+                            ? 'isHighlightedNode'
+                            : ''
+                        } ${data?.isHighlightedNodePath === data?.id
+                            ? 'isHighlightedNodePath'
+                            : ''
+                        }"> <svg width="20" height="20" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.5 3.4375L0.625 5L2.5 6.5625" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M7.5 3.4375L9.375 5L7.5 6.5625" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M6.25 1.5625L3.75 8.4375" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>

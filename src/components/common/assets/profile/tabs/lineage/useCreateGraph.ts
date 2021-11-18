@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { SimpleNodeView } from './view.js'
-import { DagreLayout } from './dagreLayout/dagre.ts'
+import { DagreLayout } from './dagreLayout/dagre'
 
 export default function useCreateGraph(
     graph,

@@ -1,5 +1,5 @@
-import { Edge } from '../types.ts'
-import { isObject } from './object.ts'
+import { Edge } from '../types'
+import { isObject } from './object'
 
 export const getEdgeTerminal = (edge: Edge, type: 'source' | 'target') => {
     const terminal = edge[type]

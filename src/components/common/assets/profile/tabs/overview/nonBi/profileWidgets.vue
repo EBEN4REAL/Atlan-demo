@@ -51,10 +51,15 @@
                     ? 'status-grid'
                     : ''
             "
+            class="flex flex-col"
         >
-            <CertificationPopover :selected-asset="asset" placement="bottom">
-                <Certificate :selected-asset="asset" />
-            </CertificationPopover>
+            <p class="mb-1 text-sm text-gray-500">Certificate</p>
+
+            <Certificate
+                :selected-asset="asset"
+                v-model="localCertificate"
+                @change="handleChangeCertificate"
+            />
         </div>
 
         <div v-if="asset.guid" class="flex flex-col">
@@ -117,6 +122,10 @@
                 definition,
                 description,
                 getConnectorImage,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateStatusMessage,
+                certificateUpdatedBy,
             } = useAssetInfo()
 
             const entity = ref({
@@ -157,6 +166,30 @@
                 mutate()
             }
 
+            const localCertificate = ref({
+                certificateStatus: certificateStatus(asset.value),
+                certificateUpdatedAt: certificateUpdatedAt(asset.value),
+                certificateUpdatedBy: certificateUpdatedBy(asset.value),
+                certificateStatusMessage: certificateStatusMessage(asset.value),
+            })
+
+            const handleChangeCertificate = () => {
+                if (
+                    localCertificate.value.certificateStatus !==
+                        certificateStatus(asset.value) ||
+                    localCertificate.value.certificateStatusMessage !==
+                        certificateStatusMessage(asset.value)
+                ) {
+                    entity.value.attributes.certificateStatus =
+                        localCertificate.value.certificateStatus
+
+                    entity.value.attributes.certificateStatusMessage =
+                        localCertificate.value.certificateStatusMessage
+                    body.value.entities = [entity.value]
+                    mutate()
+                }
+            }
+
             return {
                 rowCount,
                 columnCount,
@@ -168,6 +201,8 @@
                 localDescription,
                 localOwners,
                 handleOwnersChange,
+                localCertificate,
+                handleChangeCertificate,
             }
         },
     })

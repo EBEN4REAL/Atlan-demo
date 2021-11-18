@@ -70,6 +70,10 @@
                 emit('delete', username.value)
             }
 
+            /* const handleClick = () => {
+                emit('click', username.value)
+            } */
+
             return { username, handleDelete }
         },
     }

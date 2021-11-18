@@ -19,7 +19,6 @@ const finalTabs = computed(() => {
 
 export function useGroupPreview() {
 
-
     const closePreview = () => {
         blacklistedTabs.value = []
         allowedTabs.value = []

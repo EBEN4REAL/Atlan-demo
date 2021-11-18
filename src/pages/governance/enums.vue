@@ -1,77 +1,79 @@
 <template>
-    <!-- <div v-if="permissions.list"> -->
-    <div v-if="isLoading" class="flex items-center justify-center h-64">
-        <a-spin size="large" />
-    </div>
-    <div v-else-if="error">
-        <a-empty :image="null">
-            <template #description>
-                <p class="text-2xl font-bold">Error loading your request</p>
-            </template>
+    <div v-auth="map.LIST_ENUM">
+        <div v-if="isLoading" class="flex items-center justify-center h-64">
+            <a-spin size="large" />
+        </div>
+        <div v-else-if="error">
+            <a-empty :image="null">
+                <template #description>
+                    <p class="text-2xl font-bold">Error loading your request</p>
+                    <p>Try reloading page</p>
+                </template>
 
-            <a-button type="danger" @click="refetchEnumList()"
-                ><AtlanIcon icon="Add" class="inline" /> Try again
-            </a-button>
-        </a-empty>
-    </div>
-    <ExplorerLayout
-        v-else-if="enumList.length"
-        title="Labels"
-        sidebar-class="bg-white"
-    >
-        <template #action>
-            <AtlanBtn
-                class="flex-none"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click="toggleAddModal(true)"
-            >
-                <AtlanIcon icon="Add" class="-mx-1 text-gray" />
-            </AtlanBtn>
-        </template>
-
-        <template #sidebar>
-            <div class="px-4 pt-6 pb-4">
-                <SearchAndFilter
-                    v-model:value="searchText"
-                    :placeholder="`Search from ${enumList.length} labels`"
-                    class="bg-white"
-                />
-            </div>
-            <EnumList
-                v-model:selected="selectedId"
-                :list="searchedEnumList"
-            />
-        </template>
-
-        <EnumDetails
-            v-if="selectedId"
-            :key="selectedId"
-            v-model:selectedEnum="selectedEnum"
-        />
-        <span v-else>No Enum Selected</span>
-    </ExplorerLayout>
-    <div v-else class="flex items-center justify-center h-full">
-        <a-empty
-            :image="noEnumImage"
-            :image-style="{
-                height: '115px',
-                display: 'flex',
-                justifyContent: 'center',
-            }"
+                <!-- <a-button type="danger" @click="refetchEnumList()"
+                    ><AtlanIcon icon="Add" class="inline" /> Try again
+                </a-button> -->
+            </a-empty>
+        </div>
+        <ExplorerLayout
+            v-else-if="enumList.length"
+            title="Labels"
+            sidebar-class="bg-white"
         >
-            <template #description>
-                <p class="text-2xl font-bold">Start adding labels</p>
+            <template #action>
+                <AtlanBtn
+                    v-auth="map.CREATE_ENUM"
+                    class="flex-none"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    @click="toggleAddModal(true)"
+                >
+                    <AtlanIcon icon="Add" class="-mx-1 text-gray" />
+                </AtlanBtn>
             </template>
 
-            <a-button type="primary" @click="addModalVisible = true"
-                ><AtlanIcon icon="Add" class="inline" /> Create new label
-            </a-button>
-        </a-empty>
+            <template #sidebar>
+                <div class="px-4 pt-6 pb-4">
+                    <SearchAndFilter
+                        v-model:value="searchText"
+                        :placeholder="`Search from ${enumList.length} labels`"
+                        class="bg-white"
+                    />
+                </div>
+                <EnumList
+                    v-model:selected="selectedId"
+                    :list="searchedEnumList"
+                />
+            </template>
+
+            <EnumDetails
+                v-if="selectedId"
+                :key="selectedId"
+                v-model:selectedEnum="selectedEnum"
+            />
+            <span v-else>No Enum Selected</span>
+        </ExplorerLayout>
+        <div v-else class="flex items-center justify-center h-full">
+            <a-empty
+                :image="noEnumImage"
+                :image-style="{
+                    height: '115px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                }"
+            >
+                <template #description>
+                    <p class="text-2xl font-bold">Start adding labels</p>
+                </template>
+
+                <a-button type="primary" @click="addModalVisible = true"
+                    ><AtlanIcon icon="Add" class="inline" /> Create new label
+                </a-button>
+            </a-empty>
+        </div>
     </div>
-    <!-- </div>
-    <NoAcces v-else /> -->
+    <!--   <NoAcces v-else /> -->
     <AddEnumModal
         v-if="addModalVisible"
         @add="addToList"
@@ -90,9 +92,9 @@
     import AtlanBtn from '@/UI/button.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    // import { useAccessStore } from '~/services/access/accessStore'
     import NoAcces from '@/admin/common/noAccessPage.vue'
     import noEnumImage from '~/assets/images/admin/no-metadata.png'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {
@@ -108,11 +110,6 @@
             useHead({
                 title: 'Enums',
             })
-            // const accessStore = useAccessStore()
-            // const permissions = computed(() => ({
-            //     list: accessStore.checkPermission('LIST_BUSINESS_METADATA'),
-            //     create: accessStore.checkPermission('CREATE_BUSINESS_METADATA'),
-            // }))
 
             const {
                 enumList,
@@ -129,10 +126,6 @@
                 addModalVisible.value = state
             }
 
-            const refetchEnumList = () => {
-                // change into a means to load just enums
-            }
-
             return {
                 enumList,
                 addModalVisible,
@@ -144,7 +137,7 @@
                 isLoading,
                 searchText,
                 searchedEnumList,
-                refetchEnumList,
+                map,
             }
         },
         data() {

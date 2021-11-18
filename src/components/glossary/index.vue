@@ -30,7 +30,7 @@
             </AddGTCModal>
         </div>
 
-        <div class="flex px-4 py-1 mb-2">
+        <div class="flex px-4 my-2">
             <SearchAdvanced
                 v-model="queryText"
                 :connectorName="facets?.hierarchy?.connectorName"

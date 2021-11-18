@@ -7,7 +7,7 @@
         ><span>Getting Runs</span>
     </div>
     <div v-else-if="list.length" v-auth="access.LIST_RUNS">
-        <div class="flex px-4 mt-4 mb-4">
+        <!-- <div class="flex px-4 mt-4 mb-4">
             <a-input-search
                 v-model:value="searchText"
                 placeholder="Search Members"
@@ -18,12 +18,13 @@
             <a-button class="p-2 ml-2 rounded">
                 <AtlanIcon icon="FilterDot" class="h-4" />
             </a-button>
-        </div>
+        </div> -->
         <RunCard
             v-for="(r, x) in searchText ? filterList(searchText) : list"
             :key="x"
             :r="r"
             :select-enabled="true"
+            @click="handleClickRunCard(r)"
         />
     </div>
     <EmptyView
@@ -44,6 +45,7 @@
 <script lang="ts">
     // Vue
     import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
+    import { useRouter } from 'vue-router'
 
     // Components
     import EmptyView from '@common/empty/index.vue'
@@ -71,6 +73,7 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
+            const router = useRouter()
             const { selectedWorkflow: item } = toRefs(props)
             const searchText = ref('')
             const list = ref([])
@@ -90,6 +93,11 @@
                     list.value = [...archivedRunItems]
                 }
             })
+            const handleClickRunCard = (prop) => {
+              const {name} = item.value
+              const id = prop.uid
+              router.push(`/workflows/${name}/monitor?idmonitoring=${id}`)
+            }
 
             return {
                 access,
@@ -100,6 +108,7 @@
                 error,
                 isLoading,
                 emit,
+                handleClickRunCard
             }
         },
     })

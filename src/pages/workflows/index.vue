@@ -77,7 +77,7 @@
                 </div>
                 <EmptyState
                     v-if="workflowList.length === 0 && !isLoading"
-                    desc="Sorry! We couldn’t find any workflow templates. try resetting your filters."
+                    desc="Sorry! We couldn’t find any workflow. try resetting your filters."
                     button-text="Reset filters"
                     empty-screen="EmptyDiscover"
                     @event="handleClearFiltersFromList"

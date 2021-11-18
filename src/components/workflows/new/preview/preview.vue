@@ -88,8 +88,8 @@
         </template>
     </div>
     <AtlanButton
-        v-auth="access.CREATE_WORKFLOW"
         v-if="!workflowTemplateLoading && !workflowTemplateError"
+        v-auth="access.CREATE_WORKFLOW"
         class="m-2"
         size="sm"
         color="primary"
@@ -242,7 +242,7 @@
                 execute(false)
 
                 watch([data, error], (v) => {
-                    if (data.value && !error.value) {
+                    if (data.value && !error.value && data.value.metadata) {
                         message.success({
                             content: `${workflowName.value} created!`,
                             key: `${workflowName.value}`,

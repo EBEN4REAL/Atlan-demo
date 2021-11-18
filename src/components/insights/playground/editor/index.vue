@@ -316,9 +316,9 @@
                             >Col:&nbsp; {{ editorPos.column }}</span
                         >
                     </div>
-                    <span class="ml-2 mr-4"
+                    <!-- <span class="ml-2 mr-4"
                         >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
-                    >
+                    > -->
                     <div class="flex items-center justify-center">
                         <div class @click="togglePane">
                             <a-tooltip color="#363636">

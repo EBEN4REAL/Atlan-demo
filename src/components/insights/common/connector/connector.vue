@@ -15,15 +15,15 @@
             @select="selectNode"
         >
             <template #title="node">
-                <div class="flex items-center">
+                <div class="flex items-center truncate">
                     <AtlanIcon
                         :icon="iconName(node)"
                         class="h-4 -ml-0.5 mr-1"
                     />
                     {{
-                        node?.title
-                            ? capitalizeFirstLetter(node?.title)
-                            : 'No Data'
+                        node?.title.length > 30
+                            ? `${node?.title.slice(0, 30)}...`
+                            : node.title
                     }}
                 </div>
             </template>
@@ -285,14 +285,38 @@
             }
 
             const iconName = (node) => {
-                if (node.title === 'athena' || node.title === 'snowflake') {
-                    return capitalizeFirstLetter(node.title)
+                if (
+                    node.title === 'athena' ||
+                    node.title === 'snowflake' ||
+                    node.title === 'powerbi' ||
+                    node.title === 'tableau'
+                ) {
+                    switch (node.title) {
+                        case 'snowflake':
+                            return 'Snowflake'
+                        case 'athena':
+                            return 'Athena'
+                        case 'powerbi':
+                            return 'PowerBI'
+                        case 'tableau':
+                            return 'Tableau'
+                    }
                 } else {
                     let el = node?.key?.split('/')
                     if (el && el.length) {
-                        return capitalizeFirstLetter(el[1])
+                        switch (el[1]) {
+                            case 'snowflake':
+                                return 'Snowflake'
+                            case 'athena':
+                                return 'Athena'
+                            case 'powerbi':
+                                return 'PowerBI'
+                            case 'tableau':
+                                return 'Tableau'
+                        }
+                    } else {
+                        return ''
                     }
-                    return ''
                 }
             }
 

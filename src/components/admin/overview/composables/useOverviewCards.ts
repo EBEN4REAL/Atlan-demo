@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { pluralizeString, capitalizeFirstLetter } from '~/utils/string'
 import { useUsers } from '~/composables/user/useUsers'
 import useGroups from '~/composables/group/useGroups'
-import useAPIKeysList from '~/components/governance/apikeys/composables/useAPIKeysList'
+import useAPIKeysList from '~/components/admin/apikeys/composables/useAPIKeysList'
 import { useTenantStore } from '~/store/tenant'
 
 export default function useOverviewCards() {
@@ -97,7 +97,7 @@ export default function useOverviewCards() {
             false
         )} generated`,
         emptyText: 'No keys generated',
-        link: '/governance/apikeys',
+        link: '/admin/apikeys',
         isAPIKeyCountLoading,
     }
     overviewCards.push(apiKeyCard)

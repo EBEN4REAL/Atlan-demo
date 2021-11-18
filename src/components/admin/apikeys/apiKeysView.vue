@@ -7,12 +7,12 @@
             <component :is="NewAPIKeyIllustration" class="mb-4"></component>
             <div class="text-xl font-bold">Create API Keys</div>
             <AtlanBtn
+                v-auth="[map.CREATE_APIKEY]"
                 padding="compact"
                 size="sm"
                 color="primary"
                 class="mt-6 px-7"
                 @click="handleGenerateKey"
-                v-auth="[map.CREATE_APIKEY]"
             >
                 <AtlanIcon icon="Add" class="ml-2" />Generate API Key
             </AtlanBtn>
@@ -25,7 +25,7 @@
                 Learn more about API keys<AtlanIcon icon="ArrowRight" />
             </AtlanBtn>
         </div>
-        <DefaultLayout title="API Keys" v-else>
+        <DefaultLayout v-else title="API Keys">
             <template #header>
                 <div class="flex items-center justify-between pb-3">
                     <a-input-search
@@ -38,12 +38,12 @@
                     ></a-input-search>
                     <div class="flex-grow w-0"></div>
                     <AtlanBtn
+                        v-auth="[map.CREATE_APIKEY]"
                         padding="compact"
                         size="sm"
                         color="primary"
                         class="px-7"
                         @click="handleGenerateKey"
-                        v-auth="[map.CREATE_APIKEY]"
                     >
                         <AtlanIcon icon="Add" class="ml-2" />Generate API Key
                     </AtlanBtn>
@@ -53,7 +53,7 @@
             <APIKeysTable
                 :api-keys-list="apiKeysList"
                 :is-loading="isLoading"
-                :deleteAPIKeyLoading="deleteAPIKeyLoading"
+                :delete-a-p-i-key-loading="deleteAPIKeyLoading"
                 @selectAPIKey="handleSelectAPIKey"
                 @deleteAPIKey="handleDelete"
             />
@@ -74,16 +74,16 @@
             :closable="false"
         >
             <APIKeyDrawer
+                v-model:generatedAPIKey="generatedAPIKey"
                 :api-key="selectedAPIKey"
+                :create-update-loading="
+                    createAPIKeyLoading || updateAPIKeyLoading
+                "
+                :delete-a-p-i-key-loading="deleteAPIKeyLoading"
                 @updateAPIKey="handleUpdate"
                 @createAPIKey="handleCreate"
                 @deleteAPIKey="handleDelete"
                 @closeDrawer="toggleAPIKeyDrawer"
-                :createUpdateLoading="
-                    createAPIKeyLoading || updateAPIKeyLoading
-                "
-                :deleteAPIKeyLoading="deleteAPIKeyLoading"
-                v-model:generatedAPIKey="generatedAPIKey"
             />
         </a-drawer>
     </div>
@@ -94,14 +94,14 @@ import { defineComponent, ref, Ref, watch, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import map from '~/constant/accessControl/map'
 import { APIKey } from '~/services/service/apikeys'
-import useAPIKeysList from '@/governance/apikeys/composables/useAPIKeysList'
-//TODO: Try to make update flow similar to create flow i.e use callback from the composable instead of watching the states
+import useAPIKeysList from '@/admin/apikeys/composables/useAPIKeysList'
+// TODO: Try to make update flow similar to create flow i.e use callback from the composable instead of watching the states
 // import useUpdateAPIKey from '@/governance/apikeys/composables/useUpdateAPIKey'
-import useCreateAPIKey from '@/governance/apikeys/composables/useCreateAPIKey'
+import useCreateAPIKey from '@/admin/apikeys/composables/useCreateAPIKey'
 import DefaultLayout from '~/components/admin/layout.vue'
 import AtlanBtn from '@/UI/button.vue'
-import APIKeysTable from '@/governance/apikeys/apiKeysTable.vue'
-import APIKeyDrawer from '@/governance/apikeys/apiKeyDrawer.vue'
+import APIKeysTable from '@/admin/apikeys/apiKeysTable.vue'
+import APIKeyDrawer from '@/admin/apikeys/apiKeyDrawer.vue'
 import filteredPersonas from '~/components/governance/personas/personaView.vue'
 import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
 
@@ -114,14 +114,14 @@ export default defineComponent({
         APIKeyDrawer,
     },
     setup() {
-        /**LOCAL STATE */
+        /** LOCAL STATE */
         const apiKeyDirty = ref({})
         const deleteAPIKeyLoading = ref(false)
         const updateAPIKeyLoading = ref(false)
         const searchText: Ref<string> = ref('')
         const isAPIKeyDrawerVisible: Ref<boolean> = ref(false)
 
-        /**COMPOSABLES */
+        /** COMPOSABLES */
         const {
             apiKeysList,
             isLoading,
@@ -140,11 +140,11 @@ export default defineComponent({
             createAPIKey,
             isLoading: createAPIKeyLoading,
         } = useCreateAPIKey(apiKeyDirty)
-        //TODO: Try to make update flow similar to create flow i.e use callback from the composable instead of watching the states
+        // TODO: Try to make update flow similar to create flow i.e use callback from the composable instead of watching the states
         // const { updateAPIKey, isLoading: updateAPIKeyLoading } =
         //     useUpdateAPIKey(apiKeyDirty)
 
-        /**METHODS */
+        /** METHODS */
         const toggleAPIKeyDrawer = (val: boolean | undefined = undefined) => {
             if (val === undefined)
                 isAPIKeyDrawerVisible.value = !isAPIKeyDrawerVisible.value
@@ -238,10 +238,10 @@ export default defineComponent({
             paginateAPIKeys(page)
         }
 
-        /**WATCHERS */
+        /** WATCHERS */
         watch(searchText, () => searchAPIKeys(searchText.value))
 
-        /**COMPUTED PROPERTIES */
+        /** COMPUTED PROPERTIES */
         const pagination = computed(() => ({
             total: searchText.value.length
                 ? filteredAPIKeysCount.value

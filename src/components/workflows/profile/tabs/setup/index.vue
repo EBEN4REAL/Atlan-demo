@@ -104,13 +104,10 @@
             })
 
             watch(data, (newVal) => {
-                const urlLogo =
-                    newVal?.workflowtemplate?.metadata?.annotations &&
-                    newVal?.workflowtemplate?.metadata?.annotations[
-                        'com.atlan.orchestration/logo'
-                    ]
-                emit('handleSetLogo', urlLogo)
-                const { entrypoint } = newVal.workflowtemplate.spec
+              const meta = newVal?.workflowtemplate?.metadata?.annotations || {}
+              const urlLogo = meta["com.atlan.orchestration/logo"] || ""
+              emit("handleSetLogo", urlLogo)
+                const {entrypoint} = newVal.workflowtemplate.spec
                 tasks.value = newVal.workflowtemplate.spec.templates.find(
                     (t) => t.name === entrypoint
                 ).dag.tasks

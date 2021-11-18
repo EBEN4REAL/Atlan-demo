@@ -36,13 +36,11 @@ export default async function useComputeGraph(
     let baseEntity = null
 
     if (!relations.length) {
-        const getEntityData = (id) =>
-            useAPIPromise(entityMap.GET_ENTITY(id), 'GET', {})
-
-        const { entity } = await getEntityData(
-            '5aac83bf-60a6-4728-9253-9d57384fc493'
+        const { entity } = await useAPIPromise(
+            entityMap.GET_ENTITY({ guid: baseEntityGuid }),
+            'GET',
+            {}
         )
-
         baseEntity = entity
     }
 

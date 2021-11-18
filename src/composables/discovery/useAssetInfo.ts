@@ -11,6 +11,7 @@ import { assetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import { previewTabs } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
+import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
 import useAssetStore from '~/store/asset'
 import { Category, Term } from '~/types/glossary/glossary.interface'
@@ -130,6 +131,9 @@ export default function useAssetInfo() {
     }
     const getProfileTabs = (asset: assetInterface) => {
         return getTabs(profileTabs, assetType(asset))
+    }
+    const getSummaryVariants = (asset: assetInterface) => {
+        return getTabs(summaryVariants, assetType(asset))
     }
 
     const getActions = (asset) => {
@@ -801,6 +805,7 @@ export default function useAssetInfo() {
         getPreviewTabs,
         getProfileTabs,
         selectedAsset,
+        getSummaryVariants,
         sourceUpdatedAt,
         sourceCreatedAt,
         sourceCreatedBy,

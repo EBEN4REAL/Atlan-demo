@@ -508,14 +508,31 @@
                     if (e.key === 'Enter') {
                         if (input.value && input.value !== orignalName) {
                             item.value.attributes.name = input.value
-                            const { data, error } = Insights.CreateSavedQuery({
-                                entity: item.value.entity,
-                            })
-                            watch(error, (newError) => {
-                                if (newError) {
-                                    item.value.attributes.name = orignalName
-                                }
-                            })
+                            const { data, error } = Insights.CreateQueryFolder(
+                                {
+                                    entity: item.value.entity,
+                                },
+                                {}
+                            )
+                            console.log('rename: ', { data, error })
+                            watch(
+                                error,
+                                () => {
+                                    console.log('rename erro: ', error)
+                                    if (error.value == undefined) {
+                                        message.success({
+                                            content: `Folder renamed successfully`,
+                                        })
+                                    } else {
+                                        item.value.attributes.name = orignalName
+
+                                        message.success({
+                                            content: `Folder rename failed`,
+                                        })
+                                    }
+                                },
+                                { immediate: true }
+                            )
                         }
                         input.value = ''
                         try {

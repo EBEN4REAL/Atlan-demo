@@ -101,7 +101,7 @@
             const { classificationList } = useTypedefData()
             const searchQuery = ref('')
             const selectedClassificationName = ref('')
-            const createClassificationModalVisible = ref(true)
+            const createClassificationModalVisible = ref(false)
 
             const filteredClassificationList = computed(() => {
                 if (searchQuery.value) {
@@ -127,11 +127,19 @@
             })
 
             watch(selectedClassificationName, (newClassificationName) => {
-                router.push(
-                    `/governance/classifications/${encodeURIComponent(
-                        newClassificationName as string
-                    )}`
-                )
+                if(newClassificationName !== router.currentRoute.value.params?.classificationId) {
+                    router.push(
+                        `/governance/classifications/${encodeURIComponent(
+                            newClassificationName as string
+                        )}`
+                    )
+                }
+            })
+
+            watch(router.currentRoute, (newRoute) => {
+                if(newRoute.params?.classificationId !== selectedClassificationName.value) {
+                    selectedClassificationName.value = newRoute.params.classificationId as string;
+                }
             })
 
             return {

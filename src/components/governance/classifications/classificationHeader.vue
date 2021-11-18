@@ -31,7 +31,7 @@
 
 <script lang="ts">
     import { defineComponent, computed, ref, PropType, toRefs, watch } from 'vue'
-    import { message, Modal } from 'ant-design-vue'
+    import { Modal } from 'ant-design-vue'
     import { whenever } from '@vueuse/core'
     import { useRouter } from 'vue-router'
 
@@ -62,7 +62,6 @@
             const typedefStore = useTypedefStore()
 
             const { classification: selectedClassification} = toRefs(props)
-            const { error:deleteError, isLoading:deleteLoading, mutate: mutateDelete, isReady:isDeleteReady }  = useDeleteTypedefs(selectedClassification.value.name)
 
             const router = useRouter()
             
@@ -93,7 +92,17 @@
                     okText: 'Yes',
                     cancelText: 'No',
                     async onOk() {
+                        const { error:deleteError, mutate: mutateDelete, isReady:isDeleteReady }  = useDeleteTypedefs(selectedClassification.value.name)
+
                         mutateDelete()
+                        whenever(isDeleteReady, () => {
+                            if(typedefStore.classificationList.length) {
+                                const name = typedefStore.classificationList[0].name;
+                                router.push(`/governance/classifications/${name}`)
+                            } else {
+                                router.push('/governance/classifications')
+                            }
+                        })
                     },
                 })
             }
@@ -107,25 +116,7 @@
                 isDeleteClassificationModalOpen.value = false
             }
 
-            whenever(isDeleteReady, () => {
-                console.log(deleteError.value, 'bruh')
-                if(typedefStore.classificationList.length) {
-                    const name = typedefStore.classificationList[0].name;
-                    router.push(`/governance/classifications/${name}`)
-                } else {
-                    router.push('/governance/classifications')
-                }
-            })
 
-            watch(deleteError, (newError) => {
-                if(newError) {
-                    if(newError.response.data.errorCode === "ATLAS-409-00-002") {
-                        message.error(`Classification ${selectedClassification.value.displayName} has references!`)
-                    } else {
-                        message.error(newError.response.data.errorMessage)
-                    }
-                }
-            })
             // user preview drawer
             // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
             // const handleClickUser = (username: string) => {

@@ -54,9 +54,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, reactive, watch, ref, PropType, toRefs } from 'vue'
+    import { defineComponent, reactive, watch, ref, PropType, toRefs, nextTick, onMounted } from 'vue'
     import { useVModels, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
+    import { useRouter } from 'vue-router'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
@@ -86,12 +87,14 @@
         setup(props, { emit }) {
             const { classification: selectedClassification } = toRefs(props)
             const { modalVisible } = useVModels(props, emit)
+            const router = useRouter();
+            const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
             const name =  ref(selectedClassification.value?.displayName ?? '');
             const description =  ref(selectedClassification.value?.description ?? '');
 
             const body = ref<Record<string, any>>({})
-            const { isLoading:createLoading, mutate:mutateCreate, isReady:isCreateReady }  = useCreateTypedefs(body)
+            const { data:createData, isLoading:createLoading, mutate:mutateCreate, isReady:isCreateReady }  = useCreateTypedefs(body)
             const { isLoading:editLoading, mutate:mutateEdit, isReady:isUpdateReady }  = useEditTypedefs(body)
 
             const closeModal = () => {
@@ -132,14 +135,20 @@
                 mutateEdit()
             }
 
-            const handleOk = () => {
+            const handleOk = async () => {
                 if(props.mode === 'create') {
                     createClassification()
                 } else {
                     editClassification()
                 }
             }
-
+            watch(modalVisible, async (newVisible) => {
+                if(newVisible) {
+                    await nextTick()
+                    titleBar.value?.focus()
+                }
+            })
+            
             watch(selectedClassification, (newSelectedClassification) => {
                 if(newSelectedClassification) {
                     name.value = newSelectedClassification.displayName
@@ -150,6 +159,9 @@
             whenever(isCreateReady, () => {
                 message.success(`${name.value} Created!`)
                 closeModal()
+                if(createData.value?.classificationDefs[0]?.name) {
+                    router.push(`/governance/classifications/${createData.value?.classificationDefs[0]?.name}`)
+                }
             })
 
             whenever(isUpdateReady, () => {
@@ -168,6 +180,7 @@
                 editClassification,
                 editLoading,
                 handleOk,
+                titleBar
             }
         },
     })

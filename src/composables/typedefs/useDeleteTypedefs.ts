@@ -1,4 +1,5 @@
 import { watch, ref } from 'vue'
+import { message } from 'ant-design-vue'
 
 import { useTypedefStore } from '~/store/typedef'
 import { useOptions } from '~/services/api/common'
@@ -17,6 +18,11 @@ export default function useDeleteTypedefs(name: string) {
 
     watch(data, () => {
         typedefStore.removeClassificationByName(name)
+    })
+    watch(error, (newError) => {
+        if(newError) {
+            message.error(newError.response.data.errorMessage)
+        }
     })
     
     return {

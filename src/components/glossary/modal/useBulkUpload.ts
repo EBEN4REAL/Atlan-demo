@@ -5,10 +5,9 @@ import {
     runWorkflowByName,
     createWorkflow,
 } from '~/composables/workflow/useWorkflowList'
-import workflow from '~/mixins/workflow'
 
-const useBulkUpload = ({ guid, fileS3Key }) => {
-    console.log(guid, fileS3Key)
+export const isWorkflowRunning = ref(false)
+const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
     const body = computed(() => ({
         metadata: {
             name: `atlan-gtc-bulk-upload-${guid.slice(-8)}`, // will be static for this usecase
@@ -135,9 +134,11 @@ const useBulkUpload = ({ guid, fileS3Key }) => {
     const startUpload = () => {
         // CODEFLOW:
         // update workflow -> if error then create workflow ( with submit=true ) and show messgaes accordingly-> if success then run workflow -> show messages accordingly
-        updateWorkflow()
+        // updateWorkflow()
         console.log(guid, fileS3Key)
+        isWorkflowRunning.value = true
+        console.log(isWorkflowRunning)
     }
-    return { startUpload }
+    return { startUpload, isWorkflowRunning }
 }
 export default useBulkUpload

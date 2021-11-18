@@ -198,7 +198,7 @@
                 )
             )
             const selectedGlosaryName = ref(
-                selectedGlossary?.value.attributes?.name
+                selectedGlossary?.value?.attributes?.name
             )
 
             // List Options

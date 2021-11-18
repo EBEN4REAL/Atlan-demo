@@ -5,6 +5,7 @@
         </div>
         <div class="flex-1 border-r border-gray-300">
             <div class="flex w-full h-full">
+                <BulkUploadProgress />
                 <router-view :selected-asset="selectedGlossary" v-if="isItem" />
             </div>
         </div>
@@ -28,11 +29,14 @@
     import GlossaryDiscovery from '@/glossary/index.vue'
     import GlossaryPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    // import BulkUploadProgress from '@/common/widgets/bulkUploadProgress/index.vue'
+    import BulkUploadProgress from '~/components/common/widgets/bulkUploadProgress/progressWidget.vue'
 
     export default defineComponent({
         components: {
             GlossaryDiscovery,
             GlossaryPreview,
+            BulkUploadProgress,
         },
         setup() {
             useHead({

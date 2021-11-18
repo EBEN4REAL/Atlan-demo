@@ -17,7 +17,7 @@
         </div>
         <ExplorerLayout
             v-else-if="enumList.length"
-            title="Labels"
+            title="Enums"
             sidebar-class="bg-white"
         >
             <template #action>
@@ -37,7 +37,7 @@
                 <div class="px-4 pt-6 pb-4">
                     <SearchAndFilter
                         v-model:value="searchText"
-                        :placeholder="`Search from ${enumList.length} labels`"
+                        :placeholder="`Search from ${enumList.length} enums`"
                         class="bg-white"
                     />
                 </div>
@@ -64,11 +64,11 @@
                 }"
             >
                 <template #description>
-                    <p class="text-2xl font-bold">Start adding labels</p>
+                    <p class="text-2xl font-bold">Start adding enums</p>
                 </template>
 
                 <a-button type="primary" @click="addModalVisible = true"
-                    ><AtlanIcon icon="Add" class="inline" /> Create new label
+                    ><AtlanIcon icon="Add" class="inline" /> Create new enum
                 </a-button>
             </a-empty>
         </div>

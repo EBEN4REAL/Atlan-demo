@@ -35,11 +35,12 @@ export default function useCustomMetadataAvatar(metadata) {
   const fileList = ref<FileItem[]>([]);
 
   const store = useTypedefStore()
-  const form: Ref<avatarOptions> = ref({
+  const initializeForm = () => ({
     logoType: 'image',
     imageId: null,
     emoji: null,
   })
+  const form: Ref<avatarOptions> = ref(initializeForm())
 
 
   // image uploader ======================================================
@@ -141,6 +142,10 @@ export default function useCustomMetadataAvatar(metadata) {
     updateBM()
   }, { deep: true })
 
+  const removeAvatar = () => {
+    form.value = initializeForm()
+    popOverVisible.value = false
+  }
 
 
 
@@ -158,5 +163,6 @@ export default function useCustomMetadataAvatar(metadata) {
     fileList,
     handleUploadImage,
     handleEmojiSelect,
+    removeAvatar
   }
 }

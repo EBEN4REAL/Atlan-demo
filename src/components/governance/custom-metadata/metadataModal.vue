@@ -29,15 +29,13 @@
                 >{{ isEdit ? 'Update' : 'Create' }}</a-button
             >
         </div>
-        <!-- <pre>{{ isEdit }}</pre> -->
-        <!-- <pre>{{ metadata }}</pre> -->
     </a-modal>
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
-    import { Types } from '~/services/meta/types'
     import { message } from 'ant-design-vue'
+    import { Types } from '~/services/meta/types'
 
     // store
     import { useTypedefStore } from '~/store/typedef'
@@ -57,25 +55,22 @@
         setup(props, { emit }) {
             // data
             const store = useTypedefStore()
-
-            const visible = ref(false)
-            const loading = ref(false)
-            const form = ref({
+            const initializeForm = () => ({
                 displayName: '',
                 description: '',
                 options: {},
             })
+            const visible = ref(false)
+            const loading = ref(false)
+            const form = ref(initializeForm())
 
             // methods
             const open = () => {
                 if (props.metadata) {
-                    // const storeMetadata = store.getBusinessMetadataByGuid(
-                    //     props.metadata.guid
-                    // )
                     form.value = props.metadata
+                } else {
+                    form.value = initializeForm()
                 }
-
-                // if (props.isEdit) fillForm()
                 visible.value = true
                 setTimeout(
                     () => document.getElementById('name-input')?.focus(),

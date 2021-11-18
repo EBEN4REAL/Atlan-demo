@@ -3,7 +3,10 @@
         <div class="flex-1 border-r border-gray-300 item-stretch">
             <div class="flex w-full h-full">
                 <transition name="fade" v-if="isItem">
-                    <router-view :selected-asset="selectedAsset" />
+                    <router-view
+                        :selected-asset="selectedAsset"
+                        @preview="setSelectedAsset($event)"
+                    />
                 </transition>
                 <keep-alive>
                     <AssetDiscovery
@@ -16,13 +19,15 @@
         <div
             class="relative bg-white  asset-preview-container xs:hidden sm:hidden md:block lg:block"
         >
-            <AssetPreview :selected-asset="selectedAsset"></AssetPreview>
+            <AssetPreview
+                :selected-asset="selectedAssetFromEmit || selectedAsset"
+            ></AssetPreview>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -42,9 +47,16 @@
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
             const { selectedAsset } = useAssetInfo()
+            const selectedAssetFromEmit = ref(null)
+
+            const setSelectedAsset = (e) => {
+                selectedAssetFromEmit.value = e
+            }
             return {
                 isItem,
                 selectedAsset,
+                selectedAssetFromEmit,
+                setSelectedAsset,
             }
         },
     })

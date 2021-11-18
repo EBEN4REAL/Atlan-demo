@@ -53,6 +53,7 @@
         discardPersona,
         selectedPersonaDirty,
         deletePersonaById,
+        deletePersonaByIdLocally,
     } from './composables/useEditPurpose'
 
     import Dropdown from '@/UI/dropdown.vue'
@@ -89,6 +90,14 @@
                             key: msgId,
                         })
                         try {
+                            if (
+                                persona.value.data.resourcePolicies.length +
+                                    persona.value.data.dataPolicies.length ===
+                                0
+                            ) {
+                                deletePersonaByIdLocally(persona.value.id!)
+                            }
+
                             await deletePersonaById(persona.value.id!)
                             message.success({
                                 content: 'Purpose deleted',

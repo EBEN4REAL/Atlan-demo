@@ -27,22 +27,11 @@
             <Classification
                 v-model:modelValue="selectedClassifications"
                 :disabled="addClassificationsDisabled"
-                @change="handleClassificationChange"
             />
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -70,13 +59,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -136,34 +119,21 @@
             }
 
             /* Mimic the classification Names */
-            const classificationNames = computed(() => {
-                if (selectedPersonaDirty.value?.tag)
-                    return [selectedPersonaDirty.value?.tag]
-                else return []
-            })
 
             const selectedClassifications = ref(
-                mapClassificationsFromNames(classificationNames.value)
+                mapClassificationsFromNames([selectedPersonaDirty.value?.tag])
             )
             const addClassificationsDisabled = computed(() =>
                 selectedClassifications.value.length > 0 ? true : false
             )
 
-            const handleClassificationChange = () => {
-                if (classificationNames.value.length > 0)
-                    selectedPersonaDirty.value.tag =
-                        classificationNames.value[0]
-                else selectedPersonaDirty.value.tag = ''
-                /* Call save purpose */
-            }
-            watch(classificationNames, () => {
-                selectedClassifications.value = mapClassificationsFromNames(
-                    classificationNames.value
-                )
+            watch(selectedClassifications, () => {
+                selectedPersonaDirty.value.tag =
+                    selectedClassifications.value[0]?.typeName
             })
 
             return {
-                handleClassificationChange,
+                selectedPersonaDirty,
                 addClassificationsDisabled,
                 selectedClassifications,
                 enablePersonaCheck,

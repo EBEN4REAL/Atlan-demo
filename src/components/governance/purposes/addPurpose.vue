@@ -44,7 +44,15 @@
 
 <script lang="ts">
     import { message } from 'ant-design-vue'
-    import { computed, defineComponent, Ref, ref, toRefs, PropType } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        Ref,
+        ref,
+        toRefs,
+        PropType,
+        watch,
+    } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
     import {
@@ -165,6 +173,9 @@
                     rules.value.classification.show = true
                 }
             }
+            watch(modalVisible, () => {
+                if (modalVisible.value) selectedClassifications.value = []
+            })
 
             whenever(titleBar, () => {
                 titleBar.value?.focus()

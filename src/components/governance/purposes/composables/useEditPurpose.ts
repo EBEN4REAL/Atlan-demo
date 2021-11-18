@@ -4,6 +4,7 @@ import usePurposeService from './usePurposeService'
 import { message } from 'ant-design-vue'
 import {
     selectedPersona,
+    reFetchList,
     personaList,
     selectedPersonaId,
 } from './usePurposeList'
@@ -101,6 +102,7 @@ export async function addFirstPolicy(type: string, id) {
         const purposeOb = Object.assign({}, selectedPersonaDirty.value)
         delete purposeOb[id]
 
+        const purpose = await createPersona(purposeOb)
         const tempPersona = { ...purposeOb }
         if (type === 'meta') {
             const dirtyPolicyIndex =
@@ -154,18 +156,18 @@ export async function addFirstPolicy(type: string, id) {
             }
             policyEditMap.value.dataPolicies[id] = false
         }
-        await createPersona(purposeOb)
         message.success({
             content: ` purpose updated`,
             duration: 1.5,
             key: '1',
         })
-        // reFetchList().then(() => {
-        //     selectedPersonaId.value = newPurpose.id!
-        // })
+        reFetchList().then(() => {
+            selectedPersonaId.value = purpose.id!
+        })
     } catch (error) {
+        console.log(error, 'error')
         message.error({
-            content: 'Failed to create persona',
+            content: 'Failed to create purpose',
             duration: 1.5,
             key: '2',
         })
@@ -335,6 +337,12 @@ export function isSavedPolicy() {}
 export async function deletePersonaById(id: string) {
     await deletePersona(id)
 
+    const personaIdx = personaList.value.findIndex((prs) => prs.id === id)
+    if (personaIdx > -1) personaList.value.splice(personaIdx, 1)
+
+    selectedPersonaId.value = personaList.value[0]?.id || ''
+}
+export function deletePersonaByIdLocally(id: string) {
     const personaIdx = personaList.value.findIndex((prs) => prs.id === id)
     if (personaIdx > -1) personaList.value.splice(personaIdx, 1)
 

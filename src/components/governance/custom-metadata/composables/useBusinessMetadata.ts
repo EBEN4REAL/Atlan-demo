@@ -151,7 +151,7 @@ export default function useBusinessMetadata() {
   })
 
   //* Hooks
-
+  if (sortedSearchedBM.value.length !== 0) selectedBm.value = sortedSearchedBM.value[0]
   watch(finalBusinessMetadataList, (n) => {
     if (n.length && !selectedBm.value) {
       selectedBm.value = JSON.parse(

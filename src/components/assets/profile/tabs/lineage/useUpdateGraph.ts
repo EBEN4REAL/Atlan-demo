@@ -19,7 +19,7 @@ export default function useUpdateGraph() {
             // #9cb781 - green
             // #f1a183 - orange
             // #d9d9d9 - gray
-            // #2351cc - blue
+            // #5277D7 - blue
 
             if (reset) {
                 const edgesSplit = m.id.split('@')
@@ -41,8 +41,8 @@ export default function useUpdateGraph() {
         if (!reset) {
             edgesToHighlight.forEach((x) => {
                 const edgeData = getEdgeData(x)
-                edgeData.attrs.line.stroke = '#2351cc'
-                edgeData.attrs.line.targetMarker.stroke = '#2351cc'
+                edgeData.attrs.line.stroke = '#5277D7'
+                edgeData.attrs.line.targetMarker.stroke = '#5277D7'
                 edgeData.zIndex = 30
                 newEdgesData.push(edgeData)
             })

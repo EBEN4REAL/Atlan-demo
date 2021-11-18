@@ -1,29 +1,36 @@
 <template>
+    <!-- Lineage Legend -->
+    <div class="lineage-legend">
+        <div class="lineage-legend__item">
+            <span id="upstream"></span>
+            <span>Upstream</span>
+        </div>
+        <div class="lineage-legend__item">
+            <span id="downstream"></span>
+            <span>Downstream</span>
+        </div>
+        <div class="lineage-legend__item">
+            <span id="selected"></span>
+            <span>Selected Path</span>
+        </div>
+    </div>
     <div class="lineage-control footer">
-        <!-- Minimap Container -->
-        <div
-            v-show="showMinimap"
-            ref="minimapContainer"
-            class="mb-3 minimap"
-        ></div>
+        <slot></slot>
 
-        <div class="flex items-center flex-1 controls">
-            <div class="mr-3 cursor-pointer">
+        <div class="controls">
+            <!-- <div class="mr-3 cursor-pointer">
                 <a-tooltip placement="top">
                     <template #title>
                         <span>retry</span>
                     </template>
 
-                    <AtlanIcon icon="Retry" class="outline-none"></AtlanIcon>
+                    <AtlanIcon icon="Refresh" class="outline-none"></AtlanIcon>
                 </a-tooltip>
-            </div>
+            </div> -->
 
-            <a-divider type="vertical" />
+            <!-- <a-divider type="vertical" /> -->
 
-            <div
-                class="ml-3 mr-5 cursor-pointer"
-                @click="showMinimap = !showMinimap"
-            >
+            <div class="mr-5 cursor-pointer" @click="onShowMinimap">
                 <a-tooltip placement="top">
                     <template #title>
                         <span>{{
@@ -39,16 +46,16 @@
                 </a-tooltip>
             </div>
 
-            <div class="mr-5 cursor-pointer">
+            <div class="mr-5 cursor-pointer" @click="fit()">
                 <a-tooltip placement="top">
                     <template #title>
-                        <span>recenter</span>
+                        <span>fit graph</span>
                     </template>
 
                     <AtlanIcon icon="Recenter" class="outline-none"></AtlanIcon>
                 </a-tooltip>
             </div>
-            <div class="mr-5 cursor-pointer">
+            <div class="mr-5 cursor-pointer" @click="onFullscreen()">
                 <a-tooltip placement="top">
                     <template #title>
                         <span>{{
@@ -61,7 +68,7 @@
                     ></AtlanIcon>
                 </a-tooltip>
             </div>
-            <div class="mr-5 cursor-pointer">
+            <div class="mr-5 cursor-pointer" @click="zoom(-0.1)">
                 <a-tooltip placement="top">
                     <template #title>
                         <span>zoom out</span>
@@ -70,7 +77,7 @@
                     <AtlanIcon icon="Minus" class="outline-none"></AtlanIcon>
                 </a-tooltip>
             </div>
-            <div class="mr-5 cursor-pointer">
+            <div class="mr-5 cursor-pointer" @click="zoom(0.1)">
                 <a-tooltip placement="top">
                     <template #title>
                         <span>zoom in</span>
@@ -83,8 +90,7 @@
                 </a-tooltip>
             </div>
             <div class="w-8 text-sm text-gray-500 select-none">
-                <!-- {{ currZoom }} -->
-                60%
+                {{ currZoom }}
             </div>
         </div>
     </div>
@@ -92,31 +98,55 @@
 
 <script lang="ts">
     /** PACKAGES */
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
+
+    /** COMPOSABLES */
+    import useTransformGraph from './useTransformGraph'
 
     export default defineComponent({
         name: 'LineageFooter',
-
-        setup() {
+        props: {
+            graph: {
+                type: Object,
+                required: true,
+            },
+            lineageContainer: {
+                type: Object,
+                required: true,
+            },
+            currZoom: {
+                type: String,
+                required: true,
+            },
+        },
+        emits: ['on-zoom-change', 'on-show-minimap'],
+        setup(props, { emit }) {
             /** DATA */
-            const graphContainer = ref(null)
-            const minimapContainer = ref(null)
-            const monitorContainer = ref(null)
-            const currZoom = ref('...')
-            const currZoomDec = ref(null)
+            const { graph, lineageContainer } = toRefs(props)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
-            const isRunning = ref(true)
+
+            // transform
+            const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
+
+            const onFullscreen = () => {
+                isFullscreen.value = !isFullscreen.value
+                fullscreen(lineageContainer)
+            }
+
+            // onShowMinimap
+            const onShowMinimap = () => {
+                showMinimap.value = !showMinimap.value
+                emit('on-show-minimap', showMinimap.value)
+            }
 
             return {
-                minimapContainer,
-                monitorContainer,
-                graphContainer,
-                currZoom,
-                currZoomDec,
                 showMinimap,
                 isFullscreen,
-                isRunning,
+                zoom,
+                fit,
+                onShowMinimap,
+                onFullscreen,
             }
         },
     })

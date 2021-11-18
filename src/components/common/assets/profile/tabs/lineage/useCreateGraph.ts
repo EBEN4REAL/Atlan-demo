@@ -52,6 +52,7 @@ export default function useCreateGraph(
 
     /* graphLayout */
     graphLayout.value = new DagreLayout({
+        type: 'dagre',
         rankdir: 'LR',
         ranksep: 100,
         nodesep: 15,

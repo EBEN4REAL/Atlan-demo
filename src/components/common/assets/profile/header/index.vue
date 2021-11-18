@@ -130,41 +130,6 @@
                         "
                         class="flex text-sm text-gray-500 gap-x-2"
                     >
-                        <a-tooltip placement="bottomLeft">
-                            <div
-                                class="flex items-center text-gray-500"
-                                v-if="databaseName(item)"
-                            >
-                                <AtlanIcon
-                                    icon="DatabaseGray"
-                                    class="mr-1 mb-0.5"
-                                />
-                                <div class="tracking-tight text-gray-500">
-                                    {{ databaseName(item) }}
-                                </div>
-                            </div>
-                            <template #title>
-                                <span>Database - {{ databaseName(item) }}</span>
-                            </template>
-                        </a-tooltip>
-                        <a-tooltip placement="bottomLeft">
-                            <div
-                                v-if="schemaName(item)"
-                                class="flex items-center text-gray-500"
-                            >
-                                <AtlanIcon
-                                    icon="SchemaGray"
-                                    class="mr-1 mb-0.5"
-                                />
-                                <div class="tracking-tight text-gray-500">
-                                    {{ schemaName(item) }}
-                                </div>
-                            </div>
-                            <template #title>
-                                <span>Schema - {{ schemaName(item) }}</span>
-                            </template>
-                        </a-tooltip>
-
                         <a-tooltip
                             placement="bottomLeft"
                             v-if="tableName(item)"
@@ -200,6 +165,40 @@
                             </div>
                             <template #title>
                                 <span>View - {{ viewName(item) }}</span>
+                            </template>
+                        </a-tooltip>
+                        <a-tooltip placement="bottomLeft">
+                            <div
+                                v-if="schemaName(item)"
+                                class="flex items-center text-gray-500"
+                            >
+                                <AtlanIcon
+                                    icon="SchemaGray"
+                                    class="mr-1 mb-0.5"
+                                />
+                                <div class="tracking-tight text-gray-500">
+                                    {{ schemaName(item) }}
+                                </div>
+                            </div>
+                            <template #title>
+                                <span>Schema - {{ schemaName(item) }}</span>
+                            </template>
+                        </a-tooltip>
+                        <a-tooltip placement="bottomLeft">
+                            <div
+                                class="flex items-center text-gray-500"
+                                v-if="databaseName(item)"
+                            >
+                                <AtlanIcon
+                                    icon="DatabaseGray"
+                                    class="mr-1 mb-0.5"
+                                />
+                                <div class="tracking-tight text-gray-500">
+                                    {{ databaseName(item) }}
+                                </div>
+                            </div>
+                            <template #title>
+                                <span>Database - {{ databaseName(item) }}</span>
                             </template>
                         </a-tooltip>
                     </div>

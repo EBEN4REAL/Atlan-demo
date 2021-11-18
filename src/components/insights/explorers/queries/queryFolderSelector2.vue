@@ -188,6 +188,7 @@
                         dataRef: {
                             ...rootData,
                         },
+                        selectedFolderType: savedQueryType.value,
                     }
 
                     if (
@@ -220,7 +221,10 @@
                             selectedFolder.value = event?.node?.dataRef.title
                             dropdownVisible.value = false
 
-                            emit('folderChange', event.node)
+                            emit('folderChange', {
+                                dataRef: event.node,
+                                selectedFolderType: savedQueryType.value,
+                            })
                         }
                     }
                 }
@@ -319,8 +323,8 @@
             })
 
             const folderOpened = ref({
-                all: false,
-                personal: false,
+                all: true,
+                personal: true,
             })
 
             const toggleFolder = (type) => {

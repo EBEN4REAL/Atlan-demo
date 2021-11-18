@@ -47,6 +47,7 @@
         "chartjs-plugin-datalabels": "^2.0.0",
         "clusterize.js": "^0.18.1",
         "cron-parser": "^4.1.0",
+        "dagrejs": "^0.2.1",
         "dayjs": "^1.10.7",
         "emoji-mart-vue-fast": "^10.0.1",
         "event-source-polyfill": "^1.0.25",
@@ -72,9 +73,9 @@
         "vue-axios": "^3.4.0",
         "vue-chart-3": "^0.5.11",
         "vue-linkify": "^1.0.1",
-        "xlsx": "^0.17.4",
         "vue-router": "^4.0.12",
-        "vue3-timepicker": "^1.0.0-beta.2"
+        "vue3-timepicker": "^1.0.0-beta.2",
+        "xlsx": "^0.17.4"
     },
     "devDependencies": {
         "@babel/core": "^7.16.0",

@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { SimpleNodeView } from './view.js'
+import { DagreLayout } from './dagreLayout/dagre.ts'
 
 export default function useCreateGraph(
     graph,
@@ -10,7 +11,7 @@ export default function useCreateGraph(
 
     /* Build Graph Canvas */
     const { Graph } = window.X6
-    const { DagreLayout } = window.layout
+    // const { DagreLayout } = window.layout
 
     graph.value = new Graph({
         autoResize: true,
@@ -53,7 +54,7 @@ export default function useCreateGraph(
     graphLayout.value = new DagreLayout({
         rankdir: 'LR',
         ranksep: 100,
-        nodesep: 50,
+        nodesep: 15,
         controlPoints: true,
     })
 

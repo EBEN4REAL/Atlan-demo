@@ -2,8 +2,9 @@
     <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
     <KeepAlive>
         <div class="overflow-y-scroll">
+            <ClassificationOverview v-if="activeTabKey === '1'" :classification="selectedClassification" />
             <AssetsWrapper 
-                v-if="activeTabKey === '1'" 
+                v-if="activeTabKey === '2'" 
                 :initialFilters="filterConfig" 
                 :showFilters="false"  
             />
@@ -15,6 +16,8 @@
     import { defineComponent, computed, ref, PropType, toRefs } from 'vue'
     import AssetsWrapper from '@/assets/index.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
+    import ClassificationOverview from '@/governance/classifications/overview.vue'
+
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
@@ -22,6 +25,7 @@
         components: {
             AssetsWrapper,
             MinimalTab,
+            ClassificationOverview,
         },
         props: {
             classification: {
@@ -34,7 +38,8 @@
 
             const activeTabKey = ref('1')
             const tabConfig = [
-                { key: '1', label: 'Linked Assets' },
+                { key: '1', label: 'Overview' },
+                { key: '2', label: 'Assets' },
             ]
 
             const filterConfig = computed(() => ({

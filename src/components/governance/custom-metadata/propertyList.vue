@@ -57,10 +57,47 @@
                     <div style="width: 130px">
                         <a-button
                             class="px-1 py-0 border-0"
-                            @click="copyAPI(property.displayName)"
+                            @click="
+                                copyAPI(property.displayName, 'Name Copied!')
+                            "
                         >
                             <AtlanIcon icon="CopyOutlined" />
                         </a-button>
+                        <a-dropdown :trigger="['click']">
+                            <a-button class="border-0 rounded" size="small">
+                                <AtlanIcon icon="KebabMenu"></AtlanIcon>
+                            </a-button>
+                            <template #overlay>
+                                <a-menu
+                                    ><a-menu-item
+                                        @click="
+                                            copyAPI(
+                                                property.displayName,
+                                                'Name Copied!'
+                                            )
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="CopyOutlined"
+                                            class="mr-2"
+                                        />Copy Name</a-menu-item
+                                    >
+                                    <a-menu-item
+                                        @click="
+                                            copyAPI(
+                                                property.name,
+                                                'GUID Copied!'
+                                            )
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="CopyOutlined"
+                                            class="mr-2"
+                                        />Copy GUID</a-menu-item
+                                    >
+                                </a-menu></template
+                            >
+                        </a-dropdown>
                         <!-- <a-button
                             class="px-1 py-0 border-0"
                             @click="handleRemoveProperty(index, property)"
@@ -121,10 +158,10 @@
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
 
-            const copyAPI = (text: string) => {
+            const copyAPI = (text: string, theMessage: String) => {
                 copyToClipboard(text)
                 message.success({
-                    content: 'Name copied!',
+                    content: theMessage,
                 })
             }
 

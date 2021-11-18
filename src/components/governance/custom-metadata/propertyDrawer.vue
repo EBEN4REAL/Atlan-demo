@@ -64,13 +64,13 @@
                                     :key="type.id"
                                     :value="type.id"
                                 >
-                                    <span>
+                                    <span class="flex items-center">
                                         <AtlanIcon
-                                            class="inline h-4 mr-2"
+                                            class="inline h-4 mr-2 align-middle"
                                             :icon="type.icon"
                                         />
 
-                                        <span>
+                                        <span class="inline align-middle">
                                             {{ type.label }}
                                         </span>
                                     </span>

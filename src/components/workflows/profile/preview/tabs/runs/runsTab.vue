@@ -30,7 +30,7 @@
                     :selected-run-name="selectedRunName"
                     :is-loading="isLoadingRunGraph"
                     :select-enabled="true"
-                    @select="loadRunGraph($event)"
+                    @select="loadRunGraph($event)" 
                 />
             </template>
             <template #footer>
@@ -40,32 +40,13 @@
                 >
                     <button
                         :disabled="isLoading"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            py-2
-                            transition-all
-                            duration-300
-                            bg-white
-                            rounded-full
-                            text-primary
-                        "
+                        class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                         :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                         @click="loadMore"
                     >
                         <template v-if="!isLoading">
                             <p
-                                class="
-                                    m-0
-                                    mr-1
-                                    overflow-hidden
-                                    text-sm
-                                    transition-all
-                                    duration-300
-                                    overflow-ellipsis
-                                    whitespace-nowrap
-                                "
+                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                             >
                                 Load more
                             </p>
@@ -123,6 +104,7 @@
 
     // Components
     import EmptyView from '@common/empty/index.vue'
+    import { useRoute, useRouter } from 'vue-router'
     import RunCard from '@/workflows/shared/runCard.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import RunSort from './runSort.vue'
@@ -155,6 +137,8 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
+            const route = useRoute()
+            const router = useRouter()
             const { selectedWorkflow: item } = toRefs(props)
             const isLoadingRunGraph = ref(false)
             const selectedRunName = ref('')
@@ -179,6 +163,7 @@
             // loadRunGraph
             const loadRunGraph = (runName) => {
                 if (selectedRunName.value === runName) return
+                router.replace(route.path)
                 selectedRunName.value = runName
                 isLoadingRunGraph.value = true
                 emit('change', runName)
@@ -238,7 +223,9 @@
                     list.value = [...liveRunItems, ...archivedRunItems]
 
                     if (!selectedRunName.value) {
-                        selectedRunName.value = list.value[0]?.name
+                        const idMonitoring = route.query.idmonitoring
+                        const defaultRunName = list.value.find((el) => el.uid === idMonitoring) || list.value[0]
+                        selectedRunName.value = defaultRunName?.name
                     }
                     setTimeout(() => {
                         isReady.value = true

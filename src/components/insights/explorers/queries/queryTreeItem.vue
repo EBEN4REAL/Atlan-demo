@@ -280,7 +280,6 @@
             <QueryFolderSelector
                 :connector="currentConnector"
                 :savedQueryType="'all'"
-                :selectedFolderQF="parentFolderQF"
                 @folderChange="getSelectedFolder"
                 :selectedNewFolder="item"
             />
@@ -309,7 +308,6 @@
             <QueryFolderSelector
                 :connector="currentConnector"
                 :savedQueryType="savedQueryType"
-                :selectedFolderQF="parentFolderQF"
                 @folderChange="getSelectedFolder"
                 :selectedNewFolder="item"
             />
@@ -392,11 +390,15 @@
                 required: true,
                 default: '',
             },
-            parentFolderQF: {
-                type: String,
-                required: true,
-                default: 'root',
+            refreshQueryTree: {
+                type: Function,
+                required: false,
             },
+            // parentFolderQF: {
+            //     type: String,
+            //     required: true,
+            //     default: 'root',
+            // },
             // refetchTreeData: {
             //     type: Function,
             //     required: false,
@@ -485,10 +487,7 @@
 
             const newQuery = () => {
                 if (toggleCreateQueryModal) {
-                    toggleCreateQueryModal(
-                        props.item.guid,
-                        props.item.qualifiedName
-                    )
+                    toggleCreateQueryModal(item)
                 }
             }
             const publishFolder = () => {
@@ -785,6 +784,14 @@
                                     message.success({
                                         content: `Folder moved successfully`,
                                     })
+                                    props.refreshQueryTree(
+                                        selectedFolder.value.guid,
+                                        'queryFolder'
+                                    )
+                                    props.refreshQueryTree(
+                                        item.attributes.parent.guid,
+                                        'queryFolder'
+                                    )
                                 } else {
                                     message.success({
                                         content: `Folder move failed`,
@@ -812,6 +819,14 @@
                                     message.success({
                                         content: `Query moved successfully`,
                                     })
+                                    props.refreshQueryTree(
+                                        selectedFolder.value.guid,
+                                        'query'
+                                    )
+                                    props.refreshQueryTree(
+                                        item.attributes.parent.guid,
+                                        'query'
+                                    )
                                 } else {
                                     message.success({
                                         content: `Query move failed`,

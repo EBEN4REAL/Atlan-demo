@@ -129,11 +129,11 @@
             // AssetDropdown,
         },
         props: {
-            selectedFolderQF: {
-                type: String,
-                required: false,
-                default: '',
-            },
+            // selectedFolderQF: {
+            //     type: String,
+            //     required: false,
+            //     default: '',
+            // },
             connector: {
                 type: String as PropType<string | undefined>,
                 required: true,

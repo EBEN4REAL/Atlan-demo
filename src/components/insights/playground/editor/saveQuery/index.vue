@@ -5,6 +5,7 @@
         :class="$style.input"
         :footer="null"
         width="632px"
+        :destroyOnClose="true"
     >
         <div class="w-full p-4 text-gray-500 bg-white rounded">
             <div class="flex w-full text-xs">
@@ -13,7 +14,7 @@
                         <QueryFolderSelector
                             :connector="currentConnector"
                             :saved-query-type="queryType"
-                            :selected-folder-q-f="parentFolderQF"
+                            :parentFolder="parentFolder"
                             @folderChange="getSelectedFolder"
                         />
                     </div>
@@ -150,10 +151,10 @@
                 type: Object as PropType<boolean>,
                 required: true,
             },
-            parentFolderQF: {
-                type: String,
+            parentFolder: {
+                type: Object as PropType<object | undefined>,
                 required: true,
-                default: 'root',
+                default: {},
             },
             connector: {
                 type: String as PropType<string | undefined>,
@@ -189,7 +190,7 @@
             const {
                 savedQueryType: queryType,
                 connector: currentConnector,
-                parentFolderQF,
+                parentFolder,
             } = toRefs(props)
             const handleMenuClick = (status) => {
                 currentStatus.value = status.id
@@ -256,9 +257,19 @@
             //     selectedParentFolder.value = folder
             // }
 
+            watch(
+                parentFolder,
+                () => {
+                    console.log('parent folder: ', parentFolder.value)
+                },
+                {
+                    immediate: true,
+                }
+            )
+
             return {
                 getLastUntitledNumber,
-                parentFolderQF,
+                parentFolder,
                 title,
                 queryType,
                 currentConnector,

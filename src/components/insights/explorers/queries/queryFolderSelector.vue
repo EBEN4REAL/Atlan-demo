@@ -178,10 +178,9 @@
             // AssetDropdown,
         },
         props: {
-            selectedFolderQF: {
-                type: String,
+            parentFolder: {
+                type: Object,
                 required: false,
-                default: '',
             },
             connector: {
                 type: String as PropType<string | undefined>,
@@ -198,7 +197,7 @@
         setup(props, { emit }) {
             const permissions = inject('permissions') as ComputedRef<any>
             const router = useRouter()
-            const { connector, savedQueryType } = toRefs(props)
+            const { connector, savedQueryType, parentFolder } = toRefs(props)
 
             const savedQueryType2: Ref<'personal' | 'all'> = ref(
                 savedQueryType.value
@@ -212,8 +211,8 @@
             const selectedKey = ref<string[]>([])
             let dropdownVisible = ref(false)
 
-            console.log('already selected: ', props.selectedFolderQF)
-
+            // console.log('already selected: ', props.selectedFolderQF)
+            console.log('already selected: ', parentFolder)
             const onSelect = (selected: any, event: any) => {
                 // console.log('folder select: ', event)
 

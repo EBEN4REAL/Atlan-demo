@@ -71,7 +71,7 @@ export default function useGlossaryData() {
         return `${typeName}${status}`
     }
 
-    const selectedGlossary = computed(() => glossaryStore.selectedGlossary)
+    const selectedGlossary = computed(() => glossaryStore.selectedGTC)
 
     return {
         glossaryList,

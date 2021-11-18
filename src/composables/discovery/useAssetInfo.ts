@@ -492,7 +492,7 @@ export default function useAssetInfo() {
     const glossaryStore = useGlossaryStore()
 
     const selectedGlossary = computed(() => {
-        return glossaryStore.selectedGlossary
+        return glossaryStore.selectedGTC
     })
 
     const isGTCByType = (typeName) => {

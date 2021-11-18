@@ -162,7 +162,7 @@ export function getArchivedRunList(name) {
     }
 
     watch(data, () => {
-        if (!data?.value?.records) return
+        if (!data?.value?.records) return data.value = {records: []}
         totalCount.value = data.value.total_record
         filter_record.value = data.value.filter_record
         archivedList.value = data.value

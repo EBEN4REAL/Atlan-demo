@@ -23,17 +23,9 @@
                     </div>
                 </div>
                 <div class="flex flex-col w-full">
-                    <div class="flex px-3 pt-1">
-                        <SearchAdvanced
-                            v-model="queryText"
-                            :autofocus="true"
-                            :allow-clear="true"
-                            placeholder="Search glossaary"
-                        />
-                    </div>
                     <div
                         style="height: 200px; overflow-y: auto"
-                        class="px-2 pb-2"
+                        class="px-2 py-2"
                     >
                         <div
                             class="flex items-center p-1 cursor-pointer  hover:bg-primary-light grou"
@@ -76,7 +68,14 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, PropType, ref, onMounted } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        onMounted,
+        watch,
+    } from 'vue'
     import useGlossaryData from '~/composables/glossary/useGlossaryData'
 
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
@@ -152,6 +151,14 @@
                 emit('update:modelValue', localValue.value)
                 emit('change', localValue.value)
             }
+
+            watch(
+                () => props.modelValue,
+                () => {
+                    localValue.value = props.modelValue
+                    changeDisplayText()
+                }
+            )
 
             return {
                 filteredList,

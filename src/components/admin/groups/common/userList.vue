@@ -58,35 +58,7 @@
                                 class="flex items-center w-full py-2 border-b border-gray-100 "
                                 @change="handleChange"
                             >
-                                <span class="flex justify-between ml-3">
-                                    <div class="flex items-center">
-                                        <Avatar
-                                            avatarShape="circle"
-                                            :image-url="imageUrl(user.username)"
-                                            :allow-upload="false"
-                                            :avatar-name="
-                                                user.name ||
-                                                user.uername ||
-                                                user.email
-                                            "
-                                            :avatar-size="minimal ? 30 : 40"
-                                            class="mr-2"
-                                        />
-                                        <div class="ml-2">
-                                            <div class="text-gray">
-                                                <div class="mr-2 font-bold">
-                                                    {{ user.name }}
-                                                </div>
-                                                <div
-                                                    v-if="!minimal"
-                                                    class="mr-2 text-gray"
-                                                >
-                                                    {{ user.email }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </span>
+                                <UserCard :user="user" :minimal="true" />
                             </a-checkbox>
                         </template>
                     </div>
@@ -113,15 +85,15 @@
     import { useDebounceFn } from '@vueuse/core'
     import { getIsLoadMore } from '~/utils/isLoadMore'
     import { useUsers } from '~/composables/user/useUsers'
-    import Avatar from '~/components/common/avatar/index.vue'
     import AtlanButton from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import UserCard from './userCard.vue'
 
     export default defineComponent({
         name: 'UsersList',
         components: {
+            UserCard,
             ErrorView,
-            Avatar,
             AtlanButton,
             SearchAndFilter,
         },
@@ -228,8 +200,6 @@
                 }
                 context.emit('updateSelectedUsers', selectedIds.value)
             }
-            const imageUrl = (username: any) =>
-                `${window.location.origin}/api/service/avatars/${username}`
 
             return {
                 searchText,
@@ -243,7 +213,6 @@
                 handleLoadMore,
                 handleChange,
                 selectedIds,
-                imageUrl,
             }
         },
     })

@@ -19,7 +19,7 @@
                 </div>
                 <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton
-                        v-if="loginWithEmail"
+                        v-if="loginWithEmail || true"
                         type="primary"
                         class="rounded-md"
                         @click="handleInviteUsers"
@@ -97,8 +97,10 @@
         <a-modal
             :visible="showInviteUserModal"
             :destroy-on-close="true"
-            title="Invite User"
             :footer="null"
+            :closable="false"
+            :width="550"
+            wrapClassName="inviteModal"
             @cancel="closeInviteUserModal"
         >
             <InviteUsers
@@ -252,7 +254,6 @@
                 setUserUniqueAttribute,
             } = useUserPreview()
             const showUserPreviewDrawer = (user: any) => {
-                console.log('showUserPreviewDrawer', user)
                 setUserUniqueAttribute(user.id)
                 openPreview()
                 selectedUserId.value = user.id

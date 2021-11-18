@@ -33,7 +33,7 @@ export interface IPurpose {
     groups?: string[]
     resourcePolicies?: ResourcePolicies[]
     // Will be camel cased from BE
-    datapolicies?: DataPolicies[]
+    dataPolicies?: DataPolicies[]
     updatedAt?: string
     updatedBy?: string
     createdAt?: string

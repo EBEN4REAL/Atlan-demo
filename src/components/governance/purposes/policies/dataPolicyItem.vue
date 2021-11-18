@@ -45,8 +45,8 @@
             <Owners
                 class="mb-6"
                 v-model:modelValue="selectedOwnersData"
-                @change="handleOwnersChange"
                 :read-only="false"
+                @change="handleOwnersChange"
             />
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
@@ -205,8 +205,9 @@
                 }
             }
             const handleOwnersChange = () => {
-                policy.value.users = policy.value.ownerUsers
+                policy.value.users = selectedOwnersData.value.ownerUsers
                 policy.value.groups = selectedOwnersData.value.ownerGroups
+
                 if (
                     (selectedOwnersData.value.ownerUsers.length ??
                         0 + selectedOwnersData.value.ownerGroups.length ??
@@ -218,6 +219,7 @@
                 }
                 /* Call save purpose */
             }
+
             watch(selectedPersonaDirty, () => {
                 selectedOwnersData.value = {
                     ownerUsers: policy.value.users,

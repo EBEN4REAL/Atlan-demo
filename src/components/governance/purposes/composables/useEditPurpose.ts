@@ -1,13 +1,14 @@
 import { Ref, ref, watch } from 'vue'
 import { IPersona } from '~/types/accessPolicies/purposes'
 import usePurposeService from './usePurposeService'
+import { message } from 'ant-design-vue'
 import {
     selectedPersona,
     personaList,
     selectedPersonaId,
 } from './usePurposeList'
 
-const { updatePersona, deletePersona } = usePurposeService()
+const { updatePersona, deletePersona, createPersona } = usePurposeService()
 
 export type PolicyType = 'meta' | 'data'
 
@@ -70,12 +71,11 @@ export function addPolicy(type: PolicyType) {
         selectedPersonaDirty.value?.resourcePolicies?.push({
             id,
             actions: [],
-            assets: [],
-            connectionId: '',
+            users: [],
+            groups: [],
             allow: true,
             name: '',
             description: '',
-            type: 'metadata',
             isNew: true,
         })
         policyEditMap.value.resourcePolicies[id] = true
@@ -84,9 +84,8 @@ export function addPolicy(type: PolicyType) {
         selectedPersonaDirty.value?.dataPolicies?.push({
             id,
             actions: ['select'],
-            assets: [],
-            connectionName: '',
-            connectionId: '',
+            users: [],
+            groups: [],
             maskingOption: 'MASK_NONE',
             allow: true,
             name: '',
@@ -94,6 +93,82 @@ export function addPolicy(type: PolicyType) {
             isNew: true,
         })
         policyEditMap.value.dataPolicies[id] = true
+    }
+}
+
+export async function addFirstPolicy(type: string, id) {
+    try {
+        const purposeOb = Object.assign({}, selectedPersonaDirty.value)
+        delete purposeOb[id]
+
+        const tempPersona = { ...purposeOb }
+        if (type === 'meta') {
+            const dirtyPolicyIndex =
+                selectedPersonaDirty.value?.resourcePolicies?.findIndex(
+                    (pol) => pol.id === id
+                )
+
+            if (dirtyPolicyIndex > -1) {
+                const policy =
+                    selectedPersonaDirty.value?.resourcePolicies?.[
+                        dirtyPolicyIndex
+                    ]
+                if (policy?.isNew) {
+                    delete policy?.isNew
+                    delete policy?.id
+                    tempPersona?.resourcePolicies?.push(policy!)
+                    if (tempPersona?.resourcePolicies.length > 1)
+                        tempPersona?.resourcePolicies.splice(0, 1)
+                } else {
+                    const policyIndex =
+                        selectedPersona.value?.resourcePolicies?.findIndex(
+                            (pol) => pol.id === id
+                        )
+                    tempPersona.resourcePolicies![policyIndex!] = policy
+                }
+            }
+            policyEditMap.value.resourcePolicies[id] = false
+        }
+        if (type === 'data') {
+            const dirtyPolicyIndex =
+                selectedPersonaDirty.value?.dataPolicies?.findIndex(
+                    (pol) => pol.id === id
+                )
+
+            if (dirtyPolicyIndex > -1) {
+                const policy =
+                    selectedPersonaDirty.value?.dataPolicies?.[dirtyPolicyIndex]
+                if (policy?.isNew) {
+                    delete policy?.isNew
+                    delete policy?.id
+                    tempPersona?.dataPolicies?.push(policy!)
+                    if (tempPersona?.dataPolicies.length > 1)
+                        tempPersona?.dataPolicies.splice(0, 1)
+                } else {
+                    const policyIndex =
+                        selectedPersona.value?.dataPolicies?.findIndex(
+                            (pol) => pol.id === id
+                        )
+                    tempPersona.dataPolicies![policyIndex!] = policy
+                }
+            }
+            policyEditMap.value.dataPolicies[id] = false
+        }
+        await createPersona(purposeOb)
+        message.success({
+            content: ` purpose updated`,
+            duration: 1.5,
+            key: '1',
+        })
+        // reFetchList().then(() => {
+        //     selectedPersonaId.value = newPurpose.id!
+        // })
+    } catch (error) {
+        message.error({
+            content: 'Failed to create persona',
+            duration: 1.5,
+            key: '2',
+        })
     }
 }
 

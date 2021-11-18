@@ -229,14 +229,16 @@ import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import Hash from '~/assets/images/icons/hash.svg'
 
 //source list
-import Snowflake from '~/assets/images/source/svg/Snowflake.svg';
-import Athena from '~/assets/images/source/svg/Athena.svg';
-import Tableau from '~/assets/images/source/svg/Tableau.svg';
-import PowerBI from '~/assets/images/source/svg/PowerBI.svg';
+import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
+import Athena from '~/assets/images/source/svg/Athena.svg'
+import Tableau from '~/assets/images/source/svg/Tableau.svg'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
 
 export default {
+    Hash,
     Times,
     ExclaimCircle,
     RemoveUser,
@@ -468,5 +470,5 @@ export default {
     SMTP,
     APIKey,
     Camera,
-    CustomSaml
+    CustomSaml,
 }

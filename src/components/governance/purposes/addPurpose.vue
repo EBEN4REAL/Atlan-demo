@@ -24,26 +24,42 @@
                 @keyup.esc="$event?.target?.blur()"
             />
         </div>
+        <template #extraFooterContent>
+            <div class="flex items-center">
+                <Classification
+                    v-model:modelValue="selectedClassifications"
+                    :disabled="addClassificationsDisabled"
+                    @change="handleClassificationChange"
+                />
+                <span
+                    class="ml-2 text-red-500"
+                    v-if="rules.classification.show"
+                >
+                    {{ rules.classification.text }}
+                </span>
+            </div>
+        </template>
     </CreationModal>
 </template>
 
 <script lang="ts">
     import { message } from 'ant-design-vue'
-    import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs, PropType } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import usePurposeService from './composables/usePurposeService'
     import {
-        reFetchList,
+        addPurposeLocally,
         selectedPersonaId,
     } from './composables/usePurposeList'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { generateUUID } from '~/utils/helper/generator'
+    import Classification from '@common/input/classification/index.vue'
 
     export default defineComponent({
         name: 'AddPurpose',
         components: {
             CreationModal,
+            Classification,
         },
         props: {
             visible: {
@@ -56,6 +72,13 @@
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             const title = ref('')
             const description = ref('')
+            const selectedClassifications = ref([])
+            const rules = ref({
+                classification: {
+                    show: false,
+                    text: 'Select a classification first!',
+                },
+            })
 
             const { visible } = toRefs(props)
             const modalVisible = computed({
@@ -67,9 +90,11 @@
                 modalVisible.value = !modalVisible.value
             }
 
-            const { createPersona } = usePurposeService()
-
             async function handleCreation() {
+                if (selectedClassifications.value.length == 0) {
+                    rules.value.classification.show = true
+                    return
+                }
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Adding new purpose',
@@ -77,29 +102,17 @@
                     key: messageKey,
                 })
                 try {
-                    const newPersona: IPurpose = await createPersona({
+                    const newPurpose: IPurpose = {
+                        id: generateUUID(),
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        tag: 'NjsqRXpy1X9ckrw0R9G3RH',
+                        tag: selectedClassifications.value[0]?.typeName,
                         /* Hardcode here */
-                        resourcePolicies: [
-                            {
-                                actions: [],
-                                groups: [],
-                                users: [],
-                                allow: true,
-                            },
-                        ],
-                        dataPolicies: [
-                            {
-                                actions: [],
-                                groups: [],
-                                users: [],
-                                allow: true,
-                            },
-                        ],
-                    })
+                        resourcePolicies: [],
+                        dataPolicies: [],
+                    }
+                    addPurposeLocally(newPurpose)
                     message.success({
                         content: `${title.value} purpose Created`,
                         duration: 1.5,
@@ -107,10 +120,33 @@
                     })
                     description.value = ''
                     title.value = ''
-                    reFetchList().then(() => {
-                        selectedPersonaId.value = newPersona.id!
-                        modalVisible.value = false
-                    })
+
+                    selectedPersonaId.value = newPurpose.id!
+                    modalVisible.value = false
+
+                    /* 
+                        resourcePolicies: [
+                            {
+                                name: 'Metadata policy 1',
+                                description: 'bro',
+                                actions: ['entity-create'],
+                                groups: ['123'],
+                                users: ['aditnegi1'],
+                                allow: true,
+                                type: 'meta',
+                            },
+                        ],
+                        dataPolicies: [
+                            {
+                                name: 'Data policy 1',
+                                description: 'bro',
+                                actions: ['entity-create'],
+                                groups: ['123'],
+                                users: ['aditnegi1'],
+                                allow: true,
+                                type: 'data',
+                            },
+                        ], */
                 } catch (error) {
                     message.error({
                         content: 'Failed to create purpose',
@@ -119,12 +155,26 @@
                     })
                 }
             }
+            const addClassificationsDisabled = computed(() =>
+                selectedClassifications.value.length > 0 ? true : false
+            )
+            const handleClassificationChange = () => {
+                if (selectedClassifications.value.length > 0) {
+                    rules.value.classification.show = false
+                } else {
+                    rules.value.classification.show = true
+                }
+            }
 
             whenever(titleBar, () => {
                 titleBar.value?.focus()
             })
 
             return {
+                rules,
+                handleClassificationChange,
+                addClassificationsDisabled,
+                selectedClassifications,
                 toggleModal,
                 modalVisible,
                 handleCreation,

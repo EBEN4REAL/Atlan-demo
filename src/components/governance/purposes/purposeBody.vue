@@ -22,9 +22,8 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.resourcePolicies?.length ??
-                            0 + selectedPersonaDirty?.datapolicies?.length ??
-                            0
+                            selectedPersonaDirty?.resourcePolicies?.length +
+                            selectedPersonaDirty?.dataPolicies?.length
                         }}
                     </div>
                 </div>
@@ -154,7 +153,7 @@
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PurposeMeta from './overview/purposeMeta.vue'
-    import { IPersona } from '~/types/accessPolicies/purposes'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import {
         selectedPersonaDirty,
         addPolicy,
@@ -164,6 +163,7 @@
         removeEditFlag,
         savePolicy,
         discardPolicy,
+        addFirstPolicy,
         PolicyType,
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
@@ -180,11 +180,13 @@
         },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },
-        setup() {
+        setup(props) {
+            const { persona } = toRefs(props)
+
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
@@ -199,12 +201,22 @@
             ]
 
             async function savePolicyUI(type: PolicyType, id: string) {
+                if (
+                    persona.value.resourcePolicies?.length +
+                        persona.value.dataPolicies?.length ==
+                    0
+                ) {
+                    addFirstPolicy(type, id)
+                    return
+                }
+
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Saving policy',
                     duration: 0,
                     key: messageKey,
                 })
+
                 try {
                     await savePolicy(type, id)
                     message.success({

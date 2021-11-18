@@ -52,7 +52,10 @@
             </ExplorerList>
         </template>
 
-        <AddPurpose v-model:visible="modalVisible" />
+        <AddPurpose
+            v-model:visible="modalVisible"
+            v-model:persona="selectedPersona"
+        />
 
         <a-spin
             v-if="!isPersonaListReady"

@@ -107,16 +107,19 @@
                 )
             )
 
-            watch(localValue.value, (prev, cur) => {
-                if (!localValue.value.classifications) {
-                    delete localValue.value.classifications
+            watch(
+                () => localValue.value.classifications,
+                (prev, cur) => {
+                    if (!localValue.value.classifications) {
+                        delete localValue.value.classifications
+                    }
+                    if (!localValue.value.empty) {
+                        delete localValue.value.empty
+                    }
+                    modelValue.value = localValue.value
+                    emit('change')
                 }
-                if (!localValue.value.empty) {
-                    delete localValue.value.empty
-                }
-                modelValue.value = localValue.value
-                emit('change')
-            })
+            )
 
             const classificationSearchRef: Ref<null | HTMLInputElement> =
                 ref(null)
@@ -129,6 +132,10 @@
             const forceFocus = () => {
                 start()
             }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             return {
                 filteredList,

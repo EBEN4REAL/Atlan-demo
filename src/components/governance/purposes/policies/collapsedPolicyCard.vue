@@ -1,14 +1,6 @@
 <template>
     <div
-        class="
-            flex flex-col
-            py-4
-            mb-2
-            border-b border-gray-300
-            rounded
-            group
-            hover:shadow
-        "
+        class="flex flex-col py-4 mb-2 border-b border-gray-300 rounded  group hover:shadow"
         style="paddingleft: 12px; paddingroght: 12px"
     >
         <div class="flex items-center mb-4 gap-x-3">
@@ -33,6 +25,18 @@
                     policy.actions.join(',')
                 }}</span>
             </div>
+            <div
+                v-if="type === 'data'"
+                class="flex items-center overflow-hidden gap-x-1"
+            >
+                <AtlanIcon
+                    class="flex-none -mt-1.5 text-gray-500"
+                    icon="Hash"
+                />
+                <span class="text-sm text-gray-500 truncate">{{
+                    getMaskingLabel(policy.maskingOption)
+                }}</span>
+            </div>
         </div>
         <div class="flex items-center w-full">
             <div style="width: 70%">
@@ -44,13 +48,7 @@
             </div>
             <div style="width: 30%" class="flex justify-end">
                 <AtlanBtn
-                    class="
-                        flex-none
-                        opacity-0
-                        group-hover:opacity-100
-                        text-gray
-                        hover:text-primary
-                    "
+                    class="flex-none opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
                     size="sm"
                     color="secondary"
                     padding="compact"
@@ -72,6 +70,7 @@
         ResourcePolicies,
     } from '~/types/accessPolicies/purposes'
     import Owners from '~/components/common/input/owner/index.vue'
+    import { maskingOptions } from './maskingOptions'
 
     export default defineComponent({
         name: 'Purpose Policy',
@@ -100,7 +99,13 @@
                 }
             })
 
-            return { ownersData }
+            const getMaskingLabel = (val: string) => {
+                return (
+                    maskingOptions.find((opt) => opt.value === val)?.label ?? ''
+                )
+            }
+
+            return { ownersData, policy, getMaskingLabel }
         },
     })
 </script>

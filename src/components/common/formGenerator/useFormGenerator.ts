@@ -133,7 +133,7 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
   }
 
   // FIXME enhance,DRY
-  const finalConfigObject = (modal) => {
+  const finalConfigObject = (modal, isInit) => {
     // ? modal won't have any type object or array, but groups
     const temp = {}
 
@@ -186,9 +186,9 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
         })
       }
     })
-    emit('change', temp)
+    emit('change', temp, isInit)
     // eslint-disable-next-line no-console
-    console.table({ config: temp })
+    // console.table({ config: temp })
     return temp
   }
   const init = () => {
@@ -230,7 +230,7 @@ export default function useFormGenerator(formConfig: Ref<Array<Schema>>, formRef
     })
 
     testModal.value = { ...testModal.value, ...dV.value }
-    finalConfigObject(processedSchema.value)
+    finalConfigObject(processedSchema.value, true)
 
   }
 

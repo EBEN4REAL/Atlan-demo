@@ -51,14 +51,17 @@ export const getQueryMetadata = (query) => {
         schema: {
             keyDisplayName: 'Schemas',
             value: '',
+            icon: 'SchemaGray',
         },
         database: {
             keyDisplayName: 'Databases',
             value: '',
+            icon: 'DatabaseGray',
         },
         table: {
             keyDisplayName: 'Tables',
             value: '',
+            icon: 'TableGray',
         },
     }
     // Connection
@@ -110,7 +113,7 @@ export const getQueryMetadata = (query) => {
             deDuplicatedTableNames = [...new Set(tableNames)]
 
         if (deDuplicatedTableNames && deDuplicatedTableNames.length)
-            meta.table.value = deDuplicatedTableNames.join(',')
+            meta.table.value = deDuplicatedTableNames.join(', ')
     }
 
     return meta

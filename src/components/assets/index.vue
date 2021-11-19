@@ -21,8 +21,8 @@
             <div class="flex flex-col h-full">
                 <div class="flex">
                     <SearchAdvanced
-                        v-model="queryText"
                         :key="searchDirtyTimestamp"
+                        v-model="queryText"
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
@@ -155,11 +155,8 @@
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-
     import AtlanIcon from '../common/icon/atlanIcon.vue'
     import useAssetStore from '~/store/asset'
-    import { assetInterface } from '~/types/assets/asset.interface'
-
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
 
     export default defineComponent({
@@ -184,6 +181,7 @@
             initialFilters: {
                 type: Object,
                 required: false,
+                default: {},
             },
             showAggrs: {
                 type: Boolean,

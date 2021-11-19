@@ -39,7 +39,14 @@
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, computed, toRefs, onMounted, watch } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        toRefs,
+        onMounted,
+        watch,
+        provide,
+    } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import GlossaryTreeItem from './glossaryTreeItem.vue'
@@ -117,6 +124,13 @@
             const addCategory = (asset) => {
                 addNode(asset)
             }
+
+            const addGTCNode = (asset) => {
+                console.log('add node', selectedKeys.value)
+                // addNode(asset)
+            }
+
+            provide('addGTCNode', addGTCNode)
 
             return {
                 onLoadData,

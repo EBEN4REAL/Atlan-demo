@@ -10,24 +10,28 @@
                 v-model="selectedGlossaryQf"
                 @change="handleSelectGlossary"
             ></GlossarySelect>
-            <AddGTCModal
-                :key="selectedGlossaryQf"
-                :entityType="defaultEntityType"
-                @add="handleAddGTC"
-                :glossaryQualifiedName="selectedGlossaryQf"
-                :glossaryName="selectedGlosaryName"
-            >
-                <template #trigger>
-                    <a-button class="ml-3" size="small">
-                        <div class="flex items-center">
+            <div class="flex">
+                <AddGTCModal
+                    :key="selectedGlossaryQf"
+                    :entityType="defaultEntityType"
+                    @add="handleAddGTC"
+                    :glossaryQualifiedName="selectedGlossaryQf"
+                    :glossaryName="selectedGlosaryName"
+                >
+                    <template #trigger>
+                        <a-button class="ml-3" size="small">
                             <AtlanIcon
                                 icon="Add"
                                 class="transition duration-300 text-primary"
                             />
-                        </div>
-                    </a-button>
-                </template>
-            </AddGTCModal>
+                        </a-button>
+                    </template>
+                </AddGTCModal>
+
+                <div class="ml-2">
+                    <GlossaryActions></GlossaryActions>
+                </div>
+            </div>
         </div>
 
         <div class="flex px-4 my-2">
@@ -143,6 +147,8 @@
 
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
 
+    import GlossaryActions from '@/glossary/actions/glossary.vue'
+
     import {
         AssetAttributes,
         AssetRelationAttributes,
@@ -172,6 +178,8 @@
             GlossarySelect,
             GlossaryItem,
             GlossaryTree,
+
+            GlossaryActions,
         },
         props: {
             showFilters: {
@@ -336,6 +344,7 @@
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryTerm') {
+                        console.log('added')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }

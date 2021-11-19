@@ -30,7 +30,7 @@
                 <div class="flex items-center justify-between pb-3">
                     <a-input-search
                         v-model:value="searchText"
-                        :placeholder="`Search from api keys`"
+                        :placeholder="`Search ${totalAPIKeysCount} api keys`"
                         class="w-1/3 mr-1 shadow-sm"
                         size="default"
                         :allow-clear="true"
@@ -45,7 +45,7 @@
                         class="px-7"
                         @click="handleGenerateKey"
                     >
-                        <AtlanIcon icon="Add" class="ml-2" />Generate API Key
+                        <AtlanIcon icon="Add" />Generate API Key
                     </AtlanBtn>
                 </div>
             </template>
@@ -54,6 +54,7 @@
                 :api-keys-list="apiKeysList"
                 :is-loading="isLoading"
                 :delete-a-p-i-key-loading="deleteAPIKeyLoading"
+                :search-text="searchText"
                 @selectAPIKey="handleSelectAPIKey"
                 @deleteAPIKey="handleDelete"
             />

@@ -1,75 +1,62 @@
 <template>
-    <a-dropdown
-        v-model:visible="isVisible"
-        :trigger="treeMode ? ['click'] : ['click']"
-        @click.stop="() => {}"
-    >
-        <div>
-            <AtlanIcon icon="KebabMenu" class="h-4 m-0" @click.prevent />
-        </div>
-
+    <a-dropdown v-model:visible="isVisible" @click.stop="() => {}">
+        <a-button class="" @click.prevent size="small">
+            <AtlanIcon icon="KebabMenu" class="" />
+        </a-button>
         <template #overlay>
             <a-menu>
                 <a-menu-item
-                    v-if="
-                        showGtcCrud && entity?.typeName !== 'AtlasGlossaryTerm'
-                    "
-                    key="add"
-                    @click="closeMenu"
+                    v-if="showLinks"
+                    key="copyLink"
+                    class="flex items-center"
+                    @click="handleCopyProfileLink"
                 >
-                    <AddGtcModal
-                        entityType="AtlasGlossaryCategory"
-                        :glossaryName="glossaryName"
-                        :categoryName="categoryName"
-                        @add="handleAdd"
-                        :glossary-qualified-name="glossaryQualifiedName"
-                        :categoryGuid="categoryGuid"
-                    >
-                        <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Category" class="m-0 mr-2" />
-                                <p class="p-0 m-0">Add Category</p>
-                            </div>
-                        </template>
-                    </AddGtcModal>
+                    <div class="flex items-center">
+                        <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
+                        <p class="p-0 m-0">
+                            Copy
+                            {{ assetTypeLabel[entity?.typeName] }}
+                            profile link
+                        </p>
+                    </div>
                 </a-menu-item>
-
                 <a-menu-item
-                    v-if="
-                        showGtcCrud && entity?.typeName !== 'AtlasGlossaryTerm'
-                    "
-                    key="add"
+                    key="bulk"
+                    class="flex items-center"
                     @click="closeMenu"
                 >
-                    <AddGtcModal
-                        entityType="AtlasGlossaryTerm"
-                        :glossaryName="glossaryName"
-                        :categoryName="categoryName"
-                        :glossary-qualified-name="glossaryQualifiedName"
-                        :categoryGuid="categoryGuid"
-                    >
+                    <BulkUploadModal :entity="entity">
                         <template #trigger>
                             <div class="flex items-center">
-                                <AtlanIcon icon="Term" class="m-0 mr-2" />
-                                <p class="p-0 m-0">Add Term</p>
+                                <AtlanIcon
+                                    icon="Download"
+                                    class="m-0 mr-2 transform rotate-180  text-primary"
+                                />
+                                <p class="p-0 m-0 text-gray-700 capitalize">
+                                    Bulk upload terms
+                                </p>
                             </div>
                         </template>
-                    </AddGtcModal>
+                    </BulkUploadModal>
                 </a-menu-item>
                 <a-menu-divider></a-menu-divider>
+                <!-- Archive -->
                 <a-menu-item
                     v-if="showGtcCrud"
                     key="archive"
+                    class="text-red-700"
                     @click="closeMenu"
                 >
-                    <RemoveGTCModal :entityType="entity.typeName">
+                    <RemoveGTCModal :entity="entity">
                         <template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon
                                     icon="Trash"
-                                    class="m-0 mr-2 text-red-700"
+                                    class="mr-2 text-red-700"
                                 />
-                                <p class="p-0 m-0">Archive</p>
+                                <p class="p-0 m-0 text-gray-700 capitalize">
+                                    Archive
+                                </p>
                             </div>
                         </template>
                     </RemoveGTCModal>
@@ -97,13 +84,14 @@
     // import Owners from './owners.vue'
     // import Status from './status.vue'
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
-    import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
     // import Categories from '@/glossary/common/categories.vue'
     import ModalHeader from '@/glossary/modal/modalHeader.vue'
-    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
+    // import BulkModal from '@/glossary/gtcCrud/bulkModal.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
+    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
+    import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     // composables
     // import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
@@ -112,40 +100,24 @@
         Category,
         Term,
     } from '~/types/glossary/glossary.interface'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
             // Status,
             // Owners,
             StatusBadge,
+            BulkUploadModal,
             AddGtcModal,
             // Categories,
-            RemoveGTCModal,
             ModalHeader,
-            BulkUploadModal,
+            RemoveGTCModal,
+            // BulkModal,
         },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,
                 required: true,
                 default: () => {},
-            },
-
-            glossaryName: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            categoryName: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            categoryGuid: {
-                type: String,
-                required: false,
-                default: () => '',
             },
             showLinks: {
                 type: Boolean,
@@ -174,29 +146,14 @@
                 default: true,
             },
         },
-        emits: ['unlinkAsset', 'add'],
-        setup(props, { emit }) {
+        emits: ['unlinkAsset'],
+        setup(props, context) {
             // data
-            const {
-                entity,
-
-                categoryGuid,
-                glossaryName,
-                categoryName,
-            } = toRefs(props)
+            const { entity } = toRefs(props)
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
             const showCategories = ref(false)
-
-            const { getAnchorQualifiedName } = useAssetInfo()
-
-            const glossaryQualifiedName = computed(() => {
-                if (entity.value.typeName === 'AtlasGlossary') {
-                    return entity.value.qualifiedName
-                }
-                return getAnchorQualifiedName(entity.value)
-            })
 
             // injects
             // const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
@@ -235,24 +192,6 @@
                 return ''
             })
 
-            const addGTCNode = inject('addGTCNode')
-            const handleAdd = (asset) => {
-                console.log('add')
-                entity.value.children = []
-                entity.value.children.push({
-                    ...asset,
-                    id: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    key: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    isLeaf: false,
-                })
-                // }
-                // console.log('asdsd', entity)
-                // addGTCNode(asset)
-            }
             // const {
             //     deleteGlossary,
             //     deleteCategory,
@@ -332,7 +271,10 @@
                 message.success({
                     content: 'Copied!',
                 })
+                closeMenu()
             }
+
+            // const redirectToProfile = redirect(router)
 
             // update tree on archive or create new entity
             // const updateTree = (selectedAsset: Glossary | Category | Term) => {
@@ -360,27 +302,8 @@
                 categoryQf,
                 showCategories,
                 entity,
-                glossaryQualifiedName,
-                categoryGuid,
-                glossaryName,
-                categoryName,
-                handleAdd,
-                addGTCNode,
             }
         },
     })
 </script>
-<style lang="less" module>
-    .treeMode {
-        @apply bg-black bg-opacity-0 !important;
-    }
-    .threeDotMenu {
-        :global(.ant-dropdown-menu-item) {
-            margin: 0;
-        }
-        :global(.ant-dropdown-menu-submenu-title) {
-            padding: 9px 16px !important;
-            margin: 0;
-        }
-    }
-</style>
+<style lang="less" module></style>

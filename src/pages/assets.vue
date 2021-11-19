@@ -27,7 +27,6 @@
     import { computed, defineComponent, provide, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
-
     import AssetDiscovery from '@/assets/index.vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -42,27 +41,19 @@
                 title: 'Assets',
             })
             const route = useRoute()
-            const isItem = computed(() => !!route.params.id)
             const { selectedAsset } = useAssetInfo()
-
             const assetdiscovery = ref()
-
             const selectedAssetFromEmit = ref(null)
-
             const setSelectedAsset = (e) => {
                 selectedAssetFromEmit.value = e
             }
-
+            const isItem = computed(() => !!route.params.id)
             const updateList = (asset) => {
-                console.log('updateList')
-                console.log(asset)
                 if (assetdiscovery.value) {
                     assetdiscovery.value.updateCurrentList(asset)
                 }
             }
-
             provide('updateList', updateList)
-
             return {
                 isItem,
                 selectedAsset,

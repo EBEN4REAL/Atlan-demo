@@ -12,33 +12,59 @@
         <div class="p-4">
             <SQLSnippet :text="query._source.log.message?.userSqlQuery" />
         </div>
+        <div v-if="Object.keys(metadata).length">
+            <div v-for="meta in Object.keys(metadata)" :key="meta" class="flex">
+                <div class="w-1/3">{{ metadata[meta].keyDisplayName }}</div>
+                <div class="flex items-center mt-1 ml-4">
+                    <img
+                        v-if="
+                            metadata[meta].connector &&
+                            metadata[meta].connector.image
+                        "
+                        :src="metadata[meta].connector.image"
+                        class="w-4 h-4 mr-1 -mt-0.5"
+                    />
+                    {{ metadata[meta].value }}
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs } from 'vue'
-    import { useVModels } from '@vueuse/core'
-    import { message } from 'ant-design-vue'
-    import SQLSnippet from '@common/sql/snippet.vue'
+import { defineComponent, ref, watch, toRefs } from 'vue'
+import { useVModels } from '@vueuse/core'
+import { message } from 'ant-design-vue'
+import SQLSnippet from '@common/sql/snippet.vue'
+import { getQueryMetadata } from '@/governance/queryLogs/composables/useQueryLogs'
 
-    export default defineComponent({
-        name: 'queryPreviewDrawer',
-        components: { SQLSnippet },
-        props: {
-            query: {
-                type: Object,
-                default: () => {},
+export default defineComponent({
+    name: 'QueryPreviewDrawer',
+    components: { SQLSnippet },
+    props: {
+        query: {
+            type: Object,
+            default: () => {},
+        },
+    },
+    emits: ['updateAPIKey', 'closeDrawer'],
+    setup(props, { emit }) {
+        const { query } = toRefs(props)
+        const handleClose = () => {
+            emit('closeDrawer')
+        }
+        const metadata = ref({})
+        watch(
+            query,
+            () => {
+                metadata.value = getQueryMetadata(query.value)
             },
-        },
-        emits: ['updateAPIKey', 'closeDrawer'],
-        setup(props, { emit }) {
-            const { query } = toRefs(props)
-            const handleClose = () => {
-                emit('closeDrawer')
-            }
-            return { query, handleClose }
-        },
-    })
+            { immediate: true }
+        )
+
+        return { query, metadata, handleClose }
+    },
+})
 </script>
 <style lang="less"></style>
 <style lang="less" scoped></style>

@@ -24,6 +24,7 @@
                     />
                 </div>
                 <AtlanButton
+                    v-if="formChanged"
                     v-auth="access.UPDATE_WORKFLOW"
                     class="m-2"
                     size="sm"
@@ -178,6 +179,7 @@
 
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
+            const formChanged = ref(false)
             provide("creatorDetails", {})
             if (selectedPreviewTab.value === 'runs') activeKey.value = 1
 
@@ -196,7 +198,6 @@
 
             watch(selectedWorkflow, init, { deep: true })
             onMounted(init)
-
             const updateWorkflow = async () => {
                 const isValid = await formRef.value.validate()
                 if (isValid) {
@@ -237,7 +238,10 @@
                     })
                 }
             }
-            const handleChange = (v) => {
+            const handleChange = (v, isInit) => {
+                if(!isInit){
+                  formChanged.value = true
+                }
                 Object.entries(v).forEach(([key, value]) => {
                     const index =
                         body.value.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters.findIndex(
@@ -299,6 +303,7 @@
                 activeKey,
                 filteredTabs,
                 emit,
+                formChanged
             }
         },
     })

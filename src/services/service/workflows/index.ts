@@ -1,4 +1,3 @@
-
 import { useAPI } from '~/services/api/useAPI'
 import { map } from './key'
 
@@ -97,6 +96,9 @@ const stopRun = (pathVariables) =>
 const getRunList = (reqOptions) =>
     useAPI(map.WORKFLOW_RUN, 'GET', reqOptions, {})
 
+const getArtifacts = (reqOptions) =>
+    useAPI(map.GET_ARTIFACTS, 'GET', reqOptions, {})
+
 const getArchivedRunList = (reqOptions) =>
     useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', reqOptions, {})
 
@@ -135,15 +137,25 @@ const createWorkflow = ({ params, body, immediate, options }) =>
     )
 
 const deleteSchedule = ({ pathVariables }) =>
-    useAPI(map.DELETE_SCHEDULE, 'POST', {
-        pathVariables,
-    }, {})
+    useAPI(
+        map.DELETE_SCHEDULE,
+        'POST',
+        {
+            pathVariables,
+        },
+        {}
+    )
 
 const updateSchedule = ({ body, pathVariables }) =>
-    useAPI(map.UPDATE_SCHEDULE, 'POST', {
-        body,
-        pathVariables,
-    }, {})
+    useAPI(
+        map.UPDATE_SCHEDULE,
+        'POST',
+        {
+            body,
+            pathVariables,
+        },
+        {}
+    )
 
 const addSchedule = ({ body }) => useAPI(map.SCHEDULES, 'POST', { body }, {})
 
@@ -185,4 +197,5 @@ export const Workflows = {
     addSchedule,
     getSchedules,
     getArchivedRunLogs,
+    getArtifacts,
 }

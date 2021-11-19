@@ -199,6 +199,45 @@ const useGlossaryTree = ({
         }
     }
 
+    const recursivelyFindPath = (
+        targetGuid: string,
+        initialStack?: string[]
+    ) => {
+        let parentStack = initialStack?.length ? initialStack : [targetGuid]
+
+        const findPath = (currGuid: string) => {
+            if (
+                nodeToParentKeyMap[currGuid] &&
+                nodeToParentKeyMap[currGuid] !== 'root'
+            ) {
+                const current = nodeToParentKeyMap[currGuid]
+                if (typeof current === 'string') {
+                    parentStack.push(current)
+                    findPath(current)
+                }
+            }
+        }
+        const allPaths: string[][] = []
+
+        const firstParent = nodeToParentKeyMap[targetGuid]
+
+        if (typeof firstParent === 'string') {
+            parentStack = initialStack?.length ? initialStack : [targetGuid]
+            findPath(targetGuid)
+            allPaths.push(parentStack)
+        } else {
+            firstParent?.forEach((guid) => {
+                parentStack = initialStack?.length
+                    ? initialStack
+                    : [targetGuid, guid]
+                findPath(guid)
+                allPaths.push(parentStack)
+            })
+        }
+
+        return allPaths
+    }
+
     const selectNode = (selected: any, event: any) => {
         if (!event.node.isLeaf) {
             expandNode([], event)
@@ -322,6 +361,7 @@ const useGlossaryTree = ({
         error,
         isReady,
         getAnchorQualifiedName,
+        recursivelyFindPath,
     }
 }
 

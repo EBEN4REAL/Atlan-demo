@@ -11,7 +11,7 @@
                 <div class="relative mb-2 text-sm text-gray-500 required">
                     Policy name
                 </div>
-                <div class="max-w-xs">
+                <div style="width: 320px">
                     <a-input
                         @blur="
                             () => {
@@ -128,12 +128,7 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
                                             />
                                             <span class="text-xs">Add All</span>
                                         </div>
@@ -149,12 +144,7 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
                                             />
                                             <span class="text-xs"
                                                 >Custom select</span

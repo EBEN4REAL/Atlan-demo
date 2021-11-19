@@ -142,6 +142,7 @@
                                 <div class="flex items-center">
                                     <AtlanIcon
                                         v-if="option.icon"
+                                        class="w-4 h-4"
                                         :icon="option.icon"
                                     />
                                     <span class="pl-2 text-sm">{{
@@ -180,7 +181,9 @@
     import {
         selectedPersonaDirty,
         addPolicy,
+        savePolicyLocally,
         deletePolicy,
+        deletePolicyLocally,
         policyEditMap,
         setEditFlag,
         removeEditFlag,
@@ -230,6 +233,7 @@
                 })
                 try {
                     await savePolicy(type, id)
+                    // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
                         duration: 1.5,

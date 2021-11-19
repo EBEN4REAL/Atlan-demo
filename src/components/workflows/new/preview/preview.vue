@@ -1,9 +1,6 @@
 <template>
     <PreviewHeader
-        :name="
-            selectedWorkflow.configmap.data.display_name ??
-            selectedWorkflow.name
-        "
+        :name="selectedWorkflow?.display_name || selectedWorkflow?.name || ''"
         type="workflow template"
         :show-utility-buttons="false"
         :icon="images.icon"

@@ -12,6 +12,12 @@
             :loading="isLoading"
             @change="handleTableChange"
         >
+            <template #emptyText>
+                No api keys found
+                <span v-if="searchText"
+                    >with <span class="italic">{{ searchText }}</span>
+                </span>
+            </template>
             <template #name="{ text: apikey }">
                 <div v-if="apikey.attributes.description">
                     <a-popover trigger="hover" placement="bottom">
@@ -19,14 +25,18 @@
                             {{ apikey.attributes.description }}
                         </template>
                         <div
+                            class="cursor-pointer text-primary"
                             @click="$emit('selectAPIKey', apikey)"
-                            class="cursor-pointer"
                         >
                             {{ apikey.attributes.displayName }}
                         </div>
                     </a-popover>
                 </div>
-                <div v-else @click="$emit('selectAPIKey', apikey)" class="cursor-pointer">
+                <div
+                    v-else
+                    class="cursor-pointer text-primary"
+                    @click="$emit('selectAPIKey', apikey)"
+                >
                     {{ apikey.attributes.displayName }}
                 </div>
             </template>
@@ -36,21 +46,35 @@
             <template #personas="{ text: apikey }">
                 <!-- <span v-if="apikey.attributes.personas">
                     {{ apikey.attributes.personas.length }}
-                </span>
-                <span v-else> 0 </span> -->
+                </span> -->
+
                 <PillGroup
+                    v-if="
+                        apikey &&
+                        apikey.attributes &&
+                        apikey.attributes.personas &&
+                        apikey.attributes.personas.length
+                    "
                     v-model:data="apikey.attributes.personas"
                     label-key="persona"
                     :read-only="true"
                 >
                 </PillGroup>
+                <span v-else> No personas </span>
             </template>
             <template #created="{ text: apikey }">
                 <div class="flex items-center">
                     <Avatar
-                        :image-url="imageUrl(createdByUsername)"
+                        v-if="
+                            apikey &&
+                            apikey.attributes &&
+                            apikey.attributes.createdByUsername
+                        "
+                        :image-url="
+                            imageUrl(apikey.attributes.createdByUsername)
+                        "
                         :allow-upload="false"
-                        :avatar-name="createdByUsername"
+                        :avatar-name="apikey.attributes.createdByUsername"
                         :avatar-size="16"
                         :avatar-shape="'circle'"
                         class="mr-1 mt-0.5"
@@ -118,8 +142,8 @@
                                 size="sm"
                                 class="text-white bg-error border-error"
                                 padding="compact"
-                                @click="() => handleDelete(apikey.id)"
                                 :is-loading="deleteAPIKeyLoading"
+                                @click="() => handleDelete(apikey.id)"
                                 ><span v-if="deleteAPIKeyLoading"
                                     >Deleting</span
                                 >
@@ -141,6 +165,7 @@ import map from '~/constant/accessControl/map'
 import Avatar from '~/components/common/avatar/index.vue'
 import AtlanBtn from '@/UI/button.vue'
 import PillGroup from '@/UI/pill/pillGroup.vue'
+
 export default defineComponent({
     name: 'ApiKeysTable',
     components: { Avatar, AtlanBtn, PillGroup },
@@ -160,6 +185,10 @@ export default defineComponent({
         deleteAPIKeyLoading: {
             type: Boolean,
             default: false,
+        },
+        searchText: {
+            type: String,
+            default: '',
         },
     },
     emits: ['selectAPIKey', 'deleteAPIKey'],

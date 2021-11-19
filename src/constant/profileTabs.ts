@@ -45,4 +45,12 @@ export const profileTabs = [
         icon: 'LinkedAssets',
         tooltip: 'Linked Assets',
     },
+    {
+        id: 'termsAndCategories',
+        label: 'Terms and Categories',
+        component: 'termsAndCategories',
+        includes: ['AtlasGlossary'],
+        icon: 'TermsAndCategories',
+        tooltip: 'Terms and Categories',
+    },
 ]

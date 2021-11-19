@@ -56,9 +56,18 @@ export const AssetAttributes = [
     'ownerGroups',
     'meanings',
     'readme',
+    'rawQuery',
+    'compiledQuery',
     'links',
     'link',
     'webUrl',
+    'category',
+    'lastSyncRun',
+    'lastSyncRunAt',
+    'lastSyncWorkflowName',
+    'queryConfig',
+    'allowQuery',
+    'allowQueryPreview',
 ]
 
 export const SQLAttributes = [

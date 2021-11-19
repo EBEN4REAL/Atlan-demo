@@ -1,0 +1,140 @@
+<template>
+    <div
+        class="flex items-center justify-center w-full border rounded  h-96 border-gray-light"
+    >
+        <div v-if="isLoading" class="flex items-center text-lg leading-none">
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-8 mr-2 animate-spin"
+            ></AtlanIcon>
+            <span>Getting sample data</span>
+        </div>
+        <div v-else class="w-full h-full">
+            <AtlanTable :dataList="results">
+                <template #header>
+                    <thead>
+                        <tr>
+                            <th
+                                class="truncate bg-gray-100 border  border-gray-light"
+                            >
+                                #
+                                <!-- <span class="resize-handle"></span> -->
+                            </th>
+                            <th
+                                v-for="(col, index) in tableColumns"
+                                :key="index"
+                                class="bg-gray-100 border border-gray-light"
+                            >
+                                <div class="flex items-center">
+                                    <a-tooltip>
+                                        <template #title>{{
+                                            col.data_type
+                                        }}</template>
+                                        <component
+                                            :is="images[col.data_type]"
+                                            class="
+                                                w-4
+                                                h-4
+                                                mr-1
+                                                cursor-pointer
+                                                -mt-0.5
+                                            "
+                                        ></component>
+                                    </a-tooltip>
+
+                                    <Tooltip :tooltip-text="`${col.title}`" />
+                                </div>
+                                <!-- <span class="resize-handle"></span> -->
+                            </th>
+                        </tr>
+                    </thead>
+                </template>
+            </AtlanTable>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    // Vue
+    import {
+        defineComponent,
+        watch,
+        ref,
+        PropType,
+        toRefs,
+        // inject,
+        // computed
+    } from 'vue'
+    import { images, dataTypeCategoryList } from '~/constant/dataType'
+    import Tooltip from '@/common/ellipsis/index.vue'
+    import AtlanTable from '@/UI/table.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
+
+    // API
+    import { Insights } from '~/services/sql/query'
+
+    export default defineComponent({
+        components: { Tooltip, AtlanTable },
+        props: {
+            asset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
+        },
+        setup(props) {
+            /** DATA */
+            const tableColumns = ref<any>([])
+            const results = ref<any>([])
+
+            const { asset } = toRefs(props)
+
+            const { connectionQualifiedName, databaseName, schemaName, name } =
+                { ...asset.value.attributes }
+
+            const body = {
+                tableName: name,
+                defaultSchema: `${databaseName}.${schemaName}`,
+                dataSourceName: connectionQualifiedName,
+                limit: 100,
+            }
+            /** METHODS */
+            const { data, isLoading } = Insights.GetSampleData(body)
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeCategoryList.forEach((i) => {
+                    if (i.type.includes(type.toUpperCase())) label = i.label
+                })
+                return label
+            }
+            /** WATCHERS */
+            watch([data], () => {
+                if (data.value) {
+                    // convert data from API in table format
+                    data.value.columns.forEach((col) => {
+                        const obj = {
+                            dataIndex: col.label,
+                            title: col.columnName,
+                            data_type: getDataType(col.type.name),
+                        }
+                        tableColumns.value.push(obj)
+                    })
+                    data.value.rows.forEach((val, index) => {
+                        let obj = {}
+                        data.value.columns.forEach((col, i) => {
+                            obj[col.columnName] = val[i] || '---'
+                        })
+                        // add key to object
+                        obj = { ...obj }
+                        results.value.push(obj)
+                    })
+                }
+            })
+            return {
+                tableColumns,
+                results,
+                isLoading,
+                images,
+            }
+        },
+    })
+</script>

@@ -62,34 +62,32 @@ const useAssetAudit = (params: any, guid: string) => {
             const { attributes } = logs
             const owners = 'ownerUsers' in attributes || 'ownerGroups' in attributes
             const experts = 'expertUsers' in attributes
-            const status = 'certificateUpdatedAt' in attributes
+            const certificate = 'certificateStatus' in attributes || 'certificateStatusMessage' in attributes
             const userDescription =
                 'userDescription' in attributes ||
                 'shortDescription' in attributes
 
             if (owners) {
+
                 let users = <any>[];
                 let groups = <any>[];
 
-
                 if (attributes.ownerUsers) {
-                    users = attributes.ownerUsers.split(',')
+                    users = attributes.ownerUsers
                     users = users.map(user => ({ name: user, type: "user" }));
                 }
                 if (attributes.ownerGroups) {
-                    groups = attributes.ownerGroups.split(',')
+                    groups = attributes.ownerGroups
                     groups = groups.map(group => ({ name: group, type: "group" }));
                 }
                 if (attributes.ownerUsers === '' && attributes.ownerGroups === '') {
                     data.displayValue = 'owners'
                     data.component = 'Owners'
-
                     return data
                 }
 
                 data.displayValue = 'owners'
                 data.value = [...users, ...groups]
-
                 data.component = 'Owners'
 
                 return data
@@ -107,10 +105,10 @@ const useAssetAudit = (params: any, guid: string) => {
                 return data
             }
 
-            if (status) {
+            if (certificate) {
                 data.value = attributes
-                data.displayValue = 'status'
-                data.component = 'Status'
+                data.displayValue = 'certificate'
+                data.component = 'Certificate'
 
                 return data
             }

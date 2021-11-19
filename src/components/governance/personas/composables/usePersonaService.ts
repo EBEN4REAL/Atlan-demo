@@ -1,4 +1,4 @@
-import { IPersona } from '~/types/accessPolicies/personas'
+import { IPurpose } from '~/types/accessPolicies/purposes'
 import { Persona } from '../../../../services/service/persona'
 
 export default function usePersonaService() {
@@ -6,11 +6,11 @@ export default function usePersonaService() {
         return Persona.listPersonas()
     }
 
-    function createPersona(newPersona: IPersona) {
+    function createPersona(newPersona: IPurpose) {
         return Persona.createPersona(newPersona)
     }
 
-    function updatePersona(newPersona: IPersona) {
+    function updatePersona(newPersona: IPurpose) {
         return Persona.updatePersona(newPersona)
     }
 

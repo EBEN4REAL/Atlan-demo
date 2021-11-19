@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { SimpleNodeView } from './view.js'
+// import { DagreLayout } from '@/common/assets/profile/tabs/lineage/dagreLayout/dagre.ts'
 
 export default function useCreateGraph(
     graph,
@@ -13,6 +14,7 @@ export default function useCreateGraph(
     const { DagreLayout } = window.layout
 
     graph.value = new Graph({
+        async: true, // Saves resources and enhances performance.
         autoResize: true,
         interacting: false,
         container: graphContainer.value,

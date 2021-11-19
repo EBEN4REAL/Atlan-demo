@@ -130,6 +130,7 @@ import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 import RunHistory from '~/assets/images/icons/run-history.svg'
 import CaretLeft from '~/assets/images/icons/caret-left.svg'
 import CaretRight from '~/assets/images/icons/caret-right.svg'
+import CaretDown from '~/assets/images/icons/caret-down.svg'
 import Settings from '~/assets/images/icons/setings.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
@@ -214,22 +215,42 @@ import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 import Download from '~/assets/images/icons/download.svg'
 import Upload from '~/assets/images/icons/upload.svg'
 import Enum from '~/assets/images/icons/label.svg'
-import Boolean from '~/assets/images/icons/boolean.svg'
-import String from '~/assets/images/icons/string.svg'
+import Boolean from '~/assets/images/dataType/boolean.svg'
+import String from '~/assets/images/dataType/string.svg'
 import MoveItem from '~/assets/images/icons/move-item.svg'
-import DateTime from '~/assets/images/icons/datetime.svg'
-import Number from '~/assets/images/icons/number.svg'
+import DateTime from '~/assets/images/dataType/date.svg'
+import Number from '~/assets/images/dataType/number.svg'
+import Struct from '~/assets/images/dataType/struct.svg'
+import Geography from '~/assets/images/dataType/geography.svg'
 
 import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
+import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
+import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
 import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
+import NoUsers from '~/assets/images/illustrations/no-users.svg'
+import NoGroups from '~/assets/images/illustrations/no-groups.svg'
+import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
+import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import NoWf from '~/assets/images/icons/no-wf.svg'
+
+// source list
+import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
+import Athena from '~/assets/images/source/svg/Athena.svg'
+import Tableau from '~/assets/images/source/svg/Tableau.svg'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import Schema2Active from '~/assets/images/icons/schema2Active.svg'
+import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 
 export default {
+    CreateGroups,
+    NoGroups,
+    NoUsers,
     Times,
     ExclaimCircle,
     RemoveUser,
@@ -451,9 +472,22 @@ export default {
     Number,
     NoAvatar,
     Enter,
+    NoRequestFound,
+    NoLinkedAssets,
+    FormatText,
+    Snowflake,
+    Athena,
+    PowerBI,
+    Tableau,
     SSO,
     SMTP,
     APIKey,
     Camera,
-    FormatText,
+    CustomSaml,
+    Struct,
+    Geography,
+    NoWf,
+    Schema2Active,
+    QueriesActive,
+    CaretDown
 }

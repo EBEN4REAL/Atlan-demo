@@ -320,7 +320,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import UserSelector from '@common/facet/owners/index.vue'
 
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPersona } from '~/types/accessPolicies/purposes'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import usePersonaUsers from '../composables/usePersonaUsers'
     import usePersonaGroups from '../composables/usePersonaGroups'

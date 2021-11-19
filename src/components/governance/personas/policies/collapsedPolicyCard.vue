@@ -1,6 +1,14 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 border-b border-gray-300 rounded  group hover:shadow"
+        class="
+            flex flex-col
+            py-4
+            mb-2
+            border-b border-gray-300
+            rounded
+            group
+            hover:shadow
+        "
         style="paddingleft: 12px; paddingroght: 12px"
     >
         <div class="flex items-center mb-4 gap-x-3">
@@ -16,7 +24,14 @@
             </span>
 
             <div
-                class="flex items-center ml-auto bg-gray-200 border border-gray-200 rounded "
+                class="
+                    flex
+                    items-center
+                    ml-auto
+                    bg-gray-200
+                    border border-gray-200
+                    rounded
+                "
             >
                 <img
                     :src="getImage(connectionQfName?.split('/')[1])"
@@ -49,7 +64,13 @@
                 read-only
             />
             <AtlanBtn
-                class="flex-none opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
+                class="
+                    flex-none
+                    opacity-0
+                    group-hover:opacity-100
+                    text-gray
+                    hover:text-primary
+                "
                 size="sm"
                 color="secondary"
                 padding="compact"
@@ -68,7 +89,7 @@
     import {
         DataPolicies,
         MetadataPolicies,
-    } from '~/types/accessPolicies/personas'
+    } from '~/types/accessPolicies/purposes'
     import { useConnectionStore } from '~/store/connection'
 
     export default defineComponent({

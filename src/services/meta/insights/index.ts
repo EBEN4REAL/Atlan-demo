@@ -48,6 +48,17 @@ const UpdateSavedQuery = (body: Record<string, any>, options: useOptions) => {
     )
 }
 
+const UpdateSavedFolder = (body: Record<string, any>, options: useOptions) => {
+    return useAPI(
+        map.UPDATE_SAVED_FOLDER,
+        'POST',
+        {
+            body,
+        },
+        options || {}
+    )
+}
+
 const DeleteEntity = (guid: string, options: useOptions) => {
     return useAPI<SavedQueryResponse>(
         map.DELETE_ENTITY,
@@ -66,4 +77,5 @@ export const Insights = {
     GetSavedQuery,
     CreateQueryFolder,
     DeleteEntity,
+    UpdateSavedFolder
 }

@@ -1,0 +1,50 @@
+<template>
+    <a-popover overlayClassName="shortcutPopover">
+        <template #content>
+            <div class="flex items-center text-gray-3]500 gap-x-2">
+                <span class="text-sm">{{ action }}</span>
+
+                <span class="px-1 text-sm bg-white border rounded-sm">
+                    {{ shortcutKey }}</span
+                >
+            </div>
+        </template>
+        <slot></slot>
+    </a-popover>
+</template>
+
+<script lang="ts">
+    import { defineComponent, toRefs } from 'vue'
+
+    export default defineComponent({
+        components: {},
+        props: {
+            shortcutKey: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            action: {
+                type: String,
+                required: false,
+                default: '',
+            },
+        },
+        setup(props, { emit }) {
+            const { shortcutKey, action } = toRefs(props)
+
+            return {
+                shortcutKey,
+                action,
+            }
+        },
+    })
+</script>
+
+<style lang="less">
+    .shortcutPopover {
+        .ant-popover-inner-content {
+            @apply px-2 py-1 !important;
+        }
+    }
+</style>

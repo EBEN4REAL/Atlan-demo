@@ -60,11 +60,13 @@
                 v-if="componentType == 'users'"
                 v-model="localValue.ownerUsers"
                 :query-text="queryText"
+                :selectUserKey="selectUserKey"
             ></Users>
             <Groups
                 v-if="componentType == 'groups'"
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
+                :selectGroupKey="selectGroupKey"
             ></Groups>
         </div>
         <div class="px-4 pt-1" v-if="showNone">
@@ -128,6 +130,16 @@
                     return true
                 },
             },
+            selectUserKey: {
+                type: String,
+                required: false,
+                default: () => 'username', // can be id/username
+            },
+            selectGroupKey: {
+                type: String,
+                required: false,
+                default: () => 'name', // can be id/username
+            },
             enableTabs: {
                 type: Object as PropType<Array<any>>,
                 default: ['users', 'groups'],
@@ -137,7 +149,8 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { showNone, enableTabs } = toRefs(props)
+            const { showNone, enableTabs, selectUserKey, selectGroupKey } =
+                toRefs(props)
             const componentType = ref('users')
             if (enableTabs.value.length < 2) {
                 watch(
@@ -173,8 +186,13 @@
             watch(localValue.value, (prev, cur) => {
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
+                } else if (localValue.value.ownerUsers?.length === 0) {
+                    delete localValue.value.ownerUsers
                 }
+
                 if (!localValue.value.ownerGroups) {
+                    delete localValue.value.ownerGroups
+                } else if (localValue.value.ownerGroups?.length === 0) {
                     delete localValue.value.ownerGroups
                 }
                 modelValue.value = localValue.value
@@ -197,6 +215,8 @@
             }
 
             return {
+                selectGroupKey,
+                selectUserKey,
                 enableTabs,
                 handleGroupClick,
                 componentType,

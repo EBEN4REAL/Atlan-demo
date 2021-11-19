@@ -15,13 +15,15 @@ export const actions: Actions = {
         this.identityProviders = value?.identityProviders
         this.loginWithEmailAllowed = value?.loginWithEmailAllowed
         this.announcementTitle = value?.attributes?.announcementTitle
-        this.announcementDescription =
-            value?.attributes?.announcementDescription
+        this.announcementMessage = value?.attributes?.announcementMessage
         this.announcementType = value?.attributes?.announcementType
+        this.announcementUpdatedAt = value?.attributes?.announcementUpdatedAt
+        this.announcementUpdatedBy = value?.attributes?.announcementUpdatedBy
         this.tenantRaw = { ...value }
         console.log(this.loginWithEmailAllowed)
     },
     setSMTPConfig(payload) {
         this.smtpServer = payload
     },
+
 }

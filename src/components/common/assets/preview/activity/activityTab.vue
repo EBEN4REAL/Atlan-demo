@@ -1,13 +1,11 @@
 <template>
     <div>
-        <div
-            class="flex justify-between px-4 py-2 mb-6 border-b  border-gray-light"
-        >
-            <span class="font-semibold text-gray-700 text-md">Activity</span>
+        <div class="flex justify-between px-5 pt-4 pb-8">
+            <span class="font-semibold text-gray-500">Activity</span>
 
             <AtlanIcon
                 icon="Reload"
-                class="mt-1 cursor-pointer text-primary"
+                class="w-auto h-4 mt-1 cursor-pointer text-primary"
                 @click="refreshAudits"
             />
         </div>
@@ -22,7 +20,7 @@
             <span class="ml-1">Getting activity logs</span>
         </div>
         <div v-else-if="audits.length && !isLoading">
-            <a-timeline class="mx-4">
+            <a-timeline class="mx-5">
                 <a-timeline-item v-for="(log, index) in audits" :key="index">
                     <template #dot>
                         <div
@@ -81,6 +79,7 @@
                 emptyScreen="EmptyDiscover"
                 desc="No logs found"
                 imageClass="h-32"
+                descClass="text-center text-sm"
             />
         </div>
     </div>
@@ -183,6 +182,10 @@
     .ant-timeline-item {
         margin-bottom: 0 !important;
         padding-bottom: 40px !important;
+    }
+
+    .ant-timeline-item-last {
+        padding-bottom: 20px !important;
     }
     .ant-timeline-item-dot {
         width: 13px;

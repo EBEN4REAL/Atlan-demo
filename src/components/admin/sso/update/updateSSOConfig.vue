@@ -367,7 +367,7 @@
 
             const updateTenant = async () => {
                 const tenantResponse: any = await Tenant.GetTenant()
-                tenantStore.setData(tenantResponse)
+                tenantStore.setTenant(tenantResponse)
             }
 
             onMounted(() => {
@@ -425,10 +425,11 @@
 
             const updateMapper = async (mapper: any) => {
                 try {
-                    const promise = await Identity.updateMapper(
+                    const { mutate: updateMapper } = Identity.updateMapper(
                         props.alias,
                         mapper
                     )
+                    const promise = await updateMapper()
                     return promise
                 } catch (error) {
                     console.log('Mapper creation failed=>', error.message)
@@ -454,7 +455,11 @@
                         (mapper) => mapper?.userAttr && addMapper(mapper)
                     )
                     const mapperResponse: any = []
-                    await Identity.updateIDP(props.alias, config).then(() => {
+                    const { mutate: updateIDP } = Identity.updateIDP(
+                        props.alias,
+                        config
+                    )
+                    await updateIDP().then(() => {
                         mappers.map((mapper) =>
                             mapperResponse.push(updateMapper(mapper))
                         )

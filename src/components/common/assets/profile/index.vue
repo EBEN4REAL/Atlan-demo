@@ -5,8 +5,8 @@
         <a-tabs
             v-model:activeKey="activeKey"
             @change="handleChangeTab"
-            class="flex-1"
             :class="$style.profiletab"
+            class="flex-1"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
@@ -17,6 +17,7 @@
                     :is="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
+                    @preview="emit('preview', $event)"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -56,6 +57,9 @@
             Lineage: defineAsyncComponent(
                 () => import('./tabs/lineage/index.vue')
             ),
+            Queries: defineAsyncComponent(
+                () => import('./tabs/queries/index.vue')
+            ),
         },
         props: {
             asset: {
@@ -63,7 +67,7 @@
                 required: false,
             },
         },
-        setup(props) {
+        setup(props, {emit}) {
             const { asset } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() => getAllowedActions(asset.value))
@@ -87,11 +91,11 @@
             })
 
             return {
+                emit,
                 refs,
                 asset,
                 getProfileTabs,
                 activeKey,
-                getProfileTabs,
                 handleChangeTab,
             }
         },

@@ -9,9 +9,12 @@
                 >
                     <AtlanIcon
                         v-if="tab?.icon"
-                        :icon="tab.icon"
+                        :icon="
+                            activeTabId === tab.id
+                                ? `${tab.icon}Active`
+                                : `${tab.icon}`
+                        "
                         class="w-6 h-6"
-                        :class="activeTabId === tab.id ? 'text-primary' : ''"
                     />
                     <!-- <p
                         class="mt-1 mb-0 text-xs text-gray"
@@ -53,6 +56,9 @@
                     <Queries
                         :reset="resetTree"
                         :resetQueryTree="resetQueryTree"
+                        :resetParentGuid="resetParentGuid"
+                        :resetType="resetType"
+                        :refreshQueryTree="refreshQueryTree"
                     />
                 </div>
                 <!--explorer pane end -->
@@ -440,13 +446,18 @@
             })
 
             let resetTree = ref(false)
-            const refreshQueryTree = () => {
+            let resetParentGuid = ref(null)
+            let resetType = ref(null)
+            const refreshQueryTree = (guid, type) => {
                 resetTree.value = true
+                resetParentGuid.value = guid
+                resetType.value = type
                 // console.log('QueryTree refresh: ', resetTree.value)
             }
             const resetQueryTree = () => {
                 resetTree.value = false
-
+                resetParentGuid.value = null
+                resetType.value = null
                 // console.log('QueryTree reset: ', resetTree.value)
             }
 
@@ -468,6 +479,8 @@
                 resetTree,
                 refreshQueryTree,
                 resetQueryTree,
+                resetParentGuid,
+                resetType,
             }
         },
     })

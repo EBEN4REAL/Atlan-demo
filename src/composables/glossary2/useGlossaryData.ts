@@ -25,6 +25,14 @@ export default function useGlossaryData() {
         )
     )
 
+    const getGlossaryByQF = (qf) =>
+        glossaryList.value.find((i) => i.attributes.qualifiedName === qf)
+
+    const getFirstGlossaryQF = () =>
+        glossaryList.value.length > 0
+            ? glossaryList.value[0].attributes.qualifiedName
+            : ''
+
     const handleSelectedGlossary = (item) => {
         glossaryStore.setSelectedGlossary(item)
     }
@@ -63,9 +71,7 @@ export default function useGlossaryData() {
         return `${typeName}${status}`
     }
 
-    const selectedGlossary = computed(() => {
-        return glossaryStore.selectedGlossary
-    })
+    const selectedGlossary = computed(() => glossaryStore.selectedGTC)
 
     return {
         glossaryList,
@@ -74,5 +80,7 @@ export default function useGlossaryData() {
         getEntityStatusIcon,
         handleSelectedGlossary,
         selectedGlossary,
+        getGlossaryByQF,
+        getFirstGlossaryQF,
     }
 }

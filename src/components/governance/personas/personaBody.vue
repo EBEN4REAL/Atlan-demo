@@ -22,8 +22,8 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.metadataPolicies.length +
-                            selectedPersonaDirty?.dataPolicies.length
+                            selectedPersonaDirty?.metadataPolicies?.length +
+                            selectedPersonaDirty?.dataPolicies?.length
                         }}
                     </div>
                     <div
@@ -36,9 +36,8 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.users?.length ??
-                            0 + selectedPersonaDirty?.groups?.length ??
-                            0
+                            selectedPersonaDirty?.users?.length +
+                            selectedPersonaDirty?.groups?.length
                         }}
                     </div>
                 </div>
@@ -177,7 +176,7 @@
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './overview/personaMeta.vue'
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import {
         selectedPersonaDirty,
         addPolicy,
@@ -204,7 +203,7 @@
         },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },

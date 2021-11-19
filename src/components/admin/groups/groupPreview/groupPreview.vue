@@ -74,7 +74,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, defineAsyncComponent } from 'vue'
+    import { defineComponent, computed, defineAsyncComponent, watch } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { useGroup } from '~/composables/group/useGroups'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
@@ -103,25 +103,31 @@
                 finalTabs,
             } = useGroupPreview()
             const activeKey = defaultTab
-            let filterObj = {}
-            if (uniqueAttribute.value === 'groupAlias')
-                filterObj = {
-                    $and: [{ name: groupAlias.value }],
-                }
-            else filterObj = { $and: [{ id: groupId.value }] }
-            const { groupList, getGroup, state, STATES } = useGroup({
+
+            const params = computed(() => ({
                 limit: 1,
                 offset: 0,
                 // sort: "alias",
-                filter: filterObj,
-            })
+                filter:
+                    uniqueAttribute.value === 'groupAlias'
+                        ? [{ name: groupAlias.value }]
+                        : { $and: [{ id: groupId.value }] },
+            }))
+
+            const { groupList, getGroup, state, STATES } = useGroup(params)
             const groupObj = computed(() =>
                 groupList && groupList.value && groupList.value.length
                     ? groupList.value[0]
                     : []
             )
 
+            watch([groupAlias, groupId], () => {
+                getGroup()
+            })
+
             return {
+                groupAlias,
+                groupId,
                 tabs: finalTabs,
                 getGroup,
                 activeKey,

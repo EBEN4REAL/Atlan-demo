@@ -11,8 +11,9 @@
                 <div>
                     <a-button
                         v-if="!isEditing"
+                        v-auth="map.UPDATE_ENUM"
                         shape="circle"
-                        class="flex items-center justify-center rounded-md  ant-btn ant-btn-primary"
+                        class="flex items-center justify-center rounded-md ant-btn ant-btn-primary"
                         @click="() => (isEditing = true)"
                     >
                         <AtlanIcon
@@ -83,6 +84,7 @@
     import { useUpdateEnums } from './composables/useModifyEnums'
     // import { useAccessStore } from '~/services/access/accessStore'
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {
@@ -161,6 +163,7 @@
                 handleChange,
                 saveChanges,
                 handleClickUser,
+                map,
                 // editPermission,
             }
         },

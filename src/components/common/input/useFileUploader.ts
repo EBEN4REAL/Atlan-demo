@@ -1,7 +1,6 @@
-
-
 import { computed, ref, Ref } from 'vue'
-import { useAPI } from '~/services/api/useAPI';
+// import { useAPI } from '~/services/api/useAPI';
+import genericAPI from '~/services/api/generic'
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
 interface FileItem {
@@ -16,7 +15,6 @@ interface FileItem {
 }
 
 export default function useFileUploader(reqConfig, emit) {
-
     const fileList: Ref<FileItem> = ref([])
     const uploading = ref(false)
 
@@ -37,29 +35,27 @@ export default function useFileUploader(reqConfig, emit) {
     const handleUpload = async () => {
         const { url, formDataFormat } = reqConfig.value
         const formData = new FormData()
-        let parsedUrl = url;
+        let parsedUrl = url
         if (parsedUrl.includes('{{domain}}'))
             parsedUrl = parsedUrl.replace('{{domain}}', document.location.host)
         Object.entries(formDataFormat).forEach(([key, val]) => {
-            if (val === "{{file}}")
+            if (val === '{{file}}')
                 formData.append(key, fileList.value[0].originFileObj)
-            else
-                formData.append(key, val as string)
+            else formData.append(key, val as string)
         })
         uploading.value = true
         try {
             success.value = false
             error.value = false
-            const res = await useAPI(
-              () => parsedUrl, 
-              "POST", 
-              { body: formData },
-              { options: {
-                   headers: { 
-                     "Content-Type": `multipart/form-data boundary=${formData._boundary}` 
-                  } 
-                } 
-              }
+            const res = await genericAPI(
+                parsedUrl,
+                'POST',
+                { body: formData },
+                {
+                    headers: {
+                        'Content-Type': `multipart/form-data boundary=${formData._boundary}`,
+                    },
+                }
             )
             emit('change', res)
             fileList.value = []
@@ -70,12 +66,16 @@ export default function useFileUploader(reqConfig, emit) {
         uploading.value = false
     }
 
-    const init = () => {
-    }
+    const init = () => {}
 
     return {
-        handleUpload, beforeUpload, handleRemove, init, uploading, fileList, error, success
+        handleUpload,
+        beforeUpload,
+        handleRemove,
+        init,
+        uploading,
+        fileList,
+        error,
+        success,
     }
-};
-
-
+}

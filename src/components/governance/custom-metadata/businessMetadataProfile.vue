@@ -72,11 +72,13 @@
                 <PropertyList
                     :metadata="localBm"
                     :properties="searchedAttributeList"
-                    @changeOrder="localBm.attributeDefs = $event"
-                    @removeProperty="handleRemoveAttribute"
-                    @openEditDrawer="
+                    @change-order="localBm.attributeDefs = $event"
+                    @remove-property="handleRemoveAttribute"
+                    @open-edit-drawer="
                         addPropertyDrawer.open(
-                            $event.property,
+                            cleanLocalBm.attributeDefs.find(
+                                (x) => x.name === $event.property.name
+                            ),
                             true,
                             $event.index
                         )
@@ -115,7 +117,6 @@
     import { defineComponent, ref, computed, onMounted, watch, Ref } from 'vue'
 
     // ? Components
-    import AddAttributeCard from '@/governance/custom-metadata/addAttributeCard.vue'
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     // import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
     import MetadataHeaderButton from './metadataHeaderButton.vue'
@@ -135,7 +136,6 @@
 
     export default defineComponent({
         components: {
-            AddAttributeCard,
             CreateUpdateInfo,
             MetadataHeaderButton,
             AddPropertyDrawer,
@@ -221,23 +221,33 @@
             })
 
             watch(props.selectedBm, (newValue) => {
-                console.log('JBJBD')
-
                 if (newValue)
                     localBm.value = JSON.parse(JSON.stringify(props.selectedBm))
             })
 
-            // converts customEntityTypes from string to array so they can be set on the a-tree component
+            // converts customApplicableEntityTypes from string to array so they can be set on the a-tree component
             const cleanLocalBm = computed(() => {
                 const tempBM = JSON.parse(JSON.stringify(localBm.value))
                 tempBM.attributeDefs.forEach((x, index) => {
-                    // console.log(typeof x.options.customEntityTypes)
-                    if (typeof x.options.customEntityTypes === 'string') {
-                        tempBM.attributeDefs[index].options.customEntityTypes =
-                            JSON.parse(x.options.customEntityTypes)
+                    // clean attribute defs
+                    if (
+                        typeof x.options.customApplicableEntityTypes ===
+                        'string'
+                    ) {
+                        tempBM.attributeDefs[
+                            index
+                        ].options.customApplicableEntityTypes = JSON.parse(
+                            x.options.customApplicableEntityTypes
+                        )
                     }
+                    // clean allowFiltering, allowSearch, allowMultiple
+                    tempBM.attributeDefs[index].options.allowSearch =
+                        x.options.allowSearch === 'true'
+                    tempBM.attributeDefs[index].options.allowFiltering =
+                        x.options.allowFiltering === 'true'
+                    tempBM.attributeDefs[index].options.multiValueSelect =
+                        x.options.multiValueSelect === 'true'
                 })
-                // console.log('done:', tempBM.attributeDefs)
                 return tempBM
             })
 

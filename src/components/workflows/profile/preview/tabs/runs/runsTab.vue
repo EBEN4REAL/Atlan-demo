@@ -5,8 +5,8 @@
     >
         <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
     </div>
-    <div v-else class="pb-8">
-        <div class="sticky top-0 z-20 flex p-4 bg-white">
+    <div v-else>
+        <div class="mt-3">
             <!-- <a-input-search
                 v-model:value="searchText"
                 placeholder="Search runs"
@@ -30,7 +30,7 @@
                     :selected-run-name="selectedRunName"
                     :is-loading="isLoadingRunGraph"
                     :select-enabled="true"
-                    @select="loadRunGraph($event)"
+                    @select="loadRunGraph($event)" 
                 />
             </template>
             <template #footer>
@@ -40,32 +40,13 @@
                 >
                     <button
                         :disabled="isLoading"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            py-2
-                            transition-all
-                            duration-300
-                            bg-white
-                            rounded-full
-                            text-primary
-                        "
+                        class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                         :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                         @click="loadMore"
                     >
                         <template v-if="!isLoading">
                             <p
-                                class="
-                                    m-0
-                                    mr-1
-                                    overflow-hidden
-                                    text-sm
-                                    transition-all
-                                    duration-300
-                                    overflow-ellipsis
-                                    whitespace-nowrap
-                                "
+                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                             >
                                 Load more
                             </p>
@@ -95,18 +76,19 @@
                 </div>
             </template>
         </VirtualList>
-
-        <EmptyView
-            v-if="list.length === 0 && !isLoading"
-            :desc="
-                !error
-                    ? 'There are no runs for this workflow. '
-                    : 'Sorry, we couldn’t find the workflow you were looking for.'
-            "
-            empty-screen="NoRuns"
-            desc-class="w-56 text-center"
-            button-icon="ArrowRight"
-        />
+        <div class="no-wf">
+          <EmptyView
+              v-if="list.length === 0 && !isLoading"
+              :desc="
+                  !error
+                      ? 'There are no runs for this workflow. '
+                      : 'Sorry, we couldn’t find the workflow you were looking for.'
+              "
+              empty-screen="NoWf"
+              desc-class="w-56 text-center"
+              button-icon="ArrowRight"
+          />
+        </div>
     </div>
 </template>
 
@@ -123,6 +105,7 @@
 
     // Components
     import EmptyView from '@common/empty/index.vue'
+    import { useRoute, useRouter } from 'vue-router'
     import RunCard from '@/workflows/shared/runCard.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import RunSort from './runSort.vue'
@@ -155,6 +138,8 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
+            const route = useRoute()
+            const router = useRouter()
             const { selectedWorkflow: item } = toRefs(props)
             const isLoadingRunGraph = ref(false)
             const selectedRunName = ref('')
@@ -179,6 +164,7 @@
             // loadRunGraph
             const loadRunGraph = (runName) => {
                 if (selectedRunName.value === runName) return
+                router.replace(route.path)
                 selectedRunName.value = runName
                 isLoadingRunGraph.value = true
                 emit('change', runName)
@@ -238,7 +224,9 @@
                     list.value = [...liveRunItems, ...archivedRunItems]
 
                     if (!selectedRunName.value) {
-                        selectedRunName.value = list.value[0]?.name
+                        const idMonitoring = route.query.idmonitoring
+                        const defaultRunName = list.value.find((el) => el.uid === idMonitoring) || list.value[0]
+                        selectedRunName.value = defaultRunName?.name
                     }
                     setTimeout(() => {
                         isReady.value = true
@@ -272,6 +260,13 @@
     })
 </script>
 
+<style lang="less">
+  .no-wf{
+    // svg {
+    //   height: auto!important;
+    // }
+  }
+</style>
 <style lang="less" scoped>
     .ant-timeline-item {
         margin-bottom: 0 !important;

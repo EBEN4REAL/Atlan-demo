@@ -7,7 +7,7 @@
         ><span>Getting Runs</span>
     </div>
     <div v-else-if="list.length" v-auth="access.LIST_RUNS">
-        <div class="flex px-4 mt-4 mb-4">
+        <!-- <div class="flex px-4 mt-4 mb-4">
             <a-input-search
                 v-model:value="searchText"
                 placeholder="Search Members"
@@ -18,12 +18,13 @@
             <a-button class="p-2 ml-2 rounded">
                 <AtlanIcon icon="FilterDot" class="h-4" />
             </a-button>
-        </div>
+        </div> -->
         <RunCard
             v-for="(r, x) in searchText ? filterList(searchText) : list"
             :key="x"
             :r="r"
             :select-enabled="true"
+            @click="handleClickRunCard(r)"
         />
     </div>
     <EmptyView
@@ -44,6 +45,7 @@
 <script lang="ts">
     // Vue
     import { watch, defineComponent, PropType, toRefs, ref } from 'vue'
+    import { useRouter } from 'vue-router'
 
     // Components
     import EmptyView from '@common/empty/index.vue'
@@ -71,25 +73,46 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
+            const router = useRouter()
             const { selectedWorkflow: item } = toRefs(props)
             const searchText = ref('')
             const list = ref([])
+            const error = ref("")
+            const isLoading = ref(false)
+            const filterList = ref([])
+            const archivedList = ref([])
 
             // getArchivedRunList
-            const { archivedList, error, isLoading, filterList } =
-                getArchivedRunList(item.value.name, true)
+            const handleGetDataRun = () => {
+              isLoading.value = true
+              const { archivedList: archivedListW, error: errorW, isLoading: isLoadingW, filterList: filterListW } =
+                  getArchivedRunList(item.value.name, true)
+              // watcher
+              watch(isLoadingW, (newVal) => isLoading.value = newVal)
+              watch(errorW, (newVal) => error = newVal)
+              watch(filterListW, (newVal) => filterList.value = newVal)
+              watch(archivedListW, (newVal) => {
+                  archivedList.value = newVal
+                  if (newVal) {
+                      let archivedRunItems = []
 
-            // watcher
-            watch(archivedList, (newVal) => {
-                if (newVal) {
-                    let archivedRunItems = []
+                      if (newVal?.records?.length)
+                          archivedRunItems = newVal.records
 
-                    if (newVal?.records?.length)
-                        archivedRunItems = newVal.records
-
-                    list.value = [...archivedRunItems]
-                }
+                      list.value = [...archivedRunItems]
+                  }
+              })
+            } 
+            // for first Time Run
+            handleGetDataRun()           
+            watch(item, () => {
+              handleGetDataRun()
             })
+            const handleClickRunCard = (prop) => {
+              const {name} = item.value
+              const id = prop.uid
+              router.push(`/workflows/${name}/monitor?idmonitoring=${id}`)
+            }
 
             return {
                 access,
@@ -100,6 +123,7 @@
                 error,
                 isLoading,
                 emit,
+                handleClickRunCard
             }
         },
     })

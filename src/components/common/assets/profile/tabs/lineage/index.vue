@@ -1,92 +1,88 @@
 <template>
-    <div class="relative w-full h-full">
-        <!-- <div class="absolute flex items-center justify-center w-full h-full">
-            <a-spin />
-        </div> -->
-        <div class="absolute w-full h-full">
-            <LineageGraph
-                v-if="!isLineageEmpty"
-                :lineage="lineage"
-                @preview="emit('preview', $event)"
-            />
-            <div
-                v-else
-                class="z-20 flex items-center justify-center w-full h-full bg-white "
-            >
-                LINEAGE IS EMPTY
+    <div class="relative w-full h-screen bg-white">
+        <div
+            class="absolute flex items-center justify-center w-full"
+            style="height: 80vh"
+        >
+            <div v-if="isLoading">
+                <a-spin tip="Loading Graph..." />
             </div>
+            <div v-if="error">
+                <EmptyState
+                    desc="You can send this info to us."
+                    headline="Oops! Something went wrong"
+                    empty-screen="SomethingWrong"
+                />
+            </div>
+        </div>
+
+        <div v-if="isReady" class="absolute w-full h-full">
+            <LineageGraph :lineage="data" @preview="emit('preview', $event)" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import {
-        defineComponent,
-        computed,
-        ref,
-        provide,
-        watch,
-        onMounted,
-    } from 'vue'
-
+    import { defineComponent, computed, ref, provide } from 'vue'
     import { useRoute } from 'vue-router'
+    import { whenever } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
 
     // Components
     import LineageGraph from './lineageGraph.vue'
+    import EmptyState from '~/components/common/empty/index.vue'
 
+    // Utils
     import useLineageService from '~/services/meta/lineage/lineage_service'
 
     export default defineComponent({
-        name: 'Lineage',
-        components: { LineageGraph },
+        name: 'LineageIndex',
+        components: { LineageGraph, EmptyState },
         emits: ['preview'],
         setup(_, { emit }) {
             const route = useRoute()
 
-            const lineage = ref({})
+            /** DATA */
             const depth = ref(1)
             const direction = ref('BOTH')
             const guid = computed(() => route?.params?.id || '')
-            const isLineageEmpty = ref(false)
+            const config = computed(() => ({
+                depth: depth.value,
+                guid: guid.value,
+                direction: direction.value,
+            }))
 
+            /** METHODS */
+            // useLineageService
             const { useFetchLineage } = useLineageService()
+            const { data, isLoading, isReady, mutate, error } =
+                useFetchLineage(config)
 
-            const fetchLineage = () => {
-                const { data } = useFetchLineage({
-                    depth: depth.value,
-                    guid: guid.value,
-                    direction: direction.value,
-                })
-
-                watch(data, () => {
-                    lineage.value = data.value
-                    if (lineage.value.relations.length === 0)
-                        isLineageEmpty.value = true
-                })
-            }
-
+            // Control
             const control = (type, item = null) => {
                 if (type === 'depth') depth.value = item
                 if (type === 'direction') direction.value = item
-                if (type === 'reload') fetchLineage()
+                mutate()
             }
 
+            /** PROVIDERS */
             provide('depth', depth)
             provide('direction', direction)
             provide('control', control)
 
-            watch([depth, direction], () => {
-                fetchLineage()
-            })
-
-            onMounted(() => {
-                fetchLineage()
+            /** WATCHERS */
+            whenever(error, () => {
+                message.error(
+                    `${error.value?.response?.status}: Something went wrong. Please try again`
+                )
             })
 
             return {
-                lineage,
-                isLineageEmpty,
+                data,
+                isLoading,
+                isReady,
+                error,
                 emit,
             }
         },

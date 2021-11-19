@@ -1,25 +1,32 @@
 <template>
+    <EmptyView
+        v-if="!error && !searchText && !isLoading && !groupList?.length"
+        empty-screen="CreateGroups"
+        headline="Create a new group"
+        button-text="Create Group"
+        @event="() => (isGroupDrawerVisible = true)"
+    />
     <DefaultLayout title="Groups" :badge="totalGroupsCount">
         <template #header>
             <div class="flex justify-between">
                 <div class="flex w-1/4">
-                    <a-input-search
+                    <SearchAndFilter
                         v-model:value="searchText"
                         :placeholder="`Search ${totalGroupsCount} group${
                             totalGroupsCount > 1 ? 's' : ''
                         }`"
-                        :allow-clear="true"
                         class="mr-1"
+                        size="minimal"
                         @change="onSearch"
-                    ></a-input-search>
+                    />
                 </div>
 
                 <AtlanButton
                     v-auth="map.CREATE_GROUP"
-                    @click="isGroupDrawerVisible = true"
                     class="px-5"
                     size="sm"
                     type="primary"
+                    @click="isGroupDrawerVisible = true"
                 >
                     Create Group
                 </AtlanButton>
@@ -30,7 +37,7 @@
             :mask="false"
             :width="350"
             :closable="false"
-            :destroyOnClose="true"
+            :destroy-on-close="true"
         >
             <AddGroup
                 @closeDrawer="isGroupDrawerVisible = false"
@@ -39,7 +46,7 @@
         </a-drawer>
 
         <div
-            v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+            v-if="error"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -58,68 +65,73 @@
                 </div>
             </ErrorView>
         </div>
-        <a-table
-            v-else-if="groupList"
-            id="groupList"
-            class="overflow-hidden border rounded-lg group-table"
-            :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :table-layout="'fixed'"
-            :pagination="false"
-            :data-source="groupList"
-            :columns="columns"
-            :row-key="(group) => group.id"
-            :loading="
-                [STATES.PENDING].includes(state) ||
-                [STATES.VALIDATING].includes(state)
-            "
-            @change="handleTableChange"
-        >
-            <template #name="{ text: group }">
-                <div
-                    @click="
-                        () => {
-                            handleGroupClick(group)
-                        }
-                    "
-                >
+        <template v-else-if="groupList?.length">
+            <a-table
+                id="groupList"
+                class="overflow-hidden border rounded-lg group-table"
+                :scroll="{ y: 'calc(100vh - 20rem)' }"
+                :table-layout="'fixed'"
+                :pagination="false"
+                :data-source="groupList"
+                :columns="columns"
+                :row-key="(group) => group.id"
+                :loading="isLoading"
+                @change="handleTableChange"
+            >
+                <template #name="{ text: group }">
                     <div
-                        class="flex capitalize truncate cursor-pointer  text-primary"
+                        @click="
+                            () => {
+                                handleGroupClick(group)
+                            }
+                        "
                     >
-                        <div class="mr-2 truncate max-w-3/4">
-                            {{ group.name }}
-                        </div>
                         <div
-                            v-if="group.isDefault === 'true'"
-                            class="px-2 py-1 text-xs rounded-full  bg-blue-50 text-gray"
+                            class="flex capitalize truncate cursor-pointer  text-primary"
                         >
-                            Default
+                            <div class="mr-2 truncate max-w-3/4">
+                                {{ group.name }}
+                            </div>
+                            <div
+                                v-if="group.isDefault === 'true'"
+                                class="px-2 py-1 text-xs rounded-full  bg-blue-50 text-gray"
+                            >
+                                Default
+                            </div>
                         </div>
+                        <p class="mb-0 text-gray-500 truncate">
+                            {{ group.description }}
+                        </p>
                     </div>
-                    <p class="mb-0 text-gray-500 truncate">
-                        {{ group.description }}
-                    </p>
-                </div>
-            </template>
-            <template #actions="{ text: group }">
-                <ActionButtons
-                    v-auth="[map.UPDATE_GROUP]"
-                    :group="group"
-                    :mark-as-default-loading="markAsDefaultLoading"
-                    :delete-group-loading="deleteGroupLoading"
-                    @addMembers="handleAddMembers(group)"
-                    @deleteGroup="handleDeleteGroup(group.id)"
-                    @toggleDefault="handleToggleDefault(group)"
+                </template>
+                <template #actions="{ text: group }">
+                    <ActionButtons
+                        v-auth="[map.UPDATE_GROUP]"
+                        :group="group"
+                        :mark-as-default-loading="markAsDefaultLoading"
+                        :delete-group-loading="deleteGroupLoading"
+                        @addMembers="handleAddMembers(group)"
+                        @deleteGroup="handleDeleteGroup(group.id)"
+                        @toggleDefault="handleToggleDefault(group)"
+                    />
+                </template>
+            </a-table>
+            <div class="flex justify-end max-w-full mt-4">
+                <a-pagination
+                    :total="pagination.total"
+                    :current="pagination.current"
+                    :page-size="pagination.pageSize"
+                    @change="handlePagination"
                 />
-            </template>
-        </a-table>
-        <div class="flex justify-end max-w-full mt-4">
-            <a-pagination
-                :total="pagination.total"
-                :current="pagination.current"
-                :page-size="pagination.pageSize"
-                @change="handlePagination"
-            />
-        </div>
+            </div>
+        </template>
+        <EmptyView
+            v-else
+            empty-screen="NoGroups"
+            desc="Oops… we didn’t find any groups that match this search"
+            button-text="Clear search"
+            @event="clearFilter"
+        />
     </DefaultLayout>
 </template>
 <script lang="ts">
@@ -127,6 +139,7 @@
     import ErrorView from '@common/error/index.vue'
     import { message } from 'ant-design-vue'
     import { useDebounceFn } from '@vueuse/core'
+    import EmptyView from '@common/empty/index.vue'
     import { Groups } from '~/services/service/groups'
     import DefaultLayout from '@/admin/layout.vue'
     import useGroups from '~/composables/group/useGroups'
@@ -138,15 +151,18 @@
     import map from '~/constant/accessControl/map'
     import AddGroup from '@/admin/groups/addGroup.vue'
     import { columns } from '~/constant/groups'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
         name: 'GroupList',
         components: {
             ErrorView,
+            EmptyView,
             AddGroup,
             AtlanButton,
             DefaultLayout,
             ActionButtons,
+            SearchAndFilter,
         },
         setup(props, context) {
             const defaultTab = ref('about')
@@ -177,8 +193,8 @@
                 totalGroupsCount,
                 filteredGroupsCount,
                 getGroupList,
-                state,
-                STATES,
+                error,
+                isLoading,
             } = useGroups(groupListAPIParams)
 
             // BEGIN: GROUP PREVIEW
@@ -187,6 +203,7 @@
                 showGroupPreview: openPreview,
                 setGroupUniqueAttribute,
                 setDefaultTab,
+                closePreview,
             } = useGroupPreview()
 
             const showGroupPreviewDrawer = (
@@ -226,6 +243,10 @@
                 groupListAPIParams.offset = 0
                 getGroupList()
             }, 600)
+            const clearFilter = () => {
+                groupListAPIParams.filter = {}
+                getGroupList()
+            }
 
             const handlePagination = (page: number) => {
                 // modify offset
@@ -262,7 +283,6 @@
             }
 
             const handleGroupClick = (group: any) => {
-                // showGroupPreview.value = true;
                 showGroupPreviewDrawer(group)
             }
             const selectedGroup = computed(() => {
@@ -342,9 +362,10 @@
                 onSearch,
                 groupList,
                 pagination,
+                clearFilter,
                 handleTableChange,
-                state,
-                STATES,
+                error,
+                isLoading,
                 handleGroupClick,
                 showGroupPreview,
                 totalGroupsCount,
@@ -383,6 +404,9 @@
         // extra row hide hack
         :global(.ant-table-measure-row) {
             @apply hidden;
+        }
+        :global(.ant-table-column-title) {
+            @apply text-left;
         }
     }
 </style>

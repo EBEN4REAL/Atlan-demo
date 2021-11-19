@@ -23,4 +23,12 @@ export const profileTabs = [
         icon: 'Lineage',
         tooltip: 'Lineage',
     },
+    {
+        id: 'queries',
+        label: 'Queries',
+        component: 'queries',
+        includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
+        icon: 'Queries',
+        tooltip: 'Queries',
+    },
 ]

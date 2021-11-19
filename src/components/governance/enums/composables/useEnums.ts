@@ -1,35 +1,28 @@
 import useSWRV from 'swrv'
 import { computed, ref } from 'vue'
 import { getAPIPath, fetcher } from '~/services/api/common'
-
+import { useTypedefStore } from '~/store/typedef'
 import enumDef from '../enum.interface'
+import useTypedefData from '~/composables/typedefs/useTypedefData'
+import { mutate } from 'swrv'
+
 
 const serviceAlias = 'meta'
 const enumTypedef = 'ENUM'
 
 export default function useEnums() {
-  const { data: enumListResponse, mutate, error } = useSWRV(
-    [getAPIPath(serviceAlias, '/types/typedefs'), { type: enumTypedef }],
-    fetcher,
-    { revalidateOnFocus: false }
-  )
+  const store = useTypedefStore()
+  const isLoading = computed(() => store.isLoading)
 
-  const loadingState = computed(() => ({
-    pending: enumListResponse.value === undefined && !error.value,
-    error: enumListResponse.value === undefined && error.value
-  })
-  )
 
   // data
   const currentEnumId = ref('')
   const searchText = ref('')
 
-  const enumListData = computed<enumDef[]>(
-    () => enumListResponse.value?.enumDefs || []
-  )
+  const { enumList } = useTypedefData()
 
   const selectedId = computed<string>({
-    get: () => currentEnumId.value || enumListData.value?.[0]?.guid,
+    get: () => currentEnumId.value || enumList.value?.[0]?.guid,
     set: (val) => {
       currentEnumId.value = val
     },
@@ -37,61 +30,43 @@ export default function useEnums() {
 
   const selectedEnum = computed({
     get: () =>
-      enumListData.value?.find(
+      enumList.value?.find(
         (enumObj) => enumObj.guid === selectedId.value
       ),
     set: (updatedEnum) => {
       if (updatedEnum) {
-        const idx = enumListData.value.findIndex(
+        const idx = enumList.value.findIndex(
           (enumObj) => enumObj.guid === updatedEnum.guid
         )
-        enumListData.value[idx] = updatedEnum
+        enumList.value[idx] = updatedEnum
       }
     },
   })
 
   function addToList(newEnum: enumDef) {
-    const newEnumList = [newEnum, ...enumListData.value]
-    mutate(() => ({ enumDefs: newEnumList }))
+    store.appendEnumList([newEnum])
     currentEnumId.value = newEnum.guid
+    // const newEnumList = [newEnum, ...enumList.value]
+    // mutate('DEFAULT_TYPEDEFS',() => ({ enumDefs: newEnumList })) // TODO findout how to update swrv store
   }
 
   const searchedEnumList = computed(() => {
     if (searchText.value) {
-      return enumListData.value.filter((bm) =>
+      return enumList.value.filter((bm) =>
         bm.name.toUpperCase().includes(searchText.value.toUpperCase())
       )
     }
-    return enumListData
+    return enumList.value
   })
 
-  const sortedSearchedEnum = computed(() => {
-    const list = searchText.value
-      ? searchedEnumList.value
-      : enumListData.value
-
-    const sortedList = list.sort((listA: any, listB: any) => {
-      const a = listA.name.toLowerCase()
-      const b = listB.name.toLowerCase()
-      if (a < b) {
-        return -1
-      }
-      if (a > b) {
-        return 1
-      }
-      return 0
-    })
-    return sortedList
-  })
 
   return {
     selectedId,
-    enumListData,
+    enumList,
     selectedEnum,
-    refetchEnumList: mutate,
     addToList,
-    loadingState,
+    isLoading,
     searchText,
-    sortedSearchedEnum
+    searchedEnumList,
   }
 }

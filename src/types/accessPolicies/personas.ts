@@ -32,7 +32,7 @@ export interface IPersona {
     personaType?: 'persona'
     users?: string[]
     groups?: string[]
-    metadataPolicies?: MetadataPolicies[]
+    resourcePolicies?: MetadataPolicies[]
     // Will be camel cased from BE
     dataPolicies?: DataPolicies[]
     updatedAt?: string

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-4">
+    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
         <div class="flex items-center justify-between">
             <span class="font-semibold text-gray-500">Properties</span>
         </div>
@@ -83,7 +83,7 @@
 
         <div class="flex flex-col text-sm">
             <span class="mb-1 text-gray-500">Qualified Name</span>
-            <span class="text-gray-700">{{
+            <span class="text-gray-700 break-all">{{
                 qualifiedName(selectedAsset)
             }}</span>
         </div>

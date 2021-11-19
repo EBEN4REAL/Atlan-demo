@@ -10,28 +10,12 @@
             id="name-input"
             v-model:value="form.displayName"
             placeholder="Name the metadata"
-            class="
-                p-0
-                text-lg
-                font-bold
-                text-gray-700
-                border-0
-                shadow-none
-                outline-none
-            "
+            class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
         ></a-input>
         <a-textarea
             v-model:value="form.description"
             placeholder="Add description..."
-            class="
-                p-0
-                font-bold
-                text-gray-700
-                border-0
-                shadow-none
-                outline-none
-                resize-none
-            "
+            class="p-0 font-bold text-gray-700 border-0 shadow-none outline-none resize-none "
         ></a-textarea>
         <div class="flex items-center justify-end space-x-3">
             <a-button class="border-0" @click="visible = false"
@@ -45,15 +29,13 @@
                 >{{ isEdit ? 'Update' : 'Create' }}</a-button
             >
         </div>
-        <!-- <pre>{{ isEdit }}</pre> -->
-        <!-- <pre>{{ metadata }}</pre> -->
     </a-modal>
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
-    import { Types } from '~/services/meta/types'
     import { message } from 'ant-design-vue'
+    import { Types } from '~/services/meta/types'
 
     // store
     import { useTypedefStore } from '~/store/typedef'
@@ -73,25 +55,22 @@
         setup(props, { emit }) {
             // data
             const store = useTypedefStore()
-
-            const visible = ref(false)
-            const loading = ref(false)
-            const form = ref({
+            const initializeForm = () => ({
                 displayName: '',
                 description: '',
                 options: {},
             })
+            const visible = ref(false)
+            const loading = ref(false)
+            const form = ref(initializeForm())
 
             // methods
             const open = () => {
                 if (props.metadata) {
-                    // const storeMetadata = store.getBusinessMetadataByGuid(
-                    //     props.metadata.guid
-                    // )
                     form.value = props.metadata
+                } else {
+                    form.value = initializeForm()
                 }
-
-                // if (props.isEdit) fillForm()
                 visible.value = true
                 setTimeout(
                     () => document.getElementById('name-input')?.focus(),
@@ -144,7 +123,6 @@
                                     errorMessage: e.response.data.errorMessage,
                                 },
                             }
-                            console.log(error.value)
                         }
                     }
                 )

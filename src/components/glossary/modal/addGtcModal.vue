@@ -7,13 +7,58 @@
         v-model:visible="visible"
         :class="$style.input"
         width="50%"
+        :destroy-on-close="true"
         :closable="true"
         okText="Save"
         cancelText=""
         :footer="null"
     >
         <div class="p-3">
-            <p class="font-bold uppercase text-md">New {{ typeNameTitle }}</p>
+            <div class="flex items-center mb-1">
+                <div
+                    v-if="!glossaryQualifiedName"
+                    class="flex items-center uppercase"
+                >
+                    <AtlanIcon
+                        icon="Glossary"
+                        class="self-center pr-1"
+                    ></AtlanIcon>
+                    New Glossary
+                </div>
+                <GTCSelect
+                    v-else
+                    class="p-1 mr-3 bg-gray-100 rounded"
+                    v-model="localEntityType"
+                ></GTCSelect>
+
+                <div v-if="glossaryName" class="flex items-center mr-2">
+                    <AtlanIcon
+                        icon="Glossary"
+                        class="self-center pr-1"
+                    ></AtlanIcon>
+                    {{ glossaryName }}
+                </div>
+                <div
+                    v-if="glossaryName && categoryName && categoryGuid"
+                    class="flex items-center"
+                >
+                    <AtlanIcon
+                        icon="Category"
+                        class="self-center pr-1"
+                    ></AtlanIcon>
+                    {{ categoryName }}
+                </div>
+
+                <!-- <GlossaryPopoverSelect
+                    v-else-if="
+                        !localQualifiedName &&
+                        (localEntityType === 'AtlasGlossaryTerm' ||
+                            localEntityType === 'AtlasGlossaryCategory')
+                    "
+                    class="p-1 bg-gray-100 rounded"
+                    v-model="localQualifiedName"
+                ></GlossaryPopoverSelect> -->
+            </div>
 
             <a-input
                 ref="titleBar"
@@ -74,13 +119,19 @@
     import { message } from 'ant-design-vue'
 
     import { mutate } from 'swrv'
-    import useGlossaryData from '~/composables/glossary/useGlossaryData'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import useGlossary from '~/composables/glossary2/useGlossary'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+
+    import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
+
+    import GTCSelect from '@/common/popover/gtcSelect/index.vue'
 
     export default defineComponent({
         name: 'AddGtcModal',
         components: {
+            GlossaryPopoverSelect,
+            GTCSelect,
             // AddGtcModalOwners,
             // Categories,
         },
@@ -92,10 +143,59 @@
                     return ''
                 },
             },
+            glossaryName: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
+            categoryName: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
+
+            glossaryQualifiedName: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
+            categoryGuid: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
-            const { entityType } = toRefs(props)
+            const {
+                entityType,
+                glossaryQualifiedName,
+                categoryGuid,
+                glossaryName,
+                categoryName,
+            } = toRefs(props)
+
+            const localEntityType = ref(entityType.value)
+            watch(entityType, () => {
+                localEntityType.value = entityType.value
+            })
+
+            const { getGlossaryByQF } = useGlossaryData()
+
+            // const localQualifiedName = ref(
+            //     glossaryQualifiedName.value || getFirstGlossaryQF()
+            // )
+            // watch(glossaryQualifiedName, () => {
+            //     localQualifiedName.value = glossaryQualifiedName.value
+            // })
 
             const visible = ref(false)
 
@@ -105,8 +205,30 @@
                     name: '',
                     qualifiedName: '',
                 },
-                typeName: entityType.value,
             })
+
+            if (
+                ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                    entityType.value
+                )
+            ) {
+                entity.relationshipAttributes = {
+                    anchor: {
+                        typeName: 'AtlasGlossary',
+                        guid: getGlossaryByQF(glossaryQualifiedName.value)
+                            ?.guid,
+                    },
+                }
+
+                if (categoryGuid.value) {
+                    entity.relationshipAttributes.categories = [
+                        {
+                            typeName: 'AtlasGlossaryCategory',
+                            guid: categoryGuid.value,
+                        },
+                    ]
+                }
+            }
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
@@ -126,16 +248,17 @@
                 isLoading,
                 isReady,
                 guidUpdatedMaps,
+                guidCreatedMaps,
                 error,
             } = updateAsset(body)
 
             const resetInput = () => {
-                // title.value = ''
-                // description.value = ''
+                entity.attributes.name = ''
+                entity.attributes.userDescription = ''
             }
 
             const typeNameTitle = computed(() => {
-                switch (entityType.value) {
+                switch (localEntityType.value) {
                     case 'AtlasGlossary':
                         return 'Glossary'
                     case 'AtlasGlossaryCategory':
@@ -147,14 +270,46 @@
                 }
             })
 
+            const defaultRetry = ref(3)
             const handleSave = () => {
-                if (typeNameTitle.value === 'Glossary') {
-                    entity.attributes.qualifiedName = generateUUID()
+                defaultRetry.value = 2
+                if (entity.attributes.name) {
+                    entity.typeName = localEntityType.value
+                    if (typeNameTitle.value === 'Glossary') {
+                        entity.attributes.qualifiedName = ''
+                    }
+
+                    if (
+                        ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                            entityType.value
+                        )
+                    ) {
+                        entity.attributes.qualifiedName = ''
+                        entity.relationshipAttributes = {
+                            anchor: {
+                                typeName: 'AtlasGlossary',
+                                guid: getGlossaryByQF(
+                                    glossaryQualifiedName.value
+                                )?.guid,
+                            },
+                        }
+                        if (categoryGuid.value) {
+                            entity.relationshipAttributes.categories = [
+                                {
+                                    typeName: 'AtlasGlossaryCategory',
+                                    guid: categoryGuid.value,
+                                },
+                            ]
+                        }
+                    }
+
+                    body.value = {
+                        entities: [entity],
+                    }
+                    mutateAsset()
+                } else {
+                    message.warning(`Please enter the mandatory name`)
                 }
-                body.value = {
-                    entities: [entity],
-                }
-                mutateAsset()
             }
 
             const guid = ref(null)
@@ -173,17 +328,35 @@
                 } else {
                     visible.value = false
                     message.success(`${typeNameTitle.value} created`)
-                    if (guidUpdatedMaps.value?.length > 0) {
-                        guid.value = guidUpdatedMaps.value[0]
+
+                    if (guidCreatedMaps.value?.length > 0) {
+                        guid.value = guidCreatedMaps.value[0]
                     }
                     setTimeout(() => mutateUpdate(), 1000)
                 }
             })
 
-            whenever(isUpdateReady, () => {
+            whenever(error, () => {
+                console.log(error.value.response?.data?.errorMessage)
                 if (error.value) {
-                } else {
+                    if (error.value.response?.status === 409) {
+                        message.error(
+                            `${entity.attributes.name} already exists`
+                        )
+                    } else {
+                        message.error(
+                            `${entity.attributes.name} creation failed - ${error.value.response?.data?.errorMessage}`
+                        )
+                    }
+                }
+            })
+
+            whenever(isUpdateReady, () => {
+                if (asset.value?.attributes?.qualifiedName) {
                     emit('add', asset.value)
+                } else if (defaultRetry.value > 0) {
+                    defaultRetry.value -= 1
+                    mutateUpdate()
                 }
             })
 
@@ -200,11 +373,18 @@
                 isUpdateReady,
                 guidUpdatedMaps,
                 asset,
-
+                glossaryQualifiedName,
                 entity,
                 isLoading,
                 isReady,
                 error,
+                getGlossaryByQF,
+
+                guidCreatedMaps,
+                categoryGuid,
+                glossaryName,
+                categoryName,
+                localEntityType,
             }
         },
     })

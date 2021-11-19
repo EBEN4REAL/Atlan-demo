@@ -1,6 +1,14 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 border-b border-gray-300 rounded  group hover:shadow"
+        class="
+            flex flex-col
+            py-4
+            mb-2
+            border-b border-gray-300
+            rounded
+            group
+            hover:shadow
+        "
         style="paddingleft: 12px; paddingroght: 12px"
     >
         <div class="flex items-center mb-4 gap-x-3">
@@ -36,7 +44,13 @@
             </div>
             <div style="width: 30%" class="flex justify-end">
                 <AtlanBtn
-                    class="flex-none opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
+                    class="
+                        flex-none
+                        opacity-0
+                        group-hover:opacity-100
+                        text-gray
+                        hover:text-primary
+                    "
                     size="sm"
                     color="secondary"
                     padding="compact"
@@ -55,8 +69,8 @@
     import AtlanBtn from '@/UI/button.vue'
     import {
         DataPolicies,
-        MetadataPolicies,
-    } from '~/types/accessPolicies/personas'
+        ResourcePolicies,
+    } from '~/types/accessPolicies/purposes'
     import Owners from '~/components/common/input/owner/index.vue'
 
     export default defineComponent({
@@ -68,7 +82,7 @@
         },
         props: {
             policy: {
-                type: Object as PropType<DataPolicies & MetadataPolicies>,
+                type: Object as PropType<DataPolicies & ResourcePolicies>,
                 required: true,
             },
             type: {

@@ -101,6 +101,13 @@ export const AssetRelationAttributes = [
     'description',
     'shortDescription',
     'link',
+    'tile',
+    'workspace',
+    'dataset',
+    'dashboard',
+    'dataflow',
+    'report',
+    'page',
 ]
 
 export const DefaultRelationAttributes = []

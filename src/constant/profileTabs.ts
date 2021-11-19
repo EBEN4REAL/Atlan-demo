@@ -19,7 +19,13 @@ export const profileTabs = [
         id: 'lineage',
         label: 'Lineage',
         component: 'lineage',
-        excludes: ['Query', 'QueryFolder'],
+        excludes: [
+            'Query',
+            'QueryFolder',
+            'AtlasGlossary',
+            'AtlasGlossaryCategory',
+            'AtlasGlossaryTerm',
+        ],
         icon: 'Lineage',
         tooltip: 'Lineage',
     },
@@ -30,5 +36,13 @@ export const profileTabs = [
         includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         icon: 'Queries',
         tooltip: 'Queries',
+    },
+    {
+        id: 'linkedAssets',
+        label: 'Linked Assets',
+        component: 'linkedAssets',
+        includes: ['AtlasGlossaryTerm'],
+        icon: 'LinkedAssets',
+        tooltip: 'Linked Assets',
     },
 ]

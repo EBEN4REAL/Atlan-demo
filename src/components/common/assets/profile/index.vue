@@ -60,6 +60,9 @@
             Queries: defineAsyncComponent(
                 () => import('./tabs/queries/index.vue')
             ),
+            LinkedAssets: defineAsyncComponent(
+                () => import('./tabs/linkedAssets/index.vue')
+            ),
         },
         props: {
             asset: {

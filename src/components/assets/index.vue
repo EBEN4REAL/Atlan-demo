@@ -181,7 +181,7 @@
             initialFilters: {
                 type: Object,
                 required: false,
-                default: {},
+                default: () => {},
             },
             showAggrs: {
                 type: Boolean,

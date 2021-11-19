@@ -357,7 +357,7 @@
             <!--  -->
 
             <!-- For others component which does not need hoverActions -->
-            <!-- <div v-if="item?.typeName === 'Column' && !hoverActions">
+            <div v-if="item?.typeName === 'Column' && !hoverActions">
                 <div
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
@@ -408,7 +408,7 @@
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
                             >{{ title(item) }}
                             <span class="count-box">
                                 {{ childCount(item) }}</span
@@ -416,7 +416,7 @@
                         </span>
                         <div
                             v-if="hoverActions"
-                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                             @click.stop="() => {}"
                             :class="
                                 item?.selected
@@ -489,12 +489,11 @@
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
-                           
                         </div>
                     </div>
                 </div>
-            </div> -->
-            <!-- <div
+            </div>
+            <div
                 v-if="item?.typeName !== 'Column' && !hoverActions"
                 class="flex w-full m-0"
             >
@@ -514,26 +513,15 @@
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
                             >{{ title(item) }}
-                            <span class="count-box">
+                            <!-- <span class="count-box">
                                 ({{ childCount(item) }})</span
-                            >
+                            > -->
                         </span>
-                        <StatusBadge
-                            v-if="certificateStatus(item)"
-                            :key="item?.guid"
-                            :show-no-status="false"
-                            :status-id="certificateStatus(item)"
-                            class="
-                                ml-1.5
-                                mb-1
-                                parent-ellipsis-container-extension
-                            "
-                        ></StatusBadge>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 </template>

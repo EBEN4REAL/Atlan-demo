@@ -24,6 +24,8 @@ TR
                             :item="item"
                             v-if="item.title !== 'Load more'"
                             :expandedKeys="expandedKeys"
+                            :connector="connector"
+                            :refreshQueryTree="refreshQueryTree"
                         />
                         <div
                             :data-test-id="'loadMore'"
@@ -117,6 +119,7 @@ TR
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     // constant
     import { List as StatusList } from '~/constant/status'
@@ -180,6 +183,9 @@ TR
             showEmptyState: {
                 type: Boolean,
             },
+            refreshQueryTree: {
+                type: Function,
+            },
             // refetchTreeData: {
             //     type: Function,
             //     required: false,
@@ -211,6 +217,13 @@ TR
                 })
                 return bool
             }
+            const { getConnectorName } = useConnector()
+            const connector = ref(
+                getConnectorName(
+                    activeInlineTab.value?.explorer?.schema?.connectors
+                        ?.attributeValue
+                )
+            )
             const toggleCreateQueryModal = () => {
                 emit('toggleCreateQueryModal')
             }
@@ -226,6 +239,7 @@ TR
                 StatusList,
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
+                connector,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

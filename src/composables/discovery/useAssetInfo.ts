@@ -11,6 +11,7 @@ import { assetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import { previewTabs } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
+import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
 import useAssetStore from '~/store/asset'
 import { Category, Term } from '~/types/glossary/glossary.interface'
@@ -132,6 +133,25 @@ export default function useAssetInfo() {
         return getTabs(profileTabs, assetType(asset))
     }
 
+    const getVariants = (list, typeName: string) => {
+        return list.find((i) => {
+            let flag = true
+            if (i.includes) {
+                if (
+                    !i.includes.some(
+                        (t) => t.toLowerCase() === typeName?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
+            return flag
+        })
+    }
+    const getSummaryVariants = (asset: assetInterface) => {
+        return getVariants(summaryVariants, assetType(asset))
+    }
+
     const getActions = (asset) => {
         return assetActions.filter((i) => {
             let flag = true
@@ -182,7 +202,7 @@ export default function useAssetInfo() {
         ) {
             let tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
-        } else if(assetType(asset) === 'Query') {
+        } else if (assetType(asset) === 'Query') {
             // console.log('assetType: ', asset.guid)
             queryPath = `/insights?id=${asset.guid}`
         } else {
@@ -272,7 +292,7 @@ export default function useAssetInfo() {
     const columnCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset).columnCount)
+            : getCountString(attributes(asset)?.columnCount)
 
     const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -478,8 +498,8 @@ export default function useAssetInfo() {
 
     const isBiAsset = (asset: assetInterface) => {
         return (
-            assetType(asset).includes('Tableau') ||
-            assetType(asset).includes('BI')
+            assetType(asset)?.includes('Tableau') ||
+            assetType(asset)?.includes('BI')
         )
     }
 
@@ -492,7 +512,7 @@ export default function useAssetInfo() {
     const glossaryStore = useGlossaryStore()
 
     const selectedGlossary = computed(() => {
-        return glossaryStore.selectedGlossary
+        return glossaryStore.selectedGTC
     })
 
     const isGTCByType = (typeName) => {
@@ -801,6 +821,7 @@ export default function useAssetInfo() {
         getPreviewTabs,
         getProfileTabs,
         selectedAsset,
+        getSummaryVariants,
         sourceUpdatedAt,
         sourceCreatedAt,
         sourceCreatedBy,

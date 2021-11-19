@@ -1,6 +1,7 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+import swrvState from '~/utils/swrvState'
 
 import { pluralizeString } from '~/utils/string'
 import { roleMap } from '~/constant/role'
@@ -84,20 +85,15 @@ export const getFormattedUser = (user: any) => {
 }
 
 const defaultCacheOption = {
-  cacheOptions: {
-    shouldRetryOnError: false,
-    revalidateOnFocus: false,
-    cache: new LocalStorageCache(),
-    dedupingInterval: 1,
-  }
+    cacheOptions: {
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+        cache: new LocalStorageCache(),
+        dedupingInterval: 1,
+    },
 }
 export const useUsers = (
-    userListAPIParams: {
-        limit: number
-        offset: number
-        filter?: any
-        sort?: string
-    },
+    userListAPIParams,
     cacheKey?: string,
     cacheOption = defaultCacheOption
 ) => {
@@ -131,7 +127,7 @@ export const useUsers = (
     const usersListConcatenated: ComputedRef<any> = computed(
         () => localUsersList.value || []
     )
-
+    const { state, STATES } = swrvState(data, error, isValidating)
     const userList = computed(() => {
         if (data.value && data?.value?.records)
             return data?.value.records.map((user: any) =>
@@ -140,11 +136,12 @@ export const useUsers = (
         return []
     })
 
-
     const totalUserCount = computed(() => data?.value?.total_record ?? 0)
     const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
 
     return {
+        state,
+        STATES,
         usersListConcatenated,
         userList,
         totalUserCount,

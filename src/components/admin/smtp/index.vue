@@ -34,6 +34,7 @@
                     <a-input
                         v-else
                         :key="config.id"
+                        v-model:value="smtpServer[config.id]"
                         :type="config.type"
                         :placeholder="config.placeholder"
                         :default-value="smtpServer[config.id]"
@@ -55,8 +56,8 @@
                         }"
                     >
                         <a-input
+                            v-model:value="smtpServer.user"
                             type="text"
-                            :value="smtpServer.user"
                             @blur="triggerBlur(userFieldRef)"
                             @input="
                                 updateSmtpProperty('user', $event.target.value)
@@ -66,6 +67,7 @@
 
                     <a-form-item label="Password" name="password">
                         <a-input-password
+                            v-model:value="smtpServer.password"
                             :default-value="smtpServer.password"
                             :value="smtpServer.password"
                             @input="
@@ -182,74 +184,74 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
-    import DefaultLayout from '@/admin/layout.vue'
-    import { useSmtp } from '@/admin/smtp/useSmtp'
+import { defineComponent, reactive } from 'vue'
+import DefaultLayout from '@/admin/layout.vue'
+import { useSmtp } from '@/admin/smtp/useSmtp'
 
-    export default defineComponent({
-        name: 'SmtpForm',
-        components: { DefaultLayout },
-        setup() {
-            const {
-                formRef,
-                userFieldRef,
-                rules,
-                smtpConfig,
-                testSmtpConfigState,
-                testSmtpConfigError,
-                saveSmtpConfigState,
-                saveSmtpConfigError,
-                passwordReentered,
-                updateSmtpProperty,
-                testSmtpConfig,
-                saveSmtpConfig,
-                smtpServer,
-                finalTestSmtpConfigError,
-                triggerBlur,
-            } = useSmtp()
-
-            return {
-                formRef,
-                rules,
-                userFieldRef,
-                smtpConfig,
-                testSmtpConfigState,
-                testSmtpConfigError,
-                saveSmtpConfigState,
-                saveSmtpConfigError,
-                passwordReentered,
-                updateSmtpProperty,
-                testSmtpConfig,
-                saveSmtpConfig,
-                smtpServer,
-                finalTestSmtpConfigError,
-                triggerBlur,
-            }
-        },
-    })
+export default defineComponent({
+    name: 'SmtpForm',
+    components: { DefaultLayout },
+    setup() {
+        const {
+            formRef,
+            userFieldRef,
+            rules,
+            smtpConfig,
+            testSmtpConfigState,
+            testSmtpConfigError,
+            saveSmtpConfigState,
+            saveSmtpConfigError,
+            passwordReentered,
+            updateSmtpProperty,
+            testSmtpConfig,
+            saveSmtpConfig,
+            smtpServer,
+            finalTestSmtpConfigError,
+            triggerBlur,
+        } = useSmtp()
+        // const smtpServer = reactive(ss)
+        return {
+            formRef,
+            rules,
+            userFieldRef,
+            smtpConfig,
+            testSmtpConfigState,
+            testSmtpConfigError,
+            saveSmtpConfigState,
+            saveSmtpConfigError,
+            passwordReentered,
+            updateSmtpProperty,
+            testSmtpConfig,
+            saveSmtpConfig,
+            smtpServer,
+            finalTestSmtpConfigError,
+            triggerBlur,
+        }
+    },
+})
 </script>
 
 <style lang="less" module>
-    :global(.smtpForm .ant-form-item) {
-        @apply flex items-center flex-row;
-    }
+:global(.smtpForm .ant-form-item) {
+    @apply flex items-center flex-row;
+}
 
-    :global(.smtpForm .test-config-button) {
-        @apply text-green-500 border-green-500;
-    }
-    :global(.ant-form-item-label
-            > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
-        @apply hidden;
-    }
-    // Aesterik in right side
-    :global(.ant-form-item-label
-            > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
-        display: inline-block;
-        margin-left: 4px;
-        color: #ff4d4f;
-        font-size: 14px;
-        font-family: SimSun, sans-serif;
-        line-height: 1;
-        content: '*';
-    }
+:global(.smtpForm .test-config-button) {
+    @apply text-green-500 border-green-500;
+}
+:global(.ant-form-item-label
+        > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
+    @apply hidden;
+}
+// Aesterik in right side
+:global(.ant-form-item-label
+        > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
+    display: inline-block;
+    margin-left: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun, sans-serif;
+    line-height: 1;
+    content: '*';
+}
 </style>

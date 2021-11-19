@@ -29,7 +29,7 @@ const AssetTypeList: {
       id: 'Fields',
       label: 'Fields',
       children: [
-        { id: "Columns", label: "Columns" },
+        { id: "Column", label: "Column" },
         { id: "TableauCalculatedField", label: "Tableau Calculated Field" },
         { id: "TableauDatasourceField", label: "Tableau Datasource Field" }
       ]

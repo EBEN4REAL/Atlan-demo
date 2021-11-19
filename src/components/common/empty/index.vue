@@ -9,11 +9,11 @@
             alt=""
             :class="imageClass"
         />
-        <span v-if="headline" class="text-3xl font">{{ headline }}</span>
+        <span v-if="headline" class="text-xl font-bold">{{ headline }}</span>
         <p
             v-if="desc"
-            style="max-width: 29rem"
-            :class="descClass || 'text-lg text-center'"
+            style="max-width: 18rem"
+            :class="descClass || 'text-center'"
         >
             {{ desc || empty }}
         </p>

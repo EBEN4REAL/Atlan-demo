@@ -1,9 +1,11 @@
 <template>
     <div class="search">
         <!-- Search Input -->
-        <a-input-search
+        <a-input
             class="search-input"
             :value="query"
+            :enter-button="null"
+            :suffix="null"
             placeholder="Search"
             allow-clear
             @change="setQuery"
@@ -107,12 +109,17 @@
 
 <style lang="less" scoped>
     .search {
+        @apply mr-4;
         position: relative;
         z-index: 999;
 
         &-input {
-            width: 16rem !important;
+            width: 13rem !important;
             z-index: 999;
+            border: 0 !important;
+            padding: 0 !important;
+            outline: 0 !important;
+            box-shadow: unset !important;
         }
 
         &-results {

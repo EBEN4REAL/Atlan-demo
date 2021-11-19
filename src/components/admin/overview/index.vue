@@ -5,8 +5,15 @@
                 :class="$style.input"
                 width="632px"
                 :closable="false"
-                :visible="visible"
-            ></a-modal>
+                :visible="announcementModalVisible"
+                :footer="null"
+            >
+                <AddCompanyAnnouncement
+                    class="p-4"
+                    @updateAnnouncement="updateAnnouncement"
+                    @close="announcementModalVisible = false"
+                />
+            </a-modal>
             <a-modal
                 :visible="showEditTenantNameModal"
                 :closable="false"
@@ -35,7 +42,7 @@
                             class="px-5 font-bold"
                             :disabled="updateStatus === 'loading'"
                             :is-loading="updateStatus === 'loading'"
-                            @click="updateTenant"
+                            @click="updateTenantDisplayName"
                             ><span v-if="updateStatus !== 'loading'"
                                 >Update</span
                             ><span v-else>Updating</span></AtlanBtn
@@ -72,23 +79,46 @@
                         </div>
                     </div>
                     <div class="ml-5 text-2xl text-gray-700">
-                        {{ newTenantName }}
+                        {{ name }}
                     </div>
                 </div>
-                <AtlanBtn
-                    padding="compact"
-                    size="sm"
-                    class="px-5 mr-3 text-gray-700 bg-transparent border border-gray-300 "
-                    @click="showEditTenantNameModal = true"
-                    >Edit</AtlanBtn
-                >
+                <div class="flex items-center">
+                    <AtlanBtn
+                        padding="compact"
+                        size="sm"
+                        class="px-5 mr-3 text-gray-700 bg-transparent border border-gray-300 "
+                        @click="showEditTenantNameModal = true"
+                        >Edit</AtlanBtn
+                    >
+                    <AtlanBtn
+                        padding="compact"
+                        size="sm"
+                        color="primary"
+                        class="px-5"
+                        @click="announcementModalVisible = true"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon
+                                icon="Megaphone"
+                                class="mr-1 text-white"
+                            ></AtlanIcon>
+                            <span>New Announcement</span>
+                        </div>
+                    </AtlanBtn>
+                </div>
             </div>
+            <CompanyAnnouncement
+                class="mt-7"
+                @editAnnouncement="editAnnouncement"
+                @deleteAnnouncement="deleteAnnouncement"
+            />
             <div class="flex flex-wrap mt-7">
                 <router-link
-                    v-for="card in overviewCards"
+                    v-for="(card, index) in overviewCards"
                     :key="card.id"
                     :to="card.link"
-                    class="flex justify-between p-3 mx-2 my-2 border rounded-md cursor-pointer  overview-card hover:shadow-md group"
+                    class="flex justify-between p-3 my-2 border rounded-md cursor-pointer  overview-card hover:shadow-md group"
+                    :class="!((index + 1) % 3) ? '' : 'mr-2'"
                 >
                     <div class="flex items-center">
                         <div
@@ -155,9 +185,12 @@ import DefaultLayout from '~/components/admin/layout.vue'
 import OrgLogo from '~/components/common/logo/orgLogo.vue'
 import useTenantData from '~/composables/tenant/useTenantData'
 import useTenantUpdate from '~/composables/tenant/useTenantUpdate'
+import useTenant from '~/composables/tenant/useTenant'
 import useOverviewCards from '~/components/admin/overview/composables/useOverviewCards'
-import AddAnnouncementModal from '~/components/common/widgets/announcement/addAnnouncementModal.vue'
+import AddCompanyAnnouncement from '~/components/admin/overview/addCompanyAnnouncement.vue'
+import CompanyAnnouncement from '~/components/common/widgets/announcement/companyAnnouncement.vue'
 import AtlanBtn from '@/UI/button.vue'
+import useUserData from '~/composables/user/useUserData'
 
 export default defineComponent({
     name: 'Overview',
@@ -165,39 +198,42 @@ export default defineComponent({
         DefaultLayout,
         OrgLogo,
         AtlanBtn,
-        AddAnnouncementModal,
+        AddCompanyAnnouncement,
+        CompanyAnnouncement,
     },
     setup() {
         const { overviewCards } = useOverviewCards()
         const showEditTenantNameModal = ref(false)
+        const announcementModalVisible = ref(false)
         const { name, tenantRaw } = useTenantData()
         console.log('jhj', name, tenantRaw)
-        const newTenantName: Ref<string> = ref(name)
+        const newTenantName: Ref<string> = ref('')
+        newTenantName.value = name.value
         const updateStatus = ref('')
-
+        const { username } = useUserData()
         const logoUrl = computed(
             () => `${window.location.origin}/api/service/avatars/_logo_`
         )
 
-        const updateTenant = () => {
+        const updateTenant = (payload) => {
             try {
                 updateStatus.value = 'loading'
-                const { data, error, isLoading } = useTenantUpdate({
-                    ...tenantRaw,
-                    displayName: newTenantName.value,
-                })
+                const { data, error, isLoading } = useTenantUpdate(payload)
 
                 watch([data, error, isLoading], () => {
                     if (isLoading.value === false) {
                         if (error.value === undefined) {
+                            useTenant()
                             updateStatus.value = 'success'
                             showEditTenantNameModal.value = false
+                            announcementModalVisible.value = false
                             setTimeout(() => {
                                 updateStatus.value = ''
                             }, 2500)
                         } else {
                             updateStatus.value = 'error'
                             showEditTenantNameModal.value = false
+                            announcementModalVisible.value = false
                             setTimeout(async () => {
                                 updateStatus.value = ''
                             }, 2500)
@@ -211,10 +247,27 @@ export default defineComponent({
                 }, 2500)
             }
         }
-        const onEdit = useDebounceFn(() => {
-            updateTenant()
-        }, 800)
-
+        const updateTenantDisplayName = () => {
+            updateTenant({
+                ...tenantRaw.value,
+                displayName: newTenantName.value,
+            })
+        }
+        const updateAnnouncement = (payload) => {
+            updateTenant(payload)
+        }
+        const editAnnouncement = () => {
+            announcementModalVisible.value = true
+        }
+        const deleteAnnouncement = () => {
+            const tenantLocal = { ...tenantRaw.value }
+            tenantLocal.attributes.announcementTitle = ''
+            tenantLocal.attributes.announcementMessage = ''
+            tenantLocal.attributes.announcementType = ''
+            tenantLocal.attributes.announcementUpdatedAt = Date.now().toString()
+            tenantLocal.attributes.announcementUpdatedBy = username
+            updateTenant(tenantLocal)
+        }
         const getStatusIcon = (state) => {
             if (state === 'loading') return 'CircleLoader'
             if (state === 'error') return 'Cancel'
@@ -233,18 +286,24 @@ export default defineComponent({
             logoUrl,
             getStatusIcon,
             getIconClass,
-            onEdit,
             updateStatus,
             overviewCards,
             showEditTenantNameModal,
+            announcementModalVisible,
             updateTenant,
+            updateTenantDisplayName,
+            updateAnnouncement,
+            editAnnouncement,
+            deleteAnnouncement,
         }
     },
 })
 </script>
 <style lang="less" scoped>
 .overview-card {
-    width: 20.1875rem;
+    // width: 20.1875rem;
+
+    width: calc(33.333333% - 0.4rem);
 }
 </style>
 <style lang="less" module>

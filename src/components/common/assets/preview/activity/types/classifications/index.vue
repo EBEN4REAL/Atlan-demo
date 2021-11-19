@@ -1,24 +1,24 @@
 <template>
     <div><b>Classification </b>{{ data.displayValue }}</div>
-    <div class="my-3">
-        <Pill :label="data.value"
-            ><template #prefix>
-                <AtlanIcon
-                    icon="Shield"
-                    class="text-pink-400 group-hover:text-white" /></template
-        ></Pill>
+    <div class="flex my-3">
+        <ClassificationPill
+            :name="classificationValue?.name"
+            :displayName="classificationValue?.displayName"
+        ></ClassificationPill>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs, onMounted, ref } from 'vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
-    import Pill from '~/components/UI/pill/pill.vue'
+    import ClassificationPill from '@/common/pills/classification.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         name: 'ClassificationActivity',
 
-        components: { Pill },
+        components: { ClassificationPill },
+
         props: {
             data: {
                 type: Object as PropType<activityInterface>,
@@ -26,6 +26,23 @@
                     return { displayValue: '', value: [] }
                 },
             },
+        },
+        setup(props) {
+            const { data } = toRefs(props)
+            const { classificationList } = useTypedefData()
+            const classificationValue = ref({})
+
+            onMounted(() => {
+                classificationList.value.map((classification) => {
+                    if (classification.name === data.value.value) {
+                        classificationValue.value = classification
+                    }
+                })
+
+                console.log(classificationValue.value)
+            })
+
+            return { classificationValue }
         },
     })
 </script>

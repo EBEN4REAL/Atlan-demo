@@ -22,10 +22,10 @@
                         <AtlanIcon
                             v-if="item.label == 'All'"
                             icon="Globe"
-                            class="self-center mr-1"
+                            class="self-center mr-1 mb-0.5"
                         ></AtlanIcon>
 
-                        <div class="self-center text-sm" v-else>
+                        <div class="self-center text-sm">
                             {{ item.label }}
                         </div>
                         <div

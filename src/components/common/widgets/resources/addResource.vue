@@ -1,41 +1,42 @@
 <template>
-    <a-popover v-model:visible="popoverVisible" trigger="click">
-        <slot></slot>
-        <template #content>
-            <div class="flex flex-col gap-y-4">
-                <div class="flex items-center text-gray-500 flex-nowrap">
-                    <span class="overflow-hidden text-sm overflow-ellipsis">{{
-                        title(asset)
-                    }}</span>
-                    <AtlanIcon icon="ChevronRight" class="flex-none" />
-                    <span class="flex-none text-sm font-bold text-gray"
-                        >New Resource</span
-                    >
-                </div>
-                <a-input
-                    v-model:value="link"
-                    placeholder="Paste resource link"
-                    allow-clear
-                />
-                <div v-if="link" class="flex items-center gap-x-2">
-                    <img :src="faviconLink" alt="" class="w-4 h-4" />
-                    <a-input
-                        v-model:value="linkTitle"
-                        placeholder="Resource title"
-                        allow-clear
-                    />
-                </div>
-                <div class="flex items-center justify-end w-full mt-4 gap-x-4">
-                    <a-button @click="handleCancel" class="px-4"
-                        >Cancel</a-button
-                    >
-                    <a-button type="primary" @click="handleAdd" class="px-4"
-                        >Add</a-button
-                    >
-                </div>
+    <div @click="showModal">
+        <slot name="trigger" @click="showModal" />
+    </div>
+    <a-modal :closable="false" :visible="visible" :class="$style.input">
+        <template #title>
+            <div class="flex items-center text-gray-500 flex-nowrap">
+                <span class="overflow-hidden text-sm overflow-ellipsis">{{
+                    title(asset)
+                }}</span>
+                <AtlanIcon icon="ChevronRight" class="flex-none" />
+                <span class="flex-none text-sm font-bold text-gray"
+                    >New Resource</span
+                >
+            </div></template
+        >
+        <template #footer>
+            <div class="flex items-center justify-end w-full space-x-3">
+                <a-button @click="handleCancel">Cancel</a-button>
+                <a-button type="primary" @click="handleAdd">Add</a-button>
             </div>
         </template>
-    </a-popover>
+        <a-input
+            v-model:value="link"
+            ref="titleBar"
+            placeholder="Paste resource link"
+            class="text-lg font-bold text-gray-700"
+            allow-clear
+        />
+        <div v-if="link" class="flex items-center gap-x-2">
+            <img :src="faviconLink" alt="" class="w-5 h-5 mt-2" />
+            <a-input
+                v-model:value="linkTitle"
+                placeholder="Resource title"
+                class="mt-3 text-lg font-bold text-gray-700"
+                allow-clear
+            />
+        </div>
+    </a-modal>
 </template>
 
 <script lang="ts">
@@ -45,7 +46,7 @@
         PropType,
         ref,
         toRefs,
-        computed,
+        nextTick,
         watch,
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -62,7 +63,10 @@
             },
         },
         setup(props) {
-            const popoverVisible = ref(false)
+            const visible = ref<boolean>(false)
+
+            const titleBar: Ref<null | HTMLInputElement> = ref(null)
+
             const { asset } = toRefs(props)
 
             const { title } = useAssetInfo()
@@ -73,8 +77,14 @@
             // FIXME: Add a link meta parser for title
             const linkTitle = ref('')
 
+            const showModal = async () => {
+                visible.value = true
+                await nextTick()
+                titleBar.value?.focus()
+            }
+
             function handleCancel() {
-                popoverVisible.value = false
+                visible.value = false
                 link.value = ''
                 linkTitle.value = ''
             }
@@ -87,7 +97,7 @@
                 )
 
                 newResource()
-                popoverVisible.value = false
+                visible.value = false
                 link.value = ''
                 linkTitle.value = ''
             }
@@ -104,12 +114,35 @@
                 link,
                 faviconLink,
                 title,
-                popoverVisible,
+                visible,
                 handleCancel,
                 handleAdd,
+                showModal,
             }
         },
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" module>
+    .input {
+        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input):focus,
+        :global(.ant-input):hover {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
+        :global(.ant-modal-header) {
+            @apply border-0 border-t-0 border-b-0 px-4  !important;
+        }
+        :global(.ant-modal-footer) {
+            @apply border-0 border-t-0 px-4 border-b-0  !important;
+        }
+        :global(.ant-modal-body) {
+            @apply px-4 pt-0 pb-4 !important;
+        }
+    }
+</style>

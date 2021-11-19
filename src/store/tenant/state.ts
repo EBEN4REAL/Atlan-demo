@@ -8,8 +8,10 @@ export interface State {
     loginWithEmailAllowed: boolean
     identityProviderMappers: any
     announcementTitle: string
-    announcementDescription: string
+    announcementMessage: string
     announcementType: string
+    announcementUpdatedAt: string
+    announcementUpdatedBy: string
     // need to send the whole tenant in updateTenant Request
     tenantRaw: any
 }
@@ -22,7 +24,9 @@ export const state: State = {
     identityProviders: [],
     identityProviderMappers: [],
     announcementTitle: '',
-    announcementDescription: '',
+    announcementMessage: '',
     announcementType: '',
+    announcementUpdatedAt: '',
+    announcementUpdatedBy: '',
     tenantRaw: {},
 }

@@ -35,15 +35,18 @@
         >
             <a-spin />
         </div>
-        <EmptyView
-            v-else-if="!isLoading && !graphData?.name"
-            empty-screen="WFEmptyTab"
-            class="-mt-20"
-            headline="No Runs to Display"
-            desc="There are no runs for this workflow."
-            button-text="Back to Workflows"
-            @event="$router.push('/workflows')"
-        />
+        <div  
+          v-else-if="!isLoading && !graphData?.name" 
+          class="wrapper-monitoring">
+          <EmptyView   
+              empty-screen="WFEmptyTab"
+              class="-mt-20"
+              headline="No Runs to Display"
+              desc="There are no runs for this workflow."
+              button-text="Back to Workflows"
+              @event="$router.push('/workflows')"
+          />
+        </div>
         <div v-else-if="graphData.name" class="absolute w-full h-full">
             <MonitorGraph
                 :selected-pod="selectedPod"
@@ -222,5 +225,9 @@
         height: 4px;
         width: 4px;
         border-radius: 50%;
+    }
+    .wrapper-monitoring{
+      height: calc(100% - 400px);
+      margin-top: 200px;
     }
 </style>

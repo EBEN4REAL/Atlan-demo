@@ -5,10 +5,11 @@ import {
     runWorkflowByName,
     createWorkflow,
 } from '~/composables/workflow/useWorkflowList'
-import workflow from '~/mixins/workflow'
+import { Workflows } from '~/services/service/workflows'
 
-const useBulkUpload = ({ guid, fileS3Key }) => {
-    console.log(guid, fileS3Key)
+export const isWorkflowRunning = ref(false)
+export const workflowName = ref('')
+const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
     const body = computed(() => ({
         metadata: {
             name: `atlan-gtc-bulk-upload-${guid.slice(-8)}`, // will be static for this usecase
@@ -86,6 +87,7 @@ const useBulkUpload = ({ guid, fileS3Key }) => {
         const { data } = runWorkflowByName(runBody, true)
 
         watch(data, () => {
+            isWorkflowRunning.value = true
             message.success({
                 content: `Starting bulk upload!`,
                 duration: 2,
@@ -104,6 +106,7 @@ const useBulkUpload = ({ guid, fileS3Key }) => {
                     key: `bulkUpload`,
                     duration: 2,
                 })
+                isWorkflowRunning.value = true
             } else {
                 const errMsg = error.value?.response?.data?.message
                 message.error({
@@ -137,7 +140,28 @@ const useBulkUpload = ({ guid, fileS3Key }) => {
         // update workflow -> if error then create workflow ( with submit=true ) and show messgaes accordingly-> if success then run workflow -> show messages accordingly
         updateWorkflow()
         console.log(guid, fileS3Key)
+        workflowName.value = `atlan-gtc-bulk-upload-${guid.slice(-8)}`
+        console.log(isWorkflowRunning)
     }
+
     return { startUpload }
 }
+export function useArtifacts({ nodeName, outputName }) {
+    const params = ref(new URLSearchParams())
+    const pathVariables = ref({})
+
+    pathVariables.value = {
+        workflowName: workflowName.value,
+        nodeName,
+        outputName,
+    }
+
+    const { data, error, isLoading, mutate } = Workflows.getArtifacts({
+        pathVariables,
+        params,
+    })
+
+    return { data, error, isLoading, mutate }
+}
+
 export default useBulkUpload

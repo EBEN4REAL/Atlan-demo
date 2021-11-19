@@ -2,7 +2,7 @@
     <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
     <KeepAlive>
         <div class="overflow-y-scroll">
-            <ClassificationOverview v-if="activeTabKey === '1'" :classification="selectedClassification" />
+            <ClassificationOverview v-if="activeTabKey === '1'" :classification="selectedClassification" @openAssetsTab="activeTabKey = '2'"/>
             <AssetsWrapper 
                 v-if="activeTabKey === '2'" 
                 :initialFilters="filterConfig" 
@@ -18,7 +18,16 @@
     import MinimalTab from '@/UI/minimalTab.vue'
     import ClassificationOverview from '@/governance/classifications/overview.vue'
 
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
+
+    import {
+        AssetAttributes,
+        AssetRelationAttributes,
+        InternalAttributes,
+        SQLAttributes,
+    } from '~/constant/projection'
 
     export default defineComponent({
         name: 'ClassificationBody',
@@ -48,11 +57,66 @@
                 },
             }))
 
+
+
+            const limit = ref(20)
+            const offset = ref(0)
+            const dependentKey = ref('DEFAULT_ASSET_LIST')
+            const queryText = ref('')
+            const facets = ref({
+                __traitNames: {
+                    classifications: [selectedClassification.value.name]
+                },
+            })
+            const preference = ref({
+                sort: 'default',
+                display: [],
+            })
+            const aggregations = ref(['typeName'])
+            const postFacets = ref({
+                typeName: '__all',
+            })
+            const defaultAttributes = ref([
+                ...InternalAttributes,
+                ...AssetAttributes,
+                ...SQLAttributes,
+            ])
+            const relationAttributes = ref([...AssetRelationAttributes])
+
+            const {
+                list,
+                isLoading,
+                assetTypeAggregationList,
+                isLoadMore,
+                isValidating,
+                fetch,
+
+                error,
+                selectedAsset,
+                quickChange,
+                handleSelectedAsset,
+                updateList,
+            } = useDiscoverList({
+                isCache: true,
+                dependentKey,
+                queryText,
+                facets,
+                postFacets,
+                aggregations,
+                preference,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
+
+
             return {
                 selectedClassification,
                 filterConfig,
                 activeTabKey,
                 tabConfig,
+                assetTypeAggregationList
             }
         },
     })

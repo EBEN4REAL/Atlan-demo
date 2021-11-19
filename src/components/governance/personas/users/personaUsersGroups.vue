@@ -47,28 +47,28 @@
                         <div class="w-full mt-2">
                             <div class="flex justify-end text-xs">
                                 <span
-                                    v-if="userGroupData.ownerUsers.length > 0"
+                                    v-if="userGroupData.ownerUsers?.length > 0"
                                     >{{
-                                        `${userGroupData.ownerUsers.length} user(s)`
+                                        `${userGroupData.ownerUsers?.length} user(s)`
                                     }}</span
                                 >
                                 <span
                                     v-if="
-                                        userGroupData.ownerUsers.length &&
-                                        userGroupData.ownerGroups.length
+                                        userGroupData.ownerUsers?.length &&
+                                        userGroupData.ownerGroups?.length
                                     "
                                     >{{ `&nbsp;&` }}</span
                                 >
                                 <span
-                                    v-if="userGroupData.ownerGroups.length > 0"
+                                    v-if="userGroupData.ownerGroups?.length > 0"
                                     >{{
-                                        ` &nbsp;${userGroupData.ownerGroups.length} group(s)`
+                                        ` &nbsp;${userGroupData.ownerGroups?.length} group(s)`
                                     }}</span
                                 >
                                 <span
                                     v-if="
-                                        userGroupData.ownerGroups.length > 0 ||
-                                        userGroupData.ownerUsers.length > 0
+                                        userGroupData.ownerGroups?.length > 0 ||
+                                        userGroupData.ownerUsers?.length > 0
                                     "
                                     >{{ `&nbsp;selected` }}</span
                                 >
@@ -213,8 +213,8 @@
         <div
             v-else-if="
                 listType === 'users' &&
-                [GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
-                    groupState
+                [USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
+                    userState
                 )
             "
             class="flex flex-col items-center h-full align-middle bg-white"
@@ -617,11 +617,11 @@
             })
 
             return {
+                userState,
+                USER_STATES,
                 showGroupPreviewDrawer,
                 getGroupList,
                 getUserList,
-                USER_STATES,
-                userState,
                 enableTabs,
                 getPopoverContent,
                 confirmPopover,

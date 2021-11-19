@@ -128,12 +128,7 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
                                             />
                                             <span class="text-xs">Add All</span>
                                         </div>
@@ -149,12 +144,7 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
                                             />
                                             <span class="text-xs"
                                                 >Custom select</span

@@ -23,13 +23,7 @@
                         <div class="items-center">
                             <div class="parent-ellipsis-container">
                                 <div
-                                    class="
-                                        w-2
-                                        h-2
-                                        mr-3
-                                        rounded-full
-                                        parent-ellipsis-container-extension
-                                    "
+                                    class="w-2 h-2 mr-3 rounded-full  parent-ellipsis-container-extension"
                                     :class="
                                         getQueryStatusClass(
                                             queryInfo._source.log.message
@@ -38,10 +32,7 @@
                                     "
                                 ></div>
                                 <span
-                                    class="
-                                        text-sm text-gray-700
-                                        parent-ellipsis-container-base
-                                    "
+                                    class="text-sm text-gray-700  parent-ellipsis-container-base"
                                     >{{
                                         queryInfo._source.log.message
                                             .savedQueryId
@@ -67,13 +58,7 @@
                         <div class="items-center">
                             <div class="parent-ellipsis-container">
                                 <div
-                                    class="
-                                        w-2
-                                        h-2
-                                        mr-3
-                                        rounded-full
-                                        parent-ellipsis-container-extension
-                                    "
+                                    class="w-2 h-2 mr-3 rounded-full  parent-ellipsis-container-extension"
                                     :class="
                                         getQueryStatusClass(
                                             queryInfo._source.log.message
@@ -82,10 +67,7 @@
                                     "
                                 ></div>
                                 <span
-                                    class="
-                                        text-sm text-gray-700
-                                        parent-ellipsis-container-base
-                                    "
+                                    class="text-sm text-gray-700  parent-ellipsis-container-base"
                                     >{{
                                         queryInfo._source.log.message
                                             .userSqlQuery
@@ -305,8 +287,9 @@ export default defineComponent({
         const handleTableChange = () => {}
 
         const getQueryStatusClass = (status: string) => {
-            if (status === 'success') return 'bg-green-500'
-            if (status === 'failure') return 'bg-red-500'
+            if (status.toLowerCase() === 'success') return 'bg-green-500'
+            if (status.toLowerCase() === 'error') return 'bg-red-500'
+            if (status.toLowerCase() === 'abort') return 'bg-yellow-500'
             return 'bg-green-500'
         }
         const columns = [

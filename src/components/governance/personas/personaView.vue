@@ -85,7 +85,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, watch } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -117,6 +117,9 @@
         },
         setup() {
             const modalVisible = ref(false)
+            watch(searchTerm, () => {
+                console.log(searchTerm.value, 'searched')
+            })
 
             return {
                 filteredPersonas,

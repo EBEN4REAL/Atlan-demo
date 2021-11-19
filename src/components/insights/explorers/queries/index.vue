@@ -257,7 +257,12 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
+                        class="
+                            my-2
+                            mb-0 mb-6
+                            text-base text-center text-gray-700
+                            max-width-text
+                        "
                     >
                         Sorry, we couldn’t find
                         <br />the query you were looking for
@@ -902,26 +907,37 @@
                         //     'queryTree: ',
                         //     getRelevantTreeData().parentGuid.value
                         // )
-                        await all_refetchNode(
-                            resetParentGuid.value,
-                            resetType.value
-                        )
-                        console.log('not wait 1')
-                        await per_refetchNode(
-                            resetParentGuid.value,
-                            resetType.value
-                        )
-                        console.log('not wait 2')
-                        // await all_refetchNode(
-                        //     resetParentGuid.value,
-                        //     'queryFolder'
-                        // )
+                        console.log('reset type: ', resetType.value)
+                        console.log('reset id: ', resetParentGuid.value)
+
+                        if (Array.isArray(resetParentGuid.value)) {
+                            resetParentGuid.value.forEach(async (guid) => {
+                                await all_refetchNode(guid, resetType.value)
+                                await per_refetchNode(guidre, resetType.value)
+                            })
+                        } else {
+                            await all_refetchNode(
+                                resetParentGuid.value,
+                                resetType.value
+                            )
+                            await per_refetchNode(
+                                resetParentGuid.value,
+                                resetType.value
+                            )
+                        }
+
+                        // console.log('reset type: ', resetType.value)
+                        // console.log('reset id: ', resetParentGuid.value)
+
+                        // console.log('not wait 1')
                         // await per_refetchNode(
                         //     resetParentGuid.value,
-                        //     'queryFolder'
+                        //     resetType.value
                         // )
+                        // console.log('not wait 2')
+
                         props.resetQueryTree()
-                    }, 500)
+                    }, 750)
                 }
             })
 

@@ -15,10 +15,7 @@
                 <div class="px-3 flex items-center justify-between w-full text-base leading-6">
                     <div class="font-bold text-gray-700">New Classification</div>
                 </div>
-                <div class="flex space-x-1 p-1 rounded bg-indigo-50">
-                    <AtlanIcon icon="ShieldFilled" class="text-blue-600 self-center"/>
-                    <span class="text-xs self-center">Blue</span>
-                </div>
+                <ClassificationColorSelector v-model:selectedColor="classificationColor" />
             </div>
         </template>
 
@@ -54,10 +51,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, reactive, watch, ref, PropType, toRefs, nextTick, onMounted } from 'vue'
+    import { defineComponent, reactive, watch, ref, PropType, toRefs, nextTick, Ref } from 'vue'
     import { useVModels, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRouter } from 'vue-router'
+
+    import ClassificationColorSelector from '@/governance/classifications/classificationColorSelector.vue';
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
@@ -67,6 +66,7 @@
     export default defineComponent({
         name: 'AddClassificationModal',
         components: {
+            ClassificationColorSelector
         },
         props: {
             classification: {
@@ -92,6 +92,7 @@
 
             const name =  ref(selectedClassification.value?.displayName ?? '');
             const description =  ref(selectedClassification.value?.description ?? '');
+            const classificationColor = ref(selectedClassification?.value?.options?.color ?? 'Blue');
 
             const body = ref<Record<string, any>>({})
             const { data:createData, isLoading:createLoading, mutate:mutateCreate, isReady:isCreateReady }  = useCreateTypedefs(body)
@@ -102,9 +103,11 @@
                 if(props.mode === 'create') {
                     name.value = '';
                     description.value = '';
+                    classificationColor.value = 'Blue'
                 } else {
                     name.value = selectedClassification.value?.displayName ?? '';
                     description.value = selectedClassification.value?.description ?? '';                    
+                    classificationColor.value = selectedClassification.value?.options?.color ?? 'Blue'
                 }
             }
 
@@ -115,7 +118,10 @@
                             attributeDefs: [],
                             displayName: name.value,
                             description: description.value,
-                            superTypes: []
+                            superTypes: [],
+                            options: {
+                                color: classificationColor.value
+                            }
                         }
                     ]
                 }
@@ -148,11 +154,12 @@
                     titleBar.value?.focus()
                 }
             })
-            
+
             watch(selectedClassification, (newSelectedClassification) => {
                 if(newSelectedClassification) {
                     name.value = newSelectedClassification.displayName
                     description.value = newSelectedClassification?.description ?? ''
+                    classificationColor.value = newSelectedClassification?.options?.color ?? 'Blue'
                 }
             })
             
@@ -180,7 +187,8 @@
                 editClassification,
                 editLoading,
                 handleOk,
-                titleBar
+                titleBar,
+                classificationColor
             }
         },
     })

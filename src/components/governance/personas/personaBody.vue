@@ -142,6 +142,7 @@
                                 <div class="flex items-center">
                                     <AtlanIcon
                                         v-if="option.icon"
+                                        class="w-4 h-4"
                                         :icon="option.icon"
                                     />
                                     <span class="pl-2 text-sm">{{
@@ -231,8 +232,8 @@
                     key: messageKey,
                 })
                 try {
-                    await savePolicy()
-                    savePolicyLocally(type, id)
+                    await savePolicy(type, id)
+                    // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
                         duration: 1.5,
@@ -255,8 +256,7 @@
                     key: messageKey,
                 })
                 try {
-                    await deletePolicy()
-                    deletePolicyLocally(type, id)
+                    await deletePolicy(type, id)
                     message.success({
                         content: 'Policy deleted',
                         duration: 1.5,

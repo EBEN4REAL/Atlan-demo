@@ -11,7 +11,7 @@
                 <div class="relative mb-2 text-sm text-gray-500 required">
                     Policy name
                 </div>
-                <div class="max-w-xs">
+                <div style="width: 320px">
                     <a-input
                         @blur="
                             () => {

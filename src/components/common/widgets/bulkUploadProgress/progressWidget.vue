@@ -7,7 +7,7 @@
             'border-l-4 border-success':
                 workflowPhase === 'Succeeded' && !errorCount,
             'border-l-4 border-error':
-                (workflowPhase === 'Succeeded' || workflowPhase === 'Error') &&
+                (workflowPhase === 'Failed' || workflowPhase === 'Error') &&
                 errorCount,
             hidden: !isVisible,
         }"
@@ -18,7 +18,9 @@
                 Upload progress</span
             >
             <span
-                v-else-if="workflowPhase === 'Error'"
+                v-else-if="
+                    workflowPhase === 'Error' || workflowPhase === 'Failed'
+                "
                 class="flex items-center font-bold"
             >
                 <AtlanIcon icon="RunFailed" class="w-auto h-4 mr-2" />
@@ -33,8 +35,11 @@
                     class="w-auto h-4 mr-2"
                 />
                 Upload completed
-                <span class="mx-2 text-gray-400 mb-0.5">|</span>
+                <span v-if="errorCount !== -1" class="mx-2 text-gray-400 mb-0.5"
+                    >|</span
+                >
                 <span
+                    v-if="errorCount !== -1"
                     class="font-normal"
                     :class="{
                         'text-success': !errorCount,
@@ -64,7 +69,7 @@
         />
         <!-- upload failed state -->
         <div
-            v-else-if="workflowPhase === 'Error'"
+            v-else-if="workflowPhase === 'Error' || workflowPhase === 'Failed'"
             class="px-3 pb-5 bg-gray-100"
         >
             <a-divider class="mt-2 mb-5" />
@@ -81,6 +86,7 @@
                 </BulkModal>
             </div>
         </div>
+
         <div
             v-else
             class="px-0 pb-2 mt-2"
@@ -94,7 +100,16 @@
                 <div class="flex items-center">
                     <AtlanIcon icon="Approve" class="w-auto h-3 mr-2" />
                     <span class="border-0 shadow-none" size="small">
-                        {{ totalCount }} terms updated
+                        {{ totalCount }} terms uploaded
+                    </span>
+                </div>
+                <span v-if="createdCount" class="px-4 text-gray-400 mb-0.5"
+                    >|</span
+                >
+                <div v-if="createdCount" class="flex items-center">
+                    <AtlanIcon icon="Approve" class="w-auto h-3 mr-2" />
+                    <span class="border-0 shadow-none" size="small">
+                        {{ createdCount }} terms created
                     </span>
                 </div>
             </div>
@@ -126,32 +141,48 @@
     // import useArtifacts from '@/glossary/profile/overview/useArtifacts'
     import { message } from 'ant-design-vue'
     import useBulkUpload from `@/glossary/modal/useBulkUpload.ts`
-    import { isWorkflowRunning } from `@/glossary/modal/useBulkUpload.ts`
-    import { workflowName } from `@/glossary/modal/useBulkUpload.ts`
+    import {
+        isWorkflowRunning,
+        workflowName,
+        useArtifacts,
+    } from `@/glossary/modal/useBulkUpload.ts`
     import { getRunList } from '~/composables/workflow/useWorkflowList'
     import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
 
     export default defineComponent({
         name: 'BulkUploadProgress',
         components: { BulkModal },
-        props: {},
+        props: {
+            entity: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
+        },
         setup(props) {
             // data
             const percentage = ref(20)
             const workflowTemplateName = ref()
+            // data to display after upload complete
             const totalCount = ref(-1)
+            const createdCount = ref(-1)
+            const updatedCount = ref(-1)
             const errorCount = ref(-1)
+            // helpers
             const isVisible = ref(true)
             const workflowPhase = ref('')
             const nodeName = ref()
             let nIntervId
+            const { progressPercent, name, phase } = useWorkFlowHelper()
 
             // methods
             // stop the interval to get progress
             const stopGetProgress = () => {
                 clearInterval(nIntervId)
                 nIntervId = null
+                isWorkflowRunning.value = false
             }
+            // returns data to be displayed after upload complete
             const getFinalStatus = (data) => {
                 const createFinalCsvNode = Object.keys(data.nodes).find(
                     (el) => data.nodes[el].displayName === 'create-final-csv'
@@ -163,25 +194,24 @@
                 console.log(statusJson)
                 totalCount.value = statusJson.total_count
                 errorCount.value = statusJson.error_count
+                updatedCount.value = statusJson.updated_count
+                createdCount.value = statusJson.created_count
                 nodeName.value = data.nodes[createFinalCsvNode].name
             }
 
-            const { progressPercent, name, phase } = useWorkFlowHelper()
+            // gets realtime progress of the upload
             const getProgress = () => {
                 const { liveList } = getRunList(workflowName.value, false)
 
                 watch(liveList, () => {
                     if (liveList.value?.items && liveList.value?.items[0]) {
-                        percentage.value = progressPercent(
-                            liveList.value.items[0]
+                        percentage.value = Math.round(
+                            progressPercent(liveList.value.items[0])
                         )
                         workflowPhase.value = phase(liveList.value?.items[0])
                         workflowTemplateName.value = name(
                             liveList.value?.items[0]
                         )
-                        console.log(percentage.value)
-                        console.log(workflowPhase.value)
-                        console.log(workflowTemplateName.value)
                         if (workflowPhase.value === 'Succeeded') {
                             stopGetProgress()
                             getFinalStatus(liveList.value?.items[0].status)
@@ -194,25 +224,54 @@
                     }
                 })
             }
+
             const triggerUpload = () => {
                 if (!nIntervId) {
-                    nIntervId = setInterval(getProgress, 15000)
+                    nIntervId = setInterval(getProgress, 45000)
                     workflowPhase.value = 'Running'
                 }
             }
+
+            // gets and downloads the artifacts CSV on errors
+            const getArtifacts = () => {
+                const { data, error, isLoading, mutate } = useArtifacts({
+                    nodeName: nodeName.value,
+                    outputName: 'results',
+                })
+                watch(data, () => {
+                    if (data.value && !error.value) {
+                        const link = window.document.createElement('a')
+                        link.setAttribute(
+                            'href',
+                            'data:text/csv;charset=utf-8,%EF%BB%BF' +
+                                encodeURI(data.value)
+                        )
+                        link.setAttribute('download', 'upload_data.csv')
+                        link.click()
+                    } else {
+                        message.error({
+                            content: `Could not get file!`,
+                            duration: 5,
+                        })
+                    }
+                })
+            }
+            // starts the tracking process
             watch(isWorkflowRunning, () => {
                 if (isWorkflowRunning.value === true) {
                     triggerUpload()
                 }
             })
-            // get progress fn triggered every 30sec
+
             return {
                 percentage,
                 totalCount,
+                createdCount,
                 errorCount,
                 isVisible,
                 workflowPhase,
                 isWorkflowRunning,
+                getArtifacts,
             }
         },
     })

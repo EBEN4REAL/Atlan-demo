@@ -153,6 +153,7 @@
         Category,
         Term,
     } from '~/types/glossary/glossary.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
@@ -171,11 +172,7 @@
                 required: true,
                 default: () => {},
             },
-            glossaryQualifiedName: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
+
             glossaryName: {
                 type: String,
                 required: false,
@@ -223,7 +220,7 @@
             // data
             const {
                 entity,
-                glossaryQualifiedName,
+
                 categoryGuid,
                 glossaryName,
                 categoryName,
@@ -232,6 +229,15 @@
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
             const showCategories = ref(false)
+
+            const { getAnchorQualifiedName } = useAssetInfo()
+
+            const glossaryQualifiedName = computed(() => {
+                if (entity.value.typeName === 'AtlasGlossary') {
+                    return entity.value.qualifiedName
+                }
+                return getAnchorQualifiedName(entity.value)
+            })
 
             // injects
             // const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')

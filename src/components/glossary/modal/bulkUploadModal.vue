@@ -25,7 +25,7 @@
         <!-- Modal footer -->
         <template #footer>
             <div class="flex items-center">
-                <a-button class="px-2" @click="test"
+                <a-button class="px-2" @click="handleDownload"
                     >Download sample CSV template</a-button
                 >
                 <!-- TODO: Uncomment when doc for bulk is ready -->
@@ -118,17 +118,8 @@
                 link.setAttribute('download', 'sample.csv')
                 link.click()
             }
-            const test = () => {
-                const { startUpload } = useBulkUpload({
-                    guid: props?.entity?.guid,
-                    fileS3Key,
-                })
-
-                startUpload()
-            }
             return {
                 handleCancel,
-                test,
                 showModal,
                 visible,
                 formConfig,

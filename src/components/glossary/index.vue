@@ -11,8 +11,9 @@
                 @change="handleSelectGlossary"
             ></GlossarySelect>
             <AddGTCModal
+                :key="selectedGlossaryQf"
                 :entityType="defaultEntityType"
-                @add="handleAddGlossary"
+                @add="handleAddGTC"
                 :glossaryQualifiedName="selectedGlossaryQf"
                 :glossaryName="selectedGlosaryName"
             >
@@ -29,7 +30,7 @@
             </AddGTCModal>
         </div>
 
-        <div class="flex px-4 py-1 mb-2">
+        <div class="flex px-4 my-2">
             <SearchAdvanced
                 v-model="queryText"
                 :connectorName="facets?.hierarchy?.connectorName"
@@ -191,14 +192,13 @@
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
-
-            const selectedGlossary = ref(
+            const selectedGlossary = computed(() =>
                 glossaryStore.getGlossaryByQualifiedName(
                     selectedGlossaryQf.value
                 )
             )
-            const selectedGlosaryName = ref(
-                selectedGlossary?.value?.attributes?.name
+            const selectedGlosaryName = computed(
+                () => selectedGlossary?.value?.attributes?.name
             )
 
             // List Options
@@ -326,11 +326,25 @@
             }
 
             const glossaryTree = ref(null)
-            const handleAddGlossary = (asset) => {
-                glossaryStore.addGlossary(asset)
-                handleSelectGlossary(asset.attributes.qualifiedName)
-                if (glossaryTree.value) {
-                    glossaryTree.value.addGlossary(asset)
+            const handleAddGTC = (asset) => {
+                if (asset) {
+                    if (asset.typeName === 'AtlasGlossary') {
+                        glossaryStore.addGlossary(asset)
+                        handleSelectGlossary(asset?.attributes?.qualifiedName)
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
+                    if (asset.typeName === 'AtlasGlossaryTerm') {
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
+                    if (asset.typeName === 'AtlasGlossaryCategory') {
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
                 }
             }
 
@@ -378,7 +392,7 @@
                 height,
                 glossaryBox,
                 handleSelectedGlossary,
-                handleAddGlossary,
+                handleAddGTC,
                 glossaryTree,
                 glossaryURL,
                 selectedGlossaryQf,

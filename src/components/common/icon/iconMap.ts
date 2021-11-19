@@ -130,6 +130,7 @@ import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
 import RunHistory from '~/assets/images/icons/run-history.svg'
 import CaretLeft from '~/assets/images/icons/caret-left.svg'
 import CaretRight from '~/assets/images/icons/caret-right.svg'
+import CaretDown from '~/assets/images/icons/caret-down.svg'
 import Settings from '~/assets/images/icons/setings.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
@@ -488,4 +489,5 @@ export default {
     NoWf,
     Schema2Active,
     QueriesActive,
+    CaretDown
 }

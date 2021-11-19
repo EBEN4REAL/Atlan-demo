@@ -154,6 +154,7 @@
                         :selected-keys="per_selectedKeys"
                         :expanded-keys="per_expandedKeys"
                         :showEmptyState="showEmptyState"
+                        :refreshQueryTree="refreshQueryTree"
                     />
                 </div>
                 <div
@@ -173,6 +174,7 @@
                         :selected-keys="all_selectedKeys"
                         :expanded-keys="all_expandedKeys"
                         :showEmptyState="showEmptyState"
+                        :refreshQueryTree="refreshQueryTree"
                     />
                 </div>
                 <!--explorer pane end -->
@@ -223,6 +225,7 @@
                             :loaded-keys="per_loadedKeys"
                             :selected-keys="per_selectedKeys"
                             :expanded-keys="per_expandedKeys"
+                            :refreshQueryTree="refreshQueryTree"
                         />
                     </div>
                     <div
@@ -241,6 +244,7 @@
                             :loaded-keys="all_loadedKeys"
                             :selected-keys="all_selectedKeys"
                             :expanded-keys="all_expandedKeys"
+                            :refreshQueryTree="refreshQueryTree"
                         />
                     </div>
                 </div>
@@ -264,6 +268,7 @@
 
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
+            v-if="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"
             :ref="
                 (el) => {
@@ -272,7 +277,7 @@
             "
             :connector="connector"
             :savedQueryType="savedQueryType"
-            :parentFolderQF="getRelevantTreeData().parentQualifiedName.value"
+            :parentFolder="selectedFolder"
             @onSaveQuery="saveQuery"
         />
     </div>
@@ -292,6 +297,7 @@
         provide,
         PropType,
         toRefs,
+        defineAsyncComponent,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import {
@@ -308,7 +314,7 @@
     import useSearchQueries from './composables/useSearchQueries'
 
     import Connector from '~/components/insights/common/connector/connectorOnly.vue'
-    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
+    // import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import LoadingView from '@common/loaders/section.vue'
     import QueryTreeItem from './queryTreeItem.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
@@ -323,9 +329,15 @@
             RaisedTab,
             QueryTree,
             Connector,
-            SaveQueryModal,
+            // SaveQueryModal,
             LoadingView,
             QueryTreeItem,
+            SaveQueryModal: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/insights/playground/editor/saveQuery/index.vue'
+                    )
+            ),
         },
         props: {
             reset: {
@@ -333,12 +345,23 @@
                 required: true,
                 default: false,
             },
+            resetParentGuid: {
+                type: String,
+                required: true,
+            },
             resetQueryTree: {
                 type: Function,
             },
+            refreshQueryTree: {
+                type: Function,
+            },
+            resetType: {
+                type: String,
+                required: false,
+            },
         },
         setup(props, { emit }) {
-            let { reset } = toRefs(props)
+            let { reset, resetParentGuid, resetType } = toRefs(props)
 
             const permissions = inject('permissions') as ComputedRef<any>
             const { qualifiedName } = useAssetInfo()
@@ -411,17 +434,18 @@
                     'queries'
                 )
             }
-            const toggleCreateQueryModal = (
-                guid?: string,
-                qualifiedName?: string
-            ) => {
+            let selectedFolder = ref({})
+            const toggleCreateQueryModal = (item) => {
+                console.log('selected Parent: ', item)
                 showSaveQueryModal.value = !showSaveQueryModal.value
-                if (guid) {
-                    getRelevantTreeData().parentGuid.value = guid
+
+                if (item?.guid) {
+                    selectedFolder.value = item
+                    getRelevantTreeData().parentGuid.value = item.guid
                 }
-                if (qualifiedName) {
+                if (item?.qualifiedName) {
                     getRelevantTreeData().parentQualifiedName.value =
-                        qualifiedName
+                        item.qualifiedName
                 }
             }
 
@@ -462,17 +486,18 @@
                                 document.querySelector(
                                     '.query-explorer  .query-tree-root-div'
                                 )
-                            console.log(parentFolder)
+                            console.log('parent folder: ', parentFolder)
                         } else {
                             parentFolder = document.getElementsByClassName(
                                 getRelevantTreeData().parentGuid.value
                             )[0]
                         }
-                        console.log(
+                        console.log('parent folder: ', {
                             parentFolder,
-                            getRelevantTreeData().parentGuid.value
-                        )
+                            parentguid: getRelevantTreeData().parentGuid.value,
+                        })
                         let ul = parentFolder.getElementsByTagName('ul')[0]
+                        console.log('parent folder ul: ', ul)
 
                         if (!ul) {
                             // if the parentFolder does not have any children, it won't contain a ul element either. So create one and append it
@@ -484,13 +509,13 @@
 
                         li.classList.add('flex', 'items-center', 'active-input')
                         const caret =
-                            '<span class="ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+                            '<span class="mt-2 -ml-1 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
                         const caretEl = new DOMParser().parseFromString(
                             caret,
                             'text/html'
                         ).body.firstElementChild
                         const folderSvg =
-                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 w-auto h-5 my-auto mr-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
+                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 w-auto h-5 my-auto mr-1 -ml-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
                         const folderSvgEl = new DOMParser().parseFromString(
                             folderSvg,
                             'text/html'
@@ -873,18 +898,28 @@
                 if (reset.value) {
                     // console.log('queryTree inside if')
                     setTimeout(async () => {
-                        console.log(
-                            'queryTree: ',
-                            getRelevantTreeData().parentGuid.value
-                        )
+                        // console.log(
+                        //     'queryTree: ',
+                        //     getRelevantTreeData().parentGuid.value
+                        // )
                         await all_refetchNode(
-                            getRelevantTreeData().parentGuid.value,
-                            'query'
+                            resetParentGuid.value,
+                            resetType.value
                         )
+                        console.log('not wait 1')
                         await per_refetchNode(
-                            getRelevantTreeData().parentGuid.value,
-                            'query'
+                            resetParentGuid.value,
+                            resetType.value
                         )
+                        console.log('not wait 2')
+                        // await all_refetchNode(
+                        //     resetParentGuid.value,
+                        //     'queryFolder'
+                        // )
+                        // await per_refetchNode(
+                        //     resetParentGuid.value,
+                        //     'queryFolder'
+                        // )
                         props.resetQueryTree()
                     }, 500)
                 }
@@ -932,6 +967,7 @@
                 per_immediateParentGuid,
                 getRelevantTreeData,
                 showEmptyState,
+                selectedFolder,
                 // refetchTreeData,
             }
         },

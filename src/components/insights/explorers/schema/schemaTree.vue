@@ -186,74 +186,56 @@
                 > .ant-tree-switcher_open) {
             background-color: #fff !important;
         }
-    }
+        :global(.ant-tree-title) {
+            width: calc(100% - 1.5rem) !important;
+        }
+        :global(.ant-tree-checkbox) {
+            padding-top: 3px !important;
+        }
+        :global(.ant-tree .ant-tree-title) {
+            @apply pt-0 pb-0 !important;
+        }
+        :global(.ant-tree .ant-tree-title) {
+            @apply pl-0 pr-0 !important;
+        }
+        :global(.ant-tree.ant-tree-block-node
+                li
+                .ant-tree-node-content-wrapper) {
+            @apply w-full !important;
+        }
 
-    :global(.ant-tree-title) {
-        width: calc(100% - 1.5rem) !important;
+        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+            @apply bg-gray-light;
+        }
+        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+            @apply bg-gray-light;
+        }
+        :global(.ant-tree .ant-tree-treenode) {
+            @apply p-0 !important;
+        }
+        :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
+                > .ant-tree-switcher_open) {
+            // background-color: rgba(219, 234, 254, 1) !important;
+            height: 32px !important;
+            justify-content: center;
+            display: inline-flex !important;
+            align-items: center;
+        }
+        :global(.ant-tree li .ant-tree-node-content-wrapper) {
+            border-radius: 0px !important;
+            padding: 0 !important;
+        }
+        :global(.ant-tree .ant-tree-node-content-wrapper) {
+            padding: 0 !important;
+            overflow: hidden;
+        }
+        :global(.ant-tree
+                .ant-tree-node-content-wrapper.ant-tree-node-selected) {
+            background-color: rgba(219, 234, 254, 1) !important;
+        }
+        :global(.ant-tree span.ant-tree-indent-unit) {
+            width: 14px !important;
+            // background-color: red !important;
+        }
     }
-    :global(.ant-tree-checkbox) {
-        padding-top: 3px !important;
-    }
-    :global(.ant-tree .ant-tree-title) {
-        @apply pt-0 pb-0 !important;
-    }
-    :global(.ant-tree .ant-tree-title) {
-        @apply pl-0 pr-0 !important;
-    }
-    :global(.ant-tree.ant-tree-block-node li .ant-tree-node-content-wrapper) {
-        @apply w-full !important;
-    }
-
-    :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-        @apply bg-gray-light;
-    }
-    :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-        @apply bg-gray-light;
-    }
-    :global(.ant-tree .ant-tree-treenode) {
-        @apply p-0 !important;
-    }
-    :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
-            > .ant-tree-switcher_open) {
-        // background-color: rgba(219, 234, 254, 1) !important;
-        height: 32px !important;
-        justify-content: center;
-        display: inline-flex !important;
-        align-items: center;
-    }
-    :global(.ant-tree li .ant-tree-node-content-wrapper) {
-        border-radius: 0px !important;
-        padding: 0 !important;
-    }
-    :global(.ant-tree .ant-tree-node-content-wrapper) {
-        padding: 0 !important;
-        overflow: hidden;
-    }
-    :global(.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected) {
-        background-color: rgba(219, 234, 254, 1) !important;
-    }
-    :global(.ant-tree span.ant-tree-indent-unit) {
-        width: 14px !important;
-        // background-color: red !important;
-    }
-    // :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
-    //         > .ant-tree-switcher_open) {
-    // }
-    // :global(.ant-tree-treenode-switcher-close.ant-tree-treenode-selected
-    //         > .ant-tree-switcher_open) {
-    //     background-color: rgba(255, 255, 255, 1) !important;
-    //     height: 32px !important;
-    // justify-content: center;
-    // display: inline-flex !important;
-    // align-items: center;
-    // }
-    // :global(.ant-tree-switcher) {
-    //     @apply pl-5 pr-2 !important;
-    // }
-    // :global(.ant-tree-treenode-switcher-close:hover) {
-    //     background-color: #e5e5e5 !important;
-    // }
-    // :global(.ant-tree-treenode-switcher-close:hover) {
-    //     background-color: #e5e5e5 !important;
-    // }
 </style>

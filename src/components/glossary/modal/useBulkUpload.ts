@@ -5,6 +5,7 @@ import {
     runWorkflowByName,
     createWorkflow,
 } from '~/composables/workflow/useWorkflowList'
+import { Workflows } from '~/services/service/workflows'
 
 export const isWorkflowRunning = ref(false)
 export const workflowName = ref('')
@@ -142,6 +143,25 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
         workflowName.value = `atlan-gtc-bulk-upload-${guid.slice(-8)}`
         console.log(isWorkflowRunning)
     }
+
     return { startUpload }
 }
+export function useArtifacts({ nodeName, outputName }) {
+    const params = ref(new URLSearchParams())
+    const pathVariables = ref({})
+
+    pathVariables.value = {
+        workflowName: workflowName.value,
+        nodeName,
+        outputName,
+    }
+
+    const { data, error, isLoading, mutate } = Workflows.getArtifacts({
+        pathVariables,
+        params,
+    })
+
+    return { data, error, isLoading, mutate }
+}
+
 export default useBulkUpload

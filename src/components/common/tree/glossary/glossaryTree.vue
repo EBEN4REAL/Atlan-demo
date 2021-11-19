@@ -14,7 +14,6 @@
         ></EmptyView>
     </div>
     <a-tree
-        class="pl-0"
         :tree-data="treeData"
         :draggable="true"
         :block-node="true"
@@ -34,7 +33,7 @@
         </template>
 
         <template #title="entity">
-            <GlossaryTreeItem :item="entity" class="mr-2" />
+            <GlossaryTreeItem :item="entity" :class="treeItemClass" />
         </template>
     </a-tree>
 </template>
@@ -71,12 +70,17 @@
                 type: Number,
                 required: false,
             },
+            treeItemClass: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
         },
         emits: ['select'],
         setup(props, { emit }) {
             const router = useRouter()
 
-            const { defaultGlossary, height } = toRefs(props)
+            const { defaultGlossary, height, treeItemClass } = toRefs(props)
 
             const {
                 onLoadData,
@@ -131,6 +135,7 @@
                 height,
                 addTerm,
                 addCategory,
+                treeItemClass,
             }
             // data
         },
@@ -138,12 +143,21 @@
 </script>
 <style lang="less" module>
     .glossaryTree {
+        :global(.ant-tree-switcher) {
+            margin-right: -3px !important;
+        }
         :global(.ant-tree-switcher_open) {
             transform: rotate(90deg);
         }
-
+        :global(.ant-tree-treenode) {
+            padding-bottom: 0px !important;
+        }
         :global(.ant-tree-title) {
             @apply flex;
+        }
+
+        :global(.ant-tree-list-holder-inner) {
+            @apply px-3 !important;
         }
     }
 </style>

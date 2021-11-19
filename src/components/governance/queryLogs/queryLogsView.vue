@@ -28,18 +28,18 @@
 
                     <TimeFrameSelector
                         v-model:modelValue="timeFrame"
+                        :time-frame="timeFrame"
                         @change="handleRangePickerChange"
-                        :timeFrame="timeFrame"
                     />
                 </div>
             </template>
 
             <QueryLogTable
                 :api-keys-list="queryList"
-                :isLoading="isLoading"
+                :is-loading="isLoading"
+                :selected-query="selectedQuery"
+                :selected-row-keys="selectedRowKeys"
                 @selectQuery="handleSelectQuery"
-                :selectedQuery="selectedQuery"
-                :selectedRowKeys="selectedRowKeys"
             />
             <!-- <div class="flex justify-end max-w-full mt-4">
                 <a-pagination
@@ -69,6 +69,7 @@
 <script lang="ts">
     import { defineComponent, ref, Ref, watch, computed } from 'vue'
     import { message } from 'ant-design-vue'
+    import dayjs from 'dayjs'
     import map from '~/constant/accessControl/map'
     import DefaultLayout from '~/components/admin/layout.vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -77,7 +78,6 @@
     import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
     import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
     import { useQueryLogs } from './composables/useQueryLogs'
-    import dayjs from 'dayjs'
 
     export default defineComponent({
         name: 'ApiKeysView',
@@ -89,14 +89,14 @@
             QueryPreviewDrawer,
         },
         setup() {
-            /**LOCAL STATE */
+            /** LOCAL STATE */
             const searchText: Ref<string> = ref('')
             const isAPIKeyDrawerVisible: Ref<boolean> = ref(false)
             const timeFrame = ref('30 days')
             const selectedQuery = ref({})
             const isQueryPreviewDrawerVisible = ref(false)
             const gte = ref(
-                dayjs(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).format()
+                dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
             )
             const lt = ref(dayjs().format())
 

@@ -160,7 +160,6 @@
                 handleRangePickerChange,
                 timeFrame,
                 searchText,
-                handleSelectQuery,
                 isAPIKeyDrawerVisible,
                 NewAPIKeyIllustration,
                 map,

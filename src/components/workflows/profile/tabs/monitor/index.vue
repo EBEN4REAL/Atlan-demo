@@ -28,22 +28,25 @@
               <AtlanIcon icon="ArrowRight" />
           </a-button>
       </div>
-    <div class="relative w-full wrapper-monitoring">
+    <div class="relative w-full h-full">
         <div
             v-if="loadingGeneral"
             class="absolute flex items-center justify-center w-full h-full"
         >
             <a-spin />
         </div>
-        <EmptyView
-            v-else-if="!isLoading && !graphData?.name"
-            empty-screen="WFEmptyTab"
-            class="-mt-20"
-            headline="No Runs to Display"
-            desc="There are no runs for this workflow."
-            button-text="Back to Workflows"
-            @event="$router.push('/workflows')"
-        />
+        <div  
+          v-else-if="!isLoading && !graphData?.name" 
+          class="wrapper-monitoring">
+          <EmptyView   
+              empty-screen="WFEmptyTab"
+              class="-mt-20"
+              headline="No Runs to Display"
+              desc="There are no runs for this workflow."
+              button-text="Back to Workflows"
+              @event="$router.push('/workflows')"
+          />
+        </div>
         <div v-else-if="graphData.name" class="absolute w-full h-full">
             <MonitorGraph
                 :selected-pod="selectedPod"

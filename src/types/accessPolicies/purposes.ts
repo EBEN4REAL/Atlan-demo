@@ -12,7 +12,7 @@ export interface DataPolicies {
     assets: string[]
     connectionName: string
     description: string
-    maskingOption:
+    maskType:
         | 'MASK_REDACT'
         | 'MASK_HASH'
         | 'MASK_SHOW_LAST_4'

@@ -8,7 +8,7 @@ export const summaryVariants = [
     {
         id: 'view',
         label: 'View',
-        components: ['SQL', 'Columns'],
+        components: ['Definition', 'Columns'],
         includes: ['View', 'MaterialisedViews'],
     },
     {

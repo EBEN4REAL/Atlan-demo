@@ -6,68 +6,41 @@
                 >{{ getSummaryVariants(asset)?.label }} Summary</span
             >
         </div>
-        <div class="flex flex-col gap-y-3">
-            <div class="flex gap-x-16">
-                <SQL
-                    v-if="
-                        asset.typeName == 'View' ||
-                        asset.typeName == 'MaterialisedView'
-                    "
-                    :sql="definition(asset)"
-                >
-                    <div class="flex flex-col text-sm cursor-pointer">
-                        <span class="mb-2 text-sm text-gray-500"
-                            >Definition</span
-                        >
-                        <span class="text-primary">SQL</span>
+        <div class="flex flex-col gap-y-10">
+            <div class="flex flex-col gap-y-3">
+                <div class="flex gap-x-16">
+                    <div
+                        v-for="(component, index) in getSummaryVariants(asset)
+                            ?.components"
+                        :key="index"
+                    >
+                        <component :is="component" :asset="asset"></component>
                     </div>
-                </SQL>
-                <RowInfoHoverCard
-                    v-if="
-                        asset.typeName == 'Table' ||
-                        asset.typeName == 'TablePartition'
-                    "
-                    :image="getConnectorImage(asset)"
-                    :row-count="rowCount(asset)"
-                    :size-bytes="sizeBytes(asset)"
-                    :source-updated-at="sourceUpdatedAt(asset)"
-                    :source-updated-at-raw="sourceUpdatedAt(asset, true)"
-                    :source-created-at="sourceCreatedAt(asset)"
-                    :source-created-at-raw="sourceCreatedAt(asset, true)"
-                >
-                    <div class="flex flex-col text-sm cursor-pointer">
-                        <span class="mb-1 text-sm text-gray-500">Rows</span>
-                        <span class="text-gray-700">{{ rowCount(asset) }}</span>
+                </div>
+                <div>
+                    <div class="flex flex-col">
+                        <p class="mb-1 text-sm text-gray-500">Description</p>
+                        <Description v-model="localDescription" />
                     </div>
-                </RowInfoHoverCard>
-                <div class="flex flex-col text-sm">
-                    <span class="mb-1 text-sm text-gray-500">Columns</span>
-                    <span class="text-gray-700">{{ columnCount(asset) }}</span>
                 </div>
-            </div>
-            <div>
-                <div class="flex flex-col">
-                    <p class="mb-1 text-sm text-gray-500">Description</p>
-                    <Description v-model="localDescription" />
-                </div>
-            </div>
-            <div class="flex gap-x-32">
-                <div class="flex flex-col">
-                    <p class="mb-1 text-sm text-gray-500">Certificate</p>
+                <div class="flex gap-x-32">
+                    <div class="flex flex-col">
+                        <p class="mb-1 text-sm text-gray-500">Certificate</p>
 
-                    <Certificate
-                        v-model="localCertificate"
-                        :selected-asset="asset"
-                        @change="handleChangeCertificate"
-                    />
-                </div>
+                        <Certificate
+                            v-model="localCertificate"
+                            :selected-asset="asset"
+                            @change="handleChangeCertificate"
+                        />
+                    </div>
 
-                <div v-if="asset.guid" class="flex flex-col">
-                    <p class="mb-1 text-sm text-gray-500">Owners</p>
-                    <Owners
-                        v-model="localOwners"
-                        @change="handleOwnersChange"
-                    />
+                    <div v-if="asset.guid" class="flex flex-col">
+                        <p class="mb-1 text-sm text-gray-500">Owners</p>
+                        <Owners
+                            v-model="localOwners"
+                            @change="handleOwnersChange"
+                        />
+                    </div>
                 </div>
             </div>
             <slot></slot>
@@ -76,11 +49,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, ref, PropType, toRefs } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        ref,
+        PropType,
+        toRefs,
+        defineAsyncComponent,
+    } from 'vue'
 
     // Components
-    import SQL from '@/common/popover/sql.vue'
-    import RowInfoHoverCard from '@/common/popover/rowInfo.vue'
     import Description from '@/common/input/description/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
@@ -94,11 +72,14 @@
 
     export default defineComponent({
         components: {
-            RowInfoHoverCard,
             Description,
             Certificate,
             Owners,
-            SQL,
+            Rows: defineAsyncComponent(() => import('./types/rows.vue')),
+            Columns: defineAsyncComponent(() => import('./types/columns.vue')),
+            Definition: defineAsyncComponent(
+                () => import('./types/definition.vue')
+            ),
         },
 
         props: {

@@ -3,10 +3,8 @@ import { Ref } from 'vue'
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
-
 import { useOptions } from '~/services/api/common'
-
-import { IPersona } from '~/types/accessPolicies/purposes'
+import { IPersona } from '~/types/accessPolicies/personas'
 
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PERSONAS, 'GET', { params }, options || {})

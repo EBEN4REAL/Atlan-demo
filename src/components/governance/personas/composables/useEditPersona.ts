@@ -75,7 +75,7 @@ export function addPolicy(type: PolicyType) {
             allow: true,
             name: '',
             description: '',
-            type: 'metadata',
+            type: 'entity',
             isNew: true,
         })
         policyEditMap.value.metadataPolicies[id] = true
@@ -87,7 +87,7 @@ export function addPolicy(type: PolicyType) {
             assets: [],
             connectionName: '',
             connectionId: '',
-            maskingOption: 'MASK_NONE',
+            maskType: 'MASK_NONE',
             allow: true,
             name: '',
             description: '',
@@ -97,7 +97,7 @@ export function addPolicy(type: PolicyType) {
     }
 }
 
-export async function deletePolicy(type: PolicyType, id: string) {
+export async function deletePolicyLocally(type: PolicyType, id: string) {
     const tempPersona = { ...selectedPersona.value }
     if (type === 'meta') {
         const policyIndex =
@@ -106,8 +106,6 @@ export async function deletePolicy(type: PolicyType, id: string) {
             )
         if (policyIndex > -1)
             tempPersona?.metadataPolicies?.splice(policyIndex, 1)
-
-        await savePersona(tempPersona)
         selectedPersonaDirty.value?.metadataPolicies?.splice(policyIndex, 1)
     }
     if (type === 'data') {
@@ -115,13 +113,15 @@ export async function deletePolicy(type: PolicyType, id: string) {
             (pol) => pol.id === id
         )
         if (policyIndex > -1) tempPersona?.dataPolicies?.splice(policyIndex, 1)
-
-        await savePersona(tempPersona)
         selectedPersonaDirty.value?.dataPolicies?.splice(policyIndex, 1)
     }
 }
+export async function deletePolicy() {
+    const tempPersona = { ...selectedPersona.value }
+    await savePersona(tempPersona)
+}
 
-export function savePolicy(type: PolicyType, id: string) {
+export function savePolicyLocally(type: PolicyType, id: string) {
     const tempPersona = { ...selectedPersona.value }
     if (type === 'meta') {
         const dirtyPolicyIndex =
@@ -169,6 +169,9 @@ export function savePolicy(type: PolicyType, id: string) {
         }
         policyEditMap.value.dataPolicies[id] = false
     }
+}
+export function savePolicy() {
+    const tempPersona = { ...selectedPersona.value }
     return savePersona(tempPersona)
 }
 

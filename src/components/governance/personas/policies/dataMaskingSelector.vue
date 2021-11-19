@@ -1,8 +1,8 @@
 <template>
     <a-select
-        :value="maskingOption"
+        :value="maskType"
         class="mb-6 w-80"
-        @update:value="$emit('update:maskingOption', $event)"
+        @update:value="$emit('update:maskType', $event)"
     >
         <a-select-option
             v-for="opt in maskingOptions"
@@ -68,12 +68,12 @@
         name: 'DataMaskingSelector',
         components: {},
         props: {
-            maskingOption: {
+            maskType: {
                 type: String,
                 required: true,
             },
         },
-        emits: ['update:maskingOption'],
+        emits: ['update:maskType'],
         setup() {
             const v = ref(true)
             // FIXME: Take it out to a config file

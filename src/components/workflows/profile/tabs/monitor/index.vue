@@ -28,7 +28,7 @@
               <AtlanIcon icon="ArrowRight" />
           </a-button>
       </div>
-    <div class="relative w-full h-full">
+    <div class="relative w-full wrapper-monitoring">
         <div
             v-if="loadingGeneral"
             class="absolute flex items-center justify-center w-full h-full"
@@ -222,5 +222,9 @@
         height: 4px;
         width: 4px;
         border-radius: 50%;
+    }
+    .wrapper-monitoring{
+      height: calc(100% - 400px);
+      margin-top: 200px;
     }
 </style>

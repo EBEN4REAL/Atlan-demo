@@ -1,6 +1,6 @@
 
 
-import { Components } from "~/api/atlas/client";
+import { Components } from "~/types/atlas/client";
 import { SourceList } from "~/constant/source";
 import { BaseAttributes } from "../asset";
 
@@ -9,9 +9,9 @@ export interface ConfigAttributes {
     id: string,
     label: string,
     allowCustom: boolean
-    default: "",
-    enumConfig: [],
-    info: "",
+    default: string | number,
+    enumConfig: any[],
+    info: string,
     isMandatory: boolean,
     isVisible: boolean,
     order: number,
@@ -32,10 +32,17 @@ export interface CredentialAuthConfigAttributes {
     config: ConfigAttributes[]
 }
 
+export interface CredentialAuthConfig {
+    attributes: CredentialAuthConfigAttributes
+    typeName: string
+}
+
+
 export interface CredentialConfigAttributes {
-    auth: CredentialAuthConfigAttributes[],
+    auth: CredentialAuthConfig[],
     connType: Config,
     extra: Config[],
+    database: Config,
     host: Config,
     port: Config,
     [key: string]: any

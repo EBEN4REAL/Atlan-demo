@@ -1,21 +1,168 @@
-import snowflake from "~/assets/images/source/snowflake.png";
-import tableau from "~/assets/images/source/tableau.png";
-import redshift from "~/assets/images/source/redshift.png";
+import snowflake from '~/assets/images/source/snowflake.png'
+import tableau from '~/assets/images/source/tableau.png'
+import redshift from '~/assets/images/source/redshift.png'
+import postgres from '~/assets/images/source/postgres.png'
+import athena from '~/assets/images/source/athena.png'
+import database from '~/assets/images/assetType/Database.svg'
+import schema from '~/assets/images/assetType/Schema.svg'
+import powerbi from '~/assets/images/source/powerbi.png'
 
 export const SourceList = [
-  {
-    id: "snowflake",
-    label: "Snowflake",
-    image: snowflake,
-  },
-  {
-    id: "tableau",
-    label: "Tableau",
-    image: tableau,
-  },
-  {
-    id: "redshift",
-    label: "Redshift",
-    image: redshift,
-  },
-];
+    {
+        id: 'snowflake',
+        label: 'Snowflake',
+        image: snowflake,
+        filterMaxLevel: 2,
+        connectionCount: 0,
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: database,
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: schema,
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+        ],
+        types: [
+            'Database',
+            'Schema',
+            'Table',
+            'Column',
+            'View',
+            'TablePartition',
+            'MaterialisedView',
+            'Query',
+            'QueryFolder',
+        ],
+    },
+    {
+        id: 'tableau',
+        label: 'Tableau',
+        image: tableau,
+        hierarchy: [],
+        types: [
+            'TableauSite',
+            'TableauProject',
+            'TableauWorkbook',
+            'TableauWorksheet',
+            'TableauDashboard',
+            'TableauDatasource',
+            'TableauDatasourceField',
+            'TableauCalculatedField',
+        ],
+    },
+    {
+        id: 'redshift',
+        label: 'Redshift',
+        image: redshift,
+        hierarchy: [],
+        connectionCount: 0,
+    },
+    {
+        id: 'postgres',
+        label: 'Postgres',
+        image: postgres,
+        hierarchy: [],
+        connectionCount: 0,
+        types: [
+            'Database',
+            'Schema',
+            'Table',
+            'Column',
+            'View',
+            'TablePartition',
+            'MaterialisedView',
+            'Query',
+            'QueryFolder',
+        ],
+    },
+    {
+        id: 'athena',
+        label: 'Athena',
+        image: athena,
+        filterMaxLevel: 2,
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: database,
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: schema,
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+        ],
+        types: [
+            'Database',
+            'Schema',
+            'Table',
+            'Column',
+            'View',
+            'TablePartition',
+            'MaterialisedView',
+            'Query',
+            'QueryFolder',
+        ],
+    },
+    {
+        id: 'powerbi',
+        label: 'PowerBI',
+        image: powerbi,
+        connectionCount: 0,
+        hierarchy: [],
+        types: [
+            'PowerBIWorkspace',
+            'PowerBIDashboard',
+            'PowerBIReport',
+            'PowerBIDataset',
+            'PowerBIDataflow',
+            'PowerBITile',
+            'PowerBIPage',
+            'PowerBIDatasource',
+        ],
+    },
+]

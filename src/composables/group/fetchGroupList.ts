@@ -1,72 +1,70 @@
-import swrvState from '../utils/swrvState';
-import useSWRV from 'swrv';
-import { Components } from '~/api/auth/client';
+import useSWRV from 'swrv'
+import { computed, ref, watch } from 'vue'
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+import { Groups } from '~/services/service/groups'
+import swrvState from '../utils/swrvState'
 
-import { Group, URL } from '~/api/auth/group';
-import { computed, ref } from 'vue';
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage';
-
-export default function fetchGroupList(dependent: any, paramsdefault?: any) {
-
-    let params = ref({});
+export default function fetchGroupList(immediate: boolean = true) {
+    const params = ref(new URLSearchParams())
     // this is needed as there are multiple keys with the same param name
-    const urlparam = new URLSearchParams();
-    urlparam.append("limit", "20");
-    urlparam.append("sort", "name");
-    urlparam.append("columns", "name");
-    urlparam.append("columns", "user_count");
+    params.value.append('limit', '20')
+    params.value.append('sort', 'name')
+    params.value.append('columns', 'name')
+    params.value.append('columns', 'user_count')
+    params.value.append('columns', 'id')
+    params.value.append('columns', 'attributes')
 
-    params.value = urlparam;
+    const { data, error, mutate, isValidating } = useSWRV(
+        ['/groups', params?.value, {}],
+        () => {
+            if (immediate) return Groups.List(params?.value)
+            immediate = true
 
-
-    const { data, error, mutate, isValidating } = useSWRV([URL.GroupList, params?.value, {}], () => {
-        if (dependent.value) {
-            return Group.ListV2(params?.value);
-        }
-        else {
             return {}
+        },
+        {
+            revalidateOnFocus: false,
+            cache: new LocalStorageCache(),
+            dedupingInterval: 1,
         }
-    }, {
-        revalidateOnFocus: false,
-        cache: new LocalStorageCache(),
-        dedupingInterval: 1,
-    });
-    const { state, STATES } = swrvState(data, error, isValidating);
+    )
 
-    const list = computed(() => {
-        return data.value?.records;
-    });
-    const total = computed(() => {
-        return data.value?.total_record;
-    });
-    const filtered = computed(() => {
-        return data.value?.filter_record;
-    });
+    const { state, STATES } = swrvState(data, error, isValidating)
 
-    let debounce: any = null;
+    const list = computed(() => data.value?.records ?? [])
+    const total = computed(() => data.value?.total_record)
+    const filtered = computed(() => data.value?.filter_record)
+    function setLimit(limit = 20) {
+        params.value.set('limit', `${limit}`)
+    }
+
+    let debounce: any = null
     const handleSearch = (val: any) => {
-        let value = "";
+        let value = ''
         if (val?.target) {
             value = val.target.value
         } else {
-            value = val;
+            value = val
         }
 
-        clearTimeout(debounce);
+        clearTimeout(debounce)
         debounce = setTimeout(() => {
             if (val) {
                 params.value.set(
-                    "filter",
+                    'filter',
                     JSON.stringify({
                         $or: [{ name: { $ilike: `%${value}%` } }],
                     })
-                );
+                )
             } else {
-                params.value.set("filter", null);
+                params.value.set('filter', null)
             }
-            mutate();
-        }, 200);
-    };
+            mutate()
+        }, 200)
+    }
+    watch([list, data], () => {
+        console.log('grps', list.value, data.value?.data.value?.records)
+    })
 
     return {
         list,
@@ -77,6 +75,7 @@ export default function fetchGroupList(dependent: any, paramsdefault?: any) {
         state,
         STATES,
         mutate,
-        handleSearch
+        handleSearch,
+        setLimit,
     }
 }

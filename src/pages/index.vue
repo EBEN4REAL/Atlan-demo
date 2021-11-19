@@ -1,106 +1,103 @@
 <template>
-  <div class="grid h-full grid-cols-12">
-    <div class="h-full col-span-3 shadow-inner bg-gray-50">
-      <div class="flex items-center p-3 border-b border-gray-200">
-        <a-avatar
-          :size="42"
-          class="border-2 border-primary-300"
-          src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-        />
+    <div class="grid h-full max-w-5xl grid-cols-6 mx-auto">
+        <section class="flex items-center h-24 col-span-6 gap-4">
+             <AtlanIcon class="h-8" icon="MorningIcon"/>
+            <span class="text-lg">Good morning, {{getNameInTitleCase(name)}}!</span>
+        </section>
+        <main class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-14">
+            <section class="">
+                <SearchAndStats />
+            </section>
+            <section class="">
+                <Announcements />
+            </section>
+            <section>
+                <Relevant />
+            </section>
+            <section>
+              <YourOrgs />
+            </section>
+        </main>
+        <aside class="flex flex-col w-64 mb-24 ml-8 gap-y-12">
+            <section>
+                <div class="">
+                    <img class="mb-3 rounded-lg" src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80" alt="">
+                    <span class="text-sm text-gray-500">Pets of Atlan, Ginger and Lemon wish you nice day! 🐾</span>
+                </div>
+                
+            </section>
+            <section>
+               <YourWorkspace />
+            </section>
+            <section>
+                <h2 class="mb-3 text-xl font-bold">Helpful links</h2>
+               <router-link to="//notion.so" target="_blank" replace>
+                   <div class="flex items-center p-2 cursor-pointer gap-x-5 group hover:shadow hover:border-1">
+                    <AtlanIcon class="h-12" icon="AtlanIcon"/>
+                    <p class="flex flex-col text-gray-700 ">
+                        <h3 class="text-base">Atlan Documentation</h3>
+                    </p>
+                </div>
+               </router-link>
+               <router-link  to="//notion.so" target="_blank" replace>
+                   <div class="flex items-center p-2 cursor-pointer gap-x-5 group hover:shadow hover:border-1">
+                    <AtlanIcon class="h-12" icon="CallIcon"/>
+                    <p class="flex flex-col text-gray-700 ">
+                        <h3 class="text-base">Customer Support</h3>
+                    </p>
+                </div>
+               </router-link>
+               <router-link  to="//notion.so" target="_blank" replace>
+                   <div class="flex items-center p-2 cursor-pointer gap-x-5 group hover:shadow hover:border-1">
+                    <AtlanIcon class="h-12" icon="FeedbackIcon"/>
+                    <p class="flex flex-col text-gray-700 ">
+                        <h3 class="text-base">Share Feedback</h3>
+                    </p>
+                </div>
+               </router-link>
 
-        <div class="flex flex-col ml-2">
-          <p class="mb-0 text-base">{{ name }}</p>
-          <p class="mb-0 text-sm text-gray-500">{{ username }}</p>
-        </div>
-      </div>
-
-      <!-- <a-menu mode="inline" class="bg-transparent">
-        <a-menu-item key="1">
-          <span>Home</span>
-        </a-menu-item>
-        <a-menu-item-group title="Discover">
-          <a-menu-item key="2">
-            <span>Assets</span>
-          </a-menu-item>
-          <a-menu-item key="2">
-            <span>Terms</span>
-          </a-menu-item>
-          <a-menu-item key="2">
-            <span>Connections</span>
-          </a-menu-item>
-          <a-menu-item key="2">
-            <span>Projects</span>
-          </a-menu-item>
-        </a-menu-item-group>
-      </a-menu> -->
+            </section>
+        </aside>
     </div>
-    <div class="col-span-9 bg-white">
-      <div class="flex justify-center pt-6 pb-10 align-middle border-b">
-        <div>
-          <img :src="displayNameHTML" class="mr-0" />
-        </div>
-      </div>
-
-      <div class="flex px-6 -mt-4">
-        <a-input placeholder="Command Center"></a-input>
-        <a-button-group class="ml-2">
-          <a-button>Button</a-button>
-          <a-button>Button</a-button>
-        </a-button-group>
-      </div>
-    </div>
-  </div>
 </template>
 
-
 <script lang="ts">
-import { defineComponent, inject, computed } from "vue";
-import { useStore } from "~/store";
+    import { useHead } from '@vueuse/head'
+    import { defineComponent } from 'vue'
+    import useUserData from '~/composables/user/useUserData'
+    import { getNameInTitleCase } from '~/utils/string'
+    import SearchAndStats from '@/home/main/searchAndStats.vue'
+    import Announcements from '@/home/main/annoucement.vue';
+    import Relevant from '@/home/main/relevant.vue';
+    import YourOrgs from '@/home/main/YourOrgs.vue';
+    import YourWorkspace from '@/home/aside/YourWorkspace.vue';
 
-import PageLoader from "@common/loaders/page.vue";
-import SearchBox from "@common/searchbox/searchlist.vue";
+    export default defineComponent({
+        name: 'HomePage',
+        components: {
+            SearchAndStats,
+            YourWorkspace,
+            Announcements,
+            Relevant,
+            YourOrgs,
+        },
+        props: {},
+        setup() {
+            const { name } = useUserData()
+            
+            useHead({
+                title: `Welcome - ${getNameInTitleCase(name)} `,
+            })
 
-export default defineComponent({
-  name: "HelloWorld",
-  components: {
-    PageLoader,
-    SearchBox,
-  },
-  props: {
-    msg: {
-      type: String,
-      default: "",
-    },
-  },
-  mounted() {
-    console.log("mounted");
-  },
-  setup() {
-    const keycloak = inject("$keycloak");
-    const store = useStore();
-    //console.log(app.appContext.config.globalProperties.$keycloak);
-    // const handleLogout = () => {
-    //   console.log(
-    //     app.appContext.config.globalProperties.$keycloak.keycloak.logout({
-    //       redirectUri: window.location.origin,
-    //     })
-    //   );
-    // };
-    return {
-      name: keycloak.tokenParsed.name || "",
-      username: keycloak.tokenParsed.username || "",
-      displayName: computed(() => store.getters.getDisplayName),
-      displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
-      realm: computed(() => store.getters.getRealmName),
-    };
-  },
-});
+            return {
+                name,getNameInTitleCase
+            }
+        },
+    })
 </script>
-
-
 
 <route lang="yaml">
 meta:
-  layout: default
-  requiresAuth: true
+    layout: default
+    requiresAuth: true
 </route>

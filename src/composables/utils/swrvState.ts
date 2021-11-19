@@ -12,7 +12,7 @@ const STATES = {
 export default function (data, error, isValidating) {
     const state = ref('idle')
     watchEffect(() => {
-        if (data.value && isValidating.value) {
+        if (data.value && isValidating?.value) {
             state.value = STATES.VALIDATING
             return
         }
@@ -30,7 +30,7 @@ export default function (data, error, isValidating) {
         }
         if (data.value === undefined && error) {
             state.value = STATES.ERROR
-            return
+            
         }
     })
 

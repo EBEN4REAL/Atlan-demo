@@ -1,9 +1,7 @@
-import { useAPI } from "~/api/useAPI";
-import swrvState from "~/composables/utils/swrvState";
 import { computed } from "vue"
-import { fetcher, getAPIPath } from "~/api";
 import useSWRV, { IConfig } from "swrv";
-import { DELETE_API_KEY, GET_API_KEYS } from "~/api/keyMaps/auth/apiKeys";
+import swrvState from "~/composables/utils/swrvState";
+import { fetcher, getAPIPath } from "~/api";
 
 export default function useAPIKeys(config?: IConfig) {
     const param = {
@@ -43,14 +41,6 @@ export default function useAPIKeys(config?: IConfig) {
         config,
     );
 
-    const createNewAPI = (body: any) => {
-        useAPI(GET_API_KEYS, "POST", { cache: false, body });
-    }
-
-    const deleteAPIKey = (id: string) => {
-        useAPI(DELETE_API_KEY, "POST", { pathVariables: { id }, cache: false });
-    }
-
     const getUpdatedAPI = () => {
         mutateApiList();
     }
@@ -67,11 +57,11 @@ export default function useAPIKeys(config?: IConfig) {
 
     const { state, STATES } = swrvState(data, error, isValidating);
     const { state: roleState, STATES: roleSTATES } = swrvState(rolesData, rolesError, isRoleValidate);
-    var apiList = computed(() => data.value?.results?.records ?? []);
-    const AdminrolesId = computed(() => rolesData.value?.results.filter((role: any) => role.name === "$admin")[0].id ?? "")
+    const apiList = computed(() => data.value?.results?.records ?? []);
+    const AdminrolesId = computed(() => rolesData.value?.results?.filter((role: any) => role.name === "$admin")[0]?.id ?? "")
 
     return {
-        apiList: apiList,
+        apiList,
         mutateApiList,
         state,
         STATES,
@@ -82,8 +72,6 @@ export default function useAPIKeys(config?: IConfig) {
         AdminrolesId,
         roleState,
         roleSTATES,
-        createNewAPI,
-        deleteAPIKey,
         searchAPI,
         resetSearch
     }

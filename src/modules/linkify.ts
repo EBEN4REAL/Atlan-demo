@@ -1,8 +1,7 @@
-import linkify from "vue-linkify";
+import linkify from 'vue-linkify'
 
-import { UserModule } from "~/types";
+import { UserModule } from '~/types'
+
 export const install: UserModule = ({ app }) => {
-
-    app.directive('linkified', linkify);
-
-};
+    app.directive('linkified', linkify)
+}

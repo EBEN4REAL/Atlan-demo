@@ -13,152 +13,152 @@ export const downloadMetadata = {
       </SPSSODescriptor>
     </EntityDescriptor>
   
-    `
-};
+    `,
+}
 
 const googleDefaultConfig = {
-    displayName: "Log in with Google",
+    displayName: 'Sign in with Google',
     attributeList: [
         {
-            userAttr: "email",
-            idpAttr: "email",
-            isSystem: true
+            userAttr: 'email',
+            idpAttr: 'email',
+            isSystem: true,
         },
         {
-            userAttr: "firstName",
-            idpAttr: "firstName",
-            isSystem: true
+            userAttr: 'firstName',
+            idpAttr: 'firstName',
+            isSystem: true,
         },
         {
-            userAttr: "lastName",
-            idpAttr: "lastName",
-            isSystem: true
-        }
-    ]
-};
+            userAttr: 'lastName',
+            idpAttr: 'lastName',
+            isSystem: true,
+        },
+    ],
+}
 const oktaDefaultConfig = {
-    displayName: "Log in with Okta",
+    displayName: 'Sign in with Okta',
     attributeList: [
         {
-            userAttr: "email",
-            idpAttr: "email",
-            isSystem: true
+            userAttr: 'email',
+            idpAttr: 'email',
+            isSystem: true,
         },
         {
-            userAttr: "firstName",
-            idpAttr: "firstName",
-            isSystem: true
+            userAttr: 'firstName',
+            idpAttr: 'firstName',
+            isSystem: true,
         },
         {
-            userAttr: "lastName",
-            idpAttr: "lastName",
-            isSystem: true
-        }
-    ]
-};
+            userAttr: 'lastName',
+            idpAttr: 'lastName',
+            isSystem: true,
+        },
+    ],
+}
 const azureDefaultConfig = {
-    displayName: "Log in with Microsoft",
+    displayName: 'Sign in with Microsoft',
     attributeList: [
         {
-            userAttr: "email",
-            idpAttr: "email",
-            isSystem: true
+            userAttr: 'email',
+            idpAttr: 'email',
+            isSystem: true,
         },
         {
-            userAttr: "firstName",
-            idpAttr: "firstName",
-            isSystem: true
+            userAttr: 'firstName',
+            idpAttr: 'firstName',
+            isSystem: true,
         },
         {
-            userAttr: "lastName",
-            idpAttr: "lastName",
-            isSystem: true
-        }
-    ]
-};
+            userAttr: 'lastName',
+            idpAttr: 'lastName',
+            isSystem: true,
+        },
+    ],
+}
 
 export const customSAMLDefaultConfig = {
-    displayName: "Login with SAML",
+    displayName: 'Login with SAML',
     attributeList: [
         {
-            userAttr: "email",
-            idpAttr: "email",
-            isSystem: true
+            userAttr: 'email',
+            idpAttr: 'email',
+            isSystem: true,
         },
         {
-            userAttr: "firstName",
-            idpAttr: "firstName",
-            isSystem: true
+            userAttr: 'firstName',
+            idpAttr: 'firstName',
+            isSystem: true,
         },
         {
-            userAttr: "lastName",
-            idpAttr: "lastName",
-            isSystem: true
-        }
-    ]
+            userAttr: 'lastName',
+            idpAttr: 'lastName',
+            isSystem: true,
+        },
+    ],
 }
 
 export const topSAMLProviders = [
     {
-        title: "Google",
-        alias: "google",
+        title: 'Google',
+        alias: 'google',
         isCustomSaml: false,
-        image: "/logo/google-icon.png",
+        image: '/logo/google-icon.png',
         ctaText: {
-            default: "Add"
+            default: 'Add',
         },
         defaultConfig: {
-            ...googleDefaultConfig
-        }
+            ...googleDefaultConfig,
+        },
     },
     {
-        title: "Azure AD",
-        alias: "azure",
+        title: 'Azure AD',
+        alias: 'azure',
         isCustomSaml: false,
-        image: "/logo/microsoft.png",
+        image: '/logo/microsoft.png',
         ctaText: {
-            default: "Add"
+            default: 'Add',
         },
         defaultConfig: {
-            ...azureDefaultConfig
-        }
+            ...azureDefaultConfig,
+        },
     },
     {
-        title: "Okta",
-        alias: "okta",
+        title: 'Okta',
+        alias: 'okta',
         isCustomSaml: false,
-        image: "/logo/okta2.png",
+        image: '/logo/okta2.png',
         ctaText: {
-            default: "Add"
+            default: 'Add',
         },
         defaultConfig: {
-            ...oktaDefaultConfig
-        }
-    }
-];
+            ...oktaDefaultConfig,
+        },
+    },
+]
 export const customSamlProvider = {
-    title: "SAML 2.0",
-    alias: "", // False alias means it needs to be set
+    title: 'SAML 2.0',
+    alias: '', // False alias means it needs to be set
     isCustomSaml: true,
     ctaText: {
-        default: "Add"
-    }
-};
+        default: 'Add',
+    },
+}
 
 export const mapperList = [
     {
-        userAttr: "email",
-        idpAttr: "email",
-        isSystem: true
+        userAttr: 'email',
+        idpAttr: 'email',
+        isSystem: true,
     },
     {
-        userAttr: "firstName",
-        idpAttr: "firstName",
-        isSystem: true
+        userAttr: 'firstName',
+        idpAttr: 'firstName',
+        isSystem: true,
     },
     {
-        userAttr: "lastName",
-        idpAttr: "lastName",
-        isSystem: true
-    }
-];
+        userAttr: 'lastName',
+        idpAttr: 'lastName',
+        isSystem: true,
+    },
+]

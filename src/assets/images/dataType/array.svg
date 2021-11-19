@@ -1,22 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <defs>
-    <style>
-      .cls-1 {
-        fill: #adb5bd;
-      }
-
-      .cls-2 {
-        fill: none;
-      }
-    </style>
-  </defs>
-  <g id="Layer_2" data-name="Layer 2">
-    <g id="Layer_2-2" data-name="Layer 2">
-      <g id="Array">
-        <path class="cls-1" d="M2,13V3H5V4.5H3.5v7H5V13Z"/>
-        <path class="cls-1" d="M14,13V3H11V4.5h1.5v7H11V13Z"/>
-        <rect id="Transparent_path" data-name="Transparent path" class="cls-2" width="16" height="16"/>
-      </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+    <g id="Layer_2" data-name="Layer 2">
+        <g id="Array">
+            <path d="M2,13V3H5V4.5H3.5v7H5V13Z" style="fill:currentColor"/>
+            <path d="M14,13V3H11V4.5h1.5v7H11V13Z" style="fill:currentColor"/>
+            <rect id="Transparent_path" data-name="Transparent path" width="16" height="16" style="fill:none"/>
+        </g>
     </g>
-  </g>
 </svg>

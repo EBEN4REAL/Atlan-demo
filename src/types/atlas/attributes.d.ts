@@ -1,3 +1,5 @@
+import { Components } from "~/api/metastore";
+
 export interface BaseAttributes {
     name?: string;
     description?: string;

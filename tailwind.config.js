@@ -1,58 +1,83 @@
 // tailwind.config.js
 
 module.exports = {
-  jit: true,
-  important: true,
-  purge: {
-    safeList: [],
-    content: [
-      "./index.html",
-      "./src/**/*.{vue,js,ts,jsx,tsx}",
-      // etc.
+    jit: true,
+    important: true,
+    purge: {
+        safeList: [],
+        content: [
+            './index.html',
+            './src/**/*.{vue,js,ts,jsx,tsx}',
+            // etc.
+        ],
+    },
+    darkMode: 'class',
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Avenir'],
+                serif: ['Avenir'],
+            },
+            colors: {
+                primary: {
+                    DEFAULT: '#5277D7',
+                    focus: '#BDCDF4',
+                    light: '#F4F6FD',
+                },
+                body: '#fff',
+                gray: {
+                    DEFAULT: '#3E4359',
+                    light: '#F3F3F3',
+                    500: '#6F7590',
+                    300: '#E6E6EB',
+                    100: '#FAFAFA',
+                },
+                success: {
+                    DEFAULT: '#00a680',
+                    muted: '#c9f9ee',
+                },
+                error: {
+                    DEFAULT: '#DC5252',
+                    muted: '#f9dcd2',
+                },
+                alert: {
+                    DEFAULT: '#ffb119',
+                    muted: '#ffefd0',
+                },
+                warning: {
+                    DEFAULT: '#ff751f',
+                    light: '#FFF8E5',
+                },
+                blueGray: {
+                    light: '#e8e8f8',
+                    DEFAULT: '#64748B',
+                },
+                secondary: {
+                    DEFAULT: '#AC52D7',
+                    light: '#F9F4FD',
+                },
+                purple: {
+                    DEFAULT: '#6D6DDA',
+                },
+            },
+            outline: {
+                primary: ['1px solid #5277D7', '0px'],
+            },
+        },
+    },
+    variants: {
+        extend: {
+            animation: ['motion-safe'],
+            borderWidth: ['last'],
+            fontWeight: ['hover'],
+            borderColor: ['hover', 'focus'],
+            display: ['group-hover'],
+            textColor: ['group-focus'],
+            fill: ['group-hover'],
+        },
+    },
+    plugins: [
+        require('@tailwindcss/line-clamp'),
+        require('@tailwindcss/typography'),
     ],
-  },
-  darkMode: "class",
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ["Avenir"],
-        serif: ["Avenir"],
-      },
-      colors: {
-        primary: {
-          100: "#d2d4f6",
-          200: "#a6a8ed",
-          300: "#797de4",
-          400: "#4d51db",
-          500: "#2026d2",
-          600: "#1a1ea8",
-          700: "#13177e",
-          800: "#0d0f54",
-          900: "#06082a",
-        },
-        sidebar: "#f7f6f3",
-        dark: {
-          100: "#d2d2d3",
-          200: "#a5a6a7",
-          300: "#79797b",
-          400: "#4c4d4f",
-          500: "#1f2023",
-          600: "#191a1c",
-          700: "#131315",
-          800: "#0c0d0e",
-          900: "#060607",
-        },
-        body: "#f8f8fd",
-      },
-    },
-  },
-  variants: {
-    extend: {
-      animation: ['motion-safe'],
-    },
-  }, 
-  plugins: [
-    require('@tailwindcss/line-clamp'),
-    require('@tailwindcss/typography'),
-  ],
 }

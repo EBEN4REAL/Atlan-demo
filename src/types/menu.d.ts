@@ -7,6 +7,7 @@ export type Menu = {
   url?: string;
   isDisabled?: boolean;
   isDeleted?: boolean;
+  typeNames?: string[],
 };
 
 export type MenuArray = Menu[];

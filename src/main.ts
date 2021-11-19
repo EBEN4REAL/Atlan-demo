@@ -1,74 +1,106 @@
-
-import Vue, { createApp } from 'vue'
+import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
 import { setupLayouts } from 'virtual:generated-layouts'
-import { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
+import { createHead } from '@vueuse/head'
+import Keycloak from 'keycloak-js'
+import { createPinia } from 'pinia'
+
 import App from './App.vue'
 
+import '~/styles/antd.less'
+import '~/styles/index.less'
 
-import "~/styles/index.less";
-
-import { TENANT_FETCH_DATA } from './constant/store_types'
-import { useStore } from '~/store'
+import { getBasePath, getEnv } from './modules/__env'
+import { useAuthStore } from '~/store/auth'
+import { inputFocusDirective } from '~/utils/directives/input-focus'
+import { authDirective } from './utils/directives/auth'
 
 const app = createApp(App)
+const head = createHead()
+app.use(head)
+app.use(createPinia())
 
-// setup up pages with layouts
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
+const authStore = useAuthStore()
 
-//auto install all the plugins in modules/* folder
-Object.values(import.meta.globEager('./modules/*.ts')).map(i => i.install?.({ app, router, routes }))
+const keycloak = Keycloak({
+    url: `${getBasePath()}/auth`,
+    realm: getEnv().DEFAULT_REALM,
+    clientId: getEnv().DEFAULT_CLIENT_ID,
+})
 
-app.use(router).mount('#app');
-
-
-const fn = async () => {
-  return await app.config.globalProperties.$keycloak.init({
-    pkceMethod: "S256",
-    onLoad: "check-sso",
-    silentCheckSsoRedirectUri: window.location.origin + "/check-sso.html",
-  });
-};
-
-// const debug = process.env.NODE_ENV !== "production";
-router.beforeEach(async (to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!from.name) {
-      try {
-        const timeout = (prom: Promise<any>, time: number) =>
-          Promise.race([prom, new Promise((_r, rej) => setTimeout(rej, time)),]);
-        const auth = await timeout(fn(), 10000);
-        if (auth) {
-          const store = useStore();
-          store.dispatch(TENANT_FETCH_DATA);
-          next();
+keycloak
+    .init({
+        pkceMethod: 'S256',
+        onLoad: 'check-sso',
+        silentCheckSsoRedirectUri: `${window.location.origin}/check-sso.html`,
+    })
+    .then(async (auth) => {
+        authStore.setIsAuthenticated(auth)
+        if (!auth) {
+            window.location.replace(keycloak.createLoginUrl())
         } else {
-          console.log("login");
-          window.location.replace(
-            app.config.globalProperties.$keycloak.createLoginUrl()
-          );
+            authStore.setToken({
+                token: keycloak.token,
+                decodedToken: keycloak.tokenParsed,
+            })
 
+            keycloak.onAuthRefreshSuccess = () =>
+                authStore.setToken({
+                    token: keycloak.token,
+                    decodedToken: keycloak.tokenParsed,
+                })
+
+            keycloak.onTokenExpired = async () => {
+                try {
+                    await keycloak.updateToken(60)
+                    authStore.setToken({
+                        token: keycloak.token,
+                        decodedToken: keycloak.tokenParsed,
+                    })
+                } catch (error) {
+                    authStore.setFailed(true)
+                }
+            }
+
+            setInterval(() => {
+                keycloak.updateToken(60)
+            }, 6000)
+
+            app.config.globalProperties.$keycloak = keycloak
+            app.provide('$keycloak', keycloak)
+
+            // auto install all the plugins in modules/* folder
+            Object.values(import.meta.globEager('./modules/*.ts')).map((i) => {
+                i.install?.({ app, router, routes })
+            })
+            inputFocusDirective(app)
+            authDirective(app)
+            ;(window as any).analytics.identify(authStore?.id, {
+                name: authStore.name || '',
+                firstName: authStore.firstName,
+                lastName: authStore.lastName,
+                email: authStore.email || '',
+                username: authStore.username || '',
+                roles: authStore.roles || [],
+            })
+
+            app.use(router).mount('#app')
         }
-      } catch (err) {
-        console.log("login", err);
-        console.dir("error in init", err);
-        app.config.globalProperties.$error("Authentication Server is not available. Please try again");
-        return;
-        // window.location.replace("/not-found");
-      }
-    } else {
-      if (app.config.globalProperties.$keycloak.authenticated) {
-        next();
-      } else {
-        window.location.replace(
-          app.config.globalProperties.$keycloak.createLoginUrl()
-        );
-      }
-    }
-  } else {
-    next();
-  }
-});
+    })
+    .catch(() => {
+        authStore.setFailed(true)
+        authStore.setIsAuthenticated(false)
+    })
 
+router.beforeEach(async (to, from, next) => {
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+        if (authStore.isAuthenticated) {
+            return next()
+        }
+        return window.location.reload()
+    }
+    return next()
+})

@@ -1,5 +1,7 @@
 <template>
-    <section class="flex items-center h-32 p-6 border rounded shadow gap-x-5">
+    <section
+        class="flex items-center h-32 p-6 border rounded shadow gap-x-5 addCard"
+    >
         <div class="">
             <AtlanIcon icon="Slack" class="h-16" />
         </div>
@@ -40,4 +42,10 @@
     })
 </script>
 
-<style scoped></style>
+<style scoped>
+    .addCard {
+        background: url('~/assets/images/integrations/add-slack-bg.svg')
+            no-repeat;
+        background-size: contain;
+    }
+</style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="border shadow-sm drop-shadow">
+    <div class="border shadow-sm drop-shadow wrapper">
         <section class="flex items-center p-6 border-b gap-x-3">
             <AtlanIcon icon="Slack" class="h-10" />
             <h2 class="flex-grow text-lg font-bold">{{ meta.name }}</h2>
@@ -54,6 +54,7 @@
     } from '@/integrations/useIntegrations'
 
     export default defineComponent({
+        name: 'SlackIntegrationCard',
         components: { AtlanButton },
         setup() {
             const { name: tenantName } = useTenantData()
@@ -86,4 +87,9 @@
     })
 </script>
 
-<style scoped></style>
+<style scoped>
+    .wrapper {
+        background: url('~/assets/images/integrations/slack-bg.svg') no-repeat
+            99.5% 3%;
+    }
+</style>

@@ -12,9 +12,26 @@
                 <SearchAdvanced
                     v-model="personaParams.searchString"
                     :autofocus="true"
+                    :placeholder="`Search ${totalPersonasCount} personas`"
                 ></SearchAdvanced>
             </div>
-            <div class="mt-4 persona-list-wrapper">
+            <div
+                v-if="!totalPersonasCount"
+                class="flex items-center justify-center mt-4  persona-list-wrapper"
+            >
+                No personas exist.
+            </div>
+            <div
+                v-if="!filteredPersonas.length && personaParams.searchString"
+                class="flex items-center justify-center mt-4  persona-list-wrapper"
+            >
+                No personas found with
+                <span class="italic">{{ personaParams.searchString }}</span>
+            </div>
+            <div
+                v-if="filteredPersonas.length"
+                class="mt-4 persona-list-wrapper"
+            >
                 <div
                     v-for="persona in filteredPersonas"
                     :key="persona.id"
@@ -65,7 +82,12 @@ export default defineComponent({
     setup(props, { emit }) {
         const searchTerm = ref('')
         const personaParams = ref({ searchString: '' })
-        const { filteredPersonas, isLoading } = usePersonaList(personaParams)
+        const {
+            filteredPersonas,
+            isLoading,
+            filteredPersonasCount,
+            totalPersonasCount,
+        } = usePersonaList(personaParams)
         const { selectedPersonas } = useVModels(props, emit)
         const updateSelectedPersonas = (event) => {
             if (
@@ -90,6 +112,8 @@ export default defineComponent({
             updateSelectedPersonas,
             personaParams,
             isLoading,
+            filteredPersonasCount,
+            totalPersonasCount,
         }
     },
 })

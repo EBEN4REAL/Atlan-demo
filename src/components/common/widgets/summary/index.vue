@@ -1,70 +1,76 @@
 <template>
-    <div
-        class="grid gap-y-3 gap-x-16"
-        :class="
-            asset.typeName == 'Table' || asset.typeName == 'TablePartition'
-                ? 'summary-grid-3'
-                : 'summary-grid-2'
-        "
-    >
-        <SQL
-            v-if="
-                asset.typeName == 'View' || asset.typeName == 'MaterialisedView'
-            "
-            :sql="definition(asset)"
-        >
-            <div class="flex flex-col text-sm cursor-pointer">
-                <span class="mb-2 text-sm text-gray-500">Definition</span>
-                <span class="text-primary">SQL</span>
-            </div>
-        </SQL>
-        <RowInfoHoverCard
-            v-if="
-                asset.typeName == 'Table' || asset.typeName == 'TablePartition'
-            "
-            :image="getConnectorImage(asset)"
-            :row-count="rowCount(asset)"
-            :size-bytes="sizeBytes(asset)"
-            :source-updated-at="sourceUpdatedAt(asset)"
-            :source-updated-at-raw="sourceUpdatedAt(asset, true)"
-            :source-created-at="sourceCreatedAt(asset)"
-            :source-created-at-raw="sourceCreatedAt(asset, true)"
-        >
-            <div class="flex flex-col text-sm cursor-pointer">
-                <span class="mb-1 text-sm text-gray-500">Rows</span>
-                <span class="text-gray-700">{{ rowCount(asset) }}</span>
-            </div>
-        </RowInfoHoverCard>
-        <div class="flex flex-col text-sm">
-            <span class="mb-1 text-sm text-gray-500">Columns</span>
-            <span class="text-gray-700">{{ columnCount(asset) }}</span>
+    <div class="p-4 bg-white rounded">
+        <div class="flex items-center mb-4">
+            <AtlanIcon icon="TableSummary" class="w-auto h-8 mr-3" /><span
+                class="text-base font-bold text-gray"
+                >{{ getSummaryVariants(asset)?.label }} Summary</span
+            >
         </div>
-        <div class="max-w-screen-md">
-            <div class="flex flex-col">
-                <p class="mb-1 text-sm text-gray-500">Description</p>
-                <Description v-model="localDescription" />
+        <div class="flex flex-col gap-y-3">
+            <div class="flex gap-x-16">
+                <SQL
+                    v-if="
+                        asset.typeName == 'View' ||
+                        asset.typeName == 'MaterialisedView'
+                    "
+                    :sql="definition(asset)"
+                >
+                    <div class="flex flex-col text-sm cursor-pointer">
+                        <span class="mb-2 text-sm text-gray-500"
+                            >Definition</span
+                        >
+                        <span class="text-primary">SQL</span>
+                    </div>
+                </SQL>
+                <RowInfoHoverCard
+                    v-if="
+                        asset.typeName == 'Table' ||
+                        asset.typeName == 'TablePartition'
+                    "
+                    :image="getConnectorImage(asset)"
+                    :row-count="rowCount(asset)"
+                    :size-bytes="sizeBytes(asset)"
+                    :source-updated-at="sourceUpdatedAt(asset)"
+                    :source-updated-at-raw="sourceUpdatedAt(asset, true)"
+                    :source-created-at="sourceCreatedAt(asset)"
+                    :source-created-at-raw="sourceCreatedAt(asset, true)"
+                >
+                    <div class="flex flex-col text-sm cursor-pointer">
+                        <span class="mb-1 text-sm text-gray-500">Rows</span>
+                        <span class="text-gray-700">{{ rowCount(asset) }}</span>
+                    </div>
+                </RowInfoHoverCard>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-sm text-gray-500">Columns</span>
+                    <span class="text-gray-700">{{ columnCount(asset) }}</span>
+                </div>
             </div>
-        </div>
-        <div
-            :class="
-                asset.typeName == 'Table' || asset.typeName == 'TablePartition'
-                    ? 'status-grid'
-                    : ''
-            "
-            class="flex flex-col"
-        >
-            <p class="mb-1 text-sm text-gray-500">Certificate</p>
+            <div>
+                <div class="flex flex-col">
+                    <p class="mb-1 text-sm text-gray-500">Description</p>
+                    <Description v-model="localDescription" />
+                </div>
+            </div>
+            <div class="flex gap-x-32">
+                <div class="flex flex-col">
+                    <p class="mb-1 text-sm text-gray-500">Certificate</p>
 
-            <Certificate
-                v-model="localCertificate"
-                :selected-asset="asset"
-                @change="handleChangeCertificate"
-            />
-        </div>
+                    <Certificate
+                        v-model="localCertificate"
+                        :selected-asset="asset"
+                        @change="handleChangeCertificate"
+                    />
+                </div>
 
-        <div v-if="asset.guid" class="flex flex-col">
-            <p class="mb-1 text-sm text-gray-500">Owners</p>
-            <Owners v-model="localOwners" @change="handleOwnersChange" />
+                <div v-if="asset.guid" class="flex flex-col">
+                    <p class="mb-1 text-sm text-gray-500">Owners</p>
+                    <Owners
+                        v-model="localOwners"
+                        @change="handleOwnersChange"
+                    />
+                </div>
+            </div>
+            <slot></slot>
         </div>
     </div>
 </template>
@@ -207,15 +213,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .summary-grid-2 {
-        grid-template-columns: fit-content(300px) 1fr;
-    }
-    .summary-grid-3 {
-        grid-template-columns: fit-content(300px) fit-content(300px) 1fr;
-    }
-    .status-grid {
-        grid-column: span 2;
-    }
-</style>

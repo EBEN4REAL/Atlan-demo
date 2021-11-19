@@ -132,8 +132,24 @@ export default function useAssetInfo() {
     const getProfileTabs = (asset: assetInterface) => {
         return getTabs(profileTabs, assetType(asset))
     }
+
+    const getVariants = (list, typeName: string) => {
+        return list.find((i) => {
+            let flag = true
+            if (i.includes) {
+                if (
+                    !i.includes.some(
+                        (t) => t.toLowerCase() === typeName?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
+            return flag
+        })
+    }
     const getSummaryVariants = (asset: assetInterface) => {
-        return getTabs(summaryVariants, assetType(asset))
+        return getVariants(summaryVariants, assetType(asset))
     }
 
     const getActions = (asset) => {

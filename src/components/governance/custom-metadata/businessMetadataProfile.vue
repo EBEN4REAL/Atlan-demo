@@ -26,19 +26,13 @@
         </div>
         <div
             class="px-4 pt-3 pb-8 overflow-y-auto"
-            style="height: calc(100% - 3rem)"
+            style="height: calc(100vh - 190px)"
         >
             <div v-if="localBm.attributeDefs.length" class="py-5">
                 <div class="flex items-center justify-between mb-4">
                     <div class="mr-4">
                         <div
-                            class="
-                                relative
-                                flex
-                                items-stretch
-                                w-full
-                                overflow-hidden
-                            "
+                            class="relative flex items-stretch w-full overflow-hidden "
                         >
                             <a-input
                                 v-model:value="attrsearchText"

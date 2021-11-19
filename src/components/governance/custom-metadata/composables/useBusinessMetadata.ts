@@ -38,16 +38,9 @@ export default function useBusinessMetadata() {
   const selectedBm = ref(null)
   const searchText = ref('')
 
-  const businessMetadataList = computed(() => store.getCustomMetadataList)
+  const finalBusinessMetadataList = computed(() => store.getCustomMetadataList)
   const isLoading = computed(() => store.isLoading)
   const error = computed(() => store.error)
-
-  // TODO might use store for loading and error if needed
-
-  const finalBusinessMetadataList = computed(() => [
-    ...(businessMetadataList.value ? businessMetadataList.value : []),
-  ])
-
 
 
   const handleSelectBm = (item: any) => {
@@ -153,12 +146,21 @@ export default function useBusinessMetadata() {
   //* Hooks
   if (sortedSearchedBM.value.length !== 0) selectedBm.value = sortedSearchedBM.value[0]
   watch(finalBusinessMetadataList, (n) => {
-    if (n.length && !selectedBm.value) {
+    console.log("GOT CHANGED");
+
+    // if (n.length && !selectedBm.value) { // if not selected, select
+    //   selectedBm.value = JSON.parse(
+    //     JSON.stringify(sortedSearchedBM.value[0])
+    //   )
+    // }
+    if (n.length && selectedBm.value) {
+      // refresh selectedBM 
+      console.log(selectedBm.value.guid, n[0].attributeDefs[0].displayName, 'jbjhbbbbhhbh');
       selectedBm.value = JSON.parse(
-        JSON.stringify(sortedSearchedBM.value[0])
+        JSON.stringify(n?.find(x => x.guid === selectedBm.value.guid))
       )
     }
-  })
+  }, { deep: true })
 
   // Utility functions 
   const getDefaultAttributeTemplate = () =>
@@ -170,7 +172,6 @@ export default function useBusinessMetadata() {
 
 
   return {
-    businessMetadataList,
     error,
     isLoading,
     finalBusinessMetadataList,

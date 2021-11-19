@@ -20,15 +20,19 @@ export default function useTypedefs() {
   )
   const typedefStore = useTypedefStore()
 
-  const fillStore = (theData) => {
+  const fillStore = (theData, where) => {
+    console.log('store filled', where);
+
     typedefStore.setClassificationList(theData?.classificationDefs || [])
     typedefStore.setCustomMetadata(theData?.businessMetadataDefs || [])
     typedefStore.setEnumList(theData?.enumDefs || [])
   }
 
-  if (data.value) fillStore(data.value) // if cached then set data
+  if (data.value) fillStore(data.value, 'root') // if cached then set data
   watch(data, (newValue) => {
-    fillStore(newValue)
+    console.log(newValue);
+
+    fillStore(newValue, 'after update')
   })
 
 

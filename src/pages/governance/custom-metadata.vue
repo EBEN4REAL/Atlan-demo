@@ -124,7 +124,6 @@
                 searchText,
                 handleSelectBm,
                 onUpdate,
-                businessMetadataList,
                 error,
                 isLoading,
                 searchedBusinessMetadataList,
@@ -133,7 +132,6 @@
             } = useBusinessMetadata()
 
             return {
-                businessMetadataList,
                 error,
                 isLoading,
                 finalBusinessMetadataList,

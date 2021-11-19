@@ -502,29 +502,6 @@
                         </template>
                     </a-dropdown>
                 </div>
-
-                <!-- </template> -->
-
-                <!-- <a-dropdown
-                    v-if="variable.type === 'dropdown'"
-                    :visible="customVariableSelectKey === variable.key"
-                    :trigger="['focus']"
-                >
-                    <template #overlay>
-                        <div class="p-4" style="width: 215px">
-                            <a-select
-                                v-model:value="variable.value"
-                                v-if="variable.type === `dropdown`"
-                                mode="tags"
-                                style="width: 100%"
-                                :token-separators="[',']"
-                                placeholder="Enter to add values"
-                                @change="handleSelectInputChange(variable)"
-                                :options="variable.options"
-                            ></a-select>
-                        </div>
-                    </template>
-                </a-dropdown> -->
             </div>
         </div>
     </div>

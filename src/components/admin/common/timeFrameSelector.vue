@@ -135,14 +135,12 @@
             ])
             const rangeChecked = ref(false)
             const triggerChange = () => {
-                if (!rangeChecked.value) {
-                    emit(
-                        'change',
-                        timeFrameOptions.value.find(
-                            (e) => e.value === modelValue.value.value
-                        )?.ISOVal
-                    )
-                }
+                emit(
+                    'change',
+                    timeFrameOptions.value.find(
+                        (e) => e.value === modelValue.value.value
+                    )?.ISOVal
+                )
                 rangeChecked.value = false
             }
             const convertUTCRangeToString = (val: any[] = []) => {

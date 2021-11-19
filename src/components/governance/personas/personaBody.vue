@@ -180,7 +180,9 @@
     import {
         selectedPersonaDirty,
         addPolicy,
+        savePolicyLocally,
         deletePolicy,
+        deletePolicyLocally,
         policyEditMap,
         setEditFlag,
         removeEditFlag,
@@ -229,7 +231,8 @@
                     key: messageKey,
                 })
                 try {
-                    await savePolicy(type, id)
+                    await savePolicy()
+                    savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
                         duration: 1.5,
@@ -252,7 +255,8 @@
                     key: messageKey,
                 })
                 try {
-                    await deletePolicy(type, id)
+                    await deletePolicy()
+                    deletePolicyLocally(type, id)
                     message.success({
                         content: 'Policy deleted',
                         duration: 1.5,

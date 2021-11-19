@@ -67,103 +67,109 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, watch, computed } from 'vue'
-    import { message } from 'ant-design-vue'
-    import dayjs from 'dayjs'
-    import map from '~/constant/accessControl/map'
-    import DefaultLayout from '~/components/admin/layout.vue'
-    import AtlanBtn from '@/UI/button.vue'
-    import QueryLogTable from '@/governance/queryLogs/queryTable.vue'
-    import QueryPreviewDrawer from '~/components/governance/queryLogs/queryDrawer.vue'
-    import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
-    import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
-    import { useQueryLogs } from './composables/useQueryLogs'
+import { defineComponent, ref, Ref, watch, computed } from 'vue'
+import { message } from 'ant-design-vue'
+import dayjs from 'dayjs'
+import map from '~/constant/accessControl/map'
+import DefaultLayout from '~/components/admin/layout.vue'
+import AtlanBtn from '@/UI/button.vue'
+import QueryLogTable from '@/governance/queryLogs/queryTable.vue'
+import QueryPreviewDrawer from '~/components/governance/queryLogs/queryDrawer.vue'
+import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
+import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
+import { useQueryLogs } from './composables/useQueryLogs'
 
-    export default defineComponent({
-        name: 'ApiKeysView',
-        components: {
-            DefaultLayout,
-            AtlanBtn,
-            QueryLogTable,
-            TimeFrameSelector,
-            QueryPreviewDrawer,
-        },
-        setup() {
-            /** LOCAL STATE */
-            const searchText: Ref<string> = ref('')
-            const isAPIKeyDrawerVisible: Ref<boolean> = ref(false)
-            const timeFrame = ref('30 days')
-            const selectedQuery = ref({})
-            const isQueryPreviewDrawerVisible = ref(false)
-            const gte = ref(
-                dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
-            )
-            const lt = ref(dayjs().format())
+export default defineComponent({
+    name: 'ApiKeysView',
+    components: {
+        DefaultLayout,
+        AtlanBtn,
+        QueryLogTable,
+        TimeFrameSelector,
+        QueryPreviewDrawer,
+    },
+    setup() {
+        /** LOCAL STATE */
+        const searchText: Ref<string> = ref('')
+        const isAPIKeyDrawerVisible: Ref<boolean> = ref(false)
+        const timeFrame = ref('30 days')
+        const selectedQuery = ref({})
+        const isQueryPreviewDrawerVisible = ref(false)
+        const gte = ref(
+            dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
+        )
+        const lt = ref(dayjs().format())
 
-            const {
-                list: queryList,
-                mutateBody,
-                refetchList,
-                isLoading,
-                totalCount,
-            } = useQueryLogs(gte, lt)
+        const {
+            list: queryList,
+            mutateBody,
+            refetchList,
+            isLoading,
+            totalCount,
+        } = useQueryLogs(gte, lt)
 
-            const handleRangePickerChange = (e) => {
-                console.log(e)
-                const gte = e[0]
-                const lt = e[1]
-                mutateBody({ gte, lt })
-                refetchList()
+        const handleRangePickerChange = (e) => {
+            console.log(e)
+            const gte = e[0]
+            const lt = e[1]
+            mutateBody({ gte, lt })
+            refetchList()
+        }
+        watch(
+            [queryList, isLoading],
+            () => {
+                console.log(queryList.value, isLoading.value, 'logs')
+            },
+            { immediate: true }
+        )
+
+        const toggleQueryPreviewDrawer = (
+            val: boolean | undefined = undefined
+        ) => {
+            if (val === undefined)
+                isQueryPreviewDrawerVisible.value =
+                    !isQueryPreviewDrawerVisible.value
+            else isQueryPreviewDrawerVisible.value = val
+        }
+
+        const handleSearch = () => {}
+        const setSelectedQuery = (query: Object) => {
+            selectedQuery.value = query
+        }
+        const handleSelectQuery = (query: Object) => {
+            if (
+                isQueryPreviewDrawerVisible.value &&
+                query._id === selectedQuery.value._id
+            ) {
+                isQueryPreviewDrawerVisible.value = false
+            } else if (!isQueryPreviewDrawerVisible.value) {
+                isQueryPreviewDrawerVisible.value = true
             }
-            watch(
-                [queryList, isLoading],
-                () => {
-                    console.log(queryList.value, isLoading.value, 'logs')
-                },
-                { immediate: true }
-            )
+            setSelectedQuery(query)
+        }
+        const selectedRowKeys = computed(() =>
+            selectedQuery.value?._id !== undefined
+                ? [selectedQuery.value?._id]
+                : []
+        )
 
-            const toggleQueryPreviewDrawer = (
-                val: boolean | undefined = undefined
-            ) => {
-                if (val === undefined)
-                    isQueryPreviewDrawerVisible.value =
-                        !isQueryPreviewDrawerVisible.value
-                else isQueryPreviewDrawerVisible.value = val
-            }
-
-            const handleSearch = () => {}
-            const setSelectedQuery = (query: Object) => {
-                selectedQuery.value = query
-            }
-            const handleSelectQuery = (query: Object) => {
-                if (!isQueryPreviewDrawerVisible.value)
-                    isQueryPreviewDrawerVisible.value = true
-                setSelectedQuery(query)
-            }
-            const selectedRowKeys = computed(() =>
-                selectedQuery.value?._id !== undefined
-                    ? [selectedQuery.value?._id]
-                    : []
-            )
-
-            return {
-                selectedRowKeys,
-                isQueryPreviewDrawerVisible,
-                selectedQuery,
-                queryList,
-                totalCount,
-                isLoading,
-                handleSearch,
-                handleSelectQuery,
-                toggleQueryPreviewDrawer,
-                handleRangePickerChange,
-                timeFrame,
-                searchText,
-                isAPIKeyDrawerVisible,
-                NewAPIKeyIllustration,
-                map,
-            }
-        },
-    })
+        return {
+            selectedRowKeys,
+            isQueryPreviewDrawerVisible,
+            selectedQuery,
+            queryList,
+            totalCount,
+            isLoading,
+            handleSearch,
+            handleSelectQuery,
+            toggleQueryPreviewDrawer,
+            handleRangePickerChange,
+            timeFrame,
+            searchText,
+            isAPIKeyDrawerVisible,
+            NewAPIKeyIllustration,
+            map,
+        }
+    },
+})
 </script>

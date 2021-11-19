@@ -17,7 +17,7 @@
                     :is="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
-                    @preview="emit('preview', $event)"
+                    @preview="$emit('preview', $event)"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -67,7 +67,8 @@
                 required: false,
             },
         },
-        setup(props, {emit}) {
+        emits: ['preview'],
+        setup(props) {
             const { asset } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() => getAllowedActions(asset.value))
@@ -75,8 +76,6 @@
             provide('selectedAsset', asset)
 
             const { getProfileTabs } = useAssetInfo()
-
-            const refs: { [key: string]: any } = ref({})
 
             const activeKey = ref()
             const route = useRoute()
@@ -91,9 +90,6 @@
             })
 
             return {
-                emit,
-                refs,
-                asset,
                 getProfileTabs,
                 activeKey,
                 handleChangeTab,

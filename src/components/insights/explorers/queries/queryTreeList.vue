@@ -27,7 +27,14 @@
                         />
                         <div
                             v-else-if="item.title === 'Load more'"
-                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
+                            class="
+                                flex flex-row
+                                w-full
+                                text-sm
+                                font-bold
+                                leading-5
+                                text-primary
+                            "
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -148,6 +155,13 @@
         }
         :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
             @apply bg-gray-light;
+        }
+        :global(.ant-tree .ant-tree-node-content-wrapper) {
+            padding: 0 !important;
+            overflow: hidden;
+        }
+        :global(.ant-tree .ant-tree-treenode) {
+            @apply p-0 !important;
         }
     }
 </style>

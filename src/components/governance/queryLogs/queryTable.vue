@@ -1,9 +1,9 @@
 <template>
     <div>
         <a-table
-            class="overflow-hidden border rounded-lg apikey-list"
+            class="overflow-hidden border rounded-lg"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :style="{ height: 'calc(100vh - 20rem)' }"
+            :style="{ height: 'calc(100vh - 20rem)', cursor: 'pointer' }"
             :table-layout="'fixed'"
             :pagination="false"
             :class="$style.table_custom"
@@ -298,6 +298,7 @@ export default defineComponent({
                 key: 'QueryInfo',
                 ellipsis: true,
                 slots: { customRender: 'queryInfo' },
+                width: 500,
             },
             {
                 title: 'Execution details',
@@ -307,9 +308,9 @@ export default defineComponent({
             {
                 title: 'User',
                 key: 'user',
-
                 ellipsis: true,
                 slots: { customRender: 'user' },
+                width: 120,
             },
             {
                 title: 'Timestamp',

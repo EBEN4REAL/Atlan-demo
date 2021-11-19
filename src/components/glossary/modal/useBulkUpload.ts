@@ -7,6 +7,7 @@ import {
 } from '~/composables/workflow/useWorkflowList'
 
 export const isWorkflowRunning = ref(false)
+export const workflowName = ref('')
 const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
     const body = computed(() => ({
         metadata: {
@@ -85,6 +86,7 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
         const { data } = runWorkflowByName(runBody, true)
 
         watch(data, () => {
+            isWorkflowRunning.value = true
             message.success({
                 content: `Starting bulk upload!`,
                 duration: 2,
@@ -103,6 +105,7 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
                     key: `bulkUpload`,
                     duration: 2,
                 })
+                isWorkflowRunning.value = true
             } else {
                 const errMsg = error.value?.response?.data?.message
                 message.error({
@@ -134,11 +137,11 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
     const startUpload = () => {
         // CODEFLOW:
         // update workflow -> if error then create workflow ( with submit=true ) and show messgaes accordingly-> if success then run workflow -> show messages accordingly
-        // updateWorkflow()
+        updateWorkflow()
         console.log(guid, fileS3Key)
-        isWorkflowRunning.value = true
+        workflowName.value = `atlan-gtc-bulk-upload-${guid.slice(-8)}`
         console.log(isWorkflowRunning)
     }
-    return { startUpload, isWorkflowRunning }
+    return { startUpload }
 }
 export default useBulkUpload

@@ -1,24 +1,24 @@
 <template>
     <div
-        class="w-full h-32 pt-2 mb-10 rounded"
+        v-if="workflowPhase !== ''"
+        class="w-full pt-2 mb-10 rounded"
+        style="height: max-content"
         :class="{
-            'border-l-4 border-success': percentage === 100 && !errorCount,
+            'border-l-4 border-success':
+                workflowPhase === 'Succeeded' && !errorCount,
             'border-l-4 border-error':
-                (percentage === 100 && errorCount) || percentage === -1,
+                (workflowPhase === 'Succeeded' || workflowPhase === 'Error') &&
+                errorCount,
             hidden: !isVisible,
         }"
     >
         <!-- header  -->
         <div class="flex items-center justify-between px-3">
-            {{ isWorkflowRunning }}
-            <span
-                v-if="percentage !== 100 && percentage !== -1"
-                class="font-bold"
-            >
+            <span v-if="workflowPhase === 'Running'" class="font-bold">
                 Upload progress</span
             >
             <span
-                v-else-if="percentage === -1"
+                v-else-if="workflowPhase === 'Error'"
                 class="flex items-center font-bold"
             >
                 <AtlanIcon icon="RunFailed" class="w-auto h-4 mr-2" />
@@ -44,13 +44,6 @@
                 >
             </span>
 
-            <!-- <a-button
-                v-if="percentage !== 100"
-                class="bg-pink-100 text-error"
-                size="small"
-            >
-                Cancel upload
-            </a-button> -->
             <atlan-icon
                 icon="Cancel"
                 class="w-auto h-4 text-gray-500 cursor-pointer"
@@ -71,7 +64,7 @@
         />
         <!-- upload failed state -->
         <div
-            v-else-if="percentage === -1 && phase === 'Failed'"
+            v-else-if="workflowPhase === 'Error'"
             class="px-3 pb-5 bg-gray-100"
         >
             <a-divider class="mt-2 mb-5" />
@@ -93,8 +86,11 @@
             class="px-0 pb-2 mt-2"
             :class="{ 'bg-gray-100': errorCount }"
         >
-            <a-divider class="mt-0 mb-5" />
-            <div class="flex items-center px-3 mt-2 space-x-2">
+            <a-divider v-if="totalCount !== -1" class="mt-0 mb-5" />
+            <div
+                v-if="totalCount !== -1"
+                class="flex items-center px-3 mt-2 space-x-2"
+            >
                 <div class="flex items-center">
                     <AtlanIcon icon="Approve" class="w-auto h-3 mr-2" />
                     <span class="border-0 shadow-none" size="small">
@@ -131,6 +127,9 @@
     import { message } from 'ant-design-vue'
     import useBulkUpload from `@/glossary/modal/useBulkUpload.ts`
     import { isWorkflowRunning } from `@/glossary/modal/useBulkUpload.ts`
+    import { workflowName } from `@/glossary/modal/useBulkUpload.ts`
+    import { getRunList } from '~/composables/workflow/useWorkflowList'
+    import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
 
     export default defineComponent({
         name: 'BulkUploadProgress',
@@ -139,12 +138,11 @@
         setup(props) {
             // data
             const percentage = ref(20)
-            const workflowTemplate = ref()
+            const workflowTemplateName = ref()
             const totalCount = ref(-1)
             const errorCount = ref(-1)
             const isVisible = ref(true)
-            const workflowName = ref()
-            const phase = ref()
+            const workflowPhase = ref('')
             const nodeName = ref()
             let nIntervId
 
@@ -154,16 +152,66 @@
                 clearInterval(nIntervId)
                 nIntervId = null
             }
+            const getFinalStatus = (data) => {
+                const createFinalCsvNode = Object.keys(data.nodes).find(
+                    (el) => data.nodes[el].displayName === 'create-final-csv'
+                )
+                const finalStatus = data.nodes[
+                    createFinalCsvNode
+                ]?.outputs?.parameters.find((el) => (el.name = 'status'))
+                const statusJson = JSON.parse(finalStatus?.value)
+                console.log(statusJson)
+                totalCount.value = statusJson.total_count
+                errorCount.value = statusJson.error_count
+                nodeName.value = data.nodes[createFinalCsvNode].name
+            }
+
+            const { progressPercent, name, phase } = useWorkFlowHelper()
+            const getProgress = () => {
+                const { liveList } = getRunList(workflowName.value, false)
+
+                watch(liveList, () => {
+                    if (liveList.value?.items && liveList.value?.items[0]) {
+                        percentage.value = progressPercent(
+                            liveList.value.items[0]
+                        )
+                        workflowPhase.value = phase(liveList.value?.items[0])
+                        workflowTemplateName.value = name(
+                            liveList.value?.items[0]
+                        )
+                        console.log(percentage.value)
+                        console.log(workflowPhase.value)
+                        console.log(workflowTemplateName.value)
+                        if (workflowPhase.value === 'Succeeded') {
+                            stopGetProgress()
+                            getFinalStatus(liveList.value?.items[0].status)
+                        }
+                        if (workflowPhase.value === 'Error') {
+                            stopGetProgress()
+                        }
+                    } else {
+                        stopGetProgress()
+                    }
+                })
+            }
+            const triggerUpload = () => {
+                if (!nIntervId) {
+                    nIntervId = setInterval(getProgress, 15000)
+                    workflowPhase.value = 'Running'
+                }
+            }
             watch(isWorkflowRunning, () => {
-                console.log('is running ', isWorkflowRunning)
+                if (isWorkflowRunning.value === true) {
+                    triggerUpload()
+                }
             })
             // get progress fn triggered every 30sec
             return {
-                percentage: 100,
-                totalCount: 1,
-                errorCount: 0,
+                percentage,
+                totalCount,
+                errorCount,
                 isVisible,
-                phase,
+                workflowPhase,
                 isWorkflowRunning,
             }
         },

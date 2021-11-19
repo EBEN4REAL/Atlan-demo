@@ -6,31 +6,28 @@
                 class="relative flex items-center justify-between px-4 pb-5 border-b "
             >
                 <div
-                    class="text-lg font-bold"
                     v-if="!generatedAPIKey.attributes"
+                    class="text-lg font-bold"
                 >
                     {{
                         apiKeyDirty.id ? apiKeyDirty.displayName : 'Add new key'
                     }}
                 </div>
-                <div class="text-lg font-bold" v-else>
+                <div v-else class="text-lg font-bold">
                     {{ generatedAPIKey.attributes.displayName }}
                 </div>
 
-                <div
-                    class="top-0 p-1 border border-gray-300 rounded cursor-pointer  right-2"
-                >
+                <div class="top-0 p-1 rounded cursor-pointer right-2">
                     <AtlanIcon icon="Cross" class="r" @click="handleClose" />
                 </div>
             </div>
-            <div class="px-4 py-3" v-if="!generatedAPIKey.attributes">
+            <div v-if="!generatedAPIKey.attributes" class="px-4 py-3">
                 <div class="mb-4">
                     <div class="mb-2 mr-2 text-gray-500">
                         Name <sup class="text-error">*</sup>
                     </div>
                     <a-input
                         v-model:value="apiKeyDirty.displayName"
-                        :placeholder="'Name the api key'"
                         :class="
                             nameEmptyOnSubmit && !apiKeyDirty.displayName.length
                                 ? 'border border-error'
@@ -40,10 +37,7 @@
                 </div>
                 <div class="mb-4">
                     <div class="mb-2 mr-2 text-gray-500">Description</div>
-                    <a-input
-                        v-model:value="apiKeyDirty.description"
-                        :placeholder="'Add description'"
-                    ></a-input>
+                    <a-input v-model:value="apiKeyDirty.description"></a-input>
                 </div>
                 <div class="mb-4">
                     <div class="mb-2 mr-2 text-gray-500">Personas</div>
@@ -90,7 +84,7 @@
                         <template #content>
                             <PersonaList
                                 class="persona-list"
-                                :selectedPersonas="apiKeyDirty.personas"
+                                :selected-personas="apiKeyDirty.personas"
                             />
                         </template>
                     </a-popover>
@@ -138,28 +132,68 @@
             </div>
         </div>
         <div
-            class="flex justify-between px-4 py-5 border-t"
             v-if="!generatedAPIKey.attributes"
+            class="flex justify-between px-4 py-5 border-t"
         >
-            <AtlanBtn
-                v-if="apiKeyDirty.id"
-                class="mr-3 bg-transparent border-none text-error"
-                size="lg"
-                padding="compact"
-                @click="$emit('deleteAPIKey', apiKeyDirty.id)"
-                :is-loading="deleteAPIKeyLoading"
-                :disabled="deleteAPIKeyLoading"
+            <a-popover
+                trigger="click"
+                placement="bottomLeft"
+                :visible="isDeletePopoverVisible"
             >
-                <AtlanIcon icon="Delete" />
-                <span v-if="deleteAPIKeyLoading">Deleting</span>
-                <span v-else>Delete</span>
-            </AtlanBtn>
+                <AtlanBtn
+                    color="secondary"
+                    padding="compact"
+                    size="sm"
+                    class="bg-transparent border-none px -0 text-error"
+                    @click="isDeletePopoverVisible = true"
+                >
+                    <AtlanIcon
+                        icon="Delete"
+                        class="shadow-none cursor-pointer"
+                    />
+                    <span>Delete</span>
+                </AtlanBtn>
+                <template #content>
+                    <div class="mb-4 text-base font-bold">Delete API Key</div>
+                    <div class="mb-3.5">
+                        Are you sure you want to delete
+                        <span class="font-bold">
+                            {{ apiKeyDirty.displayName }}?</span
+                        >
+                    </div>
+                    <div class="flex justify-end mb-2">
+                        <AtlanBtn
+                            color="secondary"
+                            padding="compact"
+                            size="sm"
+                            class="mr-3 shadow-sm"
+                            @click="isDeletePopoverVisible = false"
+                        >
+                            <span>Cancel</span></AtlanBtn
+                        >
+                        <AtlanBtn
+                            v-if="apiKeyDirty.id"
+                            class="mr-3 text-white bg-transparent border-none  bg-error"
+                            size="lg"
+                            padding="compact"
+                            :is-loading="deleteAPIKeyLoading"
+                            :disabled="deleteAPIKeyLoading"
+                            @click="$emit('deleteAPIKey', apiKeyDirty.id)"
+                        >
+                            <AtlanIcon icon="Delete" />
+                            <span v-if="deleteAPIKeyLoading">Deleting</span>
+                            <span v-else>Delete</span>
+                        </AtlanBtn>
+                    </div>
+                </template>
+            </a-popover>
+
             <div class="flex justify-end w-full">
                 <AtlanBtn
                     color="secondary"
                     padding="compact"
                     size="sm"
-                    class="px-5 mr-3 shadow-sm"
+                    class="px-5 mr-3 border-none"
                     @click="$emit('closeDrawer')"
                 >
                     <span>Cancel</span></AtlanBtn
@@ -169,9 +203,9 @@
                     size="sm"
                     color="primary"
                     padding="compact"
-                    @click="handleSave"
                     :is-loading="createUpdateLoading"
                     :disabled="createUpdateLoading"
+                    @click="handleSave"
                     ><span v-if="createUpdateLoading">{{
                         apiKeyDirty.id ? 'Updating' : 'Saving'
                     }}</span>
@@ -205,6 +239,7 @@ import { copyToClipboard } from '~/utils/clipboard'
 import { formatDateTime } from '~/utils/date'
 
 import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
+
 export default defineComponent({
     name: 'APIKeyDrawer',
     components: { PillGroup, PersonaList, Pill, AtlanBtn },
@@ -233,9 +268,20 @@ export default defineComponent({
 
         const nameEmptyOnSubmit = ref(false)
         const addPersonaPopoverVisible = ref(false)
-
+        const isDeletePopoverVisible = ref(false)
         const { generatedAPIKey } = useVModels(props, emit)
 
+        const showDeletePopover = () => {
+            isDeletePopoverVisible.value = true
+        }
+        watch(
+            () => props.deleteAPIKeyLoading,
+            (newVal, prevVal) => {
+                if (newVal === false && prevVal === true) {
+                    isDeletePopoverVisible.value = false
+                }
+            }
+        )
         const handleSave = () => {
             if (!apiKeyDirty.value.displayName) {
                 nameEmptyOnSubmit.value = true
@@ -307,8 +353,9 @@ export default defineComponent({
             handleDownload,
             handleCopy,
             handleClose,
-            generatedAPIKey,
             SuccessIllustration,
+            showDeletePopover,
+            isDeletePopoverVisible,
         }
     },
 })

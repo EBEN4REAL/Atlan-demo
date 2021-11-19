@@ -9,8 +9,14 @@ interface PersonaParams {
     searchString?: string
 }
 export default function usePersonaList(params?: Ref<PersonaParams>) {
-    const { data: personaList, isLoading, mutate: reFetchList } = Persona.List()
+    const { data, isLoading, mutate: reFetchList } = Persona.List()
 
+    const personaList = computed(
+        () =>
+            data?.value?.records?.map((persona) => ({
+                ...persona,
+            })) ?? []
+    )
     const filteredPersonas = computed(() => {
         if (params?.value?.searchString)
             return personaList.value.filter((ps) =>
@@ -20,6 +26,17 @@ export default function usePersonaList(params?: Ref<PersonaParams>) {
             )
         return personaList.value
     })
+    const filteredPersonasCount = computed(() => data?.value?.filter_record)
+    const totalPersonasCount = computed(
+        () => data?.value?.total_record
+        // return 0
+    )
 
-    return { filteredPersonas, isLoading, reFetchList }
+    return {
+        filteredPersonas,
+        isLoading,
+        reFetchList,
+        totalPersonasCount,
+        filteredPersonasCount,
+    }
 }

@@ -75,7 +75,6 @@ export function addPolicy(type: PolicyType) {
             allow: true,
             name: '',
             description: '',
-            type: 'metadata',
             isNew: true,
         })
         policyEditMap.value.metadataPolicies[id] = true
@@ -87,7 +86,7 @@ export function addPolicy(type: PolicyType) {
             assets: [],
             connectionName: '',
             connectionId: '',
-            maskingOption: 'MASK_NONE',
+            maskType: 'MASK_NONE',
             allow: true,
             name: '',
             description: '',
@@ -98,7 +97,7 @@ export function addPolicy(type: PolicyType) {
 }
 
 export async function deletePolicy(type: PolicyType, id: string) {
-    const tempPersona = { ...selectedPersona.value }
+    const tempPersona = Object.assign({}, selectedPersona.value)
     if (type === 'meta') {
         const policyIndex =
             selectedPersonaDirty.value?.metadataPolicies?.findIndex(
@@ -106,7 +105,6 @@ export async function deletePolicy(type: PolicyType, id: string) {
             )
         if (policyIndex > -1)
             tempPersona?.metadataPolicies?.splice(policyIndex, 1)
-
         await savePersona(tempPersona)
         selectedPersonaDirty.value?.metadataPolicies?.splice(policyIndex, 1)
     }
@@ -115,14 +113,65 @@ export async function deletePolicy(type: PolicyType, id: string) {
             (pol) => pol.id === id
         )
         if (policyIndex > -1) tempPersona?.dataPolicies?.splice(policyIndex, 1)
-
         await savePersona(tempPersona)
         selectedPersonaDirty.value?.dataPolicies?.splice(policyIndex, 1)
     }
 }
-
-export function savePolicy(type: PolicyType, id: string) {
+export async function deletePolicyLocally() {
     const tempPersona = { ...selectedPersona.value }
+}
+
+export function savePolicyLocally(type: PolicyType, id: string) {
+    const tempPersona = { ...selectedPersona.value }
+    if (type === 'meta') {
+        const dirtyPolicyIndex =
+            selectedPersonaDirty.value?.metadataPolicies?.findIndex(
+                (pol) => pol.id === id
+            )
+
+        if (dirtyPolicyIndex > -1) {
+            const policy =
+                selectedPersonaDirty.value?.metadataPolicies?.[dirtyPolicyIndex]
+            if (policy?.isNew) {
+                delete policy?.isNew
+                delete policy?.id
+                tempPersona?.metadataPolicies?.push(policy!)
+            } else {
+                const policyIndex =
+                    selectedPersona.value?.metadataPolicies?.findIndex(
+                        (pol) => pol.id === id
+                    )
+                tempPersona.metadataPolicies![policyIndex!] = policy
+            }
+        }
+        policyEditMap.value.metadataPolicies[id] = false
+    }
+    if (type === 'data') {
+        const dirtyPolicyIndex =
+            selectedPersonaDirty.value?.dataPolicies?.findIndex(
+                (pol) => pol.id === id
+            )
+
+        if (dirtyPolicyIndex > -1) {
+            const policy =
+                selectedPersonaDirty.value?.dataPolicies?.[dirtyPolicyIndex]
+            if (policy?.isNew) {
+                delete policy?.isNew
+                delete policy?.id
+                tempPersona?.dataPolicies?.push(policy!)
+            } else {
+                const policyIndex =
+                    selectedPersona.value?.dataPolicies?.findIndex(
+                        (pol) => pol.id === id
+                    )
+                tempPersona.dataPolicies![policyIndex!] = policy
+            }
+        }
+        policyEditMap.value.dataPolicies[id] = false
+    }
+}
+export function savePolicy(type: PolicyType, id: string) {
+    const tempPersona = Object.assign({}, selectedPersona.value)
     if (type === 'meta') {
         const dirtyPolicyIndex =
             selectedPersonaDirty.value?.metadataPolicies?.findIndex(

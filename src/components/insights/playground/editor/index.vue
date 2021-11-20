@@ -612,7 +612,11 @@
                 showcustomToolBar.value = !showcustomToolBar.value
             }
 
-            const saveQuery = (saveQueryData: any, assetTerms: any) => {
+            const saveQuery = (
+                saveQueryData: any,
+                assetTerms: any,
+                selectedParentType
+            ) => {
                 console.log('assetTerms from editor: ', assetTerms)
                 saveQueryToDatabaseWithTerms(
                     assetTerms,
@@ -621,7 +625,7 @@
                     showSaveQueryModal,
                     saveModalRef,
                     router,
-                    'personal',
+                    selectedParentType,
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,
                     activeInlineTab.value,

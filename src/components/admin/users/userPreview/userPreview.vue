@@ -8,6 +8,13 @@
             class="flex flex-col items-center justify-center h-full bg-white"
         >
             <ErrorView>
+                <div class="absolute top-0 right-0 flex justify-end p-4">
+                    <AtlanIcon
+                        icon="Cross"
+                        class="absolute mt-2 cursor-pointer"
+                        @click="$emit('close')"
+                    />
+                </div>
                 <div class="mt-3">
                     <AtlanButton
                         color="secondary"

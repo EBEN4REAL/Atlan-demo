@@ -75,7 +75,7 @@
             dot: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
             size: {
-                type: String as PropType<'default' | 'minimal'>,
+                type: String as PropType<'default' | 'minimal' | 'large'>,
                 default: () => 'default',
             },
             modelValue: {

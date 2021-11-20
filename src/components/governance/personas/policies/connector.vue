@@ -20,21 +20,19 @@
                 }
             "
         >
-            <!-- <template #title="node">
-                <div v-if="node?.img" class="flex items-center">
-                    <img :src="node.img" class="w-auto h-3 mr-2" />
-                    <span class="">{{
-                        capitalizeFirstLetter(node.value)
-                    }}</span>
-                </div>
-                <div v-if="node?.integrationName" class="flex items-center">
-                    <img
-                        :src="getImage(node?.integrationName)"
-                        class="w-auto h-3 mr-2"
+            <template #title="node">
+                <div class="flex items-center truncate">
+                    <AtlanIcon
+                        :icon="iconName(node)"
+                        class="h-4 -ml-0.5 mr-1"
                     />
-                    <span class="">{{ node.name }}</span>
+                    {{
+                        node?.title?.length > 30
+                            ? `${node?.title.slice(0, 30)}...`
+                            : node.title
+                    }}
                 </div>
-            </template> -->
+            </template>
 
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
@@ -161,6 +159,7 @@
                                 integrationName: getConnectorName(
                                     connection?.attributes
                                 ),
+                                children: [],
                                 title:
                                     connection.attributes.name ||
                                     connection.attributes.qualifiedName,
@@ -263,7 +262,44 @@
                 emit('blur')
             }
 
+            const iconName = (node) => {
+                if (
+                    node.title === 'athena' ||
+                    node.title === 'snowflake' ||
+                    node.title === 'powerbi' ||
+                    node.title === 'tableau'
+                ) {
+                    switch (node.title) {
+                        case 'snowflake':
+                            return 'Snowflake'
+                        case 'athena':
+                            return 'Athena'
+                        case 'powerbi':
+                            return 'PowerBI'
+                        case 'tableau':
+                            return 'Tableau'
+                    }
+                } else {
+                    let el = node?.key?.split('/')
+                    if (el && el.length) {
+                        switch (el[1]) {
+                            case 'snowflake':
+                                return 'Snowflake'
+                            case 'athena':
+                                return 'Athena'
+                            case 'powerbi':
+                                return 'PowerBI'
+                            case 'tableau':
+                                return 'Tableau'
+                        }
+                    } else {
+                        return ''
+                    }
+                }
+            }
+
             return {
+                iconName,
                 treeSelectRef,
                 filterSourceIds,
                 onChange,

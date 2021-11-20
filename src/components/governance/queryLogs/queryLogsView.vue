@@ -1,23 +1,6 @@
 <template>
     <div class="h-full">
-        <div
-            v-if="!totalAPIKeysCount && !isLoading"
-            class="flex flex-col items-center justify-center h-full"
-        >
-            <component :is="NewAPIKeyIllustration" class="mb-4"></component>
-            <div class="text-xl font-bold">Create API Keys</div>
-            <AtlanBtn
-                padding="compact"
-                size="sm"
-                color="primary"
-                class="mt-6 px-7"
-                @click="handleGenerateKey"
-                v-auth="[map.CREATE_APIKEY]"
-            >
-                <AtlanIcon icon="Add" class="ml-2" />Generate API Key
-            </AtlanBtn>
-        </div>
-        <DefaultLayout title="Query Logs" v-else>
+        <DefaultLayout title="Query Logs">
             <template #header>
                 <div class="flex items-center justify-between pb-3">
                     <div class="flex items-stretch w-full">
@@ -34,7 +17,7 @@
                         </div>
                         <a-input-search
                             v-model:value="searchText"
-                            :placeholder="`Search through logs`"
+                            :placeholder="`Search through ${totalCount} logs`"
                             class="w-1/3 mr-1 border border-gray-300 rounded-none rounded-tr rounded-br shadow-sm "
                             size="default"
                             :allow-clear="true"
@@ -45,255 +28,148 @@
 
                     <TimeFrameSelector
                         v-model:modelValue="timeFrame"
+                        :time-frame="timeFrame"
                         @change="handleRangePickerChange"
-                        :timeFrame="timeFrame"
                     />
                 </div>
             </template>
 
             <QueryLogTable
-                :api-keys-list="[]"
+                :api-keys-list="queryList"
                 :is-loading="isLoading"
-                :deleteAPIKeyLoading="deleteAPIKeyLoading"
-                @selectAPIKey="handleSelectAPIKey"
-                @deleteAPIKey="handleDelete"
+                :selected-query="selectedQuery"
+                :selected-row-keys="selectedRowKeys"
+                @selectQuery="handleSelectQuery"
             />
-            <div class="flex justify-end max-w-full mt-4">
+            <!-- <div class="flex justify-end max-w-full mt-4">
                 <a-pagination
                     :total="pagination.total"
                     :current="pagination.current"
                     :page-size="pagination.pageSize"
                     @change="handlePagination"
                 />
-            </div>
+            </div> -->
         </DefaultLayout>
         <a-drawer
-            :visible="isAPIKeyDrawerVisible"
+            :visible="isQueryPreviewDrawerVisible"
             :mask="false"
-            :width="350"
+            :width="420"
             class="api-key"
             :closable="false"
         >
-            <APIKeyDrawer
-                :api-key="selectedAPIKey"
-                @updateAPIKey="handleUpdate"
-                @createAPIKey="handleCreate"
-                @deleteAPIKey="handleDelete"
-                @closeDrawer="toggleAPIKeyDrawer"
-                :createUpdateLoading="
-                    createAPIKeyLoading || updateAPIKeyLoading
-                "
-                :deleteAPIKeyLoading="deleteAPIKeyLoading"
-                v-model:generatedAPIKey="generatedAPIKey"
+            <QueryPreviewDrawer
+                :query="selectedQuery"
+                @closeDrawer="toggleQueryPreviewDrawer"
+                @selectQuery="handleSelectQuery"
             />
         </a-drawer>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, watch, computed } from 'vue'
-    import { message } from 'ant-design-vue'
-    import map from '~/constant/accessControl/map'
-    import { APIKey } from '~/services/service/apikeys'
-    import useAPIKeysList from '@/admin/apikeys/composables/useAPIKeysList'
-    //TODO: Try to make update flow similar to create flow i.e use callback from the composable instead of watching the states
-    // import useUpdateAPIKey from '@/governance/apikeys/composables/useUpdateAPIKey'
-    import useCreateAPIKey from '@/admin/apikeys/composables/useCreateAPIKey'
-    import DefaultLayout from '~/components/admin/layout.vue'
-    import AtlanBtn from '@/UI/button.vue'
-    import QueryLogTable from '@/governance/queryLogs/queryLogTable.vue'
-    import APIKeyDrawer from '@/admin/apikeys/apiKeyDrawer.vue'
-    import filteredPersonas from '~/components/governance/personas/personaView.vue'
-    import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
-    import TimeFrameSelector from '@/governance/queryLogs/timeFrameSelector.vue'
-    import dayjs from 'dayjs'
+import { defineComponent, ref, Ref, watch, computed } from 'vue'
+import { message } from 'ant-design-vue'
+import dayjs from 'dayjs'
+import map from '~/constant/accessControl/map'
+import DefaultLayout from '~/components/admin/layout.vue'
+import AtlanBtn from '@/UI/button.vue'
+import QueryLogTable from '@/governance/queryLogs/queryTable.vue'
+import QueryPreviewDrawer from '~/components/governance/queryLogs/queryDrawer.vue'
+import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
+import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
+import { useQueryLogs } from './composables/useQueryLogs'
 
-    export default defineComponent({
-        name: 'ApiKeysView',
-        components: {
-            DefaultLayout,
-            AtlanBtn,
-            QueryLogTable,
-            TimeFrameSelector,
-            APIKeyDrawer,
-        },
-        setup() {
-            /**LOCAL STATE */
-            const apiKeyDirty = ref({})
-            const deleteAPIKeyLoading = ref(false)
-            const updateAPIKeyLoading = ref(false)
-            const searchText: Ref<string> = ref('')
-            const isAPIKeyDrawerVisible: Ref<boolean> = ref(false)
-            const timeFrame = ref('30 days')
+export default defineComponent({
+    name: 'ApiKeysView',
+    components: {
+        DefaultLayout,
+        AtlanBtn,
+        QueryLogTable,
+        TimeFrameSelector,
+        QueryPreviewDrawer,
+    },
+    setup() {
+        /** LOCAL STATE */
+        const searchText: Ref<string> = ref('')
+        const isAPIKeyDrawerVisible: Ref<boolean> = ref(false)
+        const timeFrame = ref('30 days')
+        const selectedQuery = ref({})
+        const isQueryPreviewDrawerVisible = ref(false)
+        const gte = ref(
+            dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
+        )
+        const lt = ref(dayjs().format())
 
-            /**COMPOSABLES */
-            const {
-                apiKeysList,
-                isLoading,
-                searchAPIKeys,
-                selectedAPIKey,
-                setSelectedAPIKey,
-                resetSelectedAPIKey,
-                reFetchList,
-                filteredAPIKeysCount,
-                totalAPIKeysCount,
-                paginateAPIKeys,
-                params: listParams,
-            } = useAPIKeysList()
-            const {
-                data: generatedAPIKey,
-                createAPIKey,
-                isLoading: createAPIKeyLoading,
-            } = useCreateAPIKey(apiKeyDirty)
-            //TODO: Try to make update flow similar to create flow i.e use callback from the composable instead of watching the states
-            // const { updateAPIKey, isLoading: updateAPIKeyLoading } =
-            //     useUpdateAPIKey(apiKeyDirty)
+        const {
+            list: queryList,
+            mutateBody,
+            refetchList,
+            isLoading,
+            totalCount,
+        } = useQueryLogs(gte, lt)
 
-            /**METHODS */
-            const toggleAPIKeyDrawer = (
-                val: boolean | undefined = undefined
-            ) => {
-                if (val === undefined)
-                    isAPIKeyDrawerVisible.value = !isAPIKeyDrawerVisible.value
-                else isAPIKeyDrawerVisible.value = val
-            }
-            const handleGenerateKey = () => {
-                toggleAPIKeyDrawer()
-                resetSelectedAPIKey()
-            }
-            const handleUpdate = async (apiKey) => {
-                apiKeyDirty.value = apiKey
-                const { data, isReady, error, isLoading } =
-                    APIKey.Update(apiKeyDirty)
-                watch(
-                    isLoading,
-                    () => {
-                        updateAPIKeyLoading.value = isLoading.value
-                    },
-                    { immediate: true }
-                )
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        if (isReady && !error.value && !isLoading.value) {
-                            toggleAPIKeyDrawer()
-                            reFetchList()
-                            message.success('API Key updated successfully.')
-                        } else if (error && error.value) {
-                            toggleAPIKeyDrawer()
-                            message.error(
-                                'Unable to update API Key. Please try again.'
-                            )
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
-            const handleCreate = async (apiKey) => {
-                try {
-                    apiKeyDirty.value = apiKey
-                    await createAPIKey()
-                    // toggleAPIKeyDrawer()
-                    reFetchList()
-                    message.success('API Key generated successfully.')
-                } catch (e) {
-                    toggleAPIKeyDrawer()
-                    message.error(
-                        'Unable to generate API Key. Please try again.'
-                    )
-                }
-            }
-            const handleDelete = async (apiKeyId) => {
-                const { data, isReady, error, isLoading } =
-                    APIKey.Delete(apiKeyId)
-                watch(
-                    isLoading,
-                    () => {
-                        deleteAPIKeyLoading.value = isLoading.value
-                    },
-                    { immediate: true }
-                )
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        if (isReady && !error.value && !isLoading.value) {
-                            toggleAPIKeyDrawer(false)
-                            reFetchList()
-                            message.success('API Key deleted successfully.')
-                        } else if (error && error.value) {
-                            toggleAPIKeyDrawer(false)
-                            message.error(
-                                'Unable to delete API Key. Please try again.'
-                            )
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
-            const handleSelectAPIKey = (apikey) => {
-                // Disabling edit flow for now
-                toggleAPIKeyDrawer()
-                const localAPIKey = {
-                    displayName: apikey?.display_name,
-                    description: apikey?.attributes?.description,
-                    validitySeconds: apikey?.['access.token.lifespan'],
-                    personas: apikey?.attributes?.personas || [],
-                    id: apikey?.id,
-                }
-                setSelectedAPIKey({
-                    ...localAPIKey,
-                })
-            }
-            const handlePagination = (page: number) => {
-                paginateAPIKeys(page)
-            }
+        const handleRangePickerChange = (e) => {
+            console.log(e)
+            const gte = e[0]
+            const lt = e[1]
+            mutateBody({ gte, lt })
+            refetchList()
+        }
+        watch(
+            [queryList, isLoading],
+            () => {
+                console.log(queryList.value, isLoading.value, 'logs')
+            },
+            { immediate: true }
+        )
 
-            const handleRangePickerChange = (e) => {
-                console.log(e, 'Date pick')
-                message.info(
-                    `Selected Dates b/w ${dayjs(e[0]).format(
-                        'DD MMM YYYY'
-                    )} - ${dayjs(e[1]).format('DD MMM YYYY')}`
-                )
-            }
+        const toggleQueryPreviewDrawer = (
+            val: boolean | undefined = undefined
+        ) => {
+            if (val === undefined)
+                isQueryPreviewDrawerVisible.value =
+                    !isQueryPreviewDrawerVisible.value
+            else isQueryPreviewDrawerVisible.value = val
+        }
 
-            /**WATCHERS */
-            watch(searchText, () => searchAPIKeys(searchText.value))
-
-            /**COMPUTED PROPERTIES */
-            const pagination = computed(() => ({
-                total: searchText.value.length
-                    ? filteredAPIKeysCount.value
-                    : totalAPIKeysCount.value,
-                pageSize: listParams.value.limit,
-                current: listParams.value.offset / listParams.value.limit + 1,
-            }))
-            return {
-                timeFrame,
-                handleRangePickerChange,
-                apiKeysList,
-                isLoading,
-                searchText,
-                selectedAPIKey,
-                isAPIKeyDrawerVisible,
-                handleGenerateKey,
-                handleUpdate,
-                handleCreate,
-                handleDelete,
-                createAPIKeyLoading,
-                updateAPIKeyLoading,
-                deleteAPIKeyLoading,
-                handleSelectAPIKey,
-                toggleAPIKeyDrawer,
-                filteredPersonas,
-                generatedAPIKey,
-                pagination,
-                filteredAPIKeysCount,
-                totalAPIKeysCount,
-                handlePagination,
-                NewAPIKeyIllustration,
-                map,
+        const handleSearch = () => {}
+        const setSelectedQuery = (query: Object) => {
+            selectedQuery.value = query
+        }
+        const handleSelectQuery = (query: Object) => {
+            if (
+                isQueryPreviewDrawerVisible.value &&
+                query._id === selectedQuery.value._id
+            ) {
+                isQueryPreviewDrawerVisible.value = false
+            } else if (!isQueryPreviewDrawerVisible.value) {
+                isQueryPreviewDrawerVisible.value = true
             }
-        },
-    })
+            setSelectedQuery(query)
+        }
+        const selectedRowKeys = computed(() =>
+            selectedQuery.value?._id !== undefined
+                ? [selectedQuery.value?._id]
+                : []
+        )
+
+        return {
+            selectedRowKeys,
+            isQueryPreviewDrawerVisible,
+            selectedQuery,
+            queryList,
+            totalCount,
+            isLoading,
+            handleSearch,
+            handleSelectQuery,
+            toggleQueryPreviewDrawer,
+            handleRangePickerChange,
+            timeFrame,
+            searchText,
+            isAPIKeyDrawerVisible,
+            NewAPIKeyIllustration,
+            map,
+        }
+    },
+})
 </script>

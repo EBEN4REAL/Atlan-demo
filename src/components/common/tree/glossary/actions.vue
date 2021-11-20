@@ -1,123 +1,82 @@
 <template>
-    <div
-        class="group-hover:opacity-100"
-        :class="{
-            'opacity-0 treeMode': treeMode,
-        }"
+    <a-dropdown
+        v-model:visible="isVisible"
+        :trigger="treeMode ? ['click'] : ['click']"
+        @click.stop="() => {}"
     >
-        <a-dropdown
-            v-model:visible="isVisible"
-            :trigger="treeMode ? ['click'] : ['click']"
-            :class="{
-                [$style.treeMode]: treeMode,
-                [$style.threeDotMenu]: true,
-            }"
-            @click.stop="() => {}"
-        >
-            <div>
-                <AtlanIcon
-                    icon="KebabMenu"
-                    class="h-4 m-0"
-                    v-if="treeMode"
-                    @click.prevent
-                />
-            </div>
+        <div>
+            <AtlanIcon icon="KebabMenu" class="h-4 m-0" @click.prevent />
+        </div>
 
-            <template #overlay>
-                <a-menu :class="$style.threeDotMenu">
-                    <a-menu-item
-                        v-if="
-                            showGtcCrud &&
-                            entity?.typeName !== 'AtlasGlossaryTerm'
-                        "
-                        class="p-0"
-                        key="add"
-                        @click="closeMenu"
+        <template #overlay>
+            <a-menu>
+                <a-menu-item
+                    v-if="
+                        showGtcCrud && entity?.typeName !== 'AtlasGlossaryTerm'
+                    "
+                    key="add"
+                    @click="closeMenu"
+                >
+                    <AddGtcModal
+                        entityType="AtlasGlossaryCategory"
+                        :glossaryName="glossaryName"
+                        :categoryName="categoryName"
+                        @add="handleAdd"
+                        :glossary-qualified-name="glossaryQualifiedName"
+                        :categoryGuid="categoryGuid"
                     >
-                        <AddGtcModal
-                            entityType="AtlasGlossaryCategory"
-                            :glossaryName="glossaryName"
-                            :categoryName="categoryName"
-                            :glossary-qualified-name="glossaryQualifiedName"
-                            :categoryGuid="categoryGuid"
-                        >
-                            <template #trigger>
-                                <div class="flex items-center px-3 py-2">
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="m-0 mr-2"
-                                    />
-                                    <p class="p-0 m-0">Add Category</p>
-                                </div>
-                            </template>
-                        </AddGtcModal>
-                    </a-menu-item>
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Category" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Add Category</p>
+                            </div>
+                        </template>
+                    </AddGtcModal>
+                </a-menu-item>
 
-                    <a-menu-item
-                        v-if="
-                            showGtcCrud &&
-                            entity?.typeName !== 'AtlasGlossaryTerm'
-                        "
-                        class="p-0"
-                        key="add"
-                        @click="closeMenu"
+                <a-menu-item
+                    v-if="
+                        showGtcCrud && entity?.typeName !== 'AtlasGlossaryTerm'
+                    "
+                    key="add"
+                    @click="closeMenu"
+                >
+                    <AddGtcModal
+                        entityType="AtlasGlossaryTerm"
+                        :glossaryName="glossaryName"
+                        :categoryName="categoryName"
+                        :glossary-qualified-name="glossaryQualifiedName"
+                        :categoryGuid="categoryGuid"
                     >
-                        <AddGtcModal
-                            entityType="AtlasGlossaryTerm"
-                            :glossaryName="glossaryName"
-                            :categoryName="categoryName"
-                            :glossary-qualified-name="glossaryQualifiedName"
-                            :categoryGuid="categoryGuid"
-                        >
-                            <template #trigger>
-                                <div class="flex items-center px-3 py-2">
-                                    <AtlanIcon icon="Term" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Add Term</p>
-                                </div>
-                            </template>
-                        </AddGtcModal>
-                    </a-menu-item>
-                    <a-menu-item
-                        v-if="showGtcCrud"
-                        key="archive"
-                        class="p-0 text-red-700"
-                        @click="closeMenu"
-                    >
-                        <RemoveGTCModal :entityType="entity.typeName">
-                            <template #trigger>
-                                <div
-                                    class="flex items-center px-3 py-2 text-red-700 "
-                                >
-                                    <AtlanIcon icon="Trash" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Archive</p>
-                                </div>
-                            </template>
-                        </RemoveGTCModal>
-                    </a-menu-item>
-                    <a-menu-item
-                        v-if="showGtcCrud"
-                        key="bulk"
-                        class="p-0"
-                        @click="closeMenu"
-                    >
-                        <BulkUploadModal :entity="entity">
-                            <template #trigger>
-                                <div class="flex items-center px-3 py-2">
-                                    <AtlanIcon
-                                        icon="Term"
-                                        class="m-0 mr-2 text-primary"
-                                    />
-                                    <p class="p-0 m-0 text-gray-700 capitalize">
-                                        Bulk upload terms
-                                    </p>
-                                </div>
-                            </template>
-                        </BulkUploadModal>
-                    </a-menu-item>
-                </a-menu>
-            </template>
-        </a-dropdown>
-    </div>
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Term" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Add Term</p>
+                            </div>
+                        </template>
+                    </AddGtcModal>
+                </a-menu-item>
+                <a-menu-divider></a-menu-divider>
+                <a-menu-item
+                    v-if="showGtcCrud"
+                    key="archive"
+                    @click="closeMenu"
+                >
+                    <RemoveGTCModal :entityType="entity.typeName">
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Trash"
+                                    class="m-0 mr-2 text-red-700"
+                                />
+                                <p class="p-0 m-0">Archive</p>
+                            </div>
+                        </template>
+                    </RemoveGTCModal>
+                </a-menu-item>
+            </a-menu>
+        </template>
+    </a-dropdown>
 </template>
 <script lang="ts">
     import {
@@ -153,6 +112,7 @@
         Category,
         Term,
     } from '~/types/glossary/glossary.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
@@ -171,11 +131,7 @@
                 required: true,
                 default: () => {},
             },
-            glossaryQualifiedName: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
+
             glossaryName: {
                 type: String,
                 required: false,
@@ -218,12 +174,12 @@
                 default: true,
             },
         },
-        emits: ['unlinkAsset'],
-        setup(props, context) {
+        emits: ['unlinkAsset', 'add'],
+        setup(props, { emit }) {
             // data
             const {
                 entity,
-                glossaryQualifiedName,
+
                 categoryGuid,
                 glossaryName,
                 categoryName,
@@ -232,6 +188,15 @@
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
             const showCategories = ref(false)
+
+            const { getAnchorQualifiedName } = useAssetInfo()
+
+            const glossaryQualifiedName = computed(() => {
+                if (entity.value.typeName === 'AtlasGlossary') {
+                    return entity.value.qualifiedName
+                }
+                return getAnchorQualifiedName(entity.value)
+            })
 
             // injects
             // const currentProfile = inject<Ref<Glossary | Term | Category>>('currentEntity')
@@ -270,6 +235,24 @@
                 return ''
             })
 
+            const addGTCNode = inject('addGTCNode')
+            const handleAdd = (asset) => {
+                console.log('add')
+                entity.value.children = []
+                entity.value.children.push({
+                    ...asset,
+                    id: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
+                    key: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
+                    isLeaf: false,
+                })
+                // }
+                // console.log('asdsd', entity)
+                // addGTCNode(asset)
+            }
             // const {
             //     deleteGlossary,
             //     deleteCategory,
@@ -381,6 +364,8 @@
                 categoryGuid,
                 glossaryName,
                 categoryName,
+                handleAdd,
+                addGTCNode,
             }
         },
     })

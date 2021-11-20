@@ -4,7 +4,13 @@
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
+                    class="
+                        relative
+                        flex flex-col
+                        items-center
+                        text-xs
+                        sidebar-nav-icon
+                    "
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -56,6 +62,9 @@
                     <Queries
                         :reset="resetTree"
                         :resetQueryTree="resetQueryTree"
+                        :resetParentGuid="resetParentGuid"
+                        :resetType="resetType"
+                        :refreshQueryTree="refreshQueryTree"
                     />
                 </div>
                 <!--explorer pane end -->
@@ -314,7 +323,7 @@
             const detectQuery = () => {
                 let queryTab: activeInlineTabInterface = {
                     key: String(new Date().getTime()),
-                    label: 'Test Query',
+                    label: `${tableNameFromURL} preview`,
                     isSaved: false,
                     queryId: undefined,
                     status: 'DRAFT',
@@ -443,13 +452,18 @@
             })
 
             let resetTree = ref(false)
-            const refreshQueryTree = () => {
+            let resetParentGuid = ref(null)
+            let resetType = ref(null)
+            const refreshQueryTree = (guid, type) => {
                 resetTree.value = true
+                resetParentGuid.value = guid
+                resetType.value = type
                 // console.log('QueryTree refresh: ', resetTree.value)
             }
             const resetQueryTree = () => {
                 resetTree.value = false
-
+                resetParentGuid.value = null
+                resetType.value = null
                 // console.log('QueryTree reset: ', resetTree.value)
             }
 
@@ -471,6 +485,8 @@
                 resetTree,
                 refreshQueryTree,
                 resetQueryTree,
+                resetParentGuid,
+                resetType,
             }
         },
     })

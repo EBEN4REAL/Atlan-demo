@@ -15,7 +15,18 @@
     >
         <div class="p-3">
             <div class="flex items-center mb-1">
+                <div
+                    v-if="!glossaryQualifiedName"
+                    class="flex items-center uppercase"
+                >
+                    <AtlanIcon
+                        icon="Glossary"
+                        class="self-center pr-1"
+                    ></AtlanIcon>
+                    New Glossary
+                </div>
                 <GTCSelect
+                    v-else
                     class="p-1 mr-3 bg-gray-100 rounded"
                     v-model="localEntityType"
                 ></GTCSelect>
@@ -38,7 +49,7 @@
                     {{ categoryName }}
                 </div>
 
-                <GlossaryPopoverSelect
+                <!-- <GlossaryPopoverSelect
                     v-else-if="
                         !localQualifiedName &&
                         (localEntityType === 'AtlasGlossaryTerm' ||
@@ -46,7 +57,7 @@
                     "
                     class="p-1 bg-gray-100 rounded"
                     v-model="localQualifiedName"
-                ></GlossaryPopoverSelect>
+                ></GlossaryPopoverSelect> -->
             </div>
 
             <a-input
@@ -65,7 +76,7 @@
             />
         </div>
 
-        <div class="flex justify-between p-3 border-t border-gray-200">
+        <div class="flex justify-end p-3 border-t border-gray-200">
             <a-button type="primary" @click="handleSave" :loading="isLoading"
                 >Save</a-button
             >
@@ -177,14 +188,14 @@
                 localEntityType.value = entityType.value
             })
 
-            const { getGlossaryByQF, getFirstGlossaryQF } = useGlossaryData()
+            const { getGlossaryByQF } = useGlossaryData()
 
-            const localQualifiedName = ref(
-                glossaryQualifiedName.value || getFirstGlossaryQF()
-            )
-
-            if (!glossaryQualifiedName.value)
-                localQualifiedName.value = getFirstGlossaryQF()
+            // const localQualifiedName = ref(
+            //     glossaryQualifiedName.value || getFirstGlossaryQF()
+            // )
+            // watch(glossaryQualifiedName, () => {
+            //     localQualifiedName.value = glossaryQualifiedName.value
+            // })
 
             const visible = ref(false)
 
@@ -194,7 +205,6 @@
                     name: '',
                     qualifiedName: '',
                 },
-                typeName: entityType.value,
             })
 
             if (
@@ -205,7 +215,8 @@
                 entity.relationshipAttributes = {
                     anchor: {
                         typeName: 'AtlasGlossary',
-                        guid: getGlossaryByQF(localQualifiedName.value)?.guid,
+                        guid: getGlossaryByQF(glossaryQualifiedName.value)
+                            ?.guid,
                     },
                 }
 
@@ -244,9 +255,6 @@
             const resetInput = () => {
                 entity.attributes.name = ''
                 entity.attributes.userDescription = ''
-                if (glossaryQualifiedName.value) {
-                    localQualifiedName.value = glossaryQualifiedName.value
-                }
             }
 
             const typeNameTitle = computed(() => {
@@ -262,40 +270,46 @@
                 }
             })
 
+            const defaultRetry = ref(3)
             const handleSave = () => {
-                if (typeNameTitle.value === 'Glossary') {
-                    entity.attributes.qualifiedName = generateUUID()
-                }
-
-                if (
-                    ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
-                        entityType.value
-                    )
-                ) {
-                    entity.attributes.qualifiedName = `${generateUUID()}@${
-                        localQualifiedName.value
-                    }`
-                    entity.relationshipAttributes = {
-                        anchor: {
-                            typeName: 'AtlasGlossary',
-                            guid: getGlossaryByQF(localQualifiedName.value)
-                                ?.guid,
-                        },
+                defaultRetry.value = 2
+                if (entity.attributes.name) {
+                    entity.typeName = localEntityType.value
+                    if (typeNameTitle.value === 'Glossary') {
+                        entity.attributes.qualifiedName = ''
                     }
-                    if (categoryGuid.value) {
-                        entity.relationshipAttributes.categories = [
-                            {
-                                typeName: 'AtlasGlossaryCategory',
-                                guid: categoryGuid.value,
+
+                    if (
+                        ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                            entityType.value
+                        )
+                    ) {
+                        entity.attributes.qualifiedName = ''
+                        entity.relationshipAttributes = {
+                            anchor: {
+                                typeName: 'AtlasGlossary',
+                                guid: getGlossaryByQF(
+                                    glossaryQualifiedName.value
+                                )?.guid,
                             },
-                        ]
+                        }
+                        if (categoryGuid.value) {
+                            entity.relationshipAttributes.categories = [
+                                {
+                                    typeName: 'AtlasGlossaryCategory',
+                                    guid: categoryGuid.value,
+                                },
+                            ]
+                        }
                     }
-                }
 
-                body.value = {
-                    entities: [entity],
+                    body.value = {
+                        entities: [entity],
+                    }
+                    mutateAsset()
+                } else {
+                    message.warning(`Please enter the mandatory name`)
                 }
-                mutateAsset()
             }
 
             const guid = ref(null)
@@ -318,15 +332,31 @@
                     if (guidCreatedMaps.value?.length > 0) {
                         guid.value = guidCreatedMaps.value[0]
                     }
-
                     setTimeout(() => mutateUpdate(), 1000)
                 }
             })
 
-            whenever(isUpdateReady, () => {
+            whenever(error, () => {
+                console.log(error.value.response?.data?.errorMessage)
                 if (error.value) {
-                } else {
+                    if (error.value.response?.status === 409) {
+                        message.error(
+                            `${entity.attributes.name} already exists`
+                        )
+                    } else {
+                        message.error(
+                            `${entity.attributes.name} creation failed - ${error.value.response?.data?.errorMessage}`
+                        )
+                    }
+                }
+            })
+
+            whenever(isUpdateReady, () => {
+                if (asset.value?.attributes?.qualifiedName) {
                     emit('add', asset.value)
+                } else if (defaultRetry.value > 0) {
+                    defaultRetry.value -= 1
+                    mutateUpdate()
                 }
             })
 
@@ -349,8 +379,7 @@
                 isReady,
                 error,
                 getGlossaryByQF,
-                localQualifiedName,
-                getFirstGlossaryQF,
+
                 guidCreatedMaps,
                 categoryGuid,
                 glossaryName,

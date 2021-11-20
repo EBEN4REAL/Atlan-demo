@@ -23,7 +23,7 @@
                     class="items-center ml-auto"
                     @click="() => setPopoverState(!popoverVisible)"
                     ><span class="text-xl">+</span>
-                    <span>Add users / Groups</span></AtlanBtn
+                    <span>Add {{ listType }}</span></AtlanBtn
                 >
                 <template #content>
                     <div
@@ -47,28 +47,28 @@
                         <div class="w-full mt-2">
                             <div class="flex justify-end text-xs">
                                 <span
-                                    v-if="userGroupData.ownerUsers.length > 0"
+                                    v-if="userGroupData.ownerUsers?.length > 0"
                                     >{{
-                                        `${userGroupData.ownerUsers.length} user(s)`
+                                        `${userGroupData.ownerUsers?.length} user(s)`
                                     }}</span
                                 >
                                 <span
                                     v-if="
-                                        userGroupData.ownerUsers.length &&
-                                        userGroupData.ownerGroups.length
+                                        userGroupData.ownerUsers?.length &&
+                                        userGroupData.ownerGroups?.length
                                     "
                                     >{{ `&nbsp;&` }}</span
                                 >
                                 <span
-                                    v-if="userGroupData.ownerGroups.length > 0"
+                                    v-if="userGroupData.ownerGroups?.length > 0"
                                     >{{
-                                        ` &nbsp;${userGroupData.ownerGroups.length} group(s)`
+                                        ` &nbsp;${userGroupData.ownerGroups?.length} group(s)`
                                     }}</span
                                 >
                                 <span
                                     v-if="
-                                        userGroupData.ownerGroups.length > 0 ||
-                                        userGroupData.ownerUsers.length > 0
+                                        userGroupData.ownerGroups?.length > 0 ||
+                                        userGroupData.ownerUsers?.length > 0
                                     "
                                     >{{ `&nbsp;selected` }}</span
                                 >
@@ -213,8 +213,8 @@
         <div
             v-else-if="
                 listType === 'users' &&
-                [GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
-                    groupState
+                [USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
+                    userState
                 )
             "
             class="flex flex-col items-center h-full align-middle bg-white"
@@ -466,8 +466,8 @@
             const handleUpdate = () => {
                 if (persona.value?.id) {
                     addUsersLoading.value = true
-                    const userIds = userGroupData.value.ownerUsers
-                    const groupIds = userGroupData.value.ownerGroups
+                    const userIds = userGroupData.value.ownerUsers ?? []
+                    const groupIds = userGroupData.value.ownerGroups ?? []
                     updateUsers({
                         id: persona.value.id,
                         users: userIds,
@@ -477,9 +477,9 @@
                             addUsersLoading.value = false
                             popoverVisible.value = false
                             selectedPersonaDirty.value.users =
-                                userGroupData.value.ownerUsers
+                                userGroupData.value.ownerUsers ?? []
                             selectedPersonaDirty.value.groups =
-                                userGroupData.value.ownerGroups
+                                userGroupData.value.ownerGroups ?? []
                             getUserList()
                             getGroupList()
                         })
@@ -520,8 +520,8 @@
                 addUsersLoading.value = true
 
                 // console.log(persona.value, 'persona')
-                let updatedUsersIds = userGroupData.value.ownerUsers
-                let updatedGroupIds = userGroupData.value.ownerGroups
+                let updatedUsersIds = userGroupData.value.ownerUsers ?? []
+                let updatedGroupIds = userGroupData.value.ownerGroups ?? []
                 if (type === 'user') {
                     updatedUsersIds = userGroupData.value.ownerUsers.filter(
                         (userId) => userId !== userOrGroup.id
@@ -617,11 +617,11 @@
             })
 
             return {
+                userState,
+                USER_STATES,
                 showGroupPreviewDrawer,
                 getGroupList,
                 getUserList,
-                USER_STATES,
-                userState,
                 enableTabs,
                 getPopoverContent,
                 confirmPopover,

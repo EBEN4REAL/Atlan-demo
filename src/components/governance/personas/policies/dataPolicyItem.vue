@@ -11,7 +11,7 @@
                 <div class="relative mb-2 text-sm text-gray-500 required">
                     Policy name
                 </div>
-                <div class="max-w-xs">
+                <div class="" style="width: 320px">
                     <a-input
                         @blur="
                             () => {
@@ -123,12 +123,7 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
                                             />
                                             <span class="text-xs">Add All</span>
                                         </div>
@@ -145,12 +140,7 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="
-                                                    h-4
-                                                    mr-1
-                                                    text-gray
-                                                    group-hover:text-white
-                                                "
+                                                class="h-4 mr-1  text-gray group-hover:text-white"
                                             />
                                             <span class="text-xs"
                                                 >Custom select</span
@@ -170,7 +160,7 @@
                 {{ rules.assets.text }}
             </div>
         </div>
-        <div class="flex items-center mb-2 gap-x-1">
+        <div class="flex items-center mb-6 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Query permissions</span>
             <AtlanIcon class="h-3 ml-2 text-gray-500" icon="RunSuccess" />
@@ -185,7 +175,7 @@
         </div>
 
         <DataMaskingSelector
-            v-model:maskingOption="policy.maskingOption"
+            v-model:maskType="policy.maskType"
             class="mb-6 w-80"
         />
 

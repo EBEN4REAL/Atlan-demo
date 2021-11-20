@@ -750,7 +750,7 @@ export function useSavedQuery(
 
                     if (Callback) {
                         // console.log('queryTree callback: ', Callback)
-                        Callback()
+                        Callback(parentFolderGuid, 'query')
                     }
 
                     // save term

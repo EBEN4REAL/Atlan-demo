@@ -10,26 +10,31 @@
                 v-model="selectedGlossaryQf"
                 @change="handleSelectGlossary"
             ></GlossarySelect>
-            <AddGTCModal
-                :entityType="defaultEntityType"
-                @add="handleAddGlossary"
-                :glossaryQualifiedName="selectedGlossaryQf"
-                :glossaryName="selectedGlosaryName"
-            >
-                <template #trigger>
-                    <a-button class="ml-3" size="small">
-                        <div class="flex items-center">
+            <div class="flex">
+                <AddGTCModal
+                    :key="selectedGlossaryQf"
+                    :entityType="defaultEntityType"
+                    @add="handleAddGTC"
+                    :glossaryQualifiedName="selectedGlossaryQf"
+                    :glossaryName="selectedGlosaryName"
+                >
+                    <template #trigger>
+                        <a-button class="ml-3" size="small">
                             <AtlanIcon
                                 icon="Add"
                                 class="transition duration-300 text-primary"
                             />
-                        </div>
-                    </a-button>
-                </template>
-            </AddGTCModal>
+                        </a-button>
+                    </template>
+                </AddGTCModal>
+
+                <div class="ml-2">
+                    <GlossaryActions></GlossaryActions>
+                </div>
+            </div>
         </div>
 
-        <div class="flex px-4 py-1 mb-2">
+        <div class="flex px-4 my-2">
             <SearchAdvanced
                 v-model="queryText"
                 :connectorName="facets?.hierarchy?.connectorName"
@@ -142,6 +147,8 @@
 
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
 
+    import GlossaryActions from '@/glossary/actions/glossary.vue'
+
     import {
         AssetAttributes,
         AssetRelationAttributes,
@@ -171,6 +178,8 @@
             GlossarySelect,
             GlossaryItem,
             GlossaryTree,
+
+            GlossaryActions,
         },
         props: {
             showFilters: {
@@ -191,14 +200,13 @@
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
-
-            const selectedGlossary = ref(
+            const selectedGlossary = computed(() =>
                 glossaryStore.getGlossaryByQualifiedName(
                     selectedGlossaryQf.value
                 )
             )
-            const selectedGlosaryName = ref(
-                selectedGlossary?.value.attributes?.name
+            const selectedGlosaryName = computed(
+                () => selectedGlossary?.value?.attributes?.name
             )
 
             // List Options
@@ -326,11 +334,26 @@
             }
 
             const glossaryTree = ref(null)
-            const handleAddGlossary = (asset) => {
-                glossaryStore.addGlossary(asset)
-                handleSelectGlossary(asset.attributes.qualifiedName)
-                if (glossaryTree.value) {
-                    glossaryTree.value.addGlossary(asset)
+            const handleAddGTC = (asset) => {
+                if (asset) {
+                    if (asset.typeName === 'AtlasGlossary') {
+                        glossaryStore.addGlossary(asset)
+                        handleSelectGlossary(asset?.attributes?.qualifiedName)
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
+                    if (asset.typeName === 'AtlasGlossaryTerm') {
+                        console.log('added')
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
+                    if (asset.typeName === 'AtlasGlossaryCategory') {
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
                 }
             }
 
@@ -378,7 +401,7 @@
                 height,
                 glossaryBox,
                 handleSelectedGlossary,
-                handleAddGlossary,
+                handleAddGTC,
                 glossaryTree,
                 glossaryURL,
                 selectedGlossaryQf,

@@ -449,7 +449,10 @@
                         tabRemoveCallbackFunction,
                         false
                     )
-                    props.refreshQueryTree()
+                    props.refreshQueryTree(
+                        saveQueryData.value.parentGuid,
+                        'query'
+                    )
                 }
             }
             const saveTabConfirm = (key: string) => {

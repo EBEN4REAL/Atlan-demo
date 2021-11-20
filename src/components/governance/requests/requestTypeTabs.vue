@@ -51,10 +51,6 @@
                 @apply text-primary;
             }
         }
-
-        :global(.ant-tabs-bar) {
-            @apply mb-0 border-0 !important;
-        }
         :global(.ant-tabs-tab) {
             @apply bg-white text-sm mr-1 !important;
             border: 1px solid #e6e6eb;

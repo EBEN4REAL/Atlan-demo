@@ -437,11 +437,6 @@ meta:
         :global(.ant-tabs-tab-active) {
             @apply text-gray font-bold;
         }
-        :global(.ant-tabs-bar) {
-            @apply mb-0 pl-7;
-            @apply bg-white;
-        }
-
         :global(.ant-tabs-tabpane) {
             height: 100vh !important;
             // height: calc(100vh - 170px) !important;

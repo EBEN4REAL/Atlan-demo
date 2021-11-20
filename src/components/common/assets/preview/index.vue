@@ -395,9 +395,6 @@
 <style lang="less" module>
     .previewtab {
         &:global(.ant-tabs-left) {
-            :global(.ant-tabs-bar) {
-                margin-bottom: 0px !important;
-            }
             :global(.ant-tabs-nav-container) {
                 width: 48px !important;
                 @apply ml-0 !important;

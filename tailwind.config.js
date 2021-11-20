@@ -74,6 +74,7 @@ module.exports = {
             display: ['group-hover'],
             textColor: ['group-focus'],
             fill: ['group-hover'],
+            textDecoration: ['group-hover'],
         },
     },
     plugins: [

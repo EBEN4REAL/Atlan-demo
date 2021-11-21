@@ -49,7 +49,7 @@ export const profileTabs = [
         id: 'termsAndCategories',
         label: 'Terms and Categories',
         component: 'termsAndCategories',
-        includes: ['AtlasGlossary'],
+        includes: ['AtlasGlossary', 'AtlasGlossaryCategory'],
         icon: 'TermsAndCategories',
         tooltip: 'Terms and Categories',
     },

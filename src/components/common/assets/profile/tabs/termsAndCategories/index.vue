@@ -1,13 +1,17 @@
 <template>
     <div class="p-6">
         <div class="p-4 bg-white rounded">
-            <Assets :show-filters="false" />
+            <Assets
+                :show-filters="false"
+                :initial-filters="tabFilter"
+                page="glossary"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed } from 'vue'
+    import { defineComponent, PropType, computed, toRefs } from 'vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -22,21 +26,19 @@
                 required: true,
             },
         },
-        setup() {
-            const { isBiAsset, isGTC } = useAssetInfo()
+        setup(props) {
+            const { qualifiedName, assetType } = useAssetInfo()
+            const { selectedAsset } = toRefs(props)
+            const tabFilter = computed(() => {
+                if (
+                    assetType(selectedAsset.value) === 'AtlasGlossaryCategory'
+                ) {
+                    return { category: qualifiedName(selectedAsset.value) }
+                }
+                return { glossary: qualifiedName(selectedAsset.value) }
+            })
 
-            /*  const termsFilter = computed(() => ({
-                terms: {
-                    ownerUsers: selectedUser.value?.username
-                        ? [selectedUser.value.username]
-                        : [],
-                    ownerGroups: selectedGroup.value?.name
-                        ? [selectedGroup.value.name]
-                        : [],
-                },
-            })) */
-
-            return { isBiAsset, isGTC }
+            return { tabFilter }
         },
     })
 </script>

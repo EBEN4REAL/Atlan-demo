@@ -6,7 +6,7 @@
         <div class="flex-1 border-r border-gray-300">
             <div class="flex w-full h-full">
                 <!-- <BulkUploadProgress /> -->
-                <router-view v-if="isItem" :selected-asset="selectedAsset" />
+                <router-view :selected-asset="selectedAsset" v-if="isItem" />
             </div>
         </div>
 

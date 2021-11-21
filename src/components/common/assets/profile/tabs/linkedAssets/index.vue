@@ -4,6 +4,7 @@
             <Assets
                 :show-filters="false"
                 :initial-filters="termsFilter"
+                :static-use="true"
                 page="glossary"
             />
         </div>

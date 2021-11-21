@@ -4,6 +4,7 @@
             <Assets
                 :show-filters="false"
                 :initial-filters="tabFilter"
+                :static-use="true"
                 page="glossary"
             />
         </div>

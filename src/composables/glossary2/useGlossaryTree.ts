@@ -102,7 +102,7 @@ const useGlossaryTree = ({
             try {
                 await mutate()
 
-                if (error) {
+                if (error.value) {
                     loadedKeys.value.push(treeNode.dataRef.key)
                     treeNode.dataRef.isLoading = false
                     treeNode.dataRef.isError = error
@@ -145,7 +145,7 @@ const useGlossaryTree = ({
             generateBody()
             try {
                 await mutate()
-                if (error) {
+                if (error.value) {
                     loadedKeys.value.push(treeNode.dataRef.key)
                     treeNode.dataRef.isLoading = false
                     treeNode.dataRef.isError = error

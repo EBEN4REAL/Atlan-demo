@@ -30,9 +30,7 @@
             const { qualifiedName } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
             const termsFilter = computed(() => ({
-                terms: {
-                    __meanings: qualifiedName(selectedAsset.value),
-                },
+                terms: qualifiedName(selectedAsset.value),
             }))
 
             return { termsFilter }

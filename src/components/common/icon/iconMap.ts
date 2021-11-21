@@ -238,6 +238,7 @@ import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import NoWf from '~/assets/images/icons/no-wf.svg'
+import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
 // source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
@@ -489,5 +490,6 @@ export default {
     NoWf,
     Schema2Active,
     QueriesActive,
-    CaretDown
+    CaretDown,
+    GovernanceCenter,
 }

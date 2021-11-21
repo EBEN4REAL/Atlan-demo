@@ -4,7 +4,7 @@ import page from '~/constant/accessControl/page'
 export const workspaceCentreList = [
     {
         path: '/governance',
-        icon: 'Admin',
+        icon: 'GovernanceCenter',
         label: 'Governance Center',
         isActive: true,
         auth: page.PAGE_PLATFORM,

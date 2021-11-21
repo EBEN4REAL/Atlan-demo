@@ -1,9 +1,9 @@
 <template>
     <Loader v-if="isLoading"></Loader>
     <AssetProfile
+        v-else
         :asset="selectedAsset"
         @preview="emit('preview', $event)"
-        v-else
     ></AssetProfile>
 </template>
 

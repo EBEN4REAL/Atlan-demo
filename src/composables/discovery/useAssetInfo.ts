@@ -221,6 +221,9 @@ export default function useAssetInfo() {
     const getAnchorQualifiedName = (asset: assetInterface) => {
         return attributes(asset)?.anchor?.uniqueAttributes?.qualifiedName
     }
+    const getAnchorProfile = (asset: assetInterface) => {
+        return `/glossary/${getAnchorGuid(asset)}`
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -293,6 +296,16 @@ export default function useAssetInfo() {
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset)?.columnCount)
+
+    const termsCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? asset?.termsCount?.toLocaleString() || 'N/A'
+            : getCountString(asset?.termsCount)
+
+    const categoryCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? asset?.categoryCount?.toLocaleString() || 'N/A'
+            : getCountString(asset?.categoryCount)
 
     const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -845,7 +858,10 @@ export default function useAssetInfo() {
         qualifiedName,
         getAnchorName,
         getAnchorGuid,
+        getAnchorProfile,
         connectionQualifiedName,
+        categoryCount,
+        termsCount,
         getConnectorImageMap,
         anchorAttributes,
         readmeGuid,

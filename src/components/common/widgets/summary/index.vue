@@ -86,6 +86,9 @@
             CategoriesCount: defineAsyncComponent(
                 () => import('./types/categoriesCount.vue')
             ),
+            ParentGlossary: defineAsyncComponent(
+                () => import('./types/parentGlossary.vue')
+            ),
         },
 
         props: {

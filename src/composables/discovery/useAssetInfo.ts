@@ -221,6 +221,9 @@ export default function useAssetInfo() {
     const getAnchorQualifiedName = (asset: assetInterface) => {
         return attributes(asset)?.anchor?.uniqueAttributes?.qualifiedName
     }
+    const getAnchorProfile = (asset: assetInterface) => {
+        return `/glossary/${getAnchorGuid(asset)}`
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -855,6 +858,7 @@ export default function useAssetInfo() {
         qualifiedName,
         getAnchorName,
         getAnchorGuid,
+        getAnchorProfile,
         connectionQualifiedName,
         categoryCount,
         termsCount,

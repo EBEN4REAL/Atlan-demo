@@ -40,6 +40,7 @@ type CustomTreeDataItem =
 interface useSchemaExplorerTreeProps {
     emit: any
     queryText: Ref<string>
+    searchResultType: Ref<string>
     connectionQualifiedName?: Ref<string | undefined>
     databaseQualifiedName?: Ref<string | undefined>
     schemaQualifiedName?: Ref<string | undefined>
@@ -57,6 +58,7 @@ const useTree = ({
     cacheKey,
     isAccordion,
     queryText,
+    searchResultType
 }: useSchemaExplorerTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -80,7 +82,7 @@ const useTree = ({
         getColumnsForTable,
         // getViewsForSchema,
         getColumnsForView,
-    } = useLoadTreeData(queryText)
+    } = useLoadTreeData(queryText, searchResultType)
 
     const serviceMap = {
         Connection: getDatabaseForConnection,
@@ -141,6 +143,7 @@ const useTree = ({
         schemaQualifiedName?: string
     ) => {
         // treeData.value = [];
+        // console.log('query1: ', queryText)
         if (schemaQualifiedName) {
             const found = loadedKeys.value.find(
                 (qualifiedName) => qualifiedName === schemaQualifiedName

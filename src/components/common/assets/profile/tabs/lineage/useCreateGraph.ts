@@ -1,17 +1,20 @@
 import { ref } from 'vue'
 import { SimpleNodeView } from './view.js'
-import { DagreLayout } from './dagreLayout/dagre'
+import useUpdateGraph from './useUpdateGraph'
+
+const { updateProcessNodesPosition } = useUpdateGraph()
 
 export default function useCreateGraph(
     graph,
     graphContainer,
-    minimapContainer
+    minimapContainer,
+    showProcess
 ) {
     const graphLayout = ref({})
 
     /* Build Graph Canvas */
     const { Graph } = window.X6
-    // const { DagreLayout } = window.layout
+    const { DagreLayout } = window.layout
 
     graph.value = new Graph({
         autoResize: true,
@@ -54,9 +57,15 @@ export default function useCreateGraph(
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         rankdir: 'LR',
-        ranksep: 100,
         nodesep: 15,
         controlPoints: true,
+        ranksepFunc() {
+            if (showProcess.value) return 75
+            return 150
+        },
+        onLayoutEnd() {
+            updateProcessNodesPosition(graph)
+        },
     })
 
     return {

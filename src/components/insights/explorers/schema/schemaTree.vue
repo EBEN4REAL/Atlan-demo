@@ -28,7 +28,14 @@
                         <div
                             :data-test-id="'loadMore'"
                             v-else
-                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
+                            class="
+                                flex flex-row
+                                w-full
+                                text-sm
+                                font-bold
+                                leading-5
+                                text-primary
+                            "
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -55,7 +62,15 @@
                         activeInlineTab?.explorer?.schema?.connectors
                             ?.attributeName === 'connectionQualifiedName'
                     "
-                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                    class="
+                        flex flex-col
+                        items-center
+                        justify-center
+                        text-base
+                        leading-6
+                        text-center text-gray-500
+                        mt-14
+                    "
                 >
                     <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                     <p class="mt-6 mb-0 text-base text-gray-700">
@@ -63,7 +78,15 @@
                     </p>
                 </div>
                 <div
-                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                    class="
+                        flex flex-col
+                        items-center
+                        justify-center
+                        text-base
+                        leading-6
+                        text-center text-gray-500
+                        mt-14
+                    "
                     v-else-if="
                         activeInlineTab?.explorer?.schema?.connectors
                             ?.attributeName === 'databaseQualifiedName'
@@ -186,6 +209,7 @@
                 > .ant-tree-switcher_open) {
             background-color: #fff !important;
         }
+
         :global(.ant-tree-title) {
             width: calc(100% - 1.5rem) !important;
         }

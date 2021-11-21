@@ -294,6 +294,16 @@ export default function useAssetInfo() {
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset)?.columnCount)
 
+    const termsCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? asset?.termsCount?.toLocaleString() || 'N/A'
+            : getCountString(asset?.termsCount)
+
+    const categoryCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? asset?.categoryCount?.toLocaleString() || 'N/A'
+            : getCountString(asset?.categoryCount)
+
     const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.sizeBytes?.toLocaleString() || 'N/A'
@@ -846,6 +856,8 @@ export default function useAssetInfo() {
         getAnchorName,
         getAnchorGuid,
         connectionQualifiedName,
+        categoryCount,
+        termsCount,
         getConnectorImageMap,
         anchorAttributes,
         readmeGuid,

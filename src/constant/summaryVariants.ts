@@ -12,6 +12,24 @@ export const summaryVariants = [
         includes: ['View', 'MaterialisedViews'],
     },
     {
+        id: 'term',
+        label: 'Term',
+        components: ['Glossary', 'Categories'],
+        includes: ['AtlasGlossaryTerm'],
+    },
+    {
+        id: 'glossary',
+        label: 'Glossary',
+        components: ['TermsCount', 'CategoriesCount'],
+        includes: ['AtlasGlossary'],
+    },
+    {
+        id: 'category',
+        label: 'Category',
+        components: ['Glossary', 'TermsCount'],
+        includes: ['AtlasGlossaryCategory'],
+    },
+    {
         id: 'workspace',
         label: 'Workspace',
         components: ['Datasets', 'Reports', 'Dashboards'],

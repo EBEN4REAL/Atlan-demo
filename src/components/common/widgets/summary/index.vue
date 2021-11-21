@@ -80,6 +80,12 @@
             Definition: defineAsyncComponent(
                 () => import('./types/definition.vue')
             ),
+            TermsCount: defineAsyncComponent(
+                () => import('./types/termsCount.vue')
+            ),
+            CategoriesCount: defineAsyncComponent(
+                () => import('./types/categoriesCount.vue')
+            ),
         },
 
         props: {

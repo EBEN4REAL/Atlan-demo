@@ -181,7 +181,7 @@
             initialFilters: {
                 type: Object,
                 required: false,
-                default: {},
+                default: () => {},
             },
             showAggrs: {
                 type: Boolean,
@@ -192,6 +192,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            page: {
+                type: String,
+                required: false,
+                default: 'assets',
             },
         },
         setup(props, { emit }) {
@@ -217,10 +222,10 @@
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-            const { initialFilters } = toRefs(props)
+            const { initialFilters, page } = toRefs(props)
             const discoveryStore = useAssetStore()
 
-            if (discoveryStore.activeFacet) {
+            if (discoveryStore.activeFacet && page.value === 'assets') {
                 facets.value = discoveryStore.activeFacet
             }
             if (discoveryStore.preferences) {

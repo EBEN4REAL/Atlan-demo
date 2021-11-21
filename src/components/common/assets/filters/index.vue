@@ -199,8 +199,6 @@
                 totalFilteredCount,
                 handleResetAll,
                 componentState,
-                isAccordion,
-                filterList,
             }
         },
     })

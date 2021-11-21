@@ -4,9 +4,9 @@
 
         <a-tabs
             v-model:activeKey="activeKey"
-            @change="handleChangeTab"
             :class="$style.profiletab"
             class="flex-1"
+            @change="handleChangeTab"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
@@ -60,16 +60,28 @@
             Queries: defineAsyncComponent(
                 () => import('./tabs/queries/index.vue')
             ),
+            LinkedAssets: defineAsyncComponent(
+                () => import('./tabs/linkedAssets/index.vue')
+            ),
+            TermsAndCategories: defineAsyncComponent(
+                () => import('./tabs/termsAndCategories/index.vue')
+            ),
         },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
+                default: () => {},
+            },
+            page: {
+                type: String,
+                required: false,
+                default: 'assets',
             },
         },
         emits: ['preview'],
         setup(props) {
-            const { asset } = toRefs(props)
+            const { asset, page } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() => getAllowedActions(asset.value))
             provide('actions', actions)
@@ -82,7 +94,7 @@
 
             const router = useRouter()
             const handleChangeTab = (key) => {
-                router.replace(`/assets/${route.params.id}/${key}`)
+                router.replace(`/${page.value}/${route.params.id}/${key}`)
             }
 
             onMounted(() => {

@@ -6,16 +6,14 @@
         <div class="flex-1 border-r border-gray-300">
             <div class="flex w-full h-full">
                 <!-- <BulkUploadProgress /> -->
-                <router-view :selected-asset="selectedGlossary" v-if="isItem" />
+                <router-view :selected-asset="selectedAsset" v-if="isItem" />
             </div>
         </div>
 
         <div
             class="bg-white  asset-preview-container xs:hidden sm:hidden md:block lg:block"
         >
-            <GlossaryPreview
-                :selected-asset="selectedGlossary"
-            ></GlossaryPreview>
+            <GlossaryPreview :selected-asset="selectedAsset"></GlossaryPreview>
             <!-- <AssetPreview :selected-asset="selectedAsset"></AssetPreview> -->
         </div>
     </div>
@@ -43,7 +41,7 @@
             })
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
-            const { selectedGlossary } = useAssetInfo()
+            const { selectedAsset } = useAssetInfo()
 
             const updateList = (asset) => {
                 console.log('updateList')
@@ -57,7 +55,7 @@
 
             return {
                 isItem,
-                selectedGlossary,
+                selectedAsset,
             }
         },
     })

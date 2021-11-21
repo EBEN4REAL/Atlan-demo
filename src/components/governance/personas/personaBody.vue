@@ -233,6 +233,11 @@
                 })
                 try {
                     await savePolicy(type, id)
+                    if (type === 'meta')
+                        policyEditMap.value.metadataPolicies[id] = false
+                    else if (type === 'data')
+                        policyEditMap.value.dataPolicies[id] = false
+
                     // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',

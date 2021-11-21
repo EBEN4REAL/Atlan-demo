@@ -97,7 +97,7 @@
                     })
                 } catch (error) {
                     message.error({
-                        content: 'Failed to create persona',
+                        content: error?.message ?? 'Failed to create persona',
                         duration: 1.5,
                         key: messageKey,
                     })

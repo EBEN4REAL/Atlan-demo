@@ -17,13 +17,13 @@
                     />
                 </div>
                 <div class="flex flex-wrap items-center gap-x-2">
-                    <span v-if="row !== '-'" class="text-xs text-gray-500">
+                    <span v-if="row !== '-' && row !== ''" class="text-xs text-gray-500">
                         <span
                             class="mr-1 text-xs font-semibold tracking-tight text-gray-500"
                             >{{ row }}</span
                         >Rows
                     </span>
-                    <span v-if="col !== '-'" class="text-xs text-gray-500">
+                    <span v-if="col !== '-' && col !== ''" class="text-xs text-gray-500">
                         <span
                             class="text-xs font-semibold tracking-tight text-gray-500"
                             >{{ col }}</span

@@ -84,7 +84,7 @@
             </AtlanBtn>
         </div>
 
-        <ErrorView v-else :error="!isPersonaLoading && isPersonaError">
+        <ErrorView v-else :error="isPersonaError">
             <div class="mt-3">
                 <AtlanButton
                     size="sm"

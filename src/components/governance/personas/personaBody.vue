@@ -13,7 +13,16 @@
                         >{{ t?.data?.label }}</span
                     >
                     <div
-                        class="px-1 py-0.5 ml-2 text-xs font-bold rounded"
+                        class="
+                            px-1
+                            py-0.5
+                            ml-2
+                            text-xs
+                            font-bold
+                            rounded
+                            flex
+                            items-center
+                        "
                         v-if="t?.data?.key === 'policies'"
                         :class="
                             activeTabKey === t?.data?.key
@@ -21,13 +30,24 @@
                                 : 'text-gray-500 bg-gray-100'
                         "
                     >
-                        {{
-                            selectedPersonaDirty?.metadataPolicies?.length +
-                            selectedPersonaDirty?.dataPolicies?.length
-                        }}
+                        <div class="mt-0.5">
+                            {{
+                                selectedPersonaDirty?.metadataPolicies?.length +
+                                selectedPersonaDirty?.dataPolicies?.length
+                            }}
+                        </div>
                     </div>
                     <div
-                        class="px-1 py-0.5 ml-2 text-xs font-bold rounded"
+                        class="
+                            px-1
+                            py-0.5
+                            ml-2
+                            text-xs
+                            font-bold
+                            rounded
+                            flex
+                            items-center
+                        "
                         v-if="t?.data?.key === 'users'"
                         :class="
                             activeTabKey === t?.data?.key
@@ -35,10 +55,12 @@
                                 : 'text-gray-500 bg-gray-100'
                         "
                     >
-                        {{
-                            selectedPersonaDirty?.users?.length +
-                            selectedPersonaDirty?.groups?.length
-                        }}
+                        <div class="mt-0.5">
+                            {{
+                                selectedPersonaDirty?.users?.length +
+                                selectedPersonaDirty?.groups?.length
+                            }}
+                        </div>
                     </div>
                 </div>
             </template>

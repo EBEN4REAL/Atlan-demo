@@ -86,7 +86,7 @@ export function addPolicy(type: PolicyType) {
             assets: [],
             connectionName: '',
             connectionId: '',
-            maskType: 'MASK_NONE',
+            maskType: 'null',
             allow: true,
             name: '',
             description: '',
@@ -156,8 +156,6 @@ export function savePolicy(type: PolicyType, id: string) {
             const policy = {
                 ...selectedPersonaDirty.value?.dataPolicies?.[dirtyPolicyIndex],
             }
-
-            if (policy?.maskType) delete policy?.maskType
 
             if (policy?.isNew) {
                 delete policy?.isNew

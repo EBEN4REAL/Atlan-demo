@@ -367,6 +367,8 @@
     import usePersonaGroups from '../composables/usePersonaGroups'
     import usePersonaService from '../composables/usePersonaService'
     import Avatar from '~/components/common/avatar/avatar.vue'
+    import ErrorView from '@common/error/index.vue'
+
     import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
 
     import {
@@ -382,6 +384,7 @@
             RaisedTab,
             SearchAndFilter,
             OwnersSelector,
+            ErrorView,
         },
         props: {
             persona: {

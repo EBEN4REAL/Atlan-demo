@@ -28,7 +28,7 @@ export const getIntegrationsList = () => {
         if (v)
             records.value = data.value?.records ?? null
     })
-    return { data: records, isLoading, error }
+    return { data: records, isLoading, error, isReady }
 }
 
 export const getIntegrationById = (id) => {

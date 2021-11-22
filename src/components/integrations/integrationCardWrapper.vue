@@ -13,13 +13,11 @@
             ),
         },
         props: {
-            integration: { type: Object, required: true },
             integrationData: { type: Object, required: true },
         },
         setup(props) {
-            const { integrationData: data, integration } = toRefs(props)
+            const { integrationData: data } = toRefs(props)
             provide('data', data)
-            provide('integration', integration)
             return {}
         },
     })

@@ -1,11 +1,10 @@
 <template>
-    <main class="mx-4 my-9">
+    <main v-if="isReady" class="mx-4 my-9">
         <h1 class="mb-8 text-3xl">Integrations</h1>
         <template v-for="i in allIntegrations" :key="i.id">
             <IntegrationCardWrapper
                 v-if="integrationExist(i.name)"
                 :integration-data="getData(i.name)"
-                :integration="{ id: `0c6495c0-2b2f-4fd1-8876-b5d9e0ad4a35` }"
             />
             <AddIntegrationCard
                 v-else
@@ -17,7 +16,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, watch } from 'vue'
     import {
         getIntegrationTypes,
         getIntegrationLink,
@@ -26,11 +25,14 @@
     import AddIntegrationCard from './addIntegrationCard.vue'
     import IntegrationCardWrapper from './integrationCardWrapper.vue'
     import { integrationData } from '~/constant/integrations'
+    import integrationStore from '~/store/integrations/index'
 
     export default defineComponent({
         name: 'IntegrationsWrapper',
         components: { AddIntegrationCard, IntegrationCardWrapper },
         setup() {
+            const store = integrationStore()
+
             const {
                 data: allIntegrations,
                 isLoading,
@@ -41,17 +43,28 @@
                 data: currentIntegrations,
                 isLoading: currentLoading,
                 error: currentError,
+                isReady,
             } = getIntegrationsList()
+
+            watch(currentIntegrations, () => {
+                if (currentIntegrations.value.length)
+                    store.setAllIntegrationsList(currentIntegrations.value)
+            })
 
             const getData = (alias) => ({
                 ...integrationData[alias],
                 link: getIntegrationLink(alias),
             })
 
-            const integrationExist = (alias) => true
+            const integrationExist = (alias): Object | Boolean | undefined =>
+                store.getIntegrationList.find(
+                    (i) => i.name.toLowerCase() === alias.toLowerCase()
+                )
 
             return {
                 integrationExist,
+                isReady,
+                currentLoading,
                 currentIntegrations,
                 allIntegrations,
                 getData,

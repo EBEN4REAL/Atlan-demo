@@ -39,6 +39,7 @@
         </section>
         <section class="flex items-center justify-between p-6 gap-x-3">
             <AtlanButton
+                v-auth="access.DELETE_INTEGRATION"
                 color="minimal"
                 class="text-red-500"
                 :is-loading="isLoading"
@@ -47,6 +48,7 @@
                 Disconnect
             </AtlanButton>
             <AtlanButton
+                v-auth="access.UPDATE_INTEGRATIONS"
                 :is-loading="updateLoading"
                 class="w-16"
                 :disabled="!isEdit"
@@ -77,6 +79,7 @@
     } from '@/integrations/useIntegrations'
     import integrationStore from '~/store/integrations/index'
     import Chip from '@/UI/chip.vue'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'SlackIntegrationCard',
@@ -205,6 +208,7 @@
                 update,
                 channels,
                 isEdit,
+                access,
             }
         },
     })

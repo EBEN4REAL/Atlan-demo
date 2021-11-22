@@ -15,7 +15,7 @@
         </div>
         <div class="">
             <router-link :to="`//${integrationData.link}`" target="_blank">
-                <AtlanButton>
+                <AtlanButton v-auth="access.CREATE_INTEGRATION">
                     Add to Slack <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
             </router-link>
@@ -27,6 +27,7 @@
     import { defineComponent } from 'vue'
     import AtlanButton from '@/UI/button.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'AddIntegrationCard',
@@ -37,7 +38,7 @@
         },
         setup() {
             const { name: tenantName } = useTenantData()
-            return { tenantName }
+            return { tenantName, access }
         },
     })
 </script>

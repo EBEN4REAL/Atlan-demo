@@ -16,3 +16,10 @@
 </script>
 
 <style scoped></style>
+
+<route lang="yaml">
+meta:
+    layout: default
+    requiresAuth: true
+    permissions: [LIST_INTEGRATION]
+</route>

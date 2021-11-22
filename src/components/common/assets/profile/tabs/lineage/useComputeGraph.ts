@@ -4,7 +4,7 @@ import useUpdateGraph from './useUpdateGraph'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { map as entityMap } from '~/services/meta/entity/key'
 
-const { updateEdgesStroke } = useUpdateGraph()
+const { updateEdgesData } = useUpdateGraph()
 
 const getType = (entity) => getNodeTypeText[entity.typeName]
 const getSource = (entity) => {
@@ -12,7 +12,6 @@ const getSource = (entity) => {
     if (item[0] === 'default') return item[1]
     return item[0]
 }
-
 
 export default async function useComputeGraph(
     graph,
@@ -83,38 +82,49 @@ export default async function useComputeGraph(
             shape: 'html',
             data: {
                 id: guid,
+                isHighlightedNode: null,
+                isHighlightedNodePath: null,
+                isGrayed: false,
             },
             html: {
                 render(node) {
                     const data = node.getData() as any
 
                     return !isProcess
-                        ? `<div class="lineage-node ${data?.isHighlightedNode === data?.id
-                            ? 'isHighlightedNode'
-                            : ''
-                        }
-                          ${data?.isHighlightedNodePath === data?.id
-                            ? 'isHighlightedNodePath'
-                            : ''
-                        }
+                        ? `<div class="lineage-node group ${
+                              data?.isHighlightedNode === data?.id
+                                  ? 'isHighlightedNode'
+                                  : ''
+                          }
+                          ${
+                              data?.isHighlightedNodePath === data?.id
+                                  ? 'isHighlightedNodePath'
+                                  : ''
+                          }
+                          ${data?.isGrayed ? 'isGrayed' : ''}
                           ${isBase ? 'isBase' : ''}
                           ">
                                     <img class="node-source" src="${img}" />
                                     <div>
-                                        <div class="node-text">${displayTextTrunc}</div>
+                                        <div class="node-text name group-hover:underline">${displayTextTrunc}</div>
                                         <div class="node-text type">${type}</div>
                                     </div>
                                 </div>`
-                        : `<div class="lineage-process ${data?.isHighlightedNode === data?.id
-                            ? 'isHighlightedNode'
-                            : ''
-                        } ${data?.isHighlightedNodePath === data?.id
-                            ? 'isHighlightedNodePath'
-                            : ''
-                        }"> <svg width="20" height="20" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.5 3.4375L0.625 5L2.5 6.5625" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M7.5 3.4375L9.375 5L7.5 6.5625" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M6.25 1.5625L3.75 8.4375" stroke="#64748B" stroke-linecap="round" stroke-linejoin="round"/>
+                        : `<div class="lineage-process ${
+                              data?.isHighlightedNode === data?.id
+                                  ? 'isHighlightedNode'
+                                  : ''
+                          } ${
+                              data?.isHighlightedNodePath === data?.id
+                                  ? 'isHighlightedNodePath'
+                                  : ''
+                          }
+                          ${
+                              data?.isGrayed ? 'isGrayed' : ''
+                          }"> <svg class="process-icon" width="20" height="20" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 3.4375L0.625 5L2.5 6.5625" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M7.5 3.4375L9.375 5L7.5 6.5625" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M6.25 1.5625L3.75 8.4375" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>`
                 },
@@ -134,7 +144,7 @@ export default async function useComputeGraph(
         const getEntity = (x) => guidEntityMap.find((y) => y.guid === x)
         const isProcess = (x) => {
             const entity = getEntity(x)
-            return entity.typeName === 'Process'
+            return ['Process', 'ColumnProcess'].includes(entity.typeName)
         }
         relations.forEach((relation) => {
             // const x = relation.fromEntityId
@@ -186,20 +196,12 @@ export default async function useComputeGraph(
     graph.value.fromJSON(model.value)
 
     // Highlight Edges
-    const edgesToHighlight = edges.value.map((i) => i.id)
-    updateEdgesStroke(
-        graph,
-        model,
-        edges,
-        edgesToHighlight,
-        baseEntityGuid,
-        true
-    )
+    updateEdgesData(graph, [], baseEntityGuid)
 
     /* Zoom */
     graph.value.zoomToFit({ padding: 12 })
     graph.value.scale(0.7)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
-    return { model, edges, nodes, baseEntityGuid }
+    return { baseEntityGuid }
 }

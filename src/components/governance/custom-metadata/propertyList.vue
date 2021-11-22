@@ -20,7 +20,7 @@
                     :id="`prop-${property.name}`"
                     :key="index"
                     :data-property="property"
-                    class="relative flex items-center justify-between  last:rounded-b"
+                    class="relative flex items-center justify-between last:rounded-b"
                     style="height: 44px"
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
@@ -32,13 +32,22 @@
                             {{ index + 1 }}
                         </div> -->
                         <div
-                            class="leading-none cursor-pointer  text-primary align-center"
+                            class="leading-none cursor-pointer align-center"
                             style="width: 248px"
                             @click="
-                                $emit('openEditDrawer', { property, index })
-                            "
+                                $emit('openEditDrawer', { property, index })"
                         >
-                            {{ property.displayName }}
+                            <span class="text-primary">{{ property.displayName }}</span>
+                            <a-tooltip>
+                                <template #title>
+                                    <span>{{property.options.description}}</span>
+                                </template>
+                                <AtlanIcon
+                                    v-if="property.options.description"
+                                    class="inline h-4 ml-2 text-gray-400 hover:text-gray-500"
+                                    :icon="'Info'"
+                                />
+                            </a-tooltip>
                         </div>
                         <div class="capitalize" style="width: 248px">
                             <AtlanIcon
@@ -108,7 +117,7 @@
                 </div>
                 <div
                     v-if="isSorting"
-                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
+                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
                 >
                     <a-spin size="large" />
                 </div>
@@ -311,7 +320,14 @@
                 if (property.options?.customType) {
                     return property.options?.customType
                 }
-                return property.typeName
+                const label = attributesTypes.find(
+                    (x) =>
+                        x.id ===
+                        (property.options?.customType
+                            ? property.options?.customType
+                            : property.typeName) // if has customType property, use it instead of id to search for icon
+                )?.label
+                return label || property.typeName
             }
 
             return {

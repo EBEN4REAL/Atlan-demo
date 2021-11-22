@@ -32,6 +32,12 @@
                         <a-menu-item key="smtp" v-auth="[map.UPDATE_SMTP]">
                             SMTP
                         </a-menu-item>
+                        <a-menu-item
+                            key="integration"
+                            v-auth="[map.LIST_INTEGRATION]"
+                        >
+                            Integrations
+                        </a-menu-item>
                     </a-menu-item-group>
                 </a-menu>
             </div>

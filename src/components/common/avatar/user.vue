@@ -6,9 +6,9 @@
             :class="styleClass"
             class="text-sm align-middle border text-primary"
             :src="url"
-            ><span style="line-height: 16px">{{
-                getNameInitials(username)
-            }}</span></a-avatar
+            ><div class="-mt-0.5">
+                {{ getNameInitials(username) }}
+            </div></a-avatar
         >
         <div v-if="showUsername">{{ username }}</div>
     </div>

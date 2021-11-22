@@ -90,7 +90,7 @@
                         </template>
                         <div
                             v-if="user.enabled"
-                            class="flex items-center justify-center w-8 h-8 border rounded shadow cursor-pointer "
+                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
                             @click="emit('handleChangeRole', user)"
                         >
                             <AtlanIcon icon="StarCircled"></AtlanIcon>
@@ -159,7 +159,7 @@
                         </template>
                         <div
                             size="small"
-                            class="flex items-center justify-center w-8 h-8 border rounded shadow cursor-pointer "
+                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
                             @click="emit('toggleDisableEnablePopover', user)"
                         >
                             <AtlanIcon
@@ -179,8 +179,8 @@
                     <template #title>
                         <span>Resend Invite</span>
                     </template>
-                    <a-button
-                        size="small"
+                    <div
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
                         @click="
                             emit('resendInvite', {
                                 email: user.email,
@@ -188,18 +188,16 @@
                             })
                         "
                     >
-                        <AtlanIcon icon="ResendInvite"></AtlanIcon
-                    ></a-button>
+                        <AtlanIcon icon="ResendInvite"></AtlanIcon>
+                    </div>
                 </a-tooltip>
                 <a-dropdown v-if="!user.email_verified" :trigger="['click']">
-                    <a-button
-                        class="rounded"
-                        size="small"
-                        type="secondary"
+                    <div
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu"></AtlanIcon>
-                    </a-button>
+                    </div>
                     <template #overlay>
                         <a-menu>
                             <a-popover
@@ -405,6 +403,9 @@
         }
         :global(.ant-popover-arrow) {
             @apply hidden;
+        }
+        .customShadow {
+            box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
         }
     }
 </style>

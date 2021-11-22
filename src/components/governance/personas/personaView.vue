@@ -16,7 +16,9 @@
             <div class="px-4">
                 <SearchAndFilter
                     v-model:value="searchTerm"
-                    :placeholder="`Search from ${filteredPersonas?.length} personas`"
+                    :placeholder="`Search from ${
+                        filteredPersonas?.length ?? 0
+                    } personas`"
                     class="mt-4 mb-2 bg-white"
                     :autofocus="true"
                     size="minimal"
@@ -53,18 +55,18 @@
         </template>
 
         <AddPersona v-model:visible="modalVisible" />
-
-        <a-spin
-            v-if="!isPersonaListReady"
-            class="mx-auto my-auto"
-            size="large"
-        />
+        <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
             <PersonaHeader :persona="selectedPersona" />
             <PersonaBody v-model:persona="selectedPersona" />
         </template>
-        <div v-else class="flex flex-col items-center justify-center h-full">
-            <component :is="AddPersonaIllustration"></component>
+        <div
+            v-else-if="
+                filteredPersonas?.length == 0 && isPersonaError !== undefined
+            "
+            class="flex flex-col items-center justify-center h-full"
+        >
+            <component class="w-4 h-4" :is="AddPersonaIllustration"></component>
             <span class="mx-auto text-base text-gray"
                 >You don't have any personas</span
             >
@@ -81,6 +83,23 @@
                 Add new persona
             </AtlanBtn>
         </div>
+
+        <ErrorView v-else :error="isPersonaError">
+            <div class="mt-3">
+                <AtlanButton
+                    size="sm"
+                    color="minimal"
+                    @click="
+                        () => {
+                            reFetchList()
+                        }
+                    "
+                >
+                    <AtlanIcon icon="Reload" />
+                    Try again
+                </AtlanButton>
+            </div>
+        </ErrorView>
     </ExplorerLayout>
 </template>
 
@@ -94,19 +113,24 @@
     import ExplorerList from '@/admin/common/explorerList.vue'
     import AddPersona from './addPersona.vue'
     import {
+        reFetchList,
         filteredPersonas,
         searchTerm,
         selectedPersona,
         selectedPersonaId,
         isPersonaListReady,
+        isPersonaLoading,
+        isPersonaError,
     } from './composables/usePersonaList'
     import { isEditing } from './composables/useEditPersona'
-
+    import ErrorView from '@common/error/index.vue'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
+    import ErrorIllustration from '~/assets/images/error.svg'
 
     export default defineComponent({
         name: 'PersonaView',
         components: {
+            ErrorView,
             AtlanBtn,
             SearchAndFilter,
             PersonaBody,
@@ -122,15 +146,19 @@
             })
 
             return {
+                reFetchList,
                 filteredPersonas,
                 selectedPersona,
                 selectedPersonaId,
                 searchTerm,
                 modalVisible,
                 // createNewPersona,
+                isPersonaLoading,
+                isPersonaError,
                 isEditing,
                 AddPersonaIllustration,
                 isPersonaListReady,
+                ErrorIllustration,
             }
         },
     })

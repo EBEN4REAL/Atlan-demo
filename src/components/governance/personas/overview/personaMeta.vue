@@ -12,7 +12,9 @@
                 </span>
             </div>
             <span class="text-sm text-gray-500">on</span>
-            <span class="text-sm text-gray">{{ persona.createdAt }}</span>
+            <span class="text-sm text-gray">{{
+                persona.createdAt?.slice(0, -11)
+            }}</span>
 
             <a-switch
                 class="ml-auto"
@@ -24,18 +26,7 @@
         </div>
         <div class="flex items-center py-4 pt-2">
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    mr-3
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -63,13 +54,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -80,17 +65,7 @@
                 </div>
             </div>
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -118,13 +93,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -139,8 +108,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
-
+    import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import dayjs from 'dayjs'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
@@ -156,9 +125,12 @@
             },
         },
         emits: ['update:persona', 'update:isEditMode'],
-        setup() {
+        setup(props) {
+            const { persona } = toRefs(props)
             const enablePersonaCheck = ref(true)
+            const formatDate = (val) => {}
             return {
+                formatDate,
                 enablePersonaCheck,
                 enablePersona,
                 setActiveTab,

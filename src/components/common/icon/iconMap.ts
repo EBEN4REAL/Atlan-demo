@@ -238,6 +238,7 @@ import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import NoWf from '~/assets/images/icons/no-wf.svg'
+import Column from '~/assets/images/icons/column.svg'
 
 // source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
@@ -248,6 +249,7 @@ import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 
 export default {
+    Column,
     CreateGroups,
     NoGroups,
     NoUsers,
@@ -489,5 +491,5 @@ export default {
     NoWf,
     Schema2Active,
     QueriesActive,
-    CaretDown
+    CaretDown,
 }

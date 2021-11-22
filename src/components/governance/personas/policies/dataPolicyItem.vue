@@ -90,6 +90,8 @@
                     v-model:data="assets"
                     label-key="label"
                     @add="openAssetSelector"
+                    :customRendererForLabel="customRendererForLabel"
+                    :prefixIcons="assetsIcons"
                 >
                     <template #addBtn="d">
                         <div>
@@ -232,6 +234,7 @@
     import { useConnectionStore } from '~/store/connection'
     import { DataPolicies } from '~/types/accessPolicies/purposes'
     import { removeEditFlag } from '../composables/useEditPersona'
+    import { useUtils } from '../assets/useUtils'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -252,6 +255,7 @@
         emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
+            const { getAssetIcon } = useUtils()
             const connectorComponentRef = ref()
             const policyNameRef = ref()
             const assetSelectorVisible = ref(false)
@@ -317,6 +321,9 @@
                     else rules.value.assets.show = true
                 },
             })
+            const assetsIcons = computed(() => {
+                return assets.value.map((asset) => getAssetIcon(asset.label))
+            })
 
             const handleConnectorChange = () => {
                 policy.value.assets = []
@@ -361,7 +368,15 @@
                 )
             })
 
+            const customRendererForLabel = (label: string) => {
+                return label.split('/').length > 3
+                    ? label.split('/').slice(3).join('/')
+                    : label.split('/').slice(2).join('/')
+            }
+
             return {
+                assetsIcons,
+                customRendererForLabel,
                 addConnectionAsset,
                 isreadOnlyPillGroup,
                 handleConnectorChange,

@@ -1,14 +1,6 @@
 <template>
     <div
-        class="
-            flex flex-col
-            py-4
-            mb-2
-            border-b border-gray-300
-            rounded
-            group
-            hover:shadow
-        "
+        class="flex flex-col py-4 mb-2 border-b border-gray-300 rounded  group hover:shadow"
         style="paddingleft: 12px; paddingroght: 12px"
     >
         <div class="flex items-center mb-4 gap-x-3">
@@ -24,14 +16,7 @@
             </span>
 
             <div
-                class="
-                    flex
-                    items-center
-                    ml-auto
-                    bg-gray-200
-                    border border-gray-200
-                    rounded
-                "
+                class="flex items-center ml-auto bg-gray-200 border border-gray-200 rounded "
             >
                 <img
                     :src="getImage(connectionQfName?.split('/')[1])"
@@ -61,16 +46,11 @@
                 :data="assets"
                 label-key="label"
                 class="text-gray-700"
+                :prefixIcons="assetsIcons"
                 read-only
             />
             <AtlanBtn
-                class="
-                    flex-none
-                    opacity-0
-                    group-hover:opacity-100
-                    text-gray
-                    hover:text-primary
-                "
+                class="flex-none opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
                 size="sm"
                 color="secondary"
                 padding="compact"
@@ -91,6 +71,7 @@
         MetadataPolicies,
     } from '~/types/accessPolicies/purposes'
     import { useConnectionStore } from '~/store/connection'
+    import { useUtils } from '../assets/useUtils'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -111,6 +92,7 @@
         emits: ['edit'],
         setup(props) {
             const { policy, type } = toRefs(props)
+            const { getAssetIcon } = useUtils()
             const assets = computed(() => {
                 return policy.value.assets.map((name) => ({
                     label:
@@ -118,6 +100,9 @@
                             ? name.split('/').slice(3).join('/')
                             : name.split('/').slice(2).join('/'),
                 }))
+            })
+            const assetsIcons = computed(() => {
+                return policy.value?.assets?.map((name) => getAssetIcon(name))
             })
 
             const connStore = useConnectionStore()
@@ -133,7 +118,7 @@
                 return policy.value.connectionName
             })
 
-            return { assets, getImage, connectionQfName }
+            return { assets, getImage, connectionQfName, assetsIcons }
         },
     })
 </script>

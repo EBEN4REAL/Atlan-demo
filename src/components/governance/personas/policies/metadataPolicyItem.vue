@@ -91,6 +91,9 @@
                     v-model:data="assets"
                     label-key="label"
                     @add="openAssetSelector"
+                    :prefixIcons="assetsIcons"
+                    :hoveredPill="false"
+                    :customRendererForLabel="customRendererForLabel"
                 >
                     <template #addBtn="d">
                         <div>
@@ -128,7 +131,12 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="
+                                                    h-4
+                                                    mr-1
+                                                    text-gray
+                                                    group-hover:text-white
+                                                "
                                             />
                                             <span class="text-xs">Add All</span>
                                         </div>
@@ -144,7 +152,12 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="
+                                                    h-4
+                                                    mr-1
+                                                    text-gray
+                                                    group-hover:text-white
+                                                "
                                             />
                                             <span class="text-xs"
                                                 >Custom select</span
@@ -223,6 +236,7 @@
 
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPersona'
+    import { useUtils } from '../assets/useUtils'
 
     export default defineComponent({
         name: 'MetadataPolicy',
@@ -243,6 +257,7 @@
         emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
+            const { getAssetIcon } = useUtils()
             const assetSelectorVisible = ref(false)
             const connectorComponentRef = ref()
             const policyNameRef = ref()
@@ -291,6 +306,10 @@
                     if (val.length > 0) rules.value.assets.show = false
                     else rules.value.assets.show = true
                 },
+            })
+
+            const assetsIcons = computed(() => {
+                return assets.value.map((asset) => getAssetIcon(asset.label))
             })
             const handleConnectorChange = () => {
                 policy.value.assets = []
@@ -344,6 +363,12 @@
                 },
             })
 
+            const customRendererForLabel = (label: string) => {
+                return label.split('/').length > 3
+                    ? label.split('/').slice(3).join('/')
+                    : label.split('/').slice(2).join('/')
+            }
+
             const isreadOnlyPillGroup = computed(() => {
                 return Boolean(
                     assets.value.find(
@@ -352,6 +377,8 @@
                 )
             })
             return {
+                customRendererForLabel,
+                assetsIcons,
                 isreadOnlyPillGroup,
                 rules,
                 handleSave,

@@ -4,7 +4,7 @@
             <template #label="t">
                 <div class="flex items-center">
                     <span
-                        class="text-base"
+                        class="text-sm"
                         :class="
                             activeTabKey === t?.data?.key
                                 ? 'text-gray-700'
@@ -13,7 +13,7 @@
                         >{{ t?.data?.label }}</span
                     >
                     <div
-                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        class="px-1 py-0.5 ml-2 text-xs font-bold rounded"
                         v-if="t?.data?.key === 'policies'"
                         :class="
                             activeTabKey === t?.data?.key
@@ -27,7 +27,7 @@
                         }}
                     </div>
                     <div
-                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        class="px-1 py-0.5 ml-2 text-xs font-bold rounded"
                         v-if="t?.data?.key === 'users'"
                         :class="
                             activeTabKey === t?.data?.key

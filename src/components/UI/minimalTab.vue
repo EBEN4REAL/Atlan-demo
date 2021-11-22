@@ -63,6 +63,7 @@
             @apply text-gray-500;
             @apply text-sm !important;
             @apply tracking-wide;
+            transition: text-shadow 1s;
         }
         .ant-tabs-tab:first-child {
             margin-left: 18px !important;

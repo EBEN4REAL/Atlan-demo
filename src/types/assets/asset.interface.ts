@@ -52,7 +52,6 @@ export interface assetInterface {
             uniqueAttributes: {
                 qualifiedName: string
             }
-
         }
         links?: {
             guid: string
@@ -86,6 +85,8 @@ export interface assetInterface {
         isPublished?: boolean
         isTopLevelProject?: boolean
     }
+    categoryCount: number
+    termsCount: number
     classificationNames: string[]
     classifications: classificationInterface[]
     displayText: string

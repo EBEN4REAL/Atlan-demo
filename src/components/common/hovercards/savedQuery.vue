@@ -1,37 +1,30 @@
 <template>
-    <div class="bg-primary-light p-2.5">
-        <div v-html="displayQuery" class="break-words"></div>
-    </div>
+    <!--  <div v-html="displayQuery" class="break-words"></div> -->
+    <SQLFormatter
+        :text="compiledQuery(selectedAsset)"
+        background="bg-primary-light"
+    />
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed } from 'vue'
+    import { defineComponent, PropType } from 'vue'
+    import SQLFormatter from '@common/sql/snippet.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { format } from 'sql-formatter'
-    import { highlight } from 'sql-highlight'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
+        components: { SQLFormatter },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
-        setup(props) {
-            const { selectedAsset } = toRefs(props)
-
+        setup() {
             const { compiledQuery } = useAssetInfo()
 
-            const displayQuery = computed(() =>
-                selectedAsset.value
-                    ? highlight(format(compiledQuery(selectedAsset.value)), {
-                          html: true,
-                      })
-                    : '~'
-            )
             return {
-                displayQuery,
+                compiledQuery,
             }
         },
     })

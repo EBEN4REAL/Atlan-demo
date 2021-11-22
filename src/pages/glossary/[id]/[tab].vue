@@ -1,6 +1,10 @@
 <template>
     <Loader v-if="isLoading"></Loader>
-    <GlossaryProfile :asset="selectedAsset" v-else></GlossaryProfile>
+    <GlossaryProfile
+        v-else
+        :asset="selectedAsset"
+        page="glossary"
+    ></GlossaryProfile>
 </template>
 
 <script lang="ts">

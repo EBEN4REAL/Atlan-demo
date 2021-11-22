@@ -1,5 +1,17 @@
 <template>
-    <main v-if="isReady" class="mx-4 my-9">
+    <div
+        v-if="currentLoading || isLoading"
+        class="flex items-center justify-center h-full"
+    >
+        <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+    </div>
+    <div
+        v-else-if="currentError || error"
+        class="flex items-center justify-center h-full"
+    >
+        <ErrorView />
+    </div>
+    <main v-else-if="isReady" class="mx-4 my-9">
         <h1 class="mb-8 text-3xl">Integrations</h1>
         <template v-for="i in allIntegrations" :key="i.id">
             <IntegrationCardWrapper
@@ -26,10 +38,11 @@
     import IntegrationCardWrapper from './integrationCardWrapper.vue'
     import { integrationData } from '~/constant/integrations'
     import integrationStore from '~/store/integrations/index'
+    import ErrorView from '@/common/error/index.vue'
 
     export default defineComponent({
         name: 'IntegrationsWrapper',
-        components: { AddIntegrationCard, IntegrationCardWrapper },
+        components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
         setup() {
             const store = integrationStore()
 
@@ -70,6 +83,7 @@
                 getData,
                 isLoading,
                 error,
+                currentError,
                 integrationData,
             }
         },

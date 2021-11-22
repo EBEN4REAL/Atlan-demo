@@ -46,6 +46,11 @@
                             :title="assetTypeLabel(item) || item.typeName"
                             :item="item"
                             :path="assetURL(item)"
+                            :row="rowCount(item, false)"
+                            :col="columnCount(item, false)"
+                            :db="databaseName(item)"
+                            :schema="schemaName(item)"
+                            :table="tableName(item)"
                         >
                             <router-link
                                 :to="assetURL(item)"

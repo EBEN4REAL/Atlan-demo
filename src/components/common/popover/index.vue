@@ -16,10 +16,55 @@
                           class="mb-0.5"
                     />
                 </div>
+                <div class="flex flex-wrap gap-x-2">
+                  <span v-if="row !== '-'" class="text-gray-500">
+                    <span class="mr-1 font-semibold tracking-tight text-gray-500">{{row}}</span>Rows
+                  </span>
+                  <span v-if="col !== '-'" class="text-gray-500">
+                    <span class="font-semibold tracking-tight text-gray-500 ">{{col}}</span>
+                    Cols
+                  </span>
+                  <div
+                    v-if="table"
+                    class="flex items-center text-gray-500"
+                  >
+                    <AtlanIcon
+                        icon="TableGray"
+                        class="mr-1 mb-0.5"
+                    />
+                    <div class="tracking-tight text-gray-500">
+                        {{ table }}
+                    </div>
+                  </div>
+                  <div
+                    v-if="db"
+                    class="flex items-center text-gray-500"
+                  >
+                    <AtlanIcon
+                        icon="DatabaseGray"
+                        class="mr-1 mb-0.5"
+                    />
+                    <div class="tracking-tight text-gray-500">
+                        {{ db }}
+                    </div>
+                  </div>
+                  <div
+                    v-if="schema"
+                    class="flex items-center text-gray-500"
+                  >
+                    <AtlanIcon
+                        icon="SchemaGray"
+                        class="mr-1 mb-0.5"
+                    />
+                    <div class="tracking-tight text-gray-500">
+                        {{ schema }}
+                    </div>
+                  </div>
+                </div>
                 <div>Instacart_beverages_master</div>
                 <div class="mt-2">Description</div>
                 <div class="mt-1 text-base">
-                    {{ item?.description || 'No description available' }}
+                    {{ item?.description || 'This table has no description added' }}
                 </div>
                 <div class="flex gap-1 mt-2">
                     <ClassificationPill
@@ -77,6 +122,31 @@
                 default: '',
             },
             title: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            row: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            col: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            db: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            schema: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            table: {
                 type: String,
                 required: false,
                 default: '',

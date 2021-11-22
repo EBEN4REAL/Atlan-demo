@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 bg-white rounded">
+    <div class="p-4 bg-white rounded" style="min-height: 140px">
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center">
                 <AtlanIcon icon="Resources" class="w-auto h-8 mr-3" /><span
@@ -20,11 +20,7 @@
             </AddResources>
         </div>
         <div>
-            <div
-                v-if="links(asset)?.length > 0"
-                class="flex flex-col gap-y-2"
-                style="min-height: 10vh"
-            >
+            <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-2">
                 <a
                     v-for="(item, index) in links(asset)"
                     :key="index"

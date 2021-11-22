@@ -40,7 +40,7 @@
                             icon="Term"
                             class="h-4 mb-0.5 mr-1"
                         ></AtlanIcon>
-                        <RelationshipsPopover
+                        <Popover
                             v-if="hasPopHover"
                             :logo-title="getConnectorImage(item)"
                             :title="assetTypeLabel(item) || item.typeName"
@@ -49,18 +49,18 @@
                         >
                             <router-link
                                 :to="assetURL(item)"
-                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                             >
                                 {{ title(item) }}
                             </router-link>
-                        </RelationshipsPopover>
+                        </Popover>
                         <router-link
                             v-else
                             :to="assetURL(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
-                          </router-link>
+                        </router-link>
                         <CertificateBadge
                             v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"
@@ -126,7 +126,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -165,7 +165,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -435,6 +435,7 @@
         </div>
     </div>
 </template>
+~/components/common/popover/index.vue
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs, computed } from 'vue'
@@ -443,14 +444,14 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import RelationshipsPopover from '~/components/common/popover/relationships/index.vue'
+    import Popover from '~/components/common/popover/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
             ClassificationPill,
-            RelationshipsPopover,
+            Popover,
         },
         props: {
             item: {

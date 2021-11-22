@@ -32,13 +32,22 @@
                             {{ index + 1 }}
                         </div> -->
                         <div
-                            class="leading-none cursor-pointer text-primary align-center"
+                            class="leading-none cursor-pointer align-center"
                             style="width: 248px"
                             @click="
-                                $emit('openEditDrawer', { property, index })
-                            "
+                                $emit('openEditDrawer', { property, index })"
                         >
-                            {{ property.displayName }}
+                            <span class="text-primary">{{ property.displayName }}</span>
+                            <a-tooltip>
+                                <template #title>
+                                    <span>{{property.options.description}}</span>
+                                </template>
+                                <AtlanIcon
+                                    v-if="property.options.description"
+                                    class="inline h-4 ml-2 text-gray-400 hover:text-gray-500"
+                                    :icon="'Info'"
+                                />
+                            </a-tooltip>
                         </div>
                         <div class="capitalize" style="width: 248px">
                             <AtlanIcon

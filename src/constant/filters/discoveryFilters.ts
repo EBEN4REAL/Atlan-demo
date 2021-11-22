@@ -72,7 +72,7 @@ export const discoveryFilters = [
             {
                 name: '__modificationTimestamp.date',
                 displayName: 'Last updated at',
-                typeName: 'datetime',
+                typeName: 'date',
                 description: 'Last updated timestamp of the asset on Atlan',
                 isMandatory: true,
             },
@@ -239,7 +239,7 @@ export const glossaryFilters = [
             {
                 name: '__modificationTimestamp.date',
                 displayName: 'Last updated at',
-                typeName: 'datetime',
+                typeName: 'date',
                 description: 'Last updated timestamp of the asset on Atlan',
                 isMandatory: true,
             },

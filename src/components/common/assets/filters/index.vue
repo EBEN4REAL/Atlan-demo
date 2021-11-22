@@ -116,7 +116,7 @@
             const forceRender = () => {
                 componentState.value += 1
             }
-            const { list: cmList } = useCustomMetadataFacet()
+            const { getList: cmList } = useCustomMetadataFacet()
 
             const dynamicList = computed(() => {
                 const arr = filterList.value?.filter((el) => {
@@ -141,7 +141,7 @@
                     return true
                 })
                 if (allowCustomFilters.value) {
-                    return [...arr, ...cmList.value]
+                    return [...arr, ...cmList(typeName.value)]
                 }
                 return [...arr]
             })

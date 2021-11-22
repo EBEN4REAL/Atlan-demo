@@ -1,9 +1,6 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
-        <PackagesSetup
-            :workflowTemplate="localSelected"
-            :configMap="localConfig"
-        ></PackagesSetup>
+        <PackagesSetup :workflowTemplate="localSelected"></PackagesSetup>
     </div>
 </template>
 

@@ -360,14 +360,6 @@ export default defineComponent({
     },
 })
 </script>
-<style lang="less">
-.persona-popover {
-    .ant-popover-inner-content {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-}
-</style>
 <style lang="less" scoped>
 .persona-list {
     width: 256px;

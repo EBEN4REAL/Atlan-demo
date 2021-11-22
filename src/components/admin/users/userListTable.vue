@@ -401,9 +401,6 @@
         :global(.ant-table-measure-row) {
             @apply hidden;
         }
-        :global(.ant-popover-arrow) {
-            @apply hidden;
-        }
         .customShadow {
             box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
         }

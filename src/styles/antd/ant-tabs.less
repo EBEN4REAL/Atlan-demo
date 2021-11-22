@@ -4,19 +4,26 @@
 }
 
 //default override 
-:global(.ant-tabs-bar) {
+.ant-tabs-bar {
     @apply mb-0 border-0 !important;
 }
 
 .inline_tabs {
-    :global(.ant-tabs-bar) {
+    .ant-tabs-bar {
         @apply m-0 bg-gray-light !important;
     }
 }
 
 .profiletab { 
-    :global(.ant-tabs-bar) {
+    .ant-tabs-bar {
         @apply mb-0 pl-7;
         @apply bg-white;
+    }
+}
+
+.typeTabs, .minimal-tab-bar {
+    .ant-tabs-bar {
+        margin-bottom: 0px;
+        @apply border-gray-300 !important;
     }
 }

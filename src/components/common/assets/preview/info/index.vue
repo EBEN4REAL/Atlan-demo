@@ -719,11 +719,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .sampleDataModal {
-        :global(.ant-modal-body) {
-            @apply p-2 !important;
-        }
-    }
-</style>

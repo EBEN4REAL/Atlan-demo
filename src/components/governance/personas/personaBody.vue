@@ -7,7 +7,7 @@
                         class="text-sm"
                         :class="
                             activeTabKey === t?.data?.key
-                                ? 'text-gray-700'
+                                ? 'text-gray-700 '
                                 : 'text-gray-500'
                         "
                         >{{ t?.data?.label }}</span
@@ -203,6 +203,7 @@
     import {
         selectedPersonaDirty,
         addPolicy,
+        updateSelectedPersona,
         savePolicyLocally,
         deletePolicy,
         deletePolicyLocally,
@@ -213,6 +214,7 @@
         discardPolicy,
         PolicyType,
     } from './composables/useEditPersona'
+    import { selectedPersona } from './composables/usePersonaList'
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
 
     export default defineComponent({
@@ -259,6 +261,7 @@
                         policyEditMap.value.metadataPolicies[id] = false
                     else if (type === 'data')
                         policyEditMap.value.dataPolicies[id] = false
+                    updateSelectedPersona()
 
                     // savePolicyLocally(type, id)
                     message.success({
@@ -285,6 +288,7 @@
                 })
                 try {
                     await deletePolicy(type, id)
+                    updateSelectedPersona()
                     message.success({
                         content: 'Policy deleted',
                         duration: 1.5,
@@ -300,6 +304,7 @@
             }
 
             return {
+                selectedPersona,
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,

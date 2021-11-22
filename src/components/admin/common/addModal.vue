@@ -16,9 +16,12 @@
                 @click="$emit('cancel')"
                 >{{ cancelText }}</AtlanBtn
             >
-            <AtlanBtn padding="compact" @click="$emit('ok')">{{
-                okText
-            }}</AtlanBtn>
+            <AtlanBtn
+                :disabled="!title ? true : false"
+                padding="compact"
+                @click="$emit('ok')"
+                >{{ okText }}</AtlanBtn
+            >
         </div>
     </a-modal>
 </template>

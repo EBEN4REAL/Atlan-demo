@@ -2,6 +2,7 @@ import { Ref, ref, watch, toRaw } from 'vue'
 import { IPurpose } from '~/types/accessPolicies/purposes'
 import usePersonaService from './usePersonaService'
 import {
+    reFetchList,
     selectedPersona,
     personaList,
     selectedPersonaId,
@@ -62,6 +63,13 @@ export async function savePersona(persona: IPurpose) {
 
 export function discardPersona(type: PolicyType, idx: string) {
     isEditing.value = false
+}
+
+export function updateSelectedPersona() {
+    selectedPersona.value = JSON.parse(
+        JSON.stringify(selectedPersonaDirty.value)
+    )
+    reFetchList()
 }
 
 export function addPolicy(type: PolicyType) {
@@ -170,6 +178,7 @@ export function savePolicy(type: PolicyType, id: string) {
             }
         }
     }
+    debugger
     return savePersona(tempPersona)
 }
 

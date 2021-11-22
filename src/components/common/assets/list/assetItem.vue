@@ -23,30 +23,34 @@
                             />
                         </div>
                         <AtlanIcon
-                            icon="Category"
                             v-if="
                                 ['atlasglossarycategory'].includes(
                                     item.typeName?.toLowerCase()
                                 )
                             "
+                            icon="Category"
                             class="h-4 mb-0.5 mr-1"
                         ></AtlanIcon>
                         <AtlanIcon
-                            icon="Term"
                             v-if="
                                 ['atlasglossaryterm'].includes(
                                     item.typeName?.toLowerCase()
                                 )
                             "
+                            icon="Term"
                             class="h-4 mb-0.5 mr-1"
                         ></AtlanIcon>
-                        <router-link
-                            :to="assetURL(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        <PophoverAsset
+                          :logo-title="getConnectorImage(item)"
+                          :title="assetTypeLabel(item) || item.typeName "
                         >
-                            {{ title(item) }}
-                        </router-link>
-
+                          <router-link
+                              :to="assetURL(item)"
+                              class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                          >
+                              {{ title(item) }} 
+                          </router-link>
+                        </PophoverAsset>
                         <CertificateBadge
                             v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"
@@ -56,10 +60,10 @@
                         ></CertificateBadge>
                     </div>
 
-                    <div class="flex mt-0.5" v-if="description(item)">
+                    <div v-if="description(item)" class="flex mt-0.5">
                         <span
-                            class="text-xs text-gray-500"
                             v-if="preference?.display?.includes('description')"
+                            class="text-xs text-gray-500"
                             >{{ description(item) }}</span
                         >
                     </div>
@@ -68,8 +72,8 @@
                     <div class="flex flex-wrap items-center mt-1">
                         <div class="flex items-center mr-2">
                             <a-tooltip
-                                placement="left"
                                 v-if="connectorName(item)"
+                                placement="left"
                             >
                                 <template #title>
                                     <span>{{ connectorName(item) }} </span>
@@ -84,21 +88,21 @@
                             </a-tooltip>
 
                             <AtlanIcon
-                                icon="Category"
                                 v-if="
                                     ['atlasglossarycategory'].includes(
                                         item.typeName?.toLowerCase()
                                     )
                                 "
+                                icon="Category"
                                 class="h-4 mb-0.5 mr-1"
                             ></AtlanIcon>
                             <AtlanIcon
-                                icon="Term"
                                 v-if="
                                     ['atlasglossaryterm'].includes(
                                         item.typeName?.toLowerCase()
                                     )
                                 "
+                                icon="Term"
                                 class="h-4 mb-0.5 mr-1"
                             ></AtlanIcon>
 
@@ -111,19 +115,19 @@
 
                         <div class="flex items-center">
                             <div
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                                 v-if="categories(item)?.length > 0"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
                                     v-for="(cat, index) in categories(item)"
-                                    class="flex"
-                                    :key="cat.guid"
                                     v-if="
                                         ['atlasglossaryterm'].includes(
                                             item.typeName?.toLowerCase()
                                         )
                                     "
+                                    :key="cat.guid"
+                                    class="flex"
                                 >
                                     <AtlanIcon
                                         icon="Category"
@@ -150,18 +154,18 @@
                                 </div>
                             </div>
                             <div
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                                 v-if="parentCategory(item)"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
-                                    class="flex"
-                                    :key="parentCategory(item).guid"
                                     v-if="
                                         ['atlasglossarycategory'].includes(
                                             item.typeName?.toLowerCase()
                                         )
                                     "
+                                    :key="parentCategory(item).guid"
+                                    class="flex"
                                 >
                                     <AtlanIcon
                                         icon="Category"
@@ -303,8 +307,8 @@
                             class="flex mr-2 text-sm text-gray-500 gap-x-2"
                         >
                             <a-tooltip
-                                placement="bottomLeft"
                                 v-if="tableName(item)"
+                                placement="bottomLeft"
                             >
                                 <div
                                     v-if="tableName(item)"
@@ -323,8 +327,8 @@
                                 </template>
                             </a-tooltip>
                             <a-tooltip
-                                placement="bottomLeft"
                                 v-if="viewName(item)"
+                                placement="bottomLeft"
                             >
                                 <div
                                     v-if="viewName(item)"
@@ -376,8 +380,8 @@
                             </a-tooltip>
                             <a-tooltip placement="bottomLeft">
                                 <div
-                                    class="flex items-center text-gray-500"
                                     v-if="databaseName(item)"
+                                    class="flex items-center text-gray-500"
                                 >
                                     <AtlanIcon
                                         icon="DatabaseGray"
@@ -410,9 +414,9 @@
                         >
                             <ClassificationPill
                                 :name="classification.name"
-                                :displayName="classification?.displayName"
-                                :isPropagated="isPropagated(classification)"
-                                :allowDelete="false"
+                                :display-name="classification?.displayName"
+                                :is-propagated="isPropagated(classification)"
+                                :allow-delete="false"
                             ></ClassificationPill>
                         </template>
                     </div>
@@ -429,12 +433,14 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import PophoverAsset from '@/common/pophoverAsset/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
             ClassificationPill,
+            PophoverAsset
         },
         props: {
             item: {

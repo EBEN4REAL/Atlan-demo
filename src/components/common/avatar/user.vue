@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center">
+    <div :class="`flex items-center ${className}`">
         <a-avatar
             :shape="avatarShape"
             :size="avatarSize"
@@ -39,6 +39,10 @@
             },
             showUsername: {
                 type: Boolean,
+            },
+            className: {
+                type: String,
+                default: ""
             },
         },
         setup(props, context) {

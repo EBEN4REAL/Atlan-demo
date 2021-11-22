@@ -75,10 +75,6 @@
             @apply font-bold !important;
             text-shadow: 0 0 0.01px;
         }
-        .ant-tabs-bar {
-            margin-bottom: 0px;
-            @apply border-gray-300 !important;
-        }
         .ant-tabs-content {
             padding-right: 0px;
         }

@@ -368,9 +368,6 @@
         :global(.ant-input) {
             @apply shadow-none outline-none border-0 px-0 !important;
         }
-        :global(.ant-modal-body) {
-            @apply p-0 !important;
-        }
     }
 </style>
 

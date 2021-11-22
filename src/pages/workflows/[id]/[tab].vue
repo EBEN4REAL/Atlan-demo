@@ -415,7 +415,7 @@ meta:
     requiresAuth: true
 </route>
 
-<style lang="less" module>
+<style lang="less">
     .profiletab {
         :global(.ant-tabs-tab) {
             padding-left: 2px;

@@ -179,10 +179,6 @@
         line-height: 1;
         content: '*';
     }
-
-    .ant-popover-inner-content {
-        padding: 0 !important;
-    }
     .ant-tree li span.ant-tree-switcher {
         position: relative;
         margin-top: -3px !important;

@@ -81,10 +81,6 @@
             @apply font-bold !important;
             @apply tracking-normal;
         }
-        .ant-tabs-bar {
-            margin-bottom: 0px;
-            @apply border-gray-300 !important;
-        }
         .ant-tabs-content {
             padding-right: 0px;
         }

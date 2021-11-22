@@ -283,14 +283,7 @@
             @apply shadow-none outline-none px-0 border-0 border-transparent !important;
         }
         :global(.ant-modal-header) {
-            @apply px-0  !important;
-        }
-
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-0 pt-0 pb-0 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply px-0 pt-0 pb-0 !important;
+            @apply border-b-2 !important;
         }
     }
     .titleInput {

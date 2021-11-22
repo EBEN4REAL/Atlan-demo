@@ -156,6 +156,9 @@ export function savePolicy(type: PolicyType, id: string) {
             const policy = {
                 ...selectedPersonaDirty.value?.dataPolicies?.[dirtyPolicyIndex],
             }
+
+            if (policy?.maskType) delete policy?.maskType
+
             if (policy?.isNew) {
                 delete policy?.isNew
                 delete policy?.id

@@ -41,12 +41,11 @@
                 }}</span>
             </div>
         </div>
-        <div class="flex items-center">
+        <div class="flex flex-wrap items-center gap-y-1.5">
             <PillGroup
                 :data="assets"
                 label-key="label"
                 class="text-gray-700"
-                :prefixIcons="assetsIcons"
                 read-only
             />
             <AtlanBtn

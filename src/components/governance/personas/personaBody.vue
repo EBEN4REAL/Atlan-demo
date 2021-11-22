@@ -245,8 +245,9 @@
                         key: messageKey,
                     })
                 } catch (error) {
+                    console.log(error?.response?.data, 'error')
                     message.error({
-                        content: 'Failed to save policy',
+                        content: error?.response?.data?.message,
                         duration: 1.5,
                         key: messageKey,
                     })

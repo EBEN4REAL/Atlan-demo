@@ -91,7 +91,6 @@
                     label-key="label"
                     @add="openAssetSelector"
                     :customRendererForLabel="customRendererForLabel"
-                    :prefixIcons="assetsIcons"
                 >
                     <template #addBtn="d">
                         <div>
@@ -311,6 +310,9 @@
             }
             const assets = computed({
                 get: () => {
+                    if (policy.value.assets.length > 0)
+                        rules.value.assets.show = false
+                    else rules.value.assets.show = true
                     return policy.value.assets.map((name) => ({
                         label: name,
                     }))

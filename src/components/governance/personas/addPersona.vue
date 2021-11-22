@@ -1,7 +1,7 @@
 <template>
     <CreationModal
         v-model:visible="modalVisible"
-        title=""
+        :title="title"
         @cancel="() => (modalVisible = false)"
         @ok="handleCreation"
     >

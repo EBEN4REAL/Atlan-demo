@@ -64,6 +64,12 @@ export function discardPersona(type: PolicyType, idx: string) {
     isEditing.value = false
 }
 
+export function updateSelectedPersona() {
+    selectedPersona.value = JSON.parse(
+        JSON.stringify(selectedPersonaDirty.value)
+    )
+}
+
 export function addPolicy(type: PolicyType) {
     const id = `new_${Date.now()}`
     if (type === 'meta') {
@@ -170,6 +176,7 @@ export function savePolicy(type: PolicyType, id: string) {
             }
         }
     }
+    debugger
     return savePersona(tempPersona)
 }
 

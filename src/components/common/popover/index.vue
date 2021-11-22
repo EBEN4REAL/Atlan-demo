@@ -36,7 +36,7 @@
                         >
                         Cols
                     </span>
-                    <div v-if="col" class="dot" />
+                    <div v-if="col !== '-' && col !== ''" class="dot" />
                     <div
                         v-if="table"
                         class="flex items-center text-sm text-gray-500"

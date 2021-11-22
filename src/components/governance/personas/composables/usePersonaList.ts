@@ -24,14 +24,14 @@ export {
 export const selectedPersonaId = ref('')
 export const selectedPersona = ref()
 watch(
-    [selectedPersonaId],
+    [selectedPersonaId, personaList],
     () => {
         if (selectedPersonaId.value) {
             let t = personaList.value?.find(
                 (ps) => ps.id == selectedPersonaId.value
             )
             if (!t) selectedPersona.value = undefined
-            selectedPersona.value = t
+            selectedPersona.value = { ...t }
             return
         }
         selectedPersona.value = undefined

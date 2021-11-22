@@ -21,6 +21,7 @@
                         entityType="AtlasGlossaryCategory"
                         :glossaryName="glossaryName"
                         :categoryName="categoryName"
+                        @add="handleAdd"
                         :glossary-qualified-name="glossaryQualifiedName"
                         :categoryGuid="categoryGuid"
                     >
@@ -173,8 +174,8 @@
                 default: true,
             },
         },
-        emits: ['unlinkAsset'],
-        setup(props, context) {
+        emits: ['unlinkAsset', 'add'],
+        setup(props, { emit }) {
             // data
             const {
                 entity,
@@ -234,6 +235,24 @@
                 return ''
             })
 
+            const addGTCNode = inject('addGTCNode')
+            const handleAdd = (asset) => {
+                console.log('add')
+                entity.value.children = []
+                entity.value.children.push({
+                    ...asset,
+                    id: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
+                    key: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
+                    isLeaf: false,
+                })
+                // }
+                // console.log('asdsd', entity)
+                // addGTCNode(asset)
+            }
             // const {
             //     deleteGlossary,
             //     deleteCategory,
@@ -345,6 +364,8 @@
                 categoryGuid,
                 glossaryName,
                 categoryName,
+                handleAdd,
+                addGTCNode,
             }
         },
     })

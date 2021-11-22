@@ -1,7 +1,8 @@
 <template>
     <div
-        class="p-4 overflow-x-hidden overflow-y-auto bg-gray-100 rounded"
-        style="height: 220px"
+        class="max-w-full p-4 overflow-x-auto overflow-y-auto rounded"
+        :class="background === '' ? 'bg-gray-100' : background"
+        style="max-height: 220px"
     >
         <template v-for="(line, i) in renderedLines" :key="i">
             <div class="flex">
@@ -20,14 +21,18 @@
     import { defineComponent, ref, watch, computed, toRefs, Ref } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { message } from 'ant-design-vue'
-    import { languageTokens } from '~/components/insights/playground/editor/monaco/sqlTokens'
     import { format } from 'sql-formatter'
+    import { languageTokens } from '~/components/insights/playground/editor/monaco/sqlTokens'
 
     export default defineComponent({
         name: 'SQL Snippet',
         components: {},
         props: {
             text: {
+                type: String,
+                default: '',
+            },
+            background: {
                 type: String,
                 default: '',
             },

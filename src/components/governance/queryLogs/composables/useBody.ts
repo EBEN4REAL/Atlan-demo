@@ -11,7 +11,7 @@ export default function useBody({ from, limit, gte, lt }: useBodyProps) {
 
     base.from(from || 0)
     base.size(limit || 0)
-
+    base.sort('@timestamp', 'desc')
     base.query('range', 'time', {
         gte,
         lt,

@@ -7,7 +7,17 @@
             <div class="flex w-full m-0">
                 <div
                     v-if="item.typeName === 'QueryFolder'"
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="
+                        relative
+                        flex
+                        content-center
+                        w-full
+                        my-auto
+                        overflow-hidden
+                        text-sm
+                        leading-5
+                        text-gray-700
+                    "
                 >
                     <!--FOLDER NODE -->
 
@@ -22,11 +32,28 @@
                                 class="w-5 h-5 my-auto mr-1"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="
+                                    mb-0
+                                    text-sm text-gray-700
+                                    parent-ellipsis-container-base
+                                "
                                 >{{ title(item) }}</span
                             >
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="
+                                    absolute
+                                    top-0
+                                    right-0
+                                    flex
+                                    items-center
+                                    h-full
+                                    text-gray-500
+                                    transition
+                                    duration-300
+                                    opacity-0
+                                    margin-align-top
+                                    group-hover:opacity-100
+                                "
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -130,7 +157,17 @@
                         </div>
                     </template>
                     <div
-                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                        class="
+                            relative
+                            flex
+                            content-center
+                            w-full
+                            my-auto
+                            overflow-hidden
+                            text-sm
+                            leading-5
+                            text-gray-700
+                        "
                     >
                         <!--SAVED QUERY NODE -->
                         <!--For Others -->
@@ -145,12 +182,28 @@
                                 class="w-5 h-5 my-auto mr-1"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="
+                                    mb-0
+                                    text-sm text-gray-700
+                                    parent-ellipsis-container-base
+                                "
                                 >{{ title(item) }}</span
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  right-6 margin-align-top group-hover:opacity-100"
+                                class="
+                                    absolute
+                                    flex
+                                    items-center
+                                    h-full
+                                    text-gray-500
+                                    transition
+                                    duration-300
+                                    opacity-0
+                                    right-6
+                                    margin-align-top
+                                    group-hover:opacity-100
+                                "
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -181,7 +234,20 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="
+                                    absolute
+                                    top-0
+                                    right-0
+                                    flex
+                                    items-center
+                                    h-full
+                                    text-gray-500
+                                    transition
+                                    duration-300
+                                    opacity-0
+                                    margin-align-top
+                                    group-hover:opacity-100
+                                "
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -727,8 +793,11 @@
             const isUpdating = ref(false)
 
             const changeFolder = (item: any) => {
-                console.log('new entity item: ', item)
-                console.log('selected folder: ', selectedFolder.value)
+                let previousParentGuId = item.attributes.parent.guid
+                let selectedParentGuid = selectedFolder.value.guid
+
+                console.log('entity item parent: ', previousParentGuId)
+                console.log('entity selected folder: ', selectedParentGuid)
 
                 if (selectedFolder.value) {
                     const newEntity = item
@@ -784,12 +853,20 @@
                                     message.success({
                                         content: `Folder moved successfully`,
                                     })
+                                    // props.refreshQueryTree(
+                                    //     selectedFolder.value.guid,
+                                    //     'queryFolder'
+                                    // )
+                                    // props.refreshQueryTree(
+                                    //     item.attributes.parent.guid,
+                                    //     'queryFolder'
+                                    // )
+
                                     props.refreshQueryTree(
-                                        selectedFolder.value.guid,
-                                        'queryFolder'
-                                    )
-                                    props.refreshQueryTree(
-                                        item.attributes.parent.guid,
+                                        [
+                                            previousParentGuId,
+                                            selectedParentGuid,
+                                        ],
                                         'queryFolder'
                                     )
                                 } else {
@@ -819,12 +896,19 @@
                                     message.success({
                                         content: `Query moved successfully`,
                                     })
+                                    // props.refreshQueryTree(
+                                    //     selectedFolder.value.guid,
+                                    //     'query'
+                                    // )
+                                    // props.refreshQueryTree(
+                                    //     item.attributes.parent.guid,
+                                    //     'query'
+                                    // )
                                     props.refreshQueryTree(
-                                        selectedFolder.value.guid,
-                                        'query'
-                                    )
-                                    props.refreshQueryTree(
-                                        item.attributes.parent.guid,
+                                        [
+                                            previousParentGuId,
+                                            selectedParentGuid,
+                                        ],
                                         'query'
                                     )
                                 } else {

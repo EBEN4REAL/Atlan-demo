@@ -91,6 +91,12 @@
             activeKey: {
                 required: false,
             },
+            allowCustomFilters: {
+                required: false,
+                default() {
+                    return true
+                },
+            },
         },
         emits: [
             'change',
@@ -101,7 +107,8 @@
         ],
         setup(props, { emit }) {
             const { modelValue, activeKey } = useVModels(props, emit)
-            const { typeName, isAccordion, filterList } = toRefs(props)
+            const { typeName, isAccordion, filterList, allowCustomFilters } =
+                toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
 
@@ -109,7 +116,7 @@
             const forceRender = () => {
                 componentState.value += 1
             }
-            const { list: cmList } = useCustomMetadataFacet()
+            const { getList: cmList } = useCustomMetadataFacet()
 
             const dynamicList = computed(() => {
                 const arr = filterList.value?.filter((el) => {
@@ -133,26 +140,11 @@
                     }
                     return true
                 })
-                return [...arr, ...cmList.value]
+                if (allowCustomFilters.value) {
+                    return [...arr, ...cmList(typeName.value)]
+                }
+                return [...arr]
             })
-
-            // const totalFilteredCount = ref(0)
-            // watch(
-            //     () => localValue,
-            //     () => {
-            //         console.log('change')
-            //         let count = 0
-            //         Object.keys(localValue.value).forEach((key) => {
-            //             console.log(localValue.value[key])
-            //             if (localValue.value[key]) {
-            //                 if (localValue.value[key] !== {}) {
-            //                     count += 1
-            //                 }
-            //             }
-            //         })
-            //         totalFilteredCount.value = count
-            //     }
-            // )
 
             const totalFilteredCount = computed(() => {
                 let count = 0
@@ -201,6 +193,7 @@
                 componentState,
                 isAccordion,
                 filterList,
+                allowCustomFilters,
             }
         },
     })

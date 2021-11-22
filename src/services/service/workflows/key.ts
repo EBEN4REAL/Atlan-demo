@@ -19,6 +19,7 @@ export const WORKFLOW_TEMPLATE_NAME = 'WORKFLOW_TEMPLATE_NAME'
 export const WORKFLOW_TEMPLATE = 'WORKFLOW_TEMPLATE'
 export const WORKFLOW_CONFIG_MAP = 'WORKFLOW_CONFIG_MAP'
 export const ARCHIVED_WORKFLOW_RUN_LOGS = 'ARCHIVED_WORKFLOW_RUN_LOGS'
+export const GET_ARTIFACTS = 'GET_ARTIFACTS'
 
 export const map = {
     [SCHEDULES]: () => getAPIPath(BASE_PATH, '/workflows/schedules'),
@@ -38,6 +39,11 @@ export const map = {
     [WORKFLOW_UPDATE_BY_NAME]: ({ name }: PathParams) =>
         getAPIPath(BASE_PATH, `/workflows/${name}`),
     [WORKFLOW_RUN]: () => getAPIPath(BASE_PATH, '/runs'),
+    [GET_ARTIFACTS]: ({ workflowName, nodeName, outputName }) =>
+        getAPIPath(
+            BASE_PATH,
+            `/runs/${workflowName}/${nodeName}/artifacts/${outputName}?contentDisposition=inline`
+        ),
     [ARCHIVED_WORKFLOW_RUN]: () => getAPIPath(BASE_PATH, `/runs/archived`),
     [LIVE_WORKFLOW_RUN]: ({ workflowTemplate }: PathParams) =>
         getAPIPath(

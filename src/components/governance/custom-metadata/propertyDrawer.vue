@@ -40,7 +40,6 @@
                         >
                             <a-input
                                 v-model:value="form.displayName"
-                                placeholder="Enter a property name"
                                 type="text"
                                 class=""
                             />
@@ -160,7 +159,21 @@
                     <pre>{{ form.enumValues }}</pre> -->
                     <!-- End of conditonals ========================================= -->
                     <!-- Applicable Asset type ========================================= -->
-
+                    <div class="flex">
+                        <div class="relative" style="width: 100%">
+                            <a-form-item
+                            label="Description"
+                            :name="['description']"
+                            class=""
+                        >
+                            <a-input
+                                v-model:value="form.options.description"
+                                type="text"
+                                class=""
+                            />
+                        </a-form-item>
+                        </div>
+                    </div>
                     <div class="flex mb-6">
                         <div class="relative" style="width: 100%">
                             <a-form-item
@@ -177,10 +190,7 @@
                                             <div
                                                 class="flex flex-col items-center w-60"
                                             >
-                                                Applicable asset type once saved
-                                                cannot be removed, you can still
-                                                add new Applicable Asset type if
-                                                available.
+                                                This property will only be available for selected asset types
                                             </div>
                                         </template>
                                         <AtlanIcon

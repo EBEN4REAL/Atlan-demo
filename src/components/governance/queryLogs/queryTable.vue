@@ -1,9 +1,9 @@
 <template>
     <div>
         <a-table
-            class="overflow-hidden border rounded-lg apikey-list"
+            class="overflow-hidden border rounded-lg"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :style="{ height: 'calc(100vh - 20rem)' }"
+            :style="{ height: 'calc(100vh - 20rem)', cursor: 'pointer' }"
             :table-layout="'fixed'"
             :pagination="false"
             :class="$style.table_custom"
@@ -11,14 +11,14 @@
             :columns="columns"
             :row-key="(query) => query._id"
             :loading="isLoading"
+            :custom-row="customRow"
             @change="handleTableChange"
-            :customRow="customRow"
         >
             <template #queryInfo="{ text: queryInfo }">
                 <div class="flex items-center h-full py-1">
                     <div
-                        class="flex items-center justify-center"
                         v-if="queryInfo._source.log.message.savedQueryId"
+                        class="flex items-center justify-center"
                     >
                         <div class="items-center">
                             <div class="parent-ellipsis-container">
@@ -91,8 +91,8 @@
             <template #details="{ text: queryInfo }">
                 <div class="flex items-center h-full">
                     <div
-                        class="flex items-center"
                         v-if="queryInfo._source.log.message.totalTime"
+                        class="flex items-center"
                     >
                         <AtlanIcon
                             icon="Schedule"
@@ -101,15 +101,21 @@
 
                         <span class="text-sm text-gray-700">
                             {{
-                                queryInfo._source.log.message.totalTime > 60
+                                queryInfo._source.log.message.totalTime / 1000 >
+                                60
                                     ? `${Math.floor(
                                           queryInfo._source.log.message
-                                              .totalTime / 60
+                                              .totalTime /
+                                              (1000 * 60)
                                       )}m ${
                                           queryInfo._source.log.message
-                                              .totalTime % 60
+                                              .totalTime %
+                                          (1000 * 60)
                                       }s`
-                                    : `${queryInfo._source.log.message.totalTime}s`
+                                    : `${
+                                          queryInfo._source.log.message
+                                              .totalTime / 1000
+                                      }s`
                             }}
                         </span>
                         <div
@@ -129,10 +135,10 @@
                     <div class="flex items-center">
                         <div class="mr-2">
                             <span
-                                class="text-sm text-gray-700"
                                 v-if="
                                     queryInfo._source.log.message.numberOfRows
                                 "
+                                class="text-sm text-gray-700"
                                 >{{
                                     queryInfo._source.log.message.numberOfRows
                                 }}&nbsp;rows</span
@@ -141,11 +147,11 @@
                         </div>
                         <div>
                             <span
-                                class="text-sm text-gray-700"
                                 v-if="
                                     queryInfo._source.log.message
                                         .numberOfColumns
                                 "
+                                class="text-sm text-gray-700"
                                 >{{
                                     queryInfo._source.log.message
                                         .numberOfColumns
@@ -158,9 +164,9 @@
             </template>
             <template #user="{ text: user }">
                 <div
+                    v-if="user._source.log.message.authenticatorResult.userName"
                     class="flex items-center h-full"
                     @click="$emit('selectQuery', user)"
-                    v-if="user._source.log.message.authenticatorResult.userName"
                 >
                     <Avatar
                         :image-url="
@@ -203,8 +209,8 @@
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center mr-5"
                             v-if="timestamp._source['@timestamp']"
+                            class="flex items-center mr-5"
                         >
                             <span class="text-sm text-gray-700">
                                 {{
@@ -234,133 +240,134 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, watch, toRefs } from 'vue'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import Avatar from '~/components/common/avatar/index.vue'
-    import AtlanBtn from '@/UI/button.vue'
-    import PillGroup from '@/UI/pill/pillGroup.vue'
-    import { SourceList } from '~/constant/source'
-    import dayjs from 'dayjs'
-    export default defineComponent({
-        name: 'ApiKeysTable',
-        components: { Avatar, AtlanBtn, PillGroup },
-        props: {
-            apiKeysList: {
-                type: Array,
-                default: () => [],
-            },
-            isLoading: {
-                type: Boolean,
-                default: false,
-            },
-            selectedQuery: {
-                type: Object,
-                default: () => {},
-            },
-            selectedRowKeys: {
-                type: Object,
-                default: () => [],
-            },
+import { defineComponent, ref, Ref, watch, toRefs } from 'vue'
+import dayjs from 'dayjs'
+import { useUserPreview } from '~/composables/user/showUserPreview'
+import Avatar from '~/components/common/avatar/index.vue'
+import AtlanBtn from '@/UI/button.vue'
+import PillGroup from '@/UI/pill/pillGroup.vue'
+import { SourceList } from '~/constant/source'
+
+export default defineComponent({
+    name: 'ApiKeysTable',
+    components: { Avatar, AtlanBtn, PillGroup },
+    props: {
+        apiKeysList: {
+            type: Array,
+            default: () => [],
         },
-        emits: ['selectQuery', 'toggleQueryPreviewDrawer', 'selectQuery'],
-        setup(props, { emit }) {
-            const snowflake = SourceList.find((e) => e.id === 'snowflake')
-            const { selectedQuery, selectedRowKeys } = toRefs(props)
-            const imageUrl = (username: any) =>
-                `${window.location.origin}/api/service/avatars/${username}`
+        isLoading: {
+            type: Boolean,
+            default: false,
+        },
+        selectedQuery: {
+            type: Object,
+            default: () => {},
+        },
+        selectedRowKeys: {
+            type: Object,
+            default: () => [],
+        },
+    },
+    emits: ['selectQuery', 'toggleQueryPreviewDrawer', 'selectQuery'],
+    setup(props, { emit }) {
+        const snowflake = SourceList.find((e) => e.id === 'snowflake')
+        const { selectedQuery, selectedRowKeys } = toRefs(props)
+        const imageUrl = (username: any) =>
+            `${window.location.origin}/api/service/avatars/${username}`
 
-            const isDeletePopoverVisible = ref({})
-            const { showUserPreview: openPreview, setUserUniqueAttribute } =
-                useUserPreview()
-            const handleUserPreview = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                openPreview()
-            }
+        const isDeletePopoverVisible = ref({})
+        const { showUserPreview: openPreview, setUserUniqueAttribute } =
+            useUserPreview()
+        const handleUserPreview = (username: string) => {
+            setUserUniqueAttribute(username, 'username')
+            openPreview()
+        }
 
-            const handleTableChange = () => {}
+        const handleTableChange = () => {}
 
-            const getQueryStatusClass = (status: string) => {
-                if (status === 'success') return 'bg-green-500'
-                else if (status === 'failure') return 'bg-red-500'
-                return 'bg-green-500'
-            }
-            const columns = [
-                {
-                    title: 'Query details',
-                    key: 'QueryInfo',
-                    ellipsis: true,
-                    slots: { customRender: 'queryInfo' },
-                },
-                {
-                    title: 'Execution details',
-                    slots: { customRender: 'details' },
-                    key: 'execution_details',
-                },
-                {
-                    title: 'User',
-                    key: 'user',
+        const getQueryStatusClass = (status: string) => {
+            if (status.toLowerCase() === 'success') return 'bg-green-500'
+            if (status.toLowerCase() === 'error') return 'bg-red-500'
+            if (status.toLowerCase() === 'abort') return 'bg-yellow-500'
+            return 'bg-green-500'
+        }
+        const columns = [
+            {
+                title: 'Query details',
+                key: 'QueryInfo',
+                ellipsis: true,
+                slots: { customRender: 'queryInfo' },
+                width: 500,
+            },
+            {
+                title: 'Execution details',
+                slots: { customRender: 'details' },
+                key: 'execution_details',
+            },
+            {
+                title: 'User',
+                key: 'user',
+                ellipsis: true,
+                slots: { customRender: 'user' },
+                width: 120,
+            },
+            {
+                title: 'Timestamp',
+                key: 'timestamp',
+                slots: { customRender: 'timestamp' },
+            },
+        ]
 
-                    ellipsis: true,
-                    slots: { customRender: 'user' },
-                },
-                {
-                    title: 'Timestamp',
-                    key: 'timestamp',
-                    slots: { customRender: 'timestamp' },
-                },
-            ]
-
-            const handleRowSelected = (record: any) => {
-                console.log(record, 'record')
+        const handleRowSelected = (record: any) => {
+            console.log(record, 'record')
+            emit('selectQuery', record)
+        }
+        const customRow = (record) => ({
+            onClick: (event) => {
                 emit('selectQuery', record)
-            }
-            const customRow = (record) => {
-                return {
-                    onClick: (event) => {
-                        emit('selectQuery', record)
-                    },
-                }
-            }
-            return {
-                customRow,
-                handleRowSelected,
-                selectedRowKeys,
-                selectedQuery,
-                snowflake,
-                getQueryStatusClass,
-                dayjs,
-                columns,
-                imageUrl,
-                handleTableChange,
-                handleUserPreview,
-                isDeletePopoverVisible,
-            }
-        },
-    })
+            },
+        })
+        return {
+            customRow,
+            handleRowSelected,
+            selectedRowKeys,
+            selectedQuery,
+            snowflake,
+            getQueryStatusClass,
+            dayjs,
+            columns,
+            imageUrl,
+            handleTableChange,
+            handleUserPreview,
+            isDeletePopoverVisible,
+        }
+    },
+})
 </script>
 
 <style lang="less" scoped>
-    .parent-ellipsis-container {
-        display: flex;
-        align-items: center;
-        min-width: 0;
-    }
-    .parent-ellipsis-container-base {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    .parent-ellipsis-container-extension {
-        flex-shrink: 0;
-    }
-    .selected-row {
-        background: #f4f6fd;
-    }
+.parent-ellipsis-container {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+.parent-ellipsis-container-base {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.parent-ellipsis-container-extension {
+    flex-shrink: 0;
+}
+.selected-row {
+    background: #f4f6fd;
+}
 </style>
 <style lang="less" module>
-    .table_custom {
-        :global(.ant-empty-normal) {
-            height: calc(100vh - 20rem);
-        }
+.table_custom {
+    :global(.ant-empty-normal) {
+        height: calc(100vh - 20rem);
     }
+}
 </style>

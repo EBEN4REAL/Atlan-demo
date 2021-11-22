@@ -24,10 +24,6 @@
                 :class="{ selected: searchItem === item.guid }"
                 @click="setSearchItem(item.guid)"
             >
-                <!-- <fa
-                    :icon="getNodeTypeIcon[item.typeName]"
-                    :class="getNodeTypeIcon[item.typeName]"
-                ></fa> -->
                 <span class="w-6 h-4 bg-gray-300"></span>
                 <span>{{ item.displayText }}</span>
             </div>
@@ -38,9 +34,6 @@
 <script lang="ts">
     // Vue
     import { defineComponent, ref, inject, computed, watch } from 'vue'
-
-    // Util
-    import { getNodeTypeIcon } from './util.js'
 
     export default defineComponent({
         setup() {
@@ -95,7 +88,6 @@
                 searchItems,
                 filteredItems,
                 showSearchResults: false,
-                getNodeTypeIcon,
                 searchItem,
                 showResults,
                 setQuery,

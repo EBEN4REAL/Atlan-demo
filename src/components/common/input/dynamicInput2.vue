@@ -4,6 +4,17 @@
         v-model:value="localValue"
         @change="handleInputChange"
     ></UserSelector>
+    <GroupSelector
+        v-else-if="dataType === 'groups'"
+        v-model:value="localValue"
+        @change="handleInputChange"
+    ></GroupSelector>
+    <a-input
+        v-else-if="dataType === 'url'"
+        v-model:value="localValue"
+        @change="handleInputChange"
+        :maxlength="max || 50"
+    ></a-input>
     <a-input
         v-else-if="dataType === 'string'"
         v-model:value="localValue"
@@ -22,7 +33,7 @@
     ></a-input-number>
 
     <a-date-picker
-        v-else-if="['datetime'].includes(dataType.toLowerCase())"
+        v-else-if="['date'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
         format="YYYY-MM-DD HH:mm:ss"
         :allowClear="true"
@@ -45,6 +56,7 @@
             No
         </a-radio-button>
     </a-radio-group>
+    <EnumSelector v-else :enum="dataType"></EnumSelector>
 </template>
 
 <script lang="ts">
@@ -59,6 +71,8 @@
         Ref,
     } from 'vue'
     import UserSelector from '@/common/select/users.vue'
+    import GroupSelector from '@/common/select/groups.vue'
+    import EnumSelector from '@/common/select/enum.vue'
     import AtlanIcon from '../icon/atlanIcon.vue'
     import dayjs, { Dayjs } from 'dayjs'
 
@@ -69,7 +83,7 @@
     // import useFileUploader from './useFileUploader'
 
     export default defineComponent({
-        components: { UserSelector },
+        components: { UserSelector, GroupSelector, EnumSelector },
         props: {
             modelValue: {},
             dataType: {
@@ -87,16 +101,13 @@
 
             let val = modelValue.value
 
-            if (
-                props.dataType.toLowerCase() === 'datetime' &&
-                modelValue.value
-            ) {
+            if (props.dataType.toLowerCase() === 'date' && modelValue.value) {
                 val = dayjs(modelValue.value)
             }
             const localValue = ref(val)
 
             const handleInputChange = () => {
-                if (props.dataType.toLowerCase() === 'datetime') {
+                if (props.dataType.toLowerCase() === 'date') {
                     const date = localValue.value
                     modelValue.value = date?.valueOf()
                 } else {

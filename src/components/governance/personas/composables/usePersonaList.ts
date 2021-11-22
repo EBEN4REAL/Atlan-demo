@@ -30,9 +30,9 @@ export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {
     if (searchTerm.value) {
         return personaList.value.filter((ps) =>
-            ps
-                .display_name!.toLowerCase()
-                .includes(searchTerm.value.toLowerCase())
+            ps.displayName
+                ?.toLowerCase()
+                .includes(searchTerm.value?.toLowerCase())
         )
     }
     return personaList.value

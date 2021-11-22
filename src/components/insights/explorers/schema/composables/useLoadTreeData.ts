@@ -35,7 +35,7 @@ const attributes = [
     ...BasicSearchAttributes,
 ]
 
-const useLoadTreeData = (queryText: Ref<string>) => {
+const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) => {
     const body = ref<Record<string, any>>({})
     const parentFilter = ref({
         term: {},
@@ -59,7 +59,8 @@ const useLoadTreeData = (queryText: Ref<string>) => {
             typeName.value,
             queryText?.value,
             from?.value,
-            size?.value
+            size?.value,
+            // searchResultType?.value,
         )
         body.value = {
             dsl,
@@ -70,7 +71,17 @@ const useLoadTreeData = (queryText: Ref<string>) => {
         connectionQualifiedName: string,
         offset?: number
     ) => {
-        typeName.value = 'Database'
+        console.log('query con: ', queryText)
+        if(searchResultType.value==='table') {
+            if(queryText.value.length==0) {
+                typeName.value = 'Database'
+            } else {
+                typeName.value = ['Table', 'View']
+            }
+        } else {
+            typeName.value = 'Database'
+        }
+        
         parentFilter.value.term = {
             connectionQualifiedName,
         }
@@ -89,7 +100,21 @@ const useLoadTreeData = (queryText: Ref<string>) => {
         databaseQualifiedName: string,
         offset?: number
     ) => {
-        typeName.value = 'Schema'
+        // console.log('query sch: ', queryText)
+        if(searchResultType.value==='table') {
+            if(queryText.value.length==0) {
+                typeName.value = 'Schema'
+            } else {
+                typeName.value = ['Table', 'View']
+            }
+        } else {
+            typeName.value = 'Schema'
+        }
+        // if(queryText.value.length==0) {
+        //     typeName.value = 'Schema'
+        // } else {
+        //     typeName.value = ['Table', 'View']
+        // }
         parentFilter.value.term = {
             databaseQualifiedName,
         }
@@ -108,6 +133,7 @@ const useLoadTreeData = (queryText: Ref<string>) => {
         schemaQualifiedName: string,
         offset?: number
     ) => {
+        // console.log('query tab: ', queryText)
         typeName.value = ['Table', 'View']
         parentFilter.value.term = {
             schemaQualifiedName,
@@ -123,6 +149,8 @@ const useLoadTreeData = (queryText: Ref<string>) => {
             body,
         }) as Promise<IndexSearchResponse<Table | View>>
     }
+
+    
 
     const getColumnsForTable = (
         tableQualifiedName: string,

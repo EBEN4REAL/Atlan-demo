@@ -46,7 +46,6 @@
             const { attribute, activeProperty, condition } = toRefs(props)
 
             const isApplied = computed(() => {
-                console.log(condition)
                 return !!condition.value?.find(
                     (i) => i.operand === attribute.value.name && i.value
                 )

@@ -16,7 +16,15 @@
             :hoverActions="false"
         />
         <div
-            class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500 "
+            class="
+                flex flex-col
+                items-center
+                justify-center
+                h-full
+                text-base
+                leading-6
+                text-center text-gray-500
+            "
         >
             <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
             <p class="mt-6 mb-0 text-base text-gray-700">No assets available</p>
@@ -25,7 +33,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs, ref } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import SchemaTree from '@/insights/explorers/schema/schemaTree.vue'
 
@@ -61,6 +69,9 @@
                 },
             })
 
+            let queryText = ref('')
+            let searchResultType = ref('all')
+
             const {
                 treeData,
                 loadedKeys,
@@ -73,6 +84,8 @@
             } = useSchemaExplorerTree({
                 emit,
                 // initSelectedKeys,
+                queryText,
+                searchResultType,
                 connectionQualifiedName,
                 // databaseQualifiedName,
                 // schemaQualifiedName,

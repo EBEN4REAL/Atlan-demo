@@ -79,8 +79,7 @@
                 </div>
                 <router-link :to="path">
                     <a-button class="mt-3" block
-                        >View
-                        {{ item?.typeName?.toLowerCase() }} profile</a-button
+                        >View {{ title?.toLowerCase() }} profile</a-button
                     >
                 </router-link>
             </div>

@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col px-5">
         <div class="flex items-center mb-2 gap-x-2">
-            <AtlanIcon icon="Shield" class="text-pink-400" />
+            <AtlanIcon icon="Shield" :style="`color: ${getClassificationColorHex(selectedClassification?.options?.color)}`"/>
             <span class="text-sm tracking-wide text-gray-500 uppercase"
                 >Classification</span
             >
@@ -41,6 +41,7 @@
 
     import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
 
     import { useTypedefStore } from '~/store/typedef'
 
@@ -132,6 +133,7 @@
                 deleteClassification,
                 selectedClassification,
                 displayName,
+                getClassificationColorHex
             }
         },
     })

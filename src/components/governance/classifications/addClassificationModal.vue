@@ -135,6 +135,10 @@
                             ...selectedClassification.value,
                             displayName: name.value,
                             description: description.value,
+                            options: {
+                                ...selectedClassification.value?.options,
+                                color: classificationColor.value
+                            }
                         }
                     ]
                 }

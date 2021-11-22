@@ -31,6 +31,7 @@
                 :displayName="classification?.displayName"
                 :isPropagated="isPropagated(classification)"
                 :allowDelete="true"
+                :color="classification.options?.color"
                 @delete="handleDeleteClassification"
             ></ClassificationPill>
         </template>

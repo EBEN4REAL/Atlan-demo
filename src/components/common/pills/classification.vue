@@ -1,6 +1,6 @@
 <template>
     <div
-        class="
+        :class="`
             flex
             items-center
             py-0.5
@@ -11,19 +11,21 @@
             border border-gray-200
             rounded-full
             cursor-pointer
-            hover:bg-pink-400
+            hover:bg-${color.toLowerCase()}-400
             group
-            hover:border-pink-400
-        "
+            hover:border-${color.toLowerCase()}-400
+        `"
     >
         <AtlanIcon
             icon="ShieldFilled"
-            class="text-pink-400 group-hover:text-white"
+            class="group-hover:text-white"
+            :style="`color: ${getClassificationColorHex(color)}`"
             v-if="isPropagated"
         ></AtlanIcon>
         <AtlanIcon
             icon="Shield"
-            class="text-pink-400 group-hover:text-white"
+            class="group-hover:text-white"
+            :style="`color: ${getClassificationColorHex(color)}`"
             v-else
         ></AtlanIcon>
 
@@ -42,6 +44,7 @@
 
 <script lang="ts">
     import { toRefs } from 'vue'
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
 
     export default {
         props: {
@@ -63,6 +66,11 @@
                     return false
                 },
             },
+            color: {
+                type: String,
+                required: false,
+                default: 'Blue',
+            },
             allowDelete: {
                 type: Boolean,
                 default() {
@@ -73,13 +81,13 @@
         components: {},
         emits: ['delete'],
         setup(props, { emit }) {
-            const { name, isPropagated, displayName } = toRefs(props)
+            const { name, isPropagated, displayName, color } = toRefs(props)
 
             const handleRemove = () => {
                 emit('delete', name.value)
             }
 
-            return { name, isPropagated, displayName, handleRemove }
+            return { name, isPropagated, displayName, handleRemove, getClassificationColorHex, color }
         },
     }
 </script>

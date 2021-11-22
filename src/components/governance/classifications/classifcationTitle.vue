@@ -1,31 +1,21 @@
 <template>
-    <a-dropdown trigger="click">
-        <template #overlay>
-            <a-menu>
-                <a-menu-item v-for="option in options" :key="option.color" @click="selectedColor = option.color">
-                    <div>
-                        <AtlanIcon icon="ShieldFilled" class="self-center" :class="option.text" />
-                        {{ option.color }}
-                    </div>
-                </a-menu-item>
-            </a-menu>
-        </template>
-        <div class="flex space-x-1 py-1 px-2 rounded" :class="selectedBackground" >
-            <AtlanIcon icon="ShieldFilled" class="self-center" :class="selectedText" />
-            <span class="text-xs self-center">{{ selectedColor }}</span>
-        </div>
-    </a-dropdown>
+
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, PropType } from 'vue'
     import { useVModels } from '@vueuse/core'
+    
+    import { ClassificationInterface } from '~/types/classifications/classification.interface';
 
 
 
     export default defineComponent({
-        name: 'ClassificationColorSelector',
+        name: 'ClassificationTitle',
         components: {
+            classification: {
+                type: Object as PropType<ClassificationInterface>
+            }
         },
         props: {
             selectedColor: {

@@ -15,7 +15,7 @@
             read-only
         >
             <template #pillPrefix>
-                <AtlanIcon icon="Shield" class="text-pink-500"></AtlanIcon>
+                <AtlanIcon icon="Shield" :style="`color: ${getClassificationColorHex(item.options?.color)}`"></AtlanIcon>
             </template>
             <template #popover="{ item }">
                 <ClassificationInfoCard :classification="item" class="w-32"
@@ -30,6 +30,8 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
+
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
 
     export default defineComponent({
         props: {
@@ -61,6 +63,7 @@
             return {
                 formattedClassifications,
                 localClassification,
+                getClassificationColorHex
             }
         },
     })

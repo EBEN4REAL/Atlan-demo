@@ -413,6 +413,7 @@
                                 :displayName="classification?.displayName"
                                 :isPropagated="isPropagated(classification)"
                                 :allowDelete="false"
+                                :color="classification.options?.color"
                             ></ClassificationPill>
                         </template>
                     </div>

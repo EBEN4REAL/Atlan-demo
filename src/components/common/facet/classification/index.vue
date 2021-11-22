@@ -35,7 +35,7 @@
                                 <div class="flex items-center">
                                     <AtlanIcon
                                         icon="Shield"
-                                        class="text-pink-400"
+                                        :style="`color: ${getClassificationColorHex(item.options?.color)}`"
                                     ></AtlanIcon>
                                     <span class="mb-0 ml-1 text-gray">
                                         {{ item.displayName }}
@@ -78,6 +78,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
 
     export default defineComponent({
         components: {
@@ -160,6 +161,7 @@
                 queryText,
                 showNone,
                 height,
+                getClassificationColorHex
             }
         },
     })

@@ -32,7 +32,7 @@
             >
                 <template #default="{ item, isSelected }">
                     <div class="flex items-center gap-x-1">
-                        <AtlanIcon icon="Shield" class="text-pink-400" />
+                        <AtlanIcon icon="Shield"  :style="`color: ${getClassificationColorHex(item.options?.color)}`"/>
                         <span
                             class="text-sm truncate"
                             :class="
@@ -78,6 +78,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
@@ -149,6 +150,7 @@
                 selectedClassificationName,
                 selectClassification,
                 createClassificationModalVisible,
+                getClassificationColorHex
             }
         },
     })

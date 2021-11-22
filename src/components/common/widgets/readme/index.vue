@@ -1,54 +1,67 @@
 <template>
-    <div class="flex flex-col p-4 bg-white rounded">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center">
-                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
-                    class="text-base font-bold text-gray"
-                    >Readme</span
-                >
-            </div>
-
-            <a-button
-                class="flex items-center"
-                v-if="!isLoading && !content && isEdit && !isEditMode"
-                @click="handleEditMode"
-            >
-                <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Start a
-                readme</a-button
-            >
-
-            <div v-if="!isLoading && isEdit && isEditMode" class="flex gap-x-1">
-                <a-button
-                    class="flex items-center"
-                    @click="handleCancel"
-                    v-if="!isAssetUpdateLoading"
-                >
-                    Cancel</a-button
-                >
+    <div class="flex flex-col p-4 bg-white rounded" style="min-height: 140px">
+        <div>
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center">
+                    <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
+                        class="text-base font-bold text-gray"
+                        >Readme</span
+                    >
+                </div>
 
                 <a-button
                     class="flex items-center"
-                    type="primary"
-                    @click="handleUpdate"
-                    :loading="isAssetUpdateLoading"
+                    v-if="!isLoading && !content && isEdit && !isEditMode"
+                    @click="handleEditMode"
                 >
-                    Save</a-button
+                    <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Start a
+                    readme</a-button
+                >
+
+                <div
+                    v-if="!isLoading && isEdit && isEditMode"
+                    class="flex gap-x-1"
+                >
+                    <a-button
+                        class="flex items-center"
+                        @click="handleCancel"
+                        v-if="!isAssetUpdateLoading"
+                    >
+                        Cancel</a-button
+                    >
+
+                    <a-button
+                        class="flex items-center"
+                        type="primary"
+                        @click="handleUpdate"
+                        :loading="isAssetUpdateLoading"
+                    >
+                        Save</a-button
+                    >
+                </div>
+
+                <a-button
+                    class="flex items-center"
+                    v-if="!isLoading && isEdit && content && !isEditMode"
+                    @click="handleEditMode"
+                >
+                    <AtlanIcon
+                        icon="Edit"
+                        class="w-auto h-4 mr-1"
+                    />Edit</a-button
                 >
             </div>
-
-            <a-button
-                class="flex items-center"
-                v-if="!isLoading && isEdit && content && !isEditMode"
-                @click="handleEditMode"
-            >
-                <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Edit</a-button
+            <span
+                class="text-sm text-gray-500"
+                v-if="!isLoading && !content && !isEditMode"
+                >Add some details here ...</span
             >
         </div>
         <div class="h-24" v-if="isLoading" style="min-height: 200px">
             <SectionLoader></SectionLoader>
         </div>
         <div
-            class="mt-3 border-0"
+            class="border-0"
             style="min-height: 200px"
             v-else-if="(guid && !isLoading) || isEditMode || readme.guid"
         >

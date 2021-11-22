@@ -144,7 +144,7 @@ export const ATTRIBUTE_TYPES = [
     },
     {
         label: 'Decimal',
-        id: 'decimal',
+        id: 'float',
         icon: 'Number',
     },
     {

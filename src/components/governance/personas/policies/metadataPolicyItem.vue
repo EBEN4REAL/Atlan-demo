@@ -175,7 +175,7 @@
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
                 :checked="!policy.allow"
-                style="width: 44px"
+                style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
             />
             <span>Deny Permissions</span>

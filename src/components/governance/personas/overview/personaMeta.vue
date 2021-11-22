@@ -18,7 +18,7 @@
 
             <a-switch
                 class="ml-auto"
-                style="width: 44px"
+                style="width: 40px !important"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
             />

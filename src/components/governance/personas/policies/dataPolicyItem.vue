@@ -183,7 +183,7 @@
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
-                style="width: 44px"
+                style="width: 40px !important"
                 :checked="!policy.allow"
                 @update:checked="policy.allow = !$event"
             />

@@ -18,6 +18,7 @@ import { Category, Term } from '~/types/glossary/glossary.interface'
 import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
 import useGlossaryStore from '~/store/glossary'
+import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -126,8 +127,27 @@ export default function useAssetInfo() {
         })
     }
 
+    const { getList: cmList } = useCustomMetadataFacet()
+
     const getPreviewTabs = (asset: assetInterface) => {
-        return getTabs(previewTabs, assetType(asset))
+        console.log(getTabs(previewTabs, assetType(asset)))
+
+        let customTabList = []
+        if (cmList(assetType(asset)).length > 0) {
+            customTabList = cmList(assetType(asset)).map((i) => {
+                console.log(i)
+                return {
+                    component: 'custommetadata',
+                    image: i.options?.imageId,
+                    name: i.label,
+                    tooltip: i.label,
+                }
+            })
+        }
+
+        console.log(customTabList)
+
+        return [...getTabs(previewTabs, assetType(asset)), ...customTabList]
     }
     const getProfileTabs = (asset: assetInterface) => {
         return getTabs(profileTabs, assetType(asset))

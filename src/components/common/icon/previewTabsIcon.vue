@@ -2,7 +2,15 @@
     <a-tooltip placement="left" :title="title" :mouse-enter-delay="0.5"
         ><div class="flex items-center justify-center w-full h-full">
             <AtlanIcon
+                v-if="icon"
                 :icon="isActive && activeIcon ? activeIcon : icon"
+                :class="isActive && !activeIcon ? 'text-primary' : ''"
+                class="h-6"
+            />
+            <img v-else-if="image" :src="imageUrl(image)" class="w-auto h-6" />
+            <AtlanIcon
+                v-else
+                :icon="isActive ? 'Metadata' : 'Metadata'"
                 :class="isActive && !activeIcon ? 'text-primary' : ''"
                 class="h-6"
             />
@@ -18,15 +26,19 @@
         props: {
             title: {
                 type: String,
-                required: true,
+                required: false,
             },
             icon: {
                 type: String,
-                required: true,
+                required: false,
+            },
+            image: {
+                type: String,
+                required: false,
             },
             isActive: {
                 type: Boolean,
-                required: true,
+                required: false,
             },
             activeIcon: {
                 type: String,
@@ -35,7 +47,9 @@
             },
         },
         setup(props, { emit }) {
-            return {}
+            const imageUrl = (url) =>
+                `${window.location.origin}/api/service/images/${url}?ContentDisposition=inline&name=${url}`
+            return { imageUrl }
         },
     })
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <a-dropdown trigger="click">
+    <a-dropdown v-if="!menuMode" trigger="click">
         <template #overlay>
             <a-menu>
                 <a-menu-item v-for="option in options" :key="option.color" @click="selectedColor = option.color">
@@ -15,6 +15,14 @@
             <span class="text-xs self-center">{{ selectedColor }}</span>
         </div>
     </a-dropdown>
+    <div v-else>
+        <div class="flex flex-col gap-3">
+            <span v-for="option in options" :key="option.color" class="hover:bg-gray-light px-2 rounded flex items-center" @click="selectedColor = option.color">
+                <AtlanIcon icon="ShieldFilled" class="self-center mr-1" :class="option.text" />
+                <span>{{ option.color }}</span>
+            </span>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -32,6 +40,11 @@
                 type: String as PropType<'Blue' | 'Green' | 'Red' | 'Yellow'>,
                 required: true,
                 default: 'Blue'
+            },
+            menuMode: {
+                type: Boolean,
+                required: false,
+                default: false
             }
         },
         emits:['update:selectedColor'],

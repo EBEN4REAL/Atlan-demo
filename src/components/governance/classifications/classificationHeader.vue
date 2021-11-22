@@ -1,15 +1,56 @@
 <template>
     <div class="flex flex-col px-5">
-        <div class="flex items-center mb-2 gap-x-2">
-            <AtlanIcon icon="Shield" :style="`color: ${getClassificationColorHex(selectedClassification?.options?.color)}`"/>
-            <span class="text-sm tracking-wide text-gray-500 uppercase"
-                >Classification</span
-            >
-            <Dropdown
-                v-if="classificationDropdownOption.length"
-                class="ml-auto"
-                :options="classificationDropdownOption"
-            ></Dropdown>
+        <div class="flex items-center mb-2 gap-x-2 justify-between">
+            <div>
+                <AtlanIcon icon="Shield" :style="`color: ${getClassificationColorHex(selectedClassification?.options?.color)}`"/>
+                <span class="text-sm tracking-wide text-gray-500 uppercase"
+                    >Classification</span
+                >
+            </div>
+            <a-dropdown>
+                <AtlanBtn
+                    class="flex-none"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    @click.prevent
+                >
+                    <AtlanIcon icon="KebabMenu" class="-mx-1 text-gray" />
+                </AtlanBtn>
+
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item
+                            @click="editClassification"
+                        >
+                            <div class="flex items-center">
+                                <AtlanIcon icon="Edit" />
+                                <span class="pl-2 text-sm">Edit</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item
+                            @click="deleteClassification"
+                        >
+                            <div class="flex items-center text-red-700">
+                                <AtlanIcon icon="Trash" />
+                                <span class="pl-2 text-sm">Delete</span>
+                            </div>
+                        </a-menu-item>
+                        <a-sub-menu>
+                            <template #title>
+                                <span class="flex items-center">
+                                    <AtlanIcon icon="Shield" class="self-center mr-1" :style="`color: ${getClassificationColorHex(classificationColor)}`"/>
+                                    <span>Color</span>
+                                </span>
+                            </template>
+                            <a-menu-item class="m-0 bg-white p-0 w-28">
+                                <ClassificationColorSelector v-model:selectedColor="classificationColor" menuMode/>
+                            </a-menu-item>
+                        </a-sub-menu>
+                    </a-menu>
+                </template>
+            </a-dropdown>
+
         </div>
         <span class="mb-1 text-xl truncate text-gray">{{ selectedClassification?.displayName }}</span>
 
@@ -38,11 +79,14 @@
     // import { useUserPreview } from '~/composables/user/showUserPreview'
     import Dropdown from '@/UI/dropdown.vue'
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
+    import AtlanBtn from '~/components/UI/button.vue'
+    import ClassificationColorSelector from '@/governance/classifications/classificationColorSelector.vue';
 
     import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
 
+    import useEditTypedefs from '~/composables/typedefs/useEditTypedefs'
     import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
@@ -50,6 +94,8 @@
         components: {
             Dropdown,
             AddClassificationModal,
+            AtlanBtn,
+            ClassificationColorSelector
         },
         props: {
             classification: {
@@ -64,27 +110,18 @@
 
             const { classification: selectedClassification} = toRefs(props)
 
+            const classificationColor = ref(selectedClassification?.value?.options?.color ?? 'Blue');
+
             const router = useRouter()
             
+            const body = ref({})
+            const { mutate:mutateEdit }  = useEditTypedefs(body)
+
             const displayName = computed(
                 () => selectedClassification.value.displayName
             )
 
-            const classificationDropdownOption = computed(() => {
-                const options: Record<string, any>[] = []
-                    options.push( {
-                        title: 'Edit',
-                        icon: 'Edit',
-                        handleClick: editClassification,
-                    })
-                    options.push({
-                    title: 'Delete',
-                    icon: 'Trash',
-                    class: 'text-red-700',
-                    handleClick: deleteClassification,
-                })
-                return options
-            })
+
             const deleteClassification = () => {
                 Modal.confirm({
                     title: 'Delete Classification',
@@ -117,6 +154,21 @@
                 isDeleteClassificationModalOpen.value = false
             }
 
+            watch(classificationColor, (newClassificationColor) => {
+                body.value = {
+                    classificationDefs: [
+                        {
+                            ...selectedClassification.value,
+                            options: {
+                                ...selectedClassification.value?.options,
+                                color: newClassificationColor
+                            }
+                        }
+                    ]
+                }
+                mutateEdit()
+            })
+
 
             // user preview drawer
             // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -128,12 +180,13 @@
                 isDeleteClassificationModalOpen,
                 closeDeleteClassificationModal,
                 closeEditClassificationModal,
-                classificationDropdownOption,
                 isEditClassificationModalOpen,
                 deleteClassification,
                 selectedClassification,
                 displayName,
-                getClassificationColorHex
+                getClassificationColorHex,
+                editClassification,
+                classificationColor,
             }
         },
     })

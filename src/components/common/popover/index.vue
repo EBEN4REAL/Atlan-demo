@@ -64,7 +64,7 @@
                 <div class="mt-2">Description</div>
                 <div class="mt-1 text-base">
                     {{
-                        item?.description ||
+                        item?.attributes?.description ||
                         `This ${title} has no description added`
                     }}
                 </div>

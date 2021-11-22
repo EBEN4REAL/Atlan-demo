@@ -287,7 +287,6 @@
             :footer="null"
             :closable="false"
             width="1000px"
-            :class="$style.sampleDataModal"
         >
             <SampleDataTable :asset="selectedAsset" />
         </a-modal>

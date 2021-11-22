@@ -598,7 +598,7 @@
         height: calc(100vh - 40px);
     }
 </style>
-<style lang="less">
+<style lang="less" module>
     .inline_tabs {
         height: 30px !important;
 

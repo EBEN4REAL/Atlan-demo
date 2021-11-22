@@ -15,8 +15,8 @@
                             style="letter-spacing: 0.07em"
                         >
                             <img
-                                v-if="item.options?.imagePath"
-                                :src="imageUrl(item.options?.imagePath)"
+                                v-if="item.options?.imageId"
+                                :src="imageUrl(item.options?.imageId)"
                                 class="float-left w-auto h-4 mr-2"
                             />
 
@@ -291,7 +291,7 @@
             })
 
             const imageUrl = (url) =>
-                `${window.location.origin}/api/service${url}`
+                `${window.location.origin}/api/service/images/${url}?ContentDisposition=inline&name=${url}`
 
             return {
                 isFiltered,

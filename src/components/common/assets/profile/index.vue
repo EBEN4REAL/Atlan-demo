@@ -4,9 +4,9 @@
 
         <a-tabs
             v-model:activeKey="activeKey"
-            @change="handleChangeTab"
             :class="$style.profiletab"
             class="flex-1"
+            @change="handleChangeTab"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
@@ -17,7 +17,7 @@
                     :is="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
-                    @preview="emit('preview', $event)"
+                    @preview="$emit('preview', $event)"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -60,15 +60,28 @@
             Queries: defineAsyncComponent(
                 () => import('./tabs/queries/index.vue')
             ),
+            LinkedAssets: defineAsyncComponent(
+                () => import('./tabs/linkedAssets/index.vue')
+            ),
+            TermsAndCategories: defineAsyncComponent(
+                () => import('./tabs/termsAndCategories/index.vue')
+            ),
         },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
+                default: () => {},
+            },
+            page: {
+                type: String,
+                required: false,
+                default: 'assets',
             },
         },
-        setup(props, {emit}) {
-            const { asset } = toRefs(props)
+        emits: ['preview'],
+        setup(props) {
+            const { asset, page } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() => getAllowedActions(asset.value))
             provide('actions', actions)
@@ -76,14 +89,12 @@
 
             const { getProfileTabs } = useAssetInfo()
 
-            const refs: { [key: string]: any } = ref({})
-
             const activeKey = ref()
             const route = useRoute()
 
             const router = useRouter()
             const handleChangeTab = (key) => {
-                router.replace(`/assets/${route.params.id}/${key}`)
+                router.replace(`/${page.value}/${route.params.id}/${key}`)
             }
 
             onMounted(() => {
@@ -91,9 +102,6 @@
             })
 
             return {
-                emit,
-                refs,
-                asset,
                 getProfileTabs,
                 activeKey,
                 handleChangeTab,

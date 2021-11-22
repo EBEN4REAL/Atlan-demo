@@ -1,96 +1,70 @@
+/* eslint-disable no-nested-ternary */
 export default function useUpdateGraph() {
-    const updateEdgesStroke = async (
+    const updateNodesData = async (
         graph,
-        model,
-        edges,
-        edgesToHighlight,
-        baseEntityGuid,
-        reset = false
+        highlightedNode,
+        nodesToHighlight
     ) => {
+        await graph.value.model.nodes
+        const graphNodes = graph.value.getNodes()
+
+        console.log('highlightedNode:', highlightedNode.value)
+
+        graphNodes.forEach(async (x) => {
+            const itExists = nodesToHighlight.includes(x.id)
+            const isHN = highlightedNode.value === x.id
+            x.updateData({
+                isHighlightedNode: itExists ? (isHN ? x.id : null) : null,
+                isHighlightedNodePath: itExists ? x.id : null,
+                isGrayed: !highlightedNode.value ? false : !itExists,
+            })
+        })
+    }
+
+    const updateEdgesData = async (graph, edgesToHighlight, baseEntityGuid) => {
+        await graph.value.model.edges
         const graphEdges = graph.value.getEdges()
-        const newEdgesData = []
-        const getEdgeData = (x) =>
-            edges.value.find((edgeData) => edgeData.id === x)
 
-        edges.value.forEach((m) => {
-            const edgeData = getEdgeData(m.id)
-            let computedStroke
-
+        graphEdges.forEach(async (x) => {
             // #9cb781 - green
             // #f1a183 - orange
             // #d9d9d9 - gray
             // #5277D7 - blue
+            let computedStroke: string
+            const edgesSplit = x.id.split('@')
+            const baseCell = graph.value.getCellById(baseEntityGuid)
+            const cell = graph.value.getCellById(edgesSplit[0])
+            const isPredecessor = graph.value.isPredecessor(baseCell, cell)
 
-            if (reset) {
-                const edgesSplit = m.id.split('@')
-                const baseCell = graph.value.getCellById(baseEntityGuid)
-                const cell = graph.value.getCellById(edgesSplit[0])
-                const isPredecessor = graph.value.isPredecessor(baseCell, cell)
-                computedStroke = isPredecessor ? '#9cb781' : '#f1a183'
-                if (edgesSplit[1] === baseEntityGuid) computedStroke = '#9cb781'
-            }
+            computedStroke = isPredecessor ? '#9cb781' : '#f1a183'
+            if (edgesSplit[1] === baseEntityGuid) computedStroke = '#9cb781'
+            if (edgesToHighlight.length) computedStroke = '#d9d9d9'
 
-            edgeData.attrs.line.stroke = reset ? computedStroke : '#d9d9d9'
-            edgeData.attrs.line.targetMarker.stroke = reset
-                ? computedStroke
-                : '#d9d9d9'
-            edgeData.zIndex = 1
-            newEdgesData.push(edgeData)
+            const itExists = edgesToHighlight.includes(x.id)
+            x.attr('line/stroke', itExists ? '#5277D7' : computedStroke)
+            x.attr(
+                'line/targetMarker/stroke',
+                itExists ? '#5277D7' : computedStroke
+            )
+            x.setZIndex(itExists ? 30 : 1)
         })
-
-        if (!reset) {
-            edgesToHighlight.forEach((x) => {
-                const edgeData = getEdgeData(x)
-                edgeData.attrs.line.stroke = '#5277D7'
-                edgeData.attrs.line.targetMarker.stroke = '#5277D7'
-                edgeData.zIndex = 30
-                newEdgesData.push(edgeData)
-            })
-        }
-
-        newEdgesData.forEach((y) => {
-            graphEdges.forEach((z) => {
-                if (y.id === z.id) z.updateData(y)
-            })
-        })
-
-        await graph.value.fromJSON(model.value)
     }
 
-    // TODO: To improve on
-    const updateNodesToHighlight = (
-        graph,
-        model,
-        nodes,
-        highlightedNode,
-        nodesToHighlight,
-        reset = false
-    ) => {
+    const updateProcessNodesPosition = async (graph) => {
+        await graph.value.model.nodes
         const graphNodes = graph.value.getNodes()
-        const newNodesData = []
 
-        nodes.value.forEach((m) => {
-            nodesToHighlight.forEach((x) => {
-                if (m.id === x) {
-                    const nodeData = m
-                    nodeData.isHighlightedNode = null
-                    nodeData.isHighlightedNodePath = reset ? null : m.id
-                    if (highlightedNode.value === m.id)
-                        nodeData.isHighlightedNode = reset ? null : m.id
-                    newNodesData.push(nodeData)
-                }
-            })
-        })
-
-        newNodesData.forEach((y) => {
-            graphNodes.forEach((z) => {
-                if (y.id === z.id) z.updateData(y)
-            })
+        graphNodes.forEach(async (z) => {
+            if (z.store.data?.isProcess) {
+                const p = z.position()
+                z.position(p.x + 110, p.y)
+            }
         })
     }
 
     return {
-        updateEdgesStroke,
-        updateNodesToHighlight,
+        updateNodesData,
+        updateEdgesData,
+        updateProcessNodesPosition,
     }
 }

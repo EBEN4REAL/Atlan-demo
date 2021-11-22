@@ -29,6 +29,36 @@ export const operators = {
             label: 'Is Not Null',
         },
     ],
+    url: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        },
+        {
+            id: 'startsWith',
+            label: 'Starts With',
+        },
+        {
+            id: 'endsWith',
+            label: 'Ends With',
+        },
+        {
+            id: 'pattern',
+            label: 'Pattern',
+        },
+        {
+            id: 'isNull',
+            label: 'Is Null',
+        },
+        {
+            id: 'isNotNull',
+            label: 'Is Not Null',
+        },
+    ],
     int: [
         {
             id: 'equals',
@@ -131,15 +161,7 @@ export const operators = {
             label: 'Pattern',
         },
     ],
-    datetime_mandatory: [
-        {
-            id: 'equals',
-            label: 'Equals(=)',
-        },
-        {
-            id: 'notEquals',
-            label: 'Not Equals(!=)',
-        },
+    date_mandatory: [
         {
             id: 'greaterThan',
             label: 'Greater Than(>)',
@@ -155,6 +177,41 @@ export const operators = {
         {
             id: 'lessThanEqual',
             label: 'Less Than Equal(<=)',
+        },
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        },
+    ],
+    date: [
+        {
+            id: 'greaterThan',
+            label: 'Greater Than(>)',
+        },
+        {
+            id: 'greaterThanEqual',
+            label: 'Greater Than Equal(>=)',
+        },
+        {
+            id: 'lessThan',
+            label: 'Less Than(<)',
+        },
+        {
+            id: 'lessThanEqual',
+            label: 'Less Than Equal(<=)',
+        },
+
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
         },
     ],
 }

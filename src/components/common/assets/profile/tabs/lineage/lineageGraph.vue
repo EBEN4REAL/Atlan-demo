@@ -136,20 +136,20 @@
                 const { graphLayout } = useCreateGraph(
                     graph,
                     graphContainer,
-                    minimapContainer
+                    minimapContainer,
+                    showProcess
                 )
 
                 // useComputeGraph
-                const { model, edges, nodes, baseEntityGuid } =
-                    await useComputeGraph(
-                        graph,
-                        graphLayout,
-                        lineage,
-                        showProcess,
-                        searchItems,
-                        currZoom,
-                        reload
-                    )
+                const { baseEntityGuid } = await useComputeGraph(
+                    graph,
+                    graphLayout,
+                    lineage,
+                    showProcess,
+                    searchItems,
+                    currZoom,
+                    reload
+                )
 
                 // save cords
                 graph.value.on('cell:mousedown', ({ e }) => {
@@ -159,9 +159,6 @@
                 // useHighlight
                 useHighlight(
                     graph,
-                    model,
-                    edges,
-                    nodes,
                     baseEntityGuid,
                     showProcess,
                     highlightLoadingCords,
@@ -329,10 +326,19 @@
             background-color: #fafafa;
             width: 60px;
             height: 60px;
+            cursor: pointer;
 
             &.isHighlightedNode,
             &.isHighlightedNodePath {
                 border: 2px solid #2351cc;
+            }
+
+            & > .process-icon {
+                color: #64748b;
+            }
+
+            &.isGrayed > .process-icon {
+                color: #b6b9c5;
             }
         }
 
@@ -347,30 +353,47 @@
             background-color: #fafafa;
             width: 270px;
             height: 60px;
+            cursor: pointer;
 
             &.isBase {
                 border: 2px solid #81c1b3 !important;
                 background-color: #f2ffe7 !important;
             }
-        }
 
-        .node-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            text-transform: lowercase;
-            color: #3e4359;
+            & .node-text {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                text-transform: lowercase;
+                color: #3e4359;
 
-            &.type {
-                text-transform: capitalize;
-                color: #6f7590;
+                &.type {
+                    text-transform: capitalize;
+                    color: #6f7590;
+                }
+            }
+
+            .node-source {
+                width: 1.3rem;
+                height: 1.3rem;
+                margin-right: 0.5rem;
             }
         }
 
-        .node-source {
-            width: 1.3rem;
-            height: 1.3rem;
-            margin-right: 0.5rem;
+        .isGrayed {
+            border: 2px solid #e6e6eb !important;
+            background-color: #f3f3f3 !important;
+
+            .node-text {
+                color: #b6b9c5 !important;
+
+                &.type {
+                    color: #b6b9c5 !important;
+                }
+            }
+            .node-source {
+                opacity: 0.5;
+            }
         }
 
         .isHighlightedNode {

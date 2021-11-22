@@ -1,4 +1,3 @@
-
 import { useAPI } from '~/services/api/useAPI'
 import { map } from './key'
 
@@ -22,6 +21,39 @@ const getWorkflows = ({ immediate, options, params }) =>
             params,
         },
         { options, asyncOptions: { immediate } }
+    )
+
+const getWorkflowPackages = ({ pathVariables, options, params }) =>
+    useAPI(
+        map.WORKFLOW_TEMPLATE,
+        'GET',
+        {
+            pathVariables,
+            params,
+        },
+        options || {}
+    )
+
+const getWorkflowPackagesByName = ({ pathVariables, options }) => {
+    console.log('getWorkflowPackagesByName', pathVariables, options)
+    return useAPI(
+        map.WORKFLOW_TEMPLATE_NAME,
+        'GET',
+        {
+            pathVariables,
+        },
+        options || {}
+    )
+}
+
+const getWorkflowPackagesConfigMap = ({ params, options }) =>
+    useAPI(
+        map.WORKFLOW_CONFIG_MAP,
+        'GET',
+        {
+            params,
+        },
+        options || {}
     )
 
 const getWorkflowTemplates = ({ pathVariables, immediate, options, params }) =>
@@ -69,7 +101,6 @@ const getWorkflowTemplateByName = ({ immediate, options, pathVariables }) =>
         'GET',
         {
             pathVariables,
-            options,
         },
         { asyncOptions: { immediate } }
     )
@@ -96,6 +127,9 @@ const stopRun = (pathVariables) =>
 
 const getRunList = (reqOptions) =>
     useAPI(map.WORKFLOW_RUN, 'GET', reqOptions, {})
+
+const getArtifacts = (reqOptions) =>
+    useAPI(map.GET_ARTIFACTS, 'GET', reqOptions, {})
 
 const getArchivedRunList = (reqOptions) =>
     useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', reqOptions, {})
@@ -135,15 +169,25 @@ const createWorkflow = ({ params, body, immediate, options }) =>
     )
 
 const deleteSchedule = ({ pathVariables }) =>
-    useAPI(map.DELETE_SCHEDULE, 'POST', {
-        pathVariables,
-    }, {})
+    useAPI(
+        map.DELETE_SCHEDULE,
+        'POST',
+        {
+            pathVariables,
+        },
+        {}
+    )
 
 const updateSchedule = ({ body, pathVariables }) =>
-    useAPI(map.UPDATE_SCHEDULE, 'POST', {
-        body,
-        pathVariables,
-    }, {})
+    useAPI(
+        map.UPDATE_SCHEDULE,
+        'POST',
+        {
+            body,
+            pathVariables,
+        },
+        {}
+    )
 
 const addSchedule = ({ body }) => useAPI(map.SCHEDULES, 'POST', { body }, {})
 
@@ -178,6 +222,9 @@ export const Workflows = {
     deleteWorkflowByName,
     runWorkflowByName,
     getWorkflowTemplates,
+    getWorkflowPackages,
+    getWorkflowPackagesByName,
+    getWorkflowPackagesConfigMap,
     getWorkflowConfigMap,
     getWorkflowTemplateByName,
     deleteSchedule,
@@ -185,4 +232,5 @@ export const Workflows = {
     addSchedule,
     getSchedules,
     getArchivedRunLogs,
+    getArtifacts,
 }

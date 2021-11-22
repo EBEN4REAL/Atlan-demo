@@ -23,7 +23,7 @@
                     class="items-center ml-auto"
                     @click="() => setPopoverState(!popoverVisible)"
                     ><span class="text-xl">+</span>
-                    <span>Add users / Groups</span></AtlanBtn
+                    <span>Add {{ listType }}</span></AtlanBtn
                 >
                 <template #content>
                     <div
@@ -466,8 +466,8 @@
             const handleUpdate = () => {
                 if (persona.value?.id) {
                     addUsersLoading.value = true
-                    const userIds = userGroupData.value.ownerUsers
-                    const groupIds = userGroupData.value.ownerGroups
+                    const userIds = userGroupData.value.ownerUsers ?? []
+                    const groupIds = userGroupData.value.ownerGroups ?? []
                     updateUsers({
                         id: persona.value.id,
                         users: userIds,
@@ -477,9 +477,9 @@
                             addUsersLoading.value = false
                             popoverVisible.value = false
                             selectedPersonaDirty.value.users =
-                                userGroupData.value.ownerUsers
+                                userGroupData.value.ownerUsers ?? []
                             selectedPersonaDirty.value.groups =
-                                userGroupData.value.ownerGroups
+                                userGroupData.value.ownerGroups ?? []
                             getUserList()
                             getGroupList()
                         })
@@ -520,8 +520,8 @@
                 addUsersLoading.value = true
 
                 // console.log(persona.value, 'persona')
-                let updatedUsersIds = userGroupData.value.ownerUsers
-                let updatedGroupIds = userGroupData.value.ownerGroups
+                let updatedUsersIds = userGroupData.value.ownerUsers ?? []
+                let updatedGroupIds = userGroupData.value.ownerGroups ?? []
                 if (type === 'user') {
                     updatedUsersIds = userGroupData.value.ownerUsers.filter(
                         (userId) => userId !== userOrGroup.id

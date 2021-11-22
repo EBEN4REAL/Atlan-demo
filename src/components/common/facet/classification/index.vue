@@ -123,7 +123,7 @@
                 if (filteredList.value.length < 5) {
                     return `${filteredList.value.length * 40}px`
                 }
-                return '250px;'
+                return '150px'
             })
 
             watch(localValue.value, (prev, cur) => {

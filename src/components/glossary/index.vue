@@ -344,6 +344,7 @@
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryTerm') {
+                        console.log('added')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }

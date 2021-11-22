@@ -131,6 +131,7 @@
                     <PreviewTabsIcon
                         :title="tab.tooltip"
                         :icon="tab.icon"
+                        :image="tab.image"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
                     />
@@ -227,8 +228,6 @@
             )
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
-
-            console.log('selectedAsset', selectedAsset.value)
 
             const {
                 title,

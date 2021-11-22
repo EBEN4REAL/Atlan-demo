@@ -18,6 +18,7 @@ import { Category, Term } from '~/types/glossary/glossary.interface'
 import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
 import useGlossaryStore from '~/store/glossary'
+import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -126,8 +127,27 @@ export default function useAssetInfo() {
         })
     }
 
+    const { getList: cmList } = useCustomMetadataFacet()
+
     const getPreviewTabs = (asset: assetInterface) => {
-        return getTabs(previewTabs, assetType(asset))
+        console.log(getTabs(previewTabs, assetType(asset)))
+
+        let customTabList = []
+        if (cmList(assetType(asset)).length > 0) {
+            customTabList = cmList(assetType(asset)).map((i) => {
+                console.log(i)
+                return {
+                    component: 'custommetadata',
+                    image: i.options?.imageId,
+                    name: i.label,
+                    tooltip: i.label,
+                }
+            })
+        }
+
+        console.log(customTabList)
+
+        return [...getTabs(previewTabs, assetType(asset)), ...customTabList]
     }
     const getProfileTabs = (asset: assetInterface) => {
         return getTabs(profileTabs, assetType(asset))
@@ -221,6 +241,9 @@ export default function useAssetInfo() {
     const getAnchorQualifiedName = (asset: assetInterface) => {
         return attributes(asset)?.anchor?.uniqueAttributes?.qualifiedName
     }
+    const getAnchorProfile = (asset: assetInterface) => {
+        return `/glossary/${getAnchorGuid(asset)}`
+    }
 
     const logo = (asset: assetInterface) => {
         let img = ''
@@ -293,6 +316,16 @@ export default function useAssetInfo() {
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset)?.columnCount)
+
+    const termsCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? asset?.termsCount?.toLocaleString() || 'N/A'
+            : getCountString(asset?.termsCount)
+
+    const categoryCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? asset?.categoryCount?.toLocaleString() || 'N/A'
+            : getCountString(asset?.categoryCount)
 
     const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -845,7 +878,10 @@ export default function useAssetInfo() {
         qualifiedName,
         getAnchorName,
         getAnchorGuid,
+        getAnchorProfile,
         connectionQualifiedName,
+        categoryCount,
+        termsCount,
         getConnectorImageMap,
         anchorAttributes,
         readmeGuid,

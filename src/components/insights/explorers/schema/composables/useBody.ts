@@ -43,7 +43,8 @@ export function useBody(
     typeName: any,
     queryText?: string,
     offset?: any,
-    limit?: any
+    limit?: any,
+    // searchResultType?: string
 ) {
     const base = bodybuilder()
 
@@ -53,7 +54,7 @@ export function useBody(
             base.filter('term', ob[0], filter.term[ob[0]])
         }
         if (i == 1) {
-            if (Array.isArray(typeName))
+            if (Array.isArray(typeName)) {
                 // base.filter('terms', '__typeName.keyword', [
                 //     'Database',
                 //     'Schema',
@@ -61,9 +62,12 @@ export function useBody(
                 //     'Column',
                 // ])
                 base.filter('terms', '__typeName.keyword', typeName)
+                addQueryTextFilter(base, queryText)
+                // }
+            }
             else {
                 /* Only use queryText when searching for database/ topmost parent, children won't be filtered using query text */
-                if (typeName === 'Database' && queryText)
+                if (queryText && typeName==='Database')
                     addQueryTextFilter(base, queryText)
                 base.filter('term', '__typeName.keyword', typeName)
             }

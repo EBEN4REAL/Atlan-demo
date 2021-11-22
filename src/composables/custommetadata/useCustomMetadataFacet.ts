@@ -31,8 +31,71 @@ export default function useCustomMetadataFacet() {
         return []
     })
 
+    const getList = (typeName) => {
+        const list = []
+        customMetadataList.value.forEach((bm) => {
+            const attributeList = []
+            bm.attributeDefs.forEach((a) => {
+                if (
+                    typeof a.options?.customApplicableEntityTypes === 'string'
+                ) {
+                    let temp = JSON.parse(
+                        a.options?.customApplicableEntityTypes
+                    )
+                    if (temp) {
+                        if (temp.includes(typeName)) {
+                            attributeList.push({
+                                ...a,
+                                typeList: JSON.parse(
+                                    a.options?.customApplicableEntityTypes
+                                ),
+                            })
+                        }
+                        if (temp.length === 0) {
+                            attributeList.push({
+                                ...a,
+                                typeList: JSON.parse(
+                                    a.options?.customApplicableEntityTypes
+                                ),
+                            })
+                        }
+                    } else {
+                        attributeList.push({
+                            ...a,
+                            typeList: JSON.parse(
+                                a.options?.customApplicableEntityTypes
+                            ),
+                        })
+                    }
+                } else {
+                    attributeList.push({
+                        ...a,
+                        typeList: [],
+                    })
+                }
+            })
+            if (attributeList.length > 0) {
+                list.push({
+                    id: bm.name,
+                    label: bm.displayName,
+                    component: 'properties',
+                    overallCondition: 'OR',
+                    isDeleted: false,
+                    isDisabled: false,
+                    attributes: attributeList,
+                    includes: [],
+                    exclude: false,
+                    options: bm.options,
+                })
+            }
+        })
+
+        return list
+    }
+
     return {
         list,
+        getList,
         customMetadataList,
     }
 }

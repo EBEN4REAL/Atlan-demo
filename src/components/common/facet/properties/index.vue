@@ -97,6 +97,28 @@
             }
 
             const handleChange = () => {
+                Object.keys(localValue.value).forEach((key) => {
+                    localValue.value[key] = localValue.value[key].filter(
+                        (i) => {
+                            if (
+                                i.operator !== 'isNull' &&
+                                i.operator === 'isNotNull'
+                            ) {
+                                return true
+                            }
+                            if (i.value) {
+                                return true
+                            }
+                            return false
+                        }
+                    )
+                })
+
+                Object.keys(localValue.value).forEach((key) => {
+                    if (localValue.value[key].length === 0) {
+                        delete localValue.value[key]
+                    }
+                })
                 modelValue.value = localValue.value
                 emit('change')
             }

@@ -10,78 +10,31 @@
                 v-model="selectedGlossaryQf"
                 @change="handleSelectGlossary"
             ></GlossarySelect>
-            <a-dropdown :trigger="['click']" placement="bottomLeft">
-                <a-button class="ml-3" size="small">
-                    <div class="flex items-center">
-                        <AtlanIcon
-                            icon="Add"
-                            class="transition duration-300 text-primary"
-                        />
-                    </div>
-                </a-button>
+            <div class="flex">
+                <AddGTCModal
+                    :key="selectedGlossaryQf"
+                    :entityType="defaultEntityType"
+                    @add="handleAddGTC"
+                    :glossaryQualifiedName="selectedGlossaryQf"
+                    :glossaryName="selectedGlosaryName"
+                >
+                    <template #trigger>
+                        <a-button class="ml-3" size="small">
+                            <AtlanIcon
+                                icon="Add"
+                                class="transition duration-300 text-primary"
+                            />
+                        </a-button>
+                    </template>
+                </AddGTCModal>
 
-                <template #overlay>
-                    <a-menu>
-                        <a-menu-item key="1">
-                            <AddGTCModal
-                                entityType="AtlasGlossaryTerm"
-                                :glossaryQualifiedName="selectedGlossaryQf"
-                                @add="handleAddTerm"
-                            >
-                                <template #trigger>
-                                    <div class="flex items-center">
-                                        <AtlanIcon icon="Term" class="mr-1" />
-                                        New Term
-                                    </div>
-                                </template>
-                            </AddGTCModal>
-                        </a-menu-item>
-                        <a-menu-item key="2">
-                            <AddGTCModal
-                                entityType="AtlasGlossaryCategory"
-                                :glossaryQualifiedName="selectedGlossaryQf"
-                                @add="handleAddCategory"
-                            >
-                                <template #trigger>
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Category"
-                                            class="mr-1"
-                                        />
-                                        New Category
-                                    </div>
-                                </template>
-                            </AddGTCModal>
-                        </a-menu-item>
-                        <a-menu-item key="3">
-                            <AddGTCModal
-                                entityType="AtlasGlossary"
-                                @add="handleAddGlossary"
-                            >
-                                <template #trigger>
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Glossary"
-                                            class="mr-1"
-                                        />
-                                        New Glossary
-                                    </div>
-                                </template>
-                            </AddGTCModal>
-                        </a-menu-item>
-                        <a-menu-divider></a-menu-divider>
-                        <a-menu-item key="4">
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Glossary" class="mr-1" />
-                                Bulk Upload
-                            </div>
-                        </a-menu-item>
-                    </a-menu>
-                </template>
-            </a-dropdown>
+                <div class="ml-2">
+                    <GlossaryActions></GlossaryActions>
+                </div>
+            </div>
         </div>
 
-        <div class="flex px-4 py-1 mb-2 border-b border-gray-200">
+        <div class="flex px-4 my-2">
             <SearchAdvanced
                 v-model="queryText"
                 :connectorName="facets?.hierarchy?.connectorName"
@@ -178,6 +131,8 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
+    import { useRouter } from 'vue-router'
+
     import EmptyView from '@common/empty/index.vue'
     import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
@@ -192,6 +147,8 @@
 
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
 
+    import GlossaryActions from '@/glossary/actions/glossary.vue'
+
     import {
         AssetAttributes,
         AssetRelationAttributes,
@@ -203,11 +160,9 @@
 
     import AtlanIcon from '../common/icon/atlanIcon.vue'
     import useGlossaryStore from '~/store/glossary'
-    import { assetInterface } from '~/types/assets/asset.interface'
 
     import { glossaryFilters } from '~/constant/filters/discoveryFilters'
-    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
-    import { useRouter } from 'vue-router'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -223,6 +178,8 @@
             GlossarySelect,
             GlossaryItem,
             GlossaryTree,
+
+            GlossaryActions,
         },
         props: {
             showFilters: {
@@ -239,7 +196,20 @@
             },
         },
         setup(props, { emit }) {
-            const selectedGlossaryQf = ref('')
+            const glossaryStore = useGlossaryStore()
+            const selectedGlossaryQf = ref(
+                glossaryStore.activeGlossaryQualifiedName
+            )
+            const selectedGlossary = computed(() =>
+                glossaryStore.getGlossaryByQualifiedName(
+                    selectedGlossaryQf.value
+                )
+            )
+            const selectedGlosaryName = computed(
+                () => selectedGlossary?.value?.attributes?.name
+            )
+
+            // List Options
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -252,7 +222,7 @@
             const postFacets = ref({
                 glossary: '__all',
             })
-            const dependentKey = ref('DEFAULT_GLOSSARY_LIST')
+            const dependentKey = ref('DEFAULT_GLOSSARY_ITEMS_LIST')
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
@@ -262,21 +232,6 @@
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const { initialFilters } = toRefs(props)
-            const glossaryStore = useGlossaryStore()
-
-            if (glossaryStore.activeFacet && glossaryStore.activeFacet !== {}) {
-                facets.value = glossaryStore.activeFacet
-                console.log(facets.value)
-            }
-
-            if (glossaryStore.preferences) {
-                preference.value = glossaryStore.preferences
-            }
-            if (glossaryStore.activeFacetTab?.length > 0) {
-                activeKey.value = glossaryStore.activeFacetTab
-            } else {
-                activeKey.value = ['glossary']
-            }
 
             facets.value = {
                 ...facets.value,
@@ -284,8 +239,8 @@
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
             }
 
+            // Virtual List Height
             const glossaryBox = ref()
-
             const height = computed(() => {
                 if (glossaryBox.value) {
                     return glossaryBox.value.clientHeight - 150
@@ -293,8 +248,16 @@
                 return 400
             })
 
+            const defaultEntityType = computed(() => {
+                if (selectedGlossaryQf.value) {
+                    return 'AtlasGlossaryTerm'
+                }
+                return 'AtlasGlossary'
+            })
+
             const handleSelectGlossary = (val) => {
                 selectedGlossaryQf.value = val
+                glossaryStore.setActiveGlossaryQualifiedName(val)
             }
 
             const {
@@ -306,7 +269,6 @@
                 fetch,
                 quickChange,
                 handleSelectedGlossary,
-                selectedGlossary,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -320,6 +282,8 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
+
+            const { getAnchorQualifiedName } = useAssetInfo()
 
             const router = useRouter()
             const handlePreview = (item) => {
@@ -354,11 +318,9 @@
                 quickChange()
                 glossaryStore.setPreferences(preference.value)
             }
-
             const handleDisplayChange = () => {
                 glossaryStore.setPreferences(preference.value)
             }
-
             const handleResetEvent = () => {
                 facets.value = {
                     typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
@@ -372,23 +334,41 @@
             }
 
             const glossaryTree = ref(null)
-            const handleAddGlossary = (asset) => {
-                if (glossaryTree.value) {
-                    glossaryTree.value.addGlossary(asset)
+            const handleAddGTC = (asset) => {
+                if (asset) {
+                    if (asset.typeName === 'AtlasGlossary') {
+                        glossaryStore.addGlossary(asset)
+                        handleSelectGlossary(asset?.attributes?.qualifiedName)
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
+                    if (asset.typeName === 'AtlasGlossaryTerm') {
+                        console.log('added')
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
+                    if (asset.typeName === 'AtlasGlossaryCategory') {
+                        if (glossaryTree.value) {
+                            glossaryTree.value.addGlossary(asset)
+                        }
+                    }
                 }
             }
 
             const handleAddTerm = (asset) => {
+                handleSelectGlossary(getAnchorQualifiedName(asset))
                 if (glossaryTree.value) {
                     glossaryTree.value.addTerm(asset)
                 }
             }
             const handleAddCategory = (asset) => {
+                handleSelectGlossary(getAnchorQualifiedName(asset))
                 if (glossaryTree.value) {
                     glossaryTree.value.addCategory(asset)
                 }
             }
-
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
@@ -417,28 +397,22 @@
                 activeKey,
                 glossaryFilters,
                 selectedGlossary,
-
+                selectedGlosaryName,
                 height,
                 glossaryBox,
                 handleSelectedGlossary,
-                handleAddGlossary,
+                handleAddGTC,
                 glossaryTree,
                 glossaryURL,
                 selectedGlossaryQf,
                 handleSelectGlossary,
                 handleAddTerm,
                 handleAddCategory,
+                defaultEntityType,
             }
         },
     })
 </script>
-
-<style lang="less">
-    .facets {
-        max-width: 264px;
-        width: 25%;
-    }
-</style>
 
 <style lang="less" module>
     .filterPopover {

@@ -1,10 +1,14 @@
 import { ref } from 'vue'
 import { SimpleNodeView } from './view.js'
+import useUpdateGraph from './useUpdateGraph'
+
+const { updateProcessNodesPosition } = useUpdateGraph()
 
 export default function useCreateGraph(
     graph,
     graphContainer,
-    minimapContainer
+    minimapContainer,
+    showProcess
 ) {
     const graphLayout = ref({})
 
@@ -13,9 +17,11 @@ export default function useCreateGraph(
     const { DagreLayout } = window.layout
 
     graph.value = new Graph({
+        autoResize: true,
+        interacting: false,
         container: graphContainer.value,
         grid: true,
-        background: { color: '#f8f8fd' },
+        background: { color: '#ffffff' },
         scroller: {
             enabled: true,
             pageVisible: false,
@@ -51,11 +57,15 @@ export default function useCreateGraph(
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         rankdir: 'LR',
-        // align: 'UR',
-        ranksep: 80,
-        nodesep: 10,
-
+        nodesep: 15,
         controlPoints: true,
+        ranksepFunc() {
+            if (showProcess.value) return 75
+            return 150
+        },
+        onLayoutEnd() {
+            updateProcessNodesPosition(graph)
+        },
     })
 
     return {

@@ -3,7 +3,7 @@ export const userColumns = [
         title: 'User',
         key: 'user',
         sorter: true,
-        width: 390,
+        width: 400,
         slots: { customRender: 'name' },
         sortKey: 'first_name',
         colSpan: 2,
@@ -55,11 +55,11 @@ export const statusColorCodes = {
 export const userStatusOptions = [
     {
         label: 'Active',
-        value: { enabled: true, email_verified: true },
+        value: JSON.stringify({ enabled: true, email_verified: true }),
     },
-    { label: 'Disabled', value: { enabled: false } },
+    { label: 'Disabled', value: JSON.stringify({ enabled: false }) },
     {
         label: 'Invited',
-        value: { enabled: true, email_verified: false },
+        value: JSON.stringify({ enabled: true, email_verified: false }),
     },
 ]

@@ -1,9 +1,6 @@
 <template>
     <PreviewHeader
-        :name="
-            selectedWorkflow.configmap.data.display_name ??
-            selectedWorkflow.name
-        "
+        :name="selectedWorkflow?.display_name || selectedWorkflow?.name || ''"
         type="workflow template"
         :show-utility-buttons="false"
         :icon="images.icon"
@@ -88,8 +85,8 @@
         </template>
     </div>
     <AtlanButton
-        v-auth="access.CREATE_WORKFLOW"
         v-if="!workflowTemplateLoading && !workflowTemplateError"
+        v-auth="access.CREATE_WORKFLOW"
         class="m-2"
         size="sm"
         color="primary"
@@ -242,7 +239,7 @@
                 execute(false)
 
                 watch([data, error], (v) => {
-                    if (data.value && !error.value) {
+                    if (data.value && !error.value && data.value.metadata) {
                         message.success({
                             content: `${workflowName.value} created!`,
                             key: `${workflowName.value}`,

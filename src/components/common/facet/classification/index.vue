@@ -11,7 +11,15 @@
             </SearchAdvanced>
         </div>
 
-        <div class="w-full mt-1 overflow-y-auto h-44">
+        <div class="w-full mt-1 overflow-y-auto" :style="{ height: height }">
+            <div
+                v-if="filteredList.length == 0"
+                class="flex flex-col items-center justify-center h-full"
+            >
+                <div class="flex flex-col items-center">
+                    <span class="text-gray-500">No classifications found</span>
+                </div>
+            </div>
             <a-checkbox-group
                 v-model:value="localValue.classifications"
                 class="w-full px-3"
@@ -107,19 +115,29 @@
                 )
             )
 
-            watch(
-                () => localValue.value.classifications,
-                (prev, cur) => {
-                    if (!localValue.value.classifications) {
-                        delete localValue.value.classifications
-                    }
-                    if (!localValue.value.empty) {
-                        delete localValue.value.empty
-                    }
-                    modelValue.value = localValue.value
-                    emit('change')
+            const height = computed(() => {
+                if (filteredList.value.length === 0) {
+                    return `100px`
                 }
-            )
+                if (filteredList.value.length < 5) {
+                    return `${filteredList.value.length * 40}px`
+                }
+                return '150px'
+            })
+
+            watch(localValue.value, (prev, cur) => {
+                if (!localValue.value.classifications) {
+                    delete localValue.value.classifications
+                }
+                if (!localValue.value.empty) {
+                    delete localValue.value.empty
+                }
+                if (localValue.value.classifications?.length === 0) {
+                    delete localValue.value.classifications
+                }
+                modelValue.value = localValue.value
+                emit('change')
+            })
 
             const classificationSearchRef: Ref<null | HTMLInputElement> =
                 ref(null)
@@ -145,6 +163,7 @@
                 forceFocus,
                 queryText,
                 showNone,
+                height,
             }
         },
     })

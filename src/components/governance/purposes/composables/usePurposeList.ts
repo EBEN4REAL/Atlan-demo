@@ -7,10 +7,13 @@ import { generateUUID } from '~/utils/helper/generator'
 // Main Persona List, fetched from API
 const { listPurposes } = usePurposeService()
 const {
-    data: personaList,
+    data: list,
     isReady: isPersonaListReady,
     mutate: reFetchList,
 } = listPurposes()
+
+const personaList = computed(() => list.value?.records)
+
 export { reFetchList, personaList, isPersonaListReady }
 // Selected Persona Details
 export const selectedPersonaId = ref('')

@@ -1,9 +1,11 @@
 <template>
     <div class="search">
         <!-- Search Input -->
-        <a-input-search
+        <a-input
             class="search-input"
             :value="query"
+            :enter-button="null"
+            :suffix="null"
             placeholder="Search"
             allow-clear
             @change="setQuery"
@@ -22,10 +24,6 @@
                 :class="{ selected: searchItem === item.guid }"
                 @click="setSearchItem(item.guid)"
             >
-                <!-- <fa
-                    :icon="getNodeTypeIcon[item.typeName]"
-                    :class="getNodeTypeIcon[item.typeName]"
-                ></fa> -->
                 <span class="w-6 h-4 bg-gray-300"></span>
                 <span>{{ item.displayText }}</span>
             </div>
@@ -36,9 +34,6 @@
 <script lang="ts">
     // Vue
     import { defineComponent, ref, inject, computed, watch } from 'vue'
-
-    // Util
-    import { getNodeTypeIcon } from './util.js'
 
     export default defineComponent({
         setup() {
@@ -93,7 +88,6 @@
                 searchItems,
                 filteredItems,
                 showSearchResults: false,
-                getNodeTypeIcon,
                 searchItem,
                 showResults,
                 setQuery,
@@ -107,12 +101,17 @@
 
 <style lang="less" scoped>
     .search {
+        @apply mr-4;
         position: relative;
         z-index: 999;
 
         &-input {
-            width: 16rem !important;
+            width: 13rem !important;
             z-index: 999;
+            border: 0 !important;
+            padding: 0 !important;
+            outline: 0 !important;
+            box-shadow: unset !important;
         }
 
         &-results {

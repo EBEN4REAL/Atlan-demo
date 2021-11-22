@@ -5,7 +5,7 @@
         </template>
         <template #footer>
             <div
-                v-if="isLoadMore || isLoading"
+                v-if="(isLoadMore || isLoading) && list.length > 0"
                 class="flex items-center justify-center"
             >
                 <button

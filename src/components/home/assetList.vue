@@ -30,7 +30,7 @@
                 variable-height
             >
                 <template #default="{ item }">
-                    <!-- <ListItem
+                    <ListItem
                         class="mx-1"
                         :item="item"
                         :is-selected="
@@ -38,9 +38,9 @@
                                 ? item.displayText === selectedAssetId
                                 : item.guid === selectedAssetId
                         "
-                        :projection="[]"
-                        @click="handleCardClicked(item)"
-                    ></ListItem> -->
+                        :preference="[]"
+                        @preview="handleCardClicked"
+                    ></ListItem>
                 </template>
             </VirtualList>
         </template>
@@ -62,7 +62,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, PropType } from 'vue'
-    // import ListItem from '~/components/assets/list/assetItem.vue'
+    import ListItem from '@common/assets/list/assetItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAssetListing } from '~/composables/home/useHomeDSL'
@@ -73,6 +73,7 @@
         name: 'AssetList',
         components: {
             VirtualList,
+            ListItem,
         },
         props: {
             typeNames: {
@@ -133,11 +134,11 @@
             }
 
             const handleCardClicked = (item: any) => {
-                // add event
+                /*  // add event
                 const idx = list.value.findIndex((el) => el.guid === item.guid)
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: idx,
-                })
+                }) */
                 handlePreview(item)
             }
 

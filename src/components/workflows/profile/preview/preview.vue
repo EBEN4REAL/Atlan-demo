@@ -24,6 +24,7 @@
                     />
                 </div>
                 <AtlanButton
+                    v-if="formChanged"
                     v-auth="access.UPDATE_WORKFLOW"
                     class="m-2"
                     size="sm"
@@ -64,20 +65,10 @@
 
             <div
                 class="relative flex flex-col"
-                :style="{ height: 'calc(100vh - 0.8rem)' }"
+                :style="{ height: 'calc(100vh - 3rem)' }"
             >
                 <div
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        px-4
-                        pt-2
-                        mt-2
-                        text-lg
-                        font-semibold
-                        text-gray-700
-                    "
+                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
                 >
                     {{ tab.name }}
                 </div>
@@ -104,6 +95,7 @@
         watch,
         computed,
         onErrorCaptured,
+        provide
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
 
@@ -171,12 +163,12 @@
             const selectedPreviewTab = computed(() => route?.query?.tab || '')
 
             const filteredTabs = [
-                {
-                    name: 'Overview',
-                    component: 'info',
-                    icon: 'Overview',
-                    tooltip: 'Overview',
-                },
+                // {
+                //     name: 'Overview',
+                //     component: 'info',
+                //     icon: 'Overview',
+                //     tooltip: 'Overview',
+                // },
                 {
                     name: 'Run History',
                     component: 'runs',
@@ -187,7 +179,8 @@
 
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
-
+            const formChanged = ref(false)
+            provide("creatorDetails", {})
             if (selectedPreviewTab.value === 'runs') activeKey.value = 1
 
             watch(selectedPreviewTab, (n) => {
@@ -205,7 +198,6 @@
 
             watch(selectedWorkflow, init, { deep: true })
             onMounted(init)
-
             const updateWorkflow = async () => {
                 const isValid = await formRef.value.validate()
                 if (isValid) {
@@ -246,7 +238,10 @@
                     })
                 }
             }
-            const handleChange = (v) => {
+            const handleChange = (v, isInit) => {
+                if(!isInit){
+                  formChanged.value = true
+                }
                 Object.entries(v).forEach(([key, value]) => {
                     const index =
                         body.value.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters.findIndex(
@@ -308,6 +303,7 @@
                 activeKey,
                 filteredTabs,
                 emit,
+                formChanged
             }
         },
     })

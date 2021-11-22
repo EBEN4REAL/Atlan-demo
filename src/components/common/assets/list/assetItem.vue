@@ -7,21 +7,19 @@
     >
         <div class="flex flex-col">
             <div class="flex items-start flex-1 px-3 py-3">
-                <div
-                    class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
-                >
-                    <div class="flex items-center mb-0 overflow-hidden">
+                <div class="flex flex-col flex-1 lg:pr-16">
+                    <div class="flex items-center overflow-hidden">
                         <div
                             v-if="
                                 ['column'].includes(
                                     item.typeName?.toLowerCase()
                                 )
                             "
-                            class="flex mr-1"
+                            class="flex items-center mr-1"
                         >
                             <component
                                 :is="dataTypeCategoryImage(item)"
-                                class="h-4 text-gray-500 mb-0.5 mr-1"
+                                class="h-4 mb-1 text-gray-500"
                             />
                         </div>
                         <AtlanIcon
@@ -58,7 +56,7 @@
                         ></CertificateBadge>
                     </div>
 
-                    <div class="flex" v-if="description(item)">
+                    <div class="flex mt-0.5" v-if="description(item)">
                         <span
                             class="text-xs text-gray-500"
                             v-if="preference?.display?.includes('description')"
@@ -67,17 +65,16 @@
                     </div>
 
                     <!-- Info bar -->
-                    <div class="flex items-center gap-x-2">
-                        <div class="flex items-center mr-1">
+                    <div class="flex flex-wrap items-center mt-1">
+                        <div class="flex items-center mr-2">
                             <a-tooltip
                                 placement="left"
-                                v-if="connectionName(item)"
+                                v-if="connectorName(item)"
                             >
                                 <template #title>
-                                    <span>{{
-                                        `${connectorName(
-                                            item
-                                        )}/${connectionName(item)}`
+                                    <span>{{ connectorName(item) }} </span>
+                                    <span v-if="connectionName(item)">{{
+                                        `/${connectionName(item)}`
                                     }}</span>
                                 </template>
                                 <img
@@ -85,6 +82,7 @@
                                     class="h-3 mr-1 mb-0.5"
                                 />
                             </a-tooltip>
+
                             <AtlanIcon
                                 icon="Category"
                                 v-if="
@@ -105,7 +103,7 @@
                             ></AtlanIcon>
 
                             <div
-                                class="text-sm tracking-tight text-gray-500 uppercase "
+                                class="text-sm tracking-wider text-gray-500 uppercase "
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
                             </div>
@@ -190,7 +188,7 @@
                                     item.typeName?.toLowerCase()
                                 )
                             "
-                            class="flex text-sm text-gray-500"
+                            class="flex mr-2 text-sm text-gray-500"
                         >
                             <a-tooltip placement="bottomLeft">
                                 <span
@@ -231,7 +229,7 @@
                                     item.typeName?.toLowerCase()
                                 )
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex mr-2 text-sm text-gray-500"
                         >
                             <div class="flex items-center text-gray">
                                 <img
@@ -248,9 +246,9 @@
 
                         <div
                             v-if="item.typeName?.toLowerCase() === 'column'"
-                            class="flex items-center gap-x-1"
+                            class="flex items-center mr-2"
                         >
-                            <div class="flex">
+                            <div class="flex items-center">
                                 <!-- <component
                                 :is="dataTypeImage(item)"
                                 class="w-auto h-4 text-gray-500"
@@ -259,11 +257,12 @@
 
                                 <component
                                     :is="dataTypeCategoryImage(item)"
-                                    class="h-4 text-gray-500 mt-0.5"
+                                    class="h-4 text-gray-500 mr-0.5 mb-0.5"
                                 />
-                                <span class="text-sm text-gray-500">{{
-                                    dataType(item)
-                                }}</span>
+                                <span
+                                    class="text-sm tracking-wider text-gray-500"
+                                    >{{ dataType(item) }}</span
+                                >
                             </div>
                             <div
                                 v-if="
@@ -295,58 +294,14 @@
                                 >
                             </div>
                         </div>
-
                         <div
                             v-if="
-                                [
-                                    'table',
-                                    'view',
-                                    'tablepartition',
-                                    'materialisedview',
-                                    'column',
-                                    'schema',
-                                ].includes(item.typeName?.toLowerCase())
+                                ['column'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex mr-2 text-sm text-gray-500 gap-x-2"
                         >
-                            <a-tooltip placement="bottomLeft">
-                                <div
-                                    class="flex items-center text-gray-500"
-                                    v-if="databaseName(item)"
-                                >
-                                    <AtlanIcon
-                                        icon="DatabaseGray"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
-                                        {{ databaseName(item) }}
-                                    </div>
-                                </div>
-                                <template #title>
-                                    <span
-                                        >Database -
-                                        {{ databaseName(item) }}</span
-                                    >
-                                </template>
-                            </a-tooltip>
-                            <a-tooltip placement="bottomLeft">
-                                <div
-                                    v-if="schemaName(item)"
-                                    class="flex items-center text-gray-500"
-                                >
-                                    <AtlanIcon
-                                        icon="SchemaGray"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
-                                        {{ schemaName(item) }}
-                                    </div>
-                                </div>
-                                <template #title>
-                                    <span>Schema - {{ schemaName(item) }}</span>
-                                </template>
-                            </a-tooltip>
-
                             <a-tooltip
                                 placement="bottomLeft"
                                 v-if="tableName(item)"
@@ -388,6 +343,78 @@
                                 </template>
                             </a-tooltip>
                         </div>
+
+                        <div
+                            v-if="
+                                [
+                                    'table',
+                                    'view',
+                                    'tablepartition',
+                                    'materialisedview',
+                                    'column',
+                                    'schema',
+                                ].includes(item.typeName?.toLowerCase())
+                            "
+                            class="flex text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="schemaName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="SchemaGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ schemaName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>Schema - {{ schemaName(item) }}</span>
+                                </template>
+                            </a-tooltip>
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    class="flex items-center text-gray-500"
+                                    v-if="databaseName(item)"
+                                >
+                                    <AtlanIcon
+                                        icon="DatabaseGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ databaseName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Database -
+                                        {{ databaseName(item) }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
+                    </div>
+
+                    <div
+                        v-if="
+                            list.length > 0 &&
+                            preference?.display?.includes('classifications')
+                        "
+                        class="flex flex-wrap mt-1 gap-x-1"
+                    >
+                        <template
+                            v-for="classification in list"
+                            :key="classification.guid"
+                        >
+                            <ClassificationPill
+                                :name="classification.name"
+                                :displayName="classification?.displayName"
+                                :isPropagated="isPropagated(classification)"
+                                :allowDelete="false"
+                            ></ClassificationPill>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -399,11 +426,15 @@
     import { defineComponent, PropType, toRefs, computed } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { mergeArray } from '~/utils/array'
+    import ClassificationPill from '@/common/pills/classification.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
+            ClassificationPill,
         },
         props: {
             item: {
@@ -465,6 +496,7 @@
                 isGTC,
                 categories,
                 parentCategory,
+                classifications,
             } = useAssetInfo()
 
             const assetURL = (asset) => ({
@@ -480,6 +512,28 @@
                     return true
                 }
                 return false
+            })
+
+            const { classificationList } = useTypedefData()
+
+            const isPropagated = (classification) => {
+                if (!item?.value?.guid?.value) {
+                    return false
+                }
+                if (item?.value?.guid === classification.entityGuid) {
+                    return false
+                }
+                return true
+            }
+
+            const list = computed(() => {
+                const { matchingIdsResult } = mergeArray(
+                    classificationList.value,
+                    classifications(item.value),
+                    'name',
+                    'typeName'
+                )
+                return matchingIdsResult
             })
 
             return {
@@ -516,6 +570,9 @@
                 getAnchorName,
                 categories,
                 parentCategory,
+                isPropagated,
+                list,
+                classifications,
             }
         },
     })

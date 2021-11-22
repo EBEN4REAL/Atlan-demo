@@ -3,10 +3,11 @@
         ref="searchBar"
         :placeholder="placeholder"
         v-model:value="localValue"
+        :size="size"
         type="text"
         :class="$style.transparent"
         @change="handleChange"
-        class="px-0 text-sm text-gray-500 bg-transparent border-none  focus:outline-none"
+        class="px-0 text-sm text-gray-500 bg-transparent rounded-none  focus:outline-none"
     >
         <template #prefix>
             <a-tooltip
@@ -19,7 +20,10 @@
                     class="w-auto h-4 pr-2 mr-2 border-r"
                 />
             </a-tooltip>
-            <AtlanIcon icon="Search" class="flex-none text-gray-500" />
+            <AtlanIcon
+                icon="Search"
+                class="flex-none text-gray-700 focusIcon"
+            />
         </template>
 
         <template #suffix>
@@ -34,12 +38,10 @@
                     <slot name="postFilter" />
                 </template>
 
-                <button
-                    class="p-1 transition-colors rounded hover:bg-gray-light"
-                >
+                <button class="transition-colors rounded hover:bg-gray-100">
                     <AtlanIcon
                         :icon="dot ? 'FilterDot' : 'Filter'"
-                        class="w-4 h-4"
+                        class="w-4 h-4 px-1"
                     />
                     <slot name="buttonAggregation" />
                 </button>
@@ -73,7 +75,7 @@
             dot: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
             size: {
-                type: String as PropType<'default' | 'minimal'>,
+                type: String as PropType<'default' | 'minimal' | 'large'>,
                 default: () => 'default',
             },
             modelValue: {
@@ -85,7 +87,7 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { autofocus, connectorName } = toRefs(props)
+            const { autofocus, connectorName, size } = toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
 
@@ -144,6 +146,7 @@
                 handleChange,
                 forceFocus,
                 connectorName,
+                size,
                 getConnectorImageMap,
                 capitalizeFirstLetter,
             }
@@ -152,13 +155,25 @@
 </script>
 <style lang="less" module>
     .transparent {
+        -webkit-transition: border 500ms ease-out;
+        -moz-transition: border 500ms ease-out;
+        -o-transition: border 500ms ease-out;
+        transition: border 500ms ease-out;
         &:global(.ant-input:focus) {
             @apply border-0 shadow-none  !important;
             outline: 0 !important;
         }
 
-        &:global(.ant-input-affix-wrapper-focused) {
-            @apply border-0 shadow-none  !important;
+        &:global(.ant-input-affix-wrapper) {
+            @apply border-gray-200 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
+
+            &:global(.ant-input-affix-wrapper-focused) {
+                @apply border-primary border-b  border-solid border-t-0 border-l-0 border-r-0  !important;
+
+                :global(.focusIcon) {
+                    @apply text-primary !important;
+                }
+            }
         }
 
         :global(.ant-input) {

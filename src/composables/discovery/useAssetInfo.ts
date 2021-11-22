@@ -11,12 +11,14 @@ import { assetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import { previewTabs } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
+import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
 import useAssetStore from '~/store/asset'
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
 import useGlossaryStore from '~/store/glossary'
+import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -125,11 +127,49 @@ export default function useAssetInfo() {
         })
     }
 
+    const { getList: cmList } = useCustomMetadataFacet()
+
     const getPreviewTabs = (asset: assetInterface) => {
-        return getTabs(previewTabs, assetType(asset))
+        console.log(getTabs(previewTabs, assetType(asset)))
+
+        let customTabList = []
+        if (cmList(assetType(asset)).length > 0) {
+            customTabList = cmList(assetType(asset)).map((i) => {
+                console.log(i)
+                return {
+                    component: 'custommetadata',
+                    image: i.options?.imageId,
+                    name: i.label,
+                    tooltip: i.label,
+                }
+            })
+        }
+
+        console.log(customTabList)
+
+        return [...getTabs(previewTabs, assetType(asset)), ...customTabList]
     }
     const getProfileTabs = (asset: assetInterface) => {
         return getTabs(profileTabs, assetType(asset))
+    }
+
+    const getVariants = (list, typeName: string) => {
+        return list.find((i) => {
+            let flag = true
+            if (i.includes) {
+                if (
+                    !i.includes.some(
+                        (t) => t.toLowerCase() === typeName?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
+            return flag
+        })
+    }
+    const getSummaryVariants = (asset: assetInterface) => {
+        return getVariants(summaryVariants, assetType(asset))
     }
 
     const getActions = (asset) => {
@@ -182,6 +222,9 @@ export default function useAssetInfo() {
         ) {
             let tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+        } else if (assetType(asset) === 'Query') {
+            // console.log('assetType: ', asset.guid)
+            queryPath = `/insights?id=${asset.guid}`
         } else {
             queryPath = `/insights`
         }
@@ -197,6 +240,9 @@ export default function useAssetInfo() {
 
     const getAnchorQualifiedName = (asset: assetInterface) => {
         return attributes(asset)?.anchor?.uniqueAttributes?.qualifiedName
+    }
+    const getAnchorProfile = (asset: assetInterface) => {
+        return `/glossary/${getAnchorGuid(asset)}`
     }
 
     const logo = (asset: assetInterface) => {
@@ -269,7 +315,17 @@ export default function useAssetInfo() {
     const columnCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
-            : getCountString(attributes(asset).columnCount)
+            : getCountString(attributes(asset)?.columnCount)
+
+    const termsCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? asset?.termsCount?.toLocaleString() || 'N/A'
+            : getCountString(asset?.termsCount)
+
+    const categoryCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? asset?.categoryCount?.toLocaleString() || 'N/A'
+            : getCountString(asset?.categoryCount)
 
     const sizeBytes = (asset: assetInterface, raw: boolean = false) =>
         raw
@@ -475,8 +531,8 @@ export default function useAssetInfo() {
 
     const isBiAsset = (asset: assetInterface) => {
         return (
-            assetType(asset).includes('Tableau') ||
-            assetType(asset).includes('BI')
+            assetType(asset)?.includes('Tableau') ||
+            assetType(asset)?.includes('BI')
         )
     }
 
@@ -489,7 +545,7 @@ export default function useAssetInfo() {
     const glossaryStore = useGlossaryStore()
 
     const selectedGlossary = computed(() => {
-        return glossaryStore.selectedGlossary
+        return glossaryStore.selectedGTC
     })
 
     const isGTCByType = (typeName) => {
@@ -766,6 +822,7 @@ export default function useAssetInfo() {
     }
 
     return {
+        attributes,
         title,
         getConnectorImage,
         getConnectorName,
@@ -797,6 +854,7 @@ export default function useAssetInfo() {
         getPreviewTabs,
         getProfileTabs,
         selectedAsset,
+        getSummaryVariants,
         sourceUpdatedAt,
         sourceCreatedAt,
         sourceCreatedBy,
@@ -820,7 +878,10 @@ export default function useAssetInfo() {
         qualifiedName,
         getAnchorName,
         getAnchorGuid,
+        getAnchorProfile,
         connectionQualifiedName,
+        categoryCount,
+        termsCount,
         getConnectorImageMap,
         anchorAttributes,
         readmeGuid,

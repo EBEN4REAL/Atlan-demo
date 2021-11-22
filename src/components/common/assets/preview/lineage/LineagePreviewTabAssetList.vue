@@ -12,7 +12,7 @@
             >
                 <!-- Asset type + Hierarchy bar -->
                 <div class="flex items-center text-gray-500 gap-x-2">
-                    <AssetLogo :asset="item" />
+                    <AssetLogo :asset="item" class="mr-2" />
 
                     <HierarchyBar :selected-asset="item" />
                 </div>

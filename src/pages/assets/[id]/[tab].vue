@@ -1,6 +1,10 @@
 <template>
     <Loader v-if="isLoading"></Loader>
-    <AssetProfile :asset="selectedAsset" v-else></AssetProfile>
+    <AssetProfile
+        v-else
+        :asset="selectedAsset"
+        @preview="emit('preview', $event)"
+    ></AssetProfile>
 </template>
 
 <script lang="ts">
@@ -30,11 +34,10 @@
                 required: true,
             },
         },
-        setup(props) {
+        setup(props, { emit }) {
             useHead({
                 title: 'Assets',
             })
-
             const { selectedAsset } = toRefs(props)
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
@@ -56,7 +59,6 @@
                 ...SQLAttributes,
             ])
             const relationAttributes = ref([...DefaultRelationAttributes])
-
             const { handleSelectedAsset, list, isLoading } = useDiscoverList({
                 isCache: false,
                 dependentKey,
@@ -66,16 +68,15 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
-
             watch(list, () => {
                 if (list.value.length > 0) {
                     handleSelectedAsset(list.value[0])
                 }
             })
-
             return {
                 fetchKey,
                 isLoading,
+                emit,
             }
         },
     })

@@ -104,13 +104,15 @@ export function stopRunByName(name) {
     return { data, error, isLoading }
 }
 
-export function getRunList(name) {
+export function getRunList(name, getRunning = true) {
     const liveList = ref([])
     const params = ref(new URLSearchParams())
     const pathVariables = ref({})
 
     const labelSelector = ref(
-        `workflows.argoproj.io/workflow-template=${name},workflows.argoproj.io/phase=Running`
+        `workflows.argoproj.io/workflow-template=${name}${
+            getRunning ? '/,workflows.argoproj.iophase=Running' : ''
+        }`
     )
     params.value.append('labelSelector', labelSelector.value)
 
@@ -162,7 +164,7 @@ export function getArchivedRunList(name) {
     }
 
     watch(data, () => {
-        if (!data?.value?.records) return
+        if (!data?.value?.records) return (data.value = { records: [] })
         totalCount.value = data.value.total_record
         filter_record.value = data.value.filter_record
         archivedList.value = data.value
@@ -174,7 +176,7 @@ export function getArchivedRunList(name) {
         totalCount,
         filter_record,
         loadMore,
-        mutate
+        mutate,
     }
 }
 

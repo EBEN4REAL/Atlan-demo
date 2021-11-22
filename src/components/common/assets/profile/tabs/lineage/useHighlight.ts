@@ -2,7 +2,7 @@ import { ref, watch } from 'vue'
 import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 
-const { updateEdgesStroke, updateNodesToHighlight } = useUpdateGraph()
+const { updateEdgesData, updateNodesData } = useUpdateGraph()
 const {
     getPredecessors,
     getSuccessors,
@@ -12,9 +12,6 @@ const {
 
 export default function useHighlight(
     graph,
-    model,
-    edges,
-    nodes,
     baseEntityGuid,
     showProcess,
     highlightLoadingCords,
@@ -24,93 +21,49 @@ export default function useHighlight(
     emit
 ) {
     const previewedNode = ref('')
-
     const getCell = (guid) => graph.value.getCellById(guid)
     const cell = getCell(baseEntityGuid)
     const { entity: defaultEntity } = cell.store.data
 
     const getHighlights = async (guid) => {
-        console.log('guid:', guid)
         await getPredecessors(graph, guid, showProcess)
         await getSuccessors(graph, guid, showProcess)
     }
 
     const highlight = async (guid) => {
-        if (!guid || guid === highlightedNode.value) {
-            highlightedNode.value = ''
-            edgesToHighlightSet.clear()
-            nodesToHighlightSet.clear()
-
-            const edgesToHighlight = edges.value
-            await updateEdgesStroke(
-                graph,
-                model,
-                edges,
-                edgesToHighlight,
-                baseEntityGuid,
-                true
-            )
-            const nodesToHighlight = Array.from(nodesToHighlightSet)
-            updateNodesToHighlight(
-                graph,
-                model,
-                nodes,
-                highlightedNode,
-                nodesToHighlight,
-                true
-            )
-        } else {
-            highlightedNode.value = guid
-            edgesToHighlightSet.clear()
-            nodesToHighlightSet.clear()
-            await getHighlights(guid)
-
-            const edgesToHighlight = Array.from(edgesToHighlightSet)
-            await updateEdgesStroke(
-                graph,
-                model,
-                edges,
-                edgesToHighlight,
-                baseEntityGuid,
-                false
-            )
-            const nodesToHighlight = Array.from(nodesToHighlightSet)
-            updateNodesToHighlight(
-                graph,
-                model,
-                nodes,
-                highlightedNode,
-                nodesToHighlight,
-                false
-            )
-        }
-
+        edgesToHighlightSet.clear()
+        nodesToHighlightSet.clear()
+        const isValid = guid && guid !== highlightedNode.value
+        highlightedNode.value = isValid ? guid : ''
+        if (isValid) await getHighlights(guid)
+        const edgesToHighlight = isValid ? Array.from(edgesToHighlightSet) : []
+        await updateEdgesData(graph, edgesToHighlight, baseEntityGuid)
+        const nodesToHighlight = Array.from(nodesToHighlightSet)
+        updateNodesData(graph, highlightedNode, nodesToHighlight)
         highlightLoadingCords.value = {}
     }
 
     const preview = (node) => {
-        if (!node || node.id === previewedNode.value) {
-            previewedNode.value = ''
-            selectedNodeType.value = ''
-            emit('preview', defaultEntity)
-        } else {
-            previewedNode.value = node.id
-            selectedNodeType.value =
-                node.store.data.entity.typeName === 'Process' ? 'p' : 'np'
-            emit('preview', node.store.data.entity)
-        }
+        const isValid = node && node?.id !== previewedNode.value
+        const isProcess = node?.store?.data?.entity?.typeName === 'Process'
+        const entityToEmit = isValid ? node.store.data.entity : defaultEntity
+
+        previewedNode.value = isValid ? node?.id : ''
+        // eslint-disable-next-line no-nested-ternary
+        selectedNodeType.value = isValid ? (isProcess ? 'p' : 'np') : ''
+        emit('preview', entityToEmit)
     }
 
     watch(selectedSearchItem, (newVal) => {
         highlight(newVal)
     })
 
-    watch(showProcess, (newVal) => {
+    watch(showProcess, () => {
         emit('preview', defaultEntity)
     })
 
     graph.value.on('cell:mouseup', ({ node }) => {
-        highlight(node.id)
+        highlight(node?.id)
         preview(node)
     })
     graph.value.on('blank:click', () => {

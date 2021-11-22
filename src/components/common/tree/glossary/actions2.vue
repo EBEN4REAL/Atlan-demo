@@ -28,7 +28,7 @@
                 <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
             </a-button>
             <template #overlay>
-                <a-menu :class="$style.threeDotMenu">
+                <a-menu>
                     <!-- Go to profile Links -->
                     <a-menu-item v-if="showLinks" key="profileLink">
                         <div class="flex items-center">
@@ -613,18 +613,4 @@
         },
     })
 </script>
-<style lang="less" module>
-    .treeMode {
-        @apply bg-black bg-opacity-0 !important;
-    }
-    .threeDotMenu {
-        :global(.ant-dropdown-menu-item) {
-            padding: 9px 16px !important;
-            margin: 0;
-        }
-        :global(.ant-dropdown-menu-submenu-title) {
-            padding: 9px 16px !important;
-            margin: 0;
-        }
-    }
-</style>
+<style lang="less" module></style>

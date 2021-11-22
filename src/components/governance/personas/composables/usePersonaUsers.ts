@@ -13,10 +13,12 @@ function usePersonaUserList(persona: Ref<IPurpose>) {
     }
 
     const {
+        error,
+        isLoading,
         userList: data,
-        getUserList,
         state,
         STATES,
+        getUserList,
     } = useUsers(userListAPIParams)
 
     const list: ComputedRef<IUser[]> = computed(() =>
@@ -48,12 +50,14 @@ function usePersonaUserList(persona: Ref<IPurpose>) {
     )
 
     return {
+        state,
+        STATES,
+        error,
+        isLoading,
         list: data,
         userListAPIParams,
         getUserList,
         userList,
-        STATES,
-        state,
     }
 }
 

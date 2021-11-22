@@ -30,7 +30,6 @@
             :treeMode="true"
             :glossaryName="getAnchorName(item) || title(item)"
             :categoryName="title(item)"
-            :glossaryQualifiedName="getAnchorQualifiedName(item)"
             :categoryGuid="item.guid"
             :entity="item"
         ></Actions>

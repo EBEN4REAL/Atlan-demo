@@ -1,11 +1,11 @@
 <template>
-    <div
+    <!-- <div
         v-if="isLoadingCreator"
         class="absolute flex items-center justify-center w-full h-full"
     >
         <a-spin />
-    </div>
-    <div v-else class="flex flex-col px-5 mt-2 space-y-3">
+    </div> -->
+    <div class="flex flex-col px-5 mt-2 space-y-3">
         <!-- <div>
             <div class="flex items-center">
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
@@ -104,7 +104,7 @@
         },
         setup() {
             const creator = inject('creatorDetails')
-            const isLoadingCreator = inject('isLoadingCreator')
+            // const isLoadingCreator = inject('isLoadingCreator')
 
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
@@ -116,7 +116,7 @@
                 copyAPI,
                 creator,
                 formatDateTime,
-                isLoadingCreator,
+                // isLoadingCreator,
             }
         },
     })

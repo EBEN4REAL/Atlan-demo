@@ -34,7 +34,7 @@ export default function useGlossaryData() {
             : ''
 
     const handleSelectedGlossary = (item) => {
-        glossaryStore.setSelectedGlossary(item)
+        glossaryStore.setSelectedGTC(item)
     }
 
     const getEntityStatusIcon = (
@@ -71,7 +71,7 @@ export default function useGlossaryData() {
         return `${typeName}${status}`
     }
 
-    const selectedGlossary = computed(() => glossaryStore.selectedGlossary)
+    const selectedGlossary = computed(() => glossaryStore.selectedGTC)
 
     return {
         glossaryList,

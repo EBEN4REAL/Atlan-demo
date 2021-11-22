@@ -1,8 +1,8 @@
 <template>
-    <div class="flex w-full">
+    <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full bg-gray-100 border-r border-gray-300  md:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"
@@ -19,13 +19,16 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-6 py-0 border-b border-gray-200">
+                <div class="flex">
                     <SearchAdvanced
+                        :key="searchDirtyTimestamp"
                         v-model="queryText"
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
-                        placeholder="Search assets..."
+                        size="large"
+                        class="px-6"
+                        :placeholder="placeholder"
                         @change="handleSearchChange"
                     >
                         <template #filter>
@@ -130,7 +133,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -152,11 +155,8 @@
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-
     import AtlanIcon from '../common/icon/atlanIcon.vue'
     import useAssetStore from '~/store/asset'
-    import { assetInterface } from '~/types/assets/asset.interface'
-
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
 
     export default defineComponent({
@@ -181,6 +181,7 @@
             initialFilters: {
                 type: Object,
                 required: false,
+                default: () => {},
             },
             showAggrs: {
                 type: Boolean,
@@ -191,6 +192,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            page: {
+                type: String,
+                required: false,
+                default: 'assets',
             },
         },
         setup(props, { emit }) {
@@ -215,14 +221,21 @@
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-            const { initialFilters } = toRefs(props)
+            const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const { initialFilters, page } = toRefs(props)
             const discoveryStore = useAssetStore()
 
-            if (discoveryStore.activeFacet) {
+            if (discoveryStore.activeFacet && page.value === 'assets') {
                 facets.value = discoveryStore.activeFacet
             }
             if (discoveryStore.preferences) {
-                preference.value = discoveryStore.preferences
+                console.log(discoveryStore.preferences)
+
+                preference.value.sort =
+                    discoveryStore.preferences.sort || preference.value.sort
+                preference.value.display =
+                    discoveryStore.preferences.display ||
+                    preference.value.display
             }
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -243,6 +256,7 @@
                 isLoadMore,
                 isValidating,
                 fetch,
+
                 error,
                 selectedAsset,
                 quickChange,
@@ -305,13 +319,27 @@
 
             const handleResetEvent = () => {
                 facets.value = {}
+                queryText.value = ''
                 handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
             const handleActiveKeyChange = () => {
                 discoveryStore.setActivePanel(activeKey.value)
             }
+
+            const placeholder = computed(() => {
+                const found = assetTypeAggregationList.value.find(
+                    (item) => item.id === postFacets.value.typeName
+                )
+
+                if (found) {
+                    console.log(found)
+                    return `Search ${found.label.toLowerCase()} assets`
+                }
+                return 'Search all assets'
+            })
 
             return {
                 handleFilterChange,
@@ -326,6 +354,7 @@
                 handleAssetTypeChange,
                 handlePreview,
                 fetch,
+                placeholder,
                 handleSearchChange,
                 isValidating,
                 preference,
@@ -340,6 +369,8 @@
                 selectedAsset,
                 updateList,
                 updateCurrentList,
+                placeholder,
+                searchDirtyTimestamp,
             }
         },
     })

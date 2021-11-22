@@ -5,55 +5,62 @@
         :class="$style.input"
         :footer="null"
         width="632px"
+        :destroyOnClose="true"
     >
         <div class="w-full p-4 text-gray-500 bg-white rounded">
             <div class="flex w-full text-xs">
-                <div class="flex items-center flex-1 mr-5">
+                <div class="flex items-center justify-between flex-1">
                     <div class="flex items-center mr-1">
                         <QueryFolderSelector
                             :connector="currentConnector"
                             :saved-query-type="queryType"
-                            :selected-folder-q-f="parentFolderQF"
+                            :parentFolder="parentFolder"
                             @folderChange="getSelectedFolder"
                         />
                     </div>
-                    <!-- <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
-                    <div class="flex items-center ml-1">
-                        <span>{{ title }}</span>
-                    </div>-->
-                </div>
-                <div>
-                    <a-dropdown
-                        placement="bottomLeft"
-                        :trigger="['click']"
-                        @click.stop="() => {}"
-                    >
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item
-                                    v-for="item in List"
-                                    :key="item.id"
-                                    @click="handleMenuClick(item)"
-                                >
-                                    <div class="flex items-center space-x-2">
-                                        <component
-                                            :is="item.icon"
-                                            class="w-auto h-4 ml-1 mr-2 pushtop"
-                                        />
-                                        {{ item.label }}
-                                    </div>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                        <StatusBadge
-                            :status-id="currentStatus"
-                            :show-chip-style-status="false"
-                            :show-no-status="true"
-                            :show-label="true"
-                            :is-tree="false"
-                            class="p-0 cursor-pointer"
-                        ></StatusBadge>
-                    </a-dropdown>
+                    <div>
+                        <a-dropdown
+                            placement="bottomLeft"
+                            :trigger="['click']"
+                            @click.stop="() => {}"
+                        >
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item
+                                        v-for="item in List"
+                                        :key="item.id"
+                                        @click="handleMenuClick(item)"
+                                    >
+                                        <div
+                                            class="flex items-center space-x-2"
+                                        >
+                                            <component
+                                                :is="item.icon"
+                                                class="
+                                                    w-auto
+                                                    h-4
+                                                    ml-1
+                                                    mr-2
+                                                    pushtop
+                                                "
+                                            />
+                                            {{ item.label }}
+                                        </div>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                            <div class="button">
+                                <StatusBadge
+                                    :status-id="currentStatus"
+                                    :show-chip-style-status="false"
+                                    :show-no-status="true"
+                                    :show-label="true"
+                                    :is-tree="false"
+                                    class="p-0 cursor-pointer"
+                                ></StatusBadge>
+                            </div>
+                        </a-dropdown>
+                    </div>
                 </div>
             </div>
             <div class="my-2">
@@ -62,13 +69,25 @@
                         :ref="titleBarRef"
                         v-model:value="title"
                         :placeholder="`Untitled ${getLastUntitledNumber()}`"
-                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
+                        class="
+                            text-lg
+                            font-bold
+                            text-gray-500
+                            border-0
+                            shadow-none
+                            outline-none
+                        "
                     />
                 </div>
                 <a-textarea
                     v-model:value="description"
                     placeholder="Add Description"
-                    class="text-sm text-gray-500 border-0 shadow-none outline-none "
+                    class="
+                        text-sm text-gray-500
+                        border-0
+                        shadow-none
+                        outline-none
+                    "
                     :rows="3"
                     show-count
                     :maxlength="140"
@@ -78,13 +97,30 @@
                 <!-- <AddTerms @saveTerms="saveTerms" /> -->
 
                 <div
-                    class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer "
+                    class="
+                        flex
+                        items-center
+                        justify-end
+                        flex-1
+                        mb-1
+                        text-gray-700
+                        cursor-pointer
+                    "
                 >
                     <AtlanBtn
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 py-1 ml-3 border-none  hover:text-primary"
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            h-6
+                            py-1
+                            ml-3
+                            border-none
+                            hover:text-primary
+                        "
                         @click="closeModal"
                     >
                         <span>Cancel</span>
@@ -94,7 +130,15 @@
                         size="sm"
                         color="primary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 py-1 ml-2 border-none "
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            h-6
+                            py-1
+                            ml-2
+                            border-none
+                        "
                         @click="createSaveQuery"
                     >
                         <div class="flex items-center text-white rounded">
@@ -150,10 +194,10 @@
                 type: Object as PropType<boolean>,
                 required: true,
             },
-            parentFolderQF: {
-                type: String,
+            parentFolder: {
+                type: Object as PropType<object | undefined>,
                 required: true,
-                default: 'root',
+                default: {},
             },
             connector: {
                 type: String as PropType<string | undefined>,
@@ -180,6 +224,7 @@
             //     ref({}) as Ref<Folder>
             // )
             const selectedParentFolder = ref<Folder | null>(null)
+            const selectedParentType = ref(null)
 
             const untitledRegex = /(?:Untitled )([0-9]+)/gim
             const inlineTabs = inject('inlineTabs') as ComputedRef<
@@ -188,7 +233,7 @@
             const {
                 savedQueryType: queryType,
                 connector: currentConnector,
-                parentFolderQF,
+                parentFolder,
             } = toRefs(props)
             const handleMenuClick = (status) => {
                 currentStatus.value = status.id
@@ -216,6 +261,7 @@
             }
             const getSelectedFolder = (folder) => {
                 selectedParentFolder.value = folder.dataRef
+                selectedParentType.value = folder.selectedFolderType
             }
 
             let assetTerms = []
@@ -239,7 +285,12 @@
                         selectedParentFolder.value?.attributes?.qualifiedName,
                     parentGuid: selectedParentFolder.value?.guid,
                 }
-                emit('onSaveQuery', saveQueryData, assetTerms)
+                emit(
+                    'onSaveQuery',
+                    saveQueryData,
+                    assetTerms,
+                    selectedParentType.value
+                )
             }
             onMounted(async () => {
                 await nextTick()
@@ -249,9 +300,19 @@
             //     selectedParentFolder.value = folder
             // }
 
+            watch(
+                parentFolder,
+                () => {
+                    console.log('parent folder: ', parentFolder.value)
+                },
+                {
+                    immediate: true,
+                }
+            )
+
             return {
                 getLastUntitledNumber,
-                parentFolderQF,
+                parentFolder,
                 title,
                 queryType,
                 currentConnector,
@@ -282,6 +343,18 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+    }
+    .button {
+        --tw-bg-opacity: 1;
+        background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+        border-width: 1 px;
+        --tw-border-opacity: 1;
+        border-color: rgba(230, 230, 235, var(--tw-border-opacity));
+        padding: 4 px 8 px !important;
+        min-width: 71 px !important;
+        height: 22 px !important;
+        box-sizing: border-box !important;
+        border-radius: 4 px !important;
     }
 </style>
 <style lang="less" module>

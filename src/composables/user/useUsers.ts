@@ -1,9 +1,9 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+import swrvState from '~/utils/swrvState'
 
 import { pluralizeString } from '~/utils/string'
-import swrvState from '~/utils/swrvState'
 import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
@@ -83,14 +83,19 @@ export const getFormattedUser = (user: any) => {
     }
     return localUser
 }
-export const useUsers = (
-    userListAPIParams: {
-        limit: number
-        offset: number
-        filter?: any
-        sort?: string
+
+const defaultCacheOption = {
+    cacheOptions: {
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+        cache: new LocalStorageCache(),
+        dedupingInterval: 1,
     },
-    cacheKey?: string
+}
+export const useUsers = (
+    userListAPIParams,
+    cacheKey?: string,
+    cacheOption = defaultCacheOption
 ) => {
     const {
         data,
@@ -99,12 +104,7 @@ export const useUsers = (
         isValidating,
         error,
     } = Users.List(userListAPIParams, {
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
-        },
+        ...cacheOption,
         cacheKey: cacheKey ?? LIST_USERS,
     })
 
@@ -127,7 +127,7 @@ export const useUsers = (
     const usersListConcatenated: ComputedRef<any> = computed(
         () => localUsersList.value || []
     )
-
+    const { state, STATES } = swrvState(data, error, isValidating)
     const userList = computed(() => {
         if (data.value && data?.value?.records)
             return data?.value.records.map((user: any) =>
@@ -136,20 +136,18 @@ export const useUsers = (
         return []
     })
 
-    const { state, STATES } = swrvState(data, error, isValidating)
-
     const totalUserCount = computed(() => data?.value?.total_record ?? 0)
     const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
 
     return {
+        state,
+        STATES,
         usersListConcatenated,
         userList,
         totalUserCount,
         filteredUserCount,
         getUserList,
         isLoading,
-        state,
-        STATES,
         isValidating,
         error,
     }

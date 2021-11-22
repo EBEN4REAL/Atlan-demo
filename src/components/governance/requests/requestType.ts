@@ -28,7 +28,7 @@ export const requestTypeIcon: Record<RequestType, keyof typeof iconMap> = {
 }
 
 export const attributeCopyMapping: Record<string, string> = {
-    certificateStatus: 'Status',
+    certificateStatus: 'Certificate',
     userDescription: 'Description',
 }
 
@@ -40,13 +40,12 @@ export const typeCopyMapping: Record<string, string> = {
     create_term: 'Create Term',
     bm_attribute: 'Update',
     term_link: 'Link Term',
-    attach_classification: 'Attach Classification',
+    attach_classification: 'Link Classification',
 }
 
 export const requestTypeTabList: { id: string; value: RequestType[] }[] = [
     { id: 'All', value: [] },
     { id: 'Metadata', value: ['attribute'] },
-    { id: 'BM', value: ['bm_attribute'] },
     {
         id: 'Glossary',
         value: [
@@ -60,4 +59,5 @@ export const requestTypeTabList: { id: string; value: RequestType[] }[] = [
         id: 'Classification',
         value: ['create_typedef', 'attach_classification'],
     },
+    { id: 'Business metadata', value: ['bm_attribute'] },
 ]

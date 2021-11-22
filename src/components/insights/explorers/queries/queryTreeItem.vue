@@ -7,7 +7,17 @@
             <div class="flex w-full m-0">
                 <div
                     v-if="item.typeName === 'QueryFolder'"
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="
+                        relative
+                        flex
+                        content-center
+                        w-full
+                        my-auto
+                        overflow-hidden
+                        text-sm
+                        leading-5
+                        text-gray-700
+                    "
                 >
                     <!--FOLDER NODE -->
 
@@ -22,11 +32,28 @@
                                 class="w-5 h-5 my-auto mr-1"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="
+                                    mb-0
+                                    text-sm text-gray-700
+                                    parent-ellipsis-container-base
+                                "
                                 >{{ title(item) }}</span
                             >
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="
+                                    absolute
+                                    top-0
+                                    right-0
+                                    flex
+                                    items-center
+                                    h-full
+                                    text-gray-500
+                                    transition
+                                    duration-300
+                                    opacity-0
+                                    margin-align-top
+                                    group-hover:opacity-100
+                                "
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -130,7 +157,17 @@
                         </div>
                     </template>
                     <div
-                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                        class="
+                            relative
+                            flex
+                            content-center
+                            w-full
+                            my-auto
+                            overflow-hidden
+                            text-sm
+                            leading-5
+                            text-gray-700
+                        "
                     >
                         <!--SAVED QUERY NODE -->
                         <!--For Others -->
@@ -145,12 +182,28 @@
                                 class="w-5 h-5 my-auto mr-1"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="
+                                    mb-0
+                                    text-sm text-gray-700
+                                    parent-ellipsis-container-base
+                                "
                                 >{{ title(item) }}</span
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  right-6 margin-align-top group-hover:opacity-100"
+                                class="
+                                    absolute
+                                    flex
+                                    items-center
+                                    h-full
+                                    text-gray-500
+                                    transition
+                                    duration-300
+                                    opacity-0
+                                    right-6
+                                    margin-align-top
+                                    group-hover:opacity-100
+                                "
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -181,7 +234,20 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="
+                                    absolute
+                                    top-0
+                                    right-0
+                                    flex
+                                    items-center
+                                    h-full
+                                    text-gray-500
+                                    transition
+                                    duration-300
+                                    opacity-0
+                                    margin-align-top
+                                    group-hover:opacity-100
+                                "
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -213,6 +279,20 @@
                                                     showFolderPopover = true
                                                 "
                                                 >Move query</a-menu-item
+                                            >
+                                            <a-menu-item
+                                                v-if="
+                                                    evaluatePermisson(
+                                                        savedQueryType,
+                                                        'query',
+                                                        'MOVE'
+                                                    )
+                                                "
+                                                key="public"
+                                                @click="
+                                                    showPublishPopover = true
+                                                "
+                                                >Make query public</a-menu-item
                                             >
                                             <!-- DELETE QUERY PERMISSIONS -->
                                             <a-menu-item
@@ -252,12 +332,40 @@
         </template>
     </a-popover>
     <a-popover :visible="showPublishPopover" placement="right">
-        <template #content>
-            <PublishFolderPopover
-                :item="item"
-                @cancel="showPublishPopover = false"
-                @publish="publishFolder"
+        <!-- <template #content>
+            <QueryFolderSelector
+                :connector="currentConnector"
+                :savedQueryType="'all'"
+                :selectedFolderQF="parentFolderQF"
+                @folderChange="getSelectedFolder"
+                :selectedNewFolder="item"
             />
+        </template> -->
+
+        <template #content>
+            <QueryFolderSelector
+                :connector="currentConnector"
+                :savedQueryType="'all'"
+                @folderChange="getSelectedFolder"
+                :selectedNewFolder="item"
+            />
+
+            <div class="flex justify-end w-full">
+                <a-button
+                    class="px-5 mr-4 text-sm border rounded"
+                    style="width: 100px"
+                    type="default"
+                    @click="showPublishPopover = false"
+                    >Cancel</a-button
+                >
+                <a-button
+                    class="px-5 text-sm rounded"
+                    type="primary"
+                    @click="changeFolder(item)"
+                    :loading="isUpdating"
+                    >Move</a-button
+                >
+            </div>
         </template>
     </a-popover>
 
@@ -266,7 +374,6 @@
             <QueryFolderSelector
                 :connector="currentConnector"
                 :savedQueryType="savedQueryType"
-                :selectedFolderQF="parentFolderQF"
                 @folderChange="getSelectedFolder"
                 :selectedNewFolder="item"
             />
@@ -349,11 +456,15 @@
                 required: true,
                 default: '',
             },
-            parentFolderQF: {
-                type: String,
-                required: true,
-                default: 'root',
+            refreshQueryTree: {
+                type: Function,
+                required: false,
             },
+            // parentFolderQF: {
+            //     type: String,
+            //     required: true,
+            //     default: 'root',
+            // },
             // refetchTreeData: {
             //     type: Function,
             //     required: false,
@@ -442,30 +553,25 @@
 
             const newQuery = () => {
                 if (toggleCreateQueryModal) {
-                    toggleCreateQueryModal(
-                        props.item.guid,
-                        props.item.qualifiedName
-                    )
+                    toggleCreateQueryModal(item)
                 }
             }
             const publishFolder = () => {
-                const payload = ref([
-                    {
-                        entityGuid: props.item.guid as string,
-                        attributes: {},
-                        propagate: true,
-                        removePropagationsOnEntityDelete: true,
-                        typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                        validityPeriods: [],
-                    },
-                ])
-
+                // const payload = ref([
+                //     {
+                //         entityGuid: props.item.guid as string,
+                //         attributes: {},
+                //         propagate: true,
+                //         removePropagationsOnEntityDelete: true,
+                //         typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                //         validityPeriods: [],
+                //     },
+                // ])
                 // const { error, isLoading } = Classification.linkClassification({
                 //     cache: undefined,
                 //     payload,
                 //     entityGuid: props.item.guid,
                 // })
-
                 // watch([isLoading], () => {
                 //     if (isLoading.value == false && !error.value) {
                 //         useAddEvent('insights', 'folder', 'space_changed', {
@@ -508,14 +614,31 @@
                     if (e.key === 'Enter') {
                         if (input.value && input.value !== orignalName) {
                             item.value.attributes.name = input.value
-                            const { data, error } = Insights.CreateSavedQuery({
-                                entity: item.value.entity,
-                            })
-                            watch(error, (newError) => {
-                                if (newError) {
-                                    item.value.attributes.name = orignalName
-                                }
-                            })
+                            const { data, error } = Insights.CreateQueryFolder(
+                                {
+                                    entity: item.value.entity,
+                                },
+                                {}
+                            )
+                            console.log('rename: ', { data, error })
+                            watch(
+                                error,
+                                () => {
+                                    console.log('rename erro: ', error)
+                                    if (error.value == undefined) {
+                                        message.success({
+                                            content: `Folder renamed successfully`,
+                                        })
+                                    } else {
+                                        item.value.attributes.name = orignalName
+
+                                        message.success({
+                                            content: `Folder rename failed`,
+                                        })
+                                    }
+                                },
+                                { immediate: true }
+                            )
                         }
                         input.value = ''
                         try {
@@ -653,11 +776,14 @@
             }
 
             let selectedFolder = ref(null)
+            let selectedType = ref(null)
 
             const getSelectedFolder = (folder) => {
                 if (folder) {
+                    console.log('folder: ', folder)
                     console.log('folder selected', folder?.dataRef)
                     selectedFolder.value = folder?.dataRef
+                    selectedType.value = folder.selectedFolderType
                 } else {
                     console.log('no folder selected')
                     selectedFolder.value = null
@@ -667,9 +793,15 @@
             const isUpdating = ref(false)
 
             const changeFolder = (item: any) => {
-                console.log('selected item: ', item)
+                let previousParentGuId = item.attributes.parent.guid
+                let selectedParentGuid = selectedFolder.value.guid
+
+                console.log('entity item parent: ', previousParentGuId)
+                console.log('entity selected folder: ', selectedParentGuid)
+
                 if (selectedFolder.value) {
                     const newEntity = item
+                    delete newEntity.entity
                     newEntity.attributes.parentFolderQualifiedName =
                         selectedFolder.value.attributes.qualifiedName
                     newEntity.attributes = {
@@ -679,13 +811,33 @@
                         },
                     }
 
+                    if (
+                        selectedFolder.value.typeName === 'QueryFolderNamespace'
+                    ) {
+                        console.log('select QFN')
+                        if (selectedType.value === 'all') {
+                            newEntity.classifications = [
+                                {
+                                    attributes: {},
+                                    propagate: true,
+                                    entityGuid: item.guid,
+                                    removePropagationsOnEntityDelete: true,
+                                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                                    validityPeriods: [],
+                                },
+                            ]
+                        } else {
+                            newEntity.classifications = []
+                        }
+                    }
+
                     console.log('new entity: ', newEntity)
 
                     isUpdating.value = true
 
                     if (item.typeName == 'QueryFolder') {
                         const { data, error, isLoading } =
-                            Insights.CreateQueryFolder(
+                            Insights.UpdateSavedFolder(
                                 {
                                     entity: newEntity,
                                 },
@@ -701,12 +853,29 @@
                                     message.success({
                                         content: `Folder moved successfully`,
                                     })
+                                    // props.refreshQueryTree(
+                                    //     selectedFolder.value.guid,
+                                    //     'queryFolder'
+                                    // )
+                                    // props.refreshQueryTree(
+                                    //     item.attributes.parent.guid,
+                                    //     'queryFolder'
+                                    // )
+
+                                    props.refreshQueryTree(
+                                        [
+                                            previousParentGuId,
+                                            selectedParentGuid,
+                                        ],
+                                        'queryFolder'
+                                    )
                                 } else {
                                     message.success({
                                         content: `Folder move failed`,
                                     })
                                 }
                             }
+                            showPublishPopover.value = false
                             showFolderPopover.value = false
                         })
                     } else if (item.typeName === 'Query') {
@@ -727,6 +896,21 @@
                                     message.success({
                                         content: `Query moved successfully`,
                                     })
+                                    // props.refreshQueryTree(
+                                    //     selectedFolder.value.guid,
+                                    //     'query'
+                                    // )
+                                    // props.refreshQueryTree(
+                                    //     item.attributes.parent.guid,
+                                    //     'query'
+                                    // )
+                                    props.refreshQueryTree(
+                                        [
+                                            previousParentGuId,
+                                            selectedParentGuid,
+                                        ],
+                                        'query'
+                                    )
                                 } else {
                                     message.success({
                                         content: `Query move failed`,
@@ -734,6 +918,7 @@
                                 }
                             }
                             showFolderPopover.value = false
+                            showPublishPopover.value = false
                         })
                     }
                 }

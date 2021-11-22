@@ -42,6 +42,7 @@
             watch(localValue.value, (prev, cur) => {
                 if (!localValue.value.connectorName) {
                     delete localValue.value.connectorName
+                    delete localValue.value.connectionQualifiedName
                 }
                 if (!localValue.value.connectionQualifiedName) {
                     delete localValue.value.connectionQualifiedName

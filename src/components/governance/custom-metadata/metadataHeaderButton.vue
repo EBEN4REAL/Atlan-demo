@@ -5,7 +5,10 @@
         </a-button>
         <template #overlay>
             <a-menu>
-                <a-menu-item key="1" @click="addPropertyDrawer.open()"
+                <a-menu-item
+                    key="1"
+                    v-auth="map.UPDATE_BUSINESS_METADATA"
+                    @click="metadataModal.open()"
                     ><AtlanIcon
                         class="inline mr-2"
                         icon="Edit"
@@ -13,20 +16,23 @@
                 >
                 <a-menu-item
                     key="1"
-                    @click.prevent.stop="copyAPI(metadata.displayName)"
+                    @click.prevent.stop="
+                        copyAPI(metadata.displayName, 'Name Copied!')
+                    "
                 >
                     <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
                     name</a-menu-item
                 >
                 <a-menu-item
                     key="1"
-                    @click.prevent.stop="copyAPI(metadata.guid)"
+                    @click.prevent.stop="copyAPI(metadata.guid, 'GUID Copied!')"
                 >
                     <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
                     ID</a-menu-item
                 >
                 <a-menu-item
                     key="2"
+                    v-auth="map.DELETE_BUSINESS_METADATA"
                     class="text-red-500"
                     @click="openDeleteModal = true"
                 >
@@ -37,7 +43,7 @@
         </template>
     </a-dropdown>
     <addMetadataModal
-        ref="addPropertyDrawer"
+        ref="metadataModal"
         :metadata="metadata"
         :is-edit="true"
     />
@@ -55,6 +61,8 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import ArchiveMetadataModal from './archiveMetadataModal.vue'
 
+    import map from '~/constant/accessControl/map'
+
     export default defineComponent({
         components: {
             addMetadataModal,
@@ -67,13 +75,13 @@
             },
         },
         setup(props) {
-            const addPropertyDrawer = ref(null)
+            const metadataModal = ref(null)
             const openDeleteModal = ref(false)
 
-            const copyAPI = (text: string) => {
+            const copyAPI = (text: string, theMessage: String) => {
                 copyToClipboard(text)
                 message.success({
-                    content: 'GUID Copied!',
+                    content: theMessage,
                 })
             }
             const showDeleteConfirm = () => {
@@ -99,10 +107,11 @@
             }
 
             return {
-                addPropertyDrawer,
+                metadataModal,
                 openDeleteModal,
                 copyAPI,
                 showDeleteConfirm,
+                map,
             }
         },
     })

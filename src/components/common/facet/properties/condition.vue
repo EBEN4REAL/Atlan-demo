@@ -17,19 +17,23 @@
                     {{ item?.label }}
                 </a-select-option>
             </a-select>
-            <a-button size="small">
+            <div class="p-1 cursor-pointer">
                 <AtlanIcon
                     icon="Trash"
-                    class="h-3 text-gray-500"
+                    class="h-3 text-gray-500 hover:text-red-700"
                     @click="handleRemove"
-                ></AtlanIcon
-            ></a-button>
+                ></AtlanIcon>
+            </div>
         </div>
 
         <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
             <DynamicInput2
                 v-model="localCondition.value"
-                :data-type="attribute.subTypeName || attribute.typeName"
+                :data-type="
+                    attribute.options?.customType ||
+                    attribute.subTypeName ||
+                    attribute.typeName
+                "
                 @change="handleValueChange"
             ></DynamicInput2>
         </div>

@@ -9,14 +9,28 @@ export interface getLineageOptions {
     direction: string
 }
 
-const getLineage = (options: getLineageOptions | Ref<getLineageOptions> | ComputedRef<getLineageOptions>) =>
-    useAPI(map.GET_LINEAGE, 'GET', {
-        pathVariables: options,
-        initialState: {
-            guidEntityMap: <Record<string, assetInterface>>{},
-            relations: [],
+const getLineage = (
+    options:
+        | getLineageOptions
+        | Ref<getLineageOptions>
+        | ComputedRef<getLineageOptions>,
+    asyncOptions
+) =>
+    useAPI(
+        map.GET_LINEAGE,
+        'GET',
+        {
+            pathVariables: options,
+            initialState: {
+                guidEntityMap: <Record<string, assetInterface>>{},
+                relations: [],
+            },
         },
-    }, {})
+
+        {
+            asyncOptions,
+        }
+    )
 
 export const lineageServiceAPI = {
     getLineage,

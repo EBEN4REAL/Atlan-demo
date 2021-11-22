@@ -61,6 +61,13 @@ export const AssetAttributes = [
     'links',
     'link',
     'webUrl',
+    'category',
+    'lastSyncRun',
+    'lastSyncRunAt',
+    'lastSyncWorkflowName',
+    'queryConfig',
+    'allowQuery',
+    'allowQueryPreview',
 ]
 
 export const SQLAttributes = [
@@ -94,6 +101,13 @@ export const AssetRelationAttributes = [
     'description',
     'shortDescription',
     'link',
+    'tile',
+    'workspace',
+    'dataset',
+    'dashboard',
+    'dataflow',
+    'report',
+    'page',
 ]
 
 export const DefaultRelationAttributes = []

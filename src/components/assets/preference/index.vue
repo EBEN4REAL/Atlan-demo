@@ -2,6 +2,7 @@
     <div class="flex flex-col py-1 rounded gap-y-3">
         <div class="flex items-center justify-between">
             <p class="mb-1 text-sm text-gray-500">Sort By</p>
+
             <Sorting
                 v-model="localValue.sort"
                 @change="handleChangeSort"

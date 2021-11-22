@@ -9,12 +9,7 @@ import { getFormattedGroup } from '~/composables/group/formatGroup'
 import { Groups } from '~/services/service/groups'
 import { LIST_GROUPS, LIST_GROUP } from '~/services/service/groups/key'
 
-export const useGroup = (groupListAPIParams: {
-    limit: number
-    offset: number
-    filter: any
-    // sort: string;
-}) => {
+export const useGroup = (groupListAPIParams) => {
     const {
         data,
         error,
@@ -62,6 +57,7 @@ export default function useGroups(groupListAPIParams: {
         data,
         error,
         isValidating,
+        isLoading,
         mutate: getGroupList,
     } = Groups.List(groupListAPIParams, {
         cacheOptions: {
@@ -87,8 +83,8 @@ export default function useGroups(groupListAPIParams: {
         () => {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((group: any) =>
-                      getFormattedGroup(group)
-                  )
+                    getFormattedGroup(group)
+                )
                 : []
 
             if (data && data.value) {
@@ -116,6 +112,7 @@ export default function useGroups(groupListAPIParams: {
         getGroupList,
         state,
         STATES,
+        isLoading, error,
         groupListConcatenated,
     }
 }

@@ -15,22 +15,33 @@
                     >
                         <AtlanIcon
                             :icon="icon"
-                            class="mr-1"
+                            class="self-center mr-1"
                             v-if="icon"
                         ></AtlanIcon>
-                        <span>{{ item.label }}</span>
-                        <span
+
+                        <AtlanIcon
+                            v-if="item.label == 'All'"
+                            icon="Globe"
+                            class="self-center mr-1 mb-0.5"
+                        ></AtlanIcon>
+
+                        <div class="self-center text-sm">
+                            {{ item.label }}
+                        </div>
+                        <div
                             :class="$style.chip"
                             class="
-                                mt-0.5
-                                ml-1
+                                self-center
                                 text-xs
                                 font-bold
                                 tracking-wide
                                 text-gray-400
+                                mt-0.5
+                                ml-1
                             "
-                            >{{ getCountString(item.count) }}</span
                         >
+                            {{ getCountString(item.count) }}
+                        </div>
                     </div>
                 </template>
             </a-tab-pane>
@@ -174,6 +185,7 @@
         }
 
         :global(.ant-tabs-tab:first-child) {
+            border-top-left-radius: 4px !important;
         }
 
         :global(.ant-tabs-nav-container-scrolling) {

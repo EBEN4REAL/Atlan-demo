@@ -1,81 +1,84 @@
 <template>
-    <!-- <div class="h-full" v-if="permissions.list"> -->
-    <div v-if="isLoading" class="flex items-center justify-center h-64">
-        <a-spin size="large" />
-    </div>
-    <div v-else-if="error">
-        <a-empty :image="null">
-            <template #description>
-                <p class="text-2xl font-bold">Error loading your request</p>
-                <p>Try reloading page</p>
-            </template>
+    <div v-auth="map.LIST_BUSINESS_METADATA" class="h-full">
+        <div v-if="isLoading" class="flex items-center justify-center h-64">
+            <a-spin size="large" />
+        </div>
+        <div v-else-if="error">
+            <a-empty :image="null">
+                <template #description>
+                    <p class="text-2xl font-bold">Error loading your request</p>
+                    <p>Try reloading page</p>
+                </template>
 
-            <!-- <a-button type="danger" @click="fetchBMonStore()"
+                <!-- <a-button type="danger" @click="fetchBMonStore()"
                 ><AtlanIcon icon="Add" class="inline" /> Try again
             </a-button> -->
-        </a-empty>
-    </div>
-    <ExplorerLayout
-        v-else-if="finalBusinessMetadataList.length"
-        title="Custom Metadata"
-        sidebar-class="bg-white"
-    >
-        <template #action>
-            <AtlanBtn
-                class="flex-none"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click="addMetaDataModal.open()"
-            >
-                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
-            </AtlanBtn>
-        </template>
-
-        <template #sidebar>
-            <div class="px-4 pt-6 pb-4">
-                <SearchAndFilter
-                    v-model:value="searchText"
-                    :placeholder="`Search`"
-                    class="bg-white"
-                />
-            </div>
-
-            <BusinessMetadataList
-                class="overflow-y-auto"
-                :final-list="sortedSearchedBM"
-                :selected-bm="selectedBm"
-                @selectBm="handleSelectBm"
-            />
-        </template>
-
-        <BusinessMetadataProfile
-            v-if="selectedBm"
-            :key="selectedBm && selectedBm.guid"
-            :selected-bm="selectedBm"
-            @select-bm="handleSelectBm"
-            @update="onUpdate"
-        />
-    </ExplorerLayout>
-    <div v-else class="flex items-center justify-center h-full">
-        <a-empty
-            :image="noMetadataImage"
-            :image-style="{
-                height: '115px',
-                display: 'flex',
-                justifyContent: 'center',
-            }"
+            </a-empty>
+        </div>
+        <ExplorerLayout
+            v-else-if="finalBusinessMetadataList.length"
+            title="Custom Metadata"
+            sidebar-class="bg-white"
         >
-            <template #description>
-                <p class="text-2xl font-bold">Start adding custom metadata</p>
+            <template #action>
+                <AtlanBtn
+                    v-auth="map.CREATE_BUSINESS_METADATA"
+                    class="flex-none"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    @click="addMetaDataModal.open()"
+                >
+                    <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+                </AtlanBtn>
             </template>
 
-            <a-button type="primary" @click="addMetaDataModal.open()"
-                ><AtlanIcon icon="Add" class="inline" /> Create new metadata
-            </a-button>
-        </a-empty>
+            <template #sidebar>
+                <div class="px-4 pt-6 pb-4">
+                    <SearchAndFilter
+                        v-model:value="searchText"
+                        :placeholder="`Search`"
+                        class="bg-white"
+                    />
+                </div>
+
+                <BusinessMetadataList
+                    class="overflow-y-auto"
+                    :final-list="sortedSearchedBM"
+                    :selected-bm="selectedBm"
+                    @selectBm="handleSelectBm"
+                />
+            </template>
+
+            <BusinessMetadataProfile
+                v-if="selectedBm"
+                :key="selectedBm && selectedBm.guid"
+                :selected-bm="selectedBm"
+                @select-bm="handleSelectBm"
+                @update="onUpdate"
+            />
+        </ExplorerLayout>
+        <div v-else class="flex items-center justify-center h-full">
+            <a-empty
+                :image="noMetadataImage"
+                :image-style="{
+                    height: '115px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                }"
+            >
+                <template #description>
+                    <p class="text-2xl font-bold">
+                        Start adding custom metadata
+                    </p>
+                </template>
+
+                <a-button type="primary" @click="addMetaDataModal.open()"
+                    ><AtlanIcon icon="Add" class="inline" /> Create new metadata
+                </a-button>
+            </a-empty>
+        </div>
     </div>
-    <!-- </div> -->
     <!-- <NoAccess v-else /> -->
     <MetadataModal ref="addMetaDataModal" @selectBm="handleSelectBm" />
 </template>
@@ -91,8 +94,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import NoAccess from '@/admin/common/noAccessPage.vue'
 
-    // ? Store
-    import { useTypedefStore } from '~/store/typedef'
+    import map from '~/constant/accessControl/map'
 
     // ? Composables
     import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
@@ -142,6 +144,7 @@
                 onUpdate,
                 handleSelectBm,
                 sortedSearchedBM,
+                map,
             }
         },
         data() {

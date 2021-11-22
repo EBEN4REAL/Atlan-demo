@@ -36,6 +36,8 @@
                 >
                     <Panel
                         :item="item"
+                        :componentParentKey="`${item.id}_${componentState}`"
+                        :activeKey="localActiveKeyValue"
                         v-model="localValue"
                         @change="handleChange"
                     ></Panel>
@@ -47,7 +49,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     import Panel from './panel.vue'
@@ -89,6 +91,12 @@
             activeKey: {
                 required: false,
             },
+            allowCustomFilters: {
+                required: false,
+                default() {
+                    return true
+                },
+            },
         },
         emits: [
             'change',
@@ -99,7 +107,8 @@
         ],
         setup(props, { emit }) {
             const { modelValue, activeKey } = useVModels(props, emit)
-            const { typeName, isAccordion, filterList } = toRefs(props)
+            const { typeName, isAccordion, filterList, allowCustomFilters } =
+                toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
 
@@ -107,7 +116,7 @@
             const forceRender = () => {
                 componentState.value += 1
             }
-            const { list: cmList } = useCustomMetadataFacet()
+            const { getList: cmList } = useCustomMetadataFacet()
 
             const dynamicList = computed(() => {
                 const arr = filterList.value?.filter((el) => {
@@ -131,28 +140,29 @@
                     }
                     return true
                 })
-                return [...arr, ...cmList.value]
+                if (allowCustomFilters.value) {
+                    return [...arr, ...cmList(typeName.value)]
+                }
+                return [...arr]
             })
 
             const totalFilteredCount = computed(() => {
-                if (Object.keys(localValue.value).length > 0) {
-                    if (
-                        Object.keys(localValue.value).find(
-                            (k) => k === 'typeName'
-                        )
+                let count = 0
+                Object.keys(localValue.value).forEach((key) => {
+                    if (Array.isArray(localValue.value[key])) {
+                        if (localValue.value[key].length > 0) {
+                            count += 1
+                        }
+                    } else if (
+                        typeof localValue.value[key] === 'object' &&
+                        localValue.value[key] !== null
                     ) {
-                        return Object.keys(localValue.value).length - 1
+                        if (Object.keys(localValue.value[key]).length > 0) {
+                            count += 1
+                        }
                     }
-                    if (
-                        Object.keys(localValue.value).find(
-                            (k) => k === 'typeNames'
-                        )
-                    ) {
-                        return Object.keys(localValue.value).length - 1
-                    }
-                }
-
-                return Object.keys(localValue.value).length
+                })
+                return count
             })
 
             const handleChange = () => {
@@ -183,6 +193,7 @@
                 componentState,
                 isAccordion,
                 filterList,
+                allowCustomFilters,
             }
         },
     })
@@ -191,7 +202,7 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-b border-gray-200 !important;
+            @apply border-b border-gray-light !important;
         }
 
         :global(.ant-collapse-item-active) {

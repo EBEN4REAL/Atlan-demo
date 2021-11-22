@@ -23,6 +23,9 @@
                         <a-menu-item key="groups" v-auth="[map.LIST_GROUPS]">
                             Groups
                         </a-menu-item>
+                        <a-menu-item key="apikeys" v-auth="[map.LIST_APIKEY]"
+                            >API Keys</a-menu-item
+                        >
                         <a-menu-item key="sso" v-auth="[map.UPDATE_SSO]">
                             SSO
                         </a-menu-item>
@@ -40,7 +43,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, computed } from 'vue'
     import { useRouter, useRoute } from 'vue-router'
 
     import map from '~/constant/accessControl/map'
@@ -55,11 +58,13 @@
                 console.log(key)
                 router.push(`/admin/${key}`)
             }
-            const initialRoute = route.path.split('/').slice(-1)
-            const current = ref(
-                initialRoute[0] === 'admin' ? ['overview'] : initialRoute
-            )
-
+            const current = computed(() => {
+                const initialRoute = route.path.split('/')
+                if (initialRoute.length === 2 && initialRoute[0] === 'admin')
+                    return ['overview']
+                if (initialRoute.length > 2) return [initialRoute[2]]
+                return initialRoute.slice(-1)
+            })
             return {
                 handleClick,
                 current,

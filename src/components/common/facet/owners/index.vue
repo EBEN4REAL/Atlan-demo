@@ -72,7 +72,13 @@
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
                 v-model:checked="localValue.empty"
-                class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
+                class="
+                    inline-flex
+                    flex-row-reverse
+                    items-center
+                    w-full
+                    atlan-reverse
+                "
             >
                 <component
                     :is="noStatus"
@@ -186,8 +192,13 @@
             watch(localValue.value, (prev, cur) => {
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
+                } else if (localValue.value.ownerUsers?.length === 0) {
+                    delete localValue.value.ownerUsers
                 }
+
                 if (!localValue.value.ownerGroups) {
+                    delete localValue.value.ownerGroups
+                } else if (localValue.value.ownerGroups?.length === 0) {
                     delete localValue.value.ownerGroups
                 }
                 modelValue.value = localValue.value

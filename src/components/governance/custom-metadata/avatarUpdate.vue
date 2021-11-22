@@ -21,7 +21,7 @@
 
                 <a-tabs default-active-key="1" size="small">
                     <template #rightExtra>
-                        <a-button class="border-0">
+                        <a-button class="border-0" @click="removeAvatar">
                             <AtlanIcon
                                 icon="Delete"
                                 class="inline mr-1 text-gray-500"
@@ -48,7 +48,7 @@
                                 class="p-3 text-center border border-dashed rounded "
                             >
                                 <a-upload
-                                    class="relative block w-full mb-3 metadata-avatar-uploader"
+                                    class="relative block w-full mb-3  metadata-avatar-uploader"
                                     name="file"
                                     accept="image/*"
                                     :multiple="false"
@@ -123,6 +123,7 @@
                 fileList,
                 handleUploadImage,
                 handleEmojiSelect,
+                removeAvatar,
             } = useCustomMetadataAvatar(metadata)
 
             return {
@@ -131,8 +132,10 @@
                 isUploading,
                 isUpdating,
                 imageUrl,
+                fileList,
                 handleUploadImage,
                 handleEmojiSelect,
+                removeAvatar,
             }
         },
     })

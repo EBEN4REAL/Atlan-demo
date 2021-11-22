@@ -6,6 +6,16 @@
         class="drawer-workflow-logs"
         @close="$emit('close')"
     >
+        <div
+            :class="`close-icon ${!isOpen && 'closed'}`"
+            @click="$emit('close')"
+        >
+            <AtlanIcon
+                class="mt-2 ml-2"
+                icon="ChevronRight"
+                style="width: 24px; height: 24px"
+            />
+        </div>
         <div class="flex items-center justify-between p-4" style="height: 60px">
             <div class="flex items-center">
                 <AtlanIcon
@@ -95,17 +105,7 @@
             >
                 <pre
                     id="contentArea-log"
-                    class="
-                        w-full
-                        h-full
-                        p-4
-                        font-mono
-                        whitespace-normal
-                        bg-gray-100
-                        border border-gray-300
-                        rounded-md
-                        clusterize-content
-                    "
+                    class="w-full h-full p-4 font-mono whitespace-normal bg-gray-100 border border-gray-300 rounded-md  clusterize-content"
                 >
                   <span v-for="(item, index) in response" :key="index">
                   <span class="no">{{index + 1}}</span>
@@ -124,11 +124,12 @@
     import { useArchivedWorkflowRunLogs } from '~/composables/workflow/useWorkflowList'
     import useWorkflowLogsStream from '~/composables/workflow/useWorkflowLogsStream'
 
-    import WorkflowMixin from '~/mixins/workflow'
+    // import WorkflowMixin from '~/mixins/workflow'
+    import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
 
     export default defineComponent({
         components: { EmptyView },
-        mixins: [WorkflowMixin],
+        // mixins: [WorkflowMixin],
         props: {
             isOpen: { type: Boolean, default: false },
             run: { type: Object, default: () => {} },
@@ -138,7 +139,8 @@
             },
             selectedGraph: {
                 type: Object,
-                required: true,
+                required: false,
+                default: () => {},
             },
         },
 
@@ -236,7 +238,9 @@
                 downloadString(
                     JSON.stringify(response.value),
                     'text/csv',
-                    `runName-timestamp-${new Date().getTime()}.txt`
+                    `${
+                        selectedPod.value?.displayName
+                    }-timestamp-${new Date().getTime()}.txt`
                 )
             }
 
@@ -254,6 +258,7 @@
                 selectedPod,
                 selectedGraph,
                 isEmptyLogs,
+                ...useWorkFlowHelper()
             }
         },
     })
@@ -263,6 +268,24 @@
 </style>
 <style lang="less">
     .drawer-workflow-logs {
+        .close-icon {
+            &.closed {
+                display: none;
+            }
+            background-color: white;
+            position: fixed;
+            height: 49px;
+            width: 23px;
+            top: 100px;
+            margin-left: -23px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: -5px 1px 6px 0px #0000000d;
+            border-top-left-radius: 6px;
+            border-bottom-left-radius: 6px;
+            cursor: pointer;
+        }
         .ant-drawer-body {
             height: 100%;
         }

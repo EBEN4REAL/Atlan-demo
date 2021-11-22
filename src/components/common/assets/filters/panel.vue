@@ -15,8 +15,8 @@
                             style="letter-spacing: 0.07em"
                         >
                             <img
-                                v-if="item.options?.imagePath"
-                                :src="imageUrl(item.options?.imagePath)"
+                                v-if="item.options?.imageId"
+                                :src="imageUrl(item.options?.imageId)"
                                 class="float-left w-auto h-4 mr-2"
                             />
 
@@ -119,11 +119,18 @@
                     return []
                 },
             },
+            componentParentKey: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { item } = toRefs(props)
+            const { item, activeKey, componentParentKey } = toRefs(props)
             const { getConnectorImageMap } = useAssetInfo()
             const componentState = ref(0)
             const forceRender = () => {
@@ -154,7 +161,7 @@
             })
 
             const isActive = computed(() =>
-                props.activeKey.includes(item.value.id)
+                activeKey.value.includes(componentParentKey?.value)
             )
 
             const handleChange = () => {
@@ -246,14 +253,12 @@
                         usersLength > 0
                     ) {
                         val = facetMap.value[id]?.ownerUsers?.join(', ')
-                    } else if (usersLength + groupsLength > 2) {
+                    } else if (usersLength + groupsLength >= 2) {
                         val = `${getOwnerFilterAppliedString(
                             usersLength,
                             groupsLength
                         )}`
                     }
-
-                    console.log(val)
 
                     if (facetMap.value[id].empty) {
                         if (val !== '') {
@@ -286,7 +291,7 @@
             })
 
             const imageUrl = (url) =>
-                `${window.location.origin}/api/service${url}`
+                `${window.location.origin}/api/service/images/${url}?ContentDisposition=inline&name=${url}`
 
             return {
                 isFiltered,
@@ -300,6 +305,8 @@
                 forceRender,
                 componentKey,
                 imageUrl,
+                activeKey,
+                componentParentKey,
             }
         },
     })

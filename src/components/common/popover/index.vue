@@ -154,7 +154,6 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
-            console.log(item.value, 'sdjfhksjfhkjsdhfjksdhfjkhdskfhks')
             const {
                 certificateStatus,
                 certificateUpdatedAt,

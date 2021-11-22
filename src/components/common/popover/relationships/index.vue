@@ -40,7 +40,9 @@
                       />
                   </div>
                 </div>
-                <a-button class="mt-3" block>View column profile</a-button>
+                <router-link :to="path">
+                  <a-button class="mt-3" block>View {{item?.typeName?.toLowerCase()}} profile</a-button>
+                </router-link>
             </div>
         </template>
         <slot></slot>
@@ -79,11 +81,18 @@
                 required: false,
                 default: '',
             },
+            path: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
         },
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
-            console.log(item.value.classifications.length, 'sdjfhksjfhkjsdhfjksdhfjkhdskfhks')
+            console.log(item.value, 'sdjfhksjfhkjsdhfjksdhfjkhdskfhks')
                const {
                 certificateStatus,
                 certificateUpdatedAt,

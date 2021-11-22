@@ -142,7 +142,7 @@
                                 <div class="flex items-center">
                                     <AtlanIcon
                                         v-if="option.icon"
-                                        class="w-4 h-4"
+                                        class="w-4 h-4 text-gray-600"
                                         :icon="option.icon"
                                     />
                                     <span class="pl-2 text-sm">{{
@@ -219,7 +219,7 @@
                 },
                 {
                     title: 'Data Policy',
-                    icon: 'Queries',
+                    icon: 'Query',
                     handleClick: () => addPolicy('data'),
                 },
             ]

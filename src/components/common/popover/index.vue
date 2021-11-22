@@ -68,13 +68,18 @@
                         `This ${title} has no description added`
                     }}
                 </div>
-                <div class="flex gap-1 mt-2">
-                    <ClassificationPill
-                        :name="'private'"
-                        :display-name="'private'"
-                        :is-propagated="false"
-                        :allow-delete="false"
-                    />
+                <div v-if="list.length > 0" class="flex flex-wrap gap-1 mt-2">
+                    <template
+                        v-for="classification in list"
+                        :key="classification.guid"
+                    >
+                        <ClassificationPill
+                            :name="classification.name"
+                            :display-name="classification?.displayName"
+                            :is-propagated="isPropagated(classification)"
+                            :allow-delete="false"
+                        ></ClassificationPill>
+                    </template>
                 </div>
                 <div v-if="item?.attributes?.ownerUsers.length > 0">
                     <div class="mt-2">Owned by</div>
@@ -98,9 +103,11 @@
 </template>
 
 <script lang="ts">
-    import { toRefs } from 'vue'
+    import { toRefs, computed } from 'vue'
     // import UserAvatar from '@/common/avatar/user.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
     import UserPill from '@/common/pills/user.vue'
 
@@ -169,12 +176,38 @@
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
+                classifications,
             } = useAssetInfo()
+
+            const { classificationList } = useTypedefData()
+
+            const isPropagated = (classification) => {
+                if (!item?.value?.guid?.value) {
+                    return false
+                }
+                if (item?.value?.guid === classification.entityGuid) {
+                    return false
+                }
+                return true
+            }
+
+            const list = computed(() => {
+                const { matchingIdsResult } = mergeArray(
+                    classificationList.value,
+                    classifications(item.value),
+                    'name',
+                    'typeName'
+                )
+                return matchingIdsResult
+            })
 
             return {
                 certificateStatus,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
+                isPropagated,
+                list,
+                classifications,
             }
         },
     }

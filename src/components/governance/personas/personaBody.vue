@@ -4,7 +4,7 @@
             <template #label="t">
                 <div class="flex items-center">
                     <span
-                        class="text-base"
+                        class="text-sm"
                         :class="
                             activeTabKey === t?.data?.key
                                 ? 'text-gray-700'
@@ -13,7 +13,16 @@
                         >{{ t?.data?.label }}</span
                     >
                     <div
-                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        class="
+                            px-1
+                            py-0.5
+                            ml-2
+                            text-xs
+                            font-bold
+                            rounded
+                            flex
+                            items-center
+                        "
                         v-if="t?.data?.key === 'policies'"
                         :class="
                             activeTabKey === t?.data?.key
@@ -21,13 +30,24 @@
                                 : 'text-gray-500 bg-gray-100'
                         "
                     >
-                        {{
-                            selectedPersonaDirty?.metadataPolicies?.length +
-                            selectedPersonaDirty?.dataPolicies?.length
-                        }}
+                        <div class="mt-0.5">
+                            {{
+                                selectedPersonaDirty?.metadataPolicies?.length +
+                                selectedPersonaDirty?.dataPolicies?.length
+                            }}
+                        </div>
                     </div>
                     <div
-                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        class="
+                            px-1
+                            py-0.5
+                            ml-2
+                            text-xs
+                            font-bold
+                            rounded
+                            flex
+                            items-center
+                        "
                         v-if="t?.data?.key === 'users'"
                         :class="
                             activeTabKey === t?.data?.key
@@ -35,10 +55,12 @@
                                 : 'text-gray-500 bg-gray-100'
                         "
                     >
-                        {{
-                            selectedPersonaDirty?.users?.length +
-                            selectedPersonaDirty?.groups?.length
-                        }}
+                        <div class="mt-0.5">
+                            {{
+                                selectedPersonaDirty?.users?.length +
+                                selectedPersonaDirty?.groups?.length
+                            }}
+                        </div>
                     </div>
                 </div>
             </template>
@@ -142,7 +164,7 @@
                                 <div class="flex items-center">
                                     <AtlanIcon
                                         v-if="option.icon"
-                                        class="w-4 h-4"
+                                        class="w-4 h-4 text-gray-600"
                                         :icon="option.icon"
                                     />
                                     <span class="pl-2 text-sm">{{
@@ -219,7 +241,7 @@
                 },
                 {
                     title: 'Data Policy',
-                    icon: 'Queries',
+                    icon: 'Query',
                     handleClick: () => addPolicy('data'),
                 },
             ]
@@ -233,6 +255,11 @@
                 })
                 try {
                     await savePolicy(type, id)
+                    if (type === 'meta')
+                        policyEditMap.value.metadataPolicies[id] = false
+                    else if (type === 'data')
+                        policyEditMap.value.dataPolicies[id] = false
+
                     // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
@@ -240,8 +267,9 @@
                         key: messageKey,
                     })
                 } catch (error) {
+                    console.log(error?.response?.data, 'error')
                     message.error({
-                        content: 'Failed to save policy',
+                        content: error?.response?.data?.message,
                         duration: 1.5,
                         key: messageKey,
                     })

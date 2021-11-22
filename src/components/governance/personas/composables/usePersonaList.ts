@@ -6,12 +6,20 @@ import usePersonaService from './usePersonaService'
 const { listPersonas } = usePersonaService()
 const {
     data: list,
+    isLoading: isPersonaLoading,
+    error: isPersonaError,
     isReady: isPersonaListReady,
     mutate: reFetchList,
 } = listPersonas()
 
 const personaList = computed(() => list.value?.records)
-export { reFetchList, personaList, isPersonaListReady }
+export {
+    reFetchList,
+    personaList,
+    isPersonaListReady,
+    isPersonaLoading,
+    isPersonaError,
+}
 // Selected Persona Details
 export const selectedPersonaId = ref('')
 export const selectedPersona = computed(() => {

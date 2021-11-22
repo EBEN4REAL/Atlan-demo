@@ -73,7 +73,6 @@
         .ant-tabs-tab-active {
             @apply text-gray !important;
             @apply font-bold !important;
-            @apply tracking-normal;
         }
         .ant-tabs-bar {
             margin-bottom: 0px;

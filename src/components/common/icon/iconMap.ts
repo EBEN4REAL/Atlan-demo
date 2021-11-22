@@ -238,6 +238,7 @@ import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import NoWf from '~/assets/images/icons/no-wf.svg'
+import Column from '~/assets/images/icons/column.svg'
 import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
 // source list
@@ -249,6 +250,7 @@ import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 
 export default {
+    Column,
     CreateGroups,
     NoGroups,
     NoUsers,

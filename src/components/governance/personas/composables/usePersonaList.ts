@@ -24,7 +24,7 @@ export {
 export const selectedPersonaId = ref('')
 export const selectedPersona = ref()
 watch(
-    [selectedPersonaId, personaList],
+    [selectedPersonaId],
     () => {
         if (selectedPersonaId.value) {
             let t = personaList.value?.find(

@@ -2,6 +2,7 @@ import { Ref, ref, watch, toRaw } from 'vue'
 import { IPurpose } from '~/types/accessPolicies/purposes'
 import usePersonaService from './usePersonaService'
 import {
+    reFetchList,
     selectedPersona,
     personaList,
     selectedPersonaId,
@@ -68,6 +69,7 @@ export function updateSelectedPersona() {
     selectedPersona.value = JSON.parse(
         JSON.stringify(selectedPersonaDirty.value)
     )
+    reFetchList()
 }
 
 export function addPolicy(type: PolicyType) {

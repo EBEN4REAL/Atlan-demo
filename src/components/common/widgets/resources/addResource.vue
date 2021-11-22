@@ -2,7 +2,12 @@
     <div @click="showModal">
         <slot name="trigger" @click="showModal" />
     </div>
-    <a-modal :closable="false" :visible="visible" :class="$style.input">
+    <a-modal
+        :closable="false"
+        :visible="visible"
+        :class="$style.input"
+        centered
+    >
         <template #title>
             <div class="flex items-center text-gray-500 flex-nowrap">
                 <span class="overflow-hidden text-sm overflow-ellipsis">{{

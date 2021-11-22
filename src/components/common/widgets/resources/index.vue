@@ -19,11 +19,16 @@
                 ></template>
             </AddResources>
         </div>
-        <div style="min-height: 15vh">
-            <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-2">
+        <div>
+            <div
+                v-if="links(asset)?.length > 0"
+                class="flex flex-col gap-y-2"
+                style="min-height: 10vh"
+            >
                 <a
+                    v-for="(item, index) in links(asset)"
+                    :key="index"
                     class="flex cursor-pointer gap-x-2 hover:underline"
-                    v-for="item in links(asset)"
                     :href="`//${item?.attributes?.link}`"
                     target="_blank"
                     rel="noreferrer"

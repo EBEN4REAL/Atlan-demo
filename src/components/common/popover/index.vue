@@ -16,7 +16,7 @@
                         class="mb-0.5"
                     />
                 </div>
-                <div class="flex flex-wrap gap-x-2">
+                <div class="flex flex-wrap items-center gap-x-2">
                     <span v-if="row !== '-'" class="text-gray-500">
                         <span
                             class="mr-1 font-semibold tracking-tight text-gray-500 "
@@ -30,18 +30,21 @@
                         >
                         Cols
                     </span>
+                    <div v-if="col" class="col"/>
                     <div v-if="table" class="flex items-center text-gray-500">
                         <AtlanIcon icon="TableGray" class="mr-1 mb-0.5" />
                         <div class="tracking-tight text-gray-500">
                             {{ table }}
                         </div>
                     </div>
+                    <div v-if="table" class="dot"/>
                     <div v-if="db" class="flex items-center text-gray-500">
                         <AtlanIcon icon="DatabaseGray" class="mr-1 mb-0.5" />
                         <div class="tracking-tight text-gray-500">
                             {{ db }}
                         </div>
                     </div>
+                    <div v-if="db" class="dot"/>
                     <div v-if="schema" class="flex items-center text-gray-500">
                         <AtlanIcon icon="SchemaGray" class="mr-1 mb-0.5" />
                         <div class="tracking-tight text-gray-500">
@@ -172,5 +175,12 @@
 <style lang="less" scoped>
     .relation-ship {
         width: 330px;
+    }
+    .dot{
+        background: #c4c4c4;
+        height: 4px;
+        width: 4px;
+        border-radius: 50%;
+
     }
 </style>

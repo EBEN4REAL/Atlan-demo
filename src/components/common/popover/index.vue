@@ -108,6 +108,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import UserPill from '@/common/pills/user.vue'
 
@@ -117,6 +118,7 @@
             // UserAvatar,
             ClassificationPill,
             UserPill,
+            CertificateBadge,
         },
         props: {
             item: {

@@ -6,87 +6,79 @@
                     <img :src="logoTitle" class="h-3 mr-1" />
                     <span>{{ title }}</span>
                 </div>
-                <div class="text-lg font-semibold">
+                <div class="text-lg font-semibold truncate ...">
                     {{ item?.displayText || item?.attributes?.name }}
                     <CertificateBadge
-                          v-if="certificateStatus(item)"
-                          :status="certificateStatus(item)"
-                          :username="certificateUpdatedBy(item)"
-                          :timestamp="certificateUpdatedAt(item)"
-                          class="mb-0.5"
+                        v-if="certificateStatus(item)"
+                        :status="certificateStatus(item)"
+                        :username="certificateUpdatedBy(item)"
+                        :timestamp="certificateUpdatedAt(item)"
+                        class="mb-0.5"
                     />
                 </div>
                 <div class="flex flex-wrap gap-x-2">
-                  <span v-if="row !== '-'" class="text-gray-500">
-                    <span class="mr-1 font-semibold tracking-tight text-gray-500">{{row}}</span>Rows
-                  </span>
-                  <span v-if="col !== '-'" class="text-gray-500">
-                    <span class="font-semibold tracking-tight text-gray-500 ">{{col}}</span>
-                    Cols
-                  </span>
-                  <div
-                    v-if="table"
-                    class="flex items-center text-gray-500"
-                  >
-                    <AtlanIcon
-                        icon="TableGray"
-                        class="mr-1 mb-0.5"
-                    />
-                    <div class="tracking-tight text-gray-500">
-                        {{ table }}
+                    <span v-if="row !== '-'" class="text-gray-500">
+                        <span
+                            class="mr-1 font-semibold tracking-tight text-gray-500 "
+                            >{{ row }}</span
+                        >Rows
+                    </span>
+                    <span v-if="col !== '-'" class="text-gray-500">
+                        <span
+                            class="font-semibold tracking-tight text-gray-500"
+                            >{{ col }}</span
+                        >
+                        Cols
+                    </span>
+                    <div v-if="table" class="flex items-center text-gray-500">
+                        <AtlanIcon icon="TableGray" class="mr-1 mb-0.5" />
+                        <div class="tracking-tight text-gray-500">
+                            {{ table }}
+                        </div>
                     </div>
-                  </div>
-                  <div
-                    v-if="db"
-                    class="flex items-center text-gray-500"
-                  >
-                    <AtlanIcon
-                        icon="DatabaseGray"
-                        class="mr-1 mb-0.5"
-                    />
-                    <div class="tracking-tight text-gray-500">
-                        {{ db }}
+                    <div v-if="db" class="flex items-center text-gray-500">
+                        <AtlanIcon icon="DatabaseGray" class="mr-1 mb-0.5" />
+                        <div class="tracking-tight text-gray-500">
+                            {{ db }}
+                        </div>
                     </div>
-                  </div>
-                  <div
-                    v-if="schema"
-                    class="flex items-center text-gray-500"
-                  >
-                    <AtlanIcon
-                        icon="SchemaGray"
-                        class="mr-1 mb-0.5"
-                    />
-                    <div class="tracking-tight text-gray-500">
-                        {{ schema }}
+                    <div v-if="schema" class="flex items-center text-gray-500">
+                        <AtlanIcon icon="SchemaGray" class="mr-1 mb-0.5" />
+                        <div class="tracking-tight text-gray-500">
+                            {{ schema }}
+                        </div>
                     </div>
-                  </div>
                 </div>
-                <div>Instacart_beverages_master</div>
                 <div class="mt-2">Description</div>
                 <div class="mt-1 text-base">
-                    {{ item?.description || 'This table has no description added' }}
+                    {{
+                        item?.description ||
+                        `This ${title} has no description added`
+                    }}
                 </div>
                 <div class="flex gap-1 mt-2">
                     <ClassificationPill
-                      :name="'private'"
-                      :display-name="'private'"
-                      :is-propagated="false"
-                      :allow-delete="false"
+                        :name="'private'"
+                        :display-name="'private'"
+                        :is-propagated="false"
+                        :allow-delete="false"
                     />
                 </div>
                 <div v-if="item?.attributes?.ownerUsers.length > 0">
-                  <div class="mt-2">Owned by</div>
-                  <div class="flex gap-1">
-                      <UserPill
-                          v-for="(user, idx) in item?.attributes?.ownerUsers"
-                          :key="idx"
-                          :username="user"
-                          
-                      />
-                  </div>
+                    <div class="mt-2">Owned by</div>
+                    <div class="flex gap-1">
+                        <UserPill
+                            v-for="(user, idx) in item?.attributes?.ownerUsers"
+                            :key="idx"
+                            :username="user"
+                        />
+                    </div>
                 </div>
                 <router-link :to="path">
-                  <a-button class="mt-3" block>View {{item?.typeName?.toLowerCase()}} profile</a-button>
+                    <a-button class="mt-3" block
+                        >View
+                        {{ item?.typeName?.toLowerCase() }} profile</a-button
+                    >
                 </router-link>
             </div>
         </template>
@@ -95,7 +87,7 @@
 </template>
 
 <script lang="ts">
-    import {toRefs} from 'vue'
+    import { toRefs } from 'vue'
     // import UserAvatar from '@/common/avatar/user.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import ClassificationPill from '@/common/pills/classification.vue'
@@ -106,7 +98,7 @@
         components: {
             // UserAvatar,
             ClassificationPill,
-            UserPill
+            UserPill,
         },
         props: {
             item: {
@@ -163,23 +155,23 @@
         setup(props) {
             const { item } = toRefs(props)
             console.log(item.value, 'sdjfhksjfhkjsdhfjksdhfjkhdskfhks')
-               const {
+            const {
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
             } = useAssetInfo()
 
             return {
-              certificateStatus,
-              certificateUpdatedBy,
-              certificateUpdatedAt
+                certificateStatus,
+                certificateUpdatedBy,
+                certificateUpdatedAt,
             }
         },
     }
 </script>
 
 <style lang="less" scoped>
-  .relation-ship{
-    width: 330px;
-  }
+    .relation-ship {
+        width: 330px;
+    }
 </style>

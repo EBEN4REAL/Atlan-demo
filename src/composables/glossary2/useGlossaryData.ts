@@ -34,7 +34,7 @@ export default function useGlossaryData() {
             : ''
 
     const handleSelectedGlossary = (item) => {
-        glossaryStore.setSelectedGlossary(item)
+        glossaryStore.setSelectedGTC(item)
     }
 
     const getEntityStatusIcon = (

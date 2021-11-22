@@ -43,6 +43,7 @@
                         <RelationshipsPopover
                             :logo-title="getConnectorImage(item)"
                             :title="assetTypeLabel(item) || item.typeName"
+                            :item="item"
                         >
                             <router-link
                                 :to="assetURL(item)"

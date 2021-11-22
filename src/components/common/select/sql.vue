@@ -5,12 +5,12 @@
         class="w-full"
         @change="handleChange"
     >
-        <a-select-option
+        <!-- <a-select-option
             :value="item.value"
             v-for="item in enumSelected?.elementDefs"
         >
             {{ item.value }}
-        </a-select-option>
+        </a-select-option> -->
     </a-select>
 </template>
 
@@ -18,10 +18,10 @@
     import { defineComponent, watch, ref, computed } from 'vue'
     import { useVModels } from '@vueuse/core'
 
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import useSQLTest from '~/composables/package/useSQLTest'
 
     export default defineComponent({
-        name: 'EnumSelect',
+        name: 'testQuery',
         props: {
             queryText: {
                 type: String,
@@ -43,11 +43,15 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
-            const { enumList: list } = useTypedefData()
-
-            const enumSelected = computed(() => {
-                return list.value.find((item) => item.name === props.enum)
+            const body = ref({
+                className: 'net.snowflake.client.jdbc.SnowflakeDriver',
+                connector: 'snowflake',
+                query: 'show roles',
+                username: 'test',
+                password: 'test',
             })
+
+            const {} = useSQLTest(body)
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -55,10 +59,9 @@
             }
 
             return {
-                list,
-                enumSelected,
                 localValue,
                 handleChange,
+                body,
             }
         },
     })

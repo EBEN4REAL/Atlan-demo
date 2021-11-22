@@ -2,6 +2,7 @@ import { Ref, ref, watch, toRaw } from 'vue'
 import { IPurpose } from '~/types/accessPolicies/purposes'
 import usePersonaService from './usePersonaService'
 import {
+    reFetchList,
     selectedPersona,
     personaList,
     selectedPersonaId,
@@ -19,7 +20,7 @@ watch(
     () => {
         if (selectedPersona.value)
             selectedPersonaDirty.value = JSON.parse(
-                JSON.stringify(selectedPersona.value)
+                JSON.stringify(toRaw(selectedPersona.value))
             )
         else selectedPersonaDirty.value = undefined
     },
@@ -62,6 +63,13 @@ export async function savePersona(persona: IPurpose) {
 
 export function discardPersona(type: PolicyType, idx: string) {
     isEditing.value = false
+}
+
+export function updateSelectedPersona() {
+    selectedPersona.value = JSON.parse(
+        JSON.stringify(selectedPersonaDirty.value)
+    )
+    reFetchList()
 }
 
 export function addPolicy(type: PolicyType) {
@@ -119,7 +127,9 @@ export async function deletePolicy(type: PolicyType, id: string) {
 }
 
 export function savePolicy(type: PolicyType, id: string) {
-    const tempPersona = { ...JSON.parse(JSON.stringify(selectedPersona.value)) }
+    const tempPersona = {
+        ...JSON.parse(JSON.stringify(toRaw(selectedPersona.value))),
+    }
     if (type === 'meta') {
         const dirtyPolicyIndex =
             selectedPersonaDirty.value?.metadataPolicies?.findIndex(
@@ -128,7 +138,7 @@ export function savePolicy(type: PolicyType, id: string) {
 
         if (dirtyPolicyIndex > -1) {
             const policy = {
-                ...selectedPersonaDirty.value?.metadataPolicies?.[
+                ...toRaw(selectedPersonaDirty.value)?.metadataPolicies?.[
                     dirtyPolicyIndex
                 ],
             }
@@ -170,6 +180,7 @@ export function savePolicy(type: PolicyType, id: string) {
             }
         }
     }
+    debugger
     return savePersona(tempPersona)
 }
 
@@ -207,6 +218,7 @@ export function discardPolicy(type: PolicyType, id: string) {
             )
         }
     } else {
+        console.log('else')
         if (type === 'meta') {
             const policyIndex =
                 selectedPersona.value?.metadataPolicies?.findIndex(
@@ -218,13 +230,19 @@ export function discardPolicy(type: PolicyType, id: string) {
                 )
 
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
-                const policy =
-                    selectedPersona.value?.metadataPolicies?.[policyIndex]
-                selectedPersonaDirty.value.metadataPolicies[dirtyPolicyIndex] =
-                    policy
+                const policy = toRaw(selectedPersona.value)?.metadataPolicies?.[
+                    policyIndex
+                ]
+
+                const copySelectedPersonaDirty = JSON.parse(
+                    JSON.stringify(toRaw(selectedPersonaDirty.value))
+                )
+                copySelectedPersonaDirty.metadataPolicies[dirtyPolicyIndex] = {
+                    ...policy,
+                }
+                selectedPersonaDirty.value = copySelectedPersonaDirty
             }
 
-            policyEditMap.value.metadataPolicies[id] = false
             console.log(type, id, policyEditMap.value)
         }
         if (type === 'data') {
@@ -236,20 +254,23 @@ export function discardPolicy(type: PolicyType, id: string) {
                 selectedPersonaDirty.value?.dataPolicies?.findIndex(
                     (pol) => pol.id === id
                 )
+            console.log(policyIndex, dirtyPolicyIndex, '-1')
 
-            if (
-                dirtyPolicyIndex &&
-                dirtyPolicyIndex > -1 &&
-                policyIndex &&
-                policyIndex > -1
-            ) {
-                const policy =
-                    selectedPersona.value?.dataPolicies?.[policyIndex]
-                selectedPersonaDirty.value.dataPolicies[dirtyPolicyIndex] =
-                    policy
+            if (dirtyPolicyIndex > -1 && policyIndex > -1) {
+                const policy = toRaw(selectedPersona.value)?.dataPolicies?.[
+                    policyIndex
+                ]
+                const copySelectedPersonaDirty = JSON.parse(
+                    JSON.stringify(toRaw(selectedPersonaDirty.value))
+                )
+                copySelectedPersonaDirty.dataPolicies[dirtyPolicyIndex] = {
+                    ...policy,
+                }
+                selectedPersonaDirty.value = copySelectedPersonaDirty
             }
             policyEditMap.value.dataPolicies[id] = false
         }
+        policyEditMap.value.metadataPolicies[id] = false
     }
 }
 

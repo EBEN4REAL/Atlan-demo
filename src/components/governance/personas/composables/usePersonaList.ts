@@ -1,5 +1,5 @@
 import { invoke, until } from '@vueuse/core'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import usePersonaService from './usePersonaService'
 
 // Main Persona List, fetched from API
@@ -22,17 +22,23 @@ export {
 }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
-export const selectedPersona = computed(() => {
-    if (selectedPersonaId.value) {
-        let t = personaList.value?.find(
-            (ps) => ps.id == selectedPersonaId.value
-        )
-        if (!t) return undefined
-        return t
-    }
-    return undefined
-})
-
+export const selectedPersona = ref()
+watch(
+    [selectedPersonaId, personaList],
+    () => {
+        if (selectedPersonaId.value) {
+            let t = personaList.value?.find(
+                (ps) => ps.id == selectedPersonaId.value
+            )
+            if (!t) selectedPersona.value = undefined
+            selectedPersona.value = { ...t }
+            return
+        }
+        selectedPersona.value = undefined
+        return
+    },
+    { immediate: true }
+)
 // Filtered Persona List
 export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {

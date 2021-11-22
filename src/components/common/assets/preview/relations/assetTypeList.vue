@@ -2,7 +2,7 @@
     <VirtualList :data="list" data-key="guid" variable-height>
         <template #default="{ item }">
             <div
-                class="mx-3 my-1 transition-all duration-300  hover:bg-primary-light"
+                class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"
                 :class="
                     item.guid === selectedAssetId
                         ? 'outline-primary bg-primary-light shadow-sm'
@@ -12,6 +12,7 @@
                 <AssetItem
                     :item="item"
                     :preference="preference"
+                    has-pop-hover
                     @click="handlePreview(item)"
                 ></AssetItem>
             </div>

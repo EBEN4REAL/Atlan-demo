@@ -377,10 +377,7 @@
                             "
                         ></component>
                         <span class="mb-0 text-sm text-gray-700"
-                            >{{ title(item)
-                            }}<span class="count-box">
-                                {{ childCount(item) }}</span
-                            >
+                            >{{ title(item) }}
                         </span>
                         <StatusBadge
                             v-if="certificateStatus(item)"

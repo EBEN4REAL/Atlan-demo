@@ -5,33 +5,28 @@
         class="w-full"
         @change="handleChange"
     >
-        <a-select-option
-            :value="item.value"
-            v-for="item in enumSelected?.elementDefs"
-        >
-            {{ item.value }}
+        <a-select-option v-for="item in list" :value="item.id" :key="item.id">
+            {{ item.label }}
         </a-select-option>
     </a-select>
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, ref, computed } from 'vue'
+    import { defineComponent, watch, ref, computed, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
 
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
-
     export default defineComponent({
-        name: 'EnumSelect',
+        name: 'Custom Select',
         props: {
             queryText: {
                 type: String,
                 required: false,
                 default: () => '',
             },
-            enum: {
-                type: String,
+            list: {
+                type: Array,
                 required: false,
-                default: () => '',
+                default: () => [],
             },
             modelValue: {
                 type: [Array, String],
@@ -40,10 +35,9 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const { list } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-
-            const { enumList: list } = useTypedefData()
 
             const enumSelected = computed(() => {
                 return list.value.find((item) => item.name === props.enum)

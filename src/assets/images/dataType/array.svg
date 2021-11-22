@@ -1,9 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-    <g id="Layer_2" data-name="Layer 2">
-        <g id="Array">
-            <path d="M2,13V3H5V4.5H3.5v7H5V13Z" style="fill:currentColor"/>
-            <path d="M14,13V3H11V4.5h1.5v7H11V13Z" style="fill:currentColor"/>
-            <rect id="Transparent_path" data-name="Transparent path" width="16" height="16" style="fill:none"/>
-        </g>
-    </g>
+<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.5 2.5H13.5V13.5H11.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.5 2.5H2.5V13.5H4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
+

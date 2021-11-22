@@ -172,6 +172,6 @@
 
 <style lang="less">
     .customShadow {
-        box-customshadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
+        box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
     }
 </style>

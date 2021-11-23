@@ -2,9 +2,12 @@
     <a-popover title="">
         <template #content>
             <div class="relation-ship">
-                <div class="flex items-center">
-                    <img :src="logoTitle" class="h-3 mr-1" />
-                    <span class="uppercase">{{ title }}</span>
+                <div class="flex justify-between">
+                    <div class="flex items-center">
+                        <img :src="logoTitle" class="h-3 mr-1" />
+                        <span class="uppercase">{{ title }}</span>
+                    </div>
+                    <div v-if="item.typeName === 'Column'" class="px-2 bg-gray-100 border border-gray-300 border-solid">{{item.typeName}}</div>
                 </div>
                 <div class="text-lg font-semibold truncate ...">
                     {{ item?.displayText || item?.attributes?.name }}
@@ -41,7 +44,7 @@
                         v-if="table"
                         class="flex items-center text-sm text-gray-500"
                     >
-                        <AtlanIcon icon="TableGray" class="mr-1 mb-0.5 icon-blue-color" />
+                        <AtlanIcon icon="TableGray" class="mr-1 mb-0.5" />
                         <div class="text-xs tracking-tight text-gray-500">
                             {{ table }}
                         </div>
@@ -84,11 +87,15 @@
                 <div v-if="item?.attributes?.ownerUsers.length > 0">
                     <div class="mt-2 text-xs text-gray-500">Owned by</div>
                     <div class="flex gap-1">
-                        <UserPill
+                        <PopOverUser 
                             v-for="(user, idx) in item?.attributes?.ownerUsers"
                             :key="idx"
-                            :username="user"
-                        />
+                            :item="user"
+                            :name="user"
+                        >
+                            
+                            <UserPill :username="user"/>
+                        </PopOverUser>
                     </div>
                 </div>
                 <router-link :to="path">
@@ -113,6 +120,8 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import UserPill from '@/common/pills/user.vue'
+    import PopOverUser from '@/common/popover/user/admin.vue'
+    import PopOverGroup from '@/common/popover/user/group.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -121,6 +130,8 @@
             ClassificationPill,
             UserPill,
             CertificateBadge,
+            PopOverUser,
+            PopOverGroup
         },
         props: {
             item: {
@@ -176,6 +187,7 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
+            console.log(item.value, '<sdsdsd')
             const {
                 certificateStatus,
                 certificateUpdatedAt,

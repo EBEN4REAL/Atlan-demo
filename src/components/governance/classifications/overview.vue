@@ -28,9 +28,9 @@
             <div class="mx-2">
                 <span class="text-sm font-bold mb-1">Assets</span>
                 <div class="flex space-x-2 text-xs text-gray-500">
-                    <div><span class="font-bold">12</span> Datasets</div>
-                    <div><span class="font-bold">12</span> Fields</div>
-                    <div><span class="font-bold">121</span> Terms</div>
+                    <div><span class="font-bold">{{ datasetCount }}</span> Datasets</div>
+                    <div><span class="font-bold">{{ fieldCount }}</span> Fields</div>
+                    <div><span class="font-bold">{{ termCount }}</span> Terms</div>                 
                 </div>
             </div>
         </div>
@@ -44,6 +44,8 @@
     import { useTimeAgo } from '@vueuse/core'
 
     import UserPill from '@/common/pills/user.vue'
+
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
@@ -64,19 +66,91 @@
             const timeAgo = ref(selectedClassification.value.updateTime)
             const lastUpdatedAt = useTimeAgo(timeAgo)
             const createdOn = computed(() => dayjs(new Date(selectedClassification.value.createTime)).format('Do MMMM YYYY'))
-            watch(selectedClassification, (classification) => {
-                timeAgo.value = classification.updateTime
-            })
+
             
             const openAssetsTab = () => {
                 emit('openAssetsTab')
             }
 
+            const limit = ref(0)
+            const offset = ref(0)
+            const dependentKey = ref('DEFAULT_ASSET_LIST')
+            const facets = ref({
+                __traitNames: {
+                    classifications: [selectedClassification.value.name]
+                },
+            })
+            const preference = ref({
+                sort: 'default',
+                display: [],
+            })
+            const aggregations = ref(['typeName'])
+            const postFacets = ref({
+                typeName: '__all',
+            })
+
+            const {
+                list,
+                isLoading,
+                assetTypeAggregationList,
+                quickChange,
+            } = useDiscoverList({
+                isCache: true,
+                dependentKey,
+                facets,
+                postFacets,
+                aggregations,
+                preference,
+                limit,
+                offset,
+            })
+
+            const datasetCount = computed(() => {
+                let count = 0;
+                assetTypeAggregationList.value.forEach((item) => {
+                    if(['Database', 'Schema', 'Schema', 'Table', 'TablePartition', 'MaterialisedView'].find((label) => label === item.label)) {
+                        count += item.count;
+                    }
+                })
+                return count
+            })
+
+            const fieldCount = computed(() => {
+                let count = 0;
+                assetTypeAggregationList.value.forEach((item) => {
+                    if(['Column'].find((label) => label === item.label)) {
+                        count += item.count;
+                    }
+                })
+                return count
+            })
+
+            const termCount = computed(() => {
+                let count = 0;
+                assetTypeAggregationList.value.forEach((item) => {
+                    if(['AtlasGlossaryTerm'].find((label) => label === item.label)) {
+                        count += item.count;
+                    }
+                })
+                return count
+            })
+            watch(selectedClassification, (classification) => {
+                timeAgo.value = classification.updateTime
+                facets.value.__traitNames.classifications = [classification.name]
+                quickChange()
+            })
+
             return {
                 selectedClassification,
                 lastUpdatedAt,
                 createdOn,
-                openAssetsTab
+                openAssetsTab,
+                assetTypeAggregationList,
+                isLoading,
+
+                datasetCount,
+                fieldCount,
+                termCount
             }
         },
     })

@@ -7,7 +7,7 @@ export const userColumns = [
         slots: { customRender: 'name' },
         sortKey: 'first_name',
         colSpan: 2,
-        align: 'left'
+        align: 'left',
     },
     {
         title: 'Role',
@@ -46,10 +46,10 @@ export const userColumns = [
     },
 ]
 
-export const statusColorCodes = {
-    Active: '#DAEED4',
-    Disabled: '#FADEE0',
-    Invited: '#F8EED3',
+export const statusColorClass = {
+    Active: 'success-muted',
+    Disabled: 'error-muted',
+    Invited: 'alert-muted',
 }
 
 export const userStatusOptions = [

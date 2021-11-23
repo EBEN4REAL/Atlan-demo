@@ -40,6 +40,7 @@ export function useQueryLogs(
         dbName,
         connectionQF,
         connectorName,
+        searchText,
     }) {
         body.value = useBody({
             from: from.value,
@@ -52,6 +53,7 @@ export function useQueryLogs(
             dbName,
             connectionQF,
             connectorName,
+            searchText,
         })
     }
     const paginateLogs = (page: number) => {

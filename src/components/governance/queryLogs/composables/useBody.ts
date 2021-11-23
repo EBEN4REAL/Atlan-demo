@@ -11,6 +11,7 @@ interface useBodyProps {
     queryStatusValues?: string[] | undefined
     usernames?: string[] | undefined
     connectorName?: string | undefined
+    searchText?: string | undefined
 }
 export default function useBody({
     from,
@@ -23,6 +24,7 @@ export default function useBody({
     queryStatusValues,
     usernames,
     connectorName,
+    searchText,
 }: useBodyProps) {
     const base = bodybuilder()
 
@@ -33,6 +35,10 @@ export default function useBody({
         gte,
         lt,
     })
+    if (searchText)
+        base.query('wildcard', 'log.message.userSqlQuery', {
+            value: `*${searchText}*`,
+        })
     if (connectorName)
         base.filter('term', 'log.message.connector.keyword', connectorName)
     if (connectionQF) {

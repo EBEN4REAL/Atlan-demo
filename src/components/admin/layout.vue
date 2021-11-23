@@ -5,7 +5,7 @@
                 <span v-if="title" class="mb-2 mr-2 text-2xl">{{ title }}</span>
                 <span
                     v-if="badge"
-                    class="self-start px-2 py-1 text-sm text-blue-500 rounded  bg-blue-50"
+                    class="self-start px-2 py-1 text-sm text-blue-500 rounded bg-blue-50"
                     >{{ badge }}</span
                 >
             </div>
@@ -32,6 +32,6 @@
 <style scoped>
     .scroll-container {
         @apply overflow-y-auto;
-        height: calc(100vh - 3rem);
+        height: calc(100vh - 2.5rem);
     }
 </style>

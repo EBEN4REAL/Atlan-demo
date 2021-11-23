@@ -33,7 +33,11 @@
             <a-divider class="my-4" />
 
             <div
-                class="relative overflow-x-hidden overflow-y-hidden  drawer_height"
+                class="
+                    relative
+                    overflow-x-hidden overflow-y-hidden
+                    drawer_height
+                "
             >
                 <div
                     class="absolute w-full h-full bg-white"

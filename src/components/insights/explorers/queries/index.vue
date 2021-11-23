@@ -50,7 +50,12 @@
                                     <span>New query</span>
                                 </template>
                                 <AtlanIcon
-                                    @click="() => toggleCreateQueryModal()"
+                                    @click="
+                                        () =>
+                                            toggleCreateQueryModal(
+                                                queryFolderNamespace
+                                            )
+                                    "
                                     icon="NewQuery"
                                     class="
                                         h-4
@@ -73,7 +78,12 @@
                                     <span>New query</span>
                                 </template>
                                 <AtlanIcon
-                                    @click="() => toggleCreateQueryModal()"
+                                    @click="
+                                        () =>
+                                            toggleCreateQueryModal(
+                                                queryFolderNamespace
+                                            )
+                                    "
                                     icon="NewQuery"
                                     class="
                                         h-4
@@ -257,12 +267,7 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="
-                            my-2
-                            mb-0 mb-6
-                            text-base text-center text-gray-700
-                            max-width-text
-                        "
+                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
                     >
                         Sorry, we couldn’t find
                         <br />the query you were looking for
@@ -440,18 +445,25 @@
                 )
             }
             let selectedFolder = ref({})
-            const toggleCreateQueryModal = (item) => {
-                console.log('selected Parent: ', item)
-                showSaveQueryModal.value = !showSaveQueryModal.value
 
-                if (item?.guid) {
+            const toggleCreateQueryModal = (item) => {
+                // console.log('selected Parent: ', item)
+
+                if (item.typeName === 'QueryFolderNamespace') {
                     selectedFolder.value = item
                     getRelevantTreeData().parentGuid.value = item.guid
+                } else {
+                    if (item.value.guid) {
+                        selectedFolder.value = item
+                        getRelevantTreeData().parentGuid.value = item.value.guid
+                    }
+                    if (item.value.qualifiedName) {
+                        getRelevantTreeData().parentQualifiedName.value =
+                            item.value.qualifiedName
+                    }
                 }
-                if (item?.qualifiedName) {
-                    getRelevantTreeData().parentQualifiedName.value =
-                        item.qualifiedName
-                }
+
+                showSaveQueryModal.value = !showSaveQueryModal.value
             }
 
             const newFolderName = ref('')
@@ -984,6 +996,7 @@
                 getRelevantTreeData,
                 showEmptyState,
                 selectedFolder,
+                queryFolderNamespace,
                 // refetchTreeData,
             }
         },

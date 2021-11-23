@@ -29,11 +29,8 @@
 
 <script lang="ts">
     import { defineComponent, watch } from 'vue'
-    import {
-        getIntegrationTypes,
-        getIntegrationLink,
-        getIntegrationsList,
-    } from './useIntegrations'
+    import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
+    import { getIntegrationLink } from './useIntegrationsData'
     import AddIntegrationCard from './addIntegrationCard.vue'
     import IntegrationCardWrapper from './integrationCardWrapper.vue'
     import { integrationData } from '~/constant/integrations'
@@ -52,18 +49,6 @@
                 error,
             } = getIntegrationTypes()
 
-            const {
-                data: currentIntegrations,
-                isLoading: currentLoading,
-                error: currentError,
-                isReady,
-            } = getIntegrationsList()
-
-            watch(currentIntegrations, () => {
-                if (currentIntegrations.value.length)
-                    store.setAllIntegrationsList(currentIntegrations.value)
-            })
-
             const getData = (alias) => ({
                 ...integrationData[alias],
                 link: getIntegrationLink(alias),
@@ -76,14 +61,10 @@
 
             return {
                 integrationExist,
-                isReady,
-                currentLoading,
-                currentIntegrations,
                 allIntegrations,
                 getData,
                 isLoading,
                 error,
-                currentError,
                 integrationData,
             }
         },

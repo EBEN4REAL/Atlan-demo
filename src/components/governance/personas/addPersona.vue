@@ -91,6 +91,8 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+                    description.value = ''
+                    title.value = ''
                     reFetchList().then(() => {
                         selectedPersonaId.value = newPersona.id!
                         modalVisible.value = false

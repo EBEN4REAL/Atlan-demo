@@ -36,7 +36,7 @@
             }"
         >
             <template #content>
-                <div class="py-2" style="width: 332px">
+                <div class="p-4" style="width: 332px">
                     <Connector
                         class=""
                         :filterSourceIds="['powerBI', 'tableau']"

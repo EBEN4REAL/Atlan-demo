@@ -136,6 +136,7 @@ export default function useAssetInfo() {
                 return {
                     component: 'customMetadata',
                     image: i.options?.imageId,
+                    emoji: i.options?.emoji,
                     name: i.label,
                     tooltip: i.label,
                     data: i,

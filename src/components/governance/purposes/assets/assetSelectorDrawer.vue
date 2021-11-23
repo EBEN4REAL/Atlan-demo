@@ -33,7 +33,7 @@
             <a-divider class="my-4" />
 
             <div
-                class="relative overflow-x-hidden overflow-y-hidden  drawer_height"
+                class="relative overflow-x-hidden overflow-y-hidden drawer_height"
             >
                 <div
                     class="absolute w-full h-full bg-white"
@@ -62,6 +62,14 @@
                         >Search from your assets</span
                     >
                     <!-- <AssetsWrapper class="h-full" :data-map="filterConfig" /> -->
+                                        <AssetsWrapper
+                        :show-filters="false"
+                        :static-use="true"
+                        :show-aggrs="false"
+                        :initial-filters="filterConfig"
+                        class="asset-list-height"
+                        page="personas"
+                    />
                 </div>
 
                 <div
@@ -112,12 +120,12 @@
         toRefs,
         watch,
     } from 'vue'
-    // import AssetsWrapper from '@common/assets/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import AssetBrowserTree from './assetBrowserTree.vue'
     import CustomAssetSelector from './customAssetSelector.vue'
     import useBulkUpdateStore from '~/store/bulkUpdate'
+     import AssetsWrapper from '@/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -125,7 +133,7 @@
             AtlanBtn,
             AssetBrowserTree,
             RaisedTab,
-            // AssetsWrapper,
+             AssetsWrapper,
             CustomAssetSelector,
         },
         props: {
@@ -218,10 +226,8 @@
             )
 
             const filterConfig = computed(() => ({
-                connector: {
-                    attributeName: 'connectionQualifiedName',
-                    attributeValue: connectionQfName.value,
-                },
+                connectorName: getConnectorName(connectionQfName.value),
+                connectionQualifiedName: connectionQfName.value,
             }))
 
             // Tab related data
@@ -259,6 +265,7 @@
             )
 
             return {
+                 filterConfig,
                 activeTab,
                 tabConfig,
                 isVisible,
@@ -267,7 +274,6 @@
                 saveAssets,
                 resetAssetState,
                 selectedAssetCount,
-                filterConfig,
             }
         },
     })

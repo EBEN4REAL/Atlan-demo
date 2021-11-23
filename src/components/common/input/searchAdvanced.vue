@@ -33,6 +33,7 @@
                 v-if="$slots.postFilter"
                 trigger="click"
                 placement="bottomRight"
+                :overlay-class-name="$style.search"
             >
                 <template #content>
                     <slot name="postFilter" />
@@ -154,6 +155,11 @@
     })
 </script>
 <style lang="less" module>
+    .search {
+        :global(.ant-popover-inner-content) {
+            @apply p-3 !important;
+        }
+    }
     .transparent {
         -webkit-transition: border 500ms ease-out;
         -moz-transition: border 500ms ease-out;

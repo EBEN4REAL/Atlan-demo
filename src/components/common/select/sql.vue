@@ -1,24 +1,34 @@
 <template>
-    <a-select
-        placeholder="Select"
-        v-model:value="localValue"
-        class="w-full"
-        @change="handleChange"
-    >
-        <!-- <a-select-option
-            :value="item.value"
-            v-for="item in enumSelected?.elementDefs"
+    <a-input-group compact class="flex w-full mb-0">
+        <a-select
+            style="width: 80%"
+            placeholder="Select"
+            v-model:value="localValue"
+            @change="handleChange"
+            class="flex-1"
+            :allowClear="true"
         >
-            {{ item.value }}
-        </a-select-option> -->
-    </a-select>
+            <template #suffixIcon>
+                <AtlanIcon icon="Error" v-if="error"></AtlanIcon>
+                <AtlanIcon icon="ChevronDown" v-else></AtlanIcon>
+            </template>
+            <a-select-option :value="item.value" v-for="item in list">
+                {{ item.label }}
+            </a-select-option>
+        </a-select>
+        <a-button style="width: 20%" @click="handleClick">
+            <a-spin size="small" class="mt-1" v-if="isLoading"></a-spin>
+            <AtlanIcon icon="Refresh" v-else></AtlanIcon>
+        </a-button>
+    </a-input-group>
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, ref, computed } from 'vue'
+    import { defineComponent, watch, ref, computed, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
 
     import useSQLTest from '~/composables/package/useSQLTest'
+    import AtlanIcon from '../icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'testQuery',
@@ -37,33 +47,50 @@
                 type: [Array, String],
                 required: false,
             },
+            body: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-
-            const body = ref({
-                className: 'net.snowflake.client.jdbc.SnowflakeDriver',
-                connector: 'snowflake',
-                query: 'show roles',
-                username: 'test',
-                password: 'test',
+            const { body } = toRefs(props)
+            const { data, refresh, isLoading, error } = useSQLTest(body.value)
+            watch(body, () => {
+                console.log('change')
+                refresh()
             })
-
-            const {} = useSQLTest(body)
-
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
+            }
+            const list = ref([])
+            watch(data, () => {
+                list.value = data.value.results?.map((item) => ({
+                    value: item.name,
+                    label: item.name,
+                }))
+            })
+
+            const handleClick = () => {
+                refresh()
             }
 
             return {
                 localValue,
                 handleChange,
                 body,
+                list,
+                refresh,
+                handleClick,
+                isLoading,
+                error,
             }
         },
+        components: { AtlanIcon },
     })
 </script>
 

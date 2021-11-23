@@ -1,18 +1,6 @@
 <template>
-    <a-form ref="formRef" :model="formState" :colon="false">
-        <template v-for="property in sectionProperty()" :key="`${property.id}`">
-            <a-form-item
-                :label="property.ui?.label"
-                v-if="!property.ui?.hidden"
-                :class="itemClass(property)"
-            >
-                <Component
-                    v-model="formState[property?.id]"
-                    :is="componentName(property)"
-                    :property="property"
-                ></Component>
-            </a-form-item>
-        </template>
+    <a-form ref="formRef" :model="formState" :colon="false" type="flex">
+        <FormItem :properties="sectionProperty()"></FormItem>
     </a-form>
 </template>
 
@@ -25,33 +13,20 @@
         watch,
         ref,
         onBeforeMount,
+        toRaw,
+        provide,
         // onErrorCaptured,
         // Suspense,
     } from 'vue'
 
-    import Input from './widget/input.vue'
-    import Boolean from './widget/boolean.vue'
-    import InputNumber from './widget/inputNumber.vue'
-    import Select from './widget/select.vue'
-    import Radio from './widget/selectRadio.vue'
-    import Credential from './widget/credential.vue'
-    import Form from './widget/form.vue'
-    import Collapse from './widget/collapse.vue'
-    import Sql from './widget/sql.vue'
     import { useVModels } from '@vueuse/core'
+
+    import FormItem from './formItem.vue'
 
     export default defineComponent({
         name: 'DynamicForm',
         components: {
-            Input,
-            InputNumber,
-            Boolean,
-            Select,
-            Credential,
-            Radio,
-            Form,
-            Collapse,
-            Sql,
+            FormItem,
             // Suspense,
         },
         props: {
@@ -70,21 +45,35 @@
                 type: Object,
                 default: () => {},
             },
+            removeNesting: {
+                required: false,
+                type: Boolean,
+            },
+            baseKey: {
+                required: false,
+                type: String,
+                default() {
+                    return ''
+                },
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            // const formRef = ref()
+            const formRef = ref()
             // const configX = computed(() => props.config)
             // // const errorCaptured = ref(null)
 
             const { modelValue } = useVModels(props, emit)
-            const { config, currentStep } = toRefs(props)
+            const { config, currentStep, removeNesting, baseKey } =
+                toRefs(props)
 
             const localConfig = ref(config.value)
 
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
             const formState = reactive(modelValue.value)
+
+            provide('formState', formState)
 
             const sectionProperty = () => {
                 const list = []
@@ -97,7 +86,8 @@
                         (key) => {
                             if (currentStep.value?.properties?.includes(key)) {
                                 list.push({
-                                    id: key,
+                                    id: `${key}`,
+                                    name: `${baseKey.value}${key}`,
                                     ...localConfig.value?.properties[key],
                                 })
                             }
@@ -107,13 +97,13 @@
                     Object.keys(localConfig?.value?.properties).forEach(
                         (key) => {
                             list.push({
-                                id: key,
+                                id: `${key}`,
+                                name: `${baseKey.value}${key}`,
                                 ...localConfig.value?.properties[key],
                             })
                         }
                     )
                 }
-
                 return list
             }
 
@@ -126,34 +116,59 @@
                             if (loopStop) {
                                 return
                             }
-                            if (formState[i] !== item.properties[i].const) {
+                            if (formState[i] !== item.properties[i]?.const) {
                                 loopStop = true
                             }
                         })
                         if (!loopStop) {
                             item.required.forEach((i) => {
-                                localConfig.value.properties[
-                                    i
-                                ].ui.hidden = false
+                                console.log(i, localConfig.value.properties[i])
+
+                                if (localConfig.value.properties[i]) {
+                                    localConfig.value.properties[
+                                        i
+                                    ].ui.hidden = false
+                                }
                             })
                         } else {
                             item.required.forEach((i) => {
-                                localConfig.value.properties[i].ui.hidden = true
+                                if (localConfig.value.properties[i]) {
+                                    localConfig.value.properties[
+                                        i
+                                    ].ui.hidden = true
+                                }
                             })
                         }
                     })
                 }
             }
 
-            watch(formState, () => {
-                isImplied()
-                modelValue.value = formState.value
-                emit('change')
-                // dirtyTimestamp.value = `dirty_${Date.now().toString()}`
-            })
-
             onMounted(() => {
                 isImplied()
+            })
+
+            // const { resetFields, validate, validateInfos, mergeValidateInfo } =
+            //     useForm(formState)
+
+            const validateForm = () => {
+                if (formRef.value) {
+                    console.log('validate', formState)
+                    formRef.value
+                        .validate()
+                        .then(() => {
+                            console.log('values', formState, toRaw(formState))
+                        })
+                        .catch((error) => {
+                            console.log('error', formState, error)
+                        })
+                }
+            }
+
+            watch(formState, () => {
+                console.log(formState)
+                // isImplied()
+                // modelValue.value = formState
+                // emit('change')
             })
 
             onBeforeMount(() => {
@@ -173,41 +188,10 @@
                 })
             }
 
-            const componentName = (property) => {
-                if (!property.ui?.widget) {
-                    switch (property.type) {
-                        case 'string':
-                            return 'Input'
-                        case 'number':
-                            return 'InputNumber'
-                        case 'boolean':
-                            return 'Boolean'
-                        case 'array':
-                            return 'Select'
-                        case 'object':
-                            return 'Form'
-                        default:
-                            return 'Input'
-                    }
-                } else {
-                    return property.ui.widget
-                }
-            }
-
-            const itemClass = (property) => {
-                if (
-                    componentName(property).toLowerCase() === 'form' ||
-                    componentName(property).toLowerCase() === 'credential'
-                )
-                    return 'mb-0'
-
-                return ''
-            }
-
             return {
                 config,
                 sectionProperty,
-                componentName,
+
                 formState,
                 currentStep,
                 isImplied,
@@ -215,7 +199,9 @@
                 dirtyTimestamp,
                 modelValue,
                 setDefaultValue,
-                itemClass,
+
+                validateForm,
+                formRef,
             }
         },
     })

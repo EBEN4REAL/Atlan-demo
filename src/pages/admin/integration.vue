@@ -4,7 +4,7 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import Integrations from '@/integrations/wrapper.vue'
+    import Integrations from '@/admin/integrations/wrapper.vue'
 
     export default defineComponent({
         name: 'IntegrationPage',

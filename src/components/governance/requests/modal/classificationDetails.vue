@@ -1,22 +1,20 @@
 <template>
-    <div>
-        <div class="flex items-center">
-            <PillGroup
-                v-if="classification?.length && classification[0]?.displayName"
-                :data="classification"
-                label-key="displayName"
-                popover-trigger="hover"
-                read-only
-            >
-                <template #pillPrefix>
-                    <AtlanIcon icon="Shield" class="text-pink-500"></AtlanIcon>
-                </template>
-                <template #popover="{ item }">
-                    <ClassificationInfoCard :classification="item" class="w-32"
-                /></template>
-            </PillGroup>
-
-         </div>
+    <div class="flex items-center">
+        <PillGroup
+            v-if="classification?.length && classification[0]?.displayName"
+            :data="classification"
+            label-key="displayName"
+            popover-trigger="hover"
+            read-only
+        >
+            <template #pillPrefix>
+                <AtlanIcon icon="Shield" class="text-pink-500"></AtlanIcon>
+            </template>
+            <template #popover="{ item }">
+                <ClassificationInfoCard :classification="item" class="w-32"
+            /></template>
+        </PillGroup>
+    </div>
 </template>
 
 <script lang="ts">

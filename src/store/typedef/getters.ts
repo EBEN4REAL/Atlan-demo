@@ -3,6 +3,7 @@ import { State } from './state'
 export type Getters = {
     getCustomMetadataList(state: State): object[] | null
     getCustomMetadataListProjections(): string[]
+    getForceRevalidate(state: State): number
 }
 
 export const getters: Getters = {
@@ -20,4 +21,7 @@ export const getters: Getters = {
         })
         return reqBmAttrNames
     },
-}
+    getForceRevalidate(state: State) {
+      return state.forceRevalidate;
+    },
+

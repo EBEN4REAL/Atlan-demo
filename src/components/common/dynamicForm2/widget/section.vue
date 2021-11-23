@@ -1,31 +1,12 @@
 <template>
-    <a-collapse
-        ghost
-        v-model:activeKey="activeKey"
-        :class="$style.formCollapse"
-    >
-        <a-collapse-panel key="1" :show-arrow="false">
-            <template #header>
-                <div class="flex items-center hover:text-primary">
-                    <AtlanIcon
-                        icon="ChevronDown"
-                        class="mr-2 text-gray-500 transition-transform duration-300 transform  hover:text-primary"
-                        :class="
-                            activeKey.includes('1') ? 'rotate-0' : '-rotate-90'
-                        "
-                    />
-                    <div class="text-gray-500 hover:text-primary">
-                        {{ property.ui?.header }}
-                    </div>
-                </div>
-            </template>
-            <DynamicForm
-                :config="property"
-                layout="vertical"
-                v-model="localValue"
-            ></DynamicForm>
-        </a-collapse-panel>
-    </a-collapse>
+    <a-form-item :label="property.ui?.label" v-if="!property.ui?.hidden">
+        <DynamicForm
+            :config="property"
+            v-model="localValue"
+            class="p-4 border rounded"
+            layout="vertical"
+        ></DynamicForm>
+    </a-form-item>
 </template>
 
 <script>
@@ -34,6 +15,8 @@
         toRefs,
         computed,
         ref,
+        reactive,
+        watch,
         defineAsyncComponent,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
@@ -66,7 +49,12 @@
             const { property } = toRefs(props)
             const componentProps = computed(() => property.value.ui)
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            const localValue = reactive(modelValue.value)
+
+            watch(localValue, () => {
+                modelValue.value = localValue
+                emit('change')
+            })
 
             return { property, componentProps, localValue, activeKey }
         },

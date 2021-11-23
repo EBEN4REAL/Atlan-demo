@@ -1,10 +1,19 @@
 <template>
-    <a-input v-bind="componentProps" v-model:value="localValue"></a-input>
+    <a-form-item
+        :label="property.ui?.label"
+        v-if="!property.ui?.hidden"
+        :name="property.id"
+        :required="property.required"
+    >
+        <a-input v-bind="componentProps" v-model:value="localValue"></a-input>
+    </a-form-item>
 </template>
 
 <script>
-    import { defineComponent, toRefs, computed, ref } from 'vue'
+    import { defineComponent, toRefs, computed, ref, reactive } from 'vue'
     import { useVModels, debouncedWatch } from '@vueuse/core'
+    // import { Form } from 'ant-design-vue'
+    // const { useForm } = Form
 
     export default defineComponent({
         name: 'FormBuilder',
@@ -33,6 +42,11 @@
                 },
                 { debounce: 500 }
             )
+
+            // watch(property.ui.hidden, () => {
+            //     emit('change')
+            // })
+
             return { property, componentProps, localValue }
         },
     })

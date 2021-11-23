@@ -240,6 +240,8 @@
             const addGTCNode = inject('addGTCNode')
             const handleAdd = (asset) => {
                 console.log('add')
+                console.log(entity.value)
+                console.log(asset)
                 entity.value.children = []
                 entity.value.children.push({
                     ...asset,
@@ -251,6 +253,8 @@
                     }`,
                     isLeaf: false,
                 })
+                console.log(entity.value)
+                console.log(addGTCNode)
                 // }
                 // console.log('asdsd', entity)
                 // addGTCNode(asset)

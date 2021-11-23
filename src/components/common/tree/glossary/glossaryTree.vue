@@ -136,7 +136,7 @@
 
             const addGTCNode = (asset) => {
                 console.log('add node', selectedKeys.value)
-                // addNode(asset)
+                addNode(asset)
             }
 
             provide('addGTCNode', addGTCNode)

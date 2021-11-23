@@ -65,11 +65,6 @@ const useGlossaryTree = ({
     const preference = ref({
         sort: 'name.keyword-asc',
     })
-
-    const categoryMap: {
-        [key: string]: Category[]
-    } = {}
-
     const loadedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
@@ -199,6 +194,33 @@ const useGlossaryTree = ({
                             isLeaf: i.typeName === 'AtlasGlossaryTerm',
                         }))
                         if (map) {
+                            console.log(map)
+                            map?.forEach((el) => {
+                                if (el.typeName === 'AtlasGlossaryTerm') {
+                                    const currentParentList =
+                                        nodeToParentKeyMap[el.guid]
+                                    if (
+                                        currentParentList &&
+                                        currentParentList.length &&
+                                        typeof currentParentList !== 'string'
+                                    ) {
+                                        currentParentList.push(
+                                            treeNode.dataRef.key
+                                        )
+                                        nodeToParentKeyMap[el.guid] =
+                                            currentParentList
+                                    } else {
+                                        nodeToParentKeyMap[el.guid] = [
+                                            treeNode.dataRef.key,
+                                        ]
+                                    }
+                                } else {
+                                    nodeToParentKeyMap[el.guid] =
+                                        treeNode?.dataRef?.key
+                                }
+                            })
+                            console.log(nodeToParentKeyMap)
+
                             treeNode.dataRef.children.push(...map)
                             loadedKeys.value.push(treeNode.dataRef.key)
                         } else {
@@ -241,6 +263,7 @@ const useGlossaryTree = ({
         targetGuid: string,
         initialStack?: string[]
     ) => {
+        console.log(targetGuid)
         let parentStack = initialStack?.length ? initialStack : [targetGuid]
 
         const findPath = (currGuid: string) => {
@@ -258,7 +281,7 @@ const useGlossaryTree = ({
         const allPaths: string[][] = []
 
         const firstParent = nodeToParentKeyMap[targetGuid]
-
+        console.log(firstParent)
         if (typeof firstParent === 'string') {
             parentStack = initialStack?.length ? initialStack : [targetGuid]
             findPath(targetGuid)
@@ -272,7 +295,7 @@ const useGlossaryTree = ({
                 allPaths.push(parentStack)
             })
         }
-
+        console.log(allPaths)
         return allPaths
     }
 
@@ -315,6 +338,11 @@ const useGlossaryTree = ({
                     await mutate()
                     treeData.value = []
                     if (data.value?.entities) {
+                        console.log(data.value?.entities)
+                        data.value?.entities?.forEach((el) => {
+                            nodeToParentKeyMap[el.guid] = 'root'
+                        })
+                        console.log(nodeToParentKeyMap)
                         treeData.value = data.value?.entities.map((i) => ({
                             ...i,
                             id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
@@ -413,14 +441,10 @@ const useGlossaryTree = ({
                             limit: limit.value,
                         })
                     ).entities ?? []
-                console.log(termsList)
-                console.log(treeData.value)
             }
 
             const updatedTreeData: TreeDataItem[] = []
             if (categoryList !== null) {
-                categoryMap[parentGlossaryGuid?.value ?? ''] = categoryList
-
                 categoryList.forEach((category) => {
                     const existingCategory = treeData.value.find(
                         (entity) => entity.guid === category.guid
@@ -469,7 +493,8 @@ const useGlossaryTree = ({
                 })
             } else {
                 treeData.value.forEach((item) => {
-                    if (item.type === 'term') updatedTreeData.push(item)
+                    if (item.typeName === 'AtlasGlossaryTerm')
+                        updatedTreeData.push(item)
                 })
             }
 
@@ -484,6 +509,7 @@ const useGlossaryTree = ({
             const updateNodeNested = async (node: TreeDataItem) => {
                 const currentPath = parentStack.pop()
                 console.log(node)
+                console.log('in else')
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
                     let categoryList: Category[] | null = null
@@ -512,8 +538,6 @@ const useGlossaryTree = ({
                     const updatedChildren: TreeDataItem[] = []
 
                     if (categoryList !== null) {
-                        categoryMap[parentGlossaryGuid?.value ?? ''] =
-                            categoryList
                         categoryList.forEach((category) => {
                             const existingCategory = node.children?.find(
                                 (entity) => entity.guid === category.guid
@@ -605,12 +629,14 @@ const useGlossaryTree = ({
             // find the path to the node
             parentStack = recursivelyFindPath(guid)[0]
             const parent = parentStack?.pop()
-
+            console.log(parentStack)
+            console.log(parent)
             const updatedTreeData: TreeDataItem[] = []
 
             // eslint-disable-next-line no-restricted-syntax
             for (const node of treeData.value) {
-                if (node.key === parent) {
+                console.log(node)
+                if (node.key === parent || node.guid === parent) {
                     const updatedNode = await updateNodeNested(node)
                     updatedTreeData.push(updatedNode)
                 } else {

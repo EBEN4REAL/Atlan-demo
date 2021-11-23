@@ -40,12 +40,16 @@
         :showSearch="true"
         notFoundContent="No data available"
         style="width: 100%; border-radius: 8px"
-        :class="$style.connector"
+        :class="[
+            $style.connector,
+            bgGrayForSelector ? `${$style.selector_bg}` : '',
+        ]"
         @change="handleChange"
         :disabled="disabled"
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
         dropdownClassName="connectorDropdown"
         :loading="isLoading"
+        
     >
         <!-- <template #title="node">
             <div class="flex items-center">

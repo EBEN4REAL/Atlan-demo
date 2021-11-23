@@ -133,6 +133,7 @@
             >
                 <Connector
                     v-model:data="facets.connector"
+                    :bg-gray-for-selector="false"
                     :filter-source-ids="['powerbi', 'tableau']"
                     class="px-2 py-3"
                     @change="handleFilterChange"
@@ -144,6 +145,7 @@
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, computed } from 'vue'
 import dayjs from 'dayjs'
+import { useDebounceFn } from '@vueuse/core'
 import map from '~/constant/accessControl/map'
 import DefaultLayout from '~/components/admin/layout.vue'
 import AtlanBtn from '@/UI/button.vue'
@@ -201,7 +203,6 @@ export default defineComponent({
             else isQueryPreviewDrawerVisible.value = val
         }
 
-        const handleSearch = () => {}
         const setSelectedQuery = (query: Object) => {
             selectedQuery.value = query
         }
@@ -221,7 +222,11 @@ export default defineComponent({
                 ? [selectedQuery.value?._id]
                 : []
         )
-
+        const pagination = computed(() => ({
+            total: filteredLogsCount.value / size.value,
+            pageSize: size.value,
+            current: from.value / size.value + 1,
+        }))
         const refreshList = () => {
             const usernames = facets.value?.users?.ownerUsers
             const queryStatusValues = facets.value?.queryStatus?.status
@@ -256,6 +261,7 @@ export default defineComponent({
                 schemaName,
                 connectionQF,
                 connectorName,
+                searchText: searchText.value,
             })
             refetchList()
         }
@@ -274,11 +280,10 @@ export default defineComponent({
             lt.value = e[1]
             refreshList()
         }
-        const pagination = computed(() => ({
-            total: filteredLogsCount.value / size.value,
-            pageSize: size.value,
-            current: from.value / size.value + 1,
-        }))
+        const handleSearch = useDebounceFn(() => {
+            from.value = 0
+            refreshList()
+        }, 200)
         const handleResetEvent = () => {
             facets.value = {}
             handleFilterChange()

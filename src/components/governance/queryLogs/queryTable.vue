@@ -41,12 +41,26 @@
                             </div>
                             <div class="flex items-center mt-1 ml-4">
                                 <img
-                                    :src="snowflake.image"
+                                    :src="
+                                        getConnectorImagePath(
+                                            getConnectorName(
+                                                queryInfo._source.log.message
+                                                    .connectionQualifiedName
+                                            )
+                                        )
+                                    "
                                     class="w-4 h-4 mr-1 -mt-0.5"
                                 />
                                 <span class="text-xs text-gray-500">{{
-                                    'ATLAN_SAMPLE_DATA'
+                                    getConnectionName(
+                                        queryInfo._source.log.message
+                                            .connectionQualifiedName
+                                    )
                                 }}</span>
+                                <span class="ml-1 text-gray-500"
+                                    ><span class="text-gray-300">•&nbsp;</span
+                                    >Query</span
+                                >
                             </div>
                         </div>
                     </div>
@@ -78,8 +92,10 @@
                                 <img
                                     :src="
                                         getConnectorImagePath(
-                                            queryInfo._source.log.message
-                                                .connector
+                                            getConnectorName(
+                                                queryInfo._source.log.message
+                                                    .connectionQualifiedName
+                                            )
                                         )
                                     "
                                     class="w-4 h-4 mr-1 -mt-0.5"
@@ -197,7 +213,7 @@
                     />
 
                     <span
-                        class="text-sm text-gray-700 cursor-pointer"
+                        class="text-sm cursor-pointer text-primary"
                         @click="
                             () =>
                                 handleUserPreview(
@@ -283,7 +299,7 @@ export default defineComponent({
     },
     emits: ['selectQuery', 'toggleQueryPreviewDrawer', 'selectQuery'],
     setup(props, { emit }) {
-        const { getConnectionName } = useConnector()
+        const { getConnectionName, getConnectorName } = useConnector()
         const getConnectorImagePath = (connector) => {
             let connectorObj = {}
             if (connector) {
@@ -364,6 +380,7 @@ export default defineComponent({
             isDeletePopoverVisible,
             getConnectionName,
             getConnectorImagePath,
+            getConnectorName,
         }
     },
 })

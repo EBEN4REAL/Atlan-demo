@@ -126,8 +126,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { defineComponent, ref, toRefs, watch, computed } from 'vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
+    import { Types } from '~/services/meta/types/index'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -162,6 +163,10 @@
                 )
             )
 
+            /**
+             * @desc parses all the attached bm from the asset payload and
+             *  forms the initial attribute list
+             */
             const setAttributesList = () => {
                 if (selectedAsset.value?.attributes) {
                     const bmAttributes = Object.keys(
@@ -183,7 +188,100 @@
                 }
             }
 
+            // {"BM for facet 2":{"test for facet 2":"1","test for facet 2 date":1629294652575}}
+            const payload = computed(() => {
+                const mappedPayload = { [data.value.id]: {} }
+                // ? handle current payload
+                Object.keys(props.selectedAsset.attributes).forEach((k) => {
+                    if (k.split('.').length > 1) {
+                        const b = k.split('.')[0]
+                        const a = k.split('.')[1]
+                        const value = props.selectedAsset.attributes[k]
+                        mappedPayload[b] = {
+                            ...(mappedPayload[b] || {}),
+                            [a]: value,
+                        }
+                    }
+                })
+
+                // ? handle new payload
+                applicableList.value
+                    .filter((a) => a.value === 0 || a?.value?.toString())
+                    .forEach((at) => {
+                        mappedPayload[data.value.id][at.name] = at.value
+                    })
+
+                return mappedPayload
+            })
+
+            const mutatedAsset = computed(() => {
+                if (selectedAsset.value?.attributes) {
+                    // ? clean all bm attribute from
+                    const tempAsset = JSON.parse(
+                        JSON.stringify(selectedAsset.value)
+                    )
+
+                    const currentAttributes = Object.keys(
+                        selectedAsset.value.attributes
+                    ).filter((attr) => attr.split('.').length > 1)
+
+                    currentAttributes.forEach(
+                        (a) => delete tempAsset.attributes[a]
+                    )
+
+                    // ? add new payload attributes
+                    const newAttributes = {}
+                    Object.keys(payload.value).forEach((p) => {
+                        Object.entries(payload.value[p]).forEach((e) => {
+                            // eslint-disable-next-line prefer-destructuring
+                            newAttributes[`${p}.${e[0]}`] = e[1]
+                        })
+                    })
+
+                    return {
+                        ...tempAsset,
+                        attributes: {
+                            ...tempAsset.attributes,
+                            ...newAttributes,
+                        },
+                    }
+                }
+                return null
+            })
+
             const handleUpdate = () => {
+                activeIndex.value = index
+
+                const { error, isReady, isLoading } =
+                    Types.updateAssetBMUpdateChanges(
+                        props.selectedAsset.guid,
+                        payload.value
+                    )
+
+                watch([() => isLoading, error, isReady], () => {
+                    if (error.value) {
+                        console.log(error.value.response.data.errorMessage)
+                        let message =
+                            error.value?.response?.data?.errorMessage || ''
+                        if (message) message = message.split(':')
+                        if (message?.length > 1)
+                            applicableList.value[
+                                index
+                            ].error = `Error occured: ${
+                                message[message.length - 1]
+                            }`
+                        else
+                            applicableList.value[index].error =
+                                'Some error occured please try again.'
+                        // hasError.value = true
+                    } else if (isReady.value) {
+                        if (mutatedAsset.value)
+                            mutateSelectedAsset(mutatedAsset.value)
+
+                        applicableList.value[index].error = false
+                    }
+                })
+
                 readOnly.value = true
             }
             const handleCancel = () => {

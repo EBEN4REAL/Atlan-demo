@@ -1,17 +1,11 @@
 <template>
-    <a-form ref="formRef" :model="formState" :colon="false">
+    <a-form ref="formRef" :model="formState" :colon="false" type="flex">
         <template v-for="property in sectionProperty()" :key="`${property.id}`">
-            <a-form-item
-                :label="property.ui?.label"
-                v-if="!property.ui?.hidden"
-                :class="itemClass(property)"
-            >
-                <Component
-                    v-model="formState[property?.id]"
-                    :is="componentName(property)"
-                    :property="property"
-                ></Component>
-            </a-form-item>
+            <Component
+                v-model="formState[property?.id]"
+                :is="componentName(property)"
+                :property="property"
+            ></Component>
         </template>
     </a-form>
 </template>
@@ -36,8 +30,9 @@
     import Radio from './widget/selectRadio.vue'
     import Credential from './widget/credential.vue'
     import Form from './widget/form.vue'
-    import Collapse from './widget/collapse.vue'
+    import Section from './widget/section.vue'
     import Sql from './widget/sql.vue'
+    import Password from './widget/password.vue'
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
@@ -50,8 +45,9 @@
             Credential,
             Radio,
             Form,
-            Collapse,
+            Section,
             Sql,
+            Password,
             // Suspense,
         },
         props: {
@@ -70,15 +66,19 @@
                 type: Object,
                 default: () => {},
             },
+            removeNesting: {
+                required: false,
+                type: Boolean,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            // const formRef = ref()
+            const formRef = ref()
             // const configX = computed(() => props.config)
             // // const errorCaptured = ref(null)
 
             const { modelValue } = useVModels(props, emit)
-            const { config, currentStep } = toRefs(props)
+            const { config, currentStep, removeNesting } = toRefs(props)
 
             const localConfig = ref(config.value)
 
@@ -118,6 +118,7 @@
             }
 
             const isImplied = () => {
+                console.log(props.config)
                 localConfig.value = props.config
                 if (localConfig.value?.anyOf) {
                     localConfig.value.anyOf.forEach((item) => {
@@ -126,34 +127,55 @@
                             if (loopStop) {
                                 return
                             }
-                            if (formState[i] !== item.properties[i].const) {
+                            if (formState[i] !== item.properties[i]?.const) {
                                 loopStop = true
                             }
                         })
                         if (!loopStop) {
                             item.required.forEach((i) => {
-                                localConfig.value.properties[
-                                    i
-                                ].ui.hidden = false
+                                console.log(i, localConfig.value.properties[i])
+
+                                if (localConfig.value.properties[i]) {
+                                    localConfig.value.properties[
+                                        i
+                                    ].ui.hidden = false
+                                }
                             })
                         } else {
                             item.required.forEach((i) => {
-                                localConfig.value.properties[i].ui.hidden = true
+                                if (localConfig.value.properties[i]) {
+                                    localConfig.value.properties[
+                                        i
+                                    ].ui.hidden = true
+                                }
                             })
                         }
                     })
                 }
             }
 
-            watch(formState, () => {
-                isImplied()
-                modelValue.value = formState.value
-                emit('change')
-                // dirtyTimestamp.value = `dirty_${Date.now().toString()}`
-            })
-
             onMounted(() => {
                 isImplied()
+            })
+
+            const validateForm = () => {
+                if (formRef.value) {
+                    formRef.value
+                        .validate()
+                        .then(() => {
+                            console.log('values', formState, toRaw(formState))
+                        })
+                        .catch((error) => {
+                            console.log('error', error)
+                        })
+                }
+            }
+
+            watch(formState, () => {
+                isImplied()
+                modelValue.value = formState
+                emit('change')
+                validate()
             })
 
             onBeforeMount(() => {
@@ -195,12 +217,8 @@
             }
 
             const itemClass = (property) => {
-                if (
-                    componentName(property).toLowerCase() === 'form' ||
-                    componentName(property).toLowerCase() === 'credential'
-                )
+                if (componentName(property).toLowerCase() === 'form')
                     return 'mb-0'
-
                 return ''
             }
 
@@ -216,6 +234,9 @@
                 modelValue,
                 setDefaultValue,
                 itemClass,
+                removeNesting,
+                validateForm,
+                formRef,
             }
         },
     })

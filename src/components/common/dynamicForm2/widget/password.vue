@@ -1,9 +1,9 @@
 <template>
     <a-form-item :label="property.ui?.label" v-if="!property.ui?.hidden">
-        <a-input-number
+        <a-input-password
             v-bind="componentProps"
             v-model:value="localValue"
-        ></a-input-number>
+        ></a-input-password>
     </a-form-item>
 </template>
 
@@ -23,6 +23,7 @@
                 required: false,
             },
         },
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { property } = toRefs(props)
             const componentProps = computed(() => property.value.ui)
@@ -37,8 +38,7 @@
                 },
                 { debounce: 500 }
             )
-
-            return { property, componentProps, localValue, modelValue }
+            return { property, componentProps, localValue }
         },
     })
 </script>

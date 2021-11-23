@@ -2,13 +2,14 @@
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
             placement="leftBottom"
-            overlayClassName="classificationPopover"
+            :overlayClassName="$style.classificationPopover"
             @visibleChange="handleVisibleChange"
             :trigger="['click']"
             v-model:visible="isEdit"
+            :destroyTooltipOnHide="destroyTooltipOnHide"
         >
             <template #content>
-                <div class="classificationPopover">
+                <div>
                     <ClassificationFacet
                         v-model="selectedValue"
                         ref="classificationFacetRef"
@@ -74,6 +75,11 @@
                 type: Boolean,
                 default: false,
                 required: false,
+            },
+            destroyTooltipOnHide: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -201,9 +207,11 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" module>
     .classificationPopover {
-        @apply px-0 py-3 !important;
-        width: 250px !important;
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
+            width: 250px !important;
+        }
     }
 </style>

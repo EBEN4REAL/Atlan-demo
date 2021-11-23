@@ -2,14 +2,14 @@
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
             placement="leftBottom"
-            overlayClassName="ownerPopover"
+            :overlayClassName="$style.ownerPopover"
             @visibleChange="handleVisibleChange"
             :trigger="['click']"
             v-model:visible="isEdit"
             :destroyTooltipOnHide="destroyTooltipOnHide"
         >
             <template #content>
-                <div class="px-3 py-4">
+                <div class="">
                     <OwnerFacets
                         ref="ownerInputRef"
                         v-model="localValue"
@@ -92,7 +92,7 @@
             destroyTooltipOnHide: {
                 type: Boolean,
                 required: false,
-                default: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -208,10 +208,10 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" module>
     .ownerPopover {
-        .ant-popover-inner-content {
-            @apply px-0 py-3;
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
             width: 250px !important;
         }
     }

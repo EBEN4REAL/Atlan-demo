@@ -54,19 +54,10 @@
         setup(props) {
             const { selectedAsset, data } = toRefs(props)
 
-            const {
-                getDatatypeOfAttribute,
-                isLink,
-                formatDisplayValue,
-                getApplicableAttributes,
-            } = useCustomMetadataHelpers()
+            const { getDatatypeOfAttribute, isLink, formatDisplayValue } =
+                useCustomMetadataHelpers()
 
-            const applicableList = ref(
-                getApplicableAttributes(
-                    data.value,
-                    selectedAsset.value.typeName
-                )
-            )
+            const applicableList = ref(data.value.attributes)
 
             const setAttributesList = () => {
                 if (selectedAsset.value?.attributes) {
@@ -92,10 +83,7 @@
             watch(
                 () => selectedAsset.value.guid,
                 () => {
-                    applicableList.value = getApplicableAttributes(
-                        data.value,
-                        selectedAsset.value.typeName
-                    )
+                    applicableList.value = data.value.attributes
                     setAttributesList()
                 },
                 {

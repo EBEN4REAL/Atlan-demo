@@ -51,8 +51,10 @@ export default function useCustomMetadataHelpers() {
     const getApplicableAttributes = (BM, typeName) =>
         BM?.attributes.filter(
             (a) =>
-                a.options.customEntityTypes &&
-                JSON.parse(a.options.customEntityTypes).includes(typeName)
+                a.options.customApplicableEntityTypes &&
+                JSON.parse(a.options.customApplicableEntityTypes).includes(
+                    typeName
+                )
         )
 
     return {

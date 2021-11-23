@@ -130,8 +130,6 @@ export default function useAssetInfo() {
     const { getList: cmList } = useCustomMetadataFacet()
 
     const getPreviewTabs = (asset: assetInterface) => {
-        console.log(getTabs(previewTabs, assetType(asset)))
-
         let customTabList = []
         if (cmList(assetType(asset)).length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
@@ -142,11 +140,10 @@ export default function useAssetInfo() {
                     name: i.label,
                     tooltip: i.label,
                     data: i,
+                    exclude: ['Query'],
                 }
             })
         }
-
-        console.log(customTabList)
 
         return [...getTabs(previewTabs, assetType(asset)), ...customTabList]
     }

@@ -1,5 +1,11 @@
 <template>
-    <a-input v-bind="componentProps" v-model:value="localValue"></a-input>
+    <a-form-item :label="property.ui?.label" v-if="!property.ui?.hidden">
+        <a-input
+            v-bind="componentProps"
+            v-model:value="localValue"
+            :required="property.required"
+        ></a-input>
+    </a-form-item>
 </template>
 
 <script>
@@ -33,6 +39,11 @@
                 },
                 { debounce: 500 }
             )
+
+            // watch(property.ui.hidden, () => {
+            //     emit('change')
+            // })
+
             return { property, componentProps, localValue }
         },
     })

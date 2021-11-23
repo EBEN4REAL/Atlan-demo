@@ -1,8 +1,11 @@
 <template>
     <DynamicForm
         :config="property"
-        layout="vertical"
         v-model="localValue"
+        layout="horizontal"
+        labelAlign="left"
+        :labelCol="{ span: 6 }"
+        :wrapperCol="{ span: 14 }"
     ></DynamicForm>
 </template>
 
@@ -11,7 +14,8 @@
         defineComponent,
         toRefs,
         computed,
-        ref,
+        reactive,
+        watch,
         defineAsyncComponent,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
@@ -39,11 +43,17 @@
                 },
             },
         },
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { property } = toRefs(props)
             const componentProps = computed(() => property.value.ui)
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            const localValue = reactive(modelValue.value)
+
+            watch(localValue, () => {
+                modelValue.value = localValue
+                emit('change')
+            })
 
             return { property, componentProps, localValue }
         },

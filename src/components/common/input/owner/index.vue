@@ -2,17 +2,20 @@
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
             placement="leftBottom"
-            overlayClassName="ownerPopover"
+            :overlayClassName="$style.ownerPopover"
             @visibleChange="handleVisibleChange"
             :trigger="['click']"
             v-model:visible="isEdit"
+            :destroyTooltipOnHide="destroyTooltipOnHide"
         >
             <template #content>
-                <OwnerFacets
-                    ref="ownerInputRef"
-                    v-model="localValue"
-                    :showNone="false"
-                ></OwnerFacets>
+                <div class="">
+                    <OwnerFacets
+                        ref="ownerInputRef"
+                        v-model="localValue"
+                        :showNone="false"
+                    ></OwnerFacets>
+                </div>
             </template>
             <a-button
                 v-if="!readOnly"
@@ -86,11 +89,17 @@
                 required: false,
                 default: true,
             },
+            destroyTooltipOnHide: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, enableHover } = toRefs(props)
+            const { readOnly, enableHover, destroyTooltipOnHide } =
+                toRefs(props)
             const localValue = ref(modelValue.value)
 
             const isEdit = ref(false)
@@ -199,10 +208,10 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" module>
     .ownerPopover {
-        .ant-popover-inner-content {
-            @apply px-0 py-3;
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
             width: 250px !important;
         }
     }

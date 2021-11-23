@@ -1,78 +1,34 @@
 <template>
     <div class="flex w-full h-full">
-        <div class="flex flex-1 overflow-y-auto border-r border-gray-200">
-            <div
-                class="flex flex-col w-full h-full px-12 pb-4 bg-primary-light"
-            >
-                <div
-                    class="flex flex-col w-full p-2 bg-white border rounded-lg"
+        <div class="flex flex-1 border-r border-gray-200">
+            <div class="flex flex-col w-full h-full">
+                <a-steps
+                    v-if="steps.length > 0"
+                    v-model:current="currentStep"
+                    class="px-6 py-3 border-b border-gray-200"
                 >
-                    <div
-                        class="flex flex-col w-full px-6 py-3 border-b border-gray-200 "
-                        v-if="workflowTemplate"
-                    >
-                        <div class="mb-1 text-xl font-bold uppercase">
-                            Setup Workflow
-                        </div>
-                        <div
-                            class="flex items-center mb-1"
-                            v-if="
-                                workflowTemplate?.workflowtemplate.metadata
-                                    .annotations
-                            "
-                        >
-                            <img
-                                v-if="
-                                    workflowTemplate?.workflowtemplate.metadata
-                                        .annotations[
-                                        'com.atlan.orchestration/icon'
-                                    ]
-                                "
-                                class="self-center w-5 h-auto mr-2"
-                                :src="
-                                    workflowTemplate?.workflowtemplate.metadata
-                                        .annotations[
-                                        'com.atlan.orchestration/icon'
-                                    ]
-                                "
-                            />
-                            <div class="text-base truncate overflow-ellipsis">
-                                {{
-                                    workflowTemplate?.workflowtemplate.metadata
-                                        .annotations[
-                                        'workflows.argoproj.io/name'
-                                    ]
-                                }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-1 p-4">
-                        <a-steps
-                            v-if="steps.length > 0"
-                            v-model:current="currentStep"
-                        >
-                            <template v-for="step in steps" :key="step.id">
-                                <a-step>
-                                    <!-- <span slot="title">Finished</span> -->
-                                    <template #title>{{ step.title }}</template>
-                                </a-step>
-                            </template>
-                        </a-steps>
-
-                        <DynamicForm
-                            class="mt-8"
-                            :config="configMapDerived"
-                            :currentStep="currentStepConfig"
-                            v-model="modelValue"
-                            labelAlign="left"
-                            :labelCol="{ span: 6 }"
-                            :wrapperCol="{ span: 14 }"
-                        ></DynamicForm>
-                        <!-- {{ configMap }} -->
-                    </div>
-                    <div class="flex justify-end p-3 border-t">
-                        <a-button type="primary">Next</a-button>
-                    </div>
+                    <template v-for="step in steps" :key="step.id">
+                        <a-step>
+                            <!-- <span slot="title">Finished</span> -->
+                            <template #title>{{ step.title }}</template>
+                        </a-step>
+                    </template>
+                </a-steps>
+                <div class="flex-1 p-8 overflow-y-auto bg-white">
+                    {{ modelValue }}
+                    <DynamicForm
+                        ref="stepForm"
+                        :config="configMapDerived"
+                        :currentStep="currentStepConfig"
+                        v-model="modelValue"
+                        labelAlign="left"
+                        :labelCol="{ span: 6 }"
+                        :wrapperCol="{ span: 18 }"
+                    ></DynamicForm>
+                    <!-- {{ configMap }} -->
+                </div>
+                <div class="flex justify-end p-3 border-t">
+                    <a-button type="primary" @click="handleNext">Next</a-button>
                 </div>
             </div>
         </div>
@@ -190,6 +146,14 @@
                                     placeholder: 'Connection Name',
                                 },
                             },
+                            'connection-qualifiedName': {
+                                type: 'string',
+                                required: true,
+                                ui: {
+                                    label: 'Connection Qualified Name',
+                                    placeholder: 'Connection Name',
+                                },
+                            },
                             mode: {
                                 type: 'string',
                                 enum: ['production', 'test', 'dev'],
@@ -223,7 +187,7 @@
                                 type: 'string',
                                 ui: {
                                     widget: 'credential',
-                                    label: 'Credential Guid',
+                                    label: '',
                                     placeholder: 'Credential Guid',
                                     hidden: true,
                                 },
@@ -342,15 +306,15 @@
                         ],
                         steps: [
                             {
-                                id: 'connect',
-                                title: 'Connect',
-                                description: 'Connect',
+                                id: 'credential',
+                                title: 'Credential',
+                                description: 'Credential',
                                 properties: ['credential-guid'],
                             },
                             {
-                                id: 'extract',
-                                title: 'Extract',
-                                description: 'Extract',
+                                id: 'metadata',
+                                title: 'Metadata',
+                                description: 'Metadata',
                                 properties: [
                                     'include-filter',
                                     'exclude-filter',
@@ -360,13 +324,17 @@
                                 id: 'publish',
                                 title: 'Publish',
                                 description: 'Publish',
+                                properties: ['mode', 'auto-classification'],
+                            },
+                            {
+                                id: 'details',
+                                title: 'Details',
+                                description: 'Details',
                                 properties: [
-                                    'mode',
                                     'connection-name',
                                     'row-limit',
                                     'allow-preview',
                                     'allow-query',
-                                    'auto-classification',
                                 ],
                             },
                         ],
@@ -376,7 +344,9 @@
         },
         emits: ['change', 'openLog', 'handleSetLogo'],
         setup(props, { emit }) {
-            const graphRef = inject('graphRef')
+            // const graphRef = inject('graphRef')
+
+            const stepForm = ref()
 
             const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
@@ -445,6 +415,13 @@
                 console.log(event)
                 selectedStep.value = event
             }
+
+            const handleNext = () => {
+                if (stepForm.value) {
+                    stepForm.value.validateForm()
+                }
+                // currentStep.value += 1
+            }
             // watch(data, (newVal) => {
             //     const meta =
             //         newVal?.workflowtemplate?.metadata?.annotations || {}
@@ -470,6 +447,8 @@
                 steps,
                 configMap,
                 currentStepConfig,
+                handleNext,
+                stepForm,
             }
         },
     })

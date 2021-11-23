@@ -218,6 +218,7 @@
 <style lang="less" scoped>
     .relation-ship {
         width: 330px;
+        padding: 16px;
     }
     .dot {
         background: #c4c4c4;

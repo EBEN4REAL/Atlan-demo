@@ -561,17 +561,34 @@
                 error: isErrorClassification,
             } = useSetClassifications(classificationBody)
 
+            const arrayEquals = (a, b) =>
+                Array.isArray(a) &&
+                Array.isArray(b) &&
+                a.length === b.length &&
+                a.every((val, index) =>
+                    b.map((i) => i.typeName).includes(val.typeName)
+                )
+
             const handleClassificationChange = () => {
-                classificationBody.value = {
-                    guidHeaderMap: {
-                        [selectedAsset.value.guid]: {
-                            ...entity.value,
-                            classifications: localClassifications.value,
+                console.log(classifications(selectedAsset.value))
+                console.log(localClassifications.value)
+                if (
+                    !arrayEquals(
+                        classifications(selectedAsset.value),
+                        localClassifications.value
+                    )
+                ) {
+                    classificationBody.value = {
+                        guidHeaderMap: {
+                            [selectedAsset.value.guid]: {
+                                ...entity.value,
+                                classifications: localClassifications.value,
+                            },
                         },
-                    },
+                    }
+                    currentMessage.value = 'Classifications have been updated'
+                    mutateClassification()
                 }
-                currentMessage.value = 'Classifications have been updated'
-                mutateClassification()
             }
 
             whenever(isReadyClassification, () => {
@@ -714,6 +731,7 @@
                 descriptionRef,
                 sampleDataVisible,
                 showSampleDataModal,
+                arrayEquals,
             }
         },
     })

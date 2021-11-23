@@ -1,11 +1,12 @@
 <template>
-    <div>
-        <DynamicForm
-            :config="configMap"
-            layout="vertical"
-            v-model="localValue"
-        ></DynamicForm>
-    </div>
+    <DynamicForm
+        :config="configMap"
+        v-model="localValue"
+        layout="horizontal"
+        labelAlign="left"
+        :labelCol="{ span: 6 }"
+        :wrapperCol="{ span: 14 }"
+    ></DynamicForm>
 </template>
 
 <script>
@@ -13,7 +14,8 @@
         defineComponent,
         toRefs,
         computed,
-        ref,
+        reactive,
+        watch,
         defineAsyncComponent,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
@@ -79,6 +81,8 @@
                             host: {
                                 type: 'string',
                                 required: true,
+                                default:
+                                    'jv22371.ap-south-1.aws.snowflakecomputing.com',
                                 ui: {
                                     label: 'Host',
                                     placeholder: 'Host Name',
@@ -86,6 +90,7 @@
                             },
                             port: {
                                 type: 'number',
+                                default: 443,
                                 ui: {
                                     label: 'Port',
                                     placeholder: 'Port',
@@ -98,7 +103,7 @@
                                 enumNames: ['Basic', 'Private'],
                                 ui: {
                                     widget: 'radio',
-                                    label: 'Authentication Method',
+                                    label: 'Authentication',
                                     placeholder: 'Credential Type',
                                 },
                             },
@@ -107,6 +112,7 @@
                                 properties: {
                                     username: {
                                         type: 'string',
+                                        default: 'atlanadmin',
                                         ui: {
                                             label: 'Username',
                                             placeholder: 'Username',
@@ -114,16 +120,19 @@
                                     },
                                     password: {
                                         type: 'string',
+                                        default: 'Atlan#2020',
                                         ui: {
+                                            widget: 'password',
                                             label: 'Password',
                                             placeholder: 'Password',
                                         },
                                     },
                                 },
                                 ui: {
-                                    widget: 'form',
-                                    label: '',
+                                    widget: 'section',
+                                    label: 'Basic',
                                     placeholder: 'Credential Type',
+                                    nestedValue: false,
                                     hidden: true,
                                 },
                             },
@@ -146,8 +155,9 @@
                                     },
                                 },
                                 ui: {
-                                    widget: 'form',
-                                    label: '',
+                                    widget: 'section',
+                                    label: 'Private Key',
+                                    nestedValue: false,
                                     placeholder: 'Credential Type',
                                     hidden: true,
                                 },
@@ -160,20 +170,23 @@
                                         ui: {
                                             widget: 'sql',
                                             label: 'Role',
-                                            placeholder: 'Username',
+                                            placeholder: 'Role',
+                                            query: 'show roles',
                                         },
                                     },
                                     warehouse: {
                                         type: 'string',
                                         ui: {
+                                            widget: 'sql',
                                             label: 'Warehouse',
-                                            placeholder: 'warehouse',
+                                            placeholder: 'Warehouse',
+                                            query: 'show warehouses',
                                         },
                                     },
                                 },
                                 ui: {
-                                    widget: 'collapse',
-                                    label: '',
+                                    widget: 'form',
+                                    label: 'Advanced',
                                     header: 'Advanced',
                                     hidden: false,
                                 },
@@ -201,11 +214,17 @@
                 },
             },
         },
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { property, configMap } = toRefs(props)
             const componentProps = computed(() => property.value.ui)
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            const localValue = reactive(modelValue.value)
+
+            watch(localValue, () => {
+                modelValue.value = localValue
+                emit('change')
+            })
 
             return {
                 property,

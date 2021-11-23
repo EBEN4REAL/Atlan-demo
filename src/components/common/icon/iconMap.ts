@@ -30,6 +30,7 @@ import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
+import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
 import DatabaseGray from '~/assets/images/icons/database-gray.svg'
@@ -241,6 +242,7 @@ import Hash from '~/assets/images/icons/hash.svg'
 
 //source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
+import Column from '~/assets/images/icons/column.svg'
 import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
 // source list
@@ -253,6 +255,7 @@ import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 
 export default {
     Hash,
+    Column,
     CreateGroups,
     NoGroups,
     NoUsers,

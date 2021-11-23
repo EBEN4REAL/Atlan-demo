@@ -63,3 +63,22 @@ export const userStatusOptions = [
         value: JSON.stringify({ enabled: true, email_verified: false }),
     },
 ]
+
+
+export const allRoles = {
+    member: {
+        value: '',
+        role: 'member',
+        label: 'Member',
+    },
+    admin: {
+        value: '',
+        role: 'admin',
+        label: 'Admin',
+    },
+    guest: {
+        value: '',
+        role: 'guest',
+        label: 'Guest',
+    },
+}

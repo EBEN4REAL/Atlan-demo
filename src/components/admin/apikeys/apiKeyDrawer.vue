@@ -136,6 +136,7 @@
             class="flex justify-between px-4 py-5 border-t"
         >
             <a-popover
+                v-if="apiKeyDirty.id"
                 trigger="click"
                 placement="bottomLeft"
                 :visible="isDeletePopoverVisible"
@@ -144,7 +145,7 @@
                     color="secondary"
                     padding="compact"
                     size="sm"
-                    class="bg-transparent border-none px -0 text-error"
+                    class="px-0 bg-transparent border-none text-error"
                     @click="isDeletePopoverVisible = true"
                 >
                     <AtlanIcon
@@ -172,7 +173,6 @@
                             <span>Cancel</span></AtlanBtn
                         >
                         <AtlanBtn
-                            v-if="apiKeyDirty.id"
                             class="mr-3 text-white bg-transparent border-none  bg-error"
                             size="lg"
                             padding="compact"
@@ -360,14 +360,6 @@ export default defineComponent({
     },
 })
 </script>
-<style lang="less">
-.persona-popover {
-    .ant-popover-inner-content {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-}
-</style>
 <style lang="less" scoped>
 .persona-list {
     width: 256px;

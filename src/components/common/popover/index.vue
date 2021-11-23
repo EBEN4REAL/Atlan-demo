@@ -1,5 +1,5 @@
 <template>
-    <a-popover title="" visible>
+    <a-popover title="">
         <template #content>
             <div class="relation-ship">
                 <div class="flex items-center">

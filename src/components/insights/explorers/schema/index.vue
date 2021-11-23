@@ -26,9 +26,28 @@
                 @change="handleChange"
                 @update:data="setConnector"
             ></Connector>
+
+            <div class="flex flex-row space-x-2">
+                <a-input
+                    v-model:value="queryText"
+                    class="h-8 mt-1 rounded"
+                    :class="$style.inputSearch"
+                    placeholder="Search"
+                >
+                    <template #suffix>
+                        <AtlanIcon icon="Search" color="#6F7590" />
+                    </template>
+                </a-input>
+                <a-button
+                    class="flex items-center w-8 h-8 p-2 mt-1"
+                    :class="$style.filterButton"
+                >
+                    <AtlanIcon icon="Filter" />
+                </a-button>
+            </div>
         </div>
-        <div class="w-full px-4 pb-2">
-            <SearchAndFilter
+        <!-- <div class="w-full px-4 pb-2"> -->
+        <!-- <SearchAndFilter
                 v-model:value="queryText"
                 :placeholder="`Search `"
                 size="default"
@@ -37,8 +56,9 @@
                 <template #filter>
                     <div></div>
                 </template>
-            </SearchAndFilter>
-        </div>
+            </SearchAndFilter> -->
+        <!-- </div> -->
+
         <div
             class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto"
             :style="
@@ -360,6 +380,28 @@
     }
     .scrollable-container {
         height: calc(100vh - 14rem);
+    }
+</style>
+
+<style lang="css" module>
+    .inputSearch {
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
+        background-color: #fff !important;
+        border: 1px solid #e9ebf1 !important;
+        color: #6f7590 !important;
+        border-radius: 8px !important;
+    }
+    :global(.ant-input) {
+        color: #6f7590 !important;
+    }
+    input::placeholder {
+        color: #6f7590 !important;
+    }
+    .filterButton {
+        background: #ffffff;
+        border: 1px solid #e9ebf1;
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
     }
 </style>
 

@@ -60,7 +60,7 @@
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light via-gray-light'
+                                        : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
                                 "
                                 @click.stop="() => {}"
                             >
@@ -79,7 +79,7 @@
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
-                                                    : 'bg-gray-light'
+                                                    : 'bg-gray-light-color'
                                             "
                                         ></AtlanIcon>
                                     </a-tooltip>
@@ -91,7 +91,7 @@
                                     :class="
                                         item?.selected
                                             ? 'tree-light-color'
-                                            : 'bg-gray-light'
+                                            : 'bg-gray-light-color'
                                     "
                                     @click="() => actionClick('info', item)"
                                 >
@@ -112,7 +112,7 @@
                                     </a-tooltip>
                                 </div>
                                 <!-- <div
-                                    class="bg-gray-light"
+                                    class="bg-gray-light-color"
                                     @click.stop="
                                         () => actionClick('bookmark', item)
                                     "
@@ -133,7 +133,8 @@
                                 </div>-->
                             </div>
                             <div
-                                class="flex items-center text-xs text-gray-500"
+                                class="flex items-center text-xs leading-5 text-gray-500 "
+                                style="margin-right: 1px !important"
                             >
                                 <div
                                     class="flex items-center"
@@ -170,7 +171,7 @@
                                         class="
                                             w-4
                                             h-4
-                                            mr-1.5
+                                            mr-1
                                             -mt-0.5
                                             parent-ellipsis-container-extension
                                         "
@@ -208,7 +209,7 @@
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light via-gray-light'
+                                        : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
                                 "
                             >
                                 <div
@@ -226,7 +227,7 @@
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
-                                                    : 'bg-gray-light'
+                                                    : 'bg-gray-light-color'
                                             "
                                         ></AtlanIcon>
                                     </a-tooltip>
@@ -237,7 +238,7 @@
                                     :class="
                                         item?.selected
                                             ? 'tree-light-color'
-                                            : 'bg-gray-light'
+                                            : 'bg-gray-light-color'
                                     "
                                     @click="() => actionClick('info', item)"
                                 >
@@ -278,7 +279,7 @@
                                     </a-tooltip>
                                 </div>
                                 <!-- <div
-                                    class="bg-gray-light"
+                                    class="bg-gray-light-color"
                                     @click.stop="
                                         () => actionClick('bookmark', item)
                                     "
@@ -320,7 +321,7 @@
                                 class="
                                     w-4
                                     h-4
-                                    mr-1.5
+                                    mr-1
                                     -mt-0.5
                                     parent-ellipsis-container-extension
                                 "
@@ -355,7 +356,7 @@
                         :class="
                             item?.selected
                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                : 'bg-gradient-to-l from-gray-light via-gray-light'
+                                : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
                         "
                         @click.stop="() => {}"
                     >
@@ -371,7 +372,7 @@
                                     :class="
                                         item?.selected
                                             ? 'tree-light-color'
-                                            : 'bg-gray-light'
+                                            : 'bg-gray-light-color'
                                     "
                                 ></AtlanIcon>
                             </a-tooltip>
@@ -444,7 +445,7 @@
                             :class="
                                 item?.selected
                                     ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                    : 'bg-gradient-to-l from-gray-light via-gray-light'
+                                    : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
                             "
                         >
                             <div
@@ -462,7 +463,7 @@
                                         :class="
                                             item?.selected
                                                 ? 'tree-light-color'
-                                                : 'bg-gray-light'
+                                                : 'bg-gray-light-color'
                                         "
                                     ></AtlanIcon>
                                 </a-tooltip>
@@ -473,7 +474,7 @@
                                 :class="
                                     item?.selected
                                         ? 'tree-light-color'
-                                        : 'bg-gray-light'
+                                        : 'bg-gray-light-color'
                                 "
                                 @click="() => actionClick('info', item)"
                             >
@@ -876,34 +877,34 @@
     .from-tree-light-color {
         --tw-gradient-from: #dbe9fe !important;
     }
+    .from-gray-light-color {
+        --tw-gradient-from: #f8f8f8;
+        --tw-gradient-stops: var(--tw-gradient-from),
+            var(--tw-gradient-to, rgba(248, 248, 248, 0));
+    }
+
+    .bg-gray-light-color {
+        --tw-bg-opacity: 1;
+        background-color: rgba(248, 248, 248, var(--tw-bg-opacity));
+    }
+    .via-gray-light-color {
+        --tw-gradient-stops: var(--tw-gradient-from), #f8f8f8,
+            var(--tw-gradient-to, rgba(248, 248, 248, 0));
+    }
     .tree-select-full {
         width: 120%;
     }
 
     .count-box {
-        // justify-content: center;
-        // align-items: center;
-        // padding: 4px;
-        // margin: 4px;
-        // display: inline-flex;
-        // width: 18px;
-        // height: 18px;
-
-        /* Blues/primary-light */
-
-        // background: #f4f6fd;
-        // border-radius: 4px;
-
-        font-family: Avenir LT Pro;
-        font-style: normal;
+        justify-content: center;
+        align-items: center;
+        display: inline-flex;
+        width: 18px;
+        height: 18px;
         font-weight: 400;
-        font-size: 14px;
-        // line-height: 16px;
-        /* identical to box height, or 133% */
+        font-size: 12px;
 
-        /* Blues/primary */
-
-        // color: #5277d7;
+        line-height: 16px;
         @apply text-gray-500;
     }
 

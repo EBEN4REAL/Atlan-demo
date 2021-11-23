@@ -217,6 +217,7 @@
         @apply text-xs tracking-wide text-gray;
         @apply rounded cursor-pointer;
     }
+
     .connector-btn:hover {
         @apply bg-gray-100;
     }

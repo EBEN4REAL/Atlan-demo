@@ -67,7 +67,7 @@
                     <!-- <img :src="item.image" class="w-auto h-4 mr-1" /> -->
                     <AtlanIcon
                         :icon="typeName + `Gray`"
-                        class="w-auto h-4 mr-1"
+                        class="w-auto h-4 mr-2"
                     />
                     {{
                         item?.label.length > 30
@@ -76,6 +76,13 @@
                     }}
                 </div></a-select-option
             >
+        </template>
+        <template #suffixIcon>
+            <AtlanIcon
+                icon="ChevronDown"
+                class="h-4 -mt-0.5 -ml-1"
+                color="#6F7590"
+            />
         </template>
     </a-select>
 </template>
@@ -193,11 +200,18 @@
             border: 1px solid #e9ebf1 !important;
             color: #6f7590 !important;
             border-radius: 8px !important;
+
+            input::placeholder {
+                color: #6f7590 !important;
+            }
+        }
+        :global(.ant-select-selection-search) {
+            input::placeholder {
+                color: #6f7590 !important;
+            }
         }
     }
-    .selector_bg {
-        :global(.ant-select-selector) {
-            background-color: #fbfbfb !important;
-        }
-    }
+    // input::placeholder {
+    //     color: #6f7590 !important;
+    // }
 </style>

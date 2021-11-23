@@ -19,9 +19,9 @@
                 <a-menu-item
                     key="slack"
                     class="flex items-center"
-                    @click="openSlackModal"
+                    @click="closeMenu"
                 >
-                    <SlackModal @closeParent="closeMenu">
+                    <SlackModal :link="link" @closeParent="closeMenu">
                         <div class="flex items-center">
                             <AtlanIcon icon="Slack" />
                             <span class="pl-2 text-sm">Slack</span>
@@ -33,7 +33,7 @@
     </a-dropdown>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs } from 'vue'
+    import { defineComponent, ref, PropType, toRefs, computed } from 'vue'
 
     // utils
     import { message } from 'ant-design-vue'
@@ -63,18 +63,19 @@
             const closeMenu = () => {
                 isVisible.value = false
             }
-            async function handleCopyProfileLink() {
+            const link = computed(() => {
                 const baseUrl = window.location.origin
                 const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
-                await copyToClipboard(text)
+                return text
+            })
+            async function handleCopyProfileLink() {
+                await copyToClipboard(link.value)
                 message.success('Link copied!')
                 closeMenu()
             }
 
-            const openSlackModal = () => {}
-
             return {
-                openSlackModal,
+                link,
                 handleCopyProfileLink,
                 isVisible,
                 closeMenu,

@@ -1,14 +1,18 @@
+import { ref } from 'vue'
+import { Integrations } from '~/services/service/integrations'
+
+
+let { origin } = window.location
+if (origin.includes('localhost')) {
+    origin = `https://beta.atlan.com`
+}
+
 function installSlackUrl() {
     const scopes = [
         'chat:write',
         'chat:write.public',
         'channels:read',
     ]
-    let { origin } = window.location
-
-    if (origin.includes('localhost')) {
-        origin = `https://beta.atlan.com`
-    }
 
     const api = `${origin}/api/service/slack/auth`
     const state = {
@@ -27,4 +31,15 @@ export const getIntegrationLink = (alias) => {
             return installSlackUrl()
         default: return ''
     }
+}
+
+export const shareOnSlack = (integrationID, integrationType, channelAlias, message, link) => {
+    const body = ref({
+        integrationType,
+        "actionData": {
+            channelAlias, message, link, domain: origin
+        }
+    })
+    const { data, isLoading, error, isReady } = Integrations.ShareSlack(integrationID, body, {})
+    return { data, isLoading, error, isReady }
 }

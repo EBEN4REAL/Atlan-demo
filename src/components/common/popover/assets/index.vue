@@ -113,7 +113,7 @@
     import UserPill from '@/common/pills/user.vue'
 
     export default {
-        name: 'PophoverAsset',
+        name: 'PopoverAsset',
         components: {
             // UserAvatar,
             ClassificationPill,

@@ -440,7 +440,6 @@
         </div>
     </div>
 </template>
-~/components/common/popover/index.vue
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs, computed } from 'vue'
@@ -449,7 +448,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import Popover from '~/components/common/popover/index.vue'
+    import Popover from '@/common/popover/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',

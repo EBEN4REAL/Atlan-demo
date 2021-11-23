@@ -28,7 +28,6 @@
             <div class="flex items-center">
                 <Classification
                     v-model:modelValue="selectedClassifications"
-                    :disabled="addClassificationsDisabled"
                     @change="handleClassificationChange"
                 />
                 <span

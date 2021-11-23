@@ -8,12 +8,14 @@
             v-model:visible="isEdit"
         >
             <template #content>
-                <ClassificationFacet
-                    v-model="selectedValue"
-                    ref="classificationFacetRef"
-                    @change="handleSelectedChange"
-                    :showNone="false"
-                ></ClassificationFacet>
+                <div class="classificationPopover">
+                    <ClassificationFacet
+                        v-model="selectedValue"
+                        ref="classificationFacetRef"
+                        @change="handleSelectedChange"
+                        :showNone="false"
+                    ></ClassificationFacet>
+                </div>
             </template>
             <a-button
                 shape="circle"
@@ -198,9 +200,7 @@
 </script>
 <style lang="less">
     .classificationPopover {
-        .ant-popover-inner-content {
-            @apply px-0 py-3;
-            width: 250px !important;
-        }
+        @apply px-0 py-3 !important;
+        width: 250px !important;
     }
 </style>

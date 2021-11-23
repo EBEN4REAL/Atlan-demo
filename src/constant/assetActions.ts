@@ -17,5 +17,6 @@ export const assetActions = [
         label: 'Share',
         description: 'Share asset link',
         icon: 'Share',
+        component: 'ShareMenu'
     },
 ]

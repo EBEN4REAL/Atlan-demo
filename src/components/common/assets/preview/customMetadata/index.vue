@@ -174,6 +174,7 @@
                     selectedAsset.value.typeName
                 )
             )
+            const payload = ref({})
 
             /**
              * @desc parses all the attached bm from the asset payload and
@@ -196,12 +197,11 @@
                                 applicableList.value[attrIndex].value = value
                         }
                     })
-                    console.log(applicableList.value)
                 }
             }
 
             // {"BM for facet 2":{"test for facet 2":"1","test for facet 2 date":1629294652575}}
-            const payload = computed(() => {
+            const payloadConstructor = () => {
                 const mappedPayload = { [data.value.id]: {} }
                 // ? handle current payload
                 Object.keys(selectedAsset.value.attributes).forEach((k) => {
@@ -224,44 +224,11 @@
                     })
 
                 return mappedPayload
-            })
-
-            const mutatedAsset = computed(() => {
-                if (selectedAsset.value?.attributes) {
-                    // ? clean all bm attribute from
-                    const tempAsset = JSON.parse(
-                        JSON.stringify(selectedAsset.value)
-                    )
-
-                    const currentAttributes = Object.keys(
-                        selectedAsset.value.attributes
-                    ).filter((attr) => attr.split('.').length > 1)
-
-                    currentAttributes.forEach(
-                        (a) => delete tempAsset.attributes[a]
-                    )
-
-                    // ? add new payload attributes
-                    const newAttributes = {}
-                    Object.keys(payload.value).forEach((p) => {
-                        Object.entries(payload.value[p]).forEach((e) => {
-                            // eslint-disable-next-line prefer-destructuring
-                            newAttributes[`${p}.${e[0]}`] = e[1]
-                        })
-                    })
-
-                    return {
-                        ...tempAsset,
-                        attributes: {
-                            ...tempAsset.attributes,
-                            ...newAttributes,
-                        },
-                    }
-                }
-                return null
-            })
+            }
 
             const handleUpdate = () => {
+                payload.value = payloadConstructor()
+
                 const { error, isReady, isLoading } =
                     Types.updateAssetBMUpdateChanges(
                         props.selectedAsset.guid,
@@ -285,10 +252,6 @@
                 readOnly.value = true
             }
             const handleCancel = () => {
-                applicableList.value = getApplicableAttributes(
-                    data.value,
-                    selectedAsset.value.typeName
-                )
                 setAttributesList()
                 readOnly.value = true
             }

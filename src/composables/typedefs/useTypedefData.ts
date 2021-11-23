@@ -17,6 +17,10 @@ export default function useTypedefData() {
     )
 
     const customMetadataList = computed(() => typedefStore.customMetadataList)
+
+    const customMetadataProjections =
+        typedefStore.getCustomMetadataListProjections
+
     const enumList = computed(() =>
         typedefStore.enumList
             .filter((x) => x.serviceType !== 'atlas_core')
@@ -35,5 +39,6 @@ export default function useTypedefData() {
         classificationList,
         customMetadataList,
         enumList,
+        customMetadataProjections,
     }
 }

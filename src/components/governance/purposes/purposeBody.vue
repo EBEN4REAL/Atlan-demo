@@ -3,17 +3,27 @@
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
             <template #label="t">
                 <div class="flex items-center">
-                    <span
-                        class="text-base"
+                    <div
+                        class="relative text-sm"
                         :class="
                             activeTabKey === t?.data?.key
                                 ? 'text-gray-700'
                                 : 'text-gray-500'
                         "
-                        >{{ t?.data?.label }}</span
                     >
+                        {{ t?.data?.label }}
+                    </div>
                     <div
-                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        class="
+                            px-1
+                            py-0.5
+                            ml-2
+                            text-xs
+                            font-bold
+                            rounded
+                            flex
+                            items-center
+                        "
                         v-if="t?.data?.key === 'policies'"
                         :class="
                             activeTabKey === t?.data?.key
@@ -21,16 +31,21 @@
                                 : 'text-gray-500 bg-gray-100'
                         "
                     >
-                        {{
-                            selectedPersonaDirty?.metadataPolicies?.length +
-                            selectedPersonaDirty?.dataPolicies?.length
-                        }}
+                        <div class="mt-0.5">
+                            {{
+                                selectedPersonaDirty?.metadataPolicies?.length +
+                                selectedPersonaDirty?.dataPolicies?.length
+                            }}
+                        </div>
                     </div>
                 </div>
             </template>
         </MinimalTab>
 
         <div class="px-4 overflow-y-auto">
+            <div>
+                {{ selectedPersonaDirty?.datapolicies?.length }}
+            </div>
             <PurposeMeta
                 v-if="activeTabKey === 'details'"
                 class="pb-2"
@@ -48,8 +63,8 @@
                         v-if="policyEditMap.metadataPolicies[policy.id!]"
                         class="px-5"
                         :policy="policy"
-                        @delete="deletePolicyUI('meta', policy.id!)"
                         @save="savePolicyUI('meta', policy.id!)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                     />
 
@@ -59,6 +74,8 @@
                         :policy="policy"
                         type="meta"
                         @edit="setEditFlag('meta', policy.id!)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
+                        @cancel="discardPolicy('meta', policy.id!)"
                     />
                 </template>
 
@@ -82,6 +99,8 @@
                         :policy="policy"
                         type="data"
                         @edit="setEditFlag('data', policy.id!)"
+                        @delete="deletePolicyUI('data', policy.id!)"
+                        @cancel="discardPolicy('data', policy.id!)"
                     />
                 </template>
                 <div
@@ -125,6 +144,7 @@
                                 <div class="flex items-center">
                                     <AtlanIcon
                                         v-if="option.icon"
+                                        class="w-4 h-4 text-gray-600"
                                         :icon="option.icon"
                                     />
                                     <span class="pl-2 text-sm">{{
@@ -157,16 +177,17 @@
     import {
         selectedPersonaDirty,
         addPolicy,
+        updateSelectedPersona,
         deletePolicy,
         policyEditMap,
         setEditFlag,
         removeEditFlag,
         savePolicy,
         discardPolicy,
-        addFirstPolicy,
         PolicyType,
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
+    import { selectedPersona } from './composables/usePurposeList'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -195,38 +216,36 @@
                 },
                 {
                     title: 'Data Policy',
-                    icon: 'Queries',
+                    icon: 'Query',
                     handleClick: () => addPolicy('data'),
                 },
             ]
 
             async function savePolicyUI(type: PolicyType, id: string) {
-                if (
-                    persona.value.metadataPolicies?.length +
-                        persona.value.dataPolicies?.length ==
-                    0
-                ) {
-                    addFirstPolicy(type, id)
-                    return
-                }
-
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Saving policy',
                     duration: 0,
                     key: messageKey,
                 })
-
                 try {
                     await savePolicy(type, id)
+                    if (type === 'meta')
+                        policyEditMap.value.metadataPolicies[id] = false
+                    else if (type === 'data')
+                        policyEditMap.value.dataPolicies[id] = false
+                    updateSelectedPersona()
+
+                    // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
                         duration: 1.5,
                         key: messageKey,
                     })
                 } catch (error) {
+                    console.log(error?.response?.data, 'error')
                     message.error({
-                        content: 'Failed to save policy',
+                        content: error?.response?.data?.message,
                         duration: 1.5,
                         key: messageKey,
                     })
@@ -242,6 +261,7 @@
                 })
                 try {
                     await deletePolicy(type, id)
+                    updateSelectedPersona()
                     message.success({
                         content: 'Policy deleted',
                         duration: 1.5,
@@ -257,6 +277,7 @@
             }
 
             return {
+                selectedPersona,
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,

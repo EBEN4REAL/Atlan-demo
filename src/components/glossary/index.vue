@@ -65,6 +65,12 @@
                     </a-popover>
                 </template>
             </SearchAdvanced>
+            <atlan-icon
+                icon="TreeCollapseAll"
+                class="h-4 mt-2 ml-2 cursor-pointer"
+                @click="expandedKeys = []"
+            >
+            </atlan-icon>
         </div>
 
         <div class="w-full px-4" v-if="queryText">
@@ -77,13 +83,13 @@
             >
             </AggregationTabs>
         </div>
-
         <GlossaryTree
-            ref="glossaryTree"
             v-if="!queryText"
+            ref="glossaryTree"
             :height="height"
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
+            v-model:treeExpandedKeys="treeExpandedKeys"
         ></GlossaryTree>
 
         <div
@@ -148,6 +154,7 @@
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
 
     import GlossaryActions from '@/glossary/actions/glossary.vue'
+    import { expandedKeys } from '~/composables/glossary2/useGlossaryTree'
 
     import {
         AssetAttributes,
@@ -197,6 +204,7 @@
         },
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
+            const treeExpandedKeys = ref([])
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -409,6 +417,8 @@
                 handleAddTerm,
                 handleAddCategory,
                 defaultEntityType,
+                treeExpandedKeys,
+                expandedKeys,
             }
         },
     })

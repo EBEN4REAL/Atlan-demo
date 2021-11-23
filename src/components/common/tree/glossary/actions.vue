@@ -5,7 +5,7 @@
         @click.stop="() => {}"
     >
         <div>
-            <AtlanIcon icon="KebabMenu" class="h-4 m-0" @click.prevent />
+            <AtlanIcon icon="KebabMenu" class="m-0" @click.prevent />
         </div>
 
         <template #overlay>

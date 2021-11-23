@@ -48,13 +48,16 @@
         ref,
         provide,
     } from 'vue'
+    import { useRouter } from 'vue-router'
+    import { useVModels } from '@vueuse/core'
+
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import GlossaryTreeItem from './glossaryTreeItem.vue'
     import Actions from './actions.vue'
 
     import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
-    import { useRouter } from 'vue-router'
+    import useGlossaryStore from '~/store/glossary'
 
     export default defineComponent({
         components: {
@@ -89,11 +92,20 @@
             const router = useRouter()
 
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
+            const glossaryStore = useGlossaryStore()
+            // const parentGlossaryQualifiedName = ref('VzA8dZUiZkdY6XbH6BMIU')
+            // const parentGlossaryGuid = ref(
+            //     '0a4293f3-d7ba-4552-be75-b47af07f250a'
+            // )
+            const parentGlossaryGuid = computed(() => {
+                const selectedGlossary = glossaryStore.list.find(
+                    (el) =>
+                        el?.attributes?.qualifiedName === defaultGlossary.value
+                )
+                return selectedGlossary?.guid
+            })
 
-            const parentGlossaryQualifiedName = ref('VzA8dZUiZkdY6XbH6BMIU')
-            const parentGlossaryGuid = ref(
-                '0a4293f3-d7ba-4552-be75-b47af07f250a'
-            )
+            console.log(defaultGlossary.value)
             const {
                 onLoadData,
                 loadedKeys,
@@ -110,16 +122,23 @@
                 refetchNode,
             } = useGlossaryTree({
                 emit,
-                parentGlossaryQualifiedName,
+                parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
             })
+
             onMounted(() => {
                 initTreeData(defaultGlossary.value)
             })
-
+            console.log(parentGlossaryGuid.value)
             watch(defaultGlossary, () => {
                 console.log('changed', defaultGlossary.value)
+
+                console.log(parentGlossaryGuid.value)
+                console.log(defaultGlossary.value)
                 initTreeData(defaultGlossary.value)
+            })
+            watch(parentGlossaryGuid, () => {
+                console.log(parentGlossaryGuid)
             })
 
             const addGlossary = (asset) => {
@@ -175,9 +194,14 @@
         }
         :global(.ant-tree-treenode) {
             padding-bottom: 0px !important;
+            @apply hover:bg-primary-light rounded !important;
         }
         :global(.ant-tree-title) {
             @apply flex;
+        }
+        :global(.ant-tree-node-content-wrapper) {
+            @apply hover:bg-primary-light !important;
+            transition: none !important;
         }
 
         :global(.ant-tree-list-holder-inner) {

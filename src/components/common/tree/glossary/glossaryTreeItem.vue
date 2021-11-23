@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-between w-full py-0 m-0 group">
-        <div class="flex items-center">
+        <div class="flex items-center py-1">
             <AtlanIcon
                 :icon="
                     getEntityStatusIcon(item.typeName, certificateStatus(item))
@@ -24,15 +24,15 @@
         <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
             <AtlanIcon icon="Error"></AtlanIcon>
         </div>
-
-        <Actions
-            v-else
-            :treeMode="true"
-            :glossaryName="getAnchorName(item) || title(item)"
-            :categoryName="title(item)"
-            :categoryGuid="item.guid"
-            :entity="item"
-        ></Actions>
+        <div v-else class="hidden group-hover:flex">
+            <Actions
+                :treeMode="true"
+                :glossaryName="getAnchorName(item) || title(item)"
+                :categoryName="title(item)"
+                :categoryGuid="item.guid"
+                :entity="item"
+            ></Actions>
+        </div>
     </div>
 </template>
 <script lang="ts">

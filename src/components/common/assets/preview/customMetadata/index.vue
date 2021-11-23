@@ -1,5 +1,11 @@
 <template>
-    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
+    <div v-if="loading" class="flex items-center justify-center w-full h-full">
+        <AtlanIcon icon="Loader" class="w-auto h-8 animate-spin" />
+    </div>
+    <div
+        v-else
+        class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5"
+    >
         <div class="flex items-center justify-between">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
             <div>
@@ -158,7 +164,7 @@
             const { selectedAsset, data } = toRefs(props)
 
             const readOnly = ref(true)
-
+            const loading = ref(false)
             const { title } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
@@ -234,13 +240,16 @@
                         props.selectedAsset.guid,
                         payload.value
                     )
+                loading.value = isLoading.value
 
                 watch([() => isLoading, error, isReady], () => {
                     if (error.value) {
+                        loading.value = false
                         message.error(
                             'Some error occured...Please try again later.'
                         )
                     } else if (isReady.value) {
+                        loading.value = false
                         message.success(
                             `BM attributes for ${title(
                                 selectedAsset.value
@@ -285,6 +294,7 @@
                 handleCancel,
                 getEnumOptions,
                 handleChange,
+                loading,
             }
         },
     })

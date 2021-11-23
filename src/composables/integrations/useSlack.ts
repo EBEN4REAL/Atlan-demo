@@ -4,7 +4,7 @@ import { Integrations } from '~/services/service/integrations'
 
 let { origin } = window.location
 if (origin.includes('localhost')) {
-    origin = `https://beta.atlan.com`
+    origin = `https://staging.atlan.com`
 }
 
 function installSlackUrl() {

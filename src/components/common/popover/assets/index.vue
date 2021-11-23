@@ -61,8 +61,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-2">Description</div>
-                <div class="mt-1 text-base">
+                <div class="mt-2 text-xs text-gray-500">Description</div>
+                <div class="mt-1 text-sm">
                     {{
                         item?.attributes?.description ||
                         `This ${title} has no description added`
@@ -82,7 +82,7 @@
                     </template>
                 </div>
                 <div v-if="item?.attributes?.ownerUsers.length > 0">
-                    <div class="mt-2">Owned by</div>
+                    <div class="mt-2 text-xs text-gray-500">Owned by</div>
                     <div class="flex gap-1">
                         <UserPill
                             v-for="(user, idx) in item?.attributes?.ownerUsers"
@@ -113,7 +113,7 @@
     import UserPill from '@/common/pills/user.vue'
 
     export default {
-        name: 'PophoverAsset',
+        name: 'PopoverAsset',
         components: {
             // UserAvatar,
             ClassificationPill,

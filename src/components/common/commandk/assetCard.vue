@@ -110,7 +110,7 @@
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowsColumnCount from '@/common/info/rowsColumnCount.vue'
-    import Popover from '~/components/common/popover/index.vue'
+    import Popover from '@/common/popover/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',

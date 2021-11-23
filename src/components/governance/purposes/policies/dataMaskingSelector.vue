@@ -1,13 +1,14 @@
 <template>
     <a-select
-        :value="maskingOption"
+        :value="mask"
         class="mb-6 w-80"
-        @update:value="$emit('update:maskingOption', $event)"
+        @update:value="$emit('update:mask', $event)"
     >
         <a-select-option
             v-for="opt in maskingOptions"
             :key="opt.value"
             :value="opt.value"
+            :class="opt.borderBottom ? 'border-b border-gray-300' : ''"
             :label="opt.label"
         >
             <a-tooltip
@@ -18,7 +19,7 @@
                 color="white"
             >
                 <template #title>
-                    <div class="">
+                    <div>
                         <div class="flex items-center p-3 gap-x-2 text-gray">
                             <div
                                 class="border border-gray-300 rounded"
@@ -67,23 +68,25 @@
         name: 'DataMaskingSelector',
         components: {},
         props: {
-            maskingOption: {
+            mask: {
                 type: String,
                 required: true,
             },
         },
-        emits: ['update:maskingOption'],
+        emits: ['update:mask'],
         setup() {
             const v = ref(true)
             // FIXME: Take it out to a config file
             const maskingOptions = [
                 {
-                    value: 'MASK_NONE',
+                    value: 'null',
                     label: 'None',
+                    borderBottom: true,
                 },
                 {
-                    value: 'MASK_DATE_SHOW_YEAR',
+                    value: 'heka:MASK_DATE_SHOW_YEAR',
                     label: 'Show only year',
+                    borderBottom: false,
                     popover: {
                         field: 'Date of birth',
                         value: '24/4/1990',
@@ -92,9 +95,23 @@
                             'Show only the year portion of a date string and default the month and day to 01/01',
                     },
                 },
+
                 {
-                    value: 'MASK_SHOW_LAST_4',
+                    value: 'heka:MASK_SHOW_FIRST_4',
+                    label: 'Show first 4',
+                    borderBottom: false,
+                    popover: {
+                        field: 'Credit card number',
+                        value: '4321 9876 1254 4444',
+                        maskedValue: '4312 xxxx xxxx xxxx',
+                        helpText: 'Shows only the first 4 characters',
+                    },
+                },
+
+                {
+                    value: 'heka:MASK_SHOW_LAST_4',
                     label: 'Show last 4',
+                    borderBottom: true,
                     popover: {
                         field: 'Phone number',
                         value: '9112349678',
@@ -103,18 +120,9 @@
                     },
                 },
                 {
-                    value: 'MASK_SHOW_FIRST_4',
-                    label: 'Show first 4',
-                    popover: {
-                        field: 'Credit card number',
-                        value: '4321 9876 1254 4444',
-                        maskedValue: '4312 xxxx xxxx xxxx',
-                        helpText: 'Shows only the first 4 characters',
-                    },
-                },
-                {
-                    value: 'MASK_HASH',
+                    value: 'heka:MASK_HASH',
                     label: 'Hash',
+                    borderBottom: false,
                     popover: {
                         field: 'Address',
                         value: '123 Los Angeles Street',
@@ -124,8 +132,9 @@
                     },
                 },
                 {
-                    value: 'MASK_NULL',
+                    value: 'heka:MASK_NULL',
                     label: 'Nullify',
+                    borderBottom: false,
                     popover: {
                         field: 'Age',
                         value: '22 years',
@@ -134,8 +143,9 @@
                     },
                 },
                 {
-                    value: 'MASK_REDACT',
+                    value: 'heka:MASK_REDACT',
                     label: 'Redact',
+                    borderBottom: false,
                     popover: {
                         field: 'Address',
                         value: '123 Los Angeles Street',

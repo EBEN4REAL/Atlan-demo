@@ -136,7 +136,12 @@
                                 <Pill class="group" @click="addConnectionAsset">
                                     <template #prefix>
                                         <div
-                                            class="flex items-center  text-primary group-hover:text-white"
+                                            class="
+                                                flex
+                                                items-center
+                                                text-primary
+                                                group-hover:text-white
+                                            "
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -155,7 +160,12 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="flex items-center  text-primary group-hover:text-white"
+                                            class="
+                                                flex
+                                                items-center
+                                                text-primary
+                                                group-hover:text-white
+                                            "
                                         >
                                             <AtlanIcon
                                                 icon="Add"

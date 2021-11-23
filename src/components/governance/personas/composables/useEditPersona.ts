@@ -180,7 +180,6 @@ export function savePolicy(type: PolicyType, id: string) {
             }
         }
     }
-    debugger
     return savePersona(tempPersona)
 }
 

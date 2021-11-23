@@ -20,10 +20,38 @@
                 v-if="type === 'meta'"
                 class="flex items-center overflow-hidden gap-x-1"
             >
-                <AtlanIcon class="flex-none text-gray-500" icon="Lock" />
-                <span class="text-sm text-gray-500 truncate">{{
-                    policy.actions.join(',')
-                }}</span>
+                <AtlanIcon class="flex-none -mt-1 text-gray-500" icon="Lock" />
+                <div class="flex items-center">
+                    <div
+                        class="flex items-center"
+                        v-if="actions[0].action.length > 0"
+                    >
+                        <span>{{ actions[0].label }}: &nbsp;</span>
+                        <span>{{ actions[0].action.join(', ') }}</span>
+                    </div>
+                    <div
+                        class="w-1 h-1 mx-1 bg-gray-300 rounded-full"
+                        v-if="actions[1].action.length > 0"
+                    ></div>
+                    <div
+                        class="flex items-center"
+                        v-if="actions[1].action.length > 0"
+                    >
+                        <span>{{ actions[1].label }}: &nbsp;</span>
+                        <span>{{ actions[1].action.join(', ') }}</span>
+                    </div>
+                    <div
+                        class="w-1 h-1 mx-1 bg-gray-300 rounded-full"
+                        v-if="actions[1].action.length > 0"
+                    ></div>
+                    <div
+                        class="flex items-center mr-1.5"
+                        v-if="actions[2].action.length > 0"
+                    >
+                        <span>{{ actions[2].label }}: &nbsp;</span>
+                        <span>{{ actions[2].action.join(', ') }}</span>
+                    </div>
+                </div>
             </div>
             <div
                 v-if="type === 'data'"
@@ -96,7 +124,7 @@
         MetadataPolicies,
     } from '~/types/accessPolicies/purposes'
     import Owners from '~/components/common/input/owner/index.vue'
-    import { maskingOptions } from './maskingOptions'
+    import useScopeService from '~/components/governance/personas/composables/useScopeService'
 
     export default defineComponent({
         name: 'Purpose Policy',
@@ -118,6 +146,7 @@
         emits: ['edit', 'cancel', 'delete'],
         setup(props, { emit }) {
             const { policy, type } = toRefs(props)
+            const { findActions } = useScopeService()
             const showAll = ref(false)
             const ownersData = computed(() => {
                 return {
@@ -128,12 +157,19 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
+            const actions = computed(() => findActions(policy.value.actions))
             const removePolicy = () => {
                 /* Delete when the policy is saved */
                 if (!policy.value?.isNew) emit('delete')
                 emit('cancel')
             }
-            return { ownersData, policy, getPopoverContent, removePolicy }
+            return {
+                ownersData,
+                policy,
+                getPopoverContent,
+                removePolicy,
+                actions,
+            }
         },
     })
 </script>

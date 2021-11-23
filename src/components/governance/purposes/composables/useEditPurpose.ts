@@ -130,8 +130,9 @@ export async function deletePolicy(type: PolicyType, id: string) {
 }
 
 export function saveClassifications() {
-    const tempPersona = { ...selectedPersona.value }
-    tempPersona.tags = toRaw(selectedPersonaDirty.value).tags
+    const tempPersona = { ...JSON.parse(JSON.stringify(selectedPersona.value)) }
+    tempPersona.tags = [...toRaw(selectedPersonaDirty.value).tags]
+    console.log(tempPersona, 'tmp')
     return savePersona(tempPersona)
 }
 export function savePolicy(type: PolicyType, id: string) {

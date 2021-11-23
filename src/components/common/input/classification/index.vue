@@ -115,7 +115,7 @@
             const handleChange = () => {
                 modelValue.value = localValue.value
 
-                emit('change')
+                emit('change', localValue.value)
             }
 
             const handleDeleteClassification = (name) => {
@@ -159,6 +159,9 @@
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
+                selectedValue.value = {
+                    classifications: localValue.value.map((i) => i.typeName),
+                }
             })
 
             const activeElement = useActiveElement()

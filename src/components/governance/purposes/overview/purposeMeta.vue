@@ -33,7 +33,7 @@
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer group"
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -61,7 +61,7 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0 vertical-center group-hover:opacity-100"
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -82,6 +82,7 @@
         ref,
         watch,
         computed,
+        toRaw,
         toRefs,
     } from 'vue'
     import { message } from 'ant-design-vue'
@@ -92,9 +93,11 @@
     import Classification from '@common/input/classification/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
+        updateSelectedPersona,
         selectedPersonaDirty,
         saveClassifications,
     } from '../composables/useEditPurpose'
+    import { selectedPersona } from '../composables/usePurposeList'
 
     export default defineComponent({
         name: 'PurposeMeta',
@@ -135,12 +138,12 @@
             const selectedClassifications = ref(
                 mapClassificationsFromNames.value
             )
-            const addClassificationsDisabled = computed(() =>
-                selectedClassifications.value.length > 0 ? true : false
-            )
 
-            const updateClassifications = async () => {
+            const updateClassifications = async (classifications) => {
                 const messageKey = Date.now()
+                selectedPersonaDirty.value.tags = classifications.map(
+                    (e) => e.typeName
+                )
                 message.loading({
                     content: 'Saving classifications',
                     duration: 0,
@@ -148,12 +151,19 @@
                 })
                 try {
                     await saveClassifications()
+                    updateSelectedPersona()
                     message.success({
                         content: 'Classifications saved',
                         duration: 1.5,
                         key: messageKey,
                     })
                 } catch (error) {
+                    selectedPersonaDirty.value = {
+                        ...JSON.parse(JSON.stringify(selectedPersona.value)),
+                    }
+                    selectedClassifications.value = [
+                        ...toRaw(mapClassificationsFromNames.value),
+                    ]
                     console.log(error?.response?.data, 'error')
                     message.error({
                         content: error?.response?.data?.message,
@@ -163,15 +173,15 @@
                 }
             }
 
-            watch(selectedPersonaDirty, () => {
+            watch(selectedPersona, () => {
                 selectedClassifications.value =
                     mapClassificationsFromNames.value
             })
 
             return {
+                selectedPersona,
                 updateClassifications,
                 selectedPersonaDirty,
-                addClassificationsDisabled,
                 selectedClassifications,
                 enablePersonaCheck,
                 enablePersona,

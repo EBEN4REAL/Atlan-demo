@@ -22,6 +22,6 @@ export const getters: Getters = {
         return reqBmAttrNames
     },
     getForceRevalidate(state: State) {
-      return state.forceRevalidate;
+        return state.forceRevalidate
     },
-
+}

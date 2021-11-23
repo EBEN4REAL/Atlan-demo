@@ -273,6 +273,8 @@
                         saveModalRef = el
                     }
                 "
+                :savedQueryType="'personal'"
+                :parentFolder="queryFolderNamespace"
                 @onSaveQuery="saveQuery"
             />
             <Monaco @editorInstance="setInstance" />
@@ -395,6 +397,8 @@
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
 
+    import { Folder } from '~/types/insights/savedQuery.interface'
+
     export default defineComponent({
         components: {
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
@@ -460,6 +464,11 @@
             const { closeAssetSidebar, openAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
+            )
+
+            const queryFolderNamespace = inject<Ref<Folder>>(
+                'queryFolderNamespace',
+                ref({}) as Ref<Folder>
             )
 
             const {
@@ -770,6 +779,7 @@
                 saveQuery,
                 setInstance,
                 toggleRun,
+                queryFolderNamespace,
             }
         },
     })

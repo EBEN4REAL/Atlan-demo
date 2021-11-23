@@ -10,14 +10,22 @@
                                 class="px-2 border border-r-0 border-gray-300 rounded-tl rounded-tr-none rounded-bl rounded-br-none "
                             >
                                 <AtlanIcon
-                                    :icon="false ? 'FilterDot' : 'Filter'"
+                                    :icon="false ? 'FilterDot' : 'FilterFunnel'"
                                     class="w-4 h-4"
+                                    @click="
+                                        queryLogsFilterDrawerVisible =
+                                            !queryLogsFilterDrawerVisible
+                                    "
                                 />
                             </a-button>
                         </div>
                         <a-input-search
                             v-model:value="searchText"
-                            :placeholder="`Search through ${totalCount} logs`"
+                            :placeholder="
+                                filteredLogsCount
+                                    ? `Search through ${filteredLogsCount} logs`
+                                    : `Search logs`
+                            "
                             class="w-1/3 mr-1 border border-gray-300 rounded-none rounded-tr rounded-br shadow-sm "
                             size="default"
                             :allow-clear="true"
@@ -41,14 +49,54 @@
                 :selected-row-keys="selectedRowKeys"
                 @selectQuery="handleSelectQuery"
             />
-            <!-- <div class="flex justify-end max-w-full mt-4">
-                <a-pagination
-                    :total="pagination.total"
-                    :current="pagination.current"
-                    :page-size="pagination.pageSize"
-                    @change="handlePagination"
-                />
-            </div> -->
+            <!-- <div class="flex justify-end max-w-full "> -->
+            <div
+                v-if="(queryList && queryList.length) || isLoading"
+                class="flex flex-row items-center justify-end w-full mt-4"
+            >
+                <AtlanBtn
+                    class="bg-transparent rounded-r-none"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    :disabled="pagination.current === 1"
+                    @click="handlePagination(pagination.current - 1)"
+                >
+                    <AtlanIcon icon="CaretLeft" />
+                </AtlanBtn>
+                <AtlanBtn
+                    class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default "
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                >
+                    {{ pagination.current }} of
+                    <span v-if="Math.ceil(pagination.total)">{{
+                        Math.ceil(pagination.total)
+                    }}</span>
+
+                    <div
+                        v-else-if="isLoading"
+                        class="flex items-center justify-center"
+                    >
+                        <AtlanIcon icon="CircleLoader" class="animate-spin" />
+                    </div>
+                </AtlanBtn>
+
+                <AtlanBtn
+                    class="bg-transparent rounded-l-none"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    :disabled="
+                        pagination.current === Math.ceil(pagination.total)
+                    "
+                    @click="handlePagination(pagination.current + 1)"
+                >
+                    <AtlanIcon icon="CaretRight" />
+                </AtlanBtn>
+            </div>
+            <!-- </div> -->
         </DefaultLayout>
         <a-drawer
             :visible="isQueryPreviewDrawerVisible"
@@ -63,12 +111,33 @@
                 @selectQuery="handleSelectQuery"
             />
         </a-drawer>
+        <a-drawer
+            :visible="queryLogsFilterDrawerVisible"
+            :mask="false"
+            :placement="'left'"
+            :width="270"
+            :closable="false"
+        >
+            <AssetFilters
+                v-model="facets"
+                :filter-list="queryLogsFilter"
+                :allow-custom-filters="false"
+                class="bg-gray-100"
+                @change="handleFilterChange"
+                @reset="handleResetEvent"
+            >
+                <Connector
+                    v-model:data="facets.connector"
+                    :filter-source-ids="['powerbi', 'tableau']"
+                    class="px-2 py-3"
+                    @change="handleFilterChange"
+            /></AssetFilters>
+        </a-drawer>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, computed } from 'vue'
-import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import map from '~/constant/accessControl/map'
 import DefaultLayout from '~/components/admin/layout.vue'
@@ -78,6 +147,10 @@ import QueryPreviewDrawer from '~/components/governance/queryLogs/queryDrawer.vu
 import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
 import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
 import { useQueryLogs } from './composables/useQueryLogs'
+import AssetFilters from '@/common/assets/filters/index.vue'
+import { queryLogsFilter } from '~/constant/filters/logsFilter'
+import Connector from '~/components/insights/common/connector/connector.vue'
+import { useConnector } from '~/components/insights/common/composables/useConnector'
 
 export default defineComponent({
     name: 'ApiKeysView',
@@ -87,11 +160,14 @@ export default defineComponent({
         QueryLogTable,
         TimeFrameSelector,
         QueryPreviewDrawer,
+        AssetFilters,
+        Connector,
     },
     setup() {
         /** LOCAL STATE */
+        const facets = ref({})
         const searchText: Ref<string> = ref('')
-        const isAPIKeyDrawerVisible: Ref<boolean> = ref(false)
+        const queryLogsFilterDrawerVisible: Ref<boolean> = ref(false)
         const timeFrame = ref('30 days')
         const selectedQuery = ref({})
         const isQueryPreviewDrawerVisible = ref(false)
@@ -99,14 +175,17 @@ export default defineComponent({
             dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
         )
         const lt = ref(dayjs().format())
-
+        const from = ref(0)
+        const size = ref(6)
+        const { getDatabaseName, getSchemaName, getConnectionQualifiedName } =
+            useConnector()
         const {
             list: queryList,
             mutateBody,
             refetchList,
             isLoading,
-            totalCount,
-        } = useQueryLogs(gte, lt)
+            filteredLogsCount,
+        } = useQueryLogs(gte, lt, from, size)
 
         const handleRangePickerChange = (e) => {
             console.log(e)
@@ -153,12 +232,66 @@ export default defineComponent({
                 : []
         )
 
+        const refreshList = () => {
+            const usernames = facets.value?.users?.ownerUsers
+            const queryStatusValues = facets.value?.queryStatus?.status
+            const connectorFacet = facets.value?.connector?.attributeName
+            const facetValue = facets.value?.connector?.attributeValue
+            let schemaName = ''
+            let dbName = ''
+            let connectionQF = ''
+            let connectorName = ''
+            if (connectorFacet) {
+                if (connectorFacet === 'schemaQualifiedName') {
+                    dbName = getDatabaseName(facetValue) || ''
+                    schemaName = getSchemaName(facetValue) || ''
+                    connectionQF = getConnectionQualifiedName(facetValue) || ''
+                } else if (connectorFacet === 'databaseQualifiedName') {
+                    dbName = getDatabaseName(facetValue) || ''
+                    connectionQF = getConnectionQualifiedName(facetValue) || ''
+                } else if (connectorFacet === 'connectionQualifiedName') {
+                    connectionQF = facetValue || ''
+                } else if (connectorFacet === 'connectorName') {
+                    connectorName = facetValue || ''
+                }
+            }
+            mutateBody({
+                from,
+                size,
+                gte,
+                lt,
+                usernames,
+                queryStatusValues,
+                dbName,
+                schemaName,
+                connectionQF,
+                connectorName,
+            })
+            refetchList()
+        }
+        const handleFilterChange = () => {
+            from.value = 0
+            refreshList()
+        }
+        const handlePagination = (page) => {
+            const offset = (page - 1) * size.value
+            from.value = offset
+            refreshList()
+        }
+        const pagination = computed(() => ({
+            total: filteredLogsCount.value / size.value,
+            pageSize: size.value,
+            current: from.value / size.value + 1,
+        }))
+
+        const handleResetEvent = (obj) => {
+            console.log(obj)
+        }
         return {
             selectedRowKeys,
             isQueryPreviewDrawerVisible,
             selectedQuery,
             queryList,
-            totalCount,
             isLoading,
             handleSearch,
             handleSelectQuery,
@@ -166,9 +299,16 @@ export default defineComponent({
             handleRangePickerChange,
             timeFrame,
             searchText,
-            isAPIKeyDrawerVisible,
+            queryLogsFilterDrawerVisible,
             NewAPIKeyIllustration,
             map,
+            queryLogsFilter,
+            handleFilterChange,
+            handleResetEvent,
+            facets,
+            pagination,
+            filteredLogsCount,
+            handlePagination,
         }
     },
 })

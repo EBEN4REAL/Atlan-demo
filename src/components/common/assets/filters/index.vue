@@ -21,6 +21,7 @@
                 <span> Filters</span>
             </div>
         </div>
+        <slot></slot>
         <div class="h-full overflow-y-auto">
             <a-collapse
                 v-model:activeKey="localActiveKeyValue"

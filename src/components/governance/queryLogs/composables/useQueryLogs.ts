@@ -6,14 +6,19 @@ import { SourceList } from '~/constant/source'
 
 const { listQueryLogs } = useLogsService()
 const { getConnectionName, getConnectorName } = useConnector()
-export function useQueryLogs(gte: Ref<string>, lt: Ref<string>) {
+export function useQueryLogs(
+    gte: Ref<string>,
+    lt: Ref<string>,
+    from = ref(0),
+    size = ref(6)
+) {
     const body = ref<Record<string, any>>({})
-    const from = ref(0)
-    const limit = ref(100)
+    // const from = ref(0)
+    // const limit = ref(100)
 
     const dsl = useBody({
         from: from.value,
-        limit: limit.value,
+        limit: size.value,
         gte: gte.value,
         lt: lt.value,
     })
@@ -22,23 +27,46 @@ export function useQueryLogs(gte: Ref<string>, lt: Ref<string>) {
     const { data, mutate: refetchList, isLoading } = listQueryLogs(body)
 
     const list = computed(() => data.value?.hits?.hits)
-    const totalCount = computed(() => limit.value + from.value)
-
-    function mutateBody({ gte, lt }) {
+    const totalCount = computed(() => size.value + from.value)
+    const filteredLogsCount = computed(() => data.value?.hits?.total?.value)
+    function mutateBody({
+        from,
+        size,
+        gte,
+        lt,
+        usernames,
+        queryStatusValues,
+        schemaName,
+        dbName,
+        connectionQF,
+        connectorName,
+    }) {
         body.value = useBody({
             from: from.value,
-            limit: limit.value,
+            limit: size.value,
             gte,
             lt,
+            usernames,
+            queryStatusValues,
+            schemaName,
+            dbName,
+            connectionQF,
+            connectorName,
         })
     }
-
+    const paginateLogs = (page: number) => {
+        // modify offset
+        const offset = (page - 1) * size.value
+        from.value = offset
+    }
     return {
         list,
         mutateBody,
         refetchList,
         totalCount,
         isLoading,
+        filteredLogsCount,
+        paginateLogs,
     }
 }
 export const getQueryMetadata = (query) => {

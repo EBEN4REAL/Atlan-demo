@@ -15,7 +15,9 @@
                             <div
                                 :class="
                                     !enableTabs.includes('users')
-                                        ? 'pointer-events-none cursor-not-allowed'
+                                        ? hideDisabledTabs
+                                            ? 'hidden'
+                                            : 'pointer-events-none cursor-not-allowed'
                                         : ''
                                 "
                             >
@@ -35,7 +37,9 @@
                             <div
                                 :class="
                                     !enableTabs.includes('groups')
-                                        ? 'pointer-events-none cursor-not-allowed'
+                                        ? hideDisabledTabs
+                                            ? 'hidden'
+                                            : 'pointer-events-none cursor-not-allowed'
                                         : ''
                                 "
                             >
@@ -149,6 +153,10 @@
             enableTabs: {
                 type: Object as PropType<Array<any>>,
                 default: ['users', 'groups'],
+            },
+            hideDisabledTabs: {
+                type: Boolean,
+                default: false,
             },
         },
         emits: ['change', 'update:modelValue'],

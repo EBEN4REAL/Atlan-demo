@@ -1,3 +1,55 @@
+export const allTabs = [
+    {
+        // tab name
+        name: 'About',
+        // tab icon
+        iconClass: '',
+        // component name in userPreview.vue
+        component: 'UserAbout',
+        // unique id for tab - the one that'll get passed from different components
+        key: 'about',
+        icon: 'Overview',
+        tooltip: 'User Info',
+        activeIcon: 'InfoActive',
+    },
+    {
+        name: 'Assets',
+        iconClass: '',
+        component: 'Assets',
+        key: 'assets',
+        icon: 'AssetsInactiveLight',
+        tooltip: 'Assets',
+        activeIcon: 'AssetsActiveLight',
+    },
+    {
+        name: 'Groups',
+        iconClass: '',
+        component: 'Groups',
+        key: 'groups',
+        icon: 'GroupLight',
+        tooltip: 'Groups',
+        activeIcon: 'GroupActive',
+    },
+    {
+        name: 'Sessions',
+        iconClass: '',
+        component: 'Sessions',
+        key: 'sessions',
+        icon: 'Hourglass',
+        tooltip: 'Sessions',
+        activeIcon: 'HourglassActive',
+    },
+    {
+        name: 'Access Logs',
+        iconClass: '',
+        component: 'AccessLogs',
+        key: 'accessLogs',
+        icon: 'AccessLogs',
+        tooltip: 'Access Logs',
+        activeIcon: 'AccessLogsActive',
+    },
+]
+
 export const userColumns = [
     {
         title: 'User',
@@ -7,7 +59,7 @@ export const userColumns = [
         slots: { customRender: 'name' },
         sortKey: 'first_name',
         colSpan: 2,
-        align: 'left'
+        align: 'left',
     },
     {
         title: 'Role',

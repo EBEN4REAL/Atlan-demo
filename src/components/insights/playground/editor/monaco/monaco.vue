@@ -146,15 +146,15 @@
 
                     // console.log('active inline tab: ', activeInlineTab.value)
 
-                    if (matches?.length > 0) {
+                    if (matches?.length >= 0) {
                         createDebounce()(() => {
                             //editor in left
                             // saved var in right
-                            console.log(
-                                'all saved vars: ',
-                                activeInlineTab.value.playground.editor
-                                    .variables
-                            )
+                            // console.log(
+                            //     'all saved vars: ',
+                            //     activeInlineTab.value.playground.editor
+                            //         .variables
+                            // )
 
                             const resultsLeft = matches.filter(
                                 (match) =>
@@ -184,9 +184,9 @@
                                         )
                                 )
 
-                            console.log('intersection: ', intersection)
+                            // console.log('intersection: ', intersection)
 
-                            console.log('left diff: ', resultsLeft)
+                            // console.log('inter left diff: ', resultsLeft)
 
                             // matches?.forEach((match) => {
                             //     //check if it exist:

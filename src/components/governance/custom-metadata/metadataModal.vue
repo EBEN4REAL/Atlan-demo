@@ -177,9 +177,6 @@
 
 <style lang="less">
     .add-metadata-modal {
-        .ant-modal-body {
-            padding: 1rem;
-        }
         .ant-input {
             border: none !important;
         }

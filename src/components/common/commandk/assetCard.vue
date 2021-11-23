@@ -23,13 +23,21 @@
                         v-else
                         class="flex items-center pl-1 mb-0 overflow-hidden"
                     >
-                        <router-link
-                            :to="assetURL(item)"
-                            class="flex-shrink mb-0 overflow-hidden text-sm font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
-                            @click="$emit('closeModal')"
+                        <Popover
+                            v-if="hasPopHover"
+                            :logo-title="getConnectorImage(item)"
+                            :title="assetTypeLabel(item) || item.typeName"
+                            :item="item"
+                            :path="assetURL(item)"
                         >
-                            {{ title(item) }}
-                        </router-link>
+                            <router-link
+                                :to="assetURL(item)"
+                                class="flex-shrink mb-0 overflow-hidden text-sm font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                @click="$emit('closeModal')"
+                            >
+                                {{ title(item) }}
+                            </router-link>
+                        </Popover>
                         <CertificateBadge
                             v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"
@@ -102,6 +110,7 @@
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowsColumnCount from '@/common/info/rowsColumnCount.vue'
+    import Popover from '~/components/common/popover/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -110,6 +119,7 @@
             CertificateBadge,
             AssetLogo,
             RowsColumnCount,
+            Popover,
         },
         props: {
             item: {
@@ -118,6 +128,11 @@
                 default(): Components.Schemas.AtlasEntityHeader {
                     return {}
                 },
+            },
+            hasPopHover: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['closeModal'],
@@ -134,6 +149,8 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                getConnectorImage,
+                assetTypeLabel,
             } = useAssetInfo()
 
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
@@ -157,6 +174,8 @@
                 certificateStatusMessage,
                 dataTypeCategoryImage,
                 assetURL,
+                getConnectorImage,
+                assetTypeLabel,
             }
         },
     })

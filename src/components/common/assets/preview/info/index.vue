@@ -287,7 +287,6 @@
             :footer="null"
             :closable="false"
             width="1000px"
-            :class="$style.sampleDataModal"
         >
             <SampleDataTable :asset="selectedAsset" />
         </a-modal>
@@ -719,11 +718,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .sampleDataModal {
-        :global(.ant-modal-body) {
-            @apply p-2 !important;
-        }
-    }
-</style>

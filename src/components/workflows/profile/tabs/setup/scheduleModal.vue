@@ -637,17 +637,6 @@
     })
 </script>
 
-<style lang="less" module>
-    .scheduleModal {
-        :global(.ant-modal-body) {
-            @apply p-0 !important;
-        }
-    }
-    :global(.ant-popover-inner-content) {
-        @apply p-0 !important;
-    }
-</style>
-
 <style lang="less" scoped>
     .day {
         @apply flex-1 w-full px-4 py-1 text-center cursor-pointer border border-l-0 overflow-hidden;

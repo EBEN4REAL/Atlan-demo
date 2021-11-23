@@ -56,6 +56,7 @@
                                 :get-popup-container="
                                     (target) => target.parentNode
                                 "
+                                list-height="240"
                                 @change="handleTypeNameChange"
                             >
                                 <a-select-option
@@ -162,16 +163,16 @@
                     <div class="flex">
                         <div class="relative" style="width: 100%">
                             <a-form-item
-                            label="Description"
-                            :name="['description']"
-                            class=""
-                        >
-                            <a-input
-                                v-model:value="form.options.description"
-                                type="text"
+                                label="Description"
+                                :name="['description']"
                                 class=""
-                            />
-                        </a-form-item>
+                            >
+                                <a-input
+                                    v-model:value="form.options.description"
+                                    type="text"
+                                    class=""
+                                />
+                            </a-form-item>
                         </div>
                     </div>
                     <div class="flex mb-6">
@@ -190,7 +191,9 @@
                                             <div
                                                 class="flex flex-col items-center w-60"
                                             >
-                                                This property will only be available for selected asset types
+                                                This property will only be
+                                                available for selected asset
+                                                types
                                             </div>
                                         </template>
                                         <AtlanIcon

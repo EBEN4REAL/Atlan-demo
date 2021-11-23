@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative flex items-center justify-center bg-gray-100 rounded cursor-pointer "
+        class="relative flex items-center justify-center rounded cursor-pointer "
         :style="{ width: size, height: size }"
     >
         <a-spin v-if="isUpdating" />

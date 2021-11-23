@@ -186,9 +186,9 @@ export default defineComponent({
             strokeColor: '#00A680',
         }))
         const getQueryStatusBgClass = (status) => {
-            if (status.toLowerCase() === 'success') return 'bg-green-100'
-            if (status.toLowerCase() === 'error') return 'bg-red-100'
-            if (status.toLowerCase() === 'abort') return 'bg-yellow-100'
+            if (status.toLowerCase() === 'success') return 'bg-success-muted'
+            if (status.toLowerCase() === 'error') return 'bg-error-muted'
+            if (status.toLowerCase() === 'abort') return 'bg-alert-muted'
             return ''
         }
         const getQueryStatusCopy = (status) => {

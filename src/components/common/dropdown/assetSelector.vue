@@ -40,12 +40,16 @@
         :showSearch="true"
         notFoundContent="No data available"
         style="width: 100%; border-radius: 8px"
-        :class="$style.connector"
+        :class="[
+            $style.connector,
+            bgGrayForSelector ? `${$style.selector_bg}` : '',
+        ]"
         @change="handleChange"
         :disabled="disabled"
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
         dropdownClassName="connectorDropdown"
         :loading="isLoading"
+        
     >
         <!-- <template #title="node">
             <div class="flex items-center">
@@ -189,6 +193,11 @@
             border: 1px solid #e9ebf1 !important;
             color: #6f7590 !important;
             border-radius: 8px !important;
+        }
+    }
+    .selector_bg {
+        :global(.ant-select-selector) {
+            background-color: #fbfbfb !important;
         }
     }
 </style>

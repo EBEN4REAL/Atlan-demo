@@ -26,6 +26,7 @@
                 read-only
                 popover-trigger="hover"
             >
+                <!-- {{ item }} -->
                 <template #pillPrefix="{ item }">
                     <AtlanIcon
                         v-if="item && item.type === 'classification'"

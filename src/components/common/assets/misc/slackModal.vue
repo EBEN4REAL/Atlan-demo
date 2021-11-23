@@ -41,10 +41,14 @@
                         :disabled="!channel"
                         @clisck="shareToSlack"
                     >
-                        Update
+                        Share
                     </AtlanButton>
                 </template>
-                <router-link v-else to="/admin/integration">
+                <router-link
+                    v-else
+                    v-auth="access.CREATE_INTEGRATION"
+                    to="/admin/integration"
+                >
                     <AtlanButton>Add integration</AtlanButton>
                 </router-link>
             </div>
@@ -59,6 +63,7 @@
     import intStore from '~/store/integrations/index'
     import AtlanButton from '@/UI/button.vue'
     import { shareOnSlack } from '~/composables/integrations/useSlack'
+    import access from '~/constant/accessControl/map'
 
     const props = defineProps({
         link: {

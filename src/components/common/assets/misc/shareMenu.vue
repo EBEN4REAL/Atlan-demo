@@ -18,6 +18,7 @@
 
                 <a-menu-item
                     key="slack"
+                    v-auth="access.USE_INTEGRATION_ACTION"
                     class="flex items-center"
                     @click="closeMenu"
                 >
@@ -40,6 +41,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SlackModal from './slackModal.vue'
+    import access from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'ShareMenu',
@@ -75,6 +77,7 @@
             }
 
             return {
+                access,
                 link,
                 handleCopyProfileLink,
                 isVisible,

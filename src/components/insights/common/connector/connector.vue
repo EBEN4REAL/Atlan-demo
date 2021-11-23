@@ -1,7 +1,10 @@
 <template>
     <div class="w-full">
         <a-tree-select
-            :class="$style.tree_selecttor"
+        :class="[
+            $style.tree_selecttor,
+            bgGrayForSelector ? `${$style.selector_bg}` : '',
+        ]"
             :value="selectedValue"
             style="width: 100%"
             v-model:treeExpandedKeys="expandedKeys"
@@ -37,6 +40,7 @@
             :connector="filteredConnector"
             :filter="data"
             @change="handleChange"
+            :bgGrayForSelector="bgGrayForSelector"
             @label-change="setPlaceholder($event, 'asset')"
         ></AssetDropdown>
     </div>
@@ -78,6 +82,10 @@
             isLeafNodeSelectable: {
                 type: Boolean,
                 required: false,
+                default: true,
+            },
+            bgGrayForSelector: {
+                type: Boolean,
                 default: true,
             },
         },
@@ -360,10 +368,14 @@
     .tree_selecttor {
         :global(.ant-select-selector) {
             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
-            background-color: #fbfbfb !important;
             border: 1px solid #e9ebf1 !important;
             color: #6f7590 !important;
             border-radius: 8px !important;
+        }
+    }
+    .selector_bg {
+        :global(.ant-select-selector) {
+            background-color: #fbfbfb !important;
         }
     }
 </style>

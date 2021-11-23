@@ -141,6 +141,7 @@
                     :key="selectedAsset.guid"
                     :is="tab.component"
                     :selected-asset="selectedAsset"
+                    :data="tab.data"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -202,9 +203,9 @@
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
-            // businessMetadataTab: defineAsyncComponent(
-            //     () => import('./tabs/businessMetadata/businessMetadataTab.vue')
-            // ),
+            customMetadata: defineAsyncComponent(
+                () => import('./customMetadata/index.vue')
+            ),
             // CertificatePopover,
         },
 

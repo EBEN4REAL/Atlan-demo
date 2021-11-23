@@ -137,10 +137,11 @@ export default function useAssetInfo() {
             customTabList = cmList(assetType(asset)).map((i) => {
                 console.log(i)
                 return {
-                    component: 'custommetadata',
+                    component: 'customMetadata',
                     image: i.options?.imageId,
                     name: i.label,
                     tooltip: i.label,
+                    data: i,
                 }
             })
         }

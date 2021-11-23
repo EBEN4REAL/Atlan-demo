@@ -3,15 +3,16 @@
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
             <template #label="t">
                 <div class="flex items-center">
-                    <span
-                        class="text-sm"
+                    <div
+                        class="relative text-sm"
                         :class="
                             activeTabKey === t?.data?.key
                                 ? 'text-gray-700 '
                                 : 'text-gray-500'
                         "
-                        >{{ t?.data?.label }}</span
                     >
+                        {{ t?.data?.label }}
+                    </div>
                     <div
                         class="
                             px-1
@@ -87,8 +88,8 @@
                         v-if="policyEditMap.metadataPolicies[policy.id!]"
                         class="px-5"
                         :policy="policy"
-                        @delete="deletePolicyUI('meta', policy.id!)"
                         @save="savePolicyUI('meta', policy.id!)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                     />
 
@@ -98,6 +99,8 @@
                         :policy="policy"
                         type="meta"
                         @edit="setEditFlag('meta', policy.id!)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
+                        @cancel="discardPolicy('meta', policy.id!)"
                     />
                 </template>
 
@@ -121,6 +124,8 @@
                         :policy="policy"
                         type="data"
                         @edit="setEditFlag('data', policy.id!)"
+                        @delete="deletePolicyUI('data', policy.id!)"
+                        @cancel="discardPolicy('data', policy.id!)"
                     />
                 </template>
                 <div

@@ -53,7 +53,6 @@
         discardPersona,
         selectedPersonaDirty,
         deletePersonaById,
-        deletePersonaByIdLocally,
     } from './composables/useEditPurpose'
 
     import Dropdown from '@/UI/dropdown.vue'

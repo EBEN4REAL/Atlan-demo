@@ -17,8 +17,8 @@ export default function useTypedefData() {
     )
 
     const customMetadataList = computed(() => typedefStore.customMetadataList)
-    const enumList = computed(() => {
-        return typedefStore.enumList
+    const enumList = computed(() =>
+        typedefStore.enumList
             .filter((x) => x.serviceType !== 'atlas_core')
             .sort((a, b) => {
                 if (a.name.toLowerCase() > b.name.toLowerCase()) {
@@ -29,7 +29,7 @@ export default function useTypedefData() {
                 }
                 return 0
             })
-    })
+    )
 
     return {
         classificationList,

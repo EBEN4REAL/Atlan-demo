@@ -112,6 +112,7 @@
                             placeholder="Unassigned"
                             style="width: 100%"
                             :show-arrow="true"
+                            :options="getEnumOptions(a.typeName)"
                             class=""
                         />
                     </div>
@@ -151,6 +152,7 @@
                 isLink,
                 formatDisplayValue,
                 getApplicableAttributes,
+                getEnumOptions,
             } = useCustomMetadataHelpers()
 
             const applicableList = ref(
@@ -212,6 +214,7 @@
                 readOnly,
                 handleUpdate,
                 handleCancel,
+                getEnumOptions,
             }
         },
     })

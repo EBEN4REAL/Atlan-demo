@@ -1,8 +1,11 @@
+import useTypedefData from '../typedefs/useTypedefData'
 import { formatDate } from '../../utils/date'
 
 const numberTypes = ['int', 'double', 'float', 'byte', 'short', 'long']
 
 export default function useCustomMetadataHelpers() {
+    const { enumList } = useTypedefData()
+
     const getDatatypeOfAttribute = (typeName: string) => {
         if (typeName && typeof typeName !== 'undefined') {
             if (numberTypes.includes(typeName)) return `number`
@@ -58,10 +61,25 @@ export default function useCustomMetadataHelpers() {
                 )
         )
 
+    const getEnumOptions = (enumName: string) => {
+        if (enumList.value.length) {
+            return (
+                enumList.value
+                    .find((e) => e.name === enumName)
+                    ?.elementDefs.map((a) => ({
+                        label: a.value,
+                        value: a.value,
+                    })) || []
+            )
+        }
+        return []
+    }
+
     return {
         getDatatypeOfAttribute,
         isLink,
         formatDisplayValue,
         getApplicableAttributes,
+        getEnumOptions,
     }
 }

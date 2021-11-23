@@ -1,6 +1,12 @@
 <template>
     <a-form ref="formRef" :model="formState" :colon="false" type="flex">
-        <FormItem :properties="sectionProperty()"></FormItem>
+        <template v-for="property in sectionProperty()" :key="`${property.id}`">
+            <Component
+                v-model="formState[property?.id]"
+                :is="componentName(property)"
+                :property="property"
+            ></Component>
+        </template>
     </a-form>
 </template>
 
@@ -14,19 +20,35 @@
         ref,
         onBeforeMount,
         toRaw,
-        provide,
         // onErrorCaptured,
         // Suspense,
     } from 'vue'
 
+    import Input from './widget/input.vue'
+    import Boolean from './widget/boolean.vue'
+    import InputNumber from './widget/inputNumber.vue'
+    import Select from './widget/select.vue'
+    import Radio from './widget/selectRadio.vue'
+    import Credential from './widget/credential.vue'
+    import Form from './widget/form.vue'
+    import Section from './widget/section.vue'
+    import Sql from './widget/sql.vue'
+    import Password from './widget/password.vue'
     import { useVModels } from '@vueuse/core'
-
-    import FormItem from './formItem.vue'
 
     export default defineComponent({
         name: 'DynamicForm',
         components: {
-            FormItem,
+            Input,
+            InputNumber,
+            Boolean,
+            Select,
+            Credential,
+            Radio,
+            Form,
+            Section,
+            Sql,
+            Password,
             // Suspense,
         },
         props: {
@@ -73,8 +95,6 @@
 
             const formState = reactive(modelValue.value)
 
-            provide('formState', formState)
-
             const sectionProperty = () => {
                 const list = []
 
@@ -104,10 +124,12 @@
                         }
                     )
                 }
+
                 return list
             }
 
             const isImplied = () => {
+                console.log(props.config)
                 localConfig.value = props.config
                 if (localConfig.value?.anyOf) {
                     localConfig.value.anyOf.forEach((item) => {
@@ -165,10 +187,9 @@
             }
 
             watch(formState, () => {
-                console.log(formState)
-                // isImplied()
-                // modelValue.value = formState
-                // emit('change')
+                isImplied()
+                modelValue.value = formState
+                emit('change')
             })
 
             onBeforeMount(() => {
@@ -188,10 +209,37 @@
                 })
             }
 
+            const componentName = (property) => {
+                if (!property.ui?.widget) {
+                    switch (property.type) {
+                        case 'string':
+                            return 'Input'
+                        case 'number':
+                            return 'InputNumber'
+                        case 'boolean':
+                            return 'Boolean'
+                        case 'array':
+                            return 'Select'
+                        case 'object':
+                            return 'Form'
+                        default:
+                            return 'Input'
+                    }
+                } else {
+                    return property.ui.widget
+                }
+            }
+
+            const itemClass = (property) => {
+                if (componentName(property).toLowerCase() === 'form')
+                    return 'mb-0'
+                return ''
+            }
+
             return {
                 config,
                 sectionProperty,
-
+                componentName,
                 formState,
                 currentStep,
                 isImplied,
@@ -199,7 +247,8 @@
                 dirtyTimestamp,
                 modelValue,
                 setDefaultValue,
-
+                itemClass,
+                removeNesting,
                 validateForm,
                 formRef,
             }

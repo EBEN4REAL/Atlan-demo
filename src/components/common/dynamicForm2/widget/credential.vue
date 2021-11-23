@@ -1,12 +1,5 @@
 <template>
-    <DynamicForm
-        :config="configMap"
-        v-model="localValue"
-        layout="horizontal"
-        labelAlign="left"
-        :labelCol="{ span: 6 }"
-        :wrapperCol="{ span: 14 }"
-    ></DynamicForm>
+    <FormItem :properties="list"></FormItem>
 </template>
 
 <script>
@@ -17,6 +10,10 @@
         reactive,
         watch,
         defineAsyncComponent,
+        ref,
+        inject,
+        onMounted,
+        onBeforeMount,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
@@ -24,8 +21,8 @@
     export default defineComponent({
         name: 'CredentialInput',
         components: {
-            DynamicForm: defineAsyncComponent(() =>
-                import('@/common/dynamicForm2/index.vue')
+            FormItem: defineAsyncComponent(() =>
+                import('@/common/dynamicForm2/formItem.vue')
             ),
         },
         props: {
@@ -53,7 +50,7 @@
                         properties: {
                             name: {
                                 type: 'string',
-                                required: true,
+                                required: false,
                                 ui: {
                                     label: 'Name',
                                     hidden: true,
@@ -62,7 +59,7 @@
                             },
                             connector: {
                                 type: 'string',
-                                required: true,
+                                required: false,
                                 ui: {
                                     label: 'Connector',
                                     hidden: true,
@@ -71,8 +68,9 @@
                             },
                             connectorType: {
                                 type: 'string',
-                                required: true,
+                                required: false,
                                 ui: {
+                                    key: '_host',
                                     label: 'connectorType',
                                     placeholder: 'connectorType',
                                     hidden: true,
@@ -91,6 +89,7 @@
                             port: {
                                 type: 'number',
                                 default: 443,
+                                required: false,
                                 ui: {
                                     label: 'Port',
                                     placeholder: 'Port',
@@ -120,7 +119,6 @@
                                     },
                                     password: {
                                         type: 'string',
-                                        default: 'Atlan#2020',
                                         ui: {
                                             widget: 'password',
                                             label: 'Password',
@@ -129,7 +127,7 @@
                                     },
                                 },
                                 ui: {
-                                    widget: 'section',
+                                    widget: 'nested',
                                     label: 'Basic',
                                     placeholder: 'Credential Type',
                                     nestedValue: false,
@@ -155,7 +153,7 @@
                                     },
                                 },
                                 ui: {
-                                    widget: 'section',
+                                    widget: 'nested',
                                     label: 'Private Key',
                                     nestedValue: false,
                                     placeholder: 'Credential Type',
@@ -185,7 +183,7 @@
                                     },
                                 },
                                 ui: {
-                                    widget: 'form',
+                                    widget: 'nested',
                                     label: 'Advanced',
                                     header: 'Advanced',
                                     hidden: false,
@@ -226,12 +224,98 @@
                 emit('change')
             })
 
+            const list = ref([])
+
+            const calculateList = () => {
+                const temp = []
+                Object.keys(configMap?.value?.properties).forEach((key) => {
+                    if (!configMap.value?.properties[key]?.ui.hidden) {
+                        temp.push({
+                            id: `${key}`,
+                            ...configMap.value?.properties[key],
+                        })
+                    }
+                })
+
+                list.value = temp
+            }
+
+            const formState = inject('formState')
+            const setDefaultValue = () => {
+                Object.keys(configMap.value.properties).forEach((key) => {
+                    if (formState) {
+                        if (!formState[key]) {
+                            formState[key] =
+                                configMap.value.properties[
+                                    key
+                                ]?.default?.toString()
+                        }
+                    }
+                })
+            }
+
+            onBeforeMount(() => {
+                setDefaultValue()
+            })
+            onMounted(() => {
+                isImplied()
+                calculateList()
+            })
+
+            const isImplied = () => {
+                console.log(configMap.value)
+                if (configMap.value?.anyOf) {
+                    configMap.value.anyOf.forEach((item) => {
+                        let loopStop = false
+                        Object.keys(item.properties).some((i) => {
+                            if (loopStop) {
+                                return
+                            }
+                            if (formState[i] !== item.properties[i]?.const) {
+                                loopStop = true
+                            }
+                        })
+                        if (!loopStop) {
+                            item.required.forEach((i) => {
+                                console.log(i)
+                                if (configMap.value.properties[i]) {
+                                    configMap.value.properties[
+                                        i
+                                    ].ui.hidden = false
+                                }
+                            })
+                        } else {
+                            item.required.forEach((i) => {
+                                console.log(i)
+                                if (configMap.value.properties[i]) {
+                                    configMap.value.properties[
+                                        i
+                                    ].ui.hidden = true
+                                }
+                            })
+                        }
+                    })
+                }
+
+                console.log(configMap.value)
+            }
+
+            watch(formState, () => {
+                console.log('isImplied')
+                isImplied()
+                calculateList()
+            })
+
             return {
                 property,
                 componentProps,
                 localValue,
                 configMap,
                 modelValue,
+                list,
+                setDefaultValue,
+                isImplied,
+                calculateList,
             }
         },
     })

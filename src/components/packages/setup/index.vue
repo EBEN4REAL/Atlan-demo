@@ -15,7 +15,6 @@
                     </template>
                 </a-steps>
                 <div class="flex-1 p-8 overflow-y-auto bg-white">
-                    {{ modelValue }}
                     <DynamicForm
                         ref="stepForm"
                         :config="configMapDerived"
@@ -140,7 +139,7 @@
                         properties: {
                             'connection-name': {
                                 type: 'string',
-                                required: true,
+                                required: false,
                                 ui: {
                                     label: 'Connection Name',
                                     placeholder: 'Connection Name',
@@ -148,7 +147,7 @@
                             },
                             'connection-qualifiedName': {
                                 type: 'string',
-                                required: true,
+                                required: false,
                                 ui: {
                                     label: 'Connection Qualified Name',
                                     placeholder: 'Connection Name',
@@ -436,7 +435,7 @@
             return {
                 tasks,
                 emit,
-                graphRef,
+
                 isAllowtoRun,
                 workflowTemplate,
                 handleChange,

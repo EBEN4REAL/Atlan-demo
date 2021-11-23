@@ -6,22 +6,24 @@
         :closable="false"
         :mask-closable="false"
     >
-        <!-- <template #title />
+        <div class="p-4 rounded">
+            <!-- <template #title />
         <p class="mb-4 text-base font-bold text-gray">{{ title }}</p> -->
-        <slot />
-        <div class="flex items-center justify-end gap-x-4">
-            <AtlanBtn
-                color="secondary"
-                padding="compact"
-                @click="$emit('cancel')"
-                >{{ cancelText }}</AtlanBtn
-            >
-            <AtlanBtn
-                :disabled="!title ? true : false"
-                padding="compact"
-                @click="$emit('ok')"
-                >{{ okText }}</AtlanBtn
-            >
+            <slot />
+            <div class="flex items-center justify-end gap-x-4">
+                <AtlanBtn
+                    color="secondary"
+                    padding="compact"
+                    @click="$emit('cancel')"
+                    >{{ cancelText }}</AtlanBtn
+                >
+                <AtlanBtn
+                    :disabled="!title ? true : false"
+                    padding="compact"
+                    @click="$emit('ok')"
+                    >{{ okText }}</AtlanBtn
+                >
+            </div>
         </div>
     </a-modal>
 </template>

@@ -27,7 +27,7 @@
                 >
                 <template #content>
                     <div
-                        class="flex flex-col items-center py-1 bg-white rounded"
+                        class="flex flex-col items-center px-3 py-4 bg-white rounded "
                         style="width: 270px"
                     >
                         <!-- <OwnersSelector
@@ -73,7 +73,7 @@
                                     >{{ `&nbsp;selected` }}</span
                                 >
                             </div>
-                            <div class="flex justify-between w-full mt-2">
+                            <div class="flex justify-between mt-2">
                                 <AtlanBtn
                                     size="sm"
                                     @click="() => setPopoverState(false)"

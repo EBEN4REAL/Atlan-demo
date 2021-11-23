@@ -48,7 +48,7 @@
                         >
                             {{ item.displayName }}
                         </span>
-                        <div class="w-1.5 h-1.5 rounded-full success"></div>
+                        <!-- <div class="w-1.5 h-1.5 rounded-full success"></div> -->
                     </div>
                 </template>
             </ExplorerList>

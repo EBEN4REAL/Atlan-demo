@@ -35,21 +35,35 @@
                     {{ rules.policyName.text }}
                 </div>
             </div>
-            <AtlanBtn
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click="removePolicy"
-                ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
-            ></AtlanBtn>
+            <a-popconfirm
+                placement="leftTop"
+                :title="getPopoverContent(policy)"
+                ok-text="Yes"
+                :ok-type="'default'"
+                overlayClassName="popoverConfirm"
+                cancel-text="Cancel"
+                @confirm="removePolicy"
+            >
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="plus-btn"
+                    ><AtlanIcon
+                        icon="Delete"
+                        class="-mx-1 text-red-400"
+                    ></AtlanIcon
+                ></AtlanBtn>
+            </a-popconfirm>
         </div>
-
+        <!-- FIXME: Filtersource IDs should be dynamic -->
         <div class="relative">
             <div class="mb-2 text-sm text-gray-500 required">Connection</div>
             <Connector
                 v-model:data="connectorData"
                 class="max-w-xs mb-6"
                 :disabled="!policy?.isNew"
+                :filterSourceIds="['powerbi', 'tableau']"
                 @change="handleConnectorChange"
                 @blur="
                     () => {
@@ -121,10 +135,12 @@
                             >
                                 <Pill class="group" @click="addConnectionAsset">
                                     <template #prefix>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center  text-primary group-hover:text-white"
+                                        >
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="h-4 mr-1"
                                             />
                                             <span class="text-xs">Add All</span>
                                         </div>
@@ -138,10 +154,12 @@
                                     @blur="d?.item?.handleBlur"
                                 >
                                     <template #prefix>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center  text-primary group-hover:text-white"
+                                        >
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="h-4 mr-1"
                                             />
                                             <span class="text-xs"
                                                 >Custom select</span
@@ -375,8 +393,11 @@
                     ? label.split('/').slice(3).join('/')
                     : label.split('/').slice(2).join('/')
             }
-
+            const getPopoverContent = (policy: any) => {
+                return `Are you sure you want to delete ${policy?.name}?`
+            }
             return {
+                getPopoverContent,
                 assetsIcons,
                 customRendererForLabel,
                 addConnectionAsset,

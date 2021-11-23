@@ -35,14 +35,27 @@
                     {{ rules.policyName.text }}
                 </div>
             </div>
-            <AtlanBtn
-                size="sm"
-                color="secondary"
-                padding="compact"
-                class="plus-btn"
-                @click="removePolicy"
-                ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
-            ></AtlanBtn>
+
+            <a-popconfirm
+                placement="leftTop"
+                :title="getPopoverContent(policy)"
+                ok-text="Yes"
+                :ok-type="'default'"
+                overlayClassName="popoverConfirm"
+                cancel-text="Cancel"
+                @confirm="removePolicy"
+            >
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="plus-btn"
+                    ><AtlanIcon
+                        icon="Delete"
+                        class="-mx-1 text-red-400"
+                    ></AtlanIcon
+                ></AtlanBtn>
+            </a-popconfirm>
         </div>
 
         <div class="relative">
@@ -127,26 +140,32 @@
                                     @blur="d?.item?.handleBlur"
                                 >
                                     <template #prefix>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center  text-primary group-hover:text-white"
+                                        >
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="h-4 mr-1"
                                             />
                                             <span class="text-xs">Add All</span>
                                         </div>
                                     </template>
                                 </Pill>
-                                <span class="mx-2 text-xs">OR</span>
+                                <span class="mx-2 text-xs text-gray-500"
+                                    >OR</span
+                                >
                                 <Pill
                                     class="group"
                                     @click="d?.item?.handleAdd"
                                     @blur="d?.item?.handleBlur"
                                 >
                                     <template #prefix>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center  text-primary group-hover:text-white"
+                                        >
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="h-4 mr-1"
                                             />
                                             <span class="text-xs"
                                                 >Custom select</span
@@ -173,7 +192,7 @@
         <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
         <div class="flex items-center gap-x-2">
             <a-switch
-                :class="policy.allow ? '' : 'checked'"
+                :class="policy.allow ? `` : 'checked'"
                 :checked="!policy.allow"
                 style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
@@ -365,7 +384,13 @@
                     )
                 )
             })
+
+            const getPopoverContent = (policy: any) => {
+                return `Are you sure you want to delete ${policy?.name}?`
+            }
+
             return {
+                getPopoverContent,
                 customRendererForLabel,
                 assetsIcons,
                 isreadOnlyPillGroup,

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 border-b border-gray-300 rounded  group hover:shadow"
+        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded  group hover:shadow"
         style="paddingleft: 12px; paddingroght: 12px"
     >
         <div class="flex items-center mb-4 gap-x-3">
@@ -15,54 +15,147 @@
                 {{ type === 'meta' ? 'Denied Permissions' : 'Denied Query' }}
             </span>
 
-            <div
-                class="flex items-center ml-auto bg-gray-200 border border-gray-200 rounded "
-            >
+            <div class="flex items-center ml-auto border rounded bg-gray-light">
                 <img
                     :src="getImage(connectionQfName?.split('/')[1])"
                     class="w-auto h-6 p-1 bg-white rounded-tl rounded-bl"
                 />
-                <span class="px-1 text-sm text-gray">
+                <span class="px-1 text-sm text-gray-700">
                     {{ connectionQfName?.split('/')?.slice(-1)[0] }}
                 </span>
             </div>
         </div>
         <div class="flex items-center mb-3 gap-x-6">
-            <span class="flex-none text-sm">
-                <b>{{ policy.assets.length }}</b> assets selected
+            <span class="flex-none text-sm" v-if="policy.assets.length > 0">
+                <b class="text-gray-700">{{ policy.assets.length }}</b> assets
+                selected
             </span>
+            <span class="flex-none text-sm" v-else> No assets selected </span>
             <div
                 v-if="type === 'meta'"
                 class="flex items-center overflow-hidden gap-x-1"
             >
-                <AtlanIcon class="flex-none text-gray-500" icon="Lock" />
-                <span class="text-sm text-gray-500 truncate">{{
-                    policy.actions.join(',')
-                }}</span>
+                <AtlanIcon class="flex-none -mt-1 text-gray-500" icon="Lock" />
+                <div class="flex items-center">
+                    <div
+                        class="flex items-center"
+                        v-if="actions[0].action.length > 0"
+                    >
+                        <span>{{ actions[0].label }}: &nbsp;</span>
+                        <span>{{ actions[0].action.join(', ') }}</span>
+                    </div>
+                    <div
+                        class="w-1 h-1 mx-1 bg-gray-300 rounded-full"
+                        v-if="actions[1].action.length > 0"
+                    ></div>
+                    <div
+                        class="flex items-center"
+                        v-if="actions[1].action.length > 0"
+                    >
+                        <span>{{ actions[1].label }}: &nbsp;</span>
+                        <span>{{ actions[1].action.join(', ') }}</span>
+                    </div>
+                    <div
+                        class="w-1 h-1 mx-1 bg-gray-300 rounded-full"
+                        v-if="actions[1].action.length > 0"
+                    ></div>
+                    <div
+                        class="flex items-center mr-1.5"
+                        v-if="actions[2].action.length > 0"
+                    >
+                        <span>{{ actions[2].label }}: &nbsp;</span>
+                        <span>{{ actions[2].action.join(', ') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div
+                v-if="type === 'data' && policy.maskType !== 'null'"
+                class="flex items-center overflow-hidden gap-x-1"
+            >
+                <AtlanIcon
+                    class="flex-none -mt-1.5 text-gray-500"
+                    icon="Hash"
+                />
+                <div class="flex items-center mt-0.5">
+                    <span>{{ policy.maskType }}</span>
+                </div>
             </div>
         </div>
         <div class="flex flex-wrap items-center gap-y-1.5">
-            <PillGroup
-                :data="assets"
-                label-key="label"
-                class="text-gray-700"
-                read-only
-            />
-            <AtlanBtn
-                class="flex-none opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click.prevent="$emit('edit')"
+            <div class="flex items-center gap-y-1.5 gap-x-2 flex-1 flex-wrap">
+                <template v-for="item in splitAssets.a" :key="item.label">
+                    <div
+                        class="flex items-center justify-center px-3 text-sm text-gray-700 border border-gray-300 rounded-full "
+                        style="padding-top: 4px; padding-bottom: 4px"
+                    >
+                        {{ item.label }}
+                    </div>
+                </template>
+                <template v-for="item in splitAssets.b" :key="item.label">
+                    <div
+                        v-if="showAll"
+                        class="flex items-center justify-center px-3 text-sm text-gray-700 border border-gray-300 rounded-full "
+                        style="padding-top: 4px; padding-bottom: 4px"
+                    >
+                        {{ item.label }}
+                    </div>
+                </template>
+                <div
+                    class="font-bold text-gray-500 cursor-pointer"
+                    @click="
+                        () => {
+                            showAll = !showAll
+                        }
+                    "
+                >
+                    <span v-if="!showAll && splitAssets.b.length > 0"
+                        >Show {{ splitAssets.b.length }} more</span
+                    >
+                    <span v-else-if="showAll">Show less</span>
+                </div>
+            </div>
+            <div
+                class="flex items-stretch border border-gray-300 rounded opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
             >
-                <AtlanIcon icon="Edit" class="mr-0.5" /> Edit
-            </AtlanBtn>
+                <AtlanBtn
+                    class="flex-none px-2 border-l border-gray-300 border-none  hover:text-primary"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    @click.prevent="$emit('edit')"
+                >
+                    <AtlanIcon icon="Pencil" class="" />
+                </AtlanBtn>
+                <div
+                    class="h-full bg-gray-300"
+                    style="width: 1px; height: 30px !important"
+                ></div>
+
+                <a-popconfirm
+                    placement="leftTop"
+                    :title="getPopoverContent(policy)"
+                    ok-text="Yes"
+                    :ok-type="'default'"
+                    overlayClassName="popoverConfirm"
+                    cancel-text="Cancel"
+                    @confirm="removePolicy"
+                >
+                    <AtlanBtn
+                        class="flex-none px-2 border-r border-gray-300 border-none  hover:text-red-500"
+                        size="sm"
+                        color="secondary"
+                        padding="compact"
+                    >
+                        <AtlanIcon icon="Delete" class="" />
+                    </AtlanBtn>
+                </a-popconfirm>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs, ref } from 'vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import AtlanBtn from '@/UI/button.vue'
     import {
@@ -71,6 +164,8 @@
     } from '~/types/accessPolicies/purposes'
     import { useConnectionStore } from '~/store/connection'
     import { useUtils } from '../assets/useUtils'
+    import useScopeService from '../composables/useScopeService'
+    import { splitArray } from '~/utils/string'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -88,10 +183,12 @@
                 required: true,
             },
         },
-        emits: ['edit'],
-        setup(props) {
+        emits: ['edit', 'cancel', 'delete'],
+        setup(props, { emit }) {
             const { policy, type } = toRefs(props)
+            const { findActions } = useScopeService()
             const { getAssetIcon } = useUtils()
+            const showAll = ref(false)
             const assets = computed(() => {
                 return policy.value.assets.map((name) => ({
                     label:
@@ -100,13 +197,19 @@
                             : name.split('/').slice(2).join('/'),
                 }))
             })
+            const splitAssets = computed(() => splitArray(3, assets.value))
             const assetsIcons = computed(() => {
                 return policy.value?.assets?.map((name) => getAssetIcon(name))
             })
+            const actions = computed(() => findActions(policy.value.actions))
 
             const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)
-
+            const removePolicy = () => {
+                /* Delete when the policy is saved */
+                if (!policy.value?.isNew) emit('delete')
+                emit('cancel')
+            }
             const connectionQfName = computed(() => {
                 if (type.value === 'meta') {
                     const found = connStore.getList.find(
@@ -116,8 +219,21 @@
                 }
                 return policy.value.connectionName
             })
+            const getPopoverContent = (policy: any) => {
+                return `Are you sure you want to delete ${policy?.name}?`
+            }
 
-            return { assets, getImage, connectionQfName, assetsIcons }
+            return {
+                getPopoverContent,
+                removePolicy,
+                assets,
+                getImage,
+                actions,
+                connectionQfName,
+                assetsIcons,
+                showAll,
+                splitAssets,
+            }
         },
     })
 </script>

@@ -154,30 +154,52 @@
                         </div>
                         <!------------------------------->
                         <!--For Others -->
-                        <div v-else class="parent-ellipsis-container">
-                            <AtlanIcon
-                                :icon="
-                                    getEntityStatusIcon(
-                                        assetType(item),
-                                        certificateStatus(item)
-                                    )
-                                "
-                                class="
-                                    w-4
-                                    h-4
-                                    mr-1.5
-                                    -mt-0.5
-                                    parent-ellipsis-container-extension
-                                "
-                            ></AtlanIcon>
+                        <!-- <div v-else> -->
+                        <div v-else class="flex w-full m-0">
+                            <div
+                                class="flex items-center justify-between w-full"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                assetType(item),
+                                                certificateStatus(item)
+                                            )
+                                        "
+                                        class="
+                                            w-4
+                                            h-4
+                                            mr-1.5
+                                            -mt-0.5
+                                            parent-ellipsis-container-extension
+                                        "
+                                    ></AtlanIcon>
 
-                            <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                                >{{ title(item) }}
-                                <span class="count-box">
-                                    {{ childCount(item) }}</span
-                                >
-                            </span>
+                                    <span
+                                        class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                        >{{ title(item)?.slice(0, 20) }}
+                                        {{
+                                            title(item).length > 20 ? '...' : ''
+                                        }}
+                                    </span>
+                                    <StatusBadge
+                                        v-if="certificateStatus(item)"
+                                        :key="item?.guid"
+                                        :show-no-status="false"
+                                        :status-id="certificateStatus(item)"
+                                        class="
+                                            ml-1.5
+                                            parent-ellipsis-container-extension
+                                        "
+                                    ></StatusBadge>
+                                </div>
+                                <div>
+                                    <span class="z-10 count-box">
+                                        {{ childCount(item) }}</span
+                                    >
+                                </div>
+                            </div>
 
                             <div
                                 v-if="hoverActions"
@@ -290,68 +312,72 @@
                 <div
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
-                    <div class="parent-ellipsis-container">
-                        <AtlanIcon
-                            :icon="assetType(item)"
-                            class="
-                                w-4
-                                h-4
-                                mr-1.5
-                                -mt-0.5
-                                parent-ellipsis-container-extension
-                            "
-                        ></AtlanIcon>
+                    <!-- <div class="parent-ellipsis-container"> -->
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex items-center">
+                            <AtlanIcon
+                                :icon="assetType(item)"
+                                class="
+                                    w-4
+                                    h-4
+                                    mr-1.5
+                                    -mt-0.5
+                                    parent-ellipsis-container-extension
+                                "
+                            ></AtlanIcon>
 
-                        <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >{{ title(item) }}
-                            <span class="count-box">
+                            <span
+                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                >{{ title(item)?.slice(0, 20) }}
+                                {{ title(item).length > 20 ? '...' : '' }}
+                            </span>
+                            <StatusBadge
+                                v-if="certificateStatus(item)"
+                                :key="item?.guid"
+                                :show-no-status="false"
+                                :status-id="certificateStatus(item)"
+                                class="
+                                    ml-1.5
+                                    parent-ellipsis-container-extension
+                                "
+                            ></StatusBadge>
+                        </div>
+                        <div>
+                            <span class="z-10 count-box">
                                 {{ childCount(item) }}</span
                             >
-                        </span>
-
-                        <StatusBadge
-                            v-if="certificateStatus(item)"
-                            :key="item?.guid"
-                            :show-no-status="false"
-                            :status-id="certificateStatus(item)"
-                            class="
-                                ml-1.5
-                                mb-1
-                                parent-ellipsis-container-extension
-                            "
-                        ></StatusBadge>
-                        <div
-                            v-if="hoverActions"
-                            class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
-                            :class="
-                                item?.selected
-                                    ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                    : 'bg-gradient-to-l from-gray-light via-gray-light'
-                            "
-                            @click.stop="() => {}"
-                        >
-                            <div
-                                class="pl-2 ml-24"
-                                @click="() => actionClick('add', item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title
-                                        >Place name in editor</template
-                                    >
-                                    <AtlanIcon
-                                        icon="AddAssetName"
-                                        class="w-4 h-4 my-auto"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : 'bg-gray-light'
-                                        "
-                                    ></AtlanIcon>
-                                </a-tooltip>
-                            </div>
                         </div>
                     </div>
+
+                    <div
+                        v-if="hoverActions"
+                        class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                        :class="
+                            item?.selected
+                                ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                : 'bg-gradient-to-l from-gray-light via-gray-light'
+                        "
+                        @click.stop="() => {}"
+                    >
+                        <div
+                            class="pl-2 ml-24"
+                            @click="() => actionClick('add', item)"
+                        >
+                            <a-tooltip color="#363636" placement="top">
+                                <template #title>Place name in editor</template>
+                                <AtlanIcon
+                                    icon="AddAssetName"
+                                    class="w-4 h-4 my-auto"
+                                    :class="
+                                        item?.selected
+                                            ? 'tree-light-color'
+                                            : 'bg-gray-light'
+                                    "
+                                ></AtlanIcon>
+                            </a-tooltip>
+                        </div>
+                    </div>
+                    <!-- </div> -->
                 </div>
             </div>
             <!--  -->
@@ -377,10 +403,7 @@
                             "
                         ></component>
                         <span class="mb-0 text-sm text-gray-700"
-                            >{{ title(item)
-                            }}<span class="count-box">
-                                {{ childCount(item) }}</span
-                            >
+                            >{{ title(item) }}
                         </span>
                         <StatusBadge
                             v-if="certificateStatus(item)"
@@ -858,29 +881,30 @@
     }
 
     .count-box {
-        justify-content: center;
-        align-items: center;
+        // justify-content: center;
+        // align-items: center;
         // padding: 4px;
-        margin: 4px;
-        display: inline-flex;
-        width: 18px;
-        height: 18px;
+        // margin: 4px;
+        // display: inline-flex;
+        // width: 18px;
+        // height: 18px;
 
         /* Blues/primary-light */
 
-        background: #f4f6fd;
-        border-radius: 4px;
+        // background: #f4f6fd;
+        // border-radius: 4px;
 
         font-family: Avenir LT Pro;
         font-style: normal;
-        font-weight: normal;
-        font-size: 12px;
+        font-weight: 400;
+        font-size: 14px;
         // line-height: 16px;
         /* identical to box height, or 133% */
 
         /* Blues/primary */
 
-        color: #5277d7;
+        // color: #5277d7;
+        @apply text-gray-500;
     }
 
     /* ------------------------------- */

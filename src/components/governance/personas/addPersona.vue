@@ -1,7 +1,7 @@
 <template>
     <CreationModal
         v-model:visible="modalVisible"
-        title=""
+        :title="title"
         @cancel="() => (modalVisible = false)"
         @ok="handleCreation"
     >
@@ -91,13 +91,15 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+                    description.value = ''
+                    title.value = ''
                     reFetchList().then(() => {
                         selectedPersonaId.value = newPersona.id!
                         modalVisible.value = false
                     })
                 } catch (error) {
                     message.error({
-                        content: 'Failed to create persona',
+                        content: error?.message ?? 'Failed to create persona',
                         duration: 1.5,
                         key: messageKey,
                     })

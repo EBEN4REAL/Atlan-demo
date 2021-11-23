@@ -45,6 +45,7 @@
         toRefs,
         onMounted,
         watch,
+        ref,
         provide,
     } from 'vue'
     import EmptyView from '@common/empty/index.vue'
@@ -89,6 +90,10 @@
 
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
 
+            const parentGlossaryQualifiedName = ref('VzA8dZUiZkdY6XbH6BMIU')
+            const parentGlossaryGuid = ref(
+                '0a4293f3-d7ba-4552-be75-b47af07f250a'
+            )
             const {
                 onLoadData,
                 loadedKeys,
@@ -102,8 +107,12 @@
                 isLoading,
                 error,
                 isReady,
-            } = useGlossaryTree({ emit })
-
+                refetchNode,
+            } = useGlossaryTree({
+                emit,
+                parentGlossaryQualifiedName,
+                parentGlossaryGuid,
+            })
             onMounted(() => {
                 initTreeData(defaultGlossary.value)
             })
@@ -131,6 +140,7 @@
             }
 
             provide('addGTCNode', addGTCNode)
+            provide('refetchGlossaryTree', refetchNode)
 
             return {
                 onLoadData,

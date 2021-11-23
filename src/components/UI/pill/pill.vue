@@ -8,7 +8,14 @@
         @blur="blur"
     >
         <slot name="prefix"></slot>
-        <span v-if="label">{{ label }}</span>
+        <div v-if="label" class="flex items-center">
+            <span v-if="prefixIcon">
+                <AtlanIcon :icon="prefixIcon" class="h-4 -ml-0.5 mr-1" />
+            </span>
+            <span>
+                {{ label }}
+            </span>
+        </div>
 
         <button
             class="absolute right-0 h-full pl-4 pr-2 transition duration-300 rounded-tr-full rounded-br-full opacity-0  group-hover:opacity-100 bg-gradient-to-l from-primary via-primary"
@@ -32,6 +39,10 @@
                 type: String,
                 default: () => '',
             },
+            prefixIcon: {
+                type: String,
+                default: undefined,
+            },
             disabled: {
                 type: Boolean,
                 default: () => false,
@@ -39,6 +50,10 @@
             hasAction: {
                 type: Boolean,
                 default: () => false,
+            },
+            hoveredPill: {
+                type: Boolean,
+                default: true,
             },
             size: {
                 type: String as PropType<'md' | 'sm'>,

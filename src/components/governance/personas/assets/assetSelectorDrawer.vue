@@ -33,7 +33,11 @@
             <a-divider class="my-4" />
 
             <div
-                class="relative overflow-x-hidden overflow-y-hidden  drawer_height"
+                class="
+                    relative
+                    overflow-x-hidden overflow-y-hidden
+                    drawer_height
+                "
             >
                 <div
                     class="absolute w-full h-full bg-white"
@@ -66,7 +70,9 @@
                         :show-filters="false"
                         :static-use="true"
                         :show-aggrs="false"
+                        :initial-filters="filterConfig"
                         class="asset-list-height"
+                        page="personas"
                     />
                 </div>
 
@@ -224,10 +230,8 @@
             )
 
             const filterConfig = computed(() => ({
-                connector: {
-                    attributeName: 'connectionQualifiedName',
-                    attributeValue: connectionQfName.value,
-                },
+                connectorName: getConnectorName(connectionQfName.value),
+                connectionQualifiedName: connectionQfName.value,
             }))
 
             // Tab related data
@@ -265,6 +269,7 @@
             )
 
             return {
+                filterConfig,
                 activeTab,
                 tabConfig,
                 isVisible,
@@ -273,7 +278,6 @@
                 saveAssets,
                 resetAssetState,
                 selectedAssetCount,
-                filterConfig,
             }
         },
     })

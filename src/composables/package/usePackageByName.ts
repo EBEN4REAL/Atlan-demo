@@ -28,7 +28,7 @@ export function usePackageByName(name, immediate = false) {
         mutate()
     }
 
-    const workflowPackage = ref()
+    const workflowPackage = ref({})
     watch(data, () => {
         if (!data?.value) return
         workflowPackage.value = data.value

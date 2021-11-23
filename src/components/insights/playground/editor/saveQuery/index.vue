@@ -36,13 +36,7 @@
                                         >
                                             <component
                                                 :is="item.icon"
-                                                class="
-                                                    w-auto
-                                                    h-4
-                                                    ml-1
-                                                    mr-2
-                                                    pushtop
-                                                "
+                                                class="w-auto h-4 ml-1 mr-2  pushtop"
                                             />
                                             {{ item.label }}
                                         </div>
@@ -69,25 +63,13 @@
                         :ref="titleBarRef"
                         v-model:value="title"
                         :placeholder="`Untitled ${getLastUntitledNumber()}`"
-                        class="
-                            text-lg
-                            font-bold
-                            text-gray-500
-                            border-0
-                            shadow-none
-                            outline-none
-                        "
+                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none "
                     />
                 </div>
                 <a-textarea
                     v-model:value="description"
                     placeholder="Add Description"
-                    class="
-                        text-sm text-gray-500
-                        border-0
-                        shadow-none
-                        outline-none
-                    "
+                    class="text-sm text-gray-500 border-0 shadow-none outline-none "
                     :rows="3"
                     show-count
                     :maxlength="140"
@@ -97,30 +79,13 @@
                 <!-- <AddTerms @saveTerms="saveTerms" /> -->
 
                 <div
-                    class="
-                        flex
-                        items-center
-                        justify-end
-                        flex-1
-                        mb-1
-                        text-gray-700
-                        cursor-pointer
-                    "
+                    class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer "
                 >
                     <AtlanBtn
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            h-6
-                            py-1
-                            ml-3
-                            border-none
-                            hover:text-primary
-                        "
+                        class="flex items-center justify-between h-6 py-1 ml-3 border-none  hover:text-primary"
                         @click="closeModal"
                     >
                         <span>Cancel</span>
@@ -130,15 +95,7 @@
                         size="sm"
                         color="primary"
                         padding="compact"
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            h-6
-                            py-1
-                            ml-2
-                            border-none
-                        "
+                        class="flex items-center justify-between h-6 py-1 ml-2 border-none "
                         @click="createSaveQuery"
                     >
                         <div class="flex items-center text-white rounded">
@@ -300,15 +257,15 @@
             //     selectedParentFolder.value = folder
             // }
 
-            watch(
-                parentFolder,
-                () => {
-                    console.log('parent folder: ', parentFolder.value)
-                },
-                {
-                    immediate: true,
-                }
-            )
+            // watch(
+            //     parentFolder,
+            //     () => {
+            //         console.log('parent folder: ', parentFolder.value)
+            //     },
+            //     {
+            //         immediate: true,
+            //     }
+            // )
 
             return {
                 getLastUntitledNumber,
@@ -367,9 +324,6 @@
         }
         :global(.ant-input) {
             @apply shadow-none outline-none border-0 px-0 !important;
-        }
-        :global(.ant-modal-body) {
-            @apply p-0 !important;
         }
     }
 </style>

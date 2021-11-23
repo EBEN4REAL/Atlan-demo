@@ -173,6 +173,7 @@
                     const treeNodeObj = {
                         value: item.id,
                         key: item.id,
+                        selectable: false,
                         img: item.image,
                         connector: item.id,
                         connection: undefined,

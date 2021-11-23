@@ -26,7 +26,13 @@
                                 style="width: 150px"
                             >
                                 <div
-                                    class="p-3 text-xs font-bold text-gray-500 border-b "
+                                    class="
+                                        p-3
+                                        text-xs
+                                        font-bold
+                                        text-gray-500
+                                        border-b
+                                    "
                                 >
                                     {{ opt.popover?.field }}
                                 </div>
@@ -40,7 +46,14 @@
                                 style="width: 150px"
                             >
                                 <div
-                                    class="p-3 text-xs font-bold text-gray-500  border-b-light bg-primary-light"
+                                    class="
+                                        p-3
+                                        text-xs
+                                        font-bold
+                                        text-gray-500
+                                        border-b-light
+                                        bg-primary-light
+                                    "
                                 >
                                     {{ opt.popover?.field }}
                                 </div>
@@ -79,7 +92,7 @@
             // FIXME: Take it out to a config file
             const maskingOptions = [
                 {
-                    value: 'MASK_NONE',
+                    value: 'null',
                     label: 'None',
                     borderBottom: true,
                 },

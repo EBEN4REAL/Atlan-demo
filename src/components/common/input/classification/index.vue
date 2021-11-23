@@ -2,18 +2,21 @@
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
             placement="leftBottom"
-            overlayClassName="classificationPopover"
+            :overlayClassName="$style.classificationPopover"
             @visibleChange="handleVisibleChange"
             :trigger="['click']"
             v-model:visible="isEdit"
+            :destroyTooltipOnHide="destroyTooltipOnHide"
         >
             <template #content>
-                <ClassificationFacet
-                    v-model="selectedValue"
-                    ref="classificationFacetRef"
-                    @change="handleSelectedChange"
-                    :showNone="false"
-                ></ClassificationFacet>
+                <div>
+                    <ClassificationFacet
+                        v-model="selectedValue"
+                        ref="classificationFacetRef"
+                        @change="handleSelectedChange"
+                        :showNone="false"
+                    ></ClassificationFacet>
+                </div>
             </template>
             <a-button
                 shape="circle"
@@ -73,6 +76,11 @@
                 default: false,
                 required: false,
             },
+            destroyTooltipOnHide: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -113,7 +121,7 @@
             const handleChange = () => {
                 modelValue.value = localValue.value
 
-                emit('change')
+                emit('change', localValue.value)
             }
 
             const handleDeleteClassification = (name) => {
@@ -157,6 +165,9 @@
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
+                selectedValue.value = {
+                    classifications: localValue.value.map((i) => i.typeName),
+                }
             })
 
             const activeElement = useActiveElement()
@@ -196,10 +207,10 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" module>
     .classificationPopover {
-        .ant-popover-inner-content {
-            @apply px-0 py-3;
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
             width: 250px !important;
         }
     }

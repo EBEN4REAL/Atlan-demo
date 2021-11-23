@@ -1,14 +1,14 @@
 <template>
-    <div class="flex items-center">
+    <div :class="`flex items-center ${className}`">
         <a-avatar
             :shape="avatarShape"
             :size="avatarSize"
             :class="styleClass"
             class="text-sm align-middle border text-primary"
             :src="url"
-            ><span style="line-height: 16px">{{
-                getNameInitials(username)
-            }}</span></a-avatar
+            ><div class="-mt-0.5">
+                {{ getNameInitials(username) }}
+            </div></a-avatar
         >
         <div v-if="showUsername">{{ username }}</div>
     </div>
@@ -39,6 +39,10 @@
             },
             showUsername: {
                 type: Boolean,
+            },
+            className: {
+                type: String,
+                default: ""
             },
         },
         setup(props, context) {

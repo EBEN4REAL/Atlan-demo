@@ -605,9 +605,6 @@
         :global(.ant-tabs-tab > div) {
             @apply flex items-center !important;
         }
-        :global(.ant-tabs-bar) {
-            @apply m-0 bg-gray-light !important;
-        }
         :global(.ant-tabs-nav .ant-tabs-tab-active) {
             @apply text-white !important;
         }

@@ -2,7 +2,7 @@
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
             placement="leftBottom"
-            overlayClassName="certificatePopover"
+            :overlayClassName="$style.certificatePopover"
             @visibleChange="handleVisibleChange"
             v-model:visible="isEdit"
             :trigger="['click']"
@@ -151,10 +151,10 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" module>
     .certificatePopover {
-        .ant-popover-inner-content {
-            @apply px-0 py-3;
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
             width: 250px !important;
         }
     }

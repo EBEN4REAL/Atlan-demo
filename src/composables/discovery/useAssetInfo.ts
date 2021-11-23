@@ -135,10 +135,10 @@ export default function useAssetInfo() {
         let customTabList = []
         if (cmList(assetType(asset)).length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
-                console.log(i)
                 return {
                     component: 'custommetadata',
                     image: i.options?.imageId,
+                    emoji: i.options?.emoji,
                     name: i.label,
                     tooltip: i.label,
                 }

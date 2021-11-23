@@ -1,12 +1,12 @@
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
-import { watch } from 'vue'
+import { watch, ref } from 'vue'
 
 import { useTypedefStore } from '~/store/typedef'
 
 import { Types } from '~/services/meta/types'
 
 export default function useTypedefs() {
-  const { data, isLoading, error, } = Types.GetTypedefs(
+  const { data, isLoading, error, mutate } = Types.GetTypedefs(
     {},
     {
       cacheKey: 'DEFAULT_TYPEDEFS',
@@ -20,17 +20,26 @@ export default function useTypedefs() {
   )
   const typedefStore = useTypedefStore()
 
-  const fillStore = (theData) => {
+  const fillStore = (theData, where) => {
     typedefStore.setClassificationList(theData?.classificationDefs || [])
     typedefStore.setCustomMetadata(theData?.businessMetadataDefs || [])
     typedefStore.setEnumList(theData?.enumDefs || [])
   }
 
-  if (data.value) fillStore(data.value) // if cached then set data
+  if (data.value) fillStore(data.value, 'root') // if cached then set data
+  const initalValidation = ref(false) // to void changing store each time mutate happens like the next watch below
   watch(data, (newValue) => {
-    fillStore(newValue)
-  })
+    if (initalValidation.value) return
+    fillStore(newValue, 'after update')
+    initalValidation.value = true
+  }
+  )
 
+  // used to force a revalidation after an update, this is a fix for bug when revlidation on page refresh takes too long
+  watch(() => typedefStore.forceRevalidate, (newValue, oldValue) => {
+    if (newValue !== oldValue)
+      mutate()
+  })
 
 
   watch([isLoading, error], ([newIsLoading, newError], [oldisLoading, oldError]) => {

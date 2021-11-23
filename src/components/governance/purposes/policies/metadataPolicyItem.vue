@@ -5,7 +5,7 @@
                 <div class="relative mb-2 text-sm text-gray-500 required">
                     Policy name
                 </div>
-                <div class="max-w-xs">
+                <div style="width: 320px">
                     <a-input
                         @blur="
                             () => {
@@ -29,14 +29,26 @@
                     {{ rules.policyName.text }}
                 </div>
             </div>
-            <AtlanBtn
-                size="sm"
-                color="secondary"
-                padding="compact"
-                class="plus-btn"
-                @click="removePolicy"
-                ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
-            ></AtlanBtn>
+            <a-popconfirm
+                placement="leftTop"
+                :title="getPopoverContent(policy)"
+                ok-text="Yes"
+                :ok-type="'default'"
+                overlayClassName="popoverConfirm"
+                cancel-text="Cancel"
+                @confirm="removePolicy"
+            >
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="plus-btn"
+                    ><AtlanIcon
+                        icon="Delete"
+                        class="-mx-1 text-red-400"
+                    ></AtlanIcon
+                ></AtlanBtn>
+            </a-popconfirm>
         </div>
 
         <div class="relative">
@@ -67,7 +79,7 @@
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
                 :checked="!policy.allow"
-                style="width: 44px"
+                style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
             />
             <span>Deny Permissions</span>
@@ -120,7 +132,7 @@
     import Connector from './connector.vue'
     import MetadataScopes from './metadataScopes.vue'
     import Owners from '~/components/common/input/owner/index.vue'
-    import { ResourcePolicies } from '~/types/accessPolicies/purposes'
+    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
 
     export default defineComponent({
@@ -135,7 +147,7 @@
         },
         props: {
             policy: {
-                type: Object as PropType<ResourcePolicies>,
+                type: Object as PropType<MetadataPolicies>,
                 required: true,
             },
         },
@@ -179,9 +191,9 @@
                     rules.value.policyName.show = true
                     return
                 } else if (
-                    (selectedOwnersData.value.ownerUsers.length ??
-                        0 + selectedOwnersData.value.ownerGroups.length ??
-                        0) < 1
+                    selectedOwnersData.value.ownerUsers.length +
+                        selectedOwnersData.value.ownerGroups.length <
+                    1
                 ) {
                     rules.value.users.show = true
                     return
@@ -194,9 +206,9 @@
                 policy.value.users = selectedOwnersData.value.ownerUsers
                 policy.value.groups = selectedOwnersData.value.ownerGroups
                 if (
-                    (selectedOwnersData.value.ownerUsers.length ??
-                        0 + selectedOwnersData.value.ownerGroups.length ??
-                        0) < 1
+                    selectedOwnersData.value.ownerUsers.length +
+                        selectedOwnersData.value.ownerGroups.length <
+                    1
                 ) {
                     rules.value.users.show = true
                 } else {
@@ -210,8 +222,11 @@
                     ownerGroups: policy.value.groups,
                 }
             })
-
+            const getPopoverContent = (policy: any) => {
+                return `Are you sure you want to delete ${policy?.name}?`
+            }
             return {
+                getPopoverContent,
                 selectedOwnersData,
                 handleOwnersChange,
                 rules,

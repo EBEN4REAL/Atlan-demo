@@ -54,10 +54,14 @@
     } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import { selectedPersonaId } from './composables/usePurposeList'
+    import {
+        selectedPersonaId,
+        reFetchList,
+    } from './composables/usePurposeList'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { generateUUID } from '~/utils/helper/generator'
     import Classification from '@common/input/classification/index.vue'
+    import usePurposeService from './composables/usePurposeService'
 
     export default defineComponent({
         name: 'AddPurpose',
@@ -78,6 +82,7 @@
         emits: ['update:visible'],
         setup(props, { emit }) {
             const { personaList } = toRefs(props)
+            const { createPersona } = usePurposeService()
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             const rules = ref({
                 selectedClassifications: {
@@ -108,17 +113,17 @@
                     rules.value.classification.show = true
                     return
                 }
-                if (selectedClassifications.value.length > 0) {
-                    personaList.value.forEach((purpose) => {
-                        selectedClassifications.value.forEach((e) => {
-                            if (purpose.tags.includes(e)) {
-                                rules.value.selectedClassifications.show = true
-                                rules.value.selectedClassifications.text = `This classifications combination is already used in ${purpose.name} purpose!`
-                                return
-                            }
-                        })
-                    })
-                }
+                // if (selectedClassifications.value.length > 0) {
+                //     personaList.value.forEach((purpose) => {
+                //         selectedClassifications.value.forEach((e) => {
+                //             if (purpose.tags.includes(e)) {
+                //                 rules.value.selectedClassifications.show = true
+                //                 rules.value.selectedClassifications.text = `This classifications combination is already used in ${purpose.name} purpose!`
+                //                 return
+                //             }
+                //         })
+                //     })
+                // }
 
                 const messageKey = Date.now()
                 message.loading({
@@ -127,16 +132,19 @@
                     key: messageKey,
                 })
                 try {
-                    const newPurpose: IPurpose = {
+                    const newPurpose: IPurpose = await createPersona({
                         id: generateUUID(),
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        tags: selectedClassifications.value,
+                        tags: selectedClassifications.value.map(
+                            (e) => e.typeName
+                        ),
                         /* Hardcode here */
                         metadataPolicies: [],
                         dataPolicies: [],
-                    }
+                    })
+
                     message.success({
                         content: `${title.value} purpose Created`,
                         duration: 1.5,
@@ -145,8 +153,10 @@
                     description.value = ''
                     title.value = ''
 
-                    selectedPersonaId.value = newPurpose.id!
-                    modalVisible.value = false
+                    reFetchList().then(() => {
+                        selectedPersonaId.value = newPurpose.id!
+                        modalVisible.value = false
+                    })
 
                     /* 
                         metadataPolicies: [
@@ -173,7 +183,9 @@
                         ], */
                 } catch (error) {
                     message.error({
-                        content: 'Failed to create purpose',
+                        content:
+                            error?.response?.data?.message ??
+                            'Failed to delete policy',
                         duration: 1.5,
                         key: messageKey,
                     })

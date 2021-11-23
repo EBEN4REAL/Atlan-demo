@@ -245,7 +245,9 @@
                 } catch (error) {
                     console.log(error?.response?.data, 'error')
                     message.error({
-                        content: error?.response?.data?.message,
+                        content:
+                            error?.response?.data?.message ??
+                            'Failed to delete policy',
                         duration: 1.5,
                         key: messageKey,
                     })

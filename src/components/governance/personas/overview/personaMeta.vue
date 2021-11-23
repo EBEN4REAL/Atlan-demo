@@ -66,7 +66,7 @@
             </div>
             <div
                 class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
-                @click="setActiveTab('policies')"
+                @click="setActiveTab('users')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
                     <AtlanIcon icon="GroupStatic" class="h-6" />

@@ -68,6 +68,7 @@
                         :show-aggrs="false"
                         :initial-filters="filterConfig"
                         class="asset-list-height"
+                        page="personas"
                     />
                 </div>
 
@@ -225,7 +226,7 @@
             )
 
             const filterConfig = computed(() => ({
-                connector: getConnectorName(connectionQfName.value),
+                connectorName: getConnectorName(connectionQfName.value),
                 connectionQualifiedName: connectionQfName.value,
             }))
 

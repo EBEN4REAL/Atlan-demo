@@ -30,8 +30,7 @@
             <div
                 class="gap-6 gap-y-0 group"
                 :class="
-                    a.error ||
-                    (getDatatypeOfAttribute(a.typeName) === 'text' && !readOnly)
+                    getDatatypeOfAttribute(a.typeName) === 'text' && !readOnly
                         ? ''
                         : 'mb-4'
                 "
@@ -68,6 +67,7 @@
                         class="flex-grow border shadow-none"
                         type="number"
                         placeholder="Type..."
+                        @change="(e) => handleChange(x, e.target.value)"
                     />
                     <a-radio-group
                         v-else-if="
@@ -76,6 +76,7 @@
                         :allow-clear="true"
                         :value="a.value"
                         class="flex-grow"
+                        @change="(e) => handleChange(x, e.target.value)"
                     >
                         <a-radio class="" :value="true">True</a-radio>
                         <a-radio class="" :value="false">False</a-radio>
@@ -90,6 +91,7 @@
                             :value="(a.value || '').toString()"
                             class="flex-grow w-100"
                             value-format="x"
+                            @change="(e) => handleChange(x, e.target.value)"
                         />
                     </template>
                     <a-textarea
@@ -104,6 +106,7 @@
                         placeholder="Type..."
                         type="text"
                         class="flex-grow shadow-none"
+                        @change="(e) => handleChange(x, e.target.value)"
                     />
                     <div v-else class="flex-grow shadow-none border-1">
                         <a-select
@@ -114,28 +117,36 @@
                             :show-arrow="true"
                             :options="getEnumOptions(a.typeName)"
                             class=""
+                            @change="(e) => handleChange(x, e.target.value)"
                         />
                     </div>
                 </div>
-            </div>
-            <div v-if="a.error" class="pr-3 mb-4 text-warning">
-                {{ a.error }}
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+        computed,
+        PropType,
+    } from 'vue'
+    import { message } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {},
         props: {
             selectedAsset: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
             data: {
@@ -148,6 +159,7 @@
 
             const readOnly = ref(true)
 
+            const { title } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
                 isLink,
@@ -192,11 +204,11 @@
             const payload = computed(() => {
                 const mappedPayload = { [data.value.id]: {} }
                 // ? handle current payload
-                Object.keys(props.selectedAsset.attributes).forEach((k) => {
+                Object.keys(selectedAsset.value.attributes).forEach((k) => {
                     if (k.split('.').length > 1) {
                         const b = k.split('.')[0]
                         const a = k.split('.')[1]
-                        const value = props.selectedAsset.attributes[k]
+                        const value = selectedAsset.value.attributes[k]
                         mappedPayload[b] = {
                             ...(mappedPayload[b] || {}),
                             [a]: value,
@@ -250,8 +262,6 @@
             })
 
             const handleUpdate = () => {
-                activeIndex.value = index
-
                 const { error, isReady, isLoading } =
                     Types.updateAssetBMUpdateChanges(
                         props.selectedAsset.guid,
@@ -260,32 +270,30 @@
 
                 watch([() => isLoading, error, isReady], () => {
                     if (error.value) {
-                        console.log(error.value.response.data.errorMessage)
-                        let message =
-                            error.value?.response?.data?.errorMessage || ''
-                        if (message) message = message.split(':')
-                        if (message?.length > 1)
-                            applicableList.value[
-                                index
-                            ].error = `Error occured: ${
-                                message[message.length - 1]
-                            }`
-                        else
-                            applicableList.value[index].error =
-                                'Some error occured please try again.'
-                        // hasError.value = true
+                        message.error(
+                            'Some error occured...Please try again later.'
+                        )
                     } else if (isReady.value) {
-                        if (mutatedAsset.value)
-                            mutateSelectedAsset(mutatedAsset.value)
-
-                        applicableList.value[index].error = false
+                        message.success(
+                            `BM attributes for ${title(
+                                selectedAsset.value
+                            )} updated`
+                        )
                     }
                 })
 
                 readOnly.value = true
             }
             const handleCancel = () => {
+                applicableList.value = getApplicableAttributes(
+                    data.value,
+                    selectedAsset.value.typeName
+                )
+                setAttributesList()
                 readOnly.value = true
+            }
+            const handleChange = (index, value) => {
+                applicableList.value[index].value = value
             }
 
             watch(
@@ -313,6 +321,7 @@
                 handleUpdate,
                 handleCancel,
                 getEnumOptions,
+                handleChange,
             }
         },
     })

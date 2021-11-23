@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded group hover:shadow"
+        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded  group hover:shadow"
         style="paddingleft: 12px; paddingroght: 12px"
     >
         <div class="flex items-center mb-4 gap-x-3">
@@ -26,7 +26,7 @@
                 }}</span>
             </div>
             <div
-                v-if="type === 'data' && policy.maskType !== 'null'"
+                v-if="type === 'data'"
                 class="flex items-center overflow-hidden gap-x-1"
             >
                 <AtlanIcon
@@ -34,11 +34,12 @@
                     icon="Hash"
                 />
                 <div class="flex items-center mt-0.5">
-                    <span>{{ policy.maskType }}</span>
+                    <span v-if="policy.mask === 'null'">NONE</span>
+                    <span v-else>{{ policy.mask }}</span>
                 </div>
             </div>
         </div>
-        <div class="flex items-center w-full">
+        <div class="flex items-center justify-between w-full">
             <div style="width: 70%">
                 <Owners
                     v-model:modelValue="ownersData"
@@ -47,10 +48,10 @@
                 />
             </div>
             <div
-                class="flex items-stretch border border-gray-300 rounded opacity-0 group-hover:opacity-100 text-gray hover:text-primary"
+                class="flex items-stretch border border-gray-300 rounded opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
             >
                 <AtlanBtn
-                    class="flex-none px-2 border-l border-gray-300 border-none hover:text-primary"
+                    class="flex-none px-2 border-l border-gray-300 border-none  hover:text-primary"
                     size="sm"
                     color="secondary"
                     padding="compact"
@@ -73,7 +74,7 @@
                     @confirm="removePolicy"
                 >
                     <AtlanBtn
-                        class="flex-none px-2 border-r border-gray-300 border-none hover:text-red-500"
+                        class="flex-none px-2 border-r border-gray-300 border-none  hover:text-red-500"
                         size="sm"
                         color="secondary"
                         padding="compact"
@@ -115,20 +116,24 @@
             },
         },
         emits: ['edit', 'cancel', 'delete'],
-        setup(props) {
+        setup(props, { emit }) {
             const { policy, type } = toRefs(props)
             const showAll = ref(false)
             const ownersData = computed(() => {
                 return {
                     ownerUsers: policy.value.users,
                     ownerGroups: policy.value.groups,
- }
+                }
             })
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
-
-            return { ownersData, policy, getPopoverContent }
+            const removePolicy = () => {
+                /* Delete when the policy is saved */
+                if (!policy.value?.isNew) emit('delete')
+                emit('cancel')
+            }
+            return { ownersData, policy, getPopoverContent, removePolicy }
         },
     })
 </script>

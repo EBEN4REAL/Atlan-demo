@@ -54,10 +54,7 @@
     } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import {
-        addPurposeLocally,
-        selectedPersonaId,
-    } from './composables/usePurposeList'
+    import { selectedPersonaId } from './composables/usePurposeList'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { generateUUID } from '~/utils/helper/generator'
     import Classification from '@common/input/classification/index.vue'
@@ -140,7 +137,6 @@
                         metadataPolicies: [],
                         dataPolicies: [],
                     }
-                    addPurposeLocally(newPurpose)
                     message.success({
                         content: `${title.value} purpose Created`,
                         duration: 1.5,

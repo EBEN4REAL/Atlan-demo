@@ -1,8 +1,8 @@
 <template>
     <a-select
-        :value="maskType"
+        :value="mask"
         class="mb-6 w-80"
-        @update:value="$emit('update:maskType', $event)"
+        @update:value="$emit('update:mask', $event)"
     >
         <a-select-option
             v-for="opt in maskingOptions"
@@ -68,12 +68,12 @@
         name: 'DataMaskingSelector',
         components: {},
         props: {
-            maskType: {
+            mask: {
                 type: String,
                 required: true,
             },
         },
-        emits: ['update:maskType'],
+        emits: ['update:mask'],
         setup() {
             const v = ref(true)
             // FIXME: Take it out to a config file
@@ -84,7 +84,7 @@
                     borderBottom: true,
                 },
                 {
-                    value: 'MASK_DATE_SHOW_YEAR',
+                    value: 'heka:MASK_DATE_SHOW_YEAR',
                     label: 'Show only year',
                     borderBottom: false,
                     popover: {
@@ -97,7 +97,7 @@
                 },
 
                 {
-                    value: 'MASK_SHOW_FIRST_4',
+                    value: 'heka:MASK_SHOW_FIRST_4',
                     label: 'Show first 4',
                     borderBottom: false,
                     popover: {
@@ -109,7 +109,7 @@
                 },
 
                 {
-                    value: 'MASK_SHOW_LAST_4',
+                    value: 'heka:MASK_SHOW_LAST_4',
                     label: 'Show last 4',
                     borderBottom: true,
                     popover: {
@@ -120,7 +120,7 @@
                     },
                 },
                 {
-                    value: 'MASK_HASH',
+                    value: 'heka:MASK_HASH',
                     label: 'Hash',
                     borderBottom: false,
                     popover: {
@@ -132,7 +132,7 @@
                     },
                 },
                 {
-                    value: 'MASK_NULL',
+                    value: 'heka:MASK_NULL',
                     label: 'Nullify',
                     borderBottom: false,
                     popover: {
@@ -143,7 +143,7 @@
                     },
                 },
                 {
-                    value: 'MASK_REDACT',
+                    value: 'heka:MASK_REDACT',
                     label: 'Redact',
                     borderBottom: false,
                     popover: {

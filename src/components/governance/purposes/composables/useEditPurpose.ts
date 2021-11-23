@@ -83,6 +83,7 @@ export function addPolicy(type: PolicyType) {
             groups: [],
             allow: true,
             name: '',
+            type: 'metadata',
             description: '',
             isNew: true,
         })
@@ -95,9 +96,10 @@ export function addPolicy(type: PolicyType) {
             actions: ['select'],
             users: [],
             groups: [],
-            maskType: 'null',
+            mask: 'null',
             allow: true,
             name: '',
+            type: 'data',
             description: '',
             isNew: true,
         })

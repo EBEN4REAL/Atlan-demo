@@ -60,6 +60,7 @@
                 v-model:modelValue="selectedOwnersData"
                 :read-only="false"
                 @change="handleOwnersChange"
+                :destroyTooltipOnHide="true"
             />
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
@@ -69,7 +70,7 @@
             </div>
         </div>
 
-        <div class="flex items-center mb-2 gap-x-1">
+        <div class="flex items-center mb-6 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Query permissions</span>
             <AtlanIcon class="h-3 ml-2 text-gray-500" icon="RunSuccess" />
@@ -83,10 +84,7 @@
             <span class="text-sm text-gray-500">Masking</span>
         </div>
 
-        <DataMaskingSelector
-            v-model:maskType="policy.maskType"
-            class="mb-6 w-80"
-        />
+        <DataMaskingSelector v-model:mask="policy.mask" class="mb-6 w-80" />
 
         <div class="flex items-center gap-x-2">
             <a-switch
@@ -207,8 +205,8 @@
                     rules.value.policyName.show = true
                     return
                 } else if (
-                    selectedOwnersData.value.ownerUsers.length +
-                        selectedOwnersData.value.ownerGroups.length <
+                    selectedOwnersData.value?.ownerUsers?.length +
+                        selectedOwnersData.value?.ownerGroups?.length <
                     1
                 ) {
                     rules.value.users.show = true
@@ -218,12 +216,26 @@
                 }
             }
             const handleOwnersChange = () => {
-                policy.value.users = selectedOwnersData.value.ownerUsers
-                policy.value.groups = selectedOwnersData.value.ownerGroups
+                console.log(selectedOwnersData.value, 'owners')
+                if (selectedOwnersData.value?.ownerUsers?.length > 0) {
+                    policy.value.users = [
+                        ...selectedOwnersData.value?.ownerUsers,
+                    ]
+                    console.log(policy.value.users, 'policYUsers')
+                } else {
+                    policy.value.users = []
+                }
+                if (selectedOwnersData.value?.ownerGroups?.length > 0) {
+                    policy.value.groups = [
+                        ...selectedOwnersData.value?.ownerGroups,
+                    ]
+                } else {
+                    policy.value.groups = []
+                }
 
                 if (
-                    selectedOwnersData.value.ownerUsers.length +
-                        selectedOwnersData.value.ownerGroups.length <
+                    selectedOwnersData.value?.ownerUsers?.length +
+                        selectedOwnersData.value?.ownerGroups?.length <
                     1
                 ) {
                     rules.value.users.show = true
@@ -243,6 +255,7 @@
                 return `Are you sure you want to delete ${policy?.name}?`
             }
             return {
+                selectedPersonaDirty,
                 getPopoverContent,
                 selectedOwnersData,
                 handleOwnersChange,

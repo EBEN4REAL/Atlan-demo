@@ -60,6 +60,7 @@
                 v-model:modelValue="selectedOwnersData"
                 :read-only="false"
                 @change="handleOwnersChange"
+                :destroyTooltipOnHide="true"
             />
 
             <div
@@ -191,8 +192,8 @@
                     rules.value.policyName.show = true
                     return
                 } else if (
-                    selectedOwnersData.value.ownerUsers.length +
-                        selectedOwnersData.value.ownerGroups.length <
+                    selectedOwnersData.value?.ownerUsers?.length +
+                        selectedOwnersData.value?.ownerGroups?.length <
                     1
                 ) {
                     rules.value.users.show = true
@@ -203,18 +204,32 @@
             }
 
             const handleOwnersChange = () => {
-                policy.value.users = selectedOwnersData.value.ownerUsers
-                policy.value.groups = selectedOwnersData.value.ownerGroups
+                console.log(selectedOwnersData.value, 'owners')
+                if (selectedOwnersData.value?.ownerUsers?.length > 0) {
+                    policy.value.users = [
+                        ...selectedOwnersData.value?.ownerUsers,
+                    ]
+                    console.log(policy.value.users, 'policYUsers')
+                } else {
+                    policy.value.users = []
+                }
+                if (selectedOwnersData.value?.ownerGroups?.length > 0) {
+                    policy.value.groups = [
+                        ...selectedOwnersData.value?.ownerGroups,
+                    ]
+                } else {
+                    policy.value.groups = []
+                }
+
                 if (
-                    selectedOwnersData.value.ownerUsers.length +
-                        selectedOwnersData.value.ownerGroups.length <
+                    selectedOwnersData.value?.ownerUsers?.length +
+                        selectedOwnersData.value?.ownerGroups?.length <
                     1
                 ) {
                     rules.value.users.show = true
                 } else {
                     rules.value.users.show = false
                 }
-                /* Call save purpose */
             }
             watch(selectedPersonaDirty, () => {
                 selectedOwnersData.value = {

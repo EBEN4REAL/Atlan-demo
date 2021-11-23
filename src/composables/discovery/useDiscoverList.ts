@@ -194,9 +194,9 @@ export function useDiscoverList({
     const selectedAsset = computed(() => assetStore.selectedAsset)
 
     const handleSelectedGlossary = (item) => {
-        glossaryStore.setSelectedGlossary(item)
+        glossaryStore.setSelectedGTC(item)
     }
-    const selectedGlossary = computed(() => glossaryStore.selectedGlossary)
+    const selectedGlossary = computed(() => glossaryStore.selectedGTC)
 
     const updateList = (asset) => {
         console.log('assset', asset)

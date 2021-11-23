@@ -79,7 +79,7 @@
             // FIXME: Take it out to a config file
             const maskingOptions = [
                 {
-                    value: 'MASK_NONE',
+                    value: 'null',
                     label: 'None',
                     borderBottom: true,
                 },

@@ -131,6 +131,7 @@
                     <PreviewTabsIcon
                         :title="tab.tooltip"
                         :icon="tab.icon"
+                        :image="tab.image"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
                     />
@@ -227,8 +228,6 @@
             )
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
-
-            console.log('selectedAsset', selectedAsset.value)
 
             const {
                 title,
@@ -395,9 +394,6 @@
 <style lang="less" module>
     .previewtab {
         &:global(.ant-tabs-left) {
-            :global(.ant-tabs-bar) {
-                margin-bottom: 0px !important;
-            }
             :global(.ant-tabs-nav-container) {
                 width: 48px !important;
                 @apply ml-0 !important;

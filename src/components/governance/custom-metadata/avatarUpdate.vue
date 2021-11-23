@@ -143,10 +143,6 @@
 
 <style lang="less">
     .cm-avatar-update-modal {
-        .ant-popover-inner-content {
-            padding: 0px;
-        }
-
         .emoji-mart {
             border: unset;
         }

@@ -24,7 +24,7 @@ export const GLOSSARY_ATTRIBUTES = [
     'description',
     'userDescription',
 ]
-
+export const GLOSSARY_RELATION_ATTRIBUTES = ['categories']
 const GROUP_TERM_AGGREATION = 'group_by_terms'
 const GROUP_CATEGORY_AGGREATION = 'group_by_category'
 
@@ -83,6 +83,7 @@ export default function useGlossary(immediate = true) {
                 sort: [{ 'name.keyword': { order: 'asc' } }],
             },
             attributes: [...GLOSSARY_ATTRIBUTES],
+            relationAttributes: [...GLOSSARY_RELATION_ATTRIBUTES],
         },
         dependentKey,
         false

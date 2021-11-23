@@ -418,8 +418,5 @@
     .filterPopover {
         max-width: 200px;
         min-width: 200px;
-        :global(.ant-popover-content) {
-            @apply shadow-sm;
-        }
     }
 </style>

@@ -135,6 +135,12 @@
 
         &.minimal {
             @apply border-0;
+            &:focus-visible {
+                @apply ring-2 ring-primary-focus;
+            }
+            &:active {
+                box-shadow: 0px 3px 4px 0px #00000033 inset;
+            }
         }
 
         &.danger {

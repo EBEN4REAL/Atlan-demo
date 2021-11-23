@@ -127,18 +127,11 @@
 
 <style lang="less">
     .propertiesPopover {
-        .ant-popover-content {
-            box-shadow: 0px 9px 32px 0px #0000001f;
-        }
-        .ant-popover-title {
-            @apply shadow-sm;
-        }
         .ant-popover-inner {
             width: 250px !important;
         }
         .ant-popover-inner-content {
             max-height: 200px;
-
             overflow-y: auto;
         }
     }

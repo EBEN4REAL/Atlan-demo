@@ -66,7 +66,9 @@
                         :show-filters="false"
                         :static-use="true"
                         :show-aggrs="false"
+                        :initial-filters="filterConfig"
                         class="asset-list-height"
+                        page="personas"
                     />
                 </div>
 
@@ -224,10 +226,8 @@
             )
 
             const filterConfig = computed(() => ({
-                connector: {
-                    attributeName: 'connectionQualifiedName',
-                    attributeValue: connectionQfName.value,
-                },
+                connectorName: getConnectorName(connectionQfName.value),
+                connectionQualifiedName: connectionQfName.value,
             }))
 
             // Tab related data
@@ -265,6 +265,7 @@
             )
 
             return {
+                filterConfig,
                 activeTab,
                 tabConfig,
                 isVisible,
@@ -273,7 +274,6 @@
                 saveAssets,
                 resetAssetState,
                 selectedAssetCount,
-                filterConfig,
             }
         },
     })

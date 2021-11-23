@@ -23,6 +23,39 @@ const getWorkflows = ({ immediate, options, params }) =>
         { options, asyncOptions: { immediate } }
     )
 
+const getWorkflowPackages = ({ pathVariables, options, params }) =>
+    useAPI(
+        map.WORKFLOW_TEMPLATE,
+        'GET',
+        {
+            pathVariables,
+            params,
+        },
+        options || {}
+    )
+
+const getWorkflowPackagesByName = ({ pathVariables, options }) => {
+    console.log('getWorkflowPackagesByName', pathVariables, options)
+    return useAPI(
+        map.WORKFLOW_TEMPLATE_NAME,
+        'GET',
+        {
+            pathVariables,
+        },
+        options || {}
+    )
+}
+
+const getWorkflowPackagesConfigMap = ({ params, options }) =>
+    useAPI(
+        map.WORKFLOW_CONFIG_MAP,
+        'GET',
+        {
+            params,
+        },
+        options || {}
+    )
+
 const getWorkflowTemplates = ({ pathVariables, immediate, options, params }) =>
     useAPI(
         map.WORKFLOW_TEMPLATE,
@@ -68,7 +101,6 @@ const getWorkflowTemplateByName = ({ immediate, options, pathVariables }) =>
         'GET',
         {
             pathVariables,
-            options,
         },
         { asyncOptions: { immediate } }
     )
@@ -190,6 +222,9 @@ export const Workflows = {
     deleteWorkflowByName,
     runWorkflowByName,
     getWorkflowTemplates,
+    getWorkflowPackages,
+    getWorkflowPackagesByName,
+    getWorkflowPackagesConfigMap,
     getWorkflowConfigMap,
     getWorkflowTemplateByName,
     deleteSchedule,

@@ -221,6 +221,12 @@ export function useBody(
                 }
                 break
             }
+            case 'terms': {
+                if (filterObject) {
+                    base.filter('term', '__meanings', filterObject)
+                }
+                break
+            }
             case 'isRootTerm': {
                 if (filterObject) {
                     base.notFilter('exists', '__categories')

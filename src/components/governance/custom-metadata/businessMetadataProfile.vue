@@ -66,7 +66,6 @@
                 <PropertyList
                     :metadata="localBm"
                     :properties="searchedAttributeList"
-                    @change-order="localBm.attributeDefs = $event"
                     @remove-property="handleRemoveAttribute"
                     @open-edit-drawer="
                         addPropertyDrawer.open(
@@ -78,6 +77,7 @@
                         )
                     "
                 />
+                <!-- <pre>{{ searchedAttributeList }}</pre> -->
             </div>
             <div v-else>
                 <a-empty
@@ -104,7 +104,7 @@
     <AddPropertyDrawer
         ref="addPropertyDrawer"
         :metadata="cleanLocalBm"
-        @addedProperty="handlePropertyUpdate"
+        @added-property="handlePropertyUpdate"
     />
 </template>
 <script lang="ts">
@@ -112,7 +112,6 @@
 
     // ? Components
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
-    // import { BusinessMetadataService } from '~/services/meta/types/customMetadata'
     import MetadataHeaderButton from './metadataHeaderButton.vue'
     import AddPropertyDrawer from './propertyDrawer.vue'
     import noPropertyImage from '~/assets/images/admin/no-property.png'
@@ -121,12 +120,6 @@
 
     // ? Store
     import { useTypedefStore } from '~/store/typedef'
-    // import { useAccessStore } from '~/services/access/accessStore'
-
-    interface attributeDefs {
-        name: string
-        options: { displayName: string }
-    }
 
     export default defineComponent({
         components: {
@@ -142,21 +135,15 @@
                 required: true,
             },
         },
-        emits: ['update', 'selectBm'],
+        emits: ['update'],
         setup(props, context) {
             const store = useTypedefStore()
-            // const accessStore = useAccessStore()
-
-            // const updatePermission = computed(() =>
-            //     accessStore.checkPermission('UPDATE_BUSINESS_METADATA')
-            // )
             // * Data
-            const localBm = ref({
-                name: '',
-                description: '',
-                options: { displayName: '' },
-                guid: '',
-                attributeDefs: <attributeDefs[]>[],
+            const localBm = computed({
+                get: () => props.selectedBm,
+                set: (value) => {
+                    store.updateCustomMetadata(value)
+                },
             })
 
             const attrsearchText = ref('')
@@ -202,27 +189,14 @@
                 return localBm.value.attributeDefs
             })
 
-            // * Lifecycle hooks
-            /**
-             * @desc if a BM is select on the BM list, make a local copy
-             *       is Selected BM is a new template, enable editMode
-             *       also add an empty attribute for the new BM
-             */
-            onMounted(() => {
-                if (props.selectedBm) {
-                    localBm.value = JSON.parse(JSON.stringify(props.selectedBm))
-                }
-            })
-
-            watch(props.selectedBm, (newValue) => {
-                if (newValue)
-                    localBm.value = JSON.parse(JSON.stringify(props.selectedBm))
-            })
-
             // converts customApplicableEntityTypes from string to array so they can be set on the a-tree component
             const cleanLocalBm = computed(() => {
                 const tempBM = JSON.parse(JSON.stringify(localBm.value))
+                console.log(tempBM.attributeDefs)
+
                 tempBM.attributeDefs.forEach((x, index) => {
+                    if (x === null) console.log(x)
+
                     // clean attribute defs
                     if (
                         typeof x.options.customApplicableEntityTypes ===
@@ -254,9 +228,7 @@
 
             const handlePropertyUpdate = ($event) => {
                 localBm.value.attributeDefs = $event
-                store.updateCustomMetadata(localBm.value)
 
-                // onUpdate()
             }
 
             return {
@@ -271,7 +243,6 @@
                 panelModel,
                 searchedAttributes,
                 showArchiveMetadataModal,
-                // updatePermission,
                 addPropertyDrawer,
                 searchedAttributeList,
                 handlePropertyUpdate,

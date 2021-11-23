@@ -35,24 +35,37 @@ export default function useBusinessMetadata() {
 
 
   // * Data
-  const selectedBm = ref(null)
+  const currentBmId = ref('')
   const searchText = ref('')
 
   const finalBusinessMetadataList = computed(() => store.getCustomMetadataList)
   const isLoading = computed(() => store.isLoading)
   const error = computed(() => store.error)
 
+  const selectedId = computed<string>({
+    get: () => currentBmId.value || finalBusinessMetadataList.value?.[0]?.guid,
+    set: (val) => {
+      console.log("check");
+
+      currentBmId.value = val
+    },
+  })
+
+
+  const selectedBm = computed(() =>
+    finalBusinessMetadataList.value?.find(
+      (cmObj) => cmObj.guid === selectedId.value
+    )
+  )
 
   const handleSelectBm = (item: any) => {
     selectedBm.value = item
   }
 
-
   /**
    * @desc if an existing bm is being updated, set updated bm to
    */
   const onUpdate = (bm: { guid: string } | null) => {
-    // selectedBm.value = bm
   }
 
 
@@ -143,24 +156,7 @@ export default function useBusinessMetadata() {
     return sortedList
   })
 
-  //* Hooks
-  if (sortedSearchedBM.value.length !== 0) selectedBm.value = sortedSearchedBM.value[0]
-  watch(finalBusinessMetadataList, (n) => {
-    console.log("GOT CHANGED");
 
-    // if (n.length && !selectedBm.value) { // if not selected, select
-    //   selectedBm.value = JSON.parse(
-    //     JSON.stringify(sortedSearchedBM.value[0])
-    //   )
-    // }
-    if (n.length && selectedBm.value) {
-      // refresh selectedBM 
-      console.log(selectedBm.value.guid, n[0].attributeDefs[0].displayName, 'jbjhbbbbhhbh');
-      selectedBm.value = JSON.parse(
-        JSON.stringify(n?.find(x => x.guid === selectedBm.value.guid))
-      )
-    }
-  }, { deep: true })
 
   // Utility functions 
   const getDefaultAttributeTemplate = () =>
@@ -172,6 +168,7 @@ export default function useBusinessMetadata() {
 
 
   return {
+    selectedId,
     error,
     isLoading,
     finalBusinessMetadataList,

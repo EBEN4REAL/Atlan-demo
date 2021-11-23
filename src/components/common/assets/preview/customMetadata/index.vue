@@ -1,17 +1,23 @@
 <template>
     <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
         <div class="flex items-center justify-between">
-            <span class="font-semibold text-gray-500">{{ data.label }}</span>
+            <div class="font-semibold text-gray-500">{{ data.label }}</div>
+            <div
+                class="text-sm font-bold cursor-pointer text-primary"
+                @click="() => (readOnly = !readOnly)"
+            >
+                {{ readOnly ? 'Edit' : 'Done' }}
+            </div>
         </div>
         <div v-for="(a, x) in applicableList" :key="x">
             <div class="gap-6 gap-y-0 group" :class="a.error ? '' : 'mb-4'">
                 <div class="mb-2 text-gray-700">
-                    {{ a.options.displayName }}
+                    {{ a.displayName }}
                 </div>
 
                 <div class="flex items-center self-start flex-grow break-all">
                     <a
-                        v-if="isLink(a.value, a.options.displayName)"
+                        v-if="isLink(a.value, a.displayName)"
                         target="_blank"
                         :href="a.value"
                     >
@@ -54,10 +60,21 @@
         setup(props) {
             const { selectedAsset, data } = toRefs(props)
 
-            const { getDatatypeOfAttribute, isLink, formatDisplayValue } =
-                useCustomMetadataHelpers()
+            const readOnly = ref(true)
 
-            const applicableList = ref(data.value.attributes)
+            const {
+                getDatatypeOfAttribute,
+                isLink,
+                formatDisplayValue,
+                getApplicableAttributes,
+            } = useCustomMetadataHelpers()
+
+            const applicableList = ref(
+                getApplicableAttributes(
+                    data.value,
+                    selectedAsset.value.typeName
+                )
+            )
 
             const setAttributesList = () => {
                 if (selectedAsset.value?.attributes) {
@@ -83,7 +100,10 @@
             watch(
                 () => selectedAsset.value.guid,
                 () => {
-                    applicableList.value = data.value.attributes
+                    applicableList.value = getApplicableAttributes(
+                        data.value,
+                        selectedAsset.value.typeName
+                    )
                     setAttributesList()
                 },
                 {
@@ -98,6 +118,7 @@
                 isLink,
                 formatDisplayValue,
                 applicableList,
+                readOnly,
             }
         },
     })

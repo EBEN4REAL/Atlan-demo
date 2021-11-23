@@ -10,6 +10,7 @@ export default function useCustomMetadataHelpers() {
         }
         return typeName || ''
     }
+
     const isLink = (v: any, name: string) => {
         const urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g
         if (

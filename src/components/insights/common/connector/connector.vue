@@ -5,27 +5,31 @@
             :value="selectedValue"
             style="width: 100%"
             v-model:treeExpandedKeys="expandedKeys"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
-            :allowClear="true"
+            :allowClear="false"
             @change="onChange"
             :data-test-id="'conector'"
             @select="selectNode"
         >
             <template #title="node">
                 <div class="flex items-center truncate">
-                    <AtlanIcon
-                        :icon="iconName(node)"
-                        class="h-4 -ml-0.5 mr-1"
-                    />
+                    <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
                     {{
                         node?.title.length > 30
                             ? `${node?.title.slice(0, 30)}...`
                             : node.title
                     }}
                 </div>
+            </template>
+            <template #suffixIcon>
+                <AtlanIcon
+                    icon="ChevronDown"
+                    class="h-4 -mt-0.5 -ml-1"
+                    color="#6F7590"
+                />
             </template>
         </a-tree-select>
         <AssetDropdown
@@ -349,9 +353,6 @@
             height: 24px !important;
             line-height: 24px !important;
             margin-top: -4px !important;
-        }
-        .ant-select-switcher-icon {
-            font-weight: normal !important;
         }
     }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <CreationModal
         v-model:visible="modalVisible"
-        title=""
+        :title="title"
         @cancel="() => (modalVisible = false)"
         @ok="handleCreation"
     >
@@ -73,19 +73,28 @@
                 type: Boolean,
                 default: false,
             },
+            personaList: {
+                type: Object as PropType<IPurpose[]>,
+                required: true,
+            },
         },
         emits: ['update:visible'],
         setup(props, { emit }) {
+            const { personaList } = toRefs(props)
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
-            const title = ref('')
-            const description = ref('')
-            const selectedClassifications = ref([])
             const rules = ref({
+                selectedClassifications: {
+                    text: 'This classifications combination is already used in another purpose!',
+                    show: false,
+                },
                 classification: {
                     show: false,
                     text: 'Select a classification first!',
                 },
             })
+            const title = ref('')
+            const description = ref('')
+            const selectedClassifications = ref([])
 
             const { visible } = toRefs(props)
             const modalVisible = computed({
@@ -102,6 +111,18 @@
                     rules.value.classification.show = true
                     return
                 }
+                if (selectedClassifications.value.length > 0) {
+                    personaList.value.forEach((purpose) => {
+                        selectedClassifications.value.forEach((e) => {
+                            if (purpose.tags.includes(e)) {
+                                rules.value.selectedClassifications.show = true
+                                rules.value.selectedClassifications.text = `This classifications combination is already used in ${purpose.name} purpose!`
+                                return
+                            }
+                        })
+                    })
+                }
+
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Adding new purpose',
@@ -114,9 +135,9 @@
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        tag: selectedClassifications.value[0]?.typeName,
+                        tags: selectedClassifications.value,
                         /* Hardcode here */
-                        resourcePolicies: [],
+                        metadataPolicies: [],
                         dataPolicies: [],
                     }
                     addPurposeLocally(newPurpose)
@@ -132,7 +153,7 @@
                     modalVisible.value = false
 
                     /* 
-                        resourcePolicies: [
+                        metadataPolicies: [
                             {
                                 name: 'Metadata policy 1',
                                 description: 'bro',

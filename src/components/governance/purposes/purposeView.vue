@@ -55,6 +55,7 @@
         <AddPurpose
             v-model:visible="modalVisible"
             v-model:persona="selectedPersona"
+            :personaList="personaList"
         />
 
         <a-spin
@@ -97,6 +98,7 @@
     import ExplorerList from '@/admin/common/explorerList.vue'
     import AddPurpose from './addPurpose.vue'
     import {
+        personaList,
         filteredPersonas,
         searchTerm,
         selectedPersona,
@@ -121,6 +123,7 @@
             const modalVisible = ref(false)
 
             return {
+                personaList,
                 filteredPersonas,
                 selectedPersona,
                 selectedPersonaId,

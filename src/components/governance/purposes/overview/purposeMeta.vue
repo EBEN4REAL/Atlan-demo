@@ -26,7 +26,7 @@
             <p class="mb-3 text-sm font-bold text-gray-700">Classifications</p>
             <Classification
                 v-model:modelValue="selectedClassifications"
-                :disabled="addClassificationsDisabled"
+                @change="updateClassifications"
             />
         </div>
         <div class="flex items-center py-4 mt-0">
@@ -43,14 +43,14 @@
                         <div
                             v-if="
                                 persona.dataPolicies?.length === 0 &&
-                                persona.resourcePolicies?.length === 0
+                                persona.metadataPolicies?.length === 0
                             "
                         >
                             No policies added
                         </div>
                         <div v-else class="flex items-center">
                             <div class="mr-3">
-                                <b>{{ persona.resourcePolicies?.length }}</b>
+                                <b>{{ persona.metadataPolicies?.length }}</b>
                                 Metadata policies
                             </div>
                             <div>
@@ -75,21 +75,24 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, watch, computed } from 'vue'
-
-    import { IPersona } from '~/types/accessPolicies/purposes'
+    import { message } from 'ant-design-vue'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
     import Avatar from '@common/avatar/user.vue'
     import Classification from '@common/input/classification/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
-    import { selectedPersonaDirty } from '../composables/useEditPurpose'
+    import {
+        selectedPersonaDirty,
+        saveClassifications,
+    } from '../composables/useEditPurpose'
 
     export default defineComponent({
         name: 'PurposeMeta',
         components: { Avatar, Classification },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },
@@ -99,10 +102,10 @@
             const enablePersonaCheck = ref(true)
 
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
-            const mapClassificationsFromNames = (names: string[]) => {
+            const mapClassificationsFromNames = computed(() => {
                 let arr: any[] = []
                 classificationList.value.forEach((cl) => {
-                    names?.forEach((name) => {
+                    selectedPersonaDirty.value?.tags?.forEach((name) => {
                         if (name === cl.name) {
                             arr.push({
                                 typeName: cl.name,
@@ -116,23 +119,48 @@
                     })
                 })
                 return arr
-            }
+            })
 
             /* Mimic the classification Names */
 
             const selectedClassifications = ref(
-                mapClassificationsFromNames([selectedPersonaDirty.value?.tag])
+                mapClassificationsFromNames.value
             )
             const addClassificationsDisabled = computed(() =>
                 selectedClassifications.value.length > 0 ? true : false
             )
 
-            watch(selectedClassifications, () => {
-                selectedPersonaDirty.value.tag =
-                    selectedClassifications.value[0]?.typeName
+            const updateClassifications = async () => {
+                const messageKey = Date.now()
+                message.loading({
+                    content: 'Saving classifications',
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await saveClassifications()
+                    message.success({
+                        content: 'Classifications saved',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                } catch (error) {
+                    console.log(error?.response?.data, 'error')
+                    message.error({
+                        content: error?.response?.data?.message,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                }
+            }
+
+            watch(selectedPersonaDirty, () => {
+                selectedClassifications.value =
+                    mapClassificationsFromNames.value
             })
 
             return {
+                updateClassifications,
                 selectedPersonaDirty,
                 addClassificationsDisabled,
                 selectedClassifications,

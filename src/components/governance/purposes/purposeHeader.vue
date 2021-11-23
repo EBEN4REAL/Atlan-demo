@@ -90,14 +90,6 @@
                             key: msgId,
                         })
                         try {
-                            if (
-                                persona.value.data.resourcePolicies.length +
-                                    persona.value.data.dataPolicies.length ===
-                                0
-                            ) {
-                                deletePersonaByIdLocally(persona.value.id!)
-                            }
-
                             await deletePersonaById(persona.value.id!)
                             message.success({
                                 content: 'Purpose deleted',

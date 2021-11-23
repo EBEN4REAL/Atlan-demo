@@ -27,7 +27,7 @@ export const selectedPersona = computed(() => {
             if (!policy?.name) policy.name = `Untitled ${i}`
             if (!policy?.maskingOption) policy.maskingOption = 'MASK_NONE'
         })
-        t?.resourcePolicies?.forEach((policy, i) => {
+        t?.metadataPolicies?.forEach((policy, i) => {
             const id = generateUUID()
             if (!policy?.id) policy.id = id
             if (!policy?.name) policy.name = `Untitled ${i}`
@@ -62,7 +62,7 @@ invoke(async () => {
         //     description: 'test description',
         //     displayName: 'Hello World',
         //     tag: 'gN9SsazdCV2bp6Vs8EOIl6',
-        //     resourcePolicies: [
+        //     metadataPolicies: [
         //         {
         //             actions: ['entity-create'],
         //             groups: ['testing', 'admin'],

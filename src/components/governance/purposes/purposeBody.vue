@@ -22,7 +22,7 @@
                         "
                     >
                         {{
-                            selectedPersonaDirty?.resourcePolicies?.length +
+                            selectedPersonaDirty?.metadataPolicies?.length +
                             selectedPersonaDirty?.dataPolicies?.length
                         }}
                     </div>
@@ -40,12 +40,12 @@
                 <template
                     v-for="(
                         policy, idx
-                    ) in selectedPersonaDirty.resourcePolicies"
+                    ) in selectedPersonaDirty.metadataPolicies"
                     :key="idx"
                 >
                     <!-- Render it if the policy is being edited -->
                     <MetadataPolicy
-                        v-if="policyEditMap.resourcePolicies[policy.id!]"
+                        v-if="policyEditMap.metadataPolicies[policy.id!]"
                         class="px-5"
                         :policy="policy"
                         @delete="deletePolicyUI('meta', policy.id!)"
@@ -86,7 +86,7 @@
                 </template>
                 <div
                     v-if="
-                        !selectedPersonaDirty.resourcePolicies?.length &&
+                        !selectedPersonaDirty.metadataPolicies?.length &&
                         !selectedPersonaDirty.dataPolicies?.length
                     "
                     class="flex flex-col items-center justify-center mt-8"
@@ -202,7 +202,7 @@
 
             async function savePolicyUI(type: PolicyType, id: string) {
                 if (
-                    persona.value.resourcePolicies?.length +
+                    persona.value.metadataPolicies?.length +
                         persona.value.dataPolicies?.length ==
                     0
                 ) {

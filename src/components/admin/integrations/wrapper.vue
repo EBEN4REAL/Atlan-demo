@@ -50,9 +50,7 @@
             })
 
             const integrationExist = (alias): Object | Boolean | undefined =>
-                store.getIntegrationList.find(
-                    (i) => i.name.toLowerCase() === alias.toLowerCase()
-                )
+                !!store.getIntegration(alias)
 
             return {
                 integrationExist,

@@ -17,6 +17,7 @@
                 </a-menu-item>
 
                 <a-menu-item
+                    v-if="!!store.getIntegration('slack')"
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"
                     class="flex items-center"
@@ -42,6 +43,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import SlackModal from './slackModal.vue'
     import access from '~/constant/accessControl/map'
+    import integrationStore from '~/store/integrations/index'
 
     export default defineComponent({
         name: 'ShareMenu',
@@ -61,6 +63,8 @@
             // data
             const isVisible = ref(false)
 
+            const store = integrationStore()
+
             const { asset } = toRefs(props)
             const closeMenu = () => {
                 isVisible.value = false
@@ -77,6 +81,7 @@
             }
 
             return {
+                store,
                 access,
                 link,
                 handleCopyProfileLink,

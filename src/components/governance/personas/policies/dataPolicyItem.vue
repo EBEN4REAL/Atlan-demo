@@ -55,13 +55,14 @@
                 ></AtlanBtn>
             </a-popconfirm>
         </div>
-
+        <!-- FIXME: Filtersource IDs should be dynamic -->
         <div class="relative">
             <div class="mb-2 text-sm text-gray-500 required">Connection</div>
             <Connector
                 v-model:data="connectorData"
                 class="max-w-xs mb-6"
                 :disabled="!policy?.isNew"
+                :filterSourceIds="['powerbi', 'tableau']"
                 @change="handleConnectorChange"
                 @blur="
                     () => {

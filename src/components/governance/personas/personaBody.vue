@@ -221,6 +221,7 @@
     } from './composables/useEditPersona'
     import { selectedPersona } from './composables/usePersonaList'
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
+    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         name: 'PersonaBody',
@@ -240,6 +241,7 @@
             },
         },
         setup() {
+            const store = useTypedefStore()
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',

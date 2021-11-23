@@ -76,11 +76,19 @@
                             </div>
                             <div class="flex items-center mt-1.5 ml-4">
                                 <img
-                                    :src="snowflake.image"
+                                    :src="
+                                        getConnectorImagePath(
+                                            queryInfo._source.log.message
+                                                .connector
+                                        )
+                                    "
                                     class="w-4 h-4 mr-1 -mt-0.5"
                                 />
                                 <span class="text-xs text-gray-500">{{
-                                    'ATLAN_SAMPLE_DATA'
+                                    getConnectionName(
+                                        queryInfo._source.log.message
+                                            .connectionQualifiedName
+                                    )
                                 }}</span>
                             </div>
                         </div>
@@ -101,8 +109,11 @@
 
                         <span class="text-sm text-gray-700">
                             {{
-                                queryInfo._source.log.message.totalTime / 1000 >
-                                60
+                                queryInfo._source.log.message.totalTime < 1000
+                                    ? `${queryInfo._source.log.message.totalTime}ms`
+                                    : queryInfo._source.log.message.totalTime /
+                                          1000 >
+                                      60
                                     ? `${Math.floor(
                                           queryInfo._source.log.message
                                               .totalTime /
@@ -247,9 +258,10 @@ import Avatar from '~/components/common/avatar/index.vue'
 import AtlanBtn from '@/UI/button.vue'
 import PillGroup from '@/UI/pill/pillGroup.vue'
 import { SourceList } from '~/constant/source'
+import { useConnector } from '~/components/insights/common/composables/useConnector'
 
 export default defineComponent({
-    name: 'ApiKeysTable',
+    name: 'QueryLogsTable',
     components: { Avatar, AtlanBtn, PillGroup },
     props: {
         apiKeysList: {
@@ -271,6 +283,18 @@ export default defineComponent({
     },
     emits: ['selectQuery', 'toggleQueryPreviewDrawer', 'selectQuery'],
     setup(props, { emit }) {
+        const { getConnectionName } = useConnector()
+        const getConnectorImagePath = (connector) => {
+            let connectorObj = {}
+            if (connector) {
+                connectorObj = SourceList.find(
+                    (source) =>
+                        source.id.toLowerCase() === connector.toLowerCase()
+                )
+                return connectorObj?.image || ''
+            }
+            return ''
+        }
         const snowflake = SourceList.find((e) => e.id === 'snowflake')
         const { selectedQuery, selectedRowKeys } = toRefs(props)
         const imageUrl = (username: any) =>
@@ -283,8 +307,6 @@ export default defineComponent({
             setUserUniqueAttribute(username, 'username')
             openPreview()
         }
-
-        const handleTableChange = () => {}
 
         const getQueryStatusClass = (status: string) => {
             if (status.toLowerCase() === 'success') return 'bg-green-500'
@@ -338,9 +360,10 @@ export default defineComponent({
             dayjs,
             columns,
             imageUrl,
-            handleTableChange,
             handleUserPreview,
             isDeletePopoverVisible,
+            getConnectionName,
+            getConnectorImagePath,
         }
     },
 })

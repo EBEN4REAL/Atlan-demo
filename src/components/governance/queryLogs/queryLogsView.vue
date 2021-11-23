@@ -7,10 +7,15 @@
                         <div class="flex items-center">
                             <a-button
                                 type="default"
-                                class="px-2 border border-r-0 border-gray-300 rounded-tl rounded-tr-none rounded-bl rounded-br-none "
+                                class="px-2 rounded-tr-none rounded-br-none"
+                                :class="
+                                    queryLogsFilterDrawerVisible
+                                        ? 'text-primary border-primary'
+                                        : 'border-gray-300  border rounded-tl rounded-bl text-gray '
+                                "
                             >
                                 <AtlanIcon
-                                    :icon="false ? 'FilterDot' : 'FilterFunnel'"
+                                    :icon="'FilterFunnel'"
                                     class="w-4 h-4"
                                     @click="
                                         queryLogsFilterDrawerVisible =
@@ -26,7 +31,7 @@
                                     ? `Search through ${filteredLogsCount} logs`
                                     : `Search logs`
                             "
-                            class="w-1/3 mr-1 border border-gray-300 rounded-none rounded-tr rounded-br shadow-sm "
+                            class="w-1/3 mr-1 border border-l-0 border-gray-300 rounded-none rounded-tr rounded-br shadow-sm "
                             size="default"
                             :allow-clear="true"
                             @change="handleSearch"
@@ -153,7 +158,7 @@ import Connector from '~/components/insights/common/connector/connector.vue'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 
 export default defineComponent({
-    name: 'ApiKeysView',
+    name: 'QueryLogsView',
     components: {
         DefaultLayout,
         AtlanBtn,
@@ -186,21 +191,6 @@ export default defineComponent({
             isLoading,
             filteredLogsCount,
         } = useQueryLogs(gte, lt, from, size)
-
-        const handleRangePickerChange = (e) => {
-            console.log(e)
-            const gte = e[0]
-            const lt = e[1]
-            mutateBody({ gte, lt })
-            refetchList()
-        }
-        watch(
-            [queryList, isLoading],
-            () => {
-                console.log(queryList.value, isLoading.value, 'logs')
-            },
-            { immediate: true }
-        )
 
         const toggleQueryPreviewDrawer = (
             val: boolean | undefined = undefined
@@ -278,14 +268,20 @@ export default defineComponent({
             from.value = offset
             refreshList()
         }
+
+        const handleRangePickerChange = (e) => {
+            gte.value = e[0]
+            lt.value = e[1]
+            refreshList()
+        }
         const pagination = computed(() => ({
             total: filteredLogsCount.value / size.value,
             pageSize: size.value,
             current: from.value / size.value + 1,
         }))
-
-        const handleResetEvent = (obj) => {
-            console.log(obj)
+        const handleResetEvent = () => {
+            facets.value = {}
+            handleFilterChange()
         }
         return {
             selectedRowKeys,

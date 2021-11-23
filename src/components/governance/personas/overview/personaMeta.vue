@@ -26,7 +26,18 @@
         </div>
         <div class="flex items-center py-4 pt-2">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
+                class="
+                    relative
+                    flex
+                    items-center
+                    flex-1
+                    p-4
+                    mr-3
+                    border border-gray-300
+                    rounded
+                    cursor-pointer
+                    group
+                "
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -54,7 +65,13 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                            class="
+                                absolute
+                                right-0
+                                opacity-0
+                                vertical-center
+                                group-hover:opacity-100
+                            "
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -65,7 +82,17 @@
                 </div>
             </div>
             <div
-                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
+                class="
+                    relative
+                    flex
+                    items-center
+                    flex-1
+                    p-4
+                    border border-gray-300
+                    rounded
+                    cursor-pointer
+                    group
+                "
                 @click="setActiveTab('users')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -93,7 +120,13 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                            class="
+                                absolute
+                                right-0
+                                opacity-0
+                                vertical-center
+                                group-hover:opacity-100
+                            "
                         >
                             <AtlanIcon
                                 icon="ArrowRight"

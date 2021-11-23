@@ -12,15 +12,17 @@
                 </span>
             </div>
             <span class="text-sm text-gray-500">on</span>
-            <span class="text-sm text-gray">{{ persona.createdAt }}</span>
+            <span class="text-sm text-gray">{{
+                persona.createdAt?.slice(0, -11)
+            }}</span>
 
             <a-switch
                 class="ml-auto"
-                style="width: 44px"
+                style="width: 40px !important"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
             />
-            <span class="text-sm text-gray">Enable Persona</span>
+            <span class="text-sm text-gray">Enable Purpose</span>
         </div>
         <div class="py-4 text-gray-500 gap-x-2">
             <p class="mb-3 text-sm font-bold text-gray-700">Classifications</p>
@@ -31,7 +33,7 @@
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
-                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -59,7 +61,7 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                            class="absolute right-0 opacity-0 vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -74,7 +76,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, watch, computed } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        watch,
+        computed,
+        toRefs,
+    } from 'vue'
     import { message } from 'ant-design-vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPurpose'

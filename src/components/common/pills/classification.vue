@@ -31,7 +31,7 @@
             {{ displayName || name }}
         </div>
 
-        <div class="flex" @click="handleDelete" v-if="allowDelete">
+        <div class="flex" @click="handleRemove" v-if="allowDelete">
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500 group-hover:text-white"

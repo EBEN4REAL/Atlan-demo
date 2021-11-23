@@ -25,15 +25,16 @@ export interface DataPolicies {
 
 export interface IPurpose {
     id?: string
+    tags: string[]
     name?: string
     displayName?: string
     description?: string
     personaType?: 'persona'
     users?: string[]
     groups?: string[]
-    resourcePolicies?: ResourcePolicies[]
+    metadataPolicies?: ResourcePolicies[]
     // Will be camel cased from BE
-    datapolicies?: DataPolicies[]
+    dataPolicies?: DataPolicies[]
     updatedAt?: string
     updatedBy?: string
     createdAt?: string

@@ -6,13 +6,16 @@
             @visibleChange="handleVisibleChange"
             :trigger="['click']"
             v-model:visible="isEdit"
+            :destroyTooltipOnHide="destroyTooltipOnHide"
         >
             <template #content>
-                <OwnerFacets
-                    ref="ownerInputRef"
-                    v-model="localValue"
-                    :showNone="false"
-                ></OwnerFacets>
+                <div class="px-3 py-4">
+                    <OwnerFacets
+                        ref="ownerInputRef"
+                        v-model="localValue"
+                        :showNone="false"
+                    ></OwnerFacets>
+                </div>
             </template>
             <a-button
                 v-if="!readOnly"
@@ -86,11 +89,17 @@
                 required: false,
                 default: true,
             },
+            destroyTooltipOnHide: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, enableHover } = toRefs(props)
+            const { readOnly, enableHover, destroyTooltipOnHide } =
+                toRefs(props)
             const localValue = ref(modelValue.value)
 
             const isEdit = ref(false)

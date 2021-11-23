@@ -148,6 +148,7 @@
                         :title="tab.tooltip"
                         :icon="tab.icon"
                         :image="tab.image"
+                        :emoji="tab.emoji"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
                     />

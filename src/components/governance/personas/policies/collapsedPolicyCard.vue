@@ -136,6 +136,7 @@
                     :title="getPopoverContent(policy)"
                     ok-text="Yes"
                     :ok-type="'default'"
+                    overlayClassName="popoverConfirm"
                     cancel-text="Cancel"
                     @confirm="removePolicy"
                 >

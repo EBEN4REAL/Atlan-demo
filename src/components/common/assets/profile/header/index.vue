@@ -232,7 +232,7 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AssetMenu from './assetMenu.vue'
-    import ShareMenu from './shareMenu.vue'
+    import ShareMenu from '@/common/assets/misc/shareMenu.vue'
 
     export default defineComponent({
         name: 'AssetHeader',

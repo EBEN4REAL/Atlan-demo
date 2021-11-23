@@ -40,14 +40,7 @@
 </template>
 
 <script setup lang="ts">
-    import {
-        defineProps,
-        defineEmits,
-        defineContext,
-        ref,
-        defineComponent,
-        watch,
-    } from 'vue'
+    import { defineProps, defineEmits, ref, watch } from 'vue'
     import { message as toast } from 'ant-design-vue'
 
     import intStore from '~/store/integrations/index'

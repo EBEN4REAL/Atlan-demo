@@ -5,7 +5,7 @@
                 <div class="relative mb-2 text-sm text-gray-500 required">
                     Policy name
                 </div>
-                <div class="max-w-xs">
+                <div class="" style="width: 320px">
                     <a-input
                         @blur="
                             () => {
@@ -29,13 +29,26 @@
                     {{ rules.policyName.text }}
                 </div>
             </div>
-            <AtlanBtn
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click="removePolicy"
-                ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
-            ></AtlanBtn>
+            <a-popconfirm
+                placement="leftTop"
+                :title="getPopoverContent(policy)"
+                ok-text="Yes"
+                :ok-type="'default'"
+                overlayClassName="popoverConfirm"
+                cancel-text="Cancel"
+                @confirm="removePolicy"
+            >
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="plus-btn"
+                    ><AtlanIcon
+                        icon="Delete"
+                        class="-mx-1 text-red-400"
+                    ></AtlanIcon
+                ></AtlanBtn>
+            </a-popconfirm>
         </div>
 
         <div class="relative">
@@ -71,14 +84,14 @@
         </div>
 
         <DataMaskingSelector
-            v-model:maskingOption="policy.maskingOption"
+            v-model:maskType="policy.maskType"
             class="mb-6 w-80"
         />
 
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
-                style="width: 44px"
+                style="width: 40px !important"
                 :checked="!policy.allow"
                 @update:checked="policy.allow = !$event"
             />
@@ -194,9 +207,9 @@
                     rules.value.policyName.show = true
                     return
                 } else if (
-                    (selectedOwnersData.value.ownerUsers.length ??
-                        0 + selectedOwnersData.value.ownerGroups.length ??
-                        0) < 1
+                    selectedOwnersData.value.ownerUsers.length +
+                        selectedOwnersData.value.ownerGroups.length <
+                    1
                 ) {
                     rules.value.users.show = true
                     return
@@ -209,9 +222,9 @@
                 policy.value.groups = selectedOwnersData.value.ownerGroups
 
                 if (
-                    (selectedOwnersData.value.ownerUsers.length ??
-                        0 + selectedOwnersData.value.ownerGroups.length ??
-                        0) < 1
+                    selectedOwnersData.value.ownerUsers.length +
+                        selectedOwnersData.value.ownerGroups.length <
+                    1
                 ) {
                     rules.value.users.show = true
                 } else {
@@ -226,8 +239,11 @@
                     ownerGroups: policy.value.groups,
                 }
             })
-
+            const getPopoverContent = (policy: any) => {
+                return `Are you sure you want to delete ${policy?.name}?`
+            }
             return {
+                getPopoverContent,
                 selectedOwnersData,
                 handleOwnersChange,
                 filterSourceIds,

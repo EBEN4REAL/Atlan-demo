@@ -325,6 +325,7 @@
                     fontFamily: 'Hack',
                     cursorStyle: 'line',
                     cursorWidth: 2,
+                    letterSpacing: 0.1,
                     // cursorSmoothCaretAnimation: true,
                     // cursorBlinking: 'smooth',
                     minimap: {
@@ -371,18 +372,14 @@
                         }
                     }
                 )
-                editor?.addCommand(
-                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-                    function () {
-                        saveOrUpdate()
-                    }
-                )
+                editor?.addCommand(monaco.KeyMod.CtrlCmd | 49, function () {
+                    saveOrUpdate()
+                })
                 // /* For command pallete keybinding */
                 editor?.addCommand(
-                    monaco.KeyMod.CtrlCmd |
-                        monaco.KeyMod.Shift |
-                        monaco.KeyCode.KEY_P,
+                    monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | 46,
                     function () {
+                        // console.log('cmd+sft+p: ', 'presses')
                         editor?.trigger(
                             'editor',
                             'editor.action.quickCommand',

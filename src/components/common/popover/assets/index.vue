@@ -4,7 +4,7 @@
             <div class="relation-ship">
                 <div class="flex items-center">
                     <img :src="logoTitle" class="h-3 mr-1" />
-                    <span>{{ title }}</span>
+                    <span class="uppercase">{{ title }}</span>
                 </div>
                 <div class="text-lg font-semibold truncate ...">
                     {{ item?.displayText || item?.attributes?.name }}
@@ -41,7 +41,7 @@
                         v-if="table"
                         class="flex items-center text-sm text-gray-500"
                     >
-                        <AtlanIcon icon="TableGray" class="mr-1 mb-0.5" />
+                        <AtlanIcon icon="TableGray" class="mr-1 mb-0.5 icon-blue-color" />
                         <div class="text-xs tracking-tight text-gray-500">
                             {{ table }}
                         </div>
@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <div class="mt-2 text-xs text-gray-500">Description</div>
-                <div class="mt-1 text-sm">
+                <div :class="`mt-1 text-sm ${!item?.attributes?.description ? 'text-gray-500' : ''}`">
                     {{
                         item?.attributes?.description ||
                         `This ${title} has no description added`
@@ -92,9 +92,11 @@
                     </div>
                 </div>
                 <router-link :to="path">
-                    <a-button class="mt-3" block
-                        >View {{ title?.toLowerCase() }} profile</a-button
-                    >
+                    <a-button class="mt-3" block>
+                        <strong>
+                            View {{ title?.toLowerCase() }} profile
+                        </strong>
+                    </a-button>
                 </router-link>
             </div>
         </template>
@@ -214,10 +216,16 @@
         },
     }
 </script>
-
+<style lang="less">
+    .icon-blue-color{
+        path{
+            stroke: #5277D7;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .relation-ship {
-        width: 330px;
+        width: 370px;
         padding: 16px;
     }
     .dot {

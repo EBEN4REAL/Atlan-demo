@@ -49,7 +49,7 @@
                 link: getIntegrationLink(alias),
             })
 
-            const integrationExist = (alias): Object | Boolean | undefined =>
+            const integrationExist = (alias): boolean =>
                 !!store.getIntegration(alias)
 
             return {

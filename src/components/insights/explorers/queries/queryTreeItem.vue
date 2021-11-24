@@ -1,5 +1,6 @@
 <template>
     <div
+        class="h-8"
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
     >
@@ -7,7 +8,7 @@
             <div class="flex w-full m-0">
                 <div
                     v-if="item.typeName === 'QueryFolder'"
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
                     <!--FOLDER NODE -->
                     <!-- <div
@@ -36,7 +37,11 @@
                                 color="#5277D7"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="
+                                    mt-0.5
+                                    text-sm text-gray-700
+                                    parent-ellipsis-container-base
+                                "
                                 >{{ title(item) }}</span
                             >
                             <div
@@ -128,7 +133,7 @@
                 <!--Empty NODE -->
                 <div
                     v-else-if="item.typeName === 'Empty'"
-                    class="text-sm font-bold text-gray-500"
+                    class="h-8 text-sm font-bold text-gray-500"
                 >
                     {{ item.title }}
                 </div>
@@ -144,7 +149,7 @@
                         </div>
                     </template>
                     <div
-                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                     >
                         <!--SAVED QUERY NODE -->
                         <!--For Others -->

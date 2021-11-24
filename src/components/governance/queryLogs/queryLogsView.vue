@@ -135,45 +135,40 @@
             :placement="'left'"
             :width="286"
             :closable="false"
-            :after-visible-change="
-                (visible) => {
-                    notchVisible = visible
-                }
-            "
         >
-            <AssetFilters
-                v-model="facets"
-                :filter-list="queryLogsFilter"
-                :allow-custom-filters="false"
-                class="bg-gray-100"
-                @change="handleFilterChange"
-                @reset="handleResetEvent"
-            >
-                <Connector
-                    v-model:data="facets.connector"
-                    :bg-gray-for-selector="false"
-                    :filter-source-ids="['powerbi', 'tableau']"
-                    class="px-2 py-3"
+            <div class="relative">
+                <AssetFilters
+                    v-model="facets"
+                    :filter-list="queryLogsFilter"
+                    :allow-custom-filters="false"
+                    class="bg-gray-100"
                     @change="handleFilterChange"
-            /></AssetFilters>
+                    @reset="handleResetEvent"
+                >
+                    <Connector
+                        v-model:data="facets.connector"
+                        :bg-gray-for-selector="false"
+                        :filter-source-ids="['powerbi', 'tableau']"
+                        class="px-2 py-3"
+                        @change="handleFilterChange"
+                /></AssetFilters>
+                <AtlanBtn
+                    v-if="queryLogsFilterDrawerVisible"
+                    class="fixed z-10 px-0 border-l-0 rounded-none rounded-r  top-1/4 left-72"
+                    color="secondary"
+                    @click="
+                        () => {
+                            queryLogsFilterDrawerVisible = false
+                        }
+                    "
+                >
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="h-4 px-1 transition-transform transform rotate-90 "
+                    />
+                </AtlanBtn>
+            </div>
         </a-drawer>
-
-        <AtlanBtn
-            :class="notchVisible ? 'opacity-100' : 'opacity-0'"
-            class="fixed z-10 px-0 border-l-0 rounded-none rounded-r  top-1/4 left-72"
-            color="secondary"
-            @click="
-                () => {
-                    queryLogsFilterDrawerVisible = false
-                    notchVisible = false
-                }
-            "
-        >
-            <AtlanIcon
-                icon="ChevronDown"
-                class="h-4 px-1 transition-transform transform rotate-90"
-            />
-        </AtlanBtn>
     </div>
 </template>
 
@@ -210,7 +205,6 @@ export default defineComponent({
         const facets = ref({})
         const searchText: Ref<string> = ref('')
         const queryLogsFilterDrawerVisible: Ref<boolean> = ref(false)
-        const notchVisible: Ref<boolean> = ref(false)
         const timeFrame = ref('30 days')
         const selectedQuery = ref({})
         const isQueryPreviewDrawerVisible = ref(false)
@@ -354,7 +348,6 @@ export default defineComponent({
             savedQueryMetaMap,
             totalLogsCount,
             EmptyLogsIllustration,
-            notchVisible,
         }
     },
 })

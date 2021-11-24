@@ -2,11 +2,47 @@
     <a-popover title="">
         <template #content>
             <div class="relation-ship">
-                <div class="flex items-center">
-                    <img :src="logoTitle" class="h-3 mr-1" />
-                    <span>{{ title }}</span>
+                <div class="flex justify-between">
+                    <div class="flex items-center">
+                        <img :src="logoTitle" class="h-3 mr-1" />
+                        <AtlanIcon
+                            v-if="
+                                ['atlasglossarycategory'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            icon="Category"
+                            class="h-4 mb-0.5 mr-1"
+                        ></AtlanIcon>
+                        <AtlanIcon
+                            v-if="
+                                ['atlasglossaryterm'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            icon="Term"
+                            class="h-4 mb-0.5 mr-1"
+                        ></AtlanIcon>
+
+                        <span class="uppercase">{{
+                            title || item?.typeName
+                        }}</span>
+                    </div>
+                    <div
+                        v-if="
+                            item.typeName?.toLowerCase() === 'column' &&
+                            item.attributes?.dataType
+                        "
+                        class="flex items-center px-1 text-gray-500 bg-gray-100 border border-gray-300 border-solid "
+                    >
+                        <component
+                            :is="dataTypeCategoryImage(item)"
+                            class="h-4 text-gray-500"
+                        />
+                        {{ item.attributes?.dataType }}
+                    </div>
                 </div>
-                <div class="text-lg font-semibold truncate ...">
+                <div class="mb-0.5 text-lg font-semibold truncate ...">
                     {{ item?.displayText || item?.attributes?.name }}
                     <CertificateBadge
                         v-if="certificateStatus(item)"
@@ -18,43 +54,81 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-x-2">
                     <span
-                        v-if="row !== '-' && row !== ''"
+                        v-if="
+                            rows !== '-' &&
+                            rows !== '' &&
+                            item.typeName?.toLowerCase() !== 'column'
+                        "
                         class="text-xs text-gray-500"
                     >
                         <span
                             class="mr-1 text-xs font-semibold tracking-tight text-gray-500 "
-                            >{{ row }}</span
+                            >{{ rows }}</span
                         >Rows
                     </span>
                     <span
-                        v-if="col !== '-' && col !== ''"
+                        v-if="
+                            cols !== '-' &&
+                            cols !== '' &&
+                            item.typeName?.toLowerCase() !== 'column'
+                        "
                         class="text-xs text-gray-500"
                     >
                         <span
                             class="text-xs font-semibold tracking-tight text-gray-500 "
-                            >{{ col }}</span
+                            >{{ cols }}</span
                         >
                         Cols
                     </span>
-                    <div v-if="col !== '-' && col !== ''" class="dot" />
+                    <div
+                        v-if="
+                            cols !== '-' &&
+                            cols !== '' &&
+                            item.typeName?.toLowerCase() !== 'column'
+                        "
+                        class="dot"
+                    />
                     <div
                         v-if="table"
                         class="flex items-center text-sm text-gray-500"
                     >
-                        <AtlanIcon icon="TableGray" class="mr-1 mb-0.5" />
+                        <AtlanIcon
+                            icon="TableGray"
+                            :class="`mr-1 mb-0.5 ${
+                                item.typeName?.toLowerCase() === 'column'
+                                    ? 'icon-blue-color'
+                                    : ''
+                            }`"
+                        />
                         <div class="text-xs tracking-tight text-gray-500">
                             {{ table }}
                         </div>
                     </div>
-                    <div v-if="table" class="dot" />
-                    <div v-if="db" class="flex items-center text-gray-500">
+                    <div
+                        v-if="
+                            table && item.typeName?.toLowerCase() !== 'column'
+                        "
+                        class="dot"
+                    />
+                    <div
+                        v-if="db && item.typeName?.toLowerCase() !== 'column'"
+                        class="flex items-center text-gray-500"
+                    >
                         <AtlanIcon icon="DatabaseGray" class="mr-1 mb-0.5" />
                         <div class="text-xs tracking-tight text-gray-500">
                             {{ db }}
                         </div>
                     </div>
-                    <div v-if="db" class="dot" />
-                    <div v-if="schema" class="flex items-center text-gray-500">
+                    <div
+                        v-if="db && item.typeName?.toLowerCase() !== 'column'"
+                        class="dot"
+                    />
+                    <div
+                        v-if="
+                            schema && item.typeName?.toLowerCase() !== 'column'
+                        "
+                        class="flex items-center text-gray-500"
+                    >
                         <AtlanIcon icon="SchemaGray" class="mr-1 mb-0.5" />
                         <div class="text-xs tracking-tight text-gray-500">
                             {{ schema }}
@@ -62,7 +136,11 @@
                     </div>
                 </div>
                 <div class="mt-2 text-xs text-gray-500">Description</div>
-                <div class="mt-1 text-sm">
+                <div
+                    :class="`mt-1 text-sm ${
+                        !item?.attributes?.description ? 'text-gray-500' : ''
+                    }`"
+                >
                     {{
                         item?.attributes?.description ||
                         `This ${title} has no description added`
@@ -92,9 +170,11 @@
                     </div>
                 </div>
                 <router-link :to="path">
-                    <a-button class="mt-3" block
-                        >View {{ title?.toLowerCase() }} profile</a-button
-                    >
+                    <a-button class="mt-3" block>
+                        <strong>
+                            View {{ title?.toLowerCase() }} profile
+                        </strong>
+                    </a-button>
                 </router-link>
             </div>
         </template>
@@ -128,57 +208,24 @@
                     return {}
                 },
             },
-            logoTitle: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            title: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            row: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            col: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            db: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            schema: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            table: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            path: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
         },
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
+
             const {
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 classifications,
+                getConnectorImage,
+                assetTypeLabel,
+                rowCount,
+                columnCount,
+                databaseName,
+                schemaName,
+                tableName,
+                dataTypeCategoryImage,
             } = useAssetInfo()
 
             const { classificationList } = useTypedefData()
@@ -203,6 +250,15 @@
                 return matchingIdsResult
             })
 
+            const rows = computed(() => rowCount(item.value, false))
+            const cols = computed(() => columnCount(item.value, false))
+            const table = computed(() => tableName(item.value))
+            const db = computed(() => databaseName(item.value))
+            const schema = computed(() => schemaName(item.value))
+            const title = computed(() => assetTypeLabel(item.value))
+            const logoTitle = computed(() => getConnectorImage(item.value))
+            const path = computed(() => `/assets/${item.value.guid}`)
+
             return {
                 certificateStatus,
                 certificateUpdatedBy,
@@ -210,14 +266,29 @@
                 isPropagated,
                 list,
                 classifications,
+                dataTypeCategoryImage,
+                rows,
+                cols,
+                table,
+                db,
+                schema,
+                title,
+                logoTitle,
+                path,
             }
         },
     }
 </script>
-
+<style lang="less">
+    .icon-blue-color {
+        path {
+            stroke: #5277d7;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .relation-ship {
-        width: 330px;
+        width: 370px;
         padding: 16px;
     }
     .dot {

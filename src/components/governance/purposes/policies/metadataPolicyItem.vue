@@ -119,18 +119,10 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Pill from '@/UI/pill/pill.vue'
-    import Connector from './connector.vue'
     import MetadataScopes from './metadataScopes.vue'
     import Owners from '~/components/common/input/owner/index.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
@@ -141,7 +133,6 @@
         components: {
             Pill,
             AtlanBtn,
-            Connector,
             MetadataScopes,
             PillGroup,
             Owners,

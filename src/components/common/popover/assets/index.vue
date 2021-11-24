@@ -2,9 +2,17 @@
     <a-popover title="">
         <template #content>
             <div class="relation-ship">
-                <div class="flex items-center">
-                    <img :src="logoTitle" class="h-3 mr-1" />
-                    <span>{{ title }}</span>
+                <div class="flex justify-between">
+                    <div class="flex items-center">
+                        <img :src="logoTitle" class="h-3 mr-1" />
+                        <span class="uppercase">{{ title }}</span>
+                    </div>
+                    <div
+                        v-if="item.typeName === 'Column'"
+                        class="px-2 bg-gray-100 border border-gray-300 border-solid "
+                    >
+                        {{ item.typeName }}
+                    </div>
                 </div>
                 <div class="text-lg font-semibold truncate ...">
                     {{ item?.displayText || item?.attributes?.name }}
@@ -62,7 +70,11 @@
                     </div>
                 </div>
                 <div class="mt-2 text-xs text-gray-500">Description</div>
-                <div class="mt-1 text-sm">
+                <div
+                    :class="`mt-1 text-sm ${
+                        !item?.attributes?.description ? 'text-gray-500' : ''
+                    }`"
+                >
                     {{
                         item?.attributes?.description ||
                         `This ${title} has no description added`
@@ -92,9 +104,11 @@
                     </div>
                 </div>
                 <router-link :to="path">
-                    <a-button class="mt-3" block
-                        >View {{ title?.toLowerCase() }} profile</a-button
-                    >
+                    <a-button class="mt-3" block>
+                        <strong>
+                            View {{ title?.toLowerCase() }} profile
+                        </strong>
+                    </a-button>
                 </router-link>
             </div>
         </template>
@@ -174,6 +188,7 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
+            console.log(item.value, '<sdsdsd')
             const {
                 certificateStatus,
                 certificateUpdatedAt,
@@ -214,10 +229,16 @@
         },
     }
 </script>
-
+<style lang="less">
+    .icon-blue-color {
+        path {
+            stroke: #5277d7;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .relation-ship {
-        width: 330px;
+        width: 370px;
         padding: 16px;
     }
     .dot {

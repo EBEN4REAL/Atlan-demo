@@ -23,7 +23,6 @@
     import { useRoute } from 'vue-router'
     import AssetDiscovery from '@/assets/index.vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useAssetStore from '~/store/asset'
 
     export default defineComponent({

@@ -50,6 +50,7 @@
                 v-if="activeTabKey === 'details'"
                 class="pb-2"
                 :persona="persona"
+                :username="username"
             />
             <div v-else-if="activeTabKey === 'policies'" class="mt-2">
                 <template
@@ -161,7 +162,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        computed,
+        toRefs,
+        watch,
+    } from 'vue'
     import { message } from 'ant-design-vue'
 
     import MinimalTab from '@/UI/minimalTab.vue'
@@ -188,6 +196,7 @@
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
     import { selectedPersona } from './composables/usePurposeList'
+    import { getUsername } from './composables/getUsername'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -207,6 +216,8 @@
         },
         setup(props) {
             const { persona } = toRefs(props)
+            const userId = computed(() => persona.value.createdBy)
+            const { username } = getUsername(userId)
 
             const addPolicyDropdownConfig = [
                 {
@@ -279,6 +290,8 @@
             }
 
             return {
+                userId,
+                username,
                 selectedPersona,
                 activeTabKey,
                 tabConfig,

@@ -4,7 +4,8 @@
             <span class="text-sm text-gray-500">Created by</span>
             <div class="flex items-center text-sm">
                 <Avatar
-                    :username="persona.createdBy"
+                    :username="username"
+                    @click="showUserPreviewDrawer"
                     styleClass="bg-white mr-1"
                 />
                 <span class="text-gray">
@@ -98,6 +99,7 @@
         saveClassifications,
     } from '../composables/useEditPurpose'
     import { selectedPersona } from '../composables/usePurposeList'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
 
     export default defineComponent({
         name: 'PurposeMeta',
@@ -107,10 +109,20 @@
                 type: Object as PropType<IPurpose>,
                 required: true,
             },
+            username: {
+                type: String,
+                required: true,
+            },
         },
         emits: ['update:persona', 'update:isEditMode'],
-        setup() {
+        setup(props) {
             const { classificationList } = useTypedefData()
+            const { username, persona } = toRefs(props)
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const showUserPreviewDrawer = () => {
+                setUserUniqueAttribute(persona.value.createdBy)
+                showUserPreview()
+            }
             const enablePersonaCheck = ref(true)
 
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
@@ -179,6 +191,8 @@
             })
 
             return {
+                showUserPreviewDrawer,
+                username,
                 selectedPersona,
                 updateClassifications,
                 selectedPersonaDirty,

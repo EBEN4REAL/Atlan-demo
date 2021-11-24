@@ -647,6 +647,142 @@ export function useSavedQuery(
         return { data, error, isLoading }
     }
 
+    // let queryBody = ref(null)
+    // const refreshGetQueryBody = () => {
+    //     queryBody.value= {
+    //         dsl: {
+    //             query: {
+    //                 bool: {
+    //                     must: [
+    //                         {
+    //                             term: {
+    //                                 "__typeName.keyword": "Query"
+    //                             }
+    //                         }
+                            
+    //                     ]
+    //                 }
+    //             }
+    //         },
+    //         attributes: [
+    //             "name",
+    //             "displayName",
+    //             "typeName",
+    //             "dataType",
+    //             "description",
+    //             "userDescription",
+    //             "certificateStatus",
+    //             "ownerUsers",
+    //             "ownerGroups",
+    //             "classifications",
+    //             "connectorName",
+    //             "connectionId",
+    //             "connectionQualifiedName",
+    //             "parentFolderQualifiedName",
+    //             "defaultSchemaQualifiedName",
+    //             "parentFolder",
+    //             "columns",
+    //             "folder",
+    //             "compiledQuery",
+    //             "rawQuery",
+    //             "__timestamp",
+    //             "__modificationTimestamp",
+    //             "__modifiedBy",
+    //             "__createdBy",
+    //             "__state",
+    //             "__guid",
+    //             "__historicalGuids",
+    //             "__classificationsText",
+    //             "__classificationNames",
+    //             "__propagatedClassificationNames",
+    //             "__customAttributes",
+    //             "__labels",
+    //             "anchor",
+    //             "__timestamp",
+    //             "__modificationTimestamp",
+    //             "__modifiedBy",
+    //             "__createdBy",
+    //             "__state",
+    //             "__guid",
+    //             "__historicalGuids",
+    //             "__classificationsText",
+    //             "__classificationNames",
+    //             "__propagatedClassificationNames",
+    //             "__customAttributes",
+    //             "__labels",
+    //             "name",
+    //             "displayName",
+    //             "description",
+    //             "displayDescription",
+    //             "userDescription",
+    //             "tenantId",
+    //             "certificateStatus",
+    //             "certificateStatusMessage",
+    //             "certificateUpdatedAt",
+    //             "certificateUpdatedBy",
+    //             "assetStatusMessage",
+    //             "announcementMessage",
+    //             "announcementTitle",
+    //             "announcementType",
+    //             "announcementUpdatedAt",
+    //             "announcementUpdatedBy",
+    //             "connectionLastSyncedAt",
+    //             "connectionQualifiedName",
+    //             "rowCount",
+    //             "columnCount",
+    //             "sizeBytes",
+    //             "subType",
+    //             "image",
+    //             "sourceRefreshFrequency",
+    //             "sourceCreatedBy",
+    //             "sourceCreatedAt",
+    //             "sourceUpdatedAt",
+    //             "sourceUpdatedBy",
+    //             "databaseCount",
+    //             "databaseCrawledCount",
+    //             "schemaCount",
+    //             "schemaCrawledCount",
+    //             "tableCount",
+    //             "tableCrawledCount",
+    //             "dataType",
+    //             "table",
+    //             "tableName",
+    //             "viewName",
+    //             "lastUpdatedByJob",
+    //             "category",
+    //             "host",
+    //             "botQualifiedName",
+    //             "schemaName",
+    //             "databaseName",
+    //             "logo",
+    //             "viewDefinition",
+    //             "popularityScore",
+    //             "readers",
+    //             "sourceViewCount",
+    //             "integrationCredentialQualifiedName",
+    //             "connectionName",
+    //             "ownerUsers",
+    //             "ownerGroups",
+    //             "databaseQualifiedName",
+    //             "isPrimary",
+    //             "isPartition",
+    //             "readme",
+    //             "parent",
+    //             "connectionLastSyncedJob",
+    //             "qualifiedName",
+    //             "connectionName",
+    //             "isDiscoverable",
+    //             "alias",
+    //             "rawQuery",
+    //             "compiledQuery",
+    //             "connectionId",
+    //             "isPrivate",
+    //             "variablesSchemaBase64",
+    //             "isSnippet"
+    //         ]
+    //     }
+    // }
+
     const saveQueryToDatabaseWithTerms = async (
         assetTerms: any,
         saveQueryData: any,
@@ -816,15 +952,27 @@ export function useSavedQuery(
                     // }
 
                     //fetch query data and initialize asset sidebar
+                    // refreshGetQueryBody()
+                    // queryBody.value.dsl.query.bool.must.push({
+                    //     term: {
+                    //         "__guid": guid
+                    //     }
+                    // })
                     const { data: data2, error: error2, isLoading: isLoading2 } = Insights.GetSavedQuery(
                         guid,
                         {}
                     )
+
+                    // const { data: data2, error: error2, isLoading: isLoading2 } = Insights.Index(
+                    //     queryBody,
+                    //     {}
+                    // )
                     watch([data2, error2, isLoading2], () => {
                         if (isLoading2.value == false) {
                             if (error2.value === undefined) {
                                 // console.log('saved query entity: ', data2.value?.entity)
                                 activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entity
+                                // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
                             } else {
 
                             }

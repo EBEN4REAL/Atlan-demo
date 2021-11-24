@@ -40,21 +40,10 @@
                             icon="Term"
                             class="h-4 mb-0.5 mr-1"
                         ></AtlanIcon>
-                        <Popover
-                            v-if="hasPopHover"
-                            :logo-title="getConnectorImage(item)"
-                            :title="assetTypeLabel(item) || item.typeName"
-                            :item="item"
-                            :path="assetURL(item)"
-                            :row="rowCount(item, false)"
-                            :col="columnCount(item, false)"
-                            :db="databaseName(item)"
-                            :schema="schemaName(item)"
-                            :table="tableName(item)"
-                        >
+                        <Popover v-if="hasPopHover" :item="item">
                             <router-link
                                 :to="assetURL(item)"
-                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                             >
                                 {{ title(item) }}
                             </router-link>
@@ -62,7 +51,7 @@
                         <router-link
                             v-else
                             :to="assetURL(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -131,7 +120,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -170,7 +159,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div

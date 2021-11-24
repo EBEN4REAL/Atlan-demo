@@ -2,7 +2,7 @@
     <router-link :to="assetURL(item)" @click="$emit('closeModal')">
         <div class="flex flex-col">
             <div
-                class="flex items-center flex-1 px-5 pt-2 pb-3 transition-all duration-300 hover:bg-gray-100 hover:border-none"
+                class="flex items-center flex-1 px-5 pt-2 pb-3 transition-all duration-300  hover:bg-gray-100 hover:border-none"
             >
                 <AssetLogo
                     :asset="item"
@@ -14,7 +14,7 @@
                     <!-- Title bar -->
                     <div
                         v-if="item.guid === '-1'"
-                        class="flex flex-shrink pl-1 mb-0 overflow-hidden text-sm font-bold text-gray-700 truncate overflow-ellipsis whitespace-nowrap"
+                        class="flex flex-shrink pl-1 mb-0 overflow-hidden text-sm font-bold text-gray-700 truncate  overflow-ellipsis whitespace-nowrap"
                     >
                         <div>{{ item.displayText }}</div>
                         <AtlanIcon icon="Lock" class="ml-1 mt-0.5" />
@@ -23,21 +23,10 @@
                         v-else
                         class="flex items-center pl-1 mb-0 overflow-hidden"
                     >
-                        <Popover
-                            v-if="hasPopHover"
-                            :logo-title="getConnectorImage(item)"
-                            :title="assetTypeLabel(item) || item.typeName"
-                            :item="item"
-                            :path="assetURL(item)"
-                            :row="rowCount(item, false)"
-                            :col="columnCount(item, false)"
-                            :db="databaseName(item)"
-                            :schema="schemaName(item)"
-                            :table="tableName(item)"
-                        >
+                        <Popover v-if="hasPopHover" :item="item">
                             <router-link
                                 :to="assetURL(item)"
-                                class="flex-shrink mb-0 overflow-hidden text-sm font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                class="flex-shrink mb-0 overflow-hidden text-sm font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                                 @click="$emit('closeModal')"
                             >
                                 {{ title(item) }}
@@ -158,13 +147,13 @@
                 assetTypeLabel,
                 databaseName,
                 schemaName,
-                tableName
+                tableName,
             } = useAssetInfo()
 
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
             const assetURL = (asset) => ({
-                    path: `/assets/${asset.guid}`,
-                })
+                path: `/assets/${asset.guid}`,
+            })
             return {
                 isColumnAsset,
                 // getColumnUrl,
@@ -184,7 +173,7 @@
                 assetTypeLabel,
                 databaseName,
                 schemaName,
-                tableName
+                tableName,
             }
         },
     })

@@ -1,11 +1,35 @@
 <template>
-    <Component
-        v-for="property in list"
-        :key="`${property.id}`"
-        :is="componentName(property)"
-        v-model="formState[property.id]"
-        :property="property"
-    ></Component>
+    <div class="grid grid-cols-12 gap-x-4">
+        <template v-for="property in list" :key="`${property.id}`">
+            <div :class="getCol(property.ui.grid)" v-if="!property.ui?.hidden">
+                <Component
+                    v-if="
+                        componentName(property) === 'credential' ||
+                        componentName(property) === 'nested'
+                    "
+                    :is="componentName(property)"
+                    v-model="formState[property.id]"
+                    :property="property"
+                ></Component>
+
+                <a-form-item
+                    :label="property.ui?.label"
+                    :name="property.name"
+                    :help="property.ui?.help"
+                    :required="property.required"
+                    :rules="property.ui.rules"
+                    :validateTrigger="['blur']"
+                    v-else
+                >
+                    <Component
+                        :is="componentName(property)"
+                        v-model="formState[property.id]"
+                        :property="property"
+                    ></Component>
+                </a-form-item>
+            </div>
+        </template>
+    </div>
 </template>
 
 <script>
@@ -55,10 +79,14 @@
                 required: false,
                 type: Object,
             },
+            baseKey: {
+                required: false,
+                type: String,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { configMap, currentStep } = toRefs(props)
+            const { configMap, currentStep, baseKey } = toRefs(props)
 
             const formState = inject('formState')
 
@@ -83,11 +111,15 @@
                 }
             }
 
+            const getCol = (grid = 12) => {
+                return `col-span-${grid}`
+            }
+
             const setDefaultValue = () => {
                 Object.keys(configMap?.value?.properties).forEach((key) => {
                     if (formState) {
                         if (!formState[key]) {
-                            formState[key] =
+                            formState[getName(key)] =
                                 configMap?.value?.properties[
                                     key
                                 ]?.default?.toString()
@@ -105,6 +137,13 @@
                 calculateList()
             })
 
+            const getName = (name) => {
+                if (baseKey.value) {
+                    return `${baseKey.value}.${name}`
+                }
+                return name
+            }
+
             const list = ref([])
             const calculateList = () => {
                 isImplied()
@@ -117,8 +156,8 @@
                         if (currentStep.value?.properties?.includes(key)) {
                             if (!configMap.value?.properties[key].ui?.hidden) {
                                 temp.push({
-                                    id: `${key}`,
-                                    name: `${key}`,
+                                    id: `${getName(key)}`,
+                                    name: `${getName(key)}`,
                                     ...configMap.value?.properties[key],
                                 })
                             }
@@ -128,8 +167,8 @@
                     Object.keys(configMap?.value?.properties).forEach((key) => {
                         if (!configMap.value?.properties[key]?.ui?.hidden) {
                             temp.push({
-                                id: `${key}`,
-                                name: `${key}`,
+                                id: `${getName(key)}`,
+                                name: `${getName(key)}`,
                                 ...configMap.value?.properties[key],
                             })
                         }
@@ -139,8 +178,6 @@
             }
 
             const isImplied = () => {
-                console.log(configMap.value?.anyOf)
-                console.log(formState)
                 if (configMap.value?.anyOf) {
                     configMap.value.anyOf.forEach((item) => {
                         let loopStop = false
@@ -148,7 +185,10 @@
                             if (loopStop) {
                                 return
                             }
-                            if (formState[i] !== item.properties[i]?.const) {
+                            if (
+                                formState[getName(i)] !==
+                                item.properties[i]?.const
+                            ) {
                                 loopStop = true
                             }
                         })
@@ -176,14 +216,16 @@
 
             return {
                 componentName,
-
+                getName,
                 formState,
                 setDefaultValue,
                 configMap,
                 calculateList,
                 list,
+                baseKey,
                 currentStep,
                 isImplied,
+                getCol,
             }
         },
     })

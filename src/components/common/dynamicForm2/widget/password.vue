@@ -1,10 +1,8 @@
 <template>
-    <a-form-item :label="property.ui?.label" v-if="!property.ui?.hidden">
-        <a-input-password
-            v-bind="componentProps"
-            v-model:value="localValue"
-        ></a-input-password>
-    </a-form-item>
+    <a-input-password
+        v-bind="componentProps"
+        v-model:value="localValue"
+    ></a-input-password>
 </template>
 
 <script>

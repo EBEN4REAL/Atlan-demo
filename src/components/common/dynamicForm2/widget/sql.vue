@@ -1,13 +1,11 @@
 <template>
-    <a-form-item :label="property.ui?.label" v-if="!property.ui?.hidden">
-        <SQLSelect
-            v-bind="componentProps"
-            :list="list"
-            v-model="localValue"
-            :body="body"
-            @change="handleChange"
-        ></SQLSelect>
-    </a-form-item>
+    <SQLSelect
+        v-bind="componentProps"
+        :list="list"
+        v-model="localValue"
+        :body="body"
+        @change="handleChange"
+    ></SQLSelect>
 </template>
 
 <script>
@@ -48,8 +46,8 @@
                 jarLink:
                     'https://atlan-public.s3-eu-west-1.amazonaws.com/atlan/jdbc/snowflake.tar.gz',
                 url: 'jdbc:snowflake://jv22371.ap-south-1.aws.snowflakecomputing.com?loginTimeout=5&networkTimeout=5&CLIENT_SESSION_KEEP_ALIVE=true&application=atlan',
-                username: 'atlanadmin',
-                password: 'Atlan#2020',
+                username: '',
+                password: '',
                 query: property.value.ui?.query,
                 extra: {
                     role: 'ACCOUNTADMIN',
@@ -58,8 +56,8 @@
                 connector: 'snowflake',
                 authType: 'basic',
                 driverProperties: {
-                    username: 'atlanadmin',
-                    password: 'Atlan#2020',
+                    username: '',
+                    password: '',
                 },
             })
 

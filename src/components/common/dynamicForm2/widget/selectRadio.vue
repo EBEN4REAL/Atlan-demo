@@ -1,12 +1,10 @@
 <template>
-    <a-form-item :label="property.ui?.label" v-if="!property.ui?.hidden">
-        <CustomRadioButton
-            v-bind="componentProps"
-            :list="list"
-            v-model="localValue"
-            @change="handleChange"
-        ></CustomRadioButton>
-    </a-form-item>
+    <CustomRadioButton
+        v-bind="componentProps"
+        :list="list"
+        v-model="localValue"
+        @change="handleChange"
+    ></CustomRadioButton>
 </template>
 
 <script>

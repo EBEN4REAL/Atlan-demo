@@ -61,8 +61,7 @@
             <a-tabs
                 v-model:activeKey="activeKey"
                 tab-position="left"
-                :class="$style.previewtab"
-                class="border-t"
+                class="preview-tab border-t"
             >
                 <a-tab-pane v-for="(tab, index) in tabs" :key="tab.key">
                     <template #tab>
@@ -77,7 +76,6 @@
                     <component
                         :is="tab.component"
                         class="pt-3"
-                        :class="$style.componentHeight"
                         :is-current-user="isValidUser ? isCurrentUser : null"
                         :selected-user="isValidUser ? selectedUser : null"
                         :selected-group="isValidGroup ? selectedGroup : null"
@@ -199,37 +197,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .previewtab {
-        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
-        @apply ml-0 !important;
-        @apply mt-4 !important;
-        }
-
-        :global(.ant-tabs-bar) {
-            margin-bottom: 0 !important;
-        }
-        :global(.ant-tabs-nav-container) {
-            width: 48px !important;
-        @apply ml-0 !important;
-        }
-        :global(.ant-tabs-tab) {
-            height: 48px !important;
-            width: 48px !important;
-        @apply p-0 justify-center !important;
-        }
-
-        :global(.ant-tabs-content) {
-        @apply px-0 !important;
-        }
-        :global(.ant-tabs-ink-bar) {
-        @apply rounded-t-sm;
-            margin-bottom: 1px;
-        }
-        :global(.ant-tabs-tabpane) {
-        @apply px-0 !important;
-        @apply pb-0 !important;
-        }
-    }
-</style>

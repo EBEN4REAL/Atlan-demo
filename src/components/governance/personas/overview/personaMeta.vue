@@ -2,7 +2,10 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
-            <div class="flex items-center text-sm">
+            <div
+                class="flex items-center text-sm"
+                @click="showUserPreviewDrawer"
+            >
                 <Avatar
                     :username="persona.createdBy"
                     styleClass="bg-white mr-1"
@@ -26,18 +29,7 @@
         </div>
         <div class="flex items-center py-4 pt-2">
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    mr-3
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -65,13 +57,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -82,17 +68,7 @@
                 </div>
             </div>
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
                 @click="setActiveTab('users')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -120,13 +96,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -147,6 +117,7 @@
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import Avatar from '@common/avatar/user.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
 
     export default defineComponent({
         name: 'PersonaMeta',
@@ -159,10 +130,16 @@
         },
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const showUserPreviewDrawer = () => {
+                setUserUniqueAttribute(persona.value.createdBy)
+                showUserPreview()
+            }
             const { persona } = toRefs(props)
             const enablePersonaCheck = ref(true)
             const formatDate = (val) => {}
             return {
+                showUserPreviewDrawer,
                 formatDate,
                 enablePersonaCheck,
                 enablePersona,

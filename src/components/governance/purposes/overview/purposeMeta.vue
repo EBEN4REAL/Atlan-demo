@@ -2,12 +2,11 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
-            <div class="flex items-center text-sm">
-                <Avatar
-                    :username="username"
-                    @click="showUserPreviewDrawer"
-                    styleClass="bg-white mr-1"
-                />
+            <div
+                class="flex items-center text-sm"
+                @click="showUserPreviewDrawer"
+            >
+                <Avatar :username="username" styleClass="bg-white mr-1" />
                 <span class="text-gray">
                     {{ persona.createdBy }}
                 </span>

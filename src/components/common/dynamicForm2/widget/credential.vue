@@ -1,5 +1,7 @@
 <template>
-    <FormItem :properties="list"></FormItem>
+    <FormItem :configMap="configMap"></FormItem>
+
+    <a-button @click="handleTestAuthentication">Test Authentication</a-button>
 </template>
 
 <script>
@@ -16,6 +18,7 @@
         onBeforeMount,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import useTestCredential from '~/composables/credential/useTestCredential'
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
@@ -215,107 +218,20 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { property, configMap } = toRefs(props)
-            const componentProps = computed(() => property.value.ui)
-            const { modelValue } = useVModels(props, emit)
-            const localValue = reactive(modelValue.value)
 
-            watch(localValue, () => {
-                modelValue.value = localValue
-                emit('change')
-            })
+            const body = reactive({})
+            const dependentKey = ref()
 
-            const list = ref([])
+            const { refresh } = useTestCredential(body)
 
-            const calculateList = () => {
-                const temp = []
-                Object.keys(configMap?.value?.properties).forEach((key) => {
-                    if (!configMap.value?.properties[key]?.ui.hidden) {
-                        temp.push({
-                            id: `${key}`,
-                            ...configMap.value?.properties[key],
-                        })
-                    }
-                })
-
-                list.value = temp
+            const handleTestAuthentication = () => {
+                refresh()
             }
-
-            const formState = inject('formState')
-            const setDefaultValue = () => {
-                Object.keys(configMap.value.properties).forEach((key) => {
-                    if (formState) {
-                        if (!formState[key]) {
-                            formState[key] =
-                                configMap.value.properties[
-                                    key
-                                ]?.default?.toString()
-                        }
-                    }
-                })
-            }
-
-            onBeforeMount(() => {
-                setDefaultValue()
-            })
-            onMounted(() => {
-                isImplied()
-                calculateList()
-            })
-
-            const isImplied = () => {
-                console.log(configMap.value)
-                if (configMap.value?.anyOf) {
-                    configMap.value.anyOf.forEach((item) => {
-                        let loopStop = false
-                        Object.keys(item.properties).some((i) => {
-                            if (loopStop) {
-                                return
-                            }
-                            if (formState[i] !== item.properties[i]?.const) {
-                                loopStop = true
-                            }
-                        })
-                        if (!loopStop) {
-                            item.required.forEach((i) => {
-                                console.log(i)
-                                if (configMap.value.properties[i]) {
-                                    configMap.value.properties[
-                                        i
-                                    ].ui.hidden = false
-                                }
-                            })
-                        } else {
-                            item.required.forEach((i) => {
-                                console.log(i)
-                                if (configMap.value.properties[i]) {
-                                    configMap.value.properties[
-                                        i
-                                    ].ui.hidden = true
-                                }
-                            })
-                        }
-                    })
-                }
-
-                console.log(configMap.value)
-            }
-
-            watch(formState, () => {
-                console.log('isImplied')
-                isImplied()
-                calculateList()
-            })
 
             return {
-                property,
-                componentProps,
-                localValue,
                 configMap,
-                modelValue,
-                list,
-                setDefaultValue,
-                isImplied,
-                calculateList,
+                refresh,
+                handleTestAuthentication,
             }
         },
     })

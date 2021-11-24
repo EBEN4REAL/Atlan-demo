@@ -27,10 +27,12 @@
                 </a-button>
             </div>
         </div>
-        <div class="w-full my-4 border-b"></div>
-        <div class="w-full h-full">
-            <div class="w-full p-4 pt-0">
-                <div class="flex justify-between text-gray-500">
+        <!-- <div class="w-full my-4 border-b"></div> -->
+        <div class="w-full h-full mt-2 h-9">
+            <div class="w-full px-4">
+                <div
+                    class="flex items-end justify-between mb-2 text-gray-500  h-9"
+                >
                     <RaisedTab
                         v-model:active="savedQueryType"
                         :data="raisedTabConfig"
@@ -57,12 +59,14 @@
                                             )
                                     "
                                     icon="NewQuery"
+                                    color="#5277D7"
                                     class="
                                         h-4
                                         m-0
                                         mr-4
                                         -mt-0.5
                                         hover:text-primary
+                                        outline-none
                                     "
                                 />
                             </a-tooltip>
@@ -85,12 +89,14 @@
                                             )
                                     "
                                     icon="NewQuery"
+                                    color="#5277D7"
                                     class="
                                         h-4
                                         m-0
                                         mr-4
                                         -mt-0.5
                                         hover:text-primary
+                                        outline-none
                                     "
                                 />
                             </a-tooltip>
@@ -111,8 +117,15 @@
                                 </template>
                                 <AtlanIcon
                                     @click="createFolderInput"
+                                    color="#5277D7"
                                     icon="NewFolder"
-                                    class="h-4 m-0 -mt-0.5 hover:text-primary"
+                                    class="
+                                        h-4
+                                        m-0
+                                        -mt-0.5
+                                        hover:text-primary
+                                        outline-none
+                                    "
                                 />
                             </a-tooltip>
                             <a-tooltip
@@ -128,8 +141,15 @@
                                 </template>
                                 <AtlanIcon
                                     @click="createFolderInput"
+                                    color="#5277D7"
                                     icon="NewFolder"
-                                    class="h-4 m-0 -mt-0.5 hover:text-primary"
+                                    class="
+                                        h-4
+                                        m-0
+                                        -mt-0.5
+                                        hover:text-primary
+                                        outline-none
+                                    "
                                 />
                             </a-tooltip>
                             <!-- CREATE FOLDER PERMISSIONS -->
@@ -318,7 +338,7 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
-    import RaisedTab from '@/UI/raisedTab.vue'
+    import RaisedTab from '~/components/insights/common/raisedTabs/index.vue'
     import QueryTree from './queryTree.vue'
     import useQueryTree from './composables/useQueryTree'
     import useSearchQueries from './composables/useSearchQueries'

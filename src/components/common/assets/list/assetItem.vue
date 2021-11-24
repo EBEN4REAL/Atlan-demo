@@ -40,16 +40,8 @@
                             icon="Term"
                             class="h-4 mb-0.5 mr-1"
                         ></AtlanIcon>
-                        <Popover v-if="hasPopHover" :item="item">
-                            <router-link
-                                :to="assetURL(item)"
-                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
-                            >
-                                {{ title(item) }}
-                            </router-link>
-                        </Popover>
+
                         <router-link
-                            v-else
                             :to="assetURL(item)"
                             class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
@@ -437,14 +429,12 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
-    import Popover from '@/common/popover/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
             ClassificationPill,
-            Popover,
         },
         props: {
             item: {
@@ -469,11 +459,6 @@
                 },
             },
             showThreeDotMenu: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            hasPopHover: {
                 type: Boolean,
                 required: false,
                 default: false,

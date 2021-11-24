@@ -46,6 +46,8 @@ import {
     Empty,
     Typography,
     Image,
+    Row,
+    Col,
 } from 'ant-design-vue'
 import { UserModule } from '~/types/vitessg'
 
@@ -90,6 +92,8 @@ export const install: UserModule = ({ app }) => {
     app.use(TreeSelect)
     app.use(Typography)
     app.use(Upload)
+    app.use(Row)
+    app.use(Col)
 
     app.config.globalProperties.$message = message
     app.config.globalProperties.$error = Modal.error

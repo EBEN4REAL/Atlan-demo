@@ -2,8 +2,8 @@
     <div>
         <a-table
             class="overflow-hidden border rounded-lg"
-            :scroll="{ y: 'calc(100vh - 17.5rem)' }"
-            :style="{ maxHeight: 'calc(100vh - 17.5rem)', cursor: 'pointer' }"
+            :scroll="{ y: 'calc(100vh - 20rem)' }"
+            :style="{ cursor: 'pointer' }"
             :table-layout="'fixed'"
             :pagination="false"
             :class="$style.table_custom"

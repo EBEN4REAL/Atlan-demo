@@ -27,23 +27,27 @@
             ></a-button>
         </a-popover>
         <template v-for="username in localValue?.ownerUsers" :key="username">
-            <UserPill
-                :username="username"
-                :allowDelete="!readOnly"
-                @delete="handleDeleteUser"
-                @click="handleClickUser(username)"
-                :enableHover="enableHover"
-            ></UserPill>
+            <PopOverUser>
+                <UserPill
+                    :username="username"
+                    :allowDelete="!readOnly"
+                    @delete="handleDeleteUser"
+                    @click="handleClickUser(username)"
+                    :enableHover="enableHover"
+                ></UserPill>
+            </PopOverUser>
         </template>
 
         <template v-for="name in localValue?.ownerGroups" :key="name">
-            <GroupPill
-                :name="name"
-                :allowDelete="!readOnly"
-                @delete="handleDeleteGroup"
-                @click="handleClickGroup(name)"
-                :enableHover="enableHover"
-            ></GroupPill>
+            <PopOverGroup>
+                <GroupPill
+                    :name="name"
+                    :allowDelete="!readOnly"
+                    @delete="handleDeleteGroup"
+                    @click="handleClickGroup(name)"
+                    :enableHover="enableHover"
+                ></GroupPill>
+            </PopOverGroup>
         </template>
     </div>
 </template>
@@ -56,7 +60,8 @@
     import GroupPill from '@/common/pills/group.vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import PopOverGroup from '@/common/popover/user/groups.vue'
     // Composables
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
@@ -72,7 +77,14 @@
 
     export default defineComponent({
         name: 'OwnersWidget',
-        components: { UserPill, GroupPill, AtlanIcon, OwnerFacets },
+        components: {
+            UserPill,
+            GroupPill,
+            AtlanIcon,
+            OwnerFacets,
+            PopOverUser,
+            PopOverGroup,
+        },
         props: {
             readOnly: {
                 type: Boolean,

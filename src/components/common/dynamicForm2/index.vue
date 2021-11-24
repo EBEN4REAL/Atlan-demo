@@ -1,5 +1,11 @@
 <template>
-    <a-form ref="formRef" :model="formState" :colon="false" type="flex">
+    <a-form
+        ref="formRef"
+        :model="formState"
+        :colon="false"
+        layout="vertical"
+        :scrollToFirstError="true"
+    >
         <FormItem
             :configMap="localConfig"
             :currentStep="currentStep"
@@ -70,21 +76,24 @@
             const localConfig = ref(config.value)
 
             const formState = reactive(modelValue.value)
-            provide('formState', formState)
 
-            const validateForm = () => {
+            const validateForm = async () => {
                 if (formRef.value) {
-                    console.log('validate', formState)
-                    formRef.value
-                        .validate()
-                        .then(() => {
-                            console.log('values', formState, toRaw(formState))
-                        })
-                        .catch((error) => {
-                            console.log('error', formState, error)
-                        })
+                    try {
+                        await formRef.value.validate()
+                        return
+                    } catch (e) {
+                        console.log('error')
+                        return e
+                    }
+                }
+                return {
+                    message: 'Form is not ready',
                 }
             }
+
+            provide('formState', formState)
+            provide('validateForm', validateForm)
 
             // watch(formState, () => {
             //     // console.log(formState)

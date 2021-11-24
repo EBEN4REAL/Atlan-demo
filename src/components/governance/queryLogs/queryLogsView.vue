@@ -20,24 +20,21 @@
                 <div class="flex items-center justify-between pb-3">
                     <div class="flex items-stretch w-full">
                         <div class="flex items-center">
-                            <a-button
-                                type="default"
+                            <AtlanBtn
+                                color="secondary"
                                 class="px-2 rounded-tr-none rounded-br-none"
                                 :class="
                                     queryLogsFilterDrawerVisible
                                         ? 'text-primary border-primary'
                                         : 'border-gray-300  border rounded-tl rounded-bl text-gray '
                                 "
+                                @click="queryLogsFilterDrawerVisible = true"
                             >
                                 <AtlanIcon
                                     :icon="'FilterFunnel'"
                                     class="w-4 h-4"
-                                    @click="
-                                        queryLogsFilterDrawerVisible =
-                                            !queryLogsFilterDrawerVisible
-                                    "
                                 />
-                            </a-button>
+                            </AtlanBtn>
                         </div>
                         <a-input-search
                             v-model:value="searchText"
@@ -131,28 +128,46 @@
                 @selectQuery="handleSelectQuery"
             />
         </a-drawer>
+
         <a-drawer
             :visible="queryLogsFilterDrawerVisible"
             :mask="false"
             :placement="'left'"
-            :width="270"
+            :width="286"
             :closable="false"
         >
-            <AssetFilters
-                v-model="facets"
-                :filter-list="queryLogsFilter"
-                :allow-custom-filters="false"
-                class="bg-gray-100"
-                @change="handleFilterChange"
-                @reset="handleResetEvent"
-            >
-                <Connector
-                    v-model:data="facets.connector"
-                    :bg-gray-for-selector="false"
-                    :filter-source-ids="['powerbi', 'tableau']"
-                    class="px-2 py-3"
+            <div class="relative">
+                <AssetFilters
+                    v-model="facets"
+                    :filter-list="queryLogsFilter"
+                    :allow-custom-filters="false"
+                    class="bg-gray-100"
                     @change="handleFilterChange"
-            /></AssetFilters>
+                    @reset="handleResetEvent"
+                >
+                    <Connector
+                        v-model:data="facets.connector"
+                        :bg-gray-for-selector="false"
+                        :filter-source-ids="['powerbi', 'tableau']"
+                        class="px-2 py-3"
+                        @change="handleFilterChange"
+                /></AssetFilters>
+                <AtlanBtn
+                    v-if="queryLogsFilterDrawerVisible"
+                    class="fixed z-10 px-0 border-l-0 rounded-none rounded-r  top-1/4 left-72"
+                    color="secondary"
+                    @click="
+                        () => {
+                            queryLogsFilterDrawerVisible = false
+                        }
+                    "
+                >
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="h-4 px-1 transition-transform transform rotate-90 "
+                    />
+                </AtlanBtn>
+            </div>
         </a-drawer>
     </div>
 </template>

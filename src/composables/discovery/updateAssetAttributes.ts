@@ -269,5 +269,8 @@ export default function updateAssetAttributes(selectedAsset) {
         handleChangeCertificate,
         handleClassificationChange,
         isLoadingClassification,
+        nameRef,
+        descriptionRef,
+        animationPoint,
     }
 }

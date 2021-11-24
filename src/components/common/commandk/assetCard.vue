@@ -2,11 +2,11 @@
     <router-link :to="assetURL(item)" @click="$emit('closeModal')">
         <div class="flex flex-col">
             <div
-                class="flex items-center flex-1 px-5 pt-2 pb-3 transition-all duration-300  hover:bg-gray-100 hover:border-none"
+                class="flex items-center flex-1 px-5 pt-2 pb-3 transition-all duration-300 hover:bg-gray-100 hover:border-none"
             >
                 <AssetLogo
                     :asset="item"
-                    :textRequired="false"
+                    :text-required="false"
                     variant="lg"
                     class="mr-2"
                 />
@@ -14,7 +14,7 @@
                     <!-- Title bar -->
                     <div
                         v-if="item.guid === '-1'"
-                        class="flex flex-shrink pl-1 mb-0 overflow-hidden text-sm font-bold text-gray-700 truncate  overflow-ellipsis whitespace-nowrap"
+                        class="flex flex-shrink pl-1 mb-0 overflow-hidden text-sm font-bold text-gray-700 truncate overflow-ellipsis whitespace-nowrap"
                     >
                         <div>{{ item.displayText }}</div>
                         <AtlanIcon icon="Lock" class="ml-1 mt-0.5" />
@@ -23,13 +23,26 @@
                         v-else
                         class="flex items-center pl-1 mb-0 overflow-hidden"
                     >
-                        <router-link
-                            :to="assetURL(item)"
-                            class="flex-shrink mb-0 overflow-hidden text-sm font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
-                            @click="$emit('closeModal')"
+                        <Popover
+                            v-if="hasPopHover"
+                            :logo-title="getConnectorImage(item)"
+                            :title="assetTypeLabel(item) || item.typeName"
+                            :item="item"
+                            :path="assetURL(item)"
+                            :row="rowCount(item, false)"
+                            :col="columnCount(item, false)"
+                            :db="databaseName(item)"
+                            :schema="schemaName(item)"
+                            :table="tableName(item)"
                         >
-                            {{ title(item) }}
-                        </router-link>
+                            <router-link
+                                :to="assetURL(item)"
+                                class="flex-shrink mb-0 overflow-hidden text-sm font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                @click="$emit('closeModal')"
+                            >
+                                {{ title(item) }}
+                            </router-link>
+                        </Popover>
                         <CertificateBadge
                             v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"
@@ -44,7 +57,7 @@
                     <div class="flex items-center text-gray-500 gap-x-2">
                         <AssetLogo
                             :asset="item"
-                            :imageRequired="false"
+                            :image-required="false"
                             class="mr-2 text-xs"
                         />
                         <HierarchyBar :selected-asset="item" class="text-xs" />
@@ -95,13 +108,14 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
+    import HierarchyBar from '@common/badge/hierarchy.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
 
-    import HierarchyBar from '@common/badge/hierarchy.vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RowsColumnCount from '@/common/info/rowsColumnCount.vue'
+    import Popover from '@/common/popover/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -110,6 +124,7 @@
             CertificateBadge,
             AssetLogo,
             RowsColumnCount,
+            Popover,
         },
         props: {
             item: {
@@ -118,6 +133,11 @@
                 default(): Components.Schemas.AtlasEntityHeader {
                     return {}
                 },
+            },
+            hasPopHover: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['closeModal'],
@@ -134,14 +154,17 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                getConnectorImage,
+                assetTypeLabel,
+                databaseName,
+                schemaName,
+                tableName
             } = useAssetInfo()
 
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
-            const assetURL = (asset) => {
-                return {
+            const assetURL = (asset) => ({
                     path: `/assets/${asset.guid}`,
-                }
-            }
+                })
             return {
                 isColumnAsset,
                 // getColumnUrl,
@@ -157,6 +180,11 @@
                 certificateStatusMessage,
                 dataTypeCategoryImage,
                 assetURL,
+                getConnectorImage,
+                assetTypeLabel,
+                databaseName,
+                schemaName,
+                tableName
             }
         },
     })

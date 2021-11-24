@@ -72,7 +72,7 @@ export const discoveryFilters = [
             {
                 name: '__modificationTimestamp.date',
                 displayName: 'Last updated at',
-                typeName: 'datetime',
+                typeName: 'date',
                 description: 'Last updated timestamp of the asset on Atlan',
                 isMandatory: true,
             },
@@ -239,7 +239,7 @@ export const glossaryFilters = [
             {
                 name: '__modificationTimestamp.date',
                 displayName: 'Last updated at',
-                typeName: 'datetime',
+                typeName: 'date',
                 description: 'Last updated timestamp of the asset on Atlan',
                 isMandatory: true,
             },
@@ -267,6 +267,19 @@ export const glossaryFilters = [
             },
         ],
         overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+]
+
+export const packageFilters = [
+    {
+        id: 'certificateStatus',
+        label: 'Certificate',
+        component: 'certificate',
+        overallCondition: 'OR',
+        attributes: [],
         isDeleted: false,
         isDisabled: false,
         exclude: false,

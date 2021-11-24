@@ -62,7 +62,10 @@
                     key="archive"
                     @click="closeMenu"
                 >
-                    <RemoveGTCModal :entityType="entity.typeName">
+                    <RemoveGTCModal
+                        :entityType="entity.typeName"
+                        :entity="entity"
+                    >
                         <template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon
@@ -188,7 +191,6 @@
             const isModalVisible = ref<boolean>(false)
             const router = useRouter()
             const showCategories = ref(false)
-
             const { getAnchorQualifiedName } = useAssetInfo()
 
             const glossaryQualifiedName = computed(() => {

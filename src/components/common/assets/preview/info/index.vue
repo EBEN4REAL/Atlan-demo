@@ -287,7 +287,6 @@
             :footer="null"
             :closable="false"
             width="1000px"
-            :class="$style.sampleDataModal"
         >
             <SampleDataTable :asset="selectedAsset" />
         </a-modal>
@@ -307,6 +306,8 @@
         reactive,
     } from 'vue'
     import { whenever } from '@vueuse/core'
+    import SavedQuery from '@common/hovercards/savedQuery.vue'
+    import { message } from 'ant-design-vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -317,10 +318,8 @@
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
-    import SavedQuery from '@common/hovercards/savedQuery.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
     import useSetClassifications from '~/composables/discovery/useSetClassifications'
-    import { message, Modal } from 'ant-design-vue'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
     import whoami from '~/composables/user/whoami'
     import confetti from '~/utils/confetti'
@@ -562,17 +561,34 @@
                 error: isErrorClassification,
             } = useSetClassifications(classificationBody)
 
+            const arrayEquals = (a, b) =>
+                Array.isArray(a) &&
+                Array.isArray(b) &&
+                a.length === b.length &&
+                a.every((val, index) =>
+                    b.map((i) => i.typeName).includes(val.typeName)
+                )
+
             const handleClassificationChange = () => {
-                classificationBody.value = {
-                    guidHeaderMap: {
-                        [selectedAsset.value.guid]: {
-                            ...entity.value,
-                            classifications: localClassifications.value,
+                console.log(classifications(selectedAsset.value))
+                console.log(localClassifications.value)
+                if (
+                    !arrayEquals(
+                        classifications(selectedAsset.value),
+                        localClassifications.value
+                    )
+                ) {
+                    classificationBody.value = {
+                        guidHeaderMap: {
+                            [selectedAsset.value.guid]: {
+                                ...entity.value,
+                                classifications: localClassifications.value,
+                            },
                         },
-                    },
+                    }
+                    currentMessage.value = 'Classifications have been updated'
+                    mutateClassification()
                 }
-                currentMessage.value = 'Classifications have been updated'
-                mutateClassification()
             }
 
             whenever(isReadyClassification, () => {
@@ -715,15 +731,8 @@
                 descriptionRef,
                 sampleDataVisible,
                 showSampleDataModal,
+                arrayEquals,
             }
         },
     })
 </script>
-
-<style lang="less" module>
-    .sampleDataModal {
-        :global(.ant-modal-body) {
-            @apply p-2 !important;
-        }
-    }
-</style>

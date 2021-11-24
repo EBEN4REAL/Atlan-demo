@@ -28,7 +28,7 @@
                         <div
                             :data-test-id="'loadMore'"
                             v-else
-                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary"
+                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary h-7"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -186,6 +186,7 @@
                 > .ant-tree-switcher_open) {
             background-color: #fff !important;
         }
+
         :global(.ant-tree-title) {
             width: calc(100% - 1.5rem) !important;
         }
@@ -234,7 +235,11 @@
             background-color: rgba(219, 234, 254, 1) !important;
         }
         :global(.ant-tree span.ant-tree-indent-unit) {
-            width: 14px !important;
+            width: 16px !important;
+            // background-color: red !important;
+        }
+        :global(.ant-tree span.ant-tree-switcher.ant-tree-switcher-noop) {
+            width: 3px !important;
             // background-color: red !important;
         }
     }

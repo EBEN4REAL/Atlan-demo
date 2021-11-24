@@ -29,7 +29,11 @@
         <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
             <DynamicInput2
                 v-model="localCondition.value"
-                :data-type="attribute.subTypeName || attribute.typeName"
+                :data-type="
+                    attribute.options?.customType ||
+                    attribute.subTypeName ||
+                    attribute.typeName
+                "
                 @change="handleValueChange"
             ></DynamicInput2>
         </div>

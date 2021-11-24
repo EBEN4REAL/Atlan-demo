@@ -320,10 +320,6 @@
             @apply ml-0 !important;
             @apply mt-4 !important;
         }
-
-        :global(.ant-tabs-bar) {
-            margin-bottom: 0px !important;
-        }
         :global(.ant-tabs-nav-container) {
             width: 48px !important;
             @apply ml-0 !important;
@@ -356,16 +352,6 @@
         }
         :global(.ant-input) {
             @apply shadow-none outline-none px-0 border-0 !important;
-        }
-        :global(.ant-modal-header) {
-            @apply border-0 border-t-0 border-b-0 px-4  !important;
-        }
-
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply px-4 pt-0 pb-4 !important;
         }
     }
     .titleInput {

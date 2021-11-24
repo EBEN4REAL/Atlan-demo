@@ -14,7 +14,7 @@
 
                     <span>{{ item?.parentTitle }}</span>
                 </div>
-                <div
+                <!-- <div
                     class="w-1 h-1 mx-2 bg-gray-500 rounded-full -mt-0.5"
                 ></div>
                 <div class="flex items-center h-full">
@@ -25,7 +25,7 @@
                 ></div>
                 <div class="flex items-center h-full">
                     <span>308 total runs</span>
-                </div>
+                </div> -->
             </div>
             <div class="mt-0.5">
                 <StatusBadge
@@ -46,7 +46,7 @@
             {{ description(item) }}
         </p>
 
-        <!-- <div
+        <div
             class="flex flex-wrap items-center"
             :class="TAndCList.length > 0 ? 'mb-4' : ''"
         >
@@ -65,11 +65,14 @@
                     <AtlanIcon v-else icon="Term" class="text-purple-500" />
                 </template>
                 <template #popover="{ item }">
-                    <ClassificationInfoCard
-                        v-if="item.type === 'classification'"
-                        :classification="item"
-                        class="w-32"
-                /></template>
+                    <div class="p-4">
+                        <ClassificationInfoCard
+                            v-if="item.type === 'classification'"
+                            :classification="item"
+                            class="w-32"
+                        />
+                    </div>
+                </template>
                 <template #suffix>
                     <span
                         v-if="splittedTAndC.b.length > 0"
@@ -92,11 +95,13 @@
                     </span>
                 </template>
             </PillGroup>
-        </div> -->
+        </div>
 
         <div class="" v-if="ownerList.length > 0">
             <p class="mb-1 text-gray-700">Owned By</p>
             <div class="flex items-center justify-between">
+                <!-- owner: {{ ownerList }} -->
+                <!-- {{ item.attributes }} -->
                 <PillGroup
                     :data="ownerList"
                     label-key="username"
@@ -104,13 +109,13 @@
                     popover-trigger="hover"
                 >
                     <template #pillPrefix="{ item }">
-                        <!-- <avatar
+                        <avatar
                             class="-ml-2.5"
                             v-if="item && item.type === 'user'"
                             :image-url="
-                                // KeyMaps.auth.avatar.GET_AVATAR({
-                                //     username: item.username,
-                                // })
+                                map.GET_AVATAR({
+                                    username: item.username,
+                                })
                             "
                             :allow-upload="false"
                             :avatar-name="item.username"
@@ -126,12 +131,11 @@
                                 text-primary
                                 group-hover:text-white
                             "
-                        /> -->
+                        />
                     </template>
-                    <template #popover="{ item }">
-                        <!-- <OwnerInfoCard :user="item"
-                    /> -->
-                    </template>
+                    <!-- <template #popover="{ item }">
+                         <OwnerInfoCard :user="item" />
+                    </template> -->
                     <template #suffix>
                         <span
                             v-if="splittedUsers.b.length > 0"
@@ -181,25 +185,26 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { List } from '~/constant/status'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
-    // import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
+    import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Pill from '~/components/UI/pill/pill.vue'
     // import { KeyMaps } from '~/api/keyMap'
-    // import Avatar from '~/components/common/avatar'
+    import Avatar from '~/components/common/avatar/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     // import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { map } from '~/services/service/avatar/key'
 
     export default defineComponent({
         components: {
             StatusBadge,
             PillGroup,
-            // ClassificationInfoCard,
+            ClassificationInfoCard,
             // OwnerInfoCard,
             Pill,
-            // Avatar,
+            Avatar,
         },
         props: {
             item: {
@@ -224,6 +229,9 @@
                 inlineTabs,
                 activeInlineTab
             )
+
+            // const imageUrl = (username: any) =>
+            //     `${window.location.origin}/api/service/avatars/${username}`
 
             const {
                 mixClassificationsAndTerms,
@@ -256,6 +264,7 @@
                     ? [...splittedUsers.value.a, ...splittedUsers.value.b]
                     : splittedUsers.value.a
             )
+            // console.log('ownerList: ', ownerList.value)
             const TAndCList = computed(() =>
                 showAllTAndC.value
                     ? [...splittedTAndC.value.a, ...splittedTAndC.value.b]
@@ -273,8 +282,7 @@
                 () => {
                     mixedTermsAndClassifications.value = []
                     mixedOwnersAndGroups.value = []
-                    const classifications =
-                        item.value?.attributes.classifications ?? []
+                    const classifications = item.value?.classifications ?? []
                     const terms = item.value?.attributes.meanings ?? []
                     const groups: string[] =
                         item.value?.attributes?.ownerGroups ?? []
@@ -317,6 +325,8 @@
                 // KeyMaps,
                 List,
                 savedQueryType,
+                // imageUrl,
+                map,
             }
         },
     })
@@ -327,6 +337,7 @@
     }
     .popover-container {
         width: 440px !important;
+        padding: 16px !important;
     }
     .horizontal-scrollbar::-webkit-scrollbar {
         width: 0;

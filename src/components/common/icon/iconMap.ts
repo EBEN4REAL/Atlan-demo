@@ -30,6 +30,7 @@ import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
+import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
 import DatabaseGray from '~/assets/images/icons/database-gray.svg'
@@ -237,7 +238,12 @@ import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import Hash from '~/assets/images/icons/hash.svg'
+
+//source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
+import Column from '~/assets/images/icons/column.svg'
+import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
 // source list
 import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
@@ -246,8 +252,11 @@ import Tableau from '~/assets/images/source/svg/Tableau.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
+import Close from '~/assets/images/icons/close.svg'
 
 export default {
+    Hash,
+    Column,
     CreateGroups,
     NoGroups,
     NoUsers,
@@ -489,5 +498,7 @@ export default {
     NoWf,
     Schema2Active,
     QueriesActive,
-    CaretDown
+    CaretDown,
+    GovernanceCenter,
+    Close
 }

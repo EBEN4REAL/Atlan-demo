@@ -50,7 +50,12 @@
                                     <span>New query</span>
                                 </template>
                                 <AtlanIcon
-                                    @click="() => toggleCreateQueryModal()"
+                                    @click="
+                                        () =>
+                                            toggleCreateQueryModal(
+                                                queryFolderNamespace
+                                            )
+                                    "
                                     icon="NewQuery"
                                     class="
                                         h-4
@@ -73,7 +78,12 @@
                                     <span>New query</span>
                                 </template>
                                 <AtlanIcon
-                                    @click="() => toggleCreateQueryModal()"
+                                    @click="
+                                        () =>
+                                            toggleCreateQueryModal(
+                                                queryFolderNamespace
+                                            )
+                                    "
                                     icon="NewQuery"
                                     class="
                                         h-4
@@ -435,18 +445,25 @@
                 )
             }
             let selectedFolder = ref({})
-            const toggleCreateQueryModal = (item) => {
-                console.log('selected Parent: ', item)
-                showSaveQueryModal.value = !showSaveQueryModal.value
 
-                if (item?.guid) {
+            const toggleCreateQueryModal = (item) => {
+                // console.log('selected Parent: ', item)
+
+                if (item.typeName === 'QueryFolderNamespace') {
                     selectedFolder.value = item
                     getRelevantTreeData().parentGuid.value = item.guid
+                } else {
+                    if (item.value.guid) {
+                        selectedFolder.value = item
+                        getRelevantTreeData().parentGuid.value = item.value.guid
+                    }
+                    if (item.value.qualifiedName) {
+                        getRelevantTreeData().parentQualifiedName.value =
+                            item.value.qualifiedName
+                    }
                 }
-                if (item?.qualifiedName) {
-                    getRelevantTreeData().parentQualifiedName.value =
-                        item.qualifiedName
-                }
+
+                showSaveQueryModal.value = !showSaveQueryModal.value
             }
 
             const newFolderName = ref('')
@@ -902,26 +919,37 @@
                         //     'queryTree: ',
                         //     getRelevantTreeData().parentGuid.value
                         // )
-                        await all_refetchNode(
-                            resetParentGuid.value,
-                            resetType.value
-                        )
-                        console.log('not wait 1')
-                        await per_refetchNode(
-                            resetParentGuid.value,
-                            resetType.value
-                        )
-                        console.log('not wait 2')
-                        // await all_refetchNode(
-                        //     resetParentGuid.value,
-                        //     'queryFolder'
-                        // )
+                        console.log('reset type: ', resetType.value)
+                        console.log('reset id: ', resetParentGuid.value)
+
+                        if (Array.isArray(resetParentGuid.value)) {
+                            resetParentGuid.value.forEach(async (guid) => {
+                                await all_refetchNode(guid, resetType.value)
+                                await per_refetchNode(guidre, resetType.value)
+                            })
+                        } else {
+                            await all_refetchNode(
+                                resetParentGuid.value,
+                                resetType.value
+                            )
+                            await per_refetchNode(
+                                resetParentGuid.value,
+                                resetType.value
+                            )
+                        }
+
+                        // console.log('reset type: ', resetType.value)
+                        // console.log('reset id: ', resetParentGuid.value)
+
+                        // console.log('not wait 1')
                         // await per_refetchNode(
                         //     resetParentGuid.value,
-                        //     'queryFolder'
+                        //     resetType.value
                         // )
+                        // console.log('not wait 2')
+
                         props.resetQueryTree()
-                    }, 500)
+                    }, 750)
                 }
             })
 
@@ -968,6 +996,7 @@
                 getRelevantTreeData,
                 showEmptyState,
                 selectedFolder,
+                queryFolderNamespace,
                 // refetchTreeData,
             }
         },

@@ -31,7 +31,15 @@
             />
             <div
                 v-else-if="treeData.length == 0"
-                class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500 "
+                class="
+                    flex flex-col
+                    items-center
+                    justify-center
+                    h-full
+                    text-base
+                    leading-6
+                    text-center text-gray-500
+                "
             >
                 <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                 <p class="mt-6 mb-0 text-base text-gray-700">
@@ -78,6 +86,7 @@
             const { assets, connectionQfName: connectionQualifiedName } =
                 toRefs(props)
             const queryText = ref('')
+            const searchResultType = ref('all')
 
             const checkedKeys = computed({
                 get: () => assets.value,
@@ -99,6 +108,7 @@
             } = useSchemaExplorerTree({
                 emit,
                 queryText,
+                searchResultType,
                 // initSelectedKeys,
                 connectionQualifiedName,
                 // databaseQualifiedName,

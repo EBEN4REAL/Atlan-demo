@@ -12,11 +12,13 @@
                 </span>
             </div>
             <span class="text-sm text-gray-500">on</span>
-            <span class="text-sm text-gray">{{ persona.createdAt }}</span>
+            <span class="text-sm text-gray">{{
+                persona.createdAt?.slice(0, -11)
+            }}</span>
 
             <a-switch
                 class="ml-auto"
-                style="width: 44px"
+                style="width: 40px !important"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
             />
@@ -91,7 +93,7 @@
                     cursor-pointer
                     group
                 "
-                @click="setActiveTab('policies')"
+                @click="setActiveTab('users')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
                     <AtlanIcon icon="GroupStatic" class="h-6" />
@@ -139,8 +141,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
-
+    import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import dayjs from 'dayjs'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
@@ -156,9 +158,12 @@
             },
         },
         emits: ['update:persona', 'update:isEditMode'],
-        setup() {
+        setup(props) {
+            const { persona } = toRefs(props)
             const enablePersonaCheck = ref(true)
+            const formatDate = (val) => {}
             return {
+                formatDate,
                 enablePersonaCheck,
                 enablePersona,
                 setActiveTab,

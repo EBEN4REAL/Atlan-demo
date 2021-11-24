@@ -39,6 +39,8 @@
     import { defineComponent, ref } from 'vue'
     import FormGen from '~/components/common/formGenerator/index.vue'
     import useBulkUpload from `@/glossary/modal/useBulkUpload.ts`
+    import { isWorkflowRunning } from `@/glossary/modal/useBulkUpload.ts`
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: { FormGen },
@@ -79,10 +81,16 @@
             ]) // this drives the upload form
 
             // function to show modal
-            const showModal = async () => {
-                visible.value = true
+            const showModal = () => {
+                if (isWorkflowRunning.value) {
+                    message.error({
+                        content: `Sorry, this action cannot be completed because there is an ongoing upload for this glossary. Retry again later.`,
+                        duration: 5,
+                    })
+                } else {
+                    visible.value = true
+                }
             }
-
             const handleCancel = () => {
                 visible.value = false
             }
@@ -124,16 +132,6 @@
 
 <style lang="less" module>
     .modalStyles {
-        :global(.ant-modal-header) {
-            @apply border-0 border-t-0 border-b-0 px-4 pt-6  !important;
-        }
-
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 py-4 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply px-7  py-2 !important;
-        }
         :global(.ant-upload-drag-container) {
             @apply bg-white !important;
         }

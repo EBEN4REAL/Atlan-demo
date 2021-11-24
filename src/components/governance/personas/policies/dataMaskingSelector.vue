@@ -1,8 +1,8 @@
 <template>
     <a-select
-        :value="maskingOption"
+        :value="maskType"
         class="mb-6 w-80"
-        @update:value="$emit('update:maskingOption', $event)"
+        @update:value="$emit('update:maskType', $event)"
     >
         <a-select-option
             v-for="opt in maskingOptions"
@@ -26,7 +26,13 @@
                                 style="width: 150px"
                             >
                                 <div
-                                    class="p-3 text-xs font-bold text-gray-500 border-b "
+                                    class="
+                                        p-3
+                                        text-xs
+                                        font-bold
+                                        text-gray-500
+                                        border-b
+                                    "
                                 >
                                     {{ opt.popover?.field }}
                                 </div>
@@ -40,7 +46,14 @@
                                 style="width: 150px"
                             >
                                 <div
-                                    class="p-3 text-xs font-bold text-gray-500  border-b-light bg-primary-light"
+                                    class="
+                                        p-3
+                                        text-xs
+                                        font-bold
+                                        text-gray-500
+                                        border-b-light
+                                        bg-primary-light
+                                    "
                                 >
                                     {{ opt.popover?.field }}
                                 </div>
@@ -68,18 +81,18 @@
         name: 'DataMaskingSelector',
         components: {},
         props: {
-            maskingOption: {
+            maskType: {
                 type: String,
                 required: true,
             },
         },
-        emits: ['update:maskingOption'],
+        emits: ['update:maskType'],
         setup() {
             const v = ref(true)
             // FIXME: Take it out to a config file
             const maskingOptions = [
                 {
-                    value: 'MASK_NONE',
+                    value: 'null',
                     label: 'None',
                     borderBottom: true,
                 },

@@ -98,10 +98,10 @@ export const userColumns = [
     },
 ]
 
-export const statusColorCodes = {
-    Active: '#DAEED4',
-    Disabled: '#FADEE0',
-    Invited: '#F8EED3',
+export const statusColorClass = {
+    Active: 'success-muted',
+    Disabled: 'error-muted',
+    Invited: 'alert-muted',
 }
 
 export const userStatusOptions = [
@@ -115,3 +115,22 @@ export const userStatusOptions = [
         value: JSON.stringify({ enabled: true, email_verified: false }),
     },
 ]
+
+
+export const allRoles = {
+    member: {
+        value: '',
+        role: 'member',
+        label: 'Member',
+    },
+    admin: {
+        value: '',
+        role: 'admin',
+        label: 'Admin',
+    },
+    guest: {
+        value: '',
+        role: 'guest',
+        label: 'Guest',
+    },
+}

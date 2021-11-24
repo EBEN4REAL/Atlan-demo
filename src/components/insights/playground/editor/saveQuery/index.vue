@@ -9,7 +9,7 @@
     >
         <div class="w-full p-4 text-gray-500 bg-white rounded">
             <div class="flex w-full text-xs">
-                <div class="flex items-center flex-1 mr-5">
+                <div class="flex items-center justify-between flex-1">
                     <div class="flex items-center mr-1">
                         <QueryFolderSelector
                             :connector="currentConnector"
@@ -18,43 +18,43 @@
                             @folderChange="getSelectedFolder"
                         />
                     </div>
-                    <!-- <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
-                    <div class="flex items-center ml-1">
-                        <span>{{ title }}</span>
-                    </div>-->
-                </div>
-                <div>
-                    <a-dropdown
-                        placement="bottomLeft"
-                        :trigger="['click']"
-                        @click.stop="() => {}"
-                    >
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item
-                                    v-for="item in List"
-                                    :key="item.id"
-                                    @click="handleMenuClick(item)"
-                                >
-                                    <div class="flex items-center space-x-2">
-                                        <component
-                                            :is="item.icon"
-                                            class="w-auto h-4 ml-1 mr-2 pushtop"
-                                        />
-                                        {{ item.label }}
-                                    </div>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                        <StatusBadge
-                            :status-id="currentStatus"
-                            :show-chip-style-status="false"
-                            :show-no-status="true"
-                            :show-label="true"
-                            :is-tree="false"
-                            class="p-0 cursor-pointer"
-                        ></StatusBadge>
-                    </a-dropdown>
+                    <div>
+                        <a-dropdown
+                            placement="bottomLeft"
+                            :trigger="['click']"
+                            @click.stop="() => {}"
+                        >
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item
+                                        v-for="item in List"
+                                        :key="item.id"
+                                        @click="handleMenuClick(item)"
+                                    >
+                                        <div
+                                            class="flex items-center space-x-2"
+                                        >
+                                            <component
+                                                :is="item.icon"
+                                                class="w-auto h-4 ml-1 mr-2  pushtop"
+                                            />
+                                            {{ item.label }}
+                                        </div>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                            <div class="button">
+                                <StatusBadge
+                                    :status-id="currentStatus"
+                                    :show-chip-style-status="false"
+                                    :show-no-status="true"
+                                    :show-label="true"
+                                    :is-tree="false"
+                                    class="p-0 cursor-pointer"
+                                ></StatusBadge>
+                            </div>
+                        </a-dropdown>
+                    </div>
                 </div>
             </div>
             <div class="my-2">
@@ -257,15 +257,15 @@
             //     selectedParentFolder.value = folder
             // }
 
-            watch(
-                parentFolder,
-                () => {
-                    console.log('parent folder: ', parentFolder.value)
-                },
-                {
-                    immediate: true,
-                }
-            )
+            // watch(
+            //     parentFolder,
+            //     () => {
+            //         console.log('parent folder: ', parentFolder.value)
+            //     },
+            //     {
+            //         immediate: true,
+            //     }
+            // )
 
             return {
                 getLastUntitledNumber,
@@ -301,6 +301,18 @@
         left: 50%;
         transform: translate(-50%, -50%);
     }
+    .button {
+        --tw-bg-opacity: 1;
+        background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+        border-width: 1 px;
+        --tw-border-opacity: 1;
+        border-color: rgba(230, 230, 235, var(--tw-border-opacity));
+        padding: 4 px 8 px !important;
+        min-width: 71 px !important;
+        height: 22 px !important;
+        box-sizing: border-box !important;
+        border-radius: 4 px !important;
+    }
 </style>
 <style lang="less" module>
     .input {
@@ -312,9 +324,6 @@
         }
         :global(.ant-input) {
             @apply shadow-none outline-none border-0 px-0 !important;
-        }
-        :global(.ant-modal-body) {
-            @apply p-0 !important;
         }
     }
 </style>

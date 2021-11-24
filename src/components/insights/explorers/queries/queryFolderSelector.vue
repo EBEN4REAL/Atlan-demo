@@ -213,10 +213,57 @@
 
             // console.log('already selected: ', props.selectedFolderQF)
             console.log('already selected: ', parentFolder)
+
+            watch(
+                parentFolder,
+                () => {
+                    let item = parentFolder.value
+
+                    if (item?.typeName === 'QueryFolderNamespace') {
+                        let rootData = {
+                            ...item,
+                            attributes: {
+                                ...item.attributes,
+                                parentFolderQualifiedName: 'namespace',
+                            },
+                        }
+
+                        let data = {
+                            dataRef: {
+                                ...rootData,
+                            },
+                            selectedFolderType: savedQueryType2.value,
+                        }
+                        if (savedQueryType.value === 'all') {
+                            selectedFolder.value = "Altan's public folder"
+                        } else {
+                            selectedFolder.value = 'Your personal folder'
+                        }
+                        selectedKey.value = [rootData.guid]
+                        dropdownVisible.value = false
+
+                        emit('folderChange', data)
+                    } else {
+                        if (item?.typeName === 'QueryFolder') {
+                            selectedKey.value = [item.guid]
+                            selectedFolder.value = item.title
+                            dropdownVisible.value = false
+
+                            emit('folderChange', {
+                                dataRef: parentFolder.value,
+                                selectedFolderType: savedQueryType.value,
+                            })
+                        }
+                    }
+
+                    // console.log('already parentFolder: ', parentFolder.value)
+                },
+                { immediate: true }
+            )
             const onSelect = (selected: any, event: any) => {
                 // console.log('folder select: ', event)
 
-                console.log('qfn: ', queryFolderNamespace.value)
+                // console.log('qfn: ', queryFolderNamespace.value)
                 if (event === 'root') {
                     let rootData = {
                         ...queryFolderNamespace.value,
@@ -251,6 +298,10 @@
                         selectedFolder.value = event?.node?.dataRef.title
                         dropdownVisible.value = false
                     }
+                    // console.log('already selected queryFolder: ', {
+                    //     dataRef: event.node,
+                    //     selectedFolderType: savedQueryType2.value,
+                    // })
                     emit('folderChange', {
                         dataRef: event.node,
                         selectedFolderType: savedQueryType2.value,
@@ -462,10 +513,5 @@
     }
     .selected-underline {
         border-bottom: 2px solid #5277d7;
-    }
-</style>
-<style lang="less" module>
-    .ant-popover-inner-content {
-        padding: 0 !important;
     }
 </style>

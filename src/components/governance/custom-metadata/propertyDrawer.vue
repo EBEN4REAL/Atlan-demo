@@ -40,7 +40,6 @@
                         >
                             <a-input
                                 v-model:value="form.displayName"
-                                placeholder="Enter a property name"
                                 type="text"
                                 class=""
                             />
@@ -57,6 +56,7 @@
                                 :get-popup-container="
                                     (target) => target.parentNode
                                 "
+                                list-height="240"
                                 @change="handleTypeNameChange"
                             >
                                 <a-select-option
@@ -133,13 +133,7 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="
-                                        mb-1
-                                        lowercase
-                                        bg-gray-100
-                                        border-0
-                                        rounded-full
-                                    "
+                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full "
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
@@ -156,16 +150,7 @@
                         </div>
                         <div
                             v-if="isCreatingEnum"
-                            class="
-                                absolute
-                                top-0
-                                flex
-                                items-center
-                                justify-center
-                                w-full
-                                h-full
-                                bg-white bg-opacity-40
-                            "
+                            class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
                         >
                             <a-spin size="large" />
                         </div>
@@ -175,7 +160,21 @@
                     <pre>{{ form.enumValues }}</pre> -->
                     <!-- End of conditonals ========================================= -->
                     <!-- Applicable Asset type ========================================= -->
-
+                    <div class="flex">
+                        <div class="relative" style="width: 100%">
+                            <a-form-item
+                                label="Description"
+                                :name="['description']"
+                                class=""
+                            >
+                                <a-input
+                                    v-model:value="form.options.description"
+                                    type="text"
+                                    class=""
+                                />
+                            </a-form-item>
+                        </div>
+                    </div>
                     <div class="flex mb-6">
                         <div class="relative" style="width: 100%">
                             <a-form-item
@@ -190,16 +189,11 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="
-                                                    flex flex-col
-                                                    items-center
-                                                    w-60
-                                                "
+                                                class="flex flex-col items-center w-60"
                                             >
-                                                Applicable asset type once saved
-                                                cannot be removed, you can still
-                                                add new Applicable Asset type if
-                                                available.
+                                                This property will only be
+                                                available for selected asset
+                                                types
                                             </div>
                                         </template>
                                         <AtlanIcon
@@ -253,17 +247,7 @@
                     <!-- Applicable Asset type ========================================= -->
 
                     <div
-                        class="
-                            flex
-                            items-center
-                            justify-around
-                            w-full
-                            gap-4
-                            p-4
-                            bg-gray-100
-                            border
-                            rounded
-                        "
+                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
                     >
                         <div class="w-full">
                             <a-form-item class="mb-2">
@@ -370,6 +354,7 @@
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { mutate } from 'swrv'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -497,6 +482,19 @@
                         if (newValue) {
                             message.success('Attribute edited')
                             loading.value = false
+                            const returnSome = (oldData) => {
+                                console.log(oldData)
+                                return { ...oldData }
+                                // return {
+                                //     ...user,
+                                //     name: 'Sergio',
+                                // }
+                            }
+                            // mutate('DEFAULT_TYPEDEFS', {})
+                            emit(
+                                'addedProperty',
+                                data.value.businessMetadataDefs[0].attributeDefs
+                            )
                             visible.value = false
                         }
                         if (newError) {
@@ -535,6 +533,7 @@
                         if (newValue) {
                             message.success('Attribute added')
                             loading.value = false
+
                             emit(
                                 'addedProperty',
                                 data.value.businessMetadataDefs[0].attributeDefs

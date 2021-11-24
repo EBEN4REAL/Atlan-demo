@@ -20,6 +20,7 @@
                                         : 'FolderClosed'
                                 "
                                 class="w-5 h-5 my-auto mr-1"
+                                color="#5277D7"
                             ></AtlanIcon>
                             <span
                                 class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
@@ -143,6 +144,7 @@
                                     )
                                 "
                                 class="w-5 h-5 my-auto mr-1"
+                                color="#5277D7"
                             ></AtlanIcon>
                             <span
                                 class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
@@ -277,56 +279,60 @@
         </template> -->
 
         <template #content>
-            <QueryFolderSelector
-                :connector="currentConnector"
-                :savedQueryType="'all'"
-                @folderChange="getSelectedFolder"
-                :selectedNewFolder="item"
-            />
+            <div class="p-4">
+                <QueryFolderSelector
+                    :connector="currentConnector"
+                    :savedQueryType="'all'"
+                    @folderChange="getSelectedFolder"
+                    :selectedNewFolder="item"
+                />
 
-            <div class="flex justify-end w-full">
-                <a-button
-                    class="px-5 mr-4 text-sm border rounded"
-                    style="width: 100px"
-                    type="default"
-                    @click="showPublishPopover = false"
-                    >Cancel</a-button
-                >
-                <a-button
-                    class="px-5 text-sm rounded"
-                    type="primary"
-                    @click="changeFolder(item)"
-                    :loading="isUpdating"
-                    >Move</a-button
-                >
+                <div class="flex justify-end w-full">
+                    <a-button
+                        class="px-5 mr-4 text-sm border rounded"
+                        style="width: 100px"
+                        type="default"
+                        @click="showPublishPopover = false"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        class="px-5 text-sm rounded"
+                        type="primary"
+                        @click="changeFolder(item)"
+                        :loading="isUpdating"
+                        >Move</a-button
+                    >
+                </div>
             </div>
         </template>
     </a-popover>
 
     <a-popover :visible="showFolderPopover" placement="right">
         <template #content>
-            <QueryFolderSelector
-                :connector="currentConnector"
-                :savedQueryType="savedQueryType"
-                @folderChange="getSelectedFolder"
-                :selectedNewFolder="item"
-            />
+            <div class="p-4">
+                <QueryFolderSelector
+                    :connector="currentConnector"
+                    :savedQueryType="savedQueryType"
+                    @folderChange="getSelectedFolder"
+                    :selectedNewFolder="item"
+                />
 
-            <div class="flex justify-end w-full">
-                <a-button
-                    class="px-5 mr-4 text-sm border rounded"
-                    style="width: 100px"
-                    type="default"
-                    @click="showFolderPopover = false"
-                    >Cancel</a-button
-                >
-                <a-button
-                    class="px-5 text-sm rounded"
-                    type="primary"
-                    @click="changeFolder(item)"
-                    :loading="isUpdating"
-                    >Move</a-button
-                >
+                <div class="flex justify-end w-full">
+                    <a-button
+                        class="px-5 mr-4 text-sm border rounded"
+                        style="width: 100px"
+                        type="default"
+                        @click="showFolderPopover = false"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        class="px-5 text-sm rounded"
+                        type="primary"
+                        @click="changeFolder(item)"
+                        :loading="isUpdating"
+                        >Move</a-button
+                    >
+                </div>
             </div>
         </template>
     </a-popover>
@@ -727,8 +733,11 @@
             const isUpdating = ref(false)
 
             const changeFolder = (item: any) => {
-                console.log('new entity item: ', item)
-                console.log('selected folder: ', selectedFolder.value)
+                let previousParentGuId = item.attributes.parent.guid
+                let selectedParentGuid = selectedFolder.value.guid
+
+                console.log('entity item parent: ', previousParentGuId)
+                console.log('entity selected folder: ', selectedParentGuid)
 
                 if (selectedFolder.value) {
                     const newEntity = item
@@ -784,12 +793,20 @@
                                     message.success({
                                         content: `Folder moved successfully`,
                                     })
+                                    // props.refreshQueryTree(
+                                    //     selectedFolder.value.guid,
+                                    //     'queryFolder'
+                                    // )
+                                    // props.refreshQueryTree(
+                                    //     item.attributes.parent.guid,
+                                    //     'queryFolder'
+                                    // )
+
                                     props.refreshQueryTree(
-                                        selectedFolder.value.guid,
-                                        'queryFolder'
-                                    )
-                                    props.refreshQueryTree(
-                                        item.attributes.parent.guid,
+                                        [
+                                            previousParentGuId,
+                                            selectedParentGuid,
+                                        ],
                                         'queryFolder'
                                     )
                                 } else {
@@ -819,12 +836,19 @@
                                     message.success({
                                         content: `Query moved successfully`,
                                     })
+                                    // props.refreshQueryTree(
+                                    //     selectedFolder.value.guid,
+                                    //     'query'
+                                    // )
+                                    // props.refreshQueryTree(
+                                    //     item.attributes.parent.guid,
+                                    //     'query'
+                                    // )
                                     props.refreshQueryTree(
-                                        selectedFolder.value.guid,
-                                        'query'
-                                    )
-                                    props.refreshQueryTree(
-                                        item.attributes.parent.guid,
+                                        [
+                                            previousParentGuId,
+                                            selectedParentGuid,
+                                        ],
                                         'query'
                                     )
                                 } else {

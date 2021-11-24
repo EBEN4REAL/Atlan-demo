@@ -1,5 +1,5 @@
 <template>
-    <div ref="monacoRoot" class="relative px-3 monacoeditor"></div>
+    <div ref="monacoRoot" class="relative monacoeditor"></div>
 </template>
 
 <script lang="ts">
@@ -136,7 +136,9 @@
                 }
             }
 
-            const findAndChangeCustomVariablesColor = () => {
+            const findAndChangeCustomVariablesColor = (
+                onlySetColor: boolean
+            ) => {
                 if (activeInlineTab.value) {
                     const matches =
                         findCustomVariableMatches(
@@ -146,16 +148,13 @@
 
                     // console.log('active inline tab: ', activeInlineTab.value)
 
-                    if (matches?.length >= 0) {
-                        createDebounce()(() => {
-                            //editor in left
-                            // saved var in right
-                            // console.log(
-                            //     'all saved vars: ',
-                            //     activeInlineTab.value.playground.editor
-                            //         .variables
-                            // )
+                    if (onlySetColor) {
+                        setMoustacheTemplateColor(editor, monaco, matches)
+                        return
+                    }
 
+                    if (matches?.length > 0) {
+                        createDebounce()(() => {
                             const resultsLeft = matches.filter(
                                 (match) =>
                                     !activeInlineTab.value.playground.editor.variables.some(
@@ -164,15 +163,6 @@
                                             variable.name
                                     )
                             )
-                            // const resultsRight =
-                            //     activeInlineTab.value.playground.editor.variables.filter(
-                            //         (variable) =>
-                            //             !matches.some(
-                            //                 (match) =>
-                            //                     match.token.slice(2, -2) ===
-                            //                     variable.name
-                            //             )
-                            //     )
 
                             const intersection =
                                 activeInlineTab.value.playground.editor.variables.filter(
@@ -183,39 +173,6 @@
                                                 match.token.slice(2, -2)
                                         )
                                 )
-
-                            // console.log('intersection: ', intersection)
-
-                            // console.log('inter left diff: ', resultsLeft)
-
-                            // matches?.forEach((match) => {
-                            //     //check if it exist:
-                            //     console.log(match)
-                            //     // if yes, ignore.
-
-                            //     // Else add
-                            //     let check =
-                            //         activeInlineTab.value.playground.editor.variables.find(
-                            //             (el) =>
-                            //                 el.name === match.token.slice(2, -2)
-                            //         )
-
-                            //     // console.log('check:', check)
-
-                            //     if (!check) {
-                            //         let variable = {
-                            //             name: match.token.slice(2, -2),
-                            //             type: 'string',
-                            //             key: '',
-                            //             value: '',
-                            //         }
-                            //         addVariableFromEditor(
-                            //             activeInlineTab,
-                            //             tabs,
-                            //             variable
-                            //         )
-                            //     }
-                            // })
 
                             addVariableFromEditor(
                                 activeInlineTab,
@@ -343,6 +300,7 @@
                         strings: true,
                     },
                 })
+                // monaco.editor.EditorLayoutInfo
                 emit('editorInstance', editor, monaco)
 
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
@@ -396,7 +354,7 @@
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
                     /* ------------- custom variable color change */
-                    findAndChangeCustomVariablesColor()
+                    findAndChangeCustomVariablesColor(false)
                     /* ------------------------------------------ */
                     const changes = event?.changes[0]
                     // const lastTypedCharacter = event?.changes[0]?.text
@@ -459,15 +417,16 @@
 
                     editor?.setModel(model)
                     /* ------------- custom variable color change */
-                    findAndChangeCustomVariablesColor()
+                    findAndChangeCustomVariablesColor(true)
                     /* ------------------------------------------ */
                     /* ------------- set error decorations */
                     if (isLineError(activeInlineTab)) {
                         setErrorDecorations(activeInlineTab, editor, monaco)
                     }
-
+                    console.log('editor active inline tab change')
                     /* ------------------------------------------ */
                     editor?.getModel()?.onDidChangeContent(async (event) => {
+                        console.log('editor content change')
                         if (isLineError(activeInlineTab)) {
                             resetErrorDecorations(activeInlineTab, editor)
                         }
@@ -476,7 +435,7 @@
                         onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
                         /* ------------- custom variable color change */
-                        findAndChangeCustomVariablesColor()
+                        findAndChangeCustomVariablesColor(false)
                         /* ------------------------------------------ */
                         const suggestions = useAutoSuggestions(
                             changes,
@@ -536,6 +495,7 @@
     }
     .editor_wrapper {
         overflow: hidden;
+        // overflow: scroll;
     }
     .c {
         font-family: 'Courier New', Courier, monospace;
@@ -584,4 +544,28 @@
         top: -10%;
         height: 120%;
     }
+</style>
+
+<style lang="less" module>
+    // .monaco-global {
+    :global(.line-numbers) {
+        margin-left: 15px !important;
+    }
+    :global(.monaco-scrollable-element.editor-scrollable) {
+        left: 53px !important;
+    }
+    :global(.margin) {
+        width: 53px !important;
+    }
+    :global(.line-numbers) {
+        width: 37px !important;
+        padding-left: 8px !important;
+        padding-right: 12px !important;
+        margin-left: 16px !important;
+        text-align: left !important;
+    }
+    :global(.monaco-editor) {
+        padding-top: 8px !important;
+    }
+    // }
 </style>

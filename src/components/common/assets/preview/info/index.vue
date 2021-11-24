@@ -20,10 +20,10 @@
         ></AnnouncementWidget>
 
         <div
-            class="flex flex-col"
             v-if="
                 isGTC(selectedAsset) || selectedAsset.typeName === 'Connection'
             "
+            class="flex flex-col"
         >
             <Shortcut shortcutKey="n" action="set description" placement="left">
                 <div
@@ -110,8 +110,8 @@
                 }}</span>
             </div>
             <div
-                class="flex flex-col text-sm cursor-pointer"
                 v-if="sizeBytes(selectedAsset) > 0"
+                class="flex flex-col text-sm cursor-pointer"
             >
                 <span class="mb-2 text-sm text-gray-500">Size</span>
                 <span class="text-gray-700">{{

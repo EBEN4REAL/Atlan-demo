@@ -150,7 +150,7 @@
                         </div>
                         <div
                             v-if="isCreatingEnum"
-                            class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
+                            class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
                         >
                             <a-spin size="large" />
                         </div>
@@ -189,7 +189,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center  w-60"
+                                                class="flex flex-col items-center w-60"
                                             >
                                                 This property will only be
                                                 available for selected asset
@@ -743,6 +743,9 @@
 
 <style lang="less">
     .ant-form-right-asterix {
+        .ant-form-item-label {
+            overflow: unset !important;
+        }
         .ant-form-item-required::before {
             position: absolute;
             right: -12px;

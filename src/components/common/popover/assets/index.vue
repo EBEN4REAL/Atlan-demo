@@ -288,7 +288,7 @@
 </style>
 <style lang="less" scoped>
     .relation-ship {
-        width: 370px;
+        width: 350px;
         padding: 16px;
     }
     .dot {

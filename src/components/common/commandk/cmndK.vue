@@ -127,11 +127,7 @@
                     >
                         <GtcCard :item="item" class="px-5" />
                     </div>
-                    <AssetCard
-                        :item="item"
-                        hasPopHover
-                        Modal="$emit('closeModal')"
-                    />
+                    <AssetCard :item="item" Modal="$emit('closeModal')" />
                 </div>
             </div>
             <!-- body ends here  -->

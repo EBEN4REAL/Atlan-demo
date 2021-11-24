@@ -126,7 +126,7 @@
         setup(props) {
             // Is it a user preview drawer or a group one.
             const { previewType } = toRefs(props)
-            const isUserPreview = previewType.value === "user"
+            const isUserPreview = computed(() => previewType.value === "user")
 
             const {
                 isLoading,
@@ -142,7 +142,7 @@
             } = useUserOrGroupPreview(previewType.value)
             const isValidUser = computed(() => Boolean(selectedUser && selectedUser.value && selectedUser.value.id))
             const isValidGroup = computed(() => Boolean(selectedGroup && selectedGroup.value && selectedGroup.value.id))
-            const isValidEntity = computed(() => isUserPreview ? isValidUser.value : isValidGroup.value)
+            const isValidEntity = computed(() => isUserPreview.value ? isValidUser.value : isValidGroup.value)
 
             /**
              * A utility function for obtaining a property given a key.

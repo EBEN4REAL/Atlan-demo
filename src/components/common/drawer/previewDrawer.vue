@@ -9,7 +9,7 @@
         :closable="false"
         class="drawer"
     >
-        <UserOrGroupPreview type="group" @close="handleCloseGroupPreview" />
+        <UserOrGroupPreview previewType="group" @close="handleCloseGroupPreview" />
     </a-drawer>
     <a-drawer
         :visible="showUserPreview"
@@ -21,7 +21,7 @@
         :closable="false"
         class="drawer"
     >
-        <UserOrGroupPreview type="user" @close="handleCloseUserPreview" />
+        <UserOrGroupPreview previewType="user" @close="handleCloseUserPreview" />
     </a-drawer>
 </template>
 

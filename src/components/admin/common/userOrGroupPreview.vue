@@ -92,7 +92,7 @@
 <script lang="ts">
     import {
         defineComponent,
-        defineAsyncComponent, computed,
+        defineAsyncComponent, computed, toRefs,
     } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import Avatar from '@common/avatar/index.vue'
@@ -119,7 +119,7 @@
             AtlanButton,
         },
         props: {
-            type: {
+            previewType: {
                 type: String,
                 required: true
             }
@@ -127,7 +127,8 @@
         emits: ['close'],
         setup(props) {
             // Is it a user preview drawer or a group one.
-            const isUserPreview = props.type === "user"
+            const { previewType } = toRefs(props)
+            const isUserPreview = previewType.value === "user"
 
             const {
                 isLoading,
@@ -140,7 +141,7 @@
                 tabs,
                 imageUrl,
                 activeKey
-            } = useUserOrGroupPreview(props.type)
+            } = useUserOrGroupPreview(previewType.value)
             const isValidUser = computed(() => Boolean(selectedUser && selectedUser.value && selectedUser.value.id))
             const isValidGroup = computed(() => Boolean(selectedGroup && selectedGroup.value && selectedGroup.value.id))
             const isValidEntity = computed(() => isUserPreview ? isValidUser.value : isValidGroup.value)

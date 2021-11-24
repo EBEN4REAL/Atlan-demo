@@ -39,17 +39,18 @@
             const isItem = computed(() => !!route.params.id)
             const localSelected = ref()
 
+            const assetStore = useAssetStore()
+
+            const handlePreview = (asset) => {
+                localSelected.value = asset
+                assetStore.setSelectedAsset(asset)
+            }
             const updateList = (asset) => {
+                localSelected.value = asset
+
                 if (assetdiscovery.value) {
                     assetdiscovery.value.updateCurrentList(asset)
                 }
-            }
-
-            const assetStore = useAssetStore()
-            const handlePreview = (asset) => {
-                console.log('handlePreview')
-                localSelected.value = asset
-                assetStore.setSelectedAsset(asset)
             }
 
             provide('updateList', updateList)

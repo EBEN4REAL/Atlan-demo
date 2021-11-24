@@ -19,6 +19,9 @@ export default function updateAssetAttributes(selectedAsset) {
         certificateStatusMessage,
         certificateUpdatedBy,
         getAnchorGuid,
+        announcementMessage,
+        announcementType,
+        announcementTitle,
     } = useAssetInfo()
 
     const entity = ref({
@@ -73,6 +76,13 @@ export default function updateAssetAttributes(selectedAsset) {
     const localOwners = ref({
         ownerUsers: ownerUsers(selectedAsset.value),
         ownerGroups: ownerGroups(selectedAsset.value),
+    })
+
+    const localAnnouncement = ref({
+        announcementMessage: announcementMessage(selectedAsset.value) || '',
+        announcementType:
+            announcementType(selectedAsset.value) || 'information',
+        announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
 
     const localClassifications = ref(classifications(selectedAsset.value))
@@ -152,6 +162,19 @@ export default function updateAssetAttributes(selectedAsset) {
             currentMessage.value = 'Certificate has been updated'
             mutate()
         }
+    }
+
+    // Announcement Update
+    const handleAnnouncementUpdate = () => {
+        entity.value.attributes.announcementTitle =
+            localAnnouncement.value.announcementTitle
+        entity.value.attributes.announcementMessage =
+            localAnnouncement.value.announcementMessage
+        entity.value.attributes.announcementType =
+            localAnnouncement.value.announcementType
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Announcement added'
+        mutate()
     }
 
     const rainConfettis = () => {
@@ -263,11 +286,13 @@ export default function updateAssetAttributes(selectedAsset) {
         localCertificate,
         localOwners,
         localClassifications,
+        localAnnouncement,
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
         handleChangeCertificate,
         handleClassificationChange,
+        handleAnnouncementUpdate,
         isLoadingClassification,
         nameRef,
         descriptionRef,

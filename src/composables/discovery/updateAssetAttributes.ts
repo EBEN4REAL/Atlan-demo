@@ -1,11 +1,11 @@
-import { computed, ref, Ref, inject } from 'vue'
+import { ref, inject } from 'vue'
 import { message } from 'ant-design-vue'
 import { whenever } from '@vueuse/core'
 import updateAsset from '~/composables/discovery/updateAsset'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
-import whoami from '~/composables/user/whoami'
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
+import confetti from '~/utils/confetti'
 
 export default function updateAssetAttributes(selectedAsset) {
     const {
@@ -81,6 +81,8 @@ export default function updateAssetAttributes(selectedAsset) {
 
     const nameRef = ref(null)
     const descriptionRef = ref(null)
+    const animationPoint = ref(null)
+    const isConfetti = ref(false)
 
     // Name Change
     const handleChangeName = () => {
@@ -152,6 +154,23 @@ export default function updateAssetAttributes(selectedAsset) {
         }
     }
 
+    const rainConfettis = () => {
+        const config = {
+            angle: 45,
+            startVelocity: 10,
+            spread: 200,
+            elementCount: 100,
+            colors: ['#2251cc', '#2251cc', '#82b54b', '#e94a3f', '#faa040'],
+            width: '0.3rem',
+            height: '0.3rem',
+        }
+        if (isConfetti.value) {
+            if (animationPoint) {
+                confetti(animationPoint.value, config)
+            }
+        }
+    }
+
     // error handling
     whenever(error, () => {
         if (title(selectedAsset?.value) !== localName.value) {
@@ -168,7 +187,7 @@ export default function updateAssetAttributes(selectedAsset) {
     whenever(isReady, () => {
         message.success(currentMessage.value)
         guid.value = selectedAsset.value.guid
-
+        rainConfettis()
         mutateUpdate()
     })
 
@@ -236,7 +255,19 @@ export default function updateAssetAttributes(selectedAsset) {
         message.error('Something went wrong. Please try again')
     })
 
-    const { username } = whoami()
-
-    return { entity, localName, localDescription }
+    return {
+        entity,
+        isLoading,
+        localName,
+        localDescription,
+        localCertificate,
+        localOwners,
+        localClassifications,
+        handleChangeName,
+        handleChangeDescription,
+        handleOwnersChange,
+        handleChangeCertificate,
+        handleClassificationChange,
+        isLoadingClassification,
+    }
 }

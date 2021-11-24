@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="property-drawer">
         <a-drawer
             :visible="visible"
             :mask="false"
@@ -36,7 +36,7 @@
                         <a-form-item
                             label="Name"
                             :name="['displayName']"
-                            class=""
+                            class="ant-form-undo-flex-direction"
                         >
                             <a-input
                                 v-model:value="form.displayName"
@@ -45,7 +45,7 @@
                             />
                         </a-form-item>
                         <a-form-item
-                            class="w-full"
+                            class="ant-form-undo-flex-direction"
                             name="typeName"
                             label="Type"
                         >
@@ -150,7 +150,7 @@
                         </div>
                         <div
                             v-if="isCreatingEnum"
-                            class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
+                            class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
                         >
                             <a-spin size="large" />
                         </div>
@@ -189,7 +189,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center w-60"
+                                                class="flex flex-col items-center  w-60"
                                             >
                                                 This property will only be
                                                 available for selected asset
@@ -250,7 +250,10 @@
                         class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
                     >
                         <div class="w-full">
-                            <a-form-item class="mb-2">
+                            <a-form-item
+                                v-if="form.typeName !== 'boolean'"
+                                class="mb-2"
+                            >
                                 <div class="flex justify-between">
                                     <label :for="`${form.name}-isFacet`"
                                         >Allow multiple values</label
@@ -354,7 +357,6 @@
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
-    import { mutate } from 'swrv'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -418,7 +420,7 @@
                                 JSON.parse(customApplicableEntityTypes)
                         }
                     }
-                    form.value = theProperty
+                    form.value = { ...theProperty }
                 } else {
                     form.value = initializeForm()
                     // somehow these 2 remained, so reset them
@@ -430,6 +432,16 @@
                 propertyIndex.value = index
                 isEdit.value = makeEdit
                 visible.value = true
+            }
+
+            const handleUpdateError = (error) => {
+                const errorCode = error.response?.data.errorCode
+                if (errorCode === 'ATLAS-409-00-013') {
+                    return message.error(
+                        `Property named '${form.value.displayName}' already exists in the '${metadata.value.displayName}' metadata`
+                    )
+                }
+                message.error('Error occured, try again')
             }
 
             const handleUpdateProperty = async () => {
@@ -498,7 +510,7 @@
                             visible.value = false
                         }
                         if (newError) {
-                            message.error('Error updating property, try again')
+                            handleUpdateError(newError)
                             loading.value = false
                         }
                     })
@@ -541,7 +553,7 @@
                             visible.value = false
                         }
                         if (newError) {
-                            message.error('Error creating property, try again')
+                            handleUpdateError(newError)
                             loading.value = false
                         }
                     })
@@ -556,6 +568,7 @@
 
             const handleClose = () => {
                 loading.value = false
+                // form.value = initializeForm()
                 setTimeout(() => {
                     visible.value = false
                 }, 100)
@@ -734,5 +747,8 @@
             position: absolute;
             right: -12px;
         }
+    }
+    .ant-form-undo-flex-direction.ant-form-item {
+        flex-direction: unset !important;
     }
 </style>

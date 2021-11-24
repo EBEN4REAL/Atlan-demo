@@ -47,7 +47,7 @@
                 guid: id.value,
             })
             const fetchKey = computed(() => {
-                if (selectedAsset.value.guid) {
+                if (selectedAsset.value.guid === id.value) {
                     return null
                 }
                 return id.value

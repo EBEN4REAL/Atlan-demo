@@ -19,12 +19,14 @@
             class="flex flex-wrap items-center"
             :class="TAndCList.length > 0 ? 'mb-4' : ''"
         >
+            <!-- {{ TAndCList }} -->
             <PillGroup
                 :data="TAndCList"
                 label-key="displayText"
                 read-only
                 popover-trigger="hover"
             >
+                <!-- {{ item }} -->
                 <template #pillPrefix="{ item }">
                     <AtlanIcon
                         v-if="item && item.type === 'classification'"
@@ -34,11 +36,13 @@
                     <AtlanIcon v-else icon="Term" class="text-purple-500" />
                 </template>
                 <template #popover="{ item }">
-                    <!-- <ClassificationInfoCard
-                        v-if="item.type === 'classification'"
-                        :classification="item"
-                        class="w-32"
-                    /> -->
+                    <div class="p-4">
+                        <ClassificationInfoCard
+                            v-if="item.type === 'classification'"
+                            :classification="item"
+                            class="w-32"
+                        />
+                    </div>
                 </template>
                 <template #suffix>
                     <span
@@ -74,11 +78,11 @@
                     popover-trigger="hover"
                 >
                     <template #pillPrefix="{ item }">
-                        <!-- <avatar
+                        <avatar
                             class="-ml-2.5"
                             v-if="item && item.type === 'user'"
                             :image-url="
-                                KeyMaps.auth.avatar.GET_AVATAR({
+                                map.GET_AVATAR({
                                     username: item.username,
                                 })
                             "
@@ -86,8 +90,8 @@
                             :avatar-name="item.username"
                             avatar-size="small"
                             :avatar-shape="'circle'"
-                        /> -->
-                        <!-- <AtlanIcon
+                        />
+                        <AtlanIcon
                             v-else-if="item && item.type === 'group'"
                             icon="Group"
                             class="
@@ -96,11 +100,11 @@
                                 text-primary
                                 group-hover:text-white
                             "
-                        /> -->
+                        />
                     </template>
-                    <template #popover="{ item }">
-                        <!-- <OwnerInfoCard :user="item" /> -->
-                    </template>
+                    <!-- <template #popover="{ item }">
+                        <OwnerInfoCard :user="item" />
+                    </template> -->
                     <template #suffix>
                         <span
                             v-if="splittedUsers.b.length > 0"
@@ -150,25 +154,26 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { List } from '~/constant/status'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
-    // import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
+    import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Pill from '~/components/UI/pill/pill.vue'
     // import { KeyMaps } from '~/api/keyMap'
-    // import Avatar from '~/components/common/avatar.vue'
+    import Avatar from '~/components/common/avatar/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     // import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { map } from '~/services/service/avatar/key'
 
     export default defineComponent({
         components: {
             StatusBadge,
             PillGroup,
-            // ClassificationInfoCard,
+            ClassificationInfoCard,
             // OwnerInfoCard,
             Pill,
-            // Avatar,
+            Avatar,
         },
         props: {
             item: {
@@ -282,6 +287,7 @@
                 mixedTermsAndClassifications,
                 // KeyMaps,
                 List,
+                map,
             }
         },
     })
@@ -294,6 +300,7 @@
         max-width: 520px !important;
         // padding-horizontal: 20px !important;
         overflow: scroll !important;
+        padding: 16px !important;
     }
     .horizontal-scrollbar::-webkit-scrollbar {
         width: 0;

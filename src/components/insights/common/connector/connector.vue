@@ -1,25 +1,25 @@
 <template>
     <div class="w-full">
         <a-tree-select
-            :class="$style.tree_selecttor"
+        :class="[
+            $style.tree_selecttor,
+            bgGrayForSelector ? `${$style.selector_bg}` : '',
+        ]"
             :value="selectedValue"
             style="width: 100%"
             v-model:treeExpandedKeys="expandedKeys"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
-            :allowClear="true"
+            :allowClear="false"
             @change="onChange"
             :data-test-id="'conector'"
             @select="selectNode"
         >
             <template #title="node">
                 <div class="flex items-center truncate">
-                    <AtlanIcon
-                        :icon="iconName(node)"
-                        class="h-4 -ml-0.5 mr-1"
-                    />
+                    <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
                     {{
                         node?.title.length > 30
                             ? `${node?.title.slice(0, 30)}...`
@@ -27,12 +27,20 @@
                     }}
                 </div>
             </template>
+            <template #suffixIcon>
+                <AtlanIcon
+                    icon="ChevronDown"
+                    class="h-4 -mt-0.5 -ml-1"
+                    color="#6F7590"
+                />
+            </template>
         </a-tree-select>
         <AssetDropdown
             v-if="connection"
             :connector="filteredConnector"
             :filter="data"
             @change="handleChange"
+            :bgGrayForSelector="bgGrayForSelector"
             @label-change="setPlaceholder($event, 'asset')"
         ></AssetDropdown>
     </div>
@@ -74,6 +82,10 @@
             isLeafNodeSelectable: {
                 type: Boolean,
                 required: false,
+                default: true,
+            },
+            bgGrayForSelector: {
+                type: Boolean,
                 default: true,
             },
         },
@@ -350,19 +362,20 @@
             line-height: 24px !important;
             margin-top: -4px !important;
         }
-        .ant-select-switcher-icon {
-            font-weight: normal !important;
-        }
     }
 </style>
 <style lang="less" module>
     .tree_selecttor {
         :global(.ant-select-selector) {
             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
-            background-color: #fbfbfb !important;
             border: 1px solid #e9ebf1 !important;
             color: #6f7590 !important;
             border-radius: 8px !important;
+        }
+    }
+    .selector_bg {
+        :global(.ant-select-selector) {
+            background-color: #fbfbfb !important;
         }
     }
 </style>

@@ -76,7 +76,7 @@
     import {
         UpdateIntegration,
         archiveIntegration,
-    } from '@/integrations/useIntegrations'
+    } from '~/composables/integrations/useIntegrations'
     import integrationStore from '~/store/integrations/index'
     import Chip from '@/UI/chip.vue'
     import access from '~/constant/accessControl/map'

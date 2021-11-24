@@ -238,6 +238,9 @@ import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import Hash from '~/assets/images/icons/hash.svg'
+
+//source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
 import Column from '~/assets/images/icons/column.svg'
 import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
@@ -249,6 +252,7 @@ import Tableau from '~/assets/images/source/svg/Tableau.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
+import Close from '~/assets/images/icons/close.svg'
 
 export default {
     Hash,
@@ -496,4 +500,5 @@ export default {
     QueriesActive,
     CaretDown,
     GovernanceCenter,
+    Close
 }

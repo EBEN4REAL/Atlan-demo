@@ -10,18 +10,26 @@
                     <div
                         class="flex items-center justify-between  hover:text-primary"
                     >
-                        <span
-                            class="text-xs uppercase  text-gray hover:text-primary title"
-                            style="letter-spacing: 0.07em"
-                        >
+                        <div class="flex items-center">
                             <img
-                                v-if="item.options?.imageId"
-                                :src="imageUrl(item.options?.imageId)"
+                                v-if="item?.options?.logoType === 'image'"
                                 class="float-left w-auto h-4 mr-2"
+                                :src="imageUrl(item.options?.imageId)"
                             />
 
-                            {{ item.label }}</span
-                        >
+                            <span
+                                v-else-if="item?.options?.logoType === 'emoji'"
+                                class="self-center float-left mr-2 text-base"
+                            >
+                                {{ item?.options?.emoji }}
+                            </span>
+                            <span
+                                class="text-xs uppercase  text-gray hover:text-primary title"
+                                style="letter-spacing: 0.07em"
+                            >
+                                {{ item.label }}</span
+                            >
+                        </div>
 
                         <span
                             v-if="isFiltered"
@@ -37,15 +45,15 @@
                     </div>
                 </div>
 
-                <transition name="fade" v-if="isFiltered && !isActive">
+                <transition v-if="isFiltered && !isActive" name="fade">
                     <div class="flex items-center">
                         <img
+                            v-if="item.id === 'hierarchy'"
                             :src="
                                 getConnectorImageMap[
                                     getFilterValue.toLowerCase()
                                 ]
                             "
-                            v-if="item.id === 'hierarchy'"
                             class="w-auto h-4 mr-1"
                         />
                         <span class="text-primary"> {{ getFilterValue }}</span>
@@ -56,9 +64,10 @@
 
         <component
             :is="item.component"
-            :item="item"
             :key="componentKey"
             v-model="facetMap[item.id]"
+            :item="item"
+            v-bind="item.propsToComponent"
             @change="handleChange"
         ></component>
     </a-collapse-panel>
@@ -77,6 +86,7 @@
     import Owners from '@common/facet/owners/index.vue'
     import Certificate from '@common/facet/certificate/index.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
+    import QueryStatus from '@/common/facet/queryStatus/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { capitalizeFirstLetter } from '~/utils/string'
@@ -87,6 +97,7 @@
             Hierarchy,
             Certificate,
             Owners,
+            QueryStatus,
             Connector: defineAsyncComponent(
                 () => import('@common/treeselect/connector/index.vue')
             ),
@@ -274,9 +285,7 @@
                 let numOfAttributes = 0
                 Object.keys(facetMap.value[id]).forEach((key) => {
                     if (
-                        !!facetMap.value[id][key].find(
-                            (element) => element.value
-                        )
+                        facetMap.value[id][key].find((element) => element.value)
                     )
                         numOfAttributes += 1
                 })

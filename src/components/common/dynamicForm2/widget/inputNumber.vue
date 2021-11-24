@@ -1,8 +1,10 @@
 <template>
-    <a-input-number
-        v-bind="componentProps"
-        v-model:value="localValue"
-    ></a-input-number>
+    <a-form-item :label="property.ui?.label" v-if="!property.ui?.hidden">
+        <a-input-number
+            v-bind="componentProps"
+            v-model:value="localValue"
+        ></a-input-number>
+    </a-form-item>
 </template>
 
 <script>

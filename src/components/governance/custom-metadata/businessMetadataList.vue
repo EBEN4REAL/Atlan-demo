@@ -34,15 +34,10 @@
             finalList: { type: Object, required: true },
             selectedBm: { type: [Object, null], required: true },
         },
-        emits: ['selectBm'],
-        setup(props, context) {
-            const { finalList, selectedBm } = toRefs(props)
-
+        emits: ['update:selected'],
+        setup(props, { emit }) {
             // * Methods
-            const selectBm = (id: string) => {
-                const item = finalList.value.find((bm) => bm.guid === id)
-                context.emit('selectBm', item)
-            }
+            const selectBm = (id: string) => emit('update:selected', id)
 
             return {
                 selectBm,

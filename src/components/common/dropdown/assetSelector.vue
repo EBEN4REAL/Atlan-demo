@@ -40,12 +40,16 @@
         :showSearch="true"
         notFoundContent="No data available"
         style="width: 100%; border-radius: 8px"
-        :class="$style.connector"
+        :class="[
+            $style.connector,
+            bgGrayForSelector ? `${$style.selector_bg}` : '',
+        ]"
         @change="handleChange"
         :disabled="disabled"
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
         dropdownClassName="connectorDropdown"
         :loading="isLoading"
+        
     >
         <!-- <template #title="node">
             <div class="flex items-center">
@@ -63,7 +67,7 @@
                     <!-- <img :src="item.image" class="w-auto h-4 mr-1" /> -->
                     <AtlanIcon
                         :icon="typeName + `Gray`"
-                        class="w-auto h-4 mr-1"
+                        class="w-auto h-4 mr-2"
                     />
                     {{
                         item?.label.length > 30
@@ -72,6 +76,13 @@
                     }}
                 </div></a-select-option
             >
+        </template>
+        <template #suffixIcon>
+            <AtlanIcon
+                icon="ChevronDown"
+                class="h-4 -mt-0.5 -ml-1"
+                color="#6F7590"
+            />
         </template>
     </a-select>
 </template>
@@ -189,6 +200,18 @@
             border: 1px solid #e9ebf1 !important;
             color: #6f7590 !important;
             border-radius: 8px !important;
+
+            input::placeholder {
+                color: #6f7590 !important;
+            }
+        }
+        :global(.ant-select-selection-search) {
+            input::placeholder {
+                color: #6f7590 !important;
+            }
         }
     }
+    // input::placeholder {
+    //     color: #6f7590 !important;
+    // }
 </style>

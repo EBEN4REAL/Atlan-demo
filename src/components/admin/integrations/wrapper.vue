@@ -1,14 +1,8 @@
 <template>
-    <div
-        v-if="currentLoading || isLoading"
-        class="flex items-center justify-center h-full"
-    >
+    <div v-if="isLoading" class="flex items-center justify-center h-full">
         <AtlanIcon icon="Loader" class="h-10 animate-spin" />
     </div>
-    <div
-        v-else-if="currentError || error"
-        class="flex items-center justify-center h-full"
-    >
+    <div v-else-if="error" class="flex items-center justify-center h-full">
         <ErrorView />
     </div>
     <main v-else-if="isReady" class="mx-4 my-9">
@@ -29,11 +23,8 @@
 
 <script lang="ts">
     import { defineComponent, watch } from 'vue'
-    import {
-        getIntegrationTypes,
-        getIntegrationLink,
-        getIntegrationsList,
-    } from './useIntegrations'
+    import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
+    import { getIntegrationLink } from '~/composables/integrations/useSlack'
     import AddIntegrationCard from './addIntegrationCard.vue'
     import IntegrationCardWrapper from './integrationCardWrapper.vue'
     import { integrationData } from '~/constant/integrations'
@@ -50,41 +41,24 @@
                 data: allIntegrations,
                 isLoading,
                 error,
-            } = getIntegrationTypes()
-
-            const {
-                data: currentIntegrations,
-                isLoading: currentLoading,
-                error: currentError,
                 isReady,
-            } = getIntegrationsList()
-
-            watch(currentIntegrations, () => {
-                if (currentIntegrations.value.length)
-                    store.setAllIntegrationsList(currentIntegrations.value)
-            })
+            } = getIntegrationTypes()
 
             const getData = (alias) => ({
                 ...integrationData[alias],
                 link: getIntegrationLink(alias),
             })
 
-            const integrationExist = (alias): Object | Boolean | undefined =>
-                store.getIntegrationList.find(
-                    (i) => i.name.toLowerCase() === alias.toLowerCase()
-                )
+            const integrationExist = (alias): boolean =>
+                !!store.getIntegration(alias)
 
             return {
                 integrationExist,
-                isReady,
-                currentLoading,
-                currentIntegrations,
                 allIntegrations,
                 getData,
                 isLoading,
                 error,
-                currentError,
-                integrationData,
+                isReady,
             }
         },
     })

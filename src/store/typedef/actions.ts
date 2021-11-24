@@ -10,6 +10,7 @@ export interface Actions extends State {
   updateCustomMetadata(value: object): void;
   setIsLoading(value: boolean): void
   setError(value: object | null): void
+  tickForceRevalidate(): void
 }
 
 export const actions: Actions = {
@@ -44,5 +45,8 @@ export const actions: Actions = {
   },
   setError(value) {
     this.error = value
+  },
+  tickForceRevalidate() {
+    this.forceRevalidate += 1
   }
 }

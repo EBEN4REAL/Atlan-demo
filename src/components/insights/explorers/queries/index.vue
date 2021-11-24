@@ -470,19 +470,6 @@
             const newFolderCreateable = ref(true)
             let showEmptyState = ref(true)
 
-            // const refetchTreeData = () => {
-            //     setTimeout(async () => {
-            //         await per_refetchNode(
-            //             getRelevantTreeData().parentGuid.value,
-            //             'queryFolder'
-            //         )
-            //         await all_refetchNode(
-            //             getRelevantTreeData().parentGuid.value,
-            //             'queryFolder'
-            //         )
-            //     }, 1000)
-            // }
-
             const createFolderInput = () => {
                 const inputClassName = `${per_immediateParentGuid.value}_folder_input`
 
@@ -503,42 +490,70 @@
                                 document.querySelector(
                                     '.query-explorer  .query-tree-root-div'
                                 )
-                            console.log('parent folder: ', parentFolder)
                         } else {
-                            parentFolder = document.getElementsByClassName(
-                                getRelevantTreeData().parentGuid.value
-                            )[0]
+                            parentFolder = document.querySelector(
+                                'div.ant-tree-list .ant-tree-treenode-selected'
+                            )
                         }
-                        console.log('parent folder: ', {
-                            parentFolder,
-                            parentguid: getRelevantTreeData().parentGuid.value,
-                        })
-                        let ul = parentFolder.getElementsByTagName('ul')[0]
-                        console.log('parent folder ul: ', ul)
+                        let ul = document.createElement('div')
+                        const div = document.createElement('div')
 
-                        if (!ul) {
-                            // if the parentFolder does not have any children, it won't contain a ul element either. So create one and append it
-                            ul = document.createElement('ul')
-                            parentFolder.appendChild(ul)
-                        }
-                        const li = document.createElement('li')
                         showEmptyState.value = false
 
-                        li.classList.add('flex', 'items-center', 'active-input')
-                        const caret =
+                        div.classList.add(
+                            'flex',
+                            'items-center',
+                            'active-input',
+                            'h-8'
+                        )
+                        let childCount = 0
+                        if (guid !== queryFolderNamespace.value.guid) {
+                            console.log(
+                                'parentChild: ',
+                                parentFolder.children[0].children.length
+                            )
+                            childCount =
+                                parentFolder.children[0].children.length + 1
+
+                            console.log('count: ', childCount)
+                        }
+
+                        let spaceEl = null
+                        if (childCount) {
+                            let space = `<span style="padding-left:${
+                                24 * childCount
+                            }px;" class="h-2"></span>`
+                            spaceEl = new DOMParser().parseFromString(
+                                space,
+                                'text/html'
+                            ).body.firstElementChild
+                        }
+
+                        let caret =
                             '<span class="mt-2 -ml-1 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+
+                        if (guid !== queryFolderNamespace.value.guid) {
+                            caret =
+                                '<span class="mr-0.5 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+                        }
+
                         const caretEl = new DOMParser().parseFromString(
                             caret,
                             'text/html'
                         ).body.firstElementChild
+
                         const folderSvg =
-                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 w-auto h-5 my-auto mr-1 -ml-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
+                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 w-auto h-5 my-auto mr-1 -ml-0.5" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
                         const folderSvgEl = new DOMParser().parseFromString(
                             folderSvg,
                             'text/html'
                         ).body.firstElementChild
-                        li.appendChild(caretEl)
-                        li.appendChild(folderSvgEl)
+
+                        if (spaceEl) {
+                            div.appendChild(spaceEl)
+                        }
+                        div.appendChild(caretEl)
+                        div.appendChild(folderSvgEl)
 
                         const input = document.createElement('input')
 
@@ -569,7 +584,7 @@
                                                     .value,
                                                 'queryFolder'
                                             )
-                                            ul.removeChild(li)
+                                            ul.removeChild(div)
                                             await all_refetchNode(
                                                 getRelevantTreeData().parentGuid
                                                     .value,
@@ -582,7 +597,7 @@
                                                     .value,
                                                 'queryFolder'
                                             )
-                                            ul.removeChild(li)
+                                            ul.removeChild(div)
                                             await per_refetchNode(
                                                 getRelevantTreeData().parentGuid
                                                     .value,
@@ -606,7 +621,8 @@
                         input.addEventListener('keydown', (e) => {
                             if (e.key === 'Escape') {
                                 newFolderName.value = ''
-                                ul.removeChild(li)
+                                ul.removeChild(div)
+                                // removeInputBox()
                                 showEmptyState.value = true
                             }
                             if (e.key === 'Enter') {
@@ -617,8 +633,9 @@
                                     showEmptyState.value = false
                                 } else {
                                     newFolderName.value = ''
-                                    ul.removeChild(li)
+                                    ul.removeChild(div)
                                     showEmptyState.value = true
+                                    // removeInputBox()
                                 }
                             }
                         })
@@ -627,8 +644,9 @@
                                 makeCreateFolderRequest()
                                 showEmptyState.value = false
                             } else {
-                                li.removeChild(input)
-                                li.setAttribute('class', 'hidden')
+                                div.removeChild(input)
+                                div.setAttribute('class', 'hidden')
+                                // removeInputBox()
                                 newFolderName.value = ''
                                 newFolderCreateable.value = false
                                 setTimeout(() => {
@@ -638,8 +656,20 @@
                             }
                         })
 
-                        li.appendChild(input)
-                        ul.prepend(li)
+                        div.appendChild(input)
+                        ul.appendChild(div)
+                        // console.log('child: ul: ', ul)
+
+                        if (guid === queryFolderNamespace.value.guid) {
+                            parentFolder.prepend(ul)
+                            // console.log('input parent append')
+                        } else {
+                            parentFolder.parentNode.insertBefore(
+                                ul,
+                                parentFolder.nextSibling
+                            )
+                        }
+
                         input.focus()
                     }
                 }
@@ -712,6 +742,8 @@
                 immediateParentGuid: all_immediateParentGuid,
                 nodeToParentKeyMap: all_nodeToParentKeyMap,
                 updateNode: all_updateNode,
+                // addInputBox,
+                // removeInputBox,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,

@@ -10,6 +10,19 @@
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
                     <!--FOLDER NODE -->
+                    <!-- <div
+                        class="parent-ellipsis-container py-1.5"
+                        v-if="item.class === 'addInput'"
+                    >
+                        <div class="flex w-full">
+                            <AtlanIcon
+                                icon="FolderClosed"
+                                class="w-5 h-5 my-auto mr-1"
+                                color="#5277D7"
+                            ></AtlanIcon>
+                            <input ref="input" :value="newFolderName" />
+                        </div>
+                    </div> -->
 
                     <div class="parent-ellipsis-container py-1.5">
                         <div class="flex w-full">
@@ -863,6 +876,100 @@
                     }
                 }
             }
+
+            // let input = ref(null)
+            // let newFolderName = ref('')
+            // watch(input, () => {
+            //     console.log('inputRef: ', input)
+            //     input.value.autofocus = true
+            //     input.value.classame = 'outline-none py-0 rounded my-1 w-auto'
+            //     input.value.placeholder = 'Name your folder'
+            //     input.value.onkeypress = (e) => {
+            //         if (e.key === 'Escape') {
+            //             newFolderName.value = ''
+            //             // ul.removeChild(div)
+            //             removeInputBox()
+            //             // showEmptyState.value = true
+            //         }
+            //         if (e.key === 'Enter') {
+            //             // create folder request
+            //             if (newFolderName.value.length) {
+            //                 makeCreateFolderRequest()
+            //                 newFolderName.value = ''
+            //                 // showEmptyState.value = false
+            //             } else {
+            //                 newFolderName.value = ''
+            //                 // ul.removeChild(div)
+            //                 // showEmptyState.value = true
+            //                 removeInputBox()
+            //             }
+            //         }
+            //     }
+            //     input.value.onblur = () => {
+            //         if (newFolderName.value.length) {
+            //             makeCreateFolderRequest()
+            //             // showEmptyState.value = false
+            //         } else {
+            //             // div.removeChild(input)
+            //             // div.setAttribute('class', 'hidden')
+            //             removeInputBox()
+            //             newFolderName.value = ''
+            //             // newFolderCreateable.value = false
+            //             // setTimeout(() => {
+            //             // newFolderCreateable.value = true
+            //             // showEmptyState.value = true
+            //             // }, 300)
+            //         }
+            //     }
+
+            //     // input.setAttribute(
+            //     //             'class',
+            //     //             `outline-none py-0 rounded my-1 w-auto ${inputClassName}`
+            //     //         )
+            //     // input.setAttribute('placeholder', 'Name your folder')
+            //     // input.addEventListener('input', (e) => {
+            //     //     newFolderName.value = e.target?.value
+            //     // })
+
+            //     // input.addEventListener('keydown', (e) => {
+            //     //     if (e.key === 'Escape') {
+            //     //         newFolderName.value = ''
+            //     //         ul.removeChild(div)
+            //     //         removeInputBox()
+            //     //         showEmptyState.value = true
+            //     //     }
+            //     //     if (e.key === 'Enter') {
+            //     //         // create folder request
+            //     //         if (newFolderName.value.length) {
+            //     //             makeCreateFolderRequest()
+            //     //             newFolderName.value = ''
+            //     //             showEmptyState.value = false
+            //     //         } else {
+            //     //             newFolderName.value = ''
+            //     //             ul.removeChild(div)
+            //     //             showEmptyState.value = true
+            //     //             removeInputBox()
+            //     //         }
+            //     //     }
+            //     // })
+            //     // input.addEventListener('blur', (e) => {
+            //     //     if (newFolderName.value.length) {
+            //     //         makeCreateFolderRequest()
+            //     //         showEmptyState.value = false
+            //     //     } else {
+            //     //         div.removeChild(input)
+            //     //         div.setAttribute('class', 'hidden')
+            //     //         removeInputBox()
+            //     //         newFolderName.value = ''
+            //     //         newFolderCreateable.value = false
+            //     //         setTimeout(() => {
+            //     //             newFolderCreateable.value = true
+            //     //             showEmptyState.value = true
+            //     //         }, 300)
+            //     //     }
+            //     // })
+            // })
+
             return {
                 evaluatePermisson,
                 permissions,
@@ -892,6 +999,8 @@
                 selectedFolder,
                 changeFolder,
                 isUpdating,
+                // input,
+                // newFolderName,
             }
         },
     })

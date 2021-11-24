@@ -1,28 +1,40 @@
 <template>
     <div class="h-full">
-        <DefaultLayout title="Query Logs">
+        <div
+            v-if="!totalLogsCount && !isLoading"
+            class="flex flex-col items-center justify-center h-full"
+        >
+            <component :is="EmptyLogsIllustration" class="mb-4"></component>
+            <div class="mb-4 text-xl font-bold">Your logs will appear here</div>
+            <AtlanBtn
+                padding="compact"
+                size="sm"
+                color="secondary"
+                class="hidden mt-3 bg-transparent border-none px-7 text-primary"
+            >
+                Your logs will appear here<AtlanIcon icon="ArrowRight" />
+            </AtlanBtn>
+        </div>
+        <DefaultLayout v-else title="Query Logs">
             <template #header>
                 <div class="flex items-center justify-between pb-3">
                     <div class="flex items-stretch w-full">
                         <div class="flex items-center">
-                            <a-button
-                                type="default"
+                            <AtlanBtn
+                                color="secondary"
                                 class="px-2 rounded-tr-none rounded-br-none"
                                 :class="
                                     queryLogsFilterDrawerVisible
                                         ? 'text-primary border-primary'
                                         : 'border-gray-300  border rounded-tl rounded-bl text-gray '
                                 "
+                                @click="queryLogsFilterDrawerVisible = true"
                             >
                                 <AtlanIcon
                                     :icon="'FilterFunnel'"
                                     class="w-4 h-4"
-                                    @click="
-                                        queryLogsFilterDrawerVisible =
-                                            !queryLogsFilterDrawerVisible
-                                    "
                                 />
-                            </a-button>
+                            </AtlanBtn>
                         </div>
                         <a-input-search
                             v-model:value="searchText"
@@ -48,13 +60,14 @@
             </template>
 
             <QueryLogTable
-                :api-keys-list="queryList"
+                :query-logs-list="queryList"
                 :is-loading="isLoading"
                 :selected-query="selectedQuery"
                 :selected-row-keys="selectedRowKeys"
+                :saved-query-meta-map="savedQueryMetaMap"
                 @selectQuery="handleSelectQuery"
             />
-            <!-- <div class="flex justify-end max-w-full "> -->
+
             <div
                 v-if="(queryList && queryList.length) || isLoading"
                 class="flex flex-row items-center justify-end w-full mt-4"
@@ -101,7 +114,6 @@
                     <AtlanIcon icon="CaretRight" />
                 </AtlanBtn>
             </div>
-            <!-- </div> -->
         </DefaultLayout>
         <a-drawer
             :visible="isQueryPreviewDrawerVisible"
@@ -116,12 +128,18 @@
                 @selectQuery="handleSelectQuery"
             />
         </a-drawer>
+
         <a-drawer
             :visible="queryLogsFilterDrawerVisible"
             :mask="false"
             :placement="'left'"
-            :width="270"
+            :width="286"
             :closable="false"
+            :after-visible-change="
+                (visible) => {
+                    notchVisible = visible
+                }
+            "
         >
             <AssetFilters
                 v-model="facets"
@@ -139,6 +157,23 @@
                     @change="handleFilterChange"
             /></AssetFilters>
         </a-drawer>
+
+        <AtlanBtn
+            :class="notchVisible ? 'opacity-100' : 'opacity-0'"
+            class="fixed z-10 px-0 border-l-0 rounded-none rounded-r  top-1/4 left-72"
+            color="secondary"
+            @click="
+                () => {
+                    queryLogsFilterDrawerVisible = false
+                    notchVisible = false
+                }
+            "
+        >
+            <AtlanIcon
+                icon="ChevronDown"
+                class="h-4 px-1 transition-transform transform rotate-90"
+            />
+        </AtlanBtn>
     </div>
 </template>
 
@@ -151,13 +186,13 @@ import DefaultLayout from '~/components/admin/layout.vue'
 import AtlanBtn from '@/UI/button.vue'
 import QueryLogTable from '@/governance/queryLogs/queryTable.vue'
 import QueryPreviewDrawer from '~/components/governance/queryLogs/queryDrawer.vue'
-import NewAPIKeyIllustration from '~/assets/images/illustrations/new_apikey.svg'
 import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
 import { useQueryLogs } from './composables/useQueryLogs'
 import AssetFilters from '@/common/assets/filters/index.vue'
 import { queryLogsFilter } from '~/constant/filters/logsFilter'
 import Connector from '~/components/insights/common/connector/connector.vue'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
+import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
 
 export default defineComponent({
     name: 'QueryLogsView',
@@ -175,6 +210,7 @@ export default defineComponent({
         const facets = ref({})
         const searchText: Ref<string> = ref('')
         const queryLogsFilterDrawerVisible: Ref<boolean> = ref(false)
+        const notchVisible: Ref<boolean> = ref(false)
         const timeFrame = ref('30 days')
         const selectedQuery = ref({})
         const isQueryPreviewDrawerVisible = ref(false)
@@ -192,8 +228,14 @@ export default defineComponent({
             refetchList,
             isLoading,
             filteredLogsCount,
+            savedQueryMetaMap,
         } = useQueryLogs(gte, lt, from, size)
-
+        // since we always get filtered total count in response, storing the total count when we get the logs first time, i.e. when no filters are applied to find the total number of logs to decide if we want to render empty state or logs table.
+        const totalLogsCount = ref(0)
+        const stopWatcher = watch(filteredLogsCount, () => {
+            totalLogsCount.value = filteredLogsCount.value
+        })
+        watch(totalLogsCount, stopWatcher)
         const toggleQueryPreviewDrawer = (
             val: boolean | undefined = undefined
         ) => {
@@ -301,7 +343,6 @@ export default defineComponent({
             timeFrame,
             searchText,
             queryLogsFilterDrawerVisible,
-            NewAPIKeyIllustration,
             map,
             queryLogsFilter,
             handleFilterChange,
@@ -310,6 +351,10 @@ export default defineComponent({
             pagination,
             filteredLogsCount,
             handlePagination,
+            savedQueryMetaMap,
+            totalLogsCount,
+            EmptyLogsIllustration,
+            notchVisible,
         }
     },
 })

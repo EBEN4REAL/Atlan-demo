@@ -92,17 +92,174 @@
             provide('permissions', permissions)
             /* --------------------- */
             console.log(savedQueryGuidFromURL.value)
+
+            let queryBody = ref({})
+            const refreshGetQueryBody = () => {
+                queryBody.value = {
+                    dsl: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            '__typeName.keyword': 'Query',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                    attributes: [
+                        'name',
+                        'displayName',
+                        'typeName',
+                        'dataType',
+                        'description',
+                        'userDescription',
+                        'certificateStatus',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'classifications',
+                        'connectorName',
+                        'connectionId',
+                        'connectionQualifiedName',
+                        'parentFolderQualifiedName',
+                        'defaultSchemaQualifiedName',
+                        'parentFolder',
+                        'columns',
+                        'folder',
+                        'compiledQuery',
+                        'rawQuery',
+                        '__timestamp',
+                        '__modificationTimestamp',
+                        '__modifiedBy',
+                        '__createdBy',
+                        '__state',
+                        '__guid',
+                        '__historicalGuids',
+                        '__classificationsText',
+                        '__classificationNames',
+                        '__propagatedClassificationNames',
+                        '__customAttributes',
+                        '__labels',
+                        'anchor',
+                        '__timestamp',
+                        '__modificationTimestamp',
+                        '__modifiedBy',
+                        '__createdBy',
+                        '__state',
+                        '__guid',
+                        '__historicalGuids',
+                        '__classificationsText',
+                        '__classificationNames',
+                        '__propagatedClassificationNames',
+                        '__customAttributes',
+                        '__labels',
+                        'name',
+                        'displayName',
+                        'description',
+                        'displayDescription',
+                        'userDescription',
+                        'tenantId',
+                        'certificateStatus',
+                        'certificateStatusMessage',
+                        'certificateUpdatedAt',
+                        'certificateUpdatedBy',
+                        'assetStatusMessage',
+                        'announcementMessage',
+                        'announcementTitle',
+                        'announcementType',
+                        'announcementUpdatedAt',
+                        'announcementUpdatedBy',
+                        'connectionLastSyncedAt',
+                        'connectionQualifiedName',
+                        'rowCount',
+                        'columnCount',
+                        'sizeBytes',
+                        'subType',
+                        'image',
+                        'sourceRefreshFrequency',
+                        'sourceCreatedBy',
+                        'sourceCreatedAt',
+                        'sourceUpdatedAt',
+                        'sourceUpdatedBy',
+                        'databaseCount',
+                        'databaseCrawledCount',
+                        'schemaCount',
+                        'schemaCrawledCount',
+                        'tableCount',
+                        'tableCrawledCount',
+                        'dataType',
+                        'table',
+                        'tableName',
+                        'viewName',
+                        'lastUpdatedByJob',
+                        'category',
+                        'host',
+                        'botQualifiedName',
+                        'schemaName',
+                        'databaseName',
+                        'logo',
+                        'viewDefinition',
+                        'popularityScore',
+                        'readers',
+                        'sourceViewCount',
+                        'integrationCredentialQualifiedName',
+                        'connectionName',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'databaseQualifiedName',
+                        'isPrimary',
+                        'isPartition',
+                        'readme',
+                        'parent',
+                        'connectionLastSyncedJob',
+                        'qualifiedName',
+                        'connectionName',
+                        'isDiscoverable',
+                        'alias',
+                        'rawQuery',
+                        'compiledQuery',
+                        'connectionId',
+                        'isPrivate',
+                        'variablesSchemaBase64',
+                        'isSnippet',
+                    ],
+                    relationAttributes: ['name'],
+                }
+            }
+
             const fetchAndPassSavedQueryInfo = () => {
-                const { data, error, isLoading } = InsightsAPI.GetSavedQuery(
-                    savedQueryGuidFromURL.value as string,
-                    {}
-                )
+                refreshGetQueryBody()
+                queryBody.value.dsl.query.bool.must.push({
+                    term: {
+                        __guid: savedQueryGuidFromURL.value,
+                    },
+                })
+                const { data, error, isLoading } =
+                    InsightsAPI.GetSavedQueryIndex(queryBody, {})
+
+                // const { data, error, isLoading } =
+                //     InsightsAPI.GetSavedQuery(
+                //         savedQueryGuidFromURL.value as string,
+                //         {}
+                //     )
                 watch([data, error, isLoading], () => {
                     if (isLoading.value == false) {
                         isSavedQueryInfoLoaded.value = false
                         if (error.value === undefined) {
                             isSavedQueryInfoLoaded.value = false
-                            savedQueryInfo.value = data.value.entity
+                            // savedQueryInfo.value = data.value.entity
+                            if (
+                                data.value?.entities &&
+                                data.value?.entities?.length
+                            ) {
+                                savedQueryInfo.value = data.value.entities[0]
+                            } else {
+                                savedQueryInfo.value = {}
+                            }
+
+                            console.log('open saved query: ', data.value)
                         } else {
                             message.error({
                                 content: `Error in loading this query!`,

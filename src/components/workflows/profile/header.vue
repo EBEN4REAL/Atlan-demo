@@ -34,7 +34,7 @@
                     <span class="text-gray-500">Workflow</span>
                 </div>
                 <div>
-                    <h3 class="text-xl capitalize">
+                    <h3 class="text-xl">
                         {{ workflow?.name }}
                         <!-- <span
                             class="px-2 py-1 text-xs border border-transparent border-gray-200 rounded shadow-none hover:border-gray-300"
@@ -100,7 +100,7 @@
             logo: {
                 type: String,
                 requred: false,
-                default: ""
+                default: '',
             },
         },
         setup(props) {

@@ -15,15 +15,12 @@
                     </template>
                 </a-steps>
                 <div class="flex-1 p-8 overflow-y-auto bg-white">
-                    {{ modelValue }}
                     <DynamicForm
                         ref="stepForm"
                         :config="configMapDerived"
                         :currentStep="currentStepConfig"
                         v-model="modelValue"
                         labelAlign="left"
-                        :labelCol="{ span: 6 }"
-                        :wrapperCol="{ span: 18 }"
                     ></DynamicForm>
                     <!-- {{ configMap }} -->
                 </div>
@@ -140,7 +137,7 @@
                         properties: {
                             'connection-name': {
                                 type: 'string',
-                                required: true,
+                                required: false,
                                 ui: {
                                     label: 'Connection Name',
                                     placeholder: 'Connection Name',
@@ -148,7 +145,7 @@
                             },
                             'connection-qualifiedName': {
                                 type: 'string',
-                                required: true,
+                                required: false,
                                 ui: {
                                     label: 'Connection Qualified Name',
                                     placeholder: 'Connection Name',
@@ -188,8 +185,10 @@
                                 ui: {
                                     widget: 'credential',
                                     label: '',
+                                    credentialType:
+                                        'atlan-connectors-snowflake',
                                     placeholder: 'Credential Guid',
-                                    hidden: true,
+                                    hidden: false,
                                 },
                             },
                             'credential-kube-secret-name': {
@@ -198,20 +197,6 @@
                                     label: 'Credential Secret Name',
                                     placeholder: 'Credential Secret Name',
                                     hidden: true,
-                                },
-                            },
-                            host: {
-                                type: 'string',
-                                ui: {
-                                    label: 'Host',
-                                    placeholder: 'Host',
-                                },
-                            },
-                            port: {
-                                type: 'string',
-                                ui: {
-                                    label: 'Port',
-                                    placeholder: 'Port',
                                 },
                             },
                             crawler_name: {
@@ -436,7 +421,7 @@
             return {
                 tasks,
                 emit,
-                graphRef,
+
                 isAllowtoRun,
                 workflowTemplate,
                 handleChange,

@@ -16,20 +16,22 @@
                 <MetadataHeaderButton :metadata="localBm" />
             </div>
         </div>
-        <div class="flex items-start justify-between px-4 py-3 border-b">
-            <CreateUpdateInfo
-                :created-at="localBm.createTime"
-                :updated-at="localBm.updateTime"
-                :created-by="localBm.createdBy"
-                :updated-by="localBm.updatedBy"
-            />
-        </div>
         <div
-            class="px-4 pt-3 pb-8 overflow-y-auto"
-            style="height: calc(100vh - 190px)"
+            class="px-4 pb-8 overflow-y-auto"
+            style="height: calc(100vh - 145px)"
         >
-            <div v-if="localBm.attributeDefs.length" class="py-5">
-                <div class="flex items-center justify-between mb-4">
+            <div class="flex items-start justify-between py-3">
+                <CreateUpdateInfo
+                    :created-at="localBm.createTime"
+                    :updated-at="localBm.updateTime"
+                    :created-by="localBm.createdBy"
+                    :updated-by="localBm.updatedBy"
+                />
+            </div>
+            <div v-if="localBm.attributeDefs.length" class="pt-2 pb-5">
+                <div
+                    class="sticky top-0 z-10 flex items-center justify-between py-3 mb-4 bg-white"
+                >
                     <div class="mr-4">
                         <div
                             class="relative flex items-stretch w-full overflow-hidden "
@@ -77,7 +79,6 @@
                         )
                     "
                 />
-                <!-- <pre>{{ searchedAttributeList }}</pre> -->
             </div>
             <div v-else>
                 <a-empty
@@ -228,7 +229,6 @@
 
             const handlePropertyUpdate = ($event) => {
                 localBm.value.attributeDefs = $event
-
             }
 
             return {

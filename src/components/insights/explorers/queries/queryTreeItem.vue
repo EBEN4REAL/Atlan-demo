@@ -7,17 +7,7 @@
             <div class="flex w-full m-0">
                 <div
                     v-if="item.typeName === 'QueryFolder'"
-                    class="
-                        relative
-                        flex
-                        content-center
-                        w-full
-                        my-auto
-                        overflow-hidden
-                        text-sm
-                        leading-5
-                        text-gray-700
-                    "
+                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                 >
                     <!--FOLDER NODE -->
 
@@ -30,30 +20,14 @@
                                         : 'FolderClosed'
                                 "
                                 class="w-5 h-5 my-auto mr-1"
+                                color="#5277D7"
                             ></AtlanIcon>
                             <span
-                                class="
-                                    mb-0
-                                    text-sm text-gray-700
-                                    parent-ellipsis-container-base
-                                "
+                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
                             <div
-                                class="
-                                    absolute
-                                    top-0
-                                    right-0
-                                    flex
-                                    items-center
-                                    h-full
-                                    text-gray-500
-                                    transition
-                                    duration-300
-                                    opacity-0
-                                    margin-align-top
-                                    group-hover:opacity-100
-                                "
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -157,17 +131,7 @@
                         </div>
                     </template>
                     <div
-                        class="
-                            relative
-                            flex
-                            content-center
-                            w-full
-                            my-auto
-                            overflow-hidden
-                            text-sm
-                            leading-5
-                            text-gray-700
-                        "
+                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                     >
                         <!--SAVED QUERY NODE -->
                         <!--For Others -->
@@ -180,30 +144,15 @@
                                     )
                                 "
                                 class="w-5 h-5 my-auto mr-1"
+                                color="#5277D7"
                             ></AtlanIcon>
                             <span
-                                class="
-                                    mb-0
-                                    text-sm text-gray-700
-                                    parent-ellipsis-container-base
-                                "
+                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
 
                             <div
-                                class="
-                                    absolute
-                                    flex
-                                    items-center
-                                    h-full
-                                    text-gray-500
-                                    transition
-                                    duration-300
-                                    opacity-0
-                                    right-6
-                                    margin-align-top
-                                    group-hover:opacity-100
-                                "
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  right-6 margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -234,20 +183,7 @@
                                 </div>
                             </div>
                             <div
-                                class="
-                                    absolute
-                                    top-0
-                                    right-0
-                                    flex
-                                    items-center
-                                    h-full
-                                    text-gray-500
-                                    transition
-                                    duration-300
-                                    opacity-0
-                                    margin-align-top
-                                    group-hover:opacity-100
-                                "
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -343,56 +279,60 @@
         </template> -->
 
         <template #content>
-            <QueryFolderSelector
-                :connector="currentConnector"
-                :savedQueryType="'all'"
-                @folderChange="getSelectedFolder"
-                :selectedNewFolder="item"
-            />
+            <div class="p-4">
+                <QueryFolderSelector
+                    :connector="currentConnector"
+                    :savedQueryType="'all'"
+                    @folderChange="getSelectedFolder"
+                    :selectedNewFolder="item"
+                />
 
-            <div class="flex justify-end w-full">
-                <a-button
-                    class="px-5 mr-4 text-sm border rounded"
-                    style="width: 100px"
-                    type="default"
-                    @click="showPublishPopover = false"
-                    >Cancel</a-button
-                >
-                <a-button
-                    class="px-5 text-sm rounded"
-                    type="primary"
-                    @click="changeFolder(item)"
-                    :loading="isUpdating"
-                    >Move</a-button
-                >
+                <div class="flex justify-end w-full">
+                    <a-button
+                        class="px-5 mr-4 text-sm border rounded"
+                        style="width: 100px"
+                        type="default"
+                        @click="showPublishPopover = false"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        class="px-5 text-sm rounded"
+                        type="primary"
+                        @click="changeFolder(item)"
+                        :loading="isUpdating"
+                        >Move</a-button
+                    >
+                </div>
             </div>
         </template>
     </a-popover>
 
     <a-popover :visible="showFolderPopover" placement="right">
         <template #content>
-            <QueryFolderSelector
-                :connector="currentConnector"
-                :savedQueryType="savedQueryType"
-                @folderChange="getSelectedFolder"
-                :selectedNewFolder="item"
-            />
+            <div class="p-4">
+                <QueryFolderSelector
+                    :connector="currentConnector"
+                    :savedQueryType="savedQueryType"
+                    @folderChange="getSelectedFolder"
+                    :selectedNewFolder="item"
+                />
 
-            <div class="flex justify-end w-full">
-                <a-button
-                    class="px-5 mr-4 text-sm border rounded"
-                    style="width: 100px"
-                    type="default"
-                    @click="showFolderPopover = false"
-                    >Cancel</a-button
-                >
-                <a-button
-                    class="px-5 text-sm rounded"
-                    type="primary"
-                    @click="changeFolder(item)"
-                    :loading="isUpdating"
-                    >Move</a-button
-                >
+                <div class="flex justify-end w-full">
+                    <a-button
+                        class="px-5 mr-4 text-sm border rounded"
+                        style="width: 100px"
+                        type="default"
+                        @click="showFolderPopover = false"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        class="px-5 text-sm rounded"
+                        type="primary"
+                        @click="changeFolder(item)"
+                        :loading="isUpdating"
+                        >Move</a-button
+                    >
+                </div>
             </div>
         </template>
     </a-popover>

@@ -46,6 +46,7 @@ export function useEditor(
             // /* If there are any array changes show them here */
             // setSqlVariables(sqlVariables, res)
             // activeInlineTabCopy.playground.editor.variables = res
+            // console.log('editor content update')
             activeInlineTabCopy.playground.editor.text = editorText
             modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
         }
@@ -86,9 +87,12 @@ export function useEditor(
     }
     function semicolonSeparateQuery(query: string) {
         // check if it have semicolon
-        const queryTextValues = query.split(';')
+        const queryTextValues = query?.split(';')
         // always select the first one for now
-        let queryText = queryTextValues[0]
+        let queryText = ''
+        if(queryTextValues && queryTextValues.length) {
+            queryText = queryTextValues[0]
+        }
         return queryText
     }
     function getParsedQuery(
@@ -178,7 +182,7 @@ export function useEditor(
         editorText: string
     ) => {
         const reg = /{{\s*[\w\.]+\s*}}/gm
-        const v: string[] | null = editorText.match(reg)
+        const v: string[] | null = editorText?.match(reg)
         const matches = []
         if (editorInstance) {
             for (let i = 0; i < v?.length; i++) {

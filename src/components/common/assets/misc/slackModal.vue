@@ -39,7 +39,7 @@
                     <AtlanButton
                         type="primary"
                         :disabled="!channel"
-                        @clisck="shareToSlack"
+                        @click="shareToSlack"
                     >
                         Share
                     </AtlanButton>

@@ -148,6 +148,7 @@
                         :title="tab.tooltip"
                         :icon="tab.icon"
                         :image="tab.image"
+                        :emoji="tab.emoji"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
                     />
@@ -157,6 +158,7 @@
                     :is="tab.component"
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
+                    :data="tab.data"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -220,9 +222,9 @@
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
-            // businessMetadataTab: defineAsyncComponent(
-            //     () => import('./tabs/businessMetadata/businessMetadataTab.vue')
-            // ),
+            customMetadata: defineAsyncComponent(
+                () => import('./customMetadata/index.vue')
+            ),
             // CertificatePopover,
         },
 

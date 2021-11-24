@@ -23,15 +23,15 @@
             </template>
 
             <CertificatePill
-                class="w-full"
                 v-if="
                     localValue.certificateStatus !== 'NONE' &&
                     localValue.certificateStatus
                 "
-                :status="localValue.certificateStatus"
-                :message="localValue.certificateStatusMessage"
-                :username="localValue.certificateUpdatedBy"
-                :timestamp="localValue.certificateUpdatedAt"
+                class="w-full"
+                :status="certificateStatus(selectedAsset)"
+                :message="certificateStatusMessage(selectedAsset)"
+                :username="certificateUpdatedBy(selectedAsset)"
+                :timestamp="certificateUpdatedAt(selectedAsset)"
             ></CertificatePill>
             <a-button
                 v-else
@@ -98,6 +98,14 @@
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
 
+            const {
+                certificateStatus,
+                certificateStatusMessage,
+                certificateUpdatedBy,
+                certificateUpdatedAt,
+                selectedAsset,
+            } = useAssetInfo()
+
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -146,6 +154,11 @@
                 handleVisibleChange,
                 username,
                 isEdit,
+                certificateStatus,
+                certificateStatusMessage,
+                certificateUpdatedBy,
+                certificateUpdatedAt,
+                selectedAsset,
             }
         },
     })

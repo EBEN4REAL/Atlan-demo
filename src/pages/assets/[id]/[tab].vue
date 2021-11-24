@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, inject, ref, watch } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -87,12 +87,10 @@
                     handlePreview(list.value[0])
                 }
             })
-            /* watch(selectedAsset, () => {
-                if (selectedAsset.value?.guid === id.value) {
-                    localSelected.value = selectedAsset.value
-                    handlePreview(localSelected.value)
-                }
-            }) */
+            watch(selectedAsset, () => {
+                localSelected.value = selectedAsset.value
+            })
+
             return {
                 fetchKey,
                 isLoading,

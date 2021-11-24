@@ -46,11 +46,10 @@
                 assetStore.setSelectedAsset(asset)
             }
             const updateList = (asset) => {
-                localSelected.value = asset
-
                 if (assetdiscovery.value) {
                     assetdiscovery.value.updateCurrentList(asset)
                 }
+                localSelected.value = asset
             }
 
             provide('updateList', updateList)

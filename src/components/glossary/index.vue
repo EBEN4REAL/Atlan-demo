@@ -68,7 +68,7 @@
             <atlan-icon
                 icon="TreeCollapseAll"
                 class="h-4 mt-2 ml-2 cursor-pointer"
-                @click="expandedKeys = []"
+                @click="handleCollapse"
             >
             </atlan-icon>
         </div>
@@ -89,7 +89,6 @@
             :height="height"
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
-            v-model:treeExpandedKeys="treeExpandedKeys"
         ></GlossaryTree>
 
         <div
@@ -154,7 +153,6 @@
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
 
     import GlossaryActions from '@/glossary/actions/glossary.vue'
-    import { expandedKeys } from '~/composables/glossary2/useGlossaryTree'
 
     import {
         AssetAttributes,
@@ -204,7 +202,6 @@
         },
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
-            const treeExpandedKeys = ref([])
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -352,12 +349,13 @@
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryTerm') {
-                        console.log('added')
+                        console.log('added term')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryCategory') {
+                        console.log('added cat')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }
@@ -365,6 +363,9 @@
                 }
             }
 
+            const handleCollapse = () => {
+                glossaryTree.value.collapseTree()
+            }
             const handleAddTerm = (asset) => {
                 handleSelectGlossary(getAnchorQualifiedName(asset))
                 if (glossaryTree.value) {
@@ -417,8 +418,7 @@
                 handleAddTerm,
                 handleAddCategory,
                 defaultEntityType,
-                treeExpandedKeys,
-                expandedKeys,
+                handleCollapse,
             }
         },
     })

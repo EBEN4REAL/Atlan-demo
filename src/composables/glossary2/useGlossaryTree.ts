@@ -37,7 +37,6 @@ interface UseTreeParams {
     nodesKey?: 'qualifiedName' | 'guid'
 }
 
-export const expandedKeys = ref<string[]>([])
 const useGlossaryTree = ({
     emit,
     optimisticUpdate = true,
@@ -69,6 +68,7 @@ const useGlossaryTree = ({
     })
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
+    const expandedKeys = ref<string[]>([])
     const treeData = ref<TreeDataItem[]>([])
 
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
@@ -360,6 +360,10 @@ const useGlossaryTree = ({
                             key: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
                             isLeaf: i.typeName === 'AtlasGlossaryTerm',
                         }))
+                        treeData.value.sort((a, b) => {
+                            if (a.typeName === 'AtlasGlossaryTerm') return 1
+                            return -1
+                        })
                     }
                 } catch (e) {
                     console.log(e)

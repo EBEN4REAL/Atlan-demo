@@ -120,6 +120,7 @@
                 error,
                 isReady,
                 refetchNode,
+                collapseAll,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -144,7 +145,9 @@
             const addGlossary = (asset) => {
                 addNode(asset)
             }
-
+            const collapseTree = () => {
+                collapseAll()
+            }
             const addTerm = (asset) => {
                 addNode(asset)
             }
@@ -179,6 +182,7 @@
                 addTerm,
                 addCategory,
                 treeItemClass,
+                collapseTree,
             }
             // data
         },

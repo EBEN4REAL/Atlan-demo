@@ -80,17 +80,17 @@
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
             const { entityType, guid, entity } = toRefs(props)
-            console.log(entity.value)
             const visible = ref(false)
+            const isLoading = ref(false)
 
-            const entityToDelete = reactive({
-                attributes: {
-                    userDescription: '',
-                    name: '',
-                    qualifiedName: '',
-                },
-                typeName: entityType.value,
-            })
+            // const entityToDelete = reactive({
+            //     attributes: {
+            //         userDescription: '',
+            //         name: '',
+            //         qualifiedName: '',
+            //     },
+            //     typeName: entityType.value,
+            // })
             const refetchGlossaryTree = inject<
                 (
                     guid: string | 'root',
@@ -108,16 +108,16 @@
             const showModal = async () => {
                 visible.value = true
             }
-            const body = ref({
-                entities: [],
-            })
-            const {
-                mutate: mutateAsset,
-                isLoading,
-                isReady,
-                guidUpdatedMaps,
-                error,
-            } = updateAsset(body)
+            // const body = ref({
+            //     entities: [],
+            // })
+            // const {
+            //     mutate: mutateAsset,
+            //     isLoading,
+            //     isReady,
+            //     guidUpdatedMaps,
+            //     error,
+            // } = updateAsset(body)
             const typeNameTitle = computed(() => {
                 switch (entityType.value) {
                     case 'AtlasGlossary':
@@ -130,62 +130,62 @@
                         return 'Glossary'
                 }
             })
-            const handleSave = () => {
-                if (typeNameTitle.value === 'Glossary') {
-                    entityToDelete.attributes.qualifiedName = generateUUID()
-                }
-                entityToDelete.attributes.name = entity.value.attributes.name
-                entityToDelete.attributes.name = entity.value.attributes.name
-                entityToDelete.attributes.anchor =
-                    entity.value.attributes.anchor
-                body.value = {
-                    entities: [entityToDelete],
-                }
-                console.log(entityToDelete)
+            // const handleSave = () => {
+            //     if (typeNameTitle.value === 'Glossary') {
+            //         entityToDelete.attributes.qualifiedName = generateUUID()
+            //     }
+            //     entityToDelete.attributes.name = entity.value.attributes.name
+            //     entityToDelete.attributes.name = entity.value.attributes.name
+            //     entityToDelete.attributes.anchor =
+            //         entity.value.attributes.anchor
+            //     body.value = {
+            //         entities: [entityToDelete],
+            //     }
+            //     console.log(entityToDelete)
 
-                mutateAsset()
-            }
+            //     mutateAsset()
+            // }
             const handleDelete = () => {
-                const { data } = serviceMap[props.entity?.typeName](
+                const { data, isLoading: loading } = serviceMap[
+                    props.entity?.typeName
+                ](
                     props.entity?.guid,
                     false,
                     props.entity?.attributes?.anchor?.guid
                 )
+                isLoading.value = loading.value
                 watch(data, () => {
-                    setTimeout(() => {
-                        if (refetchGlossaryTree) {
-                            if (
-                                props.entity?.typeName ===
-                                'AtlasGlossaryCategory'
-                            ) {
-                                refetchGlossaryTree(
-                                    props.entity?.attributes?.parentCategory
-                                        ?.guid ?? 'root',
-                                    props.entity?.attributes?.qualifiedName,
-                                    'category'
+                    isLoading.value = loading.value
+                    message.success(`${props.entity?.name} deleted`)
+                    if (refetchGlossaryTree) {
+                        if (
+                            props.entity?.typeName === 'AtlasGlossaryCategory'
+                        ) {
+                            refetchGlossaryTree(
+                                props.entity?.attributes?.parentCategory
+                                    ?.guid ?? 'root',
+                                props.entity?.attributes?.qualifiedName,
+                                'category'
+                            )
+                        } else if (
+                            props.entity?.typeName === 'AtlasGlossaryTerm'
+                        ) {
+                            if (props.entity?.attributes?.categories?.length) {
+                                props.entity?.attributes?.categories?.forEach(
+                                    (category) => {
+                                        refetchGlossaryTree(
+                                            category.guid,
+                                            category?.uniqueAttributes
+                                                ?.qualifiedName,
+                                            'term'
+                                        )
+                                    }
                                 )
-                            } else if (
-                                props.entity?.typeName === 'AtlasGlossaryTerm'
-                            ) {
-                                if (
-                                    props.entity?.attributes?.categories?.length
-                                ) {
-                                    props.entity?.attributes?.categories?.forEach(
-                                        (category) => {
-                                            refetchGlossaryTree(
-                                                category.guid,
-                                                category?.uniqueAttributes
-                                                    ?.qualifiedName,
-                                                'term'
-                                            )
-                                        }
-                                    )
-                                } else {
-                                    refetchGlossaryTree('root', '', 'term')
-                                }
+                            } else {
+                                refetchGlossaryTree('root', '', 'term')
                             }
                         }
-                    }, 500)
+                    }
                 })
             }
 
@@ -210,14 +210,8 @@
             return {
                 visible,
                 showModal,
-                entityType,
                 typeNameTitle,
-                handleSave,
-                guid,
-                entity,
                 isLoading,
-                isReady,
-                error,
                 handleDelete,
             }
         },

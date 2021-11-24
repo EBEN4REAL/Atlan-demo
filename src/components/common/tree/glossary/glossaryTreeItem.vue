@@ -87,7 +87,6 @@
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
-            console.log(item.value)
             const { getEntityStatusIcon } = useGlossaryData()
             const {
                 certificateStatus,

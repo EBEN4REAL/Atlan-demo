@@ -1,6 +1,7 @@
 import { watch, ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { Glossary } from '~/services/meta/glossary/index'
+import { message } from 'ant-design-vue'
 
 const useDeleteGlossary = () => {
     const error = ref<any>()
@@ -63,7 +64,16 @@ const useDeleteGlossary = () => {
         }
 
         watch(deleteError, (newError) => {
-            error.value = newError
+            console.log(newError)
+            error.value = newError?.value
+            const errMsg = error.value?.response?.data?.errorMessage
+
+            message.error({
+                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
+                    1
+                )}`,
+                duration: 5,
+            })
         })
 
         return { data, deleteError, isLoading }

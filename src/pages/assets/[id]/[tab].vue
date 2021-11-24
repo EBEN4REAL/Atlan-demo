@@ -2,13 +2,13 @@
     <Loader v-if="isLoading"></Loader>
     <AssetProfile
         v-else
-        :asset="selectedAsset"
+        :asset="localSelected"
         @preview="emit('preview', $event)"
     ></AssetProfile>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -22,25 +22,31 @@
         DefaultRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
             AssetProfile,
             Loader,
         },
-        props: {
-            selectedAsset: {
-                type: Object,
-                required: true,
-            },
-        },
+        emits: ['preview'],
         setup(props, { emit }) {
             useHead({
                 title: 'Assets',
             })
-            const { selectedAsset } = toRefs(props)
+
+            const { selectedAsset } = useAssetInfo()
+
+            const localSelected = ref()
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
+            const handlePreview = inject('preview')
+
+            if (selectedAsset.value?.guid === id.value) {
+                localSelected.value = selectedAsset.value
+                handlePreview(localSelected.value)
+            }
+
             const limit = ref(1)
             const offset = ref(0)
             const facets = ref({
@@ -68,15 +74,20 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
+
             watch(list, () => {
                 if (list.value.length > 0) {
-                    handleSelectedAsset(list.value[0])
+                    localSelected.value = list.value[0]
+
+                    handlePreview(list.value[0])
                 }
             })
             return {
                 fetchKey,
                 isLoading,
                 emit,
+                localSelected,
+                handlePreview,
             }
         },
     })

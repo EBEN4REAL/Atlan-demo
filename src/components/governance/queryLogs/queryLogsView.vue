@@ -20,24 +20,21 @@
                 <div class="flex items-center justify-between pb-3">
                     <div class="flex items-stretch w-full">
                         <div class="flex items-center">
-                            <a-button
-                                type="default"
+                            <AtlanBtn
+                                color="secondary"
                                 class="px-2 rounded-tr-none rounded-br-none"
                                 :class="
                                     queryLogsFilterDrawerVisible
                                         ? 'text-primary border-primary'
                                         : 'border-gray-300  border rounded-tl rounded-bl text-gray '
                                 "
+                                @click="queryLogsFilterDrawerVisible = true"
                             >
                                 <AtlanIcon
                                     :icon="'FilterFunnel'"
                                     class="w-4 h-4"
-                                    @click="
-                                        queryLogsFilterDrawerVisible =
-                                            !queryLogsFilterDrawerVisible
-                                    "
                                 />
-                            </a-button>
+                            </AtlanBtn>
                         </div>
                         <a-input-search
                             v-model:value="searchText"
@@ -131,12 +128,18 @@
                 @selectQuery="handleSelectQuery"
             />
         </a-drawer>
+
         <a-drawer
             :visible="queryLogsFilterDrawerVisible"
             :mask="false"
             :placement="'left'"
-            :width="270"
+            :width="286"
             :closable="false"
+            :after-visible-change="
+                (visible) => {
+                    notchVisible = visible
+                }
+            "
         >
             <AssetFilters
                 v-model="facets"
@@ -154,6 +157,23 @@
                     @change="handleFilterChange"
             /></AssetFilters>
         </a-drawer>
+
+        <AtlanBtn
+            :class="notchVisible ? 'opacity-100' : 'opacity-0'"
+            class="fixed z-10 px-0 border-l-0 rounded-none rounded-r  top-1/4 left-72"
+            color="secondary"
+            @click="
+                () => {
+                    queryLogsFilterDrawerVisible = false
+                    notchVisible = false
+                }
+            "
+        >
+            <AtlanIcon
+                icon="ChevronDown"
+                class="h-4 px-1 transition-transform transform rotate-90"
+            />
+        </AtlanBtn>
     </div>
 </template>
 
@@ -190,6 +210,7 @@ export default defineComponent({
         const facets = ref({})
         const searchText: Ref<string> = ref('')
         const queryLogsFilterDrawerVisible: Ref<boolean> = ref(false)
+        const notchVisible: Ref<boolean> = ref(false)
         const timeFrame = ref('30 days')
         const selectedQuery = ref({})
         const isQueryPreviewDrawerVisible = ref(false)
@@ -333,6 +354,7 @@ export default defineComponent({
             savedQueryMetaMap,
             totalLogsCount,
             EmptyLogsIllustration,
+            notchVisible,
         }
     },
 })

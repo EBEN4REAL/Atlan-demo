@@ -86,8 +86,8 @@
                                                 rounded-full
                                                 bg-primary
                                                 absolute
+                                                right-3
                                             "
-                                            style="margin-left: 9px"
                                         ></div>
                                     </div>
                                 </div>

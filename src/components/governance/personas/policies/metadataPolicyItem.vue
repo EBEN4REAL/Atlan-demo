@@ -141,12 +141,7 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -166,12 +161,7 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -252,8 +242,7 @@
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import { useConnectionStore } from '~/store/connection'
 
-    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
-    import { selectedPersonaDirty } from '../composables/useEditPersona'
+    import { MetadataPolicies } from '~/types/accessPolicies/personas'
     import { useUtils } from '../assets/useUtils'
 
     export default defineComponent({

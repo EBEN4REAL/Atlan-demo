@@ -123,7 +123,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Pill from '@/UI/pill/pill.vue'
-    import MetadataScopes from './metadataScopes.vue'
+    import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import Owners from '~/components/common/input/owner/index.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
@@ -183,9 +183,10 @@
                     rules.value.policyName.show = true
                     return
                 } else if (
-                    selectedOwnersData.value?.ownerUsers?.length +
-                        selectedOwnersData.value?.ownerGroups?.length <
-                    1
+                    !Boolean(
+                        selectedOwnersData.value?.ownerUsers?.length +
+                            selectedOwnersData.value?.ownerGroups?.length
+                    )
                 ) {
                     rules.value.users.show = true
                     return

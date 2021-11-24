@@ -1,5 +1,5 @@
 import { Ref, ref, watch, toRaw } from 'vue'
-import { IPersona } from '~/types/accessPolicies/purposes'
+import { IPurpose } from '~/types/accessPolicies/purposes'
 import usePurposeService from './usePurposeService'
 import {
     reFetchList,
@@ -13,7 +13,7 @@ const { updatePersona, deletePersona } = usePurposeService()
 export type PolicyType = 'meta' | 'data'
 
 export const isEditing = ref(false)
-export const selectedPersonaDirty: Ref<IPersona | undefined> = ref(undefined)
+export const selectedPersonaDirty: Ref<IPurpose | undefined> = ref(undefined)
 
 watch(
     () => selectedPersona.value?.id,
@@ -57,7 +57,7 @@ export function removeEditFlag(type: PolicyType, idx: string) {
     else if (type === 'data') policyEditMap.value.dataPolicies[idx] = false
 }
 
-export async function savePersona(persona: IPersona) {
+export async function savePersona(persona: IPurpose) {
     return updatePersona(persona)
 }
 
@@ -77,7 +77,6 @@ export function addPolicy(type: PolicyType) {
     if (type === 'meta') {
         selectedPersonaDirty.value?.metadataPolicies?.push({
             id,
-            tags: [],
             actions: [],
             users: [],
             groups: [],
@@ -92,7 +91,6 @@ export function addPolicy(type: PolicyType) {
     if (type === 'data') {
         selectedPersonaDirty.value?.dataPolicies?.push({
             id,
-            tags: [],
             actions: ['select'],
             users: [],
             groups: [],
@@ -113,16 +111,17 @@ export async function deletePolicy(type: PolicyType, id: string) {
         const policyIndex =
             selectedPersonaDirty.value?.metadataPolicies?.findIndex(
                 (pol) => pol.id === id
-            )
+            ) ?? -1
         if (policyIndex > -1)
             tempPersona?.metadataPolicies?.splice(policyIndex, 1)
         await savePersona(tempPersona)
         selectedPersonaDirty.value?.metadataPolicies?.splice(policyIndex, 1)
     }
     if (type === 'data') {
-        const policyIndex = selectedPersonaDirty.value?.dataPolicies?.findIndex(
-            (pol) => pol.id === id
-        )
+        const policyIndex =
+            selectedPersonaDirty.value?.dataPolicies?.findIndex(
+                (pol) => pol.id === id
+            ) ?? -1
         if (policyIndex > -1) tempPersona?.dataPolicies?.splice(policyIndex, 1)
         await savePersona(tempPersona)
         selectedPersonaDirty.value?.dataPolicies?.splice(policyIndex, 1)
@@ -143,7 +142,7 @@ export function savePolicy(type: PolicyType, id: string) {
         const dirtyPolicyIndex =
             selectedPersonaDirty.value?.metadataPolicies?.findIndex(
                 (pol) => pol.id === id
-            )
+            ) ?? -1
 
         if (dirtyPolicyIndex > -1) {
             const policy = {
@@ -168,7 +167,7 @@ export function savePolicy(type: PolicyType, id: string) {
         const dirtyPolicyIndex =
             selectedPersonaDirty.value?.dataPolicies?.findIndex(
                 (pol) => pol.id === id
-            )
+            ) ?? -1
 
         if (dirtyPolicyIndex > -1) {
             const policy = {
@@ -196,7 +195,7 @@ export function discardPolicy(type: PolicyType, id: string) {
             const dirtyPolicyIndex =
                 selectedPersonaDirty.value?.metadataPolicies?.findIndex(
                     (pol) => pol.id === id
-                )
+                ) ?? -1
             if (dirtyPolicyIndex > -1) {
                 selectedPersonaDirty.value?.metadataPolicies?.splice(
                     dirtyPolicyIndex,
@@ -208,7 +207,7 @@ export function discardPolicy(type: PolicyType, id: string) {
             const dirtyPolicyIndex =
                 selectedPersonaDirty.value?.dataPolicies?.findIndex(
                     (pol) => pol.id === id
-                )
+                ) ?? -1
             if (dirtyPolicyIndex > -1) {
                 selectedPersonaDirty.value?.dataPolicies?.splice(
                     dirtyPolicyIndex,
@@ -228,11 +227,11 @@ export function discardPolicy(type: PolicyType, id: string) {
             const policyIndex =
                 selectedPersona.value?.metadataPolicies?.findIndex(
                     (pol) => pol.id === id
-                )
+                ) ?? -1
             const dirtyPolicyIndex =
                 selectedPersonaDirty.value?.metadataPolicies?.findIndex(
                     (pol) => pol.id === id
-                )
+                ) ?? -1
 
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
                 const policy = toRaw(selectedPersona.value)?.metadataPolicies?.[
@@ -250,14 +249,17 @@ export function discardPolicy(type: PolicyType, id: string) {
             console.log(type, id, policyEditMap.value)
         }
         if (type === 'data') {
-            const policyIndex = selectedPersona.value?.dataPolicies?.findIndex(
-                (pol) => pol.id === id
-            )
+            const policyIndex =
+                selectedPersona.value?.dataPolicies?.findIndex(
+                    (pol) => pol.id === id
+                ) ??
+                -1 ??
+                -1
 
             const dirtyPolicyIndex =
                 selectedPersonaDirty.value?.dataPolicies?.findIndex(
                     (pol) => pol.id === id
-                )
+                ) ?? -1
 
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
                 const policy = toRaw(selectedPersona.value)?.dataPolicies?.[

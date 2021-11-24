@@ -196,9 +196,10 @@
                     rules.value.policyName.show = true
                     return
                 } else if (
-                    selectedOwnersData.value?.ownerUsers?.length +
-                        selectedOwnersData.value?.ownerGroups?.length <
-                    1
+                    !Boolean(
+                        selectedOwnersData.value?.ownerUsers?.length +
+                            selectedOwnersData.value?.ownerGroups?.length
+                    )
                 ) {
                     rules.value.users.show = true
                     return

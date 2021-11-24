@@ -26,13 +26,7 @@
                                 style="width: 150px"
                             >
                                 <div
-                                    class="
-                                        p-3
-                                        text-xs
-                                        font-bold
-                                        text-gray-500
-                                        border-b
-                                    "
+                                    class="p-3 text-xs font-bold text-gray-500 border-b "
                                 >
                                     {{ opt.popover?.field }}
                                 </div>
@@ -46,14 +40,7 @@
                                 style="width: 150px"
                             >
                                 <div
-                                    class="
-                                        p-3
-                                        text-xs
-                                        font-bold
-                                        text-gray-500
-                                        border-b-light
-                                        bg-primary-light
-                                    "
+                                    class="p-3 text-xs font-bold text-gray-500  border-b-light bg-primary-light"
                                 >
                                     {{ opt.popover?.field }}
                                 </div>
@@ -177,9 +164,6 @@
     })
 </script>
 
-<style lang="less" module>
-    // FIXME: Styling is not working for some reason
-</style>
 <style lang="less" scoped>
     .light-border {
         border: 1px solid #bdcdf4;

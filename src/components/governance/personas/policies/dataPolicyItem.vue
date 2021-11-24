@@ -136,12 +136,7 @@
                                 <Pill class="group" @click="addConnectionAsset">
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -160,12 +155,7 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -259,7 +249,7 @@
     import DataMaskingSelector from './dataMaskingSelector.vue'
     import Pill from '@/UI/pill/pill.vue'
     import { useConnectionStore } from '~/store/connection'
-    import { DataPolicies } from '~/types/accessPolicies/purposes'
+    import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPersona'
     import { useUtils } from '../assets/useUtils'
 

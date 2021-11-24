@@ -174,7 +174,7 @@
     })
 </script>
 
-<style scoped>
+<style lang="less" scoped>
     .data-policy-pill {
         @apply rounded-full text-sm px-2 py-1;
         background-color: #eeffef;

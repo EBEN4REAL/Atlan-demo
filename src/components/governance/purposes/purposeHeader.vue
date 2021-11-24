@@ -59,7 +59,7 @@
     import { reFetchList } from './composables/usePurposeList'
 
     export default defineComponent({
-        name: 'PurposeHeader',
+        name: 'Purpose Header',
         components: { Dropdown, CreationModal },
         props: {
             persona: {

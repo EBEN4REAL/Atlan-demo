@@ -43,9 +43,6 @@
         </MinimalTab>
 
         <div class="px-4 overflow-y-auto">
-            <div>
-                {{ selectedPersonaDirty?.datapolicies?.length }}
-            </div>
             <PurposeMeta
                 v-if="activeTabKey === 'details'"
                 class="pb-2"
@@ -216,7 +213,7 @@
         },
         setup(props) {
             const { persona } = toRefs(props)
-            const userId = computed(() => persona.value.createdBy)
+            const userId = computed(() => persona.value.created_by)
             const { username } = getUsername(userId)
 
             const addPolicyDropdownConfig = [

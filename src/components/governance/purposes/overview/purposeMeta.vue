@@ -8,12 +8,12 @@
             >
                 <Avatar :username="username" styleClass="bg-white mr-1" />
                 <span class="text-gray">
-                    {{ persona.createdBy }}
+                    {{ persona.created_by }}
                 </span>
             </div>
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
-                persona.createdAt?.slice(0, -11)
+                persona.created_at?.slice(0, -11)
             }}</span>
 
             <a-switch
@@ -119,7 +119,7 @@
             const { username, persona } = toRefs(props)
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
             const showUserPreviewDrawer = () => {
-                setUserUniqueAttribute(persona.value.createdBy)
+                setUserUniqueAttribute(persona.value.created_by)
                 showUserPreview()
             }
             const enablePersonaCheck = ref(true)

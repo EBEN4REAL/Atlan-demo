@@ -153,7 +153,7 @@
                         return
                     }
 
-                    if (matches?.length > 0) {
+                    if (matches?.length >= 0) {
                         createDebounce()(() => {
                             const resultsLeft = matches.filter(
                                 (match) =>

@@ -45,7 +45,7 @@
                     <div class="flex items-center cursor-pointer">
                         <AtlanIcon :icon="icon" class="w-auto h-4 mr-1" /><span
                             class="text-sm capitalize"
-                            >{{ type }}</span
+                            >{{ localAnnouncement.announcementType }}</span
                         >
                     </div>
                 </a-dropdown>
@@ -64,12 +64,12 @@
         </template>
         <a-input
             ref="titleBar"
-            v-model:value="annTitle"
+            v-model:value="localAnnouncement.announcementTitle"
             placeholder="Add Announcement Header..."
             class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
         />
         <a-textarea
-            v-model:value="description"
+            v-model:value="localAnnouncement.announcementMessage"
             placeholder="Add description..."
             class="text-gray-500 border-0 shadow-none outline-none"
             :maxlength="280"
@@ -86,13 +86,11 @@
         nextTick,
         ref,
         Ref,
-        watch,
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AnnouncementList from '~/constant/announcement'
-    import updateAsset from '~/composables/discovery/updateAsset'
-    import { message } from 'ant-design-vue'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
         name: 'AnnouncementModal',
@@ -104,28 +102,29 @@
         },
         setup(props) {
             const { asset } = toRefs(props)
-            const {
-                announcementTitle,
-                announcementMessage,
-                announcementType,
-                title,
-            } = useAssetInfo()
+            const { title } = useAssetInfo()
 
-            const description = ref(announcementMessage(asset.value) || '')
-            const type = ref(announcementType(asset.value) || 'information')
-            const annTitle = ref(announcementTitle(asset.value) || '')
             const visible = ref<boolean>(false)
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
+            const { isLoading, localAnnouncement, handleAnnouncementUpdate } =
+                updateAssetAttributes(asset)
+
+            const handleUpdate = async () => {
+                handleAnnouncementUpdate()
+                await nextTick()
+                visible.value = false
+            }
+
             const resetInput = () => {
-                annTitle.value = ''
-                description.value = ''
-                type.value = 'information'
+                localAnnouncement.value.announcementTitle = ''
+                localAnnouncement.value.announcementMessage = ''
+                localAnnouncement.value.announcementType = 'information'
             }
 
             const icon = computed(() => {
-                switch (type.value) {
+                switch (localAnnouncement.value.announcementType) {
                     case 'information':
                         return 'InformationAnnouncement'
                     case 'issue':
@@ -136,42 +135,6 @@
                         return 'InformationAnnouncement'
                 }
             })
-
-            const entity = ref<assetInterface>({
-                guid: asset.value.guid,
-                typeName: asset.value.typeName,
-                attributes: {
-                    name: asset.value.attributes?.name,
-                    qualifiedName: asset.value.attributes?.qualifiedName,
-                    tenantId: 'default',
-                },
-            })
-
-            const body = ref({
-                entities: <assetInterface[]>[],
-            })
-
-            const { data, mutate, error, isLoading } = updateAsset(body)
-
-            const handleUpdate = () => {
-                entity.value.attributes.announcementTitle = annTitle.value
-                entity.value.attributes.announcementMessage = description.value
-                entity.value.attributes.announcementType = type.value
-                body.value.entities = [entity.value]
-                mutate().then(
-                    watch([data, error, isLoading], () => {
-                        if (!error.value && !isLoading.value) {
-                            message.success('Announcement added')
-                            visible.value = false
-                        } else if (error && error.value) {
-                            message.error(
-                                'Not able to add announcement, try again later'
-                            )
-                            visible.value = false
-                        }
-                    })
-                )
-            }
 
             const handleCancel = () => {
                 resetInput()
@@ -185,13 +148,11 @@
             }
 
             const handleMenuClick = (announcement) => {
-                type.value = announcement.id
+                localAnnouncement.value.announcementType = announcement.id
             }
 
             return {
-                type,
-                description,
-                annTitle,
+                localAnnouncement,
                 showModal,
                 icon,
                 title,

@@ -118,14 +118,12 @@
         searchTerm,
         selectedPersona,
         selectedPersonaId,
-        isPersonaListReady,
         isPersonaLoading,
         isPersonaError,
     } from './composables/usePersonaList'
     import { isEditing } from './composables/useEditPersona'
     import ErrorView from '@common/error/index.vue'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
-    import ErrorIllustration from '~/assets/images/error.svg'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -157,8 +155,6 @@
                 isPersonaError,
                 isEditing,
                 AddPersonaIllustration,
-                isPersonaListReady,
-                ErrorIllustration,
             }
         },
     })

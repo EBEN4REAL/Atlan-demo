@@ -191,27 +191,25 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, watch } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import { message } from 'ant-design-vue'
-
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
-
-    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
-
     import PolicyCard from './policies/collapsedPolicyCard.vue'
     import PersonaUsersGroups from './users/personaUsersGroups.vue'
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './overview/personaMeta.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
+
+    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+
+    import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
         selectedPersonaDirty,
         addPolicy,
         updateSelectedPersona,
-        savePolicyLocally,
         deletePolicy,
-        deletePolicyLocally,
         policyEditMap,
         setEditFlag,
         removeEditFlag,
@@ -219,9 +217,6 @@
         discardPolicy,
         PolicyType,
     } from './composables/useEditPersona'
-    import { selectedPersona } from './composables/usePersonaList'
-    import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
-    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         name: 'PersonaBody',
@@ -241,7 +236,6 @@
             },
         },
         setup() {
-            const store = useTypedefStore()
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
@@ -276,7 +270,7 @@
                         duration: 1.5,
                         key: messageKey,
                     })
-                } catch (error) {
+                } catch (error: any) {
                     console.log(error?.response?.data, 'error')
                     message.error({
                         content: error?.response?.data?.message,
@@ -311,7 +305,6 @@
             }
 
             return {
-                selectedPersona,
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,

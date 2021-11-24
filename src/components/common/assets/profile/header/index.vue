@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div class="flex items-center w-full px-8 pt-3">
-        <a-button class="px-1" @click="$router.back()">
+        <a-button class="px-1" @click="back">
             <atlan-icon
                 icon="ArrowRight"
                 class="w-auto h-4 text-gray-500 transform rotate-180"
@@ -331,8 +331,16 @@
 
             const router = useRouter()
             watch(Escape, (v) => {
-                if (v) router.back()
+                if (v) back()
             })
+
+            const back = () => {
+                if (window.history.length <= 1) {
+                    router.push({ path: '/assets' })
+                    return false
+                }
+                router.back()
+            }
 
             return {
                 title,
@@ -359,6 +367,7 @@
                 certificateStatusMessage,
                 tableName,
                 viewName,
+                back,
             }
         },
     })

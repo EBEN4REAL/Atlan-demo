@@ -188,7 +188,7 @@
                                     widget: 'credential',
                                     label: '',
                                     placeholder: 'Credential Guid',
-                                    hidden: true,
+                                    hidden: false,
                                 },
                             },
                             'credential-kube-secret-name': {

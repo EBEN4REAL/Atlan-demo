@@ -133,7 +133,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed, inject } from 'vue'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -280,9 +280,7 @@
                 relationAttributes,
             })
 
-            const handlePreview = (item) => {
-                handleSelectedAsset(item)
-            }
+            const handlePreview = inject('preview')
 
             const updateCurrentList = (asset) => {
                 updateList(asset)

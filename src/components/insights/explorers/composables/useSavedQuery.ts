@@ -582,7 +582,7 @@ export function useSavedQuery(
 
         const name = folderName
 
-        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${connectionQualifiedName}/folder/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
 
@@ -626,7 +626,7 @@ export function useSavedQuery(
         }
         // chaing loading to true
         saveFolderLoading.value = true
-        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value, {})
+        const { data, error, isLoading } = Insights.CreateQueryFolder(body.value, {})
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {

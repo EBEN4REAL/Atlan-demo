@@ -115,9 +115,9 @@
             //     'activeInlineTabKey'
             // ) as ComputedRef<activeInlineTabInterface>
 
-            let sqlVariables: Ref<CustomVaribaleInterface[]> = ref([
-                ...activeInlineTab.value.playground.editor.variables,
-            ])
+            // let sqlVariables: Ref<CustomVaribaleInterface[]> = ref([
+            //     ...activeInlineTab.value.playground.editor.variables,
+            // ])
 
             // watch(activeInlineTab, () => {
             //     console.log('active inline tab: ', activeInlineTab.value)

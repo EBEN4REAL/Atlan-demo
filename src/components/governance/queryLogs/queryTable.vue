@@ -7,7 +7,7 @@
             :table-layout="'fixed'"
             :pagination="false"
             :class="$style.table_custom"
-            :data-source="apiKeysList"
+            :data-source="queryLogsList"
             :columns="columns"
             :row-key="(query) => query._id"
             :loading="isLoading"
@@ -33,11 +33,29 @@
                                 ></div>
                                 <span
                                     class="text-sm text-gray-700  parent-ellipsis-container-base"
-                                    >{{
-                                        queryInfo._source.log.message
-                                            .savedQueryId
-                                    }}</span
                                 >
+                                    <!-- Just checking if savedQueryID is present in locally stored savedQueryMetaMap, if it is, using name from that, otherwise using savedQueryId; Sorry for such verbose code!!-->
+                                    {{
+                                        savedQueryMetaMap[
+                                            queryInfo._source.log.message
+                                                .savedQueryId
+                                        ] &&
+                                        savedQueryMetaMap[
+                                            queryInfo._source.log.message
+                                                .savedQueryId
+                                        ].attributes &&
+                                        savedQueryMetaMap[
+                                            queryInfo._source.log.message
+                                                .savedQueryId
+                                        ].attributes.name
+                                            ? savedQueryMetaMap[
+                                                  queryInfo._source.log.message
+                                                      .savedQueryId
+                                              ].attributes.name
+                                            : queryInfo._source.log.message
+                                                  .savedQueryId
+                                    }}
+                                </span>
                             </div>
                             <div class="flex items-center mt-1 ml-4">
                                 <img
@@ -280,7 +298,7 @@ export default defineComponent({
     name: 'QueryLogsTable',
     components: { Avatar, AtlanBtn, PillGroup },
     props: {
-        apiKeysList: {
+        queryLogsList: {
             type: Array,
             default: () => [],
         },
@@ -295,6 +313,10 @@ export default defineComponent({
         selectedRowKeys: {
             type: Object,
             default: () => [],
+        },
+        savedQueryMetaMap: {
+            type: Object,
+            default: () => {},
         },
     },
     emits: ['selectQuery', 'toggleQueryPreviewDrawer', 'selectQuery'],
@@ -311,7 +333,6 @@ export default defineComponent({
             }
             return ''
         }
-        const snowflake = SourceList.find((e) => e.id === 'snowflake')
         const { selectedQuery, selectedRowKeys } = toRefs(props)
         const imageUrl = (username: any) =>
             `${window.location.origin}/api/service/avatars/${username}`
@@ -371,7 +392,6 @@ export default defineComponent({
             handleRowSelected,
             selectedRowKeys,
             selectedQuery,
-            snowflake,
             getQueryStatusClass,
             dayjs,
             columns,

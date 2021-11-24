@@ -37,7 +37,12 @@
                     <span>{{ status }}</span>
                 </div>
             </div>
-            <a-button size="small" type="link" @click="downloadFile"
+            <a-button
+                v-if="!isEmptyLogs"
+                :disabled="isLoading"
+                size="small"
+                type="link"
+                @click="downloadFile"
                 >{{ isDownloading ? 'Downloading...' : 'Download logs' }}
                 <AtlanIcon
                     v-if="!isDownloading"
@@ -258,7 +263,7 @@
                 selectedPod,
                 selectedGraph,
                 isEmptyLogs,
-                ...useWorkFlowHelper()
+                ...useWorkFlowHelper(),
             }
         },
     })

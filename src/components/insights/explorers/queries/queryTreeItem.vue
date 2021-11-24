@@ -282,6 +282,7 @@
                 :item="item"
                 @cancel="showDeletePopover = false"
                 @delete="() => delteItem(item.typeName)"
+                :isSaving="isDeleteLoading"
             />
         </template>
     </a-popover>
@@ -624,20 +625,32 @@
                 })
             }
 
+            let isDeleteLoading = ref(false)
             const delteItem = (type: 'Query' | 'QueryFolder') => {
-                const { data, error } = Insights.DeleteEntity(item.value.guid)
-
-                watch([data, error], ([newData, newError]) => {
+                const { data, error, isLoading } = Insights.DeleteEntity(
+                    item.value.guid,
+                    {}
+                )
+                isDeleteLoading.value = true
+                watch([data, error, isLoading], ([newData, newError]) => {
+                    isDeleteLoading.value = isLoading.value
+                    console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
                         useAddEvent('insights', 'folder', 'deleted', undefined)
-                        message.success({
-                            content: `${item.value?.attributes?.name} deleted!`,
-                        })
+                        showDeletePopover.value = false
                         refetchParentNode(
                             props.item.guid,
                             type === 'Query' ? 'query' : 'queryFolder',
                             savedQueryType.value
                         )
+                        message.success({
+                            content: `${item.value?.attributes?.name} deleted!`,
+                        })
+                        // refetchParentNode(
+                        //     props.item.guid,
+                        //     type === 'Query' ? 'query' : 'queryFolder',
+                        //     savedQueryType.value
+                        // )
                     }
                 })
             }
@@ -1004,6 +1017,7 @@
                 selectedFolder,
                 changeFolder,
                 isUpdating,
+                isDeleteLoading,
                 // input,
                 // newFolderName,
             }

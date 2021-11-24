@@ -185,7 +185,7 @@ const useGlossaryTree = ({
                     if (!treeNode.dataRef.children) {
                         treeNode.dataRef.children = []
                     }
-
+                    console.log(data.value?.entities)
                     if (data.value?.entities) {
                         let map = data.value?.entities?.map((i) => ({
                             ...i,
@@ -225,8 +225,26 @@ const useGlossaryTree = ({
                             loadedKeys.value.push(treeNode.dataRef.key)
                         }
                     } else {
-                        treeNode.dataRef.children = null
-                        treeNode.dataRef.isLeaf = true
+                        console.log('add cta node')
+                        // treeNode.dataRef.children = null
+                        console.log(treeNode)
+                        treeNode.dataRef.children.push({
+                            key: `${treeNode.attributes?.qualifiedName}_cta`,
+                            id: `${treeNode.attributes?.qualifiedName}_cta`,
+                            title: 'cta',
+                            isLeaf: true,
+                            typeName: 'cta',
+                            guid: 'cta',
+                            glossaryName:
+                                treeNode?.attributes?.anchor?.attributes?.name,
+                            glossaryQualifiedName:
+                                treeNode?.attributes?.anchor?.uniqueAttributes
+                                    ?.qualifiedName,
+                            categoryName: treeNode?.attributes?.name,
+                            categoryGuid: treeNode?.guid,
+                            selectable: false,
+                        })
+                        loadedKeys.value.push(treeNode.dataRef.key)
                     }
                     treeNode.dataRef.isLoading = false
                     treeNode.dataRef.isError = null

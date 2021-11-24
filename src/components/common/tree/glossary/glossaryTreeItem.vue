@@ -1,37 +1,61 @@
 <template>
     <div class="flex items-center justify-between w-full py-0 m-0 group">
-        <div class="flex items-center py-1">
-            <AtlanIcon
-                :icon="
-                    getEntityStatusIcon(item.typeName, certificateStatus(item))
-                "
-                :style="iconSize"
-                class="self-center"
-            />
+        <div v-if="item?.typeName === 'cta'">
+            <AddGtcModal
+                entityType="AtlasGlossaryTerm"
+                :glossaryName="item?.glossaryName"
+                :categoryName="item?.categoryName"
+                :glossary-qualified-name="item?.glossaryQualifiedName"
+                :categoryGuid="item?.categoryGuid"
+            >
+                <template #trigger>
+                    <div class="flex items-center hover:underline text-primary">
+                        <AtlanIcon icon="Term" class="m-0 mr-2" />
+                        <p class="p-0 m-0">Add Term</p>
+                    </div>
+                </template>
+            </AddGtcModal>
+        </div>
+        <div
+            v-else
+            class="flex items-center justify-between w-full py-0 m-0 group"
+        >
+            <div class="flex items-center py-1">
+                <AtlanIcon
+                    :icon="
+                        getEntityStatusIcon(
+                            item.typeName,
+                            certificateStatus(item)
+                        )
+                    "
+                    :style="iconSize"
+                    class="self-center"
+                />
 
-            <span class="ml-1 text-sm" :class="textClass">{{
-                title(item)
-            }}</span>
-        </div>
+                <span class="ml-1 text-sm" :class="textClass">{{
+                    title(item)
+                }}</span>
+            </div>
 
-        <div v-if="item.dataRef.isLoading">
-            <a-spin
-                size="small"
-                icon="Loader"
-                class="w-auto h-4 mr-1 animate-spin"
-            ></a-spin>
-        </div>
-        <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
-            <AtlanIcon icon="Error"></AtlanIcon>
-        </div>
-        <div v-else class="hidden group-hover:flex">
-            <Actions
-                :treeMode="true"
-                :glossaryName="getAnchorName(item) || title(item)"
-                :categoryName="title(item)"
-                :categoryGuid="item.guid"
-                :entity="item"
-            ></Actions>
+            <div v-if="item.dataRef.isLoading">
+                <a-spin
+                    size="small"
+                    icon="Loader"
+                    class="w-auto h-4 mr-1 animate-spin"
+                ></a-spin>
+            </div>
+            <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
+                <AtlanIcon icon="Error"></AtlanIcon>
+            </div>
+            <div v-else class="hidden group-hover:flex">
+                <Actions
+                    :treeMode="true"
+                    :glossaryName="getAnchorName(item) || title(item)"
+                    :categoryName="title(item)"
+                    :categoryGuid="item.guid"
+                    :entity="item"
+                ></Actions>
+            </div>
         </div>
     </div>
 </template>
@@ -41,6 +65,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import Actions from './actions.vue'
+    import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
 
     import {
         Glossary,
@@ -50,7 +75,7 @@
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
-        components: { Actions, AtlanIcon },
+        components: { Actions, AtlanIcon, AddGtcModal },
         props: {
             item: {
                 type: Object as PropType<Glossary | Term | Category>,
@@ -62,7 +87,7 @@
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
-
+            console.log(item.value)
             const { getEntityStatusIcon } = useGlossaryData()
             const {
                 certificateStatus,

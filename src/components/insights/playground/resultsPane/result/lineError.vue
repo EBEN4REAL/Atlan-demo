@@ -349,12 +349,12 @@
         background: #cf592e;
         position: absolute !important;
         top: 50%;
-        left: -14% !important;
+        left: 9px !important;
         transform: translate(0%, -50%);
         width: 6px !important;
         height: 6px !important;
         border-radius: 100%;
-        margin-left: 3px;
+        // margin-left: 3px;
     }
 </style>
 

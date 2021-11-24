@@ -7,7 +7,12 @@
                         <img :src="logoTitle" class="h-3 mr-1" />
                         <span class="uppercase">{{ title }}</span>
                     </div>
-                    <div v-if="item.typeName === 'Column'" class="px-2 bg-gray-100 border border-gray-300 border-solid">{{item.typeName}}</div>
+                    <div
+                        v-if="item.typeName === 'Column'"
+                        class="px-2 bg-gray-100 border border-gray-300 border-solid "
+                    >
+                        {{ item.typeName }}
+                    </div>
                 </div>
                 <div class="text-lg font-semibold truncate ...">
                     {{ item?.displayText || item?.attributes?.name }}
@@ -65,7 +70,11 @@
                     </div>
                 </div>
                 <div class="mt-2 text-xs text-gray-500">Description</div>
-                <div :class="`mt-1 text-sm ${!item?.attributes?.description ? 'text-gray-500' : ''}`">
+                <div
+                    :class="`mt-1 text-sm ${
+                        !item?.attributes?.description ? 'text-gray-500' : ''
+                    }`"
+                >
                     {{
                         item?.attributes?.description ||
                         `This ${title} has no description added`
@@ -87,15 +96,11 @@
                 <div v-if="item?.attributes?.ownerUsers.length > 0">
                     <div class="mt-2 text-xs text-gray-500">Owned by</div>
                     <div class="flex gap-1">
-                        <PopOverUser 
+                        <UserPill
                             v-for="(user, idx) in item?.attributes?.ownerUsers"
                             :key="idx"
-                            :item="user"
-                            :name="user"
-                        >
-                            
-                            <UserPill :username="user"/>
-                        </PopOverUser>
+                            :username="user"
+                        />
                     </div>
                 </div>
                 <router-link :to="path">
@@ -120,8 +125,6 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import UserPill from '@/common/pills/user.vue'
-    import PopOverUser from '@/common/popover/user/admin.vue'
-    import PopOverGroup from '@/common/popover/user/group.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -130,8 +133,6 @@
             ClassificationPill,
             UserPill,
             CertificateBadge,
-            PopOverUser,
-            PopOverGroup
         },
         props: {
             item: {
@@ -229,9 +230,9 @@
     }
 </script>
 <style lang="less">
-    .icon-blue-color{
-        path{
-            stroke: #5277D7;
+    .icon-blue-color {
+        path {
+            stroke: #5277d7;
         }
     }
 </style>

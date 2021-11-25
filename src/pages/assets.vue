@@ -23,7 +23,6 @@
     import { useRoute } from 'vue-router'
     import AssetDiscovery from '@/assets/index.vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useAssetStore from '~/store/asset'
 
     export default defineComponent({
@@ -40,17 +39,17 @@
             const isItem = computed(() => !!route.params.id)
             const localSelected = ref()
 
+            const assetStore = useAssetStore()
+
+            const handlePreview = (asset) => {
+                localSelected.value = asset
+                assetStore.setSelectedAsset(asset)
+            }
             const updateList = (asset) => {
                 if (assetdiscovery.value) {
                     assetdiscovery.value.updateCurrentList(asset)
                 }
-            }
-
-            const assetStore = useAssetStore()
-            const handlePreview = (asset) => {
-                console.log('handlePreview')
                 localSelected.value = asset
-                assetStore.setSelectedAsset(asset)
             }
 
             provide('updateList', updateList)

@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, inject, ref, watch } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -65,7 +65,7 @@
                 ...SQLAttributes,
             ])
             const relationAttributes = ref([...DefaultRelationAttributes])
-            const { handleSelectedAsset, list, isLoading } = useDiscoverList({
+            const { updateList, list, isLoading } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -75,6 +75,11 @@
                 relationAttributes,
             })
 
+            /* const updateCurrentList = (asset) => {
+                updateList(asset)
+                 handlePreview(asset)
+            } */
+
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
@@ -82,6 +87,10 @@
                     handlePreview(list.value[0])
                 }
             })
+            watch(selectedAsset, () => {
+                localSelected.value = selectedAsset.value
+            })
+
             return {
                 fetchKey,
                 isLoading,

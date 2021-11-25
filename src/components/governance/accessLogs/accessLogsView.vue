@@ -164,7 +164,6 @@ import map from '~/constant/accessControl/map'
 import DefaultLayout from '~/components/admin/layout.vue'
 import AtlanBtn from '@/UI/button.vue'
 import AccessLogsTable from '@/governance/accessLogs/accessLogsTable.vue'
-import AccessLogDrawer from '~/components/governance/accessLogs/accessLogDrawer.vue'
 import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
 import { useAccessLogs } from './composables/useAccessLogs'
 import AssetFilters from '@/common/assets/filters/index.vue'
@@ -180,7 +179,6 @@ export default defineComponent({
         AtlanBtn,
         AccessLogsTable,
         TimeFrameSelector,
-        AccessLogDrawer,
         AssetFilters,
         Connector,
     },

@@ -2,10 +2,24 @@
     <a-popover title="">
         <template #content>
             <div class="user-popover">
-                <div class="flex items-center">
-                    <!-- <img :src="logoTitle" class="h-3 mr-1" /> -->
-                    <AtlanIcon icon="User" class="mr-1 mb-0.5" />
-                    <span class="uppercase">user</span>
+                <div class="flex justify-between">
+                    <div class="flex items-center">
+                        <AtlanIcon icon="User" class="mr-1 mb-0.5" />
+                        <span class="uppercase">user</span>
+                    </div>
+                    <div
+                        v-if="admin"
+                        class="
+                            flex
+                            items-center
+                            px-1.5
+                            text-gray-500
+                            bg-gray-100
+                            border border-gray-300 border-solid
+                        "
+                    >
+                        {{ admin }}
+                    </div>
                 </div>
                 <div class="flex items-center gap-3 mt-2">
                     <a-avatar size="large">{{ item[0] }}</a-avatar>
@@ -41,6 +55,7 @@
                                 text-xs
                                 border border-gray-300 border-solid
                                 rounded-xl
+                                capitalize
                             "
                         >
                             {{ group.name }}
@@ -52,6 +67,8 @@
                     <div class="text-xs text-gray-500">Personas</div>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <span
+                            v-for="persona in listOfPersona"
+                            :key="persona.id"
                             class="
                                 px-2
                                 py-0.5
@@ -59,9 +76,11 @@
                                 bg-gray-200
                                 border border-gray-300 border-solid
                                 rounded-xl
+                                capitalize
                             "
-                            >Data Scientist</span
+                            >{{ persona?.displayName }}</span
                         >
+                        <span v-if="listOfPersona.length === 0">-</span>
                     </div>
                 </div>
                 <a-button class="mt-3" block @click="handleClickViewUser">
@@ -74,7 +93,7 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, watch } from 'vue'
+    import { toRefs, computed, watch, ref } from 'vue'
     import bodybuilder from 'bodybuilder'
     // import ClassificationPill from '@/common/pills/classification.vue'
     // import UserPill from '@/common/pills/user.vue'
@@ -117,7 +136,11 @@
                     ? userList.value[0]
                     : []
             )
-            
+            const admin = computed(() =>
+                selectedUser.value?.roles?.includes('$admin' || 'admin')
+                    ? 'Admin'
+                    : ''
+            )
             const groupListAPIParams = {
                 userId: selectedUser?.value.id,
                 params: {
@@ -145,7 +168,7 @@
                 .build()
             const { data } = Search.IndexSearch({ dsl: query }, {})
             const bussinesCount = computed(() => {
-                const arrBus = [
+                const terms = [
                     'atlasglossary',
                     'atlasglossarycategory',
                     'atlasglossaryterm',
@@ -154,7 +177,7 @@
                     data?.value?.aggregations?.group_by_typeName?.buckets || []
                 let count = 0
                 aggs.forEach((el) => {
-                    if (arrBus.includes(el.key.toLowerCase())) {
+                    if (terms.includes(el.key.toLowerCase())) {
                         count += el.doc_count
                     }
                 })
@@ -173,12 +196,20 @@
                 setUserUniqueAttribute(item.value, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
+            const listOfPersona = ref([])
+            const flag = ref(true)
+            if (flag.value) {
+                const { personaList } = usePersonaList()
+                watch(personaList, (newValue) => {
+                    if (newValue) {
+                        const user = selectedUser.value.id
+                        listOfPersona.value = newValue.filter((element) => {
+                            return element.users.includes(user)
+                        })
+                    }
+                })
+            }
 
-            const { personaList, list } = usePersonaList()
-
-            // const persona = personaList.filter(el => )
-            console.log('this', personaList.value)
-            console.log('here', list)
             return {
                 selectedUser,
                 isLoading,
@@ -186,7 +217,8 @@
                 assetCount,
                 groupList,
                 handleClickViewUser,
-                personaList,
+                listOfPersona,
+                admin,
             }
         },
     }

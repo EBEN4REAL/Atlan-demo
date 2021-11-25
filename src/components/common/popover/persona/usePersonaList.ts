@@ -10,9 +10,6 @@ interface PersonaParams {
 }
 export default function usePersonaList(params?: Ref<PersonaParams>) {
     const { data, isLoading, mutate: reFetchList } = Persona.List()
-   watch(data, () => {
-       console.log(data.value, 'sdkshdksjhdjkshdshd')
-   })
 
     const personaList = computed(
         () =>
@@ -20,7 +17,7 @@ export default function usePersonaList(params?: Ref<PersonaParams>) {
                 ...persona,
             })) ?? []
     )
-    const list = data?.value?.records
+
     const filteredPersonas = computed(() => {
         if (params?.value?.searchString)
             return personaList.value.filter((ps) =>
@@ -43,6 +40,5 @@ export default function usePersonaList(params?: Ref<PersonaParams>) {
         totalPersonasCount,
         filteredPersonasCount,
         personaList,
-        list,
     }
 }

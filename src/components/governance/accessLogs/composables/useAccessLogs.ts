@@ -1,20 +1,22 @@
 import { ref, Ref, computed, watch } from 'vue'
 import bodybuilder from 'bodybuilder'
-import useLogsService from './useQueryLogService'
+import useLogsService from './useAccessLogService'
 import useBody from './useBody'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { SourceList } from '~/constant/source'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
+import { AssetAttributes, SQLAttributes } from '~/constant/projection'
 
-const { listQueryLogs } = useLogsService()
+const { listAccessLogs } = useLogsService()
 const { getConnectionName, getConnectorName } = useConnector()
-export function useQueryLogs(
+const defaultAttributes = ref([...AssetAttributes, ...SQLAttributes])
+export function useAccessLogs(
     gte: Ref<string>,
     lt: Ref<string>,
     from = ref(0),
-    size = ref(6)
+    size = ref(20)
 ) {
-    const savedQueryMetaMap: Ref<Record<string, any>> = ref({})
+    const assetMetaMap: Ref<Record<string, any>> = ref({})
     const body = ref<Record<string, any>>({})
     // const from = ref(0)
     // const limit = ref(100)
@@ -27,18 +29,18 @@ export function useQueryLogs(
     })
 
     body.value = dsl
-    const { data, mutate: refetchList, isLoading } = listQueryLogs(body)
+    const { data, mutate: refetchList, isLoading } = listAccessLogs(body)
 
     // fetch saved quey meta when data refreshes
-    const fetchSavedQueryMeta = (requestBody) => {
+    const fetchAssetMeta = (requestBody) => {
         const {
-            data: savedQueries,
+            data: assets,
             error,
             isLoading,
         } = useIndexSearch(
             {
                 dsl: { ...requestBody },
-                attributes: ['name'],
+                attributes: defaultAttributes.value,
             },
             ref('GET_SAVED_QUERY_META'),
             false
@@ -46,19 +48,19 @@ export function useQueryLogs(
         watch([isLoading, error], () => {
             if (!error.value && !isLoading.value) {
                 if (
-                    savedQueries &&
-                    savedQueries.value &&
-                    savedQueries.value.entities &&
-                    savedQueries.value.entities.length
+                    assets &&
+                    assets.value &&
+                    assets.value.entities &&
+                    assets.value.entities.length
                 ) {
-                    const newSavedQueries = {}
-                    savedQueries.value.entities.forEach((savedQuery) => {
-                        const { guid } = savedQuery
-                        newSavedQueries[guid] = { ...savedQuery }
+                    const newAssets = {}
+                    assets.value.entities.forEach((asset) => {
+                        const { qualifiedName } = asset.attributes
+                        newAssets[qualifiedName] = { ...asset }
                     })
-                    savedQueryMetaMap.value = {
-                        ...savedQueryMetaMap.value,
-                        ...newSavedQueries,
+                    assetMetaMap.value = {
+                        ...assetMetaMap.value,
+                        ...newAssets,
                     }
                 }
             }
@@ -69,35 +71,48 @@ export function useQueryLogs(
         () => {
             if (data.value?.hits?.hits?.length) {
                 // get saved query logs, if present in the result
-                const savedQueryIds = (
-                    data.value?.hits?.hits.filter(
-                        (log) => log._source?.message?.savedQueryId
-                    ) || []
-                ).map((log) => log._source.message.savedQueryId)
+                const qualifiedNames = (data.value?.hits?.hits || []).map(
+                    (log) => log._source.resource
+                )
                 // Check if the ids already have cached metadata
-                let filteredSavedQueryIds = []
-                if (savedQueryIds && savedQueryIds.length) {
-                    filteredSavedQueryIds = savedQueryIds.filter(
-                        (savedQueryId) =>
-                            !savedQueryMetaMap.value.hasOwnProperty(
-                                savedQueryId
-                            )
+                let filteredQFs = []
+                if (qualifiedNames && qualifiedNames.length) {
+                    filteredQFs = qualifiedNames.filter(
+                        (qf) => !assetMetaMap.value.hasOwnProperty(qf)
                     )
                 }
-                if (filteredSavedQueryIds && filteredSavedQueryIds.length) {
+                if (filteredQFs && filteredQFs.length) {
                     const base = bodybuilder()
-                    filteredSavedQueryIds.forEach((queryId) =>
-                        base.orFilter('term', '__guid', queryId)
-                    )
+                    filteredQFs.forEach((assetQf) => {
+                        const qf = assetQf?.split('/')?.slice(2).join('/')
+                        if (qf) base.orFilter('term', 'qualifiedName', qf)
+                    })
                     const requestBody = base.build()
-                    fetchSavedQueryMeta(requestBody)
+                    fetchAssetMeta(requestBody)
                 }
             }
         },
         { immediate: true }
     )
 
-    const list = computed(() => data.value?.hits?.hits)
+    const list = computed(() => {
+        if (data.value?.hits?.hits) {
+            const logsWithQf = data.value?.hits?.hits.map((log) => {
+                const { resource } = log._source
+                if (resource) {
+                    const qf = resource?.split('/')?.slice(2).join('/')
+                    if (qf)
+                        return {
+                            ...log,
+                            _source: { ...log._source, resourceQF: qf },
+                        }
+                }
+                return log
+            })
+            return logsWithQf ?? []
+        }
+        return []
+    })
     const totalCount = computed(() => size.value + from.value)
     const filteredLogsCount = computed(() => data.value?.hits?.total?.value)
     function mutateBody({
@@ -140,7 +155,7 @@ export function useQueryLogs(
         isLoading,
         filteredLogsCount,
         paginateLogs,
-        savedQueryMetaMap,
+        assetMetaMap,
     }
 }
 export const getQueryMetadata = (query) => {

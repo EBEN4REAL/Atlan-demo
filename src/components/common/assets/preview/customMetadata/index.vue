@@ -70,14 +70,14 @@
                         {{
                             formatDisplayValue(
                                 a.value?.toString() || '',
-                                getDatatypeOfAttribute(a.typeName)
+                                getDatatypeOfAttribute(a)
                             ) || '-'
                         }}</span
                     >
                 </div>
                 <div v-else class="flex self-start flex-grow">
                     <a-input
-                        v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
+                        v-if="getDatatypeOfAttribute(a) === 'number'"
                         v-model:value="a.value"
                         :allow-clear="true"
                         class="flex-grow border shadow-none"
@@ -86,9 +86,7 @@
                         @change="(e) => handleChange(x, e.target.value)"
                     />
                     <a-radio-group
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'boolean'
-                        "
+                        v-else-if="getDatatypeOfAttribute(a) === 'boolean'"
                         :allow-clear="true"
                         :value="a.value"
                         class="flex-grow"
@@ -97,11 +95,7 @@
                         <a-radio class="" :value="true">Yes</a-radio>
                         <a-radio class="" :value="false">No</a-radio>
                     </a-radio-group>
-                    <template
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'date'
-                        "
-                    >
+                    <template v-else-if="getDatatypeOfAttribute(a) === 'date'">
                         <a-date-picker
                             :allow-clear="true"
                             :value="(a.value || '').toString()"
@@ -111,9 +105,7 @@
                         />
                     </template>
                     <a-textarea
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'text'
-                        "
+                        v-else-if="getDatatypeOfAttribute(a) === 'text'"
                         v-model:value="a.value"
                         :allow-clear="true"
                         :auto-size="true"
@@ -131,7 +123,7 @@
                             placeholder="Unassigned"
                             style="width: 100%"
                             :show-arrow="true"
-                            :options="getEnumOptions(a.typeName)"
+                            :options="getEnumOptions(a)"
                             class=""
                             @change="(e) => handleChange(x, e.target.value)"
                         />
@@ -214,6 +206,7 @@
                         }
                     })
                 }
+                console.log(applicableList.value)
             }
 
             // {"BM for facet 2":{"test for facet 2":"1","test for facet 2 date":1629294652575}}

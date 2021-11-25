@@ -2,11 +2,11 @@ name: Production Website Workflow
 on:
   push:
     branches:
-      # - beta
-      # - alpha
-      # - development
-      # - main
-      # - staging
+      - beta
+      - alpha
+      - development
+      - main
+      - staging
       - add-version
 jobs:
   tag-version:

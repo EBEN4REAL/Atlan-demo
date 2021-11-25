@@ -37,6 +37,7 @@
                         >
                             {{group.name}}
                         </span>
+                        <span v-if="groupList.length === 0">-</span>
                     
                     </div>
                 </div>
@@ -70,10 +71,11 @@
     import bodybuilder from 'bodybuilder'
     // import ClassificationPill from '@/common/pills/classification.vue'
     // import UserPill from '@/common/pills/user.vue'
-    import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
+    // import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import getUserGroups from '~/composables/user/getUserGroups'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { Search } from '~/services/meta/search'
+    import { useUsers } from '~/composables/user/useUsers'
 
     export default {
         name: 'PopoverAsset',
@@ -93,11 +95,23 @@
         setup(props) {
             const {item} = toRefs(props)
             const { setUserUniqueAttribute, showUserPreview } = useUserPreview()
-            setUserUniqueAttribute(item.value, 'username')
-            const {
-                isLoading,
-                selectedUser,
-            } = useUserOrGroupPreview('user')
+            const params = {
+                limit: 1,
+                offset: 0,
+                filter: {
+                    $and: [
+                        { email_verified: true },
+                        { username: item.value },
+                    ],
+                }
+            }
+            const { userList, isLoading } = useUsers(params, item.value)
+
+            const selectedUser = computed(() =>
+                userList && userList.value && userList.value.length
+                    ? userList.value[0]
+                    : []
+            )
             // const {
             //     isLoading,
             //     selectedUser,
@@ -113,7 +127,7 @@
                     filter: {},
                 },
             }
-            const { groupList } = getUserGroups(groupListAPIParams)
+            const { groupList } = getUserGroups(groupListAPIParams, selectedUser?.value.id)
             // watch(groupList, (newVal) => {
             //     console.log(newVal, 'shdsdhsgdsjdgjshgjd')
             // })
@@ -151,8 +165,9 @@
                 return count
             })
             const handleClickViewUser = () => {
+                setUserUniqueAttribute(item.value, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
-        }
+            }
             return {
                 selectedUser,
                 isLoading,

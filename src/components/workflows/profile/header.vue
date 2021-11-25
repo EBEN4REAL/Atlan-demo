@@ -57,7 +57,7 @@
                             Last run {{ latRun }}</span
                         >
                     </div>
-                    <template v-if="totalRun !== 0">
+                    <template v-if="totalRun">
                         <div style="color: rgb(196, 196, 196)">•</div>
                         <div class="flex text-sm text-gray-500">
                             <span class="text-gray-500"
@@ -95,12 +95,12 @@
             },
             creator: {
                 type: Object,
-                requred: true,
+                required: true,
             },
             logo: {
                 type: String,
                 requred: false,
-                default: ""
+                default: '',
             },
         },
         setup(props) {
@@ -109,7 +109,7 @@
             const { id } = toRefs(props)
             const { archivedList } = getArchivedRunList(id.value)
             watch(archivedList, (newVal) => {
-                totalRun.value = newVal.filter_record
+                totalRun.value = newVal.filter_record ?? 0
                 if (newVal?.records?.length > 0) {
                     const lastRun = newVal.records[newVal?.records.length - 1]
                     latRun.value = useTimeAgo(lastRun.finished_at).value

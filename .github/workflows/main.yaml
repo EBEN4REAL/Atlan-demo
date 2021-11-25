@@ -7,40 +7,9 @@ on:
       - development
       - main
       - staging
-
 jobs:
-  tag-version:
-    # The type of runner that the job will run on          
-    runs-on: ubuntu-latest
-    
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-    
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Check out into the repo
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    
-    - name: Get branch name
-      if: startsWith(github.ref, 'refs/heads')
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: get_branch
-
-    - name: Get commit id
-      run: echo "##[set-output name=version;]$(echo `git ls-remote https://${{ secrets.my_pat }}@github.com/atlanhq/atlan-frontend.git ${{ steps.get_branch.outputs.branch }} | awk '{ print $1}' | cut -c1-7`)"
-      id: get_version
-
-    - name: Fetch & tag variables in package.json
-      run: |
-        chmod +x ./scripts/tag_version.sh
-        ./scripts/tag_version.sh
-      env:
-        ATLAN_FRONTEND_VERSION: ${{ steps.get_version.outputs.version }}
-
-  create-release:
+  test:
     name: Production Deployment
-    needs: tag-version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1

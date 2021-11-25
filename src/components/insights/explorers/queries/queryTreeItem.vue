@@ -638,11 +638,14 @@
                     if (newData && !newError) {
                         useAddEvent('insights', 'folder', 'deleted', undefined)
                         showDeletePopover.value = false
-                        refetchParentNode(
-                            props.item.guid,
-                            type === 'Query' ? 'query' : 'queryFolder',
-                            savedQueryType.value
-                        )
+                        setTimeout(() => {
+                            refetchParentNode(
+                                props.item.guid,
+                                type === 'Query' ? 'query' : 'queryFolder',
+                                savedQueryType.value
+                            )
+                        }, 500)
+
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         })

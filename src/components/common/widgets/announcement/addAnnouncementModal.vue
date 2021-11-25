@@ -42,7 +42,7 @@
                             </a-menu-item>
                         </a-menu>
                     </template>
-                    <div class="flex items-center cursor-pointer">
+                    <div class="flex items-center mr-2 cursor-pointer">
                         <AtlanIcon :icon="icon" class="w-auto h-4 mr-1" /><span
                             class="text-sm capitalize"
                             >{{ localAnnouncement.announcementType }}</span
@@ -62,18 +62,20 @@
                 >
             </div>
         </template>
-        <a-input
-            ref="titleBar"
-            v-model:value="localAnnouncement.announcementTitle"
-            placeholder="Add Announcement Header..."
-            class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-        />
-        <a-textarea
-            v-model:value="localAnnouncement.announcementMessage"
-            placeholder="Add description..."
-            class="text-gray-500 border-0 shadow-none outline-none"
-            :maxlength="280"
-        />
+        <div class="px-4 pt-0 pb-4">
+            <a-input
+                ref="titleBar"
+                v-model:value="localAnnouncement.announcementTitle"
+                placeholder="Add Announcement Header..."
+                class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+            />
+            <a-textarea
+                v-model:value="localAnnouncement.announcementMessage"
+                placeholder="Add description..."
+                class="text-gray-500 border-0 shadow-none outline-none"
+                :maxlength="280"
+            />
+        </div>
     </a-modal>
 </template>
 

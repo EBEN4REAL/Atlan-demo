@@ -287,8 +287,9 @@
             :footer="null"
             :closable="false"
             width="1000px"
-        >
-            <SampleDataTable :asset="selectedAsset" />
+            ><div class="p-3">
+                <SampleDataTable :asset="selectedAsset" />
+            </div>
         </a-modal>
     </div>
 </template>

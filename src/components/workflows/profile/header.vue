@@ -46,19 +46,32 @@
                 </div>
                 <div class="flex items-center gap-x-3">
                     <div
-                        class="flex items-center text-sm text-gray-500 gap-x-1"
+                        class="flex items-center text-sm text-gray-500 cursor-pointer  gap-x-1"
+                        @click="showUserPreviewDrawer"
                     >
                         <AtlanIcon v-if="creator?.first_name" icon="User" />
                         <span>{{ creator?.first_name }}</span>
                     </div>
-                    <div v-if="latRun" style="color: rgb(196, 196, 196)">•</div>
+
                     <div v-if="latRun" class="flex text-sm text-gray-500">
+                        <div
+                            v-if="creator?.first_name"
+                            class="mr-3"
+                            style="color: rgb(196, 196, 196)"
+                        >
+                            •
+                        </div>
                         <span class="text-gray-500">
                             Last run {{ latRun }}</span
                         >
                     </div>
-                    <template v-if="totalRun !== 0">
-                        <div style="color: rgb(196, 196, 196)">•</div>
+                    <template v-if="totalRun">
+                        <div
+                            v-if="latRun || creator?.first_name"
+                            style="color: rgb(196, 196, 196)"
+                        >
+                            •
+                        </div>
                         <div class="flex text-sm text-gray-500">
                             <span class="text-gray-500"
                                 >{{ totalRun }} total runs</span
@@ -82,6 +95,7 @@
     import { useTimeAgo } from '@vueuse/core'
     import UtilityButtons from '@/workflows/shared/utilityButtons.vue'
     import { getArchivedRunList } from '~/composables/workflow/useWorkflowList'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
 
     export default defineComponent({
         components: {
@@ -95,7 +109,7 @@
             },
             creator: {
                 type: Object,
-                requred: true,
+                required: true,
             },
             logo: {
                 type: String,
@@ -109,13 +123,28 @@
             const { id } = toRefs(props)
             const { archivedList } = getArchivedRunList(id.value)
             watch(archivedList, (newVal) => {
-                totalRun.value = newVal.filter_record
+                totalRun.value = newVal.filter_record ?? 0
                 if (newVal?.records?.length > 0) {
                     const lastRun = newVal.records[newVal?.records.length - 1]
-                    latRun.value = useTimeAgo(lastRun.finished_at).value
+                    latRun.value = lastRun?.finished_at
+                        ? useTimeAgo(lastRun.finished_at).value
+                        : ''
                 }
             })
+
+            // BEGIN: USER PREVIEW
+            const {
+                showPreview,
+                showUserPreview: openPreview,
+                setUserUniqueAttribute,
+            } = useUserPreview()
+            const showUserPreviewDrawer = () => {
+                setUserUniqueAttribute(props.creator.id)
+                openPreview()
+            }
+
             return {
+                showUserPreviewDrawer,
                 totalRun,
                 latRun,
             }

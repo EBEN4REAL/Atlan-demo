@@ -117,12 +117,7 @@
                     ? userList.value[0]
                     : []
             )
-            // const {
-            //     isLoading,
-            //     selectedUser,
-            // } = useUserOrGroupPreview('group')
-            // watch(selectedUser, () => {
-            //     })
+            
             const groupListAPIParams = {
                 userId: selectedUser?.value.id,
                 params: {
@@ -132,13 +127,11 @@
                     filter: {},
                 },
             }
+            // console.log(groupListAPIParams)
             const { groupList } = getUserGroups(
                 groupListAPIParams,
                 selectedUser?.value.id
             )
-            // watch(groupList, (newVal) => {
-            //     console.log(newVal, 'shdsdhsgdsjdgjshgjd')
-            // })
 
             const query = bodybuilder()
                 .filter('term', 'ownerUsers', item.value)

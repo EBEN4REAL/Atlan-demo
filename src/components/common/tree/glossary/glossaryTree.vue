@@ -114,6 +114,7 @@
                 selectedKeys,
                 selectNode,
                 addNode,
+                deleteNode,
                 initTreeData,
                 treeData,
                 isLoading,
@@ -157,12 +158,16 @@
             }
 
             const addGTCNode = (asset, entity = {}) => {
-                console.log('add node', selectedKeys.value)
                 if (entity !== {}) addNode(asset, entity)
                 else addNode(asset)
             }
-
+            const deleteGTCNode = (asset, entity = {}) => {
+                console.log('delete node', selectedKeys.value)
+                if (entity !== {}) deleteNode(asset, entity)
+                else deleteNode(asset)
+            }
             provide('addGTCNode', addGTCNode)
+            provide('deleteGTCNode', deleteGTCNode)
             provide('refetchGlossaryTree', refetchNode)
 
             return {

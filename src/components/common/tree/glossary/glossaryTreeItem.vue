@@ -116,10 +116,6 @@
             })
             const addGTCNode = inject('addGTCNode')
             const handleAdd = (asset) => {
-                console.log(item.value)
-                console.log(addGTCNode)
-                // }
-                // console.log('asdsd', entity)
                 addGTCNode(asset, item.value.parentCategory)
             }
 

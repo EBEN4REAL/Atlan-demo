@@ -392,12 +392,11 @@ const useGlossaryTree = ({
     }
 
     const { getAnchorQualifiedName } = useAssetInfo()
-    const recursivelyAddNode = async (asset, entity) => {
+    const recursivelyAddNode = async (asset, guid) => {
         let parentStack: string[]
 
         const updateNodeNested = async (node: TreeDataItem) => {
             const currentPath = parentStack.pop()
-            const guid = entity?.value?.guid || entity?.value
             console.log(currentPath)
             console.log(node)
             // if the target node is reached
@@ -446,9 +445,7 @@ const useGlossaryTree = ({
         }
 
         // find the path to the node
-        parentStack = recursivelyFindPath(
-            entity?.guid || entity?.value?.guid
-        )[0]
+        parentStack = recursivelyFindPath(guid)[0]
         console.log(parentStack)
         const parent = parentStack?.pop()
         const updatedTreeData: TreeDataItem[] = []
@@ -499,11 +496,27 @@ const useGlossaryTree = ({
 
         // treeData.value = updatedTreeData
     }
+    const deleteNode = (asset, guid) => {
+        console.log(asset)
+        console.log(guid)
+        if (guid === 'root') {
+            const updatedTreeData: TreeDataItem[] = treeData.value.filter(
+                (el) => {
+                    console.log(
+                        el?.guid !== asset?.value?.guid ||
+                            el?.guid !== asset?.guid
+                    )
+                    return el?.guid !== asset?.guid
+                }
+            )
+            treeData.value = updatedTreeData
+        }
+    }
     const addNode = (asset, entity): TreeDataItem => {
         console.log(asset)
         if (entity && entity !== {}) {
             console.log(entity)
-            recursivelyAddNode(asset, entity)
+            recursivelyAddNode(asset, entity?.value?.guid || entity?.guid)
             // refetchNode(
             //     entity?.guid || entity.value?.guid,
             //     entity?.attributes?.qualifiedName ||
@@ -815,6 +828,7 @@ const useGlossaryTree = ({
         recursivelyFindPath,
         refetchNode,
         collapseAll,
+        deleteNode,
     }
 }
 

@@ -66,6 +66,7 @@
                     <RemoveGTCModal
                         :entityType="entity.typeName"
                         :entity="entity"
+                        @delete="handleDelete"
                     >
                         <template #trigger>
                             <div class="flex items-center">
@@ -239,25 +240,23 @@
             })
 
             const addGTCNode = inject('addGTCNode')
+            const deleteGTCNode = inject('deleteGTCNode')
+            const handleDelete = (guid) => {
+                console.log(guid)
+                deleteGTCNode(entity.value, guid)
+            }
             const handleAdd = (asset) => {
-                console.log('add')
-                console.log(entity.value)
-                console.log(asset)
-                entity.value.children = []
-                entity.value.children.push({
-                    ...asset,
-                    id: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    key: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
-                    isLeaf: false,
-                })
-                console.log(entity.value)
-                console.log(addGTCNode)
-                // }
-                // console.log('asdsd', entity)
+                // entity.value.children = []
+                // entity.value.children.push({
+                //     ...asset,
+                //     id: `${getAnchorQualifiedName(asset)}_${
+                //         asset.attributes?.qualifiedName
+                //     }`,
+                //     key: `${getAnchorQualifiedName(asset)}_${
+                //         asset.attributes?.qualifiedName
+                //     }`,
+                //     isLeaf: false,
+                // })
                 addGTCNode(asset, entity.value)
             }
             // const {
@@ -373,6 +372,7 @@
                 categoryName,
                 handleAdd,
                 addGTCNode,
+                handleDelete,
             }
         },
     })

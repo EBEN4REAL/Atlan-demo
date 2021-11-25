@@ -77,11 +77,12 @@
                 },
             },
         },
-        emits: ['add', 'update:visible'],
+        emits: ['delete', 'update:visible'],
         setup(props, { emit }) {
             const { entityType, guid, entity } = toRefs(props)
             const visible = ref(false)
             const isLoading = ref(false)
+            const deleteGTCNode = inject('deleteGTCNode')
 
             // const entityToDelete = reactive({
             //     attributes: {
@@ -157,40 +158,48 @@
                 )
                 isLoading.value = loading.value
                 watch([data, deleteError], () => {
-                    if (data.value && !deleteError.value) {
-                        message.success(`${props.entity?.name} deleted`)
-                        if (refetchGlossaryTree) {
-                            if (
-                                props.entity?.typeName ===
-                                'AtlasGlossaryCategory'
-                            ) {
-                                refetchGlossaryTree(
-                                    props.entity?.attributes?.parentCategory
-                                        ?.guid ?? 'root',
-                                    props.entity?.attributes?.qualifiedName,
-                                    'category'
-                                )
-                            } else if (
-                                props.entity?.typeName === 'AtlasGlossaryTerm'
-                            ) {
-                                if (
-                                    props.entity?.attributes?.categories?.length
-                                ) {
-                                    props.entity?.attributes?.categories?.forEach(
-                                        (category) => {
-                                            refetchGlossaryTree(
-                                                category.guid,
-                                                category?.uniqueAttributes
-                                                    ?.qualifiedName,
-                                                'term'
-                                            )
-                                        }
-                                    )
-                                } else {
-                                    refetchGlossaryTree('root', '', 'term')
-                                }
-                            }
-                        }
+                    console.log(data)
+                    console.log(deleteError)
+                    console.log(props.entity)
+                    if (data && !deleteError.value) {
+                        message.success(`${props.entity?.displayText} deleted`)
+                        emit(
+                            'delete',
+                            props.entity?.attributes?.parentCategory?.guid ??
+                                'root'
+                        )
+                        // if (refetchGlossaryTree) {
+                        //     if (
+                        //         props.entity?.typeName ===
+                        //         'AtlasGlossaryCategory'
+                        //     ) {
+                        //         refetchGlossaryTree(
+                        //             props.entity?.attributes?.parentCategory
+                        //                 ?.guid ?? 'root',
+                        //             props.entity?.attributes?.qualifiedName,
+                        //             'category'
+                        //         )
+                        //     } else if (
+                        //         props.entity?.typeName === 'AtlasGlossaryTerm'
+                        //     ) {
+                        //         if (
+                        //             props.entity?.attributes?.categories?.length
+                        //         ) {
+                        //             props.entity?.attributes?.categories?.forEach(
+                        //                 (category) => {
+                        //                     refetchGlossaryTree(
+                        //                         category.guid,
+                        //                         category?.uniqueAttributes
+                        //                             ?.qualifiedName,
+                        //                         'term'
+                        //                     )
+                        //                 }
+                        //             )
+                        //         } else {
+                        //             refetchGlossaryTree('root', '', 'term')
+                        //         }
+                        //     }
+                        // }
                     }
                     isLoading.value = loading.value
                     visible.value = false

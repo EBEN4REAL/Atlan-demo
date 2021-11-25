@@ -221,12 +221,10 @@
                 }
 
                 if (categoryGuid.value) {
-                    entity.relationshipAttributes.categories = [
-                        {
-                            typeName: 'AtlasGlossaryCategory',
-                            guid: categoryGuid.value,
-                        },
-                    ]
+                    entity.relationshipAttributes.parentCategory = {
+                        typeName: 'AtlasGlossaryCategory',
+                        guid: categoryGuid.value,
+                    }
                 }
             }
 
@@ -294,12 +292,10 @@
                             },
                         }
                         if (categoryGuid.value) {
-                            entity.relationshipAttributes.categories = [
-                                {
-                                    typeName: 'AtlasGlossaryCategory',
-                                    guid: categoryGuid.value,
-                                },
-                            ]
+                            entity.relationshipAttributes.parentCategory = {
+                                typeName: 'AtlasGlossaryCategory',
+                                guid: categoryGuid.value,
+                            }
                         }
                     }
 

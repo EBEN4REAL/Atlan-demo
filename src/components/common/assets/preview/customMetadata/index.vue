@@ -60,9 +60,10 @@
                     class="flex items-center self-start flex-grow break-all"
                 >
                     <a
-                        v-if="isLink(a.value, a.displayName)"
+                        v-if="a?.options?.customType === 'url'"
+                        class="font-bold text-primary"
                         target="_blank"
-                        :href="a.value"
+                        :href="`//${a.value}`"
                     >
                         {{ a.value || '-' }}</a
                     >
@@ -82,6 +83,15 @@
                         :allow-clear="true"
                         class="flex-grow border shadow-none"
                         type="number"
+                        placeholder="Type..."
+                        @change="(e) => handleChange(x, e.target.value)"
+                    />
+                    <a-input
+                        v-if="getDatatypeOfAttribute(a) === 'url'"
+                        v-model:value="a.value"
+                        :allow-clear="true"
+                        class="flex-grow border shadow-none"
+                        type="url"
                         placeholder="Type..."
                         @change="(e) => handleChange(x, e.target.value)"
                     />
@@ -109,7 +119,7 @@
                         v-model:value="a.value"
                         :allow-clear="true"
                         :auto-size="true"
-                        :show-count="true"
+                        :show-count="parseInt(a.options.maxStrLength) < 1000"
                         :maxlength="parseInt(a.options.maxStrLength)"
                         placeholder="Type..."
                         type="text"

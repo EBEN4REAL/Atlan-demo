@@ -40,6 +40,7 @@ jobs:
 
   create-release:
     name: Production Deployment
+    needs: tag-version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1

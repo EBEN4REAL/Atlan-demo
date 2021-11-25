@@ -31,49 +31,38 @@ jobs:
       run: echo "##[set-output name=version;]$(echo `git ls-remote https://${{ secrets.my_pat }}@github.com/atlanhq/atlan-frontend.git ${{ steps.get_branch.outputs.branch }} | awk '{ print $1}' | cut -c1-7`)"
       id: get_version
 
-    - name: Get previous tag from atlan-frontend repo
-      id: get_latest_tag
-      run: |
-        repo_branch=${{ steps.get_branch.outputs.branch }}
-        branch_name="$repo_branch"
-        echo "charts tag = $branch_name"
-        echo "##[set-output name=branch_name;]$(echo $branch_name)"
-        tag=$(git tag)
-        echo $tag
-        git tag | grep $branch_name;
-        tag=$(git tag | grep "\<$branch_name\>" | sort -V | grep 'v[0-9].*' | tail -1)
-        echo $tag
-        echo "##[set-output name=tag;]$(git tag | grep "\<$branch_name\>" | sort -V | grep 'v[0-9].*' | tail -1)"
-        if echo $tag | grep "999"; then
-            echo "##[set-output name=command;]$(echo 'm')"
-        else
-            echo "##[set-output name=command;]$(echo 'p')"
-        fi
-      shell: bash
+    # - name: Get previous tag from atlan-frontend repo
+    #   id: get_latest_tag
+    #   run: |
+    #     repo_branch=${{ steps.get_branch.outputs.branch }}
+    #     branch_name="$repo_branch"
+    #     echo "charts tag = $branch_name"
+    #     echo "##[set-output name=branch_name;]$(echo $branch_name)"
+    #     tag=$(git tag)
+    #     echo $tag
+    #     git tag | grep $branch_name;
+    #     tag=$(git tag | grep "\<$branch_name\>" | sort -V | grep 'v[0-9].*' | tail -1)
+    #     echo $tag
+    #     echo "##[set-output name=tag;]$(git tag | grep "\<$branch_name\>" | sort -V | grep 'v[0-9].*' | tail -1)"
+    #     if echo $tag | grep "999"; then
+    #         echo "##[set-output name=command;]$(echo 'm')"
+    #     else
+    #         echo "##[set-output name=command;]$(echo 'p')"
+    #     fi
+    #   shell: bash
 
-    - name: Get new tag by doing semver version bump
-      id: bump_tag
-      run: |
-        chmod +x ./scripts/semver-version-upgrade.sh
-        bumped_tag=$(./scripts/semver-version-upgrade.sh -${{ steps.get_latest_tag.outputs.command }} ${{ steps.get_latest_tag.outputs.tag }})
-        echo "##[set-output name=new_tag;]$(echo $bumped_tag)"
+    # - name: Get new tag by doing semver version bump
+    #   id: bump_tag
+    #   run: |
+    #     chmod +x ./scripts/semver-version-upgrade.sh
+    #     bumped_tag=$(./scripts/semver-version-upgrade.sh -${{ steps.get_latest_tag.outputs.command }} ${{ steps.get_latest_tag.outputs.tag }})
+    #     echo "##[set-output name=new_tag;]$(echo $bumped_tag)"
 
-    # - name: Create Release on atlan-v2 repo
-    #   id: create_release
-    #   uses: actions/create-release@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.my_pat }}
-    #   with:
-    #     tag_name: ${{ steps.bump_tag.outputs.new_tag }}-${{ steps.get_latest_tag.outputs.branch_name }}
-    #     release_name: ${{ github.event.repository.name }}
-    #     body: |
-    #       ${{ github.event.head_commit.message }}
-    #       Commit id - ${{ steps.get_version.outputs.version }}
-    #     draft: false
-    #     prerelease: false
-    #     owner: atlanhq
-    #     repo: atlan-v2
-    #     commitish: ${{ steps.get_latest_tag.outputs.branch_name }}
+    - name: Tag version in package.json
+      id: tag-version
+      run: |
+        echo ${{ steps.get_version.outputs.version }}
+
 
   # create-release:
   #   name: Production Deployment

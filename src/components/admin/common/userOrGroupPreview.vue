@@ -61,7 +61,7 @@
             <a-tabs
                 v-model:activeKey="activeKey"
                 tab-position="left"
-                class="preview-tab border-t"
+                class="border-t preview-tab"
             >
                 <a-tab-pane v-for="(tab, index) in tabs" :key="tab.key">
                     <template #tab>
@@ -154,7 +154,7 @@
                 if (isValidUser.value) {
                     return selectedUser.value[userKey]
                 }
-                else if (isValidGroup.value) {
+                if (isValidGroup.value) {
                     return selectedGroup.value[groupKey]
                 }
                 return ""
@@ -171,7 +171,7 @@
                 if (isValidUser.value) {
                     return (selectedUser.value.role_object && selectedUser.value.role_object.name) ? selectedUser.value.role_object.name : ""
                 }
-                else if (isValidGroup.value) {
+                if (isValidGroup.value) {
                     return selectedGroup.value.memberCountString ? selectedGroup.value.memberCountString : ""
                 }
                 return ""

@@ -254,7 +254,10 @@ import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
 
+import ShieldCheck from '~/assets/images/icons/shield-check.svg'
+
 export default {
+    ShieldCheck,
     Hash,
     Column,
     CreateGroups,

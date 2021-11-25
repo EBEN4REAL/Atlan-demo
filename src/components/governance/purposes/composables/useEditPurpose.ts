@@ -11,6 +11,7 @@ import {
 const { updatePersona, deletePersona } = usePurposeService()
 
 export type PolicyType = 'meta' | 'data'
+export const newIdTag = 'new_'
 
 export const isEditing = ref(false)
 export const selectedPersonaDirty: Ref<IPurpose | undefined> = ref(undefined)
@@ -73,7 +74,7 @@ export function updateSelectedPersona() {
 }
 
 export function addPolicy(type: PolicyType) {
-    const id = `new_${Date.now()}`
+    const id = `${newIdTag}${Date.now()}`
     if (type === 'meta') {
         selectedPersonaDirty.value?.metadataPolicies?.push({
             id,

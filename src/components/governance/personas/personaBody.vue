@@ -85,7 +85,7 @@
                 >
                     <!-- Render it if the policy is being edited -->
                     <MetadataPolicy
-                        v-if="policyEditMap.metadataPolicies[policy.id!]"
+                        v-if="policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
                         class="px-5"
                         :policy="policy"
                         @save="savePolicyUI('meta', policy.id!)"
@@ -94,11 +94,52 @@
                     />
 
                     <PolicyCard
-                        v-else
+                        v-else-if="!policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
                         class="px-5"
                         :policy="policy"
                         type="meta"
                         @edit="setEditFlag('meta', policy.id!)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
+                        @cancel="discardPolicy('meta', policy.id!)"
+                    />
+                </template>
+                <template
+                    v-for="(policy, idx) in selectedPersonaDirty.dataPolicies"
+                    :key="idx"
+                >
+                    <!-- Render it if the policy is being edited -->
+                    <DataPolicy
+                        v-if="policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
+                        class="px-5"
+                        :policy="policy"
+                        @delete="deletePolicyUI('data', policy.id!)"
+                        @save="savePolicyUI('data', policy.id!)"
+                        @cancel="discardPolicy('data', policy.id!)"
+                    />
+                    <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
+                    <PolicyCard
+                        v-else-if="!policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
+                        class="px-5"
+                        :policy="policy"
+                        type="data"
+                        @edit="setEditFlag('data', policy.id!)"
+                        @delete="deletePolicyUI('data', policy.id!)"
+                        @cancel="discardPolicy('data', policy.id!)"
+                    />
+                </template>
+                <!-- For pusing the new edit policy to bottom -->
+                <template
+                    v-for="(
+                        policy, idx
+                    ) in selectedPersonaDirty.metadataPolicies"
+                    :key="idx"
+                >
+                    <!-- Render it if the new policy is being edited -->
+                    <MetadataPolicy
+                        v-if="policyEditMap.metadataPolicies[policy.id!] && policy?.id?.includes(newIdTag)"
+                        class="px-5"
+                        :policy="policy"
+                        @save="savePolicyUI('meta', policy.id!)"
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                     />
@@ -108,26 +149,18 @@
                     v-for="(policy, idx) in selectedPersonaDirty.dataPolicies"
                     :key="idx"
                 >
-                    <!-- Render it if the policy is being edited -->
+                    <!-- Render it if the new data policy is being edited -->
                     <DataPolicy
-                        v-if="policyEditMap.dataPolicies[policy.id!]"
+                        v-if="policyEditMap.dataPolicies[policy.id!] &&  policy?.id?.includes(newIdTag)"
                         class="px-5"
                         :policy="policy"
                         @delete="deletePolicyUI('data', policy.id!)"
                         @save="savePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                     />
-                    <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
-                    <PolicyCard
-                        v-else
-                        class="px-5"
-                        :policy="policy"
-                        type="data"
-                        @edit="setEditFlag('data', policy.id!)"
-                        @delete="deletePolicyUI('data', policy.id!)"
-                        @cancel="discardPolicy('data', policy.id!)"
-                    />
                 </template>
+
+                <!-- ------------------ -->
                 <div
                     v-if="
                         !selectedPersonaDirty.metadataPolicies?.length &&
@@ -206,6 +239,7 @@
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
+        newIdTag,
         selectedPersonaDirty,
         addPolicy,
         updateSelectedPersona,
@@ -305,6 +339,7 @@
             }
 
             return {
+                newIdTag,
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,

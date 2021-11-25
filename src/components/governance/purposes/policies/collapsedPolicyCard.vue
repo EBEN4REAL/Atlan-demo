@@ -1,7 +1,17 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded  group hover:shadow"
+        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded  hover:shadow"
         style="paddingleft: 12px; paddingroght: 12px"
+        @mouseover="
+            () => {
+                editToggle = true
+            }
+        "
+        @mouseout="
+            () => {
+                editToggle = false
+            }
+        "
     >
         <div class="flex items-center mb-4 gap-x-3">
             <span class="text-base font-bold text-gray">{{ policy.name }}</span>
@@ -67,16 +77,54 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-between w-full">
-            <div style="width: 70%">
-                <Owners
-                    v-model:modelValue="ownersData"
-                    :read-only="true"
-                    :enable-hover="false"
-                />
+
+        <div class="flex flex-wrap items-center gap-y-1.5">
+            <div class="flex items-center gap-y-1.5 gap-x-2 flex-1 flex-wrap">
+                <template
+                    v-for="(item, index) in splitAssets.a"
+                    :key="item + index"
+                >
+                    <UserPill
+                        v-if="item.type === 'user'"
+                        :username="item.value"
+                        :allowDelete="false"
+                    ></UserPill>
+                    <GroupPill
+                        v-else-if="item.type === 'group'"
+                        :name="item.value"
+                        :allowDelete="false"
+                    ></GroupPill>
+                </template>
+
+                <template v-for="item in splitAssets.b" :key="item + index">
+                    <UserPill
+                        v-if="item.type === 'user'"
+                        :username="item.value"
+                        :allowDelete="false"
+                    ></UserPill>
+                    <GroupPill
+                        v-else-if="item.type === 'group'"
+                        :name="item.value"
+                        :allowDelete="false"
+                    ></GroupPill>
+                </template>
+                <div
+                    class="font-bold text-gray-500 cursor-pointer"
+                    @click="
+                        () => {
+                            showAll = !showAll
+                        }
+                    "
+                >
+                    <span v-if="!showAll && splitAssets.b.length > 0"
+                        >Show {{ splitAssets.b.length }} more</span
+                    >
+                    <span v-else-if="showAll">Show less</span>
+                </div>
             </div>
             <div
-                class="flex items-stretch border border-gray-300 rounded opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
+                class="flex items-stretch border border-gray-300 rounded opacity-0  text-gray hover:text-primary"
+                :class="editToggle ? 'opacity-100' : ''"
             >
                 <AtlanBtn
                     class="flex-none px-2 border-l border-gray-300 border-none  hover:text-primary"
@@ -125,10 +173,15 @@
     } from '~/types/accessPolicies/purposes'
     import Owners from '~/components/common/input/owner/index.vue'
     import useScopeService from '~/components/governance/personas/composables/useScopeService'
+    import { splitArray } from '~/utils/string'
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
 
     export default defineComponent({
         name: 'Purpose Policy',
         components: {
+            UserPill,
+            GroupPill,
             Owners,
             AtlanBtn,
             PillGroup,
@@ -147,6 +200,7 @@
         setup(props, { emit }) {
             const { policy, type } = toRefs(props)
             const { findActions } = useScopeService()
+            const editToggle = ref(false)
             const showAll = ref(false)
             const ownersData = computed(() => {
                 return {
@@ -154,6 +208,16 @@
                     ownerGroups: policy.value.groups,
                 }
             })
+            const splitAssets = computed(() =>
+                splitArray(3, [
+                    ...ownersData.value.ownerUsers.map((username) => {
+                        return { type: 'user', value: username }
+                    }),
+                    ...ownersData.value.ownerGroups.map((name) => {
+                        return { type: 'group', value: name }
+                    }),
+                ])
+            )
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
@@ -164,6 +228,9 @@
                 emit('cancel')
             }
             return {
+                editToggle,
+                splitAssets,
+                showAll,
                 ownersData,
                 policy,
                 getPopoverContent,
@@ -174,7 +241,7 @@
     })
 </script>
 
-<style scoped>
+<style lang="less" scoped>
     .data-policy-pill {
         @apply rounded-full text-sm px-2 py-1;
         background-color: #eeffef;

@@ -56,14 +56,14 @@
                 ></AtlanBtn>
             </a-popconfirm>
         </div>
-        <!-- FIXME: Filtersource IDs should be dynamic -->
+
         <div class="relative">
             <div class="mb-2 text-sm text-gray-500 required">Connection</div>
             <Connector
                 v-model:data="connectorData"
                 class="max-w-xs mb-6"
                 :disabled="!policy?.isNew"
-                :filterSourceIds="['powerbi', 'tableau']"
+                :filterSourceIds="BItypes"
                 @change="handleConnectorChange"
                 @blur="
                     () => {
@@ -136,12 +136,7 @@
                                 <Pill class="group" @click="addConnectionAsset">
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -160,12 +155,7 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -259,9 +249,10 @@
     import DataMaskingSelector from './dataMaskingSelector.vue'
     import Pill from '@/UI/pill/pill.vue'
     import { useConnectionStore } from '~/store/connection'
-    import { DataPolicies } from '~/types/accessPolicies/purposes'
+    import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPersona'
     import { useUtils } from '../assets/useUtils'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -282,6 +273,7 @@
         emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
+            const BItypes = getBISourceTypes()
             const { getAssetIcon } = useUtils()
             const connectorComponentRef = ref()
             const policyNameRef = ref()
@@ -407,6 +399,7 @@
                 return `Are you sure you want to delete ${policy?.name}?`
             }
             return {
+                BItypes,
                 getPopoverContent,
                 assetsIcons,
                 customRendererForLabel,

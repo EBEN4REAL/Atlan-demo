@@ -46,7 +46,7 @@
 
     import CreationModal from '@/admin/common/addModal.vue'
 
-    import { IPersona } from '~/types/accessPolicies/purposes'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import {
         isEditing,
         savePersona,
@@ -59,11 +59,11 @@
     import { reFetchList } from './composables/usePurposeList'
 
     export default defineComponent({
-        name: 'PurposeHeader',
+        name: 'Purpose Header',
         components: { Dropdown, CreationModal },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },

@@ -3,17 +3,16 @@
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             <div class="flex items-center text-sm">
-                <Avatar
-                    :username="persona.createdBy"
-                    styleClass="bg-white mr-1"
-                />
-                <span class="text-gray">
-                    {{ persona.createdBy }}
-                </span>
+                <PopOverUser>
+                    <UserPill
+                        :username="username"
+                        :allowDelete="false"
+                    ></UserPill>
+                </PopOverUser>
             </div>
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
-                persona.createdAt?.slice(0, -11)
+                persona.created_at?.slice(0, -17)
             }}</span>
 
             <a-switch
@@ -89,7 +88,6 @@
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
-    import Avatar from '@common/avatar/user.vue'
     import Classification from '@common/input/classification/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
@@ -98,19 +96,27 @@
         saveClassifications,
     } from '../composables/useEditPurpose'
     import { selectedPersona } from '../composables/usePurposeList'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'PurposeMeta',
-        components: { Avatar, Classification },
+        components: { Classification, PopOverUser, UserPill },
         props: {
             persona: {
                 type: Object as PropType<IPurpose>,
                 required: true,
             },
+            username: {
+                type: String,
+                required: true,
+            },
         },
         emits: ['update:persona', 'update:isEditMode'],
-        setup() {
+        setup(props) {
             const { classificationList } = useTypedefData()
+            const { username, persona } = toRefs(props)
+
             const enablePersonaCheck = ref(true)
 
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
@@ -179,6 +185,7 @@
             })
 
             return {
+                username,
                 selectedPersona,
                 updateClassifications,
                 selectedPersonaDirty,

@@ -141,12 +141,7 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -166,12 +161,7 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -197,9 +187,23 @@
         </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
-            <span class="text-sm text-gray-500">Metadata permissions</span>
+            <span class="text-sm text-gray-500 required"
+                >Metadata permissions</span
+            >
         </div>
-        <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
+        <div class="relative">
+            <MetadataScopes
+                v-model:actions="policy.actions"
+                class="mb-6"
+                @change="onScopesChange"
+            />
+            <div
+                class="absolute text-xs text-red-500 -bottom-6"
+                v-if="rules.metadata.show"
+            >
+                {{ rules.metadata.text }}
+            </div>
+        </div>
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? `` : 'checked'"
@@ -252,8 +256,7 @@
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import { useConnectionStore } from '~/store/connection'
 
-    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
-    import { selectedPersonaDirty } from '../composables/useEditPersona'
+    import { MetadataPolicies } from '~/types/accessPolicies/personas'
     import { useUtils } from '../assets/useUtils'
 
     export default defineComponent({
@@ -292,7 +295,7 @@
                 },
                 assets: { text: 'Select atleast 1 asset!', show: false },
                 metadata: {
-                    text: 'Select atleast 1 permissions!',
+                    text: 'Select atleast 1 permission!',
                     show: false,
                 },
             })
@@ -345,6 +348,9 @@
                     rules.value.connection.show = true
                 } else if (policy.value.assets.length < 1) {
                     rules.value.assets.show = true
+                } else if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                    return
                 } else {
                     emit('save')
                 }
@@ -398,8 +404,16 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
+            const onScopesChange = () => {
+                if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                } else {
+                    rules.value.metadata.show = false
+                }
+            }
 
             return {
+                onScopesChange,
                 getPopoverContent,
                 customRendererForLabel,
                 assetsIcons,

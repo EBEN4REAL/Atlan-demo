@@ -36,12 +36,12 @@
             <div
                 class="gap-6 gap-y-0 group"
                 :class="
-                    getDatatypeOfAttribute(a.typeName) === 'text' && !readOnly
+                    getDatatypeOfAttribute(a) === 'text' && !readOnly
                         ? ''
                         : 'mb-4'
                 "
             >
-                <div class="mb-2 text-gray-700">
+                <div class="mb-2 font-normal text-gray-500">
                     <span>{{ a.displayName }}</span>
                     <a-tooltip>
                         <template #title>
@@ -66,7 +66,7 @@
                     >
                         {{ a.value || '-' }}</a
                     >
-                    <span v-else>
+                    <span v-else class="font-bold text-gray-700">
                         {{
                             formatDisplayValue(
                                 a.value?.toString() || '',
@@ -254,7 +254,7 @@
                     } else if (isReady.value) {
                         loading.value = false
                         message.success(
-                            `BM attributes for ${title(
+                            `${data.value?.label} attributes for ${title(
                                 selectedAsset.value
                             )} updated`
                         )

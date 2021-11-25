@@ -7,17 +7,17 @@ export default function useCustomMetadataHelpers() {
     const { enumList } = useTypedefData()
 
     const getDatatypeOfAttribute = (a) => {
-        if (a.typeName && typeof a.typeName !== 'undefined') {
-            if (numberTypes.includes(a.typeName)) return 'number'
-            if (a.typeName.includes('string')) {
-                if (a.options.customType.includes('users')) return 'users'
-                if (a.options.customType.includes('groups')) return 'groups'
-                if (a.options.customType.includes('url')) return `url`
+        if (a?.typeName && typeof a.typeName !== 'undefined') {
+            if (numberTypes.includes(a?.typeName)) return 'number'
+            if (a?.typeName?.includes('string')) {
+                if (a?.options?.customType?.includes('users')) return 'users'
+                if (a?.options?.customType?.includes('groups')) return 'groups'
+                if (a?.options?.customType?.includes('url')) return `url`
 
                 return 'text'
             }
         }
-        return a.typeName || ''
+        return a?.typeName || ''
     }
 
     const isLink = (v: any, name: string) => {

@@ -187,7 +187,9 @@
         </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
-            <span class="text-sm text-gray-500">Metadata permissions</span>
+            <span class="text-sm text-gray-500 required"
+                >Metadata permissions</span
+            >
         </div>
         <div class="relative">
             <MetadataScopes

@@ -10,7 +10,9 @@ interface PersonaParams {
 }
 export default function usePersonaList(params?: Ref<PersonaParams>) {
     const { data, isLoading, mutate: reFetchList } = Persona.List()
-    console.log('dataaa', data.value)
+   watch(data, () => {
+       console.log(data.value, 'sdkshdksjhdjkshdshd')
+   })
 
     const personaList = computed(
         () =>

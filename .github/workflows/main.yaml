@@ -28,7 +28,7 @@ jobs:
       id: get_branch
 
     - name: Get commit id
-      run: echo "##[set-output name=version;]$(echo `git ls-remote https://${{ secrets.my_pat }}@github.com/atlanhq/atlan-v2.git ${{ steps.get_branch.outputs.branch }} | awk '{ print $1}' | cut -c1-7`)"
+      run: echo "##[set-output name=version;]$(echo `git ls-remote https://${{ secrets.my_pat }}@github.com/atlanhq/atlan-frontend.git ${{ steps.get_branch.outputs.branch }} | awk '{ print $1}' | cut -c1-7`)"
       id: get_version
 
     - name: Get previous tag from atlan-frontend repo

@@ -84,8 +84,8 @@
                         class="flex-grow"
                         @change="(e) => handleChange(x, e.target.value)"
                     >
-                        <a-radio class="" :value="true">True</a-radio>
-                        <a-radio class="" :value="false">False</a-radio>
+                        <a-radio class="" :value="true">Yes</a-radio>
+                        <a-radio class="" :value="false">No</a-radio>
                     </a-radio-group>
                     <template
                         v-else-if="
@@ -236,8 +236,8 @@
                 payload.value = payloadConstructor()
 
                 const { error, isReady, isLoading } =
-                    Types.updateAssetBMUpdateChanges(
-                        props.selectedAsset.guid,
+                    Types.updateAssetBMChanges(
+                        selectedAsset.value?.guid,
                         payload.value
                     )
                 loading.value = isLoading.value

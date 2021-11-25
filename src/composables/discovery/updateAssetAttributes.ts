@@ -119,14 +119,14 @@ export default function updateAssetAttributes(selectedAsset) {
         let isChanged = false
         if (
             entity.value.attributes.ownerUsers?.sort().toString() !==
-            localOwners.value?.ownerUsers.sort().toString()
+            localOwners.value?.ownerUsers?.sort().toString()
         ) {
             entity.value.attributes.ownerUsers = localOwners.value?.ownerUsers
             isChanged = true
         }
         if (
             entity.value.attributes.ownerGroups?.sort().toString() !==
-            localOwners.value?.ownerGroups.sort().toString()
+            localOwners.value?.ownerGroups?.sort().toString()
         ) {
             entity.value.attributes.ownerGroups = localOwners.value?.ownerGroups
             isChanged = true

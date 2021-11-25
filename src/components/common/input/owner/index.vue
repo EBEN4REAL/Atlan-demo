@@ -26,7 +26,7 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-for="username in localValue?.ownerUsers" :key="username">
+        <template v-for="username in ownerUsers(selectedAsset)" :key="username">
             <PopOverUser>
                 <UserPill
                     :username="username"
@@ -38,7 +38,7 @@
             </PopOverUser>
         </template>
 
-        <template v-for="name in localValue?.ownerGroups" :key="name">
+        <template v-for="name in ownerGroups(selectedAsset)" :key="name">
             <PopOverGroup>
                 <GroupPill
                     :name="name"
@@ -55,17 +55,6 @@
 <script lang="ts">
     import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
 
-    // Components
-    import UserPill from '@/common/pills/user.vue'
-    import GroupPill from '@/common/pills/group.vue'
-    import OwnerFacets from '@/common/facet/owners/index.vue'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
-    import PopOverUser from '@/common/popover/user/user.vue'
-    import PopOverGroup from '@/common/popover/user/groups.vue'
-    // Composables
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { useGroupPreview } from '~/composables/group/showGroupPreview'
-
     // Utils
     import {
         and,
@@ -74,6 +63,19 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+
+    // Components
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
+    import OwnerFacets from '@/common/facet/owners/index.vue'
+    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import PopOverGroup from '@/common/popover/user/groups.vue'
+
+    // Composables
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'OwnersWidget',
@@ -114,6 +116,7 @@
                 toRefs(props)
             const localValue = ref(modelValue.value)
 
+            const { ownerGroups, ownerUsers, selectedAsset } = useAssetInfo()
             const isEdit = ref(false)
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -132,6 +135,7 @@
 
             const handleChange = () => {
                 modelValue.value = localValue.value
+                console.log('Hellooo')
                 emit('change')
             }
 
@@ -205,8 +209,9 @@
             }
 
             return {
-                enableHover,
-                readOnly,
+                ownerGroups,
+                ownerUsers,
+                selectedAsset,
                 handleClickUser,
                 handleClickGroup,
                 localValue,

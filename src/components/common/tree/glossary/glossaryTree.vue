@@ -156,9 +156,10 @@
                 addNode(asset)
             }
 
-            const addGTCNode = (asset) => {
+            const addGTCNode = (asset, entity = {}) => {
                 console.log('add node', selectedKeys.value)
-                addNode(asset)
+                if (entity !== {}) addNode(asset, entity)
+                else addNode(asset)
             }
 
             provide('addGTCNode', addGTCNode)

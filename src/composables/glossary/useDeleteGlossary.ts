@@ -64,14 +64,12 @@ const useDeleteGlossary = () => {
         }
 
         watch(deleteError, (newError) => {
-            console.log(newError)
-            error.value = newError?.value
-            const errMsg = error.value?.response?.data?.errorMessage
+            const errMsg =
+                newError?.response?.data?.errorMessage ||
+                'Something went wrong!'
 
             message.error({
-                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
-                    1
-                )}`,
+                content: `${errMsg}`,
                 duration: 5,
             })
         })

@@ -7,6 +7,7 @@
                 :categoryName="item?.categoryName"
                 :glossary-qualified-name="item?.glossaryQualifiedName"
                 :categoryGuid="item?.categoryGuid"
+                @add="handleAdd"
             >
                 <template #trigger>
                     <div class="flex items-center hover:underline text-primary">
@@ -61,7 +62,7 @@
 </template>
 <script lang="ts">
     // library
-    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import Actions from './actions.vue'
@@ -113,6 +114,14 @@
 
                 return 'text-sm text-gray-700'
             })
+            const addGTCNode = inject('addGTCNode')
+            const handleAdd = (asset) => {
+                console.log(item.value)
+                console.log(addGTCNode)
+                // }
+                // console.log('asdsd', entity)
+                addGTCNode(asset, item.value.parentCategory)
+            }
 
             return {
                 getEntityStatusIcon,
@@ -122,6 +131,7 @@
                 textClass,
                 getAnchorQualifiedName,
                 getAnchorName,
+                handleAdd,
             }
         },
     })

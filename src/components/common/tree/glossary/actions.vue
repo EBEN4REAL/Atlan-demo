@@ -45,6 +45,7 @@
                         entityType="AtlasGlossaryTerm"
                         :glossaryName="glossaryName"
                         :categoryName="categoryName"
+                        @add="handleAdd"
                         :glossary-qualified-name="glossaryQualifiedName"
                         :categoryGuid="categoryGuid"
                     >
@@ -257,7 +258,7 @@
                 console.log(addGTCNode)
                 // }
                 // console.log('asdsd', entity)
-                // addGTCNode(asset)
+                addGTCNode(asset, entity.value)
             }
             // const {
             //     deleteGlossary,

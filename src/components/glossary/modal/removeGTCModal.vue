@@ -146,46 +146,54 @@
             //     mutateAsset()
             // }
             const handleDelete = () => {
-                const { data, isLoading: loading } = serviceMap[
-                    props.entity?.typeName
-                ](
+                const {
+                    data,
+                    isLoading: loading,
+                    deleteError,
+                } = serviceMap[props.entity?.typeName](
                     props.entity?.guid,
                     false,
                     props.entity?.attributes?.anchor?.guid
                 )
                 isLoading.value = loading.value
-                watch(data, () => {
-                    isLoading.value = loading.value
-                    message.success(`${props.entity?.name} deleted`)
-                    if (refetchGlossaryTree) {
-                        if (
-                            props.entity?.typeName === 'AtlasGlossaryCategory'
-                        ) {
-                            refetchGlossaryTree(
-                                props.entity?.attributes?.parentCategory
-                                    ?.guid ?? 'root',
-                                props.entity?.attributes?.qualifiedName,
-                                'category'
-                            )
-                        } else if (
-                            props.entity?.typeName === 'AtlasGlossaryTerm'
-                        ) {
-                            if (props.entity?.attributes?.categories?.length) {
-                                props.entity?.attributes?.categories?.forEach(
-                                    (category) => {
-                                        refetchGlossaryTree(
-                                            category.guid,
-                                            category?.uniqueAttributes
-                                                ?.qualifiedName,
-                                            'term'
-                                        )
-                                    }
+                watch([data, deleteError], () => {
+                    if (data.value && !deleteError.value) {
+                        message.success(`${props.entity?.name} deleted`)
+                        if (refetchGlossaryTree) {
+                            if (
+                                props.entity?.typeName ===
+                                'AtlasGlossaryCategory'
+                            ) {
+                                refetchGlossaryTree(
+                                    props.entity?.attributes?.parentCategory
+                                        ?.guid ?? 'root',
+                                    props.entity?.attributes?.qualifiedName,
+                                    'category'
                                 )
-                            } else {
-                                refetchGlossaryTree('root', '', 'term')
+                            } else if (
+                                props.entity?.typeName === 'AtlasGlossaryTerm'
+                            ) {
+                                if (
+                                    props.entity?.attributes?.categories?.length
+                                ) {
+                                    props.entity?.attributes?.categories?.forEach(
+                                        (category) => {
+                                            refetchGlossaryTree(
+                                                category.guid,
+                                                category?.uniqueAttributes
+                                                    ?.qualifiedName,
+                                                'term'
+                                            )
+                                        }
+                                    )
+                                } else {
+                                    refetchGlossaryTree('root', '', 'term')
+                                }
                             }
                         }
                     }
+                    isLoading.value = loading.value
+                    visible.value = false
                 })
             }
 

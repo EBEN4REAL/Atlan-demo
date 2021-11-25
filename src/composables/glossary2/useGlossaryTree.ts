@@ -185,7 +185,6 @@ const useGlossaryTree = ({
                     if (!treeNode.dataRef.children) {
                         treeNode.dataRef.children = []
                     }
-                    console.log(data.value?.entities)
                     if (data.value?.entities) {
                         let map = data.value?.entities?.map((i) => ({
                             ...i,
@@ -234,7 +233,7 @@ const useGlossaryTree = ({
                             title: 'cta',
                             isLeaf: true,
                             typeName: 'cta',
-                            guid: 'cta',
+                            guid: `${treeNode.attributes?.qualifiedName}_cta`,
                             glossaryName:
                                 treeNode?.attributes?.anchor?.attributes?.name,
                             glossaryQualifiedName:
@@ -242,9 +241,14 @@ const useGlossaryTree = ({
                                     ?.qualifiedName,
                             categoryName: treeNode?.attributes?.name,
                             categoryGuid: treeNode?.guid,
+                            parentCategory: treeNode,
                             selectable: false,
                         })
                         loadedKeys.value.push(treeNode.dataRef.key)
+                        nodeToParentKeyMap[
+                            `${treeNode.attributes?.qualifiedName}_cta`
+                        ] = treeNode.dataRef.key
+                        console.log(nodeToParentKeyMap)
                     }
                     treeNode.dataRef.isLoading = false
                     treeNode.dataRef.isError = null
@@ -295,6 +299,8 @@ const useGlossaryTree = ({
         const allPaths: string[][] = []
 
         const firstParent = nodeToParentKeyMap[targetGuid]
+        console.log(targetGuid)
+        console.log(firstParent)
         if (typeof firstParent === 'string') {
             parentStack = initialStack?.length ? initialStack : [targetGuid]
             findPath(targetGuid)
@@ -308,6 +314,7 @@ const useGlossaryTree = ({
                 allPaths.push(parentStack)
             })
         }
+        console.log(allPaths)
         return allPaths
     }
 
@@ -316,8 +323,6 @@ const useGlossaryTree = ({
             expandNode([], event)
             // selectedKeys.value = []
         }
-        console.log('select')
-        console.log(event.node.dataRef)
         emit('select', event.node.dataRef)
     }
 
@@ -387,41 +392,161 @@ const useGlossaryTree = ({
     }
 
     const { getAnchorQualifiedName } = useAssetInfo()
+    const recursivelyAddNode = async (asset, entity) => {
+        let parentStack: string[]
 
-    const addNode = (asset): TreeDataItem => {
-        if (asset.typeName === 'AtlasGlossary') {
-            treeData.value.unshift({
-                ...asset,
-                id: asset.attributes?.qualifiedName,
-                key: asset.attributes?.qualifiedName,
-                isLeaf: false,
-            })
+        const updateNodeNested = async (node: TreeDataItem) => {
+            const currentPath = parentStack.pop()
+            const guid = entity?.value?.guid || entity?.value
+            console.log(currentPath)
+            console.log(node)
+            // if the target node is reached
+            if (node.key === guid || !currentPath || node.guid === guid) {
+                console.log('reached target')
+                console.log(node)
+                const updatedChildren: TreeDataItem[] = []
+                node?.children?.forEach((element) => {
+                    if (element?.typeName !== 'cta')
+                        updatedChildren.push(element)
+                })
+                updatedChildren.push({
+                    ...asset,
+                    id: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
+                    key: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
+                    isLeaf: asset.typeName === 'AtlasGlossaryTerm',
+                })
+                nodeToParentKeyMap[asset?.guid ?? asset?.value?.guid ?? ''] =
+                    node.key as string
+
+                return {
+                    ...node,
+                    children: updatedChildren,
+                }
+            }
+            const updatedChildren: TreeDataItem[] = []
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const childNode of node?.children ?? []) {
+                console.log(childNode)
+                // if the current node is in the path that is needed to reach the target node
+                if (
+                    childNode.key === currentPath ||
+                    childNode.guid === currentPath
+                ) {
+                    const updatedNode = await updateNodeNested(childNode)
+                    updatedChildren.push(updatedNode)
+                } else {
+                    updatedChildren.push(childNode)
+                }
+            }
+            return {
+                ...node,
+                children: updatedChildren,
+            }
         }
 
-        if (asset.typeName === 'AtlasGlossaryTerm') {
-            treeData.value.unshift({
-                ...asset,
-                id: `${getAnchorQualifiedName(asset)}_${
-                    asset.attributes?.qualifiedName
-                }`,
-                key: `${getAnchorQualifiedName(asset)}_${
-                    asset.attributes?.qualifiedName
-                }`,
-                isLeaf: true,
-            })
+        // find the path to the node
+        parentStack = recursivelyFindPath(
+            entity?.guid || entity?.value?.guid
+        )[0]
+        console.log(parentStack)
+        const parent = parentStack?.pop()
+        const updatedTreeData: TreeDataItem[] = []
+        console.log(parent)
+        console.log(treeData.value)
+        // eslint-disable-next-line no-restricted-syntax
+        for (const node of treeData.value) {
+            if (node.key === parent || node.guid === parent) {
+                const updatedNode = await updateNodeNested(node)
+                updatedTreeData.push(updatedNode)
+            } else {
+                updatedTreeData.push(node)
+            }
         }
 
-        if (asset.typeName === 'AtlasGlossaryCategory') {
-            treeData.value.unshift({
-                ...asset,
-                id: `${getAnchorQualifiedName(asset)}_${
-                    asset.attributes?.qualifiedName
-                }`,
-                key: `${getAnchorQualifiedName(asset)}_${
-                    asset.attributes?.qualifiedName
-                }`,
-                isLeaf: false,
-            })
+        treeData.value = updatedTreeData
+
+        // let parentStack: string[]
+        // parentStack = recursivelyFindPath(entity.value?.guid || entity?.guid)[0]
+        // console.log(parentStack)
+        // const parent = parentStack?.pop()
+        // const updatedTreeData: TreeDataItem[] = []
+        // console.log(parent)
+        // treeData.value.forEach((node) => {
+        //     console.log(node.key, node.guid)
+        //     if (
+        //         node.key === entity?.value?.guid ||
+        //         node.guid === entity?.value?.guid ||
+        //         node.key === entity?.guid ||
+        //         node.guid === entity?.guid
+        //     ) {
+        //         console.log(node)
+        //         node.children?.push({
+        //             ...asset,
+        //             id: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
+        //             key: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
+        //             isLeaf: asset.typeName === 'AtlasGlossaryTerm',
+        //         })
+        //         console.log(node)
+        //         nodeToParentKeyMap[asset?.guid ?? asset?.value?.guid ?? ''] =
+        //             node.key as string
+
+        //         updatedTreeData.push(node)
+        //     } else {
+        //         updatedTreeData.push(node)
+        //     }
+        // })
+
+        // treeData.value = updatedTreeData
+    }
+    const addNode = (asset, entity): TreeDataItem => {
+        console.log(asset)
+        if (entity && entity !== {}) {
+            console.log(entity)
+            recursivelyAddNode(asset, entity)
+            // refetchNode(
+            //     entity?.guid || entity.value?.guid,
+            //     entity?.attributes?.qualifiedName ||
+            //         entity.value?.attributes?.qualifiedName,
+            //     'term'
+            // )
+        } else {
+            nodeToParentKeyMap[asset?.guid ?? asset?.value?.guid ?? ''] = 'root'
+
+            if (asset.typeName === 'AtlasGlossary') {
+                treeData.value.unshift({
+                    ...asset,
+                    id: asset.attributes?.qualifiedName,
+                    key: asset.attributes?.qualifiedName,
+                    isLeaf: false,
+                })
+            }
+
+            if (asset.typeName === 'AtlasGlossaryTerm') {
+                treeData.value.unshift({
+                    ...asset,
+                    id: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
+                    key: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
+                    isLeaf: true,
+                })
+            }
+
+            if (asset.typeName === 'AtlasGlossaryCategory') {
+                treeData.value.unshift({
+                    ...asset,
+                    id: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
+                    key: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
+                    isLeaf: false,
+                })
+            }
         }
     }
     const refetchNode = async (

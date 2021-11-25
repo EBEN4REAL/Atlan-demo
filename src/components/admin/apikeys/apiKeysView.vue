@@ -222,7 +222,6 @@ export default defineComponent({
             )
         }
         const handleSelectAPIKey = (apikey) => {
-            // Disabling edit flow for now
             toggleAPIKeyDrawer()
             const localAPIKey = {
                 displayName: apikey?.display_name,

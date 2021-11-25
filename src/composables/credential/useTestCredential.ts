@@ -5,7 +5,7 @@ import axios from 'axios'
 import { Credential } from '~/services/service/credentials'
 import { useOptions } from '~/services/api/common'
 
-export default function useTestCredential(
+export function useTestCredential(
     body: Record<string, any> | Ref<Record<string, any>>
 ) {
     const options: useOptions = {}

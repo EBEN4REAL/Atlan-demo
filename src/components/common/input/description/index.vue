@@ -8,8 +8,10 @@
             @click="handleEdit"
             :class="$style.editable"
         >
-            <span v-if="!isEdit && localValue">{{ localValue }}</span>
-            <span v-else-if="!isEdit && localValue === ''"
+            <span v-if="!isEdit && description(selectedAsset)">{{
+                description(selectedAsset)
+            }}</span>
+            <span v-else-if="!isEdit && description(selectedAsset) === ''"
                 >No description available</span
             >
             <a-textarea
@@ -44,6 +46,7 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'DescriptionWidget',
@@ -64,6 +67,8 @@
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
+
+            const { description, selectedAsset } = useAssetInfo()
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -104,6 +109,8 @@
                 isEdit,
                 start,
                 handleBlur,
+                selectedAsset,
+                description,
             }
         },
     })

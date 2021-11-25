@@ -73,9 +73,23 @@
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
-            <span class="text-sm text-gray-500">Metadata permissions</span>
+            <span class="text-sm text-gray-500 required"
+                >Metadata permissions</span
+            >
         </div>
-        <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
+        <div class="relative">
+            <MetadataScopes
+                v-model:actions="policy.actions"
+                class="mb-6"
+                @change="onScopesChange"
+            />
+            <div
+                class="absolute text-xs text-red-500 -bottom-6"
+                v-if="rules.metadata.show"
+            >
+                {{ rules.metadata.text }}
+            </div>
+        </div>
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
@@ -119,19 +133,11 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Pill from '@/UI/pill/pill.vue'
-    import Connector from './connector.vue'
-    import MetadataScopes from './metadataScopes.vue'
+    import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import Owners from '~/components/common/input/owner/index.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
@@ -141,7 +147,6 @@
         components: {
             Pill,
             AtlanBtn,
-            Connector,
             MetadataScopes,
             PillGroup,
             Owners,
@@ -169,7 +174,7 @@
                     show: false,
                 },
                 metadata: {
-                    text: 'Select atleast 1 permissions!',
+                    text: 'Select atleast 1 permission!',
                     show: false,
                 },
             })
@@ -193,10 +198,13 @@
                     return
                 } else if (
                     selectedOwnersData.value?.ownerUsers?.length +
-                        selectedOwnersData.value?.ownerGroups?.length <
-                    1
+                        selectedOwnersData.value?.ownerGroups?.length ===
+                    0
                 ) {
                     rules.value.users.show = true
+                    return
+                } else if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
                     return
                 } else {
                     emit('save')
@@ -240,7 +248,16 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
+
+            const onScopesChange = () => {
+                if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                } else {
+                    rules.value.metadata.show = false
+                }
+            }
             return {
+                onScopesChange,
                 getPopoverContent,
                 selectedOwnersData,
                 handleOwnersChange,

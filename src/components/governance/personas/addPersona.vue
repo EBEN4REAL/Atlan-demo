@@ -32,12 +32,13 @@
     import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import usePersonaService from './composables/usePersonaService'
+    import { IPersona } from '~/types/accessPolicies/personas'
+
     import {
         reFetchList,
         selectedPersonaId,
     } from './composables/usePersonaList'
-    import { IPurpose } from '~/types/accessPolicies/purposes'
+    import usePersonaService from './composables/usePersonaService'
 
     export default defineComponent({
         name: 'AddPersona',
@@ -76,7 +77,7 @@
                     key: messageKey,
                 })
                 try {
-                    const newPersona: IPurpose = await createPersona({
+                    const newPersona: IPersona = (await createPersona({
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
@@ -85,7 +86,7 @@
                         groups: [],
                         personaType: 'persona',
                         dataPolicies: [],
-                    })
+                    })) as IPersona
                     message.success({
                         content: `${title.value} persona Created`,
                         duration: 1.5,
@@ -97,9 +98,11 @@
                         selectedPersonaId.value = newPersona.id!
                         modalVisible.value = false
                     })
-                } catch (error) {
+                } catch (error: any) {
                     message.error({
-                        content: error?.message ?? 'Failed to create persona',
+                        content:
+                            error?.response?.data?.message ??
+                            'Failed to create persona',
                         duration: 1.5,
                         key: messageKey,
                     })

@@ -262,9 +262,38 @@ const useTree = ({
         store.set(expandedCacheKey, expandedKeys.value)
     }
 
+    // let selectedNodeForFolder = ref(null)
+
+    // const addInputBox = () => {
+    //     if(selectedNodeForFolder.value) {
+    //         selectedNodeForFolder.value.children.unshift(
+    //             {
+    //                 class: 'addInput',
+    //                 key: String(new Date().getTime()),
+    //                 typeName: 'QueryFolder',
+    //             }
+    //         )
+    //     }
+    // }
+    // const removeInputBox = () => {
+    //     if(selectedNodeForFolder.value) {
+    //         if(selectedNodeForFolder.value.children.length && selectedNodeForFolder.value.children[0].class==='addInput') {
+    //             selectedNodeForFolder.value.children.shift()
+    //         }
+    //     }
+    // }
+
     const selectNode = (selected: any, event: any) => {
+        console.log('select input: ', selected)
         const item = event.node.dataRef.entity as Folder | SavedQuery
-        console.log('opened query: ', event.node)
+
+        // selectedNodeForFolder.value = event.node.dataRef;
+
+
+        // console.log('event.node.dataRef: ', event.node.dataRef)
+        // console.log('event.selected: ', selected
+        // )
+        // console.log('opened query: ', event.node)
         const parentTitle = event.node.dataRef?.parentTitle;
 
         if (item.typeName === 'Query') {
@@ -635,7 +664,9 @@ const useTree = ({
         onLoadFolderData,
         expandNode,
         selectNode,
-        refetchNode
+        refetchNode,
+        // addInputBox,
+        // removeInputBox
     }
 }
 

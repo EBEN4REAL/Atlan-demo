@@ -1,12 +1,5 @@
 <template>
-    <a-form-item
-        :label="property.ui?.label"
-        v-if="!property.ui?.hidden"
-        :name="property.id"
-        :required="property.required"
-    >
-        <a-input v-bind="componentProps" v-model:value="localValue"></a-input>
-    </a-form-item>
+    <a-input v-bind="componentProps" v-model:value="localValue"></a-input>
 </template>
 
 <script>

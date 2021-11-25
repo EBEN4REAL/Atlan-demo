@@ -1,5 +1,5 @@
 <template>
-    <FormItem :configMap="property"></FormItem>
+    <FormItem :configMap="property" :baseKey="property.id"></FormItem>
 </template>
 
 <script>

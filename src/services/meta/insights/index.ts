@@ -3,6 +3,7 @@ import { useAPI } from '~/services/api/useAPI'
 import { SavedQueryResponse } from '~/types/insights/savedQuery.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 import { useOptions } from '~/services/api/common'
+import { map as Index } from '~/services/meta/search/key'
 
 const CreateSavedQuery = (body: Record<string, any>, options: useOptions) => {
     return useAPI<BasicSearchResponse<any>>(
@@ -37,6 +38,15 @@ const GetSavedQuery = (guid: string, options: useOptions) => {
         options || {}
     )
 }
+
+const GetSavedQueryIndex = (body, options: useOptions) => {
+    return useAPI<SavedQueryResponse>(
+        Index.INDEX_SEARCH, 'POST', {
+            body,
+        },
+        options || {}
+    )
+    }
 const UpdateSavedQuery = (body: Record<string, any>, options: useOptions) => {
     return useAPI<SavedQueryResponse>(
         map.UPDATE_SAVED_QUERY,
@@ -77,5 +87,6 @@ export const Insights = {
     GetSavedQuery,
     CreateQueryFolder,
     DeleteEntity,
-    UpdateSavedFolder
+    UpdateSavedFolder,
+    GetSavedQueryIndex
 }

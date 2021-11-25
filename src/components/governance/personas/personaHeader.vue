@@ -43,10 +43,8 @@
 <script lang="ts">
     import { defineComponent, PropType, computed, toRefs, ref } from 'vue'
     import { message } from 'ant-design-vue'
-
     import CreationModal from '@/admin/common/addModal.vue'
-
-    import { IPurpose } from '~/types/accessPolicies/purposes'
+    import { IPersona } from '~/types/accessPolicies/personas'
     import {
         isEditing,
         savePersona,
@@ -63,7 +61,7 @@
         components: { Dropdown, CreationModal },
         props: {
             persona: {
-                type: Object as PropType<IPurpose>,
+                type: Object as PropType<IPersona>,
                 required: true,
             },
         },

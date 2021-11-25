@@ -84,7 +84,7 @@
             <span class="text-sm text-gray-500">Masking</span>
         </div>
 
-        <DataMaskingSelector v-model:mask="policy.mask" class="mb-6 w-80" />
+        <DataMaskingSelector v-model:maskType="policy.mask" class="mb-6 w-80" />
 
         <div class="flex items-center gap-x-2">
             <a-switch
@@ -129,19 +129,11 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
-    import Connector from './connector.vue'
-    import DataMaskingSelector from './dataMaskingSelector.vue'
     import Pill from '@/UI/pill/pill.vue'
+    import DataMaskingSelector from '~/components/governance/personas/policies/dataMaskingSelector.vue'
     import { DataPolicies } from '~/types/accessPolicies/purposes'
     import { removeEditFlag } from '../composables/useEditPurpose'
     import Owners from '~/components/common/input/owner/index.vue'
@@ -153,7 +145,6 @@
             Pill,
             Owners,
             AtlanBtn,
-            Connector,
             PillGroup,
             DataMaskingSelector,
         },
@@ -206,8 +197,8 @@
                     return
                 } else if (
                     selectedOwnersData.value?.ownerUsers?.length +
-                        selectedOwnersData.value?.ownerGroups?.length <
-                    1
+                        selectedOwnersData.value?.ownerGroups?.length ===
+                    0
                 ) {
                     rules.value.users.show = true
                     return
@@ -242,7 +233,6 @@
                 } else {
                     rules.value.users.show = false
                 }
-                /* Call save purpose */
             }
 
             watch(selectedPersonaDirty, () => {

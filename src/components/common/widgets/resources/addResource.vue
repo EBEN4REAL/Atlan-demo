@@ -25,21 +25,23 @@
                 <a-button type="primary" @click="handleAdd">Add</a-button>
             </div>
         </template>
-        <a-input
-            v-model:value="link"
-            ref="titleBar"
-            placeholder="Paste resource link"
-            class="text-lg font-bold text-gray-700"
-            allow-clear
-        />
-        <div v-if="link" class="flex items-center gap-x-2">
-            <img :src="faviconLink" alt="" class="w-5 h-5 mt-2" />
+        <div class="px-4 pt-0 pb-4">
             <a-input
-                v-model:value="linkTitle"
-                placeholder="Resource title"
-                class="mt-3 text-lg font-bold text-gray-700"
+                ref="titleBar"
+                v-model:value="link"
+                placeholder="Paste resource link"
+                class="text-lg font-bold text-gray-700"
                 allow-clear
             />
+            <div v-if="link" class="flex items-center gap-x-2">
+                <img :src="faviconLink" alt="" class="w-5 h-5 mt-2" />
+                <a-input
+                    v-model:value="linkTitle"
+                    placeholder="Resource title"
+                    class="mt-3 text-lg font-bold text-gray-700"
+                    allow-clear
+                />
+            </div>
         </div>
     </a-modal>
 </template>

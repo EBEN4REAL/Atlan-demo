@@ -189,7 +189,19 @@
             <AtlanIcon class="text-gray-500" icon="Lock" />
             <span class="text-sm text-gray-500">Metadata permissions</span>
         </div>
-        <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
+        <div class="relative">
+            <MetadataScopes
+                v-model:actions="policy.actions"
+                class="mb-6"
+                @change="onScopesChange"
+            />
+            <div
+                class="absolute text-xs text-red-500 -bottom-6"
+                v-if="rules.metadata.show"
+            >
+                {{ rules.metadata.text }}
+            </div>
+        </div>
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? `` : 'checked'"
@@ -281,7 +293,7 @@
                 },
                 assets: { text: 'Select atleast 1 asset!', show: false },
                 metadata: {
-                    text: 'Select atleast 1 permissions!',
+                    text: 'Select atleast 1 permission!',
                     show: false,
                 },
             })
@@ -334,6 +346,9 @@
                     rules.value.connection.show = true
                 } else if (policy.value.assets.length < 1) {
                     rules.value.assets.show = true
+                } else if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                    return
                 } else {
                     emit('save')
                 }
@@ -387,8 +402,16 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
+            const onScopesChange = () => {
+                if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                } else {
+                    rules.value.metadata.show = false
+                }
+            }
 
             return {
+                onScopesChange,
                 getPopoverContent,
                 customRendererForLabel,
                 assetsIcons,

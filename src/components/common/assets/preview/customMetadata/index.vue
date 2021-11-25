@@ -42,7 +42,17 @@
                 "
             >
                 <div class="mb-2 text-gray-700">
-                    {{ a.displayName }}
+                    <span>{{ a.displayName }}</span>
+                    <a-tooltip>
+                        <template #title>
+                            <span>{{ a.options.description }}</span>
+                        </template>
+                        <AtlanIcon
+                            v-if="a.options.description"
+                            class="inline h-4 mb-1 ml-2 text-gray-400  hover:text-gray-500"
+                            icon="Info"
+                        />
+                    </a-tooltip>
                 </div>
 
                 <div

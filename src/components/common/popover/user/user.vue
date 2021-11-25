@@ -8,17 +8,25 @@
                     <span class="uppercase">user</span>
                 </div>
                 <div class="flex items-center gap-3 mt-2">
-                    <a-avatar size="large">{{item[0]}}</a-avatar>
+                    <a-avatar size="large">{{ item[0] }}</a-avatar>
                     <div>
-                        <div class="text-sm font-semibold">{{ selectedUser.name }}</div>
-                        <div class="text-xs text-gray-500">{{ selectedUser.email}}</div>
+                        <div class="text-sm font-semibold">
+                            {{ selectedUser.name }}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            {{ selectedUser.email }}
+                        </div>
                     </div>
                 </div>
                 <div class="mt-3">
                     <div class="text-xs text-gray-500">Ownership</div>
                     <div class="flex gap-5 mt-1">
-                        <div><strong>{{assetCount}}</strong> Assets</div>
-                        <div><strong>{{bussinesCount}}</strong> Business Terms</div>
+                        <div>
+                            <strong>{{ assetCount }}</strong> Assets
+                        </div>
+                        <div>
+                            <strong>{{ bussinesCount }}</strong> Business Terms
+                        </div>
                     </div>
                 </div>
                 <div class="mt-3">
@@ -35,10 +43,9 @@
                                 rounded-xl
                             "
                         >
-                            {{group.name}}
+                            {{ group.name }}
                         </span>
                         <span v-if="groupList.length === 0">-</span>
-                    
                     </div>
                 </div>
                 <div class="mt-3">
@@ -76,6 +83,7 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { Search } from '~/services/meta/search'
     import { useUsers } from '~/composables/user/useUsers'
+    import usePersonaList from '../persona/usePersonaList'
 
     export default {
         name: 'PopoverAsset',
@@ -88,22 +96,19 @@
             item: {
                 type: String,
                 required: false,
-                default: ""
+                default: '',
             },
         },
         emits: [],
         setup(props) {
-            const {item} = toRefs(props)
+            const { item } = toRefs(props)
             const { setUserUniqueAttribute, showUserPreview } = useUserPreview()
             const params = {
                 limit: 1,
                 offset: 0,
                 filter: {
-                    $and: [
-                        { email_verified: true },
-                        { username: item.value },
-                    ],
-                }
+                    $and: [{ email_verified: true }, { username: item.value }],
+                },
             }
             const { userList, isLoading } = useUsers(params, item.value)
 
@@ -127,54 +132,68 @@
                     filter: {},
                 },
             }
-            const { groupList } = getUserGroups(groupListAPIParams, selectedUser?.value.id)
+            const { groupList } = getUserGroups(
+                groupListAPIParams,
+                selectedUser?.value.id
+            )
             // watch(groupList, (newVal) => {
             //     console.log(newVal, 'shdsdhsgdsjdgjshgjd')
             // })
-            
+
             const query = bodybuilder()
-            .filter('term', 'ownerUsers', item.value)
-            .aggregation(
-                'terms',
-                '__typeName.keyword',
-                {},
-                'group_by_typeName'
-            )
-            .size(10)
-            .build()
-            const { data } = Search.IndexSearch(
-                { dsl: query }, {}
-            )
+                .filter('term', 'ownerUsers', item.value)
+                .aggregation(
+                    'terms',
+                    '__typeName.keyword',
+                    {},
+                    'group_by_typeName'
+                )
+                .size(10)
+                .build()
+            const { data } = Search.IndexSearch({ dsl: query }, {})
             const bussinesCount = computed(() => {
-                const arrBus = ["atlasglossary", "atlasglossarycategory", "atlasglossaryterm"]
-                const aggs = data?.value?.aggregations?.group_by_typeName?.buckets || []
+                const arrBus = [
+                    'atlasglossary',
+                    'atlasglossarycategory',
+                    'atlasglossaryterm',
+                ]
+                const aggs =
+                    data?.value?.aggregations?.group_by_typeName?.buckets || []
                 let count = 0
-                aggs.forEach(el => {
-                    if(arrBus.includes(el.key.toLowerCase())){
+                aggs.forEach((el) => {
+                    if (arrBus.includes(el.key.toLowerCase())) {
                         count += el.doc_count
                     }
-                });
+                })
                 return count
             })
             const assetCount = computed(() => {
-                const aggs = data?.value?.aggregations?.group_by_typeName?.buckets || []
+                const aggs =
+                    data?.value?.aggregations?.group_by_typeName?.buckets || []
                 let count = 0
-                aggs.forEach(el => {
+                aggs.forEach((el) => {
                     count += el.doc_count
-                });
+                })
                 return count
             })
             const handleClickViewUser = () => {
                 setUserUniqueAttribute(item.value, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
+
+            const { personaList, list } = usePersonaList()
+
+            // const persona = personaList.filter(el => )
+            console.log('this', personaList.value)
+            console.log('here', list)
             return {
                 selectedUser,
                 isLoading,
                 bussinesCount,
                 assetCount,
                 groupList,
-                handleClickViewUser
+                handleClickViewUser,
+                personaList,
             }
         },
     }

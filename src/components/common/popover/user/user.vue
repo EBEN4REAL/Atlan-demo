@@ -95,9 +95,6 @@
 <script lang="ts">
     import { toRefs, computed, watch, ref } from 'vue'
     import bodybuilder from 'bodybuilder'
-    // import ClassificationPill from '@/common/pills/classification.vue'
-    // import UserPill from '@/common/pills/user.vue'
-    // import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import getUserGroups from '~/composables/user/getUserGroups'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { Search } from '~/services/meta/search'
@@ -105,12 +102,7 @@
     import usePersonaList from '../persona/usePersonaList'
 
     export default {
-        name: 'PopoverAsset',
-        components: {
-            // UserAvatar,
-            // ClassificationPill,
-            // UserPill,
-        },
+        name: 'PopoverUser',
         props: {
             item: {
                 type: String,
@@ -150,7 +142,6 @@
                     filter: {},
                 },
             }
-            // console.log(groupListAPIParams)
             const { groupList } = getUserGroups(
                 groupListAPIParams,
                 selectedUser?.value.id

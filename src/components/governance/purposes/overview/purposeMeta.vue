@@ -12,7 +12,7 @@
             </div>
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
-                persona.created_at?.slice(0, -11)
+                persona.created_at?.slice(0, -17)
             }}</span>
 
             <a-switch

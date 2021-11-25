@@ -38,7 +38,8 @@
                 </div>
                 <router-link :to="path">
                     <a-button class="mt-3" block>
-                        <strong> View user profile </strong>
+                        <strong> View group profile </strong>
+                        <AtlanIcon icon="Enter" class="mr-1 mb-0.5" />
                     </a-button>
                 </router-link>
             </div>

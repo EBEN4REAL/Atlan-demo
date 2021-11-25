@@ -1,19 +1,19 @@
 <template>
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
-            placement="leftBottom"
-            :overlayClassName="$style.ownerPopover"
-            @visibleChange="handleVisibleChange"
-            :trigger="['click']"
             v-model:visible="isEdit"
-            :destroyTooltipOnHide="destroyTooltipOnHide"
+            placement="leftBottom"
+            :overlay-class-name="$style.ownerPopover"
+            :trigger="['click']"
+            :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            @visibleChange="handleVisibleChange"
         >
             <template #content>
                 <div class="">
                     <OwnerFacets
                         ref="ownerInputRef"
                         v-model="localValue"
-                        :showNone="false"
+                        :show-none="false"
                     ></OwnerFacets>
                 </div>
             </template>
@@ -21,19 +21,19 @@
                 v-if="!readOnly"
                 shape="circle"
                 size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
         <template v-for="username in ownerUsers(selectedAsset)" :key="username">
-            <PopOverUser>
+            <PopOverUser :item="username">
                 <UserPill
                     :username="username"
-                    :allowDelete="!readOnly"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
                     @delete="handleDeleteUser"
                     @click="handleClickUser(username)"
-                    :enableHover="enableHover"
                 ></UserPill>
             </PopOverUser>
         </template>
@@ -42,10 +42,10 @@
             <PopOverGroup>
                 <GroupPill
                     :name="name"
-                    :allowDelete="!readOnly"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
                     @delete="handleDeleteGroup"
                     @click="handleClickGroup(name)"
-                    :enableHover="enableHover"
                 ></GroupPill>
             </PopOverGroup>
         </template>
@@ -135,7 +135,6 @@
 
             const handleChange = () => {
                 modelValue.value = localValue.value
-                console.log('Hellooo')
                 emit('change')
             }
 

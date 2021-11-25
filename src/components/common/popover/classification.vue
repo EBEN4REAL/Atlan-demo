@@ -47,7 +47,7 @@
                             Created by
                         </span>
                         <div class="flex flex-wrap gap-3">
-                            <span class="text-primary">
+                            <span>
                                 {{ classification.createdBy }}
                             </span>
                         </div>
@@ -60,7 +60,7 @@
                             Updated by
                         </span>
                         <div class="flex flex-wrap gap-3">
-                            <span class="text-primary">
+                            <span>
                                 {{ classification.updatedBy }}
                             </span>
                         </div>
@@ -73,10 +73,7 @@
                             Updated at
                         </span>
                         <div class="flex flex-wrap gap-3">
-                            <span
-                                v-if="classification.updateTime"
-                                class="text-primary"
-                            >
+                            <span v-if="classification.updateTime">
                                 {{
                                     useTimeAgo(classification.updateTime).value
                                 }}

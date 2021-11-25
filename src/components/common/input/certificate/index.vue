@@ -24,8 +24,8 @@
 
             <CertificatePill
                 v-if="
-                    localValue.certificateStatus !== 'NONE' &&
-                    localValue.certificateStatus
+                    certificateStatus(selectedAsset) !== 'NONE' &&
+                    certificateStatus(selectedAsset)
                 "
                 class="w-full"
                 :status="certificateStatus(selectedAsset)"

@@ -8,10 +8,10 @@
             @click="handleEdit"
             :class="$style.editable"
         >
-            <span v-if="!isEdit && localValue">{{
+            <span v-if="!isEdit && description(selectedAsset)">{{
                 description(selectedAsset)
             }}</span>
-            <span v-else-if="!isEdit && localValue === ''"
+            <span v-else-if="!isEdit && description(selectedAsset) === ''"
                 >No description available</span
             >
             <a-textarea

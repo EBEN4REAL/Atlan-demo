@@ -85,6 +85,7 @@
                 </div>
                 <a-button class="mt-3" block @click="handleClickViewUser">
                     <strong> View user profile </strong>
+                    <AtlanIcon icon="Enter" class="mr-1 mb-0.5" />
                 </a-button>
             </div>
         </template>
@@ -100,6 +101,7 @@
     import { Search } from '~/services/meta/search'
     import { useUsers } from '~/composables/user/useUsers'
     import usePersonaList from '../persona/usePersonaList'
+    import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default {
         name: 'PopoverUser',
@@ -122,7 +124,6 @@
                 },
             }
             const { userList, isLoading } = useUsers(params, item.value)
-
             const selectedUser = computed(() =>
                 userList && userList.value && userList.value.length
                     ? userList.value[0]
@@ -146,7 +147,6 @@
                 groupListAPIParams,
                 selectedUser?.value.id
             )
-
             const query = bodybuilder()
                 .filter('term', 'ownerUsers', item.value)
                 .aggregation(
@@ -200,7 +200,6 @@
                     }
                 })
             }
-
             return {
                 selectedUser,
                 isLoading,
@@ -212,6 +211,7 @@
                 admin,
             }
         },
+        components: { AtlanIcon },
     }
 </script>
 <style lang="less">

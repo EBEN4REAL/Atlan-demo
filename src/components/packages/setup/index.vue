@@ -21,8 +21,6 @@
                         :currentStep="currentStepConfig"
                         v-model="modelValue"
                         labelAlign="left"
-                        :labelCol="{ span: 6 }"
-                        :wrapperCol="{ span: 18 }"
                     ></DynamicForm>
                     <!-- {{ configMap }} -->
                 </div>
@@ -187,8 +185,10 @@
                                 ui: {
                                     widget: 'credential',
                                     label: '',
+                                    credentialType:
+                                        'atlan-connectors-snowflake',
                                     placeholder: 'Credential Guid',
-                                    hidden: true,
+                                    hidden: false,
                                 },
                             },
                             'credential-kube-secret-name': {
@@ -197,20 +197,6 @@
                                     label: 'Credential Secret Name',
                                     placeholder: 'Credential Secret Name',
                                     hidden: true,
-                                },
-                            },
-                            host: {
-                                type: 'string',
-                                ui: {
-                                    label: 'Host',
-                                    placeholder: 'Host',
-                                },
-                            },
-                            port: {
-                                type: 'string',
-                                ui: {
-                                    label: 'Port',
-                                    placeholder: 'Port',
                                 },
                             },
                             crawler_name: {

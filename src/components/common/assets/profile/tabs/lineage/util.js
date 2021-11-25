@@ -14,6 +14,7 @@ import powerbi from '~/assets/images/source/powerbi.png'
 export const getNodeTypeText = {
     Column: 'Column',
     ColumnProcess: 'Process',
+    Database: 'Database',
     PowerBIDashboard: 'PowerBIDashboard',
     PowerBIDataflow: 'PowerBIDataflow',
     PowerBIDataset: 'PowerBIDataset',

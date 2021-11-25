@@ -1,12 +1,10 @@
 <template>
-    <a-form-item :label="property.ui?.label" v-if="!property.ui?.hidden">
-        <CustomSelect
-            v-bind="componentProps"
-            :list="list"
-            v-model="localValue"
-            @change="handleChange"
-        ></CustomSelect>
-    </a-form-item>
+    <CustomSelect
+        v-bind="componentProps"
+        :list="list"
+        v-model="localValue"
+        @change="handleChange"
+    ></CustomSelect>
 </template>
 
 <script>

@@ -37,7 +37,7 @@ export default function useHighlight(
         highlightedNode.value = isValid ? guid : ''
         if (isValid) await getHighlights(guid)
         const edgesToHighlight = isValid ? Array.from(edgesToHighlightSet) : []
-        await updateEdgesData(graph, edgesToHighlight, baseEntityGuid)
+        await updateEdgesData(graph, edgesToHighlight)
         const nodesToHighlight = Array.from(nodesToHighlightSet)
         updateNodesData(graph, highlightedNode, nodesToHighlight)
         highlightLoadingCords.value = {}

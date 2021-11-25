@@ -1,6 +1,15 @@
 <template>
-    <a-form ref="formRef" :model="formState" :colon="false" type="flex">
-        <FormItem :properties="sectionProperty()"></FormItem>
+    <a-form
+        ref="formRef"
+        :model="formState"
+        :colon="false"
+        layout="vertical"
+        :scrollToFirstError="true"
+    >
+        <FormItem
+            :configMap="localConfig"
+            :currentStep="currentStep"
+        ></FormItem>
     </a-form>
 </template>
 
@@ -60,145 +69,48 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const formRef = ref()
-            // const configX = computed(() => props.config)
-            // // const errorCaptured = ref(null)
 
             const { modelValue } = useVModels(props, emit)
-            const { config, currentStep, removeNesting, baseKey } =
-                toRefs(props)
+            const { config, currentStep, baseKey } = toRefs(props)
 
             const localConfig = ref(config.value)
 
-            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-
             const formState = reactive(modelValue.value)
 
-            provide('formState', formState)
-
-            const sectionProperty = () => {
-                const list = []
-
-                if (
-                    localConfig.value?.properties &&
-                    currentStep.value?.properties
-                ) {
-                    Object.keys(localConfig?.value?.properties).forEach(
-                        (key) => {
-                            if (currentStep.value?.properties?.includes(key)) {
-                                list.push({
-                                    id: `${key}`,
-                                    name: `${baseKey.value}${key}`,
-                                    ...localConfig.value?.properties[key],
-                                })
-                            }
-                        }
-                    )
-                } else {
-                    Object.keys(localConfig?.value?.properties).forEach(
-                        (key) => {
-                            list.push({
-                                id: `${key}`,
-                                name: `${baseKey.value}${key}`,
-                                ...localConfig.value?.properties[key],
-                            })
-                        }
-                    )
-                }
-                return list
-            }
-
-            const isImplied = () => {
-                localConfig.value = props.config
-                if (localConfig.value?.anyOf) {
-                    localConfig.value.anyOf.forEach((item) => {
-                        let loopStop = false
-                        Object.keys(item.properties).some((i) => {
-                            if (loopStop) {
-                                return
-                            }
-                            if (formState[i] !== item.properties[i]?.const) {
-                                loopStop = true
-                            }
-                        })
-                        if (!loopStop) {
-                            item.required.forEach((i) => {
-                                console.log(i, localConfig.value.properties[i])
-
-                                if (localConfig.value.properties[i]) {
-                                    localConfig.value.properties[
-                                        i
-                                    ].ui.hidden = false
-                                }
-                            })
-                        } else {
-                            item.required.forEach((i) => {
-                                if (localConfig.value.properties[i]) {
-                                    localConfig.value.properties[
-                                        i
-                                    ].ui.hidden = true
-                                }
-                            })
-                        }
-                    })
-                }
-            }
-
-            onMounted(() => {
-                isImplied()
-            })
-
-            // const { resetFields, validate, validateInfos, mergeValidateInfo } =
-            //     useForm(formState)
-
-            const validateForm = () => {
+            const validateForm = async () => {
                 if (formRef.value) {
-                    console.log('validate', formState)
-                    formRef.value
-                        .validate()
-                        .then(() => {
-                            console.log('values', formState, toRaw(formState))
-                        })
-                        .catch((error) => {
-                            console.log('error', formState, error)
-                        })
+                    try {
+                        await formRef.value.validate()
+                        return
+                    } catch (e) {
+                        console.log('error')
+                        return e
+                    }
+                }
+                return {
+                    message: 'Form is not ready',
                 }
             }
 
-            watch(formState, () => {
-                console.log(formState)
-                // isImplied()
-                // modelValue.value = formState
-                // emit('change')
-            })
+            provide('formState', formState)
+            provide('validateForm', validateForm)
 
-            onBeforeMount(() => {
-                setDefaultValue()
-            })
-
-            const setDefaultValue = () => {
-                Object.keys(localConfig.value.properties).forEach((key) => {
-                    if (modelValue.value) {
-                        if (!modelValue.value[key]) {
-                            modelValue.value[key] =
-                                localConfig.value.properties[
-                                    key
-                                ]?.default?.toString()
-                        }
-                    }
-                })
-            }
+            // watch(formState, () => {
+            //     // console.log(formState)
+            //     // // isImplied()
+            //     // // modelValue.value = formState
+            //     // // emit('change')
+            // })
 
             return {
                 config,
-                sectionProperty,
 
                 formState,
                 currentStep,
-                isImplied,
+
                 localConfig,
-                dirtyTimestamp,
+
                 modelValue,
-                setDefaultValue,
 
                 validateForm,
                 formRef,

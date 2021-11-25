@@ -1,15 +1,48 @@
 <template>
-    <Component
-        v-for="property in properties"
-        :key="`${property.id}`"
-        :is="componentName(property)"
-        v-model="formState[property.id]"
-        :property="property"
-    ></Component>
+    <div class="grid grid-cols-12 gap-x-4">
+        <template v-for="property in list" :key="`${property.id}`">
+            <div :class="getCol(property.ui.grid)" v-if="!property.ui?.hidden">
+                <Component
+                    v-if="
+                        componentName(property) === 'credential' ||
+                        componentName(property) === 'nested'
+                    "
+                    :is="componentName(property)"
+                    v-model="formState[property.id]"
+                    :property="property"
+                ></Component>
+
+                <a-form-item
+                    :label="property.ui?.label"
+                    :name="property.name"
+                    :help="property.ui?.help"
+                    :required="property.required"
+                    :rules="property.ui.rules"
+                    :validateTrigger="['blur']"
+                    v-else
+                >
+                    <Component
+                        :is="componentName(property)"
+                        v-model="formState[property.id]"
+                        :property="property"
+                    ></Component>
+                </a-form-item>
+            </div>
+        </template>
+    </div>
 </template>
 
 <script>
-    import { defineComponent, toRefs, reactive, watch, inject } from 'vue'
+    import {
+        defineComponent,
+        toRefs,
+        reactive,
+        watch,
+        inject,
+        ref,
+        onBeforeMount,
+        onMounted,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
 
     import Input from './widget/input.vue'
@@ -38,24 +71,22 @@
             Nested,
         },
         props: {
-            properties: {
+            configMap: {
                 required: false,
-                type: Array,
-                default() {
-                    return []
-                },
+                type: Object,
+            },
+            currentStep: {
+                required: false,
+                type: Object,
+            },
+            baseKey: {
+                required: false,
+                type: String,
             },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            // const { modelValue } = useVModels(props, emit)
-            const { properties } = toRefs(props)
-            // const localValue = reactive({ ...modelValue.value })
-
-            // watch(localValue, () => {
-            //     modelValue.value = localValue
-            //     emit('change')
-            // })
+            const { configMap, currentStep, baseKey } = toRefs(props)
 
             const formState = inject('formState')
 
@@ -80,45 +111,121 @@
                 }
             }
 
+            const getCol = (grid = 12) => {
+                return `col-span-${grid}`
+            }
+
+            const setDefaultValue = () => {
+                Object.keys(configMap?.value?.properties).forEach((key) => {
+                    if (formState) {
+                        if (!formState[key]) {
+                            formState[getName(key)] =
+                                configMap?.value?.properties[
+                                    key
+                                ]?.default?.toString()
+                        }
+                    }
+                })
+            }
+
+            watch(formState, () => {
+                calculateList()
+            })
+
+            onBeforeMount(() => {
+                setDefaultValue()
+                calculateList()
+            })
+
+            const getName = (name) => {
+                if (baseKey.value) {
+                    return `${baseKey.value}.${name}`
+                }
+                return name
+            }
+
+            const list = ref([])
+            const calculateList = () => {
+                isImplied()
+                const temp = []
+                if (
+                    configMap.value?.properties &&
+                    currentStep.value?.properties
+                ) {
+                    Object.keys(configMap?.value?.properties).forEach((key) => {
+                        if (currentStep.value?.properties?.includes(key)) {
+                            if (!configMap.value?.properties[key].ui?.hidden) {
+                                temp.push({
+                                    id: `${getName(key)}`,
+                                    name: `${getName(key)}`,
+                                    ...configMap.value?.properties[key],
+                                })
+                            }
+                        }
+                    })
+                } else {
+                    Object.keys(configMap?.value?.properties).forEach((key) => {
+                        if (!configMap.value?.properties[key]?.ui?.hidden) {
+                            temp.push({
+                                id: `${getName(key)}`,
+                                name: `${getName(key)}`,
+                                ...configMap.value?.properties[key],
+                            })
+                        }
+                    })
+                }
+                list.value = temp
+            }
+
             const isImplied = () => {
-                // localConfig.value = props.config
-                // if (localConfig.value?.anyOf) {
-                //     localConfig.value.anyOf.forEach((item) => {
-                //         let loopStop = false
-                //         Object.keys(item.properties).some((i) => {
-                //             if (loopStop) {
-                //                 return
-                //             }
-                //             if (formState[i] !== item.properties[i]?.const) {
-                //                 loopStop = true
-                //             }
-                //         })
-                //         if (!loopStop) {
-                //             item.required.forEach((i) => {
-                //                 console.log(i, localConfig.value.properties[i])
-                //                 if (localConfig.value.properties[i]) {
-                //                     localConfig.value.properties[
-                //                         i
-                //                     ].ui.hidden = false
-                //                 }
-                //             })
-                //         } else {
-                //             item.required.forEach((i) => {
-                //                 if (localConfig.value.properties[i]) {
-                //                     localConfig.value.properties[
-                //                         i
-                //                     ].ui.hidden = true
-                //                 }
-                //             })
-                //         }
-                //     })
-                // }
+                if (configMap.value?.anyOf) {
+                    configMap.value.anyOf.forEach((item) => {
+                        let loopStop = false
+                        Object.keys(item.properties).some((i) => {
+                            if (loopStop) {
+                                return
+                            }
+                            if (
+                                formState[getName(i)] !==
+                                item.properties[i]?.const
+                            ) {
+                                loopStop = true
+                            }
+                        })
+
+                        if (!loopStop) {
+                            item.required.forEach((i) => {
+                                if (configMap.value.properties[i]) {
+                                    configMap.value.properties[
+                                        i
+                                    ].ui.hidden = false
+                                }
+                            })
+                        } else {
+                            item.required.forEach((i) => {
+                                if (configMap.value.properties[i]) {
+                                    configMap.value.properties[
+                                        i
+                                    ].ui.hidden = true
+                                }
+                            })
+                        }
+                    })
+                }
             }
 
             return {
                 componentName,
-                properties,
+                getName,
                 formState,
+                setDefaultValue,
+                configMap,
+                calculateList,
+                list,
+                baseKey,
+                currentStep,
+                isImplied,
+                getCol,
             }
         },
     })

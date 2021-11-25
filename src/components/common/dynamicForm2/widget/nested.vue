@@ -1,5 +1,5 @@
 <template>
-    <FormItem :properties="list"></FormItem>
+    <FormItem :configMap="property" :baseKey="property.id"></FormItem>
 </template>
 
 <script>
@@ -30,45 +30,12 @@
                     return {}
                 },
             },
-            modelValue: {
-                required: false,
-                type: Object,
-                default() {
-                    return {}
-                },
-            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { property, configMap } = toRefs(props)
-            const componentProps = computed(() => property.value.ui)
-            const { modelValue } = useVModels(props, emit)
-            const localValue = reactive(modelValue.value)
-
-            watch(localValue, () => {
-                modelValue.value = localValue
-                emit('change')
-            })
-
-            const list = computed(() => {
-                const temp = []
-                console.log(property.value.properties)
-                Object.keys(property.value?.properties).forEach((key) => {
-                    temp.push({
-                        id: `${key}`,
-                        ...property.value?.properties[key],
-                    })
-                })
-                return temp
-            })
-
+            const { property } = toRefs(props)
             return {
                 property,
-                componentProps,
-                localValue,
-                configMap,
-                modelValue,
-                list,
             }
         },
     })

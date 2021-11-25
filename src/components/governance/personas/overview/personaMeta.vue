@@ -2,18 +2,15 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
-            <div
-                class="flex items-center text-sm"
-                @click="showUserPreviewDrawer"
-            >
-                <Avatar
-                    :username="persona.createdBy"
-                    styleClass="bg-white mr-1"
-                />
-                <span class="text-gray">
-                    {{ persona.createdBy }}
-                </span>
+            <div class="flex items-center text-sm">
+                <PopOverUser>
+                    <UserPill
+                        :username="persona.createdBy"
+                        :allowDelete="false"
+                    ></UserPill>
+                </PopOverUser>
             </div>
+
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
                 persona.createdAt?.slice(0, -11)
@@ -112,34 +109,27 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs } from 'vue'
-    import dayjs from 'dayjs'
-    import { IPurpose } from '~/types/accessPolicies/purposes'
+    import { IPersona } from '~/types/accessPolicies/personas'
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
-    import Avatar from '@common/avatar/user.vue'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'PersonaMeta',
-        components: { Avatar },
+        components: { PopOverUser, UserPill },
         props: {
             persona: {
-                type: Object as PropType<IPurpose>,
+                type: Object as PropType<IPersona>,
                 required: true,
             },
         },
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            const showUserPreviewDrawer = () => {
-                setUserUniqueAttribute(persona.value.createdBy)
-                showUserPreview()
-            }
             const { persona } = toRefs(props)
             const enablePersonaCheck = ref(true)
             const formatDate = (val) => {}
             return {
-                showUserPreviewDrawer,
                 formatDate,
                 enablePersonaCheck,
                 enablePersona,

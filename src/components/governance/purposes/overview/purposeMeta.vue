@@ -2,14 +2,13 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
-            <div
-                class="flex items-center text-sm"
-                @click="showUserPreviewDrawer"
-            >
-                <Avatar :username="username" styleClass="bg-white mr-1" />
-                <span class="text-gray">
-                    {{ persona.created_by }}
-                </span>
+            <div class="flex items-center text-sm">
+                <PopOverUser>
+                    <UserPill
+                        :username="username"
+                        :allowDelete="false"
+                    ></UserPill>
+                </PopOverUser>
             </div>
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
@@ -89,7 +88,6 @@
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
-    import Avatar from '@common/avatar/user.vue'
     import Classification from '@common/input/classification/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
@@ -98,11 +96,12 @@
         saveClassifications,
     } from '../composables/useEditPurpose'
     import { selectedPersona } from '../composables/usePurposeList'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'PurposeMeta',
-        components: { Avatar, Classification },
+        components: { Classification, PopOverUser, UserPill },
         props: {
             persona: {
                 type: Object as PropType<IPurpose>,
@@ -117,11 +116,7 @@
         setup(props) {
             const { classificationList } = useTypedefData()
             const { username, persona } = toRefs(props)
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            const showUserPreviewDrawer = () => {
-                setUserUniqueAttribute(persona.value.created_by)
-                showUserPreview()
-            }
+
             const enablePersonaCheck = ref(true)
 
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
@@ -190,7 +185,6 @@
             })
 
             return {
-                showUserPreviewDrawer,
                 username,
                 selectedPersona,
                 updateClassifications,

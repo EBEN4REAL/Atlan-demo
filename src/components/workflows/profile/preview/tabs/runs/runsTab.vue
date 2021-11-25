@@ -3,7 +3,7 @@
         v-if="!isReady"
         class="absolute flex items-center justify-center w-full h-full"
     >
-        <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
+        <AtlanIcon icon="Loader" class="h-5 animate-spin" />
     </div>
     <template v-else>
         <div v-if="list.length === 0 && !isLoading" class="flex-grow">
@@ -56,7 +56,7 @@
                         </template>
                         <AtlanIcon
                             v-else
-                            icon="CircleLoader"
+                            icon="Loader"
                             class="h-5 animate-spin"
                         />
                     </button>

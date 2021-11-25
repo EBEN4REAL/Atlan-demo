@@ -34,7 +34,7 @@
             v-if="loadingGeneral"
             class="absolute flex items-center justify-center w-full h-full"
         >
-            <a-spin />
+            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
         </div>
         <div
             v-else-if="!isLoading && !graphData?.name"

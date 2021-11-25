@@ -31,7 +31,6 @@
                 :username="username"
                 :allowDelete="!readOnly"
                 @delete="handleDeleteUser"
-                @click="handleClickUser(username)"
                 :enableHover="enableHover"
             ></UserPill>
         </template>
@@ -41,7 +40,6 @@
                 :name="name"
                 :allowDelete="!readOnly"
                 @delete="handleDeleteGroup"
-                @click="handleClickGroup(name)"
                 :enableHover="enableHover"
             ></GroupPill>
         </template>

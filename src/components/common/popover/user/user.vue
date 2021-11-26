@@ -95,16 +95,18 @@
 
 <script lang="ts">
     import { toRefs, computed, watch, ref } from 'vue'
-    import bodybuilder from 'bodybuilder'
+    // import bodybuilder from 'bodybuilder'
     import getUserGroups from '~/composables/user/getUserGroups'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { Search } from '~/services/meta/search'
+    // import { Search } from '~/services/meta/search'
     import { useUsers } from '~/composables/user/useUsers'
     import usePersonaList from '../persona/usePersonaList'
     import AtlanIcon from '../../icon/atlanIcon.vue'
+    import usePopoverUserGroup from '~/composables/user/usePopoverUserGroup'
 
     export default {
         name: 'PopoverUser',
+        components: { AtlanIcon },
         props: {
             item: {
                 type: String,
@@ -147,42 +149,8 @@
                 groupListAPIParams,
                 selectedUser?.value.id
             )
-            const query = bodybuilder()
-                .filter('term', 'ownerUsers', item.value)
-                .aggregation(
-                    'terms',
-                    '__typeName.keyword',
-                    {},
-                    'group_by_typeName'
-                )
-                .size(10)
-                .build()
-            const { data } = Search.IndexSearch({ dsl: query }, {})
-            const bussinesCount = computed(() => {
-                const terms = [
-                    'atlasglossary',
-                    'atlasglossarycategory',
-                    'atlasglossaryterm',
-                ]
-                const aggs =
-                    data?.value?.aggregations?.group_by_typeName?.buckets || []
-                let count = 0
-                aggs.forEach((el) => {
-                    if (terms.includes(el.key.toLowerCase())) {
-                        count += el.doc_count
-                    }
-                })
-                return count
-            })
-            const assetCount = computed(() => {
-                const aggs =
-                    data?.value?.aggregations?.group_by_typeName?.buckets || []
-                let count = 0
-                aggs.forEach((el) => {
-                    count += el.doc_count
-                })
-                return count
-            })
+            const { bussinesCount, assetCount } = usePopoverUserGroup('user', item.value )
+       
             const handleClickViewUser = () => {
                 setUserUniqueAttribute(item.value, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
@@ -194,9 +162,7 @@
                 watch(personaList, (newValue) => {
                     if (newValue) {
                         const user = selectedUser.value.id
-                        listOfPersona.value = newValue.filter((element) => {
-                            return element.users.includes(user)
-                        })
+                        listOfPersona.value = newValue.filter((element) => element.users.includes(user))
                     }
                 })
             }
@@ -211,7 +177,6 @@
                 admin,
             }
         },
-        components: { AtlanIcon },
     }
 </script>
 <style lang="less">

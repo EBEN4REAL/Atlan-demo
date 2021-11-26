@@ -42,7 +42,10 @@
                 "
             >
                 <PopOverUser :item="attribute.value">
-                    <UserPill :username="attribute.value"></UserPill>
+                    <UserPill
+                        :username="attribute.value"
+                        @click="handleClickUser(attribute.value)"
+                    ></UserPill>
                 </PopOverUser>
             </template>
             <template
@@ -52,7 +55,10 @@
                 "
                 ><div v-for="username in attribute.value" :key="username">
                     <PopOverUser :item="username">
-                        <UserPill :username="username"></UserPill>
+                        <UserPill
+                            :username="username"
+                            @click="handleClickUser(username)"
+                        ></UserPill>
                     </PopOverUser>
                 </div>
             </template>
@@ -69,7 +75,10 @@
                 "
             >
                 <PopOverGroup>
-                    <GroupPill :name="attribute.value"></GroupPill>
+                    <GroupPill
+                        :name="attribute.value"
+                        @click="handleClickGroup(attribute.value)"
+                    ></GroupPill>
                 </PopOverGroup>
             </template>
             <template
@@ -80,7 +89,10 @@
             >
                 <div v-for="name in attribute.value" :key="name">
                     <PopOverGroup>
-                        <GroupPill :name="name"></GroupPill>
+                        <GroupPill
+                            :name="name"
+                            @click="handleClickGroup(name)"
+                        ></GroupPill>
                     </PopOverGroup>
                 </div>
             </template>
@@ -125,12 +137,17 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
 
-    import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
+    // Components
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
     import EnumPill from '@/UI/pill/pill.vue'
+
+    // Composables
+    import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     export default defineComponent({
         name: 'CustomMetadataReadOnly',
@@ -151,9 +168,25 @@
             const { getDatatypeOfAttribute, formatDisplayValue } =
                 useCustomMetadataHelpers()
 
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const { showGroupPreview, setGroupUniqueAttribute } =
+                useGroupPreview()
+
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+            }
+
+            const handleClickGroup = (groupAlias: string) => {
+                setGroupUniqueAttribute(groupAlias, 'groupAlias')
+                showGroupPreview({ allowed: ['about', 'assets', 'members'] })
+            }
+
             return {
                 getDatatypeOfAttribute,
                 formatDisplayValue,
+                handleClickUser,
+                handleClickGroup,
             }
         },
     })

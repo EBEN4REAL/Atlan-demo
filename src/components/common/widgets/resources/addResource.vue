@@ -2,7 +2,12 @@
     <div @click="showModal">
         <slot name="trigger" @click="showModal" />
     </div>
-    <a-modal :closable="false" :visible="visible" :class="$style.input">
+    <a-modal
+        :closable="false"
+        :visible="visible"
+        :class="$style.input"
+        centered
+    >
         <template #title>
             <div class="flex items-center text-gray-500 flex-nowrap">
                 <span class="overflow-hidden text-sm overflow-ellipsis">{{
@@ -20,21 +25,23 @@
                 <a-button type="primary" @click="handleAdd">Add</a-button>
             </div>
         </template>
-        <a-input
-            v-model:value="link"
-            ref="titleBar"
-            placeholder="Paste resource link"
-            class="text-lg font-bold text-gray-700"
-            allow-clear
-        />
-        <div v-if="link" class="flex items-center gap-x-2">
-            <img :src="faviconLink" alt="" class="w-5 h-5 mt-2" />
+        <div class="px-4 pt-0 pb-4">
             <a-input
-                v-model:value="linkTitle"
-                placeholder="Resource title"
-                class="mt-3 text-lg font-bold text-gray-700"
+                ref="titleBar"
+                v-model:value="link"
+                placeholder="Paste resource link"
+                class="text-lg font-bold text-gray-700"
                 allow-clear
             />
+            <div v-if="link" class="flex items-center gap-x-2">
+                <img :src="faviconLink" alt="" class="w-5 h-5 mt-2" />
+                <a-input
+                    v-model:value="linkTitle"
+                    placeholder="Resource title"
+                    class="mt-3 text-lg font-bold text-gray-700"
+                    allow-clear
+                />
+            </div>
         </div>
     </a-modal>
 </template>
@@ -134,15 +141,6 @@
         }
         :global(.ant-input) {
             @apply shadow-none outline-none px-0 border-0 !important;
-        }
-        :global(.ant-modal-header) {
-            @apply border-0 border-t-0 border-b-0 px-4  !important;
-        }
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply px-4 pt-0 pb-4 !important;
         }
     }
 </style>

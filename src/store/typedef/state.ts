@@ -16,6 +16,7 @@ export interface State {
   enumList: Typedef[]
   isLoading: Boolean
   error: object | null
+  forceRevalidate: number
 }
 
 export const state: State = {
@@ -23,5 +24,6 @@ export const state: State = {
   customMetadataList: [] as Typedef[],
   enumList: [] as Typedef[],
   isLoading: false,
-  error: null
+  error: null,
+  forceRevalidate: 0
 }

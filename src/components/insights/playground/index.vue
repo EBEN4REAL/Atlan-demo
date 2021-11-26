@@ -25,12 +25,12 @@
                                         inline-flex
                                         items-center
                                         justify-center
-                                        p-1.5
-                                        rounded-full
+                                        p-0.5
+                                        rounded-sm
                                         btn-add
-                                        hover:bg-gray-300
+                                        cross-hover
+                                        mt-1
                                     "
-                                    style="margin-top: 1px"
                                     @click="handleAdd"
                                 >
                                     <!-- <fa icon="fal plus" class="text-gray-700" /> -->
@@ -39,6 +39,7 @@
                             </a-tooltip>
                         </div>
                     </template>
+
                     <a-tab-pane
                         v-for="tab in tabs"
                         :key="tab.key"
@@ -53,18 +54,15 @@
                                 "
                             >
                                 <div
-                                    class="flex items-center justify-between  inline_tab"
+                                    class="flex items-center inline_tab"
+                                    @mouseenter="setTabHover(tab)"
+                                    @mouseleave="setTabHover(null)"
                                 >
                                     <div
                                         class="flex items-center text-gray-700"
                                     >
                                         <span
-                                            class="
-                                                text-sm
-                                                truncate
-                                                ...
-                                                inline_tab_label
-                                            "
+                                            class="text-sm inline_tab_label"
                                             :class="
                                                 tab.key !== activeInlineTabKey
                                                     ? 'text-gray-500'
@@ -75,7 +73,7 @@
                                     </div>
                                     <div
                                         v-if="!tab.isSaved"
-                                        class="flex items-center mr-2  unsaved-dot"
+                                        class="flex items-center unsaved-dot"
                                     >
                                         <div
                                             v-if="
@@ -87,9 +85,8 @@
                                                 h-1.5
                                                 rounded-full
                                                 bg-primary
-                                                -mt-0.5
                                                 absolute
-                                                right-2.5
+                                                right-3
                                             "
                                         ></div>
                                     </div>
@@ -108,6 +105,18 @@
                                     </a-menu>
                                 </template>
                             </a-dropdown>
+                        </template>
+
+                        <template #closeIcon>
+                            <AtlanIcon
+                                icon="Close"
+                                class="w-4 h-4 rounded-sm cross-hover"
+                                :style="{
+                                    opacity: tabHover === tab.key ? 1 : 0,
+                                }"
+                                @mouseenter="setTabHover(tab)"
+                                @mouseleave="setTabHover(null)"
+                            />
                         </template>
                     </a-tab-pane>
                 </a-tabs>
@@ -486,6 +495,16 @@
                 console.log('save', key)
             }
 
+            let tabHover = ref(null)
+            const setTabHover = (val) => {
+                // console.log('tab: ', val)
+                if (val) {
+                    tabHover.value = val.key
+                } else {
+                    tabHover.value = null
+                }
+            }
+
             return {
                 fullSreenState,
                 saveModalRef,
@@ -506,6 +525,8 @@
                 onEdit,
                 onTabClick,
                 queryRun,
+                setTabHover,
+                tabHover,
             }
         },
     })
@@ -513,10 +534,10 @@
 <style lang="less">
     .insights-tabs {
         .ant-tabs-nav-container {
-            height: 30px !important;
+            height: 28px !important;
         }
         .ant-tabs-extra-content {
-            line-height: 30px !important;
+            line-height: 28px !important;
         }
 
         .ant-tabs-tab {
@@ -526,8 +547,9 @@
             border-left: 0px !important;
             border-right: 0px !important;
             border-top: 0px !important;
+            border-bottom: 0px !important;
             padding: 0 12px !important;
-            height: 30px !important;
+            height: 28px !important;
             @apply bg-gray-light !important;
 
             > div {
@@ -535,8 +557,12 @@
             }
 
             &.ant-tabs-tab-active {
-                border-bottom: 1px solid !important;
+                // border-bottom: 1px solid !important;
                 @apply bg-white !important;
+
+                &:hover {
+                    background-color: #fafafa !important;
+                }
             }
             .ant-tabs-close-x {
                 visibility: hidden;
@@ -563,10 +589,10 @@
 </style>
 <style lang="less" scoped>
     .btn {
-        border: 1px solid #f06;
+        // border: 1px solid #f06;
         padding: 10px 16px;
         border-radius: 2px;
-        border: 1px solid #fff;
+        // border: 1px solid #fff;
         box-shadow: 0 3px 1px -2px #00000033, 0 2px 2px 0 rgba(0, 0, 0, 0.14),
             0 1px 5px 0 rgba(0, 0, 0, 0.12);
         background-color: #fff;
@@ -584,14 +610,23 @@
     .children_spiltpanes {
         height: calc(100vh - 19rem);
     }
-    // .inline_tab {
-    //     max-width: 4.2rem;
-    //     overflow: hidden;
-    //     // min-width: 3rem
-    // }
-    .inline_tab_label {
-        max-width: 5.8rem;
+    .inline_tab {
+        max-width: 49px !important;
+        width: 49px !important;
+        min-width: 49px !important;
         overflow: hidden;
+        height: 28px !important;
+        // min-width: 3rem
+    }
+    .cross-hover:hover {
+        // width: 16px;
+        // height: 16px;
+        background: #ededed;
+        // border-radius: 2px;
+    }
+    .inline_tab_label {
+        max-width: 53px !important;
+        // overflow: hidden;
     }
     .playground-height {
         // @apply bg-gray-light !important;
@@ -600,13 +635,10 @@
 </style>
 <style lang="less" module>
     .inline_tabs {
-        height: 30px !important;
+        height: 28px !important;
 
         :global(.ant-tabs-tab > div) {
             @apply flex items-center !important;
-        }
-        :global(.ant-tabs-bar) {
-            @apply m-0 bg-gray-light !important;
         }
         :global(.ant-tabs-nav .ant-tabs-tab-active) {
             @apply text-white !important;

@@ -3,11 +3,11 @@
         <a-table
             class="overflow-hidden border rounded-lg"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :style="{ height: 'calc(100vh - 20rem)', cursor: 'pointer' }"
+            :style="{ cursor: 'pointer' }"
             :table-layout="'fixed'"
             :pagination="false"
             :class="$style.table_custom"
-            :data-source="apiKeysList"
+            :data-source="queryLogsList"
             :columns="columns"
             :row-key="(query) => query._id"
             :loading="isLoading"
@@ -17,7 +17,13 @@
             <template #queryInfo="{ text: queryInfo }">
                 <div class="flex items-center h-full py-1">
                     <div
-                        v-if="queryInfo._source.log.message.savedQueryId"
+                        v-if="
+                            queryInfo &&
+                            queryInfo._source &&
+                            queryInfo._source.log &&
+                            queryInfo._source.log.message &&
+                            queryInfo._source.log.message.savedQueryId
+                        "
                         class="flex items-center justify-center"
                     >
                         <div class="items-center">
@@ -33,26 +39,64 @@
                                 ></div>
                                 <span
                                     class="text-sm text-gray-700  parent-ellipsis-container-base"
-                                    >{{
-                                        queryInfo._source.log.message
-                                            .savedQueryId
-                                    }}</span
                                 >
+                                    <!-- Just checking if savedQueryID is present in locally stored savedQueryMetaMap, if it is, using name from that, otherwise using savedQueryId; Sorry for such verbose code!!-->
+                                    {{
+                                        savedQueryMetaMap[
+                                            queryInfo._source.log.message
+                                                .savedQueryId
+                                        ] &&
+                                        savedQueryMetaMap[
+                                            queryInfo._source.log.message
+                                                .savedQueryId
+                                        ].attributes &&
+                                        savedQueryMetaMap[
+                                            queryInfo._source.log.message
+                                                .savedQueryId
+                                        ].attributes.name
+                                            ? savedQueryMetaMap[
+                                                  queryInfo._source.log.message
+                                                      .savedQueryId
+                                              ].attributes.name
+                                            : queryInfo._source.log.message
+                                                  .savedQueryId
+                                    }}
+                                </span>
                             </div>
                             <div class="flex items-center mt-1 ml-4">
                                 <img
-                                    :src="snowflake.image"
+                                    :src="
+                                        getConnectorImagePath(
+                                            getConnectorName(
+                                                queryInfo._source.log.message
+                                                    .connectionQualifiedName
+                                            )
+                                        )
+                                    "
                                     class="w-4 h-4 mr-1 -mt-0.5"
                                 />
                                 <span class="text-xs text-gray-500">{{
-                                    'ATLAN_SAMPLE_DATA'
+                                    getConnectionName(
+                                        queryInfo._source.log.message
+                                            .connectionQualifiedName
+                                    )
                                 }}</span>
+                                <span class="ml-1 text-gray-500"
+                                    ><span class="text-gray-300">•&nbsp;</span
+                                    >Query</span
+                                >
                             </div>
                         </div>
                     </div>
 
                     <div
-                        v-else-if="queryInfo._source.log.message.userSqlQuery"
+                        v-else-if="
+                            queryInfo &&
+                            queryInfo._source &&
+                            queryInfo._source.log &&
+                            queryInfo._source.log.message &&
+                            queryInfo._source.log.message.userSqlQuery
+                        "
                         class="overflow-hidden"
                     >
                         <div class="items-center">
@@ -76,11 +120,21 @@
                             </div>
                             <div class="flex items-center mt-1.5 ml-4">
                                 <img
-                                    :src="snowflake.image"
+                                    :src="
+                                        getConnectorImagePath(
+                                            getConnectorName(
+                                                queryInfo._source.log.message
+                                                    .connectionQualifiedName
+                                            )
+                                        )
+                                    "
                                     class="w-4 h-4 mr-1 -mt-0.5"
                                 />
                                 <span class="text-xs text-gray-500">{{
-                                    'ATLAN_SAMPLE_DATA'
+                                    getConnectionName(
+                                        queryInfo._source.log.message
+                                            .connectionQualifiedName
+                                    )
                                 }}</span>
                             </div>
                         </div>
@@ -91,7 +145,13 @@
             <template #details="{ text: queryInfo }">
                 <div class="flex items-center h-full">
                     <div
-                        v-if="queryInfo._source.log.message.totalTime"
+                        v-if="
+                            queryInfo &&
+                            queryInfo._source &&
+                            queryInfo._source.log &&
+                            queryInfo._source.log.message &&
+                            queryInfo._source.log.message.totalTime
+                        "
                         class="flex items-center"
                     >
                         <AtlanIcon
@@ -101,8 +161,11 @@
 
                         <span class="text-sm text-gray-700">
                             {{
-                                queryInfo._source.log.message.totalTime / 1000 >
-                                60
+                                queryInfo._source.log.message.totalTime < 1000
+                                    ? `${queryInfo._source.log.message.totalTime}ms`
+                                    : queryInfo._source.log.message.totalTime /
+                                          1000 >
+                                      60
                                     ? `${Math.floor(
                                           queryInfo._source.log.message
                                               .totalTime /
@@ -186,7 +249,7 @@
                     />
 
                     <span
-                        class="text-sm text-gray-700 cursor-pointer"
+                        class="text-sm cursor-pointer text-primary"
                         @click="
                             () =>
                                 handleUserPreview(
@@ -223,7 +286,7 @@
                                 {{
                                     dayjs(
                                         timestamp._source['@timestamp']
-                                    ).format('HH:MM')
+                                    ).format('HH:mm')
                                 }}
                             </span>
                         </div>
@@ -247,12 +310,13 @@ import Avatar from '~/components/common/avatar/index.vue'
 import AtlanBtn from '@/UI/button.vue'
 import PillGroup from '@/UI/pill/pillGroup.vue'
 import { SourceList } from '~/constant/source'
+import { useConnector } from '~/components/insights/common/composables/useConnector'
 
 export default defineComponent({
-    name: 'ApiKeysTable',
+    name: 'QueryLogsTable',
     components: { Avatar, AtlanBtn, PillGroup },
     props: {
-        apiKeysList: {
+        queryLogsList: {
             type: Array,
             default: () => [],
         },
@@ -268,10 +332,25 @@ export default defineComponent({
             type: Object,
             default: () => [],
         },
+        savedQueryMetaMap: {
+            type: Object,
+            default: () => {},
+        },
     },
     emits: ['selectQuery', 'toggleQueryPreviewDrawer', 'selectQuery'],
     setup(props, { emit }) {
-        const snowflake = SourceList.find((e) => e.id === 'snowflake')
+        const { getConnectionName, getConnectorName } = useConnector()
+        const getConnectorImagePath = (connector) => {
+            let connectorObj = {}
+            if (connector) {
+                connectorObj = SourceList.find(
+                    (source) =>
+                        source.id.toLowerCase() === connector.toLowerCase()
+                )
+                return connectorObj?.image || ''
+            }
+            return ''
+        }
         const { selectedQuery, selectedRowKeys } = toRefs(props)
         const imageUrl = (username: any) =>
             `${window.location.origin}/api/service/avatars/${username}`
@@ -283,8 +362,6 @@ export default defineComponent({
             setUserUniqueAttribute(username, 'username')
             openPreview()
         }
-
-        const handleTableChange = () => {}
 
         const getQueryStatusClass = (status: string) => {
             if (status.toLowerCase() === 'success') return 'bg-green-500'
@@ -333,14 +410,15 @@ export default defineComponent({
             handleRowSelected,
             selectedRowKeys,
             selectedQuery,
-            snowflake,
             getQueryStatusClass,
             dayjs,
             columns,
             imageUrl,
-            handleTableChange,
             handleUserPreview,
             isDeletePopoverVisible,
+            getConnectionName,
+            getConnectorImagePath,
+            getConnectorName,
         }
     },
 })

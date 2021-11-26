@@ -11,6 +11,7 @@
                     @change="handleChange(item.attribute, $event, item.level)"
                     :placeholder="`Select ${item.name}`"
                     :data-test-id="item.name?.toLowerCase()"
+                    :bgGrayForSelector="bgGrayForSelector"
                 ></AssetSelector>
             </div>
         </template>
@@ -50,6 +51,10 @@
                 type: Object as PropType<Components.Schemas.FilterCriteria>,
                 required: false,
                 default: () => '',
+            },
+            bgGrayForSelector: {
+                type: Boolean,
+                default: true,
             },
         },
         emits: ['labelChange', 'change'],
@@ -212,6 +217,7 @@
         @apply text-xs tracking-wide text-gray;
         @apply rounded cursor-pointer;
     }
+
     .connector-btn:hover {
         @apply bg-gray-100;
     }

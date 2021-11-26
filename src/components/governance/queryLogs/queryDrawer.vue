@@ -12,7 +12,7 @@
         <div class="p-4">
             <SQLSnippet :text="query._source.log.message?.userSqlQuery" />
         </div>
-        <div v-if="Object.keys(metadata).length" class="p-4">
+        <div v-if="Object.keys(metadata).length" class="p-4 border-b">
             <div v-for="meta in Object.keys(metadata)" :key="meta">
                 <div v-if="metadata[meta].value" class="flex items-center mb-2">
                     <div class="w-1/4">{{ metadata[meta].keyDisplayName }}</div>
@@ -40,7 +40,35 @@
                 </div>
             </div>
         </div>
-        <div v-if="durationDetails.executionTimeString" class="border-t">
+        <div
+            v-if="
+                query &&
+                query._source &&
+                query._source.log &&
+                query._source.log.message &&
+                query._source.log.message.queryStatus
+            "
+            class="flex items-center px-4 pt-5 pb-2"
+        >
+            <div class="w-1/4">Status</div>
+            <div class="w-full">
+                <div
+                    class="px-4 rounded-2xl w-max"
+                    :class="
+                        getQueryStatusBgClass(
+                            query._source.log.message.queryStatus
+                        )
+                    "
+                >
+                    {{
+                        getQueryStatusCopy(
+                            query._source.log.message.queryStatus
+                        )
+                    }}
+                </div>
+            </div>
+        </div>
+        <div v-if="durationDetails.executionTimeString">
             <div class="flex p-4">
                 <div class="w-1/4">Duration</div>
                 <div class="w-full">
@@ -84,8 +112,6 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, toRefs, computed } from 'vue'
-import { useVModels } from '@vueuse/core'
-import { message } from 'ant-design-vue'
 import SQLSnippet from '@common/sql/snippet.vue'
 import { getQueryMetadata } from '@/governance/queryLogs/composables/useQueryLogs'
 
@@ -159,7 +185,27 @@ export default defineComponent({
             percent: getDurationPercent(),
             strokeColor: '#00A680',
         }))
-        return { query, metadata, handleClose, durationObj, durationDetails }
+        const getQueryStatusBgClass = (status) => {
+            if (status.toLowerCase() === 'success') return 'bg-success-muted'
+            if (status.toLowerCase() === 'error') return 'bg-error-muted'
+            if (status.toLowerCase() === 'abort') return 'bg-alert-muted'
+            return ''
+        }
+        const getQueryStatusCopy = (status) => {
+            if (status.toLowerCase() === 'success') return 'Success'
+            if (status.toLowerCase() === 'error') return 'Failed'
+            if (status.toLowerCase() === 'abort') return 'Aborted'
+            return ''
+        }
+        return {
+            query,
+            metadata,
+            handleClose,
+            durationObj,
+            durationDetails,
+            getQueryStatusBgClass,
+            getQueryStatusCopy,
+        }
     },
 })
 </script>

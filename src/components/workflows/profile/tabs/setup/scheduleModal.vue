@@ -1,7 +1,6 @@
 <template>
     <a-modal
         :visible="visible"
-        :class="$style.scheduleModal"
         :footer="null"
         width="45vw"
         style="z-index: 600"
@@ -55,7 +54,7 @@
                 <div
                     v-for="(s, index) in data.items"
                     :key="index"
-                    class="flex items-center px-2 py-3 text-base cursor-pointer hover:bg-primary-light"
+                    class="flex items-center px-2 py-3 text-base cursor-pointer  hover:bg-primary-light"
                 >
                     <div class="w-full mr-3">
                         <!-- Name -->
@@ -104,11 +103,10 @@
                             placement="rightTop"
                             trigger="click"
                             class="outline-none"
-                            :class="$style.scheduleModal"
                         >
                             <template #content>
                                 <div
-                                    class="px-4 py-2 cursor-pointer hover:bg-primary-light"
+                                    class="px-4 py-2 cursor-pointer  hover:bg-primary-light"
                                     @click="setSuspend(s)"
                                 >
                                     {{
@@ -119,14 +117,14 @@
                                 </div>
                                 <div
                                     v-auth="access.UPDATE_WORKFLOW_SCHEDULES"
-                                    class="px-4 py-2 cursor-pointer hover:bg-primary-light"
+                                    class="px-4 py-2 cursor-pointer  hover:bg-primary-light"
                                     @click="setUpdate(s)"
                                 >
                                     Edit
                                 </div>
                                 <div
                                     v-auth="access.DELETE_WORKFLOW_SCHEDULES"
-                                    class="px-4 py-2 cursor-pointer text-error hover:bg-primary-light"
+                                    class="px-4 py-2 cursor-pointer  text-error hover:bg-primary-light"
                                     @click="onDeleteSchedule(s.metadata.name)"
                                 >
                                     Delete
@@ -305,7 +303,7 @@
 
     /** COMPONENTS */
     import EmptyView from '@common/empty/index.vue'
-    import timezoneDayJs from "dayjs/plugin/timezone"
+    import timezoneDayJs from 'dayjs/plugin/timezone'
     import utc from 'dayjs/plugin/utc'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     /** ASSETS */
@@ -454,7 +452,7 @@
             const go = (m, s = '') => {
                 mode.value = m
                 if (['add', 'list'].includes(m)) {
-                    const timeZoneUser = dayjs.tz.guess() 
+                    const timeZoneUser = dayjs.tz.guess()
                     suspend.value = false
                     formState.scheduleName = ''
                     formState.time = '23:00'
@@ -636,17 +634,6 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .scheduleModal {
-        :global(.ant-modal-body) {
-            @apply p-0 !important;
-        }
-    }
-    :global(.ant-popover-inner-content) {
-        @apply p-0 !important;
-    }
-</style>
 
 <style lang="less" scoped>
     .day {

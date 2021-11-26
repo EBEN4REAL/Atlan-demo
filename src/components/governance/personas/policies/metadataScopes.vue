@@ -50,7 +50,7 @@
                 required: true,
             },
         },
-        emits: ['update:actions'],
+        emits: ['update:actions', 'change'],
         setup(props, { emit }) {
             const { actions } = toRefs(props)
             const { scopeList } = useScopeService().listScopes()
@@ -79,6 +79,7 @@
                     [] as string[]
                 )
                 emit('update:actions', allScopes)
+                emit('change')
             }
 
             function toggleCheckAll(idx: number) {

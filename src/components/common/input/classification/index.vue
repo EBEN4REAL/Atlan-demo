@@ -1,19 +1,22 @@
 <template>
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
-            placement="leftBottom"
-            overlayClassName="classificationPopover"
-            @visibleChange="handleVisibleChange"
-            :trigger="['click']"
             v-model:visible="isEdit"
+            placement="leftBottom"
+            :overlay-class-name="$style.classificationPopover"
+            :trigger="['click']"
+            :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            @visibleChange="handleVisibleChange"
         >
             <template #content>
-                <ClassificationFacet
-                    v-model="selectedValue"
-                    ref="classificationFacetRef"
-                    @change="handleSelectedChange"
-                    :showNone="false"
-                ></ClassificationFacet>
+                <div>
+                    <ClassificationFacet
+                        ref="classificationFacetRef"
+                        v-model="selectedValue"
+                        :show-none="false"
+                        @change="handleSelectedChange"
+                    ></ClassificationFacet>
+                </div>
             </template>
             <a-button
                 shape="circle"
@@ -26,13 +29,15 @@
         </a-popover>
 
         <template v-for="classification in list" :key="classification.guid">
-            <ClassificationPill
-                :name="classification.name"
-                :displayName="classification?.displayName"
-                :isPropagated="isPropagated(classification)"
-                :allowDelete="true"
-                @delete="handleDeleteClassification"
-            ></ClassificationPill>
+            <Popover :classification="classification">
+                <ClassificationPill
+                    :name="classification.name"
+                    :display-name="classification?.displayName"
+                    :is-propagated="isPropagated(classification)"
+                    :allow-delete="true"
+                    @delete="handleDeleteClassification"
+                />
+            </Popover>
         </template>
     </div>
 </template>
@@ -50,16 +55,21 @@
     import { mergeArray } from '~/utils/array'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import Popover from '@/common/popover/classification.vue'
 
     export default defineComponent({
         components: {
             ClassificationFacet,
             ClassificationPill,
+            Popover,
         },
         props: {
             guid: {
                 type: String,
                 required: false,
+                default() {
+                    return ''
+                },
             },
             modelValue: {
                 type: Array,
@@ -72,6 +82,11 @@
                 type: Boolean,
                 default: false,
                 required: false,
+            },
+            destroyTooltipOnHide: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -113,7 +128,7 @@
             const handleChange = () => {
                 modelValue.value = localValue.value
 
-                emit('change')
+                emit('change', localValue.value)
             }
 
             const handleDeleteClassification = (name) => {
@@ -157,6 +172,9 @@
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
+                selectedValue.value = {
+                    classifications: localValue.value.map((i) => i.typeName),
+                }
             })
 
             const activeElement = useActiveElement()
@@ -196,10 +214,10 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" module>
     .classificationPopover {
-        .ant-popover-inner-content {
-            @apply px-0 py-3;
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
             width: 250px !important;
         }
     }

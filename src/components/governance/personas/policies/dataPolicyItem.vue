@@ -35,13 +35,26 @@
                     {{ rules.policyName.text }}
                 </div>
             </div>
-            <AtlanBtn
-                size="sm"
-                color="secondary"
-                padding="compact"
-                @click="removePolicy"
-                ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
-            ></AtlanBtn>
+            <a-popconfirm
+                placement="leftTop"
+                :title="getPopoverContent(policy)"
+                ok-text="Yes"
+                :ok-type="'default'"
+                overlayClassName="popoverConfirm"
+                cancel-text="Cancel"
+                @confirm="removePolicy"
+            >
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="plus-btn"
+                    ><AtlanIcon
+                        icon="Delete"
+                        class="-mx-1 text-red-400"
+                    ></AtlanIcon
+                ></AtlanBtn>
+            </a-popconfirm>
         </div>
 
         <div class="relative">
@@ -50,6 +63,7 @@
                 v-model:data="connectorData"
                 class="max-w-xs mb-6"
                 :disabled="!policy?.isNew"
+                :filterSourceIds="BItypes"
                 @change="handleConnectorChange"
                 @blur="
                     () => {
@@ -90,6 +104,7 @@
                     v-model:data="assets"
                     label-key="label"
                     @add="openAssetSelector"
+                    :customRendererForLabel="customRendererForLabel"
                 >
                     <template #addBtn="d">
                         <div>
@@ -120,10 +135,12 @@
                             >
                                 <Pill class="group" @click="addConnectionAsset">
                                     <template #prefix>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center  text-primary group-hover:text-white"
+                                        >
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="h-4 mr-1"
                                             />
                                             <span class="text-xs">Add All</span>
                                         </div>
@@ -137,10 +154,12 @@
                                     @blur="d?.item?.handleBlur"
                                 >
                                     <template #prefix>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center  text-primary group-hover:text-white"
+                                        >
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="h-4 mr-1"
                                             />
                                             <span class="text-xs"
                                                 >Custom select</span
@@ -182,7 +201,7 @@
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
-                style="width: 44px"
+                style="width: 40px !important"
                 :checked="!policy.allow"
                 @update:checked="policy.allow = !$event"
             />
@@ -230,8 +249,10 @@
     import DataMaskingSelector from './dataMaskingSelector.vue'
     import Pill from '@/UI/pill/pill.vue'
     import { useConnectionStore } from '~/store/connection'
-    import { DataPolicies } from '~/types/accessPolicies/purposes'
+    import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPersona'
+    import { useUtils } from '../assets/useUtils'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -252,6 +273,8 @@
         emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
+            const BItypes = getBISourceTypes()
+            const { getAssetIcon } = useUtils()
             const connectorComponentRef = ref()
             const policyNameRef = ref()
             const assetSelectorVisible = ref(false)
@@ -307,6 +330,9 @@
             }
             const assets = computed({
                 get: () => {
+                    if (policy.value.assets.length > 0)
+                        rules.value.assets.show = false
+                    else rules.value.assets.show = true
                     return policy.value.assets.map((name) => ({
                         label: name,
                     }))
@@ -316,6 +342,9 @@
                     if (val.length > 0) rules.value.assets.show = false
                     else rules.value.assets.show = true
                 },
+            })
+            const assetsIcons = computed(() => {
+                return assets.value.map((asset) => getAssetIcon(asset.label))
             })
 
             const handleConnectorChange = () => {
@@ -361,7 +390,19 @@
                 )
             })
 
+            const customRendererForLabel = (label: string) => {
+                return label.split('/').length > 3
+                    ? label.split('/').slice(3).join('/')
+                    : label.split('/').slice(2).join('/')
+            }
+            const getPopoverContent = (policy: any) => {
+                return `Are you sure you want to delete ${policy?.name}?`
+            }
             return {
+                BItypes,
+                getPopoverContent,
+                assetsIcons,
+                customRendererForLabel,
                 addConnectionAsset,
                 isreadOnlyPillGroup,
                 handleConnectorChange,

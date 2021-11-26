@@ -9,11 +9,14 @@
                         : ''
                 "
             >
-                <AssetItem
-                    :item="item"
-                    :preference="preference"
-                    @click="handlePreview(item)"
-                ></AssetItem>
+                <Popover :item="item">
+                    <AssetItem
+                        :item="item"
+                        :preference="preference"
+                        has-pop-hover
+                        @click="handlePreview(item)"
+                    ></AssetItem>
+                </Popover>
             </div>
         </template>
     </VirtualList>
@@ -25,12 +28,14 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
     import { useRelations } from '~/composables/discovery/useRelations'
+    import Popover from '@/common/popover/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetList',
         components: {
             AssetItem,
             VirtualList,
+            Popover,
         },
         props: {
             preference: {

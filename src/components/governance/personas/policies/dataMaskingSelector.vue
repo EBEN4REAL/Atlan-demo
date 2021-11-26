@@ -79,7 +79,7 @@
             // FIXME: Take it out to a config file
             const maskingOptions = [
                 {
-                    value: 'MASK_NONE',
+                    value: 'null',
                     label: 'None',
                     borderBottom: true,
                 },
@@ -164,9 +164,6 @@
     })
 </script>
 
-<style lang="less" module>
-    // FIXME: Styling is not working for some reason
-</style>
 <style lang="less" scoped>
     .light-border {
         border: 1px solid #bdcdf4;

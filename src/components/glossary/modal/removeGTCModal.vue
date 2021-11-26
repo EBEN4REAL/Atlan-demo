@@ -216,19 +216,8 @@
         :global(.ant-input) {
             @apply shadow-none outline-none px-0 border-0 !important;
         }
-        :global(.ant-modal-header) {
-            @apply border-0 border-t-0 border-b-0 px-4  !important;
-        }
-
         :global(.ant-modal-content) {
             @apply rounded-md  !important;
-        }
-
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply p-0 !important;
         }
     }
     .titleInput {

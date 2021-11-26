@@ -51,7 +51,7 @@
                 default: () => {},
             },
         },
-        emits: ['selectBm'],
+        emits: ['update:selected'],
         setup(props, { emit }) {
             // data
             const store = useTypedefStore()
@@ -62,6 +62,7 @@
             })
             const visible = ref(false)
             const loading = ref(false)
+            const error = ref(null)
             const form = ref(initializeForm())
 
             // methods
@@ -83,11 +84,13 @@
             const handleBmUpdateSuccess = (serviceResponse: any[]) => {
                 if (props.isEdit) {
                     store.updateCustomMetadata(serviceResponse[0])
+                    store.tickForceRevalidate()
                     message.success('Metadata updated')
                 } else {
                     store.appendCustomMetadata(serviceResponse)
+                    store.tickForceRevalidate()
                     message.success('Metadata created')
-                    emit('selectBm', serviceResponse[0])
+                    emit('update:selected', serviceResponse[0].guid)
                 }
             }
 
@@ -113,6 +116,8 @@
                     () => apiResponse.value.error,
                     (e) => {
                         loading.value = false
+                        message.error('Error occured, try again')
+
                         console.log(
                             '🚀 ~ file: businessMetadataProfile.vue ~ handleAddBusinessMetadata ~ error',
                             e
@@ -177,9 +182,6 @@
 
 <style lang="less">
     .add-metadata-modal {
-        .ant-modal-body {
-            padding: 1rem;
-        }
         .ant-input {
             border: none !important;
         }

@@ -1,5 +1,6 @@
 <template>
     <div
+        @click.stop="() => {}"
         class="
             flex
             items-center
@@ -23,7 +24,7 @@
         <div :class="enableHover ? ' group-hover:text-white' : ''">
             {{ username }}
         </div>
-        <div class="flex" @click="handleDelete" v-if="allowDelete">
+        <div class="flex" @click.prevent="handleDelete" v-if="allowDelete">
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500"

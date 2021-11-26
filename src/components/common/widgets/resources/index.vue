@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 bg-white rounded">
+    <div class="p-4 bg-white rounded" style="min-height: 140px">
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center">
                 <AtlanIcon icon="Resources" class="w-auto h-8 mr-3" /><span
@@ -19,11 +19,12 @@
                 ></template>
             </AddResources>
         </div>
-        <div style="min-height: 15vh">
+        <div>
             <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-2">
                 <a
+                    v-for="(item, index) in links(asset)"
+                    :key="index"
                     class="flex cursor-pointer gap-x-2 hover:underline"
-                    v-for="item in links(asset)"
                     :href="`//${item?.attributes?.link}`"
                     target="_blank"
                     rel="noreferrer"

@@ -1,12 +1,19 @@
 <template>
-    <div class="p-0 rounded" style="width: 321px" @blur="cancel">
+    <div
+        class="p-4 rounded"
+        style="width: 321px"
+        @mouseleave="cancel"
+        @blur="cancel"
+    >
         <div class="mb-6">
             <p class="mb-2 text-base font-bold text-gray-700">
                 Delete {{ item?.attributes?.name }}
             </p>
             <p v-if="item.typeName === 'QueryFolder'" class="mb-0 text-black">
-                Deleting the folder will also 
-                <span class="font-bold">delete all the sub-folders and queries</span> 
+                Deleting the folder will also
+                <span class="font-bold"
+                    >delete all the sub-folders and queries</span
+                >
                 inside it.
             </p>
             <p v-if="item.typeName === 'Query'" class="mb-0 text-black">
@@ -48,7 +55,7 @@
             isSaving: {
                 type: Boolean,
                 required: true,
-                default: false
+                default: false,
             },
         },
         setup(props, { emit }) {

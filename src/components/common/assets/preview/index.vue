@@ -1,8 +1,8 @@
 <template>
     <div v-if="selectedAsset?.guid" class="flex flex-col h-full">
         <div
-            class="flex flex-col px-4 py-3 border-b border-gray-200"
             v-if="!isProfile"
+            class="flex flex-col px-4 py-3 border-b border-gray-200"
         >
             <div class="flex items-center mb-1" style="padding-bottom: 1px">
                 <div
@@ -19,21 +19,21 @@
                     />
                 </div>
                 <AtlanIcon
-                    icon="Category"
                     v-if="
                         ['atlasglossarycategory'].includes(
                             selectedAsset.typeName?.toLowerCase()
                         )
                     "
+                    icon="Category"
                     class="h-4 mb-0.5 mr-1"
                 ></AtlanIcon>
                 <AtlanIcon
-                    icon="Term"
                     v-if="
                         ['atlasglossaryterm'].includes(
                             selectedAsset.typeName?.toLowerCase()
                         )
                     "
+                    icon="Term"
                     class="h-4 mb-0.5 mr-1"
                 ></AtlanIcon>
                 <router-link
@@ -55,8 +55,8 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <a-tooltip
-                        placement="left"
                         v-if="connectorName(selectedAsset)"
+                        placement="left"
                     >
                         <template #title>
                             <span>{{ connectorName(selectedAsset) }} </span>
@@ -70,21 +70,21 @@
                         />
                     </a-tooltip>
                     <AtlanIcon
-                        icon="Category"
                         v-if="
                             ['atlasglossarycategory'].includes(
                                 selectedAsset.typeName?.toLowerCase()
                             )
                         "
+                        icon="Category"
                         class="h-4 mb-0.5 mr-1"
                     ></AtlanIcon>
                     <AtlanIcon
-                        icon="Term"
                         v-if="
                             ['atlasglossaryterm'].includes(
                                 selectedAsset.typeName?.toLowerCase()
                             )
                         "
+                        icon="Term"
                         class="h-4 mb-0.5 mr-1"
                     ></AtlanIcon>
 
@@ -96,18 +96,34 @@
                     </div>
                 </div>
                 <a-button-group>
-                    <a-button
-                        class="flex items-center justify-center"
+                    <template
                         v-for="action in getActions(selectedAsset)"
                         :key="action.id"
-                        @click="handleAction(action.id)"
                     >
-                        <a-tooltip :title="action.label">
-                            <AtlanIcon
-                                :icon="action.icon"
-                                class="mb-0.5"
-                            /> </a-tooltip
-                    ></a-button>
+                        <component
+                            :is="action.component"
+                            v-if="action.component"
+                            :asset="selectedAsset"
+                            :edit-permission="true"
+                        >
+                            <a-button class="flex items-center justify-center">
+                                <AtlanIcon icon="Share" class="mb-0.5" />
+                            </a-button>
+                        </component>
+                        <template v-else>
+                            <a-tooltip :title="action.label">
+                                <a-button
+                                    class="flex items-center justify-center"
+                                    @click="handleAction(action.id)"
+                                >
+                                    <AtlanIcon
+                                        :icon="action.icon"
+                                        class="mb-0.5"
+                                    />
+                                </a-button>
+                            </a-tooltip>
+                        </template>
+                    </template>
                 </a-button-group>
             </div>
         </div>
@@ -132,15 +148,17 @@
                         :title="tab.tooltip"
                         :icon="tab.icon"
                         :image="tab.image"
+                        :emoji="tab.emoji"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
                     />
                 </template>
 
                 <component
-                    :key="selectedAsset.guid"
                     :is="tab.component"
+                    :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
+                    :data="tab.data"
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -159,22 +177,24 @@
         provide,
     } from 'vue'
 
+    import { useRoute, useRouter } from 'vue-router'
+    import { debouncedWatch } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useRoute, useRouter } from 'vue-router'
 
     import useEvaluate from '~/composables/auth/useEvaluate'
-    import { debouncedWatch } from '@vueuse/core'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
+    import ShareMenu from '@/common/assets/misc/shareMenu.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
         components: {
             PreviewTabsIcon,
             CertificateBadge,
+            ShareMenu,
             // Tooltip,
             // AssetLogo,
             // StatusBadge,
@@ -202,9 +222,9 @@
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
-            // businessMetadataTab: defineAsyncComponent(
-            //     () => import('./tabs/businessMetadata/businessMetadataTab.vue')
-            // ),
+            customMetadata: defineAsyncComponent(
+                () => import('./customMetadata/index.vue')
+            ),
             // CertificatePopover,
         },
 
@@ -264,9 +284,7 @@
                 isProfile.value = true
             }
 
-            const assetURL = (asset) => {
-                return `/assets/${asset.guid}`
-            }
+            const assetURL = (asset) => `/assets/${asset.guid}`
 
             watch(
                 () => route.params.id,
@@ -310,8 +328,6 @@
             const router = useRouter()
 
             const handleAction = (key) => {
-                console.log('sdasd', key)
-
                 switch (key) {
                     case 'open':
                         router.push(assetURL(selectedAsset.value))
@@ -394,9 +410,6 @@
 <style lang="less" module>
     .previewtab {
         &:global(.ant-tabs-left) {
-            :global(.ant-tabs-bar) {
-                margin-bottom: 0px !important;
-            }
             :global(.ant-tabs-nav-container) {
                 width: 48px !important;
                 @apply ml-0 !important;

@@ -25,9 +25,11 @@
                 <span>
                     {{ r.name }}
                 </span>
-                <a-spin
+
+                <AtlanIcon
                     v-if="isLoading && selectedRunName === r.name"
-                    class="ml-2"
+                    icon="Loader"
+                    class="h-4 mb-1 ml-2 animate-spin"
                 />
             </div>
             <div>

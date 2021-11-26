@@ -87,7 +87,6 @@
             const selectedGlossaryQf = computed(
                 () => glossaryStore.activeGlossaryQualifiedName
             )
-            console.log(selectedGlossaryQf)
             // const entityToDelete = reactive({
             //     attributes: {
             //         userDescription: '',
@@ -143,7 +142,6 @@
 
             //     mutateAsset()
             // }
-            console.log(serviceMap)
             const handleDelete = () => {
                 const {
                     data,
@@ -154,17 +152,10 @@
                     false
                 )
                 isLoading.value = loading.value
-                console.log(data)
-                console.log(deleteError)
-                console.log('deleting')
-                console.log(props.entity)
                 if (data && !deleteError.value) {
-                    console.log('in if')
-                    console.log(selectedGlossaryQf.value.length)
                     if (props.entity?.typeName === 'AtlasGlossaryCategory') {
                         message.success(`${props.entity?.displayText} deleted`)
                         if (!selectedGlossaryQf?.value?.length) {
-                            console.log(props?.entity?.attributes?.anchor)
                             emit(
                                 'delete',
                                 props.entity?.attributes?.parentCategory
@@ -189,8 +180,6 @@
                             )
                         }
                         if (!selectedGlossaryQf?.value?.length) {
-                            console.log(props?.entity?.attributes?.anchor)
-
                             emit(
                                 'delete',
                                 props?.entity?.attributes?.anchor?.guid ??
@@ -204,9 +193,6 @@
                 isLoading.value = loading.value
                 visible.value = false
             }
-            watch(selectedGlossaryQf, () => {
-                console.log(selectedGlossaryQf.value)
-            })
             return {
                 visible,
                 showModal,

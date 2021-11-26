@@ -5,13 +5,26 @@
     >
         <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin"></AtlanIcon>
     </div>
-    <div v-else-if="treeData.length === 0 && !isLoading" class="flex-grow">
-        <EmptyView
-            empty-screen="EmptyDiscover"
-            desc="No terms found"
-            button-text="Add Term"
-            class="mb-10"
-        ></EmptyView>
+    <div
+        v-else-if="treeData.length === 0 && !isLoading"
+        class="flex items-center justify-center h-full"
+    >
+        <AddGtcModal
+            entityType="AtlasGlossaryTerm"
+            @add="reInitTree"
+            :glossary-qualified-name="defaultGlossary"
+        >
+            <template #trigger>
+                <div class="flex-grow">
+                    <EmptyView
+                        empty-screen="EmptyDiscover"
+                        desc="No terms found"
+                        button-text="Add Term"
+                        class="mb-10"
+                    ></EmptyView>
+                </div>
+            </template>
+        </AddGtcModal>
     </div>
     <a-tree
         :tree-data="treeData"
@@ -55,6 +68,7 @@
     import ErrorView from '@common/error/discover.vue'
     import GlossaryTreeItem from './glossaryTreeItem.vue'
     import Actions from './actions.vue'
+    import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
 
     import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
     import useGlossaryStore from '~/store/glossary'
@@ -63,6 +77,7 @@
         components: {
             GlossaryTreeItem,
             Actions,
+            AddGtcModal,
             EmptyView,
             ErrorView,
         },
@@ -93,10 +108,6 @@
 
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
             const glossaryStore = useGlossaryStore()
-            // const parentGlossaryQualifiedName = ref('VzA8dZUiZkdY6XbH6BMIU')
-            // const parentGlossaryGuid = ref(
-            //     '0a4293f3-d7ba-4552-be75-b47af07f250a'
-            // )
             const parentGlossaryGuid = computed(() => {
                 const selectedGlossary = glossaryStore.list.find(
                     (el) =>
@@ -104,8 +115,6 @@
                 )
                 return selectedGlossary?.guid
             })
-
-            console.log(defaultGlossary.value)
             const {
                 onLoadData,
                 loadedKeys,
@@ -132,10 +141,6 @@
                 initTreeData(defaultGlossary.value)
             })
             watch(defaultGlossary, () => {
-                console.log('changed', defaultGlossary.value)
-
-                console.log(parentGlossaryGuid.value)
-                console.log(defaultGlossary.value)
                 initTreeData(defaultGlossary.value)
             })
             const addGlossary = (asset) => {
@@ -161,10 +166,12 @@
                 if (entity !== {}) deleteNode(asset, entity)
                 else deleteNode(asset)
             }
+            const reInitTree = () => {
+                initTreeData(defaultGlossary.value)
+            }
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             provide('refetchGlossaryTree', refetchNode)
-
             return {
                 onLoadData,
                 loadedKeys,
@@ -184,6 +191,8 @@
                 addCategory,
                 treeItemClass,
                 collapseTree,
+                addGTCNode,
+                reInitTree,
             }
             // data
         },

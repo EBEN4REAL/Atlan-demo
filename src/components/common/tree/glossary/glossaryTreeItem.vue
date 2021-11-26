@@ -71,7 +71,7 @@
                     :treeMode="true"
                     :glossaryName="getAnchorName(item) || title(item)"
                     :categoryName="title(item)"
-                    :categoryGuid="item.guid"
+                    :categoryGuid="categoryId"
                     :entity="item"
                 ></Actions>
             </div>

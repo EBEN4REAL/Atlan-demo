@@ -47,7 +47,6 @@ const useGlossaryTree = ({
     parentGlossaryQualifiedName,
     nodesKey = 'guid',
 }: UseTreeParams) => {
-    console.log(parentGlossaryGuid, parentGlossaryQualifiedName)
     const limit = ref(100)
     const offset = ref(0)
     const queryText = ref('')
@@ -176,9 +175,7 @@ const useGlossaryTree = ({
                         treeNode.dataRef.children.push(...map)
                         loadedKeys.value.push(treeNode.dataRef.key)
                     } else {
-                        console.log('add cta node')
                         // treeNode.dataRef.children = null
-                        console.log(treeNode)
                         treeNode.dataRef.children.push({
                             key: `${treeNode.attributes?.qualifiedName}_cta`,
                             id: `${treeNode.attributes?.qualifiedName}_cta`,
@@ -200,7 +197,6 @@ const useGlossaryTree = ({
                         nodeToParentKeyMap[
                             `${treeNode.attributes?.qualifiedName}_cta`
                         ] = treeNode.dataRef.key
-                        console.log(nodeToParentKeyMap)
                     }
                     treeNode.dataRef.isLoading = false
                     treeNode.dataRef.isError = null
@@ -271,9 +267,7 @@ const useGlossaryTree = ({
                             loadedKeys.value.push(treeNode.dataRef.key)
                         }
                     } else {
-                        console.log('add cta node')
                         // treeNode.dataRef.children = null
-                        console.log(treeNode)
                         treeNode.dataRef.children.push({
                             key: `${treeNode.attributes?.qualifiedName}_cta`,
                             id: `${treeNode.attributes?.qualifiedName}_cta`,
@@ -295,7 +289,6 @@ const useGlossaryTree = ({
                         nodeToParentKeyMap[
                             `${treeNode.attributes?.qualifiedName}_cta`
                         ] = treeNode.dataRef.key
-                        console.log(nodeToParentKeyMap)
                     }
                     treeNode.dataRef.isLoading = false
                     treeNode.dataRef.isError = null
@@ -346,8 +339,6 @@ const useGlossaryTree = ({
         const allPaths: string[][] = []
 
         const firstParent = nodeToParentKeyMap[targetGuid]
-        console.log(targetGuid)
-        console.log(firstParent)
         if (typeof firstParent === 'string') {
             parentStack = initialStack?.length ? initialStack : [targetGuid]
             findPath(targetGuid)
@@ -361,7 +352,6 @@ const useGlossaryTree = ({
                 allPaths.push(parentStack)
             })
         }
-        console.log(allPaths)
         return allPaths
     }
 
@@ -388,7 +378,6 @@ const useGlossaryTree = ({
     const initTreeData = async (defaultGlossaryQf) => {
         let glossaryFound = null
         if (defaultGlossaryQf !== '') {
-            console.log('if')
             glossaryFound = glossaryList.value.find(
                 (i) => i.attributes.qualifiedName === defaultGlossaryQf
             )
@@ -424,7 +413,6 @@ const useGlossaryTree = ({
                 }
             }
         } else {
-            console.log('else')
             treeData.value = glossaryList.value.map((i) => {
                 nodeToParentKeyMap[i?.guid] = 'root'
                 // let isLeafFlag = false
@@ -438,7 +426,6 @@ const useGlossaryTree = ({
                     isLeaf: false,
                 }
             })
-            console.log(nodeToParentKeyMap)
         }
     }
 
@@ -448,12 +435,8 @@ const useGlossaryTree = ({
 
         const updateNodeNested = async (node: TreeDataItem) => {
             const currentPath = parentStack.pop()
-            console.log(currentPath)
-            console.log(node)
             // if the target node is reached
             if (node.key === guid || !currentPath || node.guid === guid) {
-                console.log('reached target')
-                console.log(node)
                 const updatedChildren: TreeDataItem[] = []
                 if (action === 'add') {
                     node?.children?.forEach((element) => {
@@ -468,8 +451,6 @@ const useGlossaryTree = ({
                     })
                 }
                 if (action === 'delete') {
-                    console.log('deleting node')
-                    console.log(guid)
                     node?.children?.forEach((element) => {
                         if (
                             element?.typeName !== 'cta' &&
@@ -491,7 +472,6 @@ const useGlossaryTree = ({
 
             // eslint-disable-next-line no-restricted-syntax
             for (const childNode of node?.children ?? []) {
-                console.log(childNode)
                 // if the current node is in the path that is needed to reach the target node
                 if (
                     childNode.key === currentPath ||
@@ -511,11 +491,8 @@ const useGlossaryTree = ({
 
         // find the path to the node
         parentStack = recursivelyFindPath(guid)[0]
-        console.log(parentStack)
         const parent = parentStack?.pop()
         const updatedTreeData: TreeDataItem[] = []
-        console.log(parent)
-        console.log(treeData.value)
         // eslint-disable-next-line no-restricted-syntax
         for (const node of treeData.value) {
             if (node.key === parent || node.guid === parent) {
@@ -562,15 +539,9 @@ const useGlossaryTree = ({
         // treeData.value = updatedTreeData
     }
     const deleteNode = (asset, guid) => {
-        console.log(asset)
-        console.log(guid)
         if (guid === 'root') {
             const updatedTreeData: TreeDataItem[] = treeData.value.filter(
                 (el) => {
-                    console.log(
-                        el?.guid !== asset?.value?.guid ||
-                            el?.guid !== asset?.guid
-                    )
                     return el?.guid !== asset?.guid
                 }
             )
@@ -580,9 +551,7 @@ const useGlossaryTree = ({
         }
     }
     const addNode = (asset, entity): TreeDataItem => {
-        console.log(asset)
         if (entity && entity !== {}) {
-            console.log(entity)
             recursivelyAddOrDeleteNode(
                 asset,
                 entity?.value?.guid || entity?.guid,
@@ -639,13 +608,7 @@ const useGlossaryTree = ({
         refetchEntityType?: 'category' | 'term'
     ) => {
         // if the root level of the tree needs a refetch
-        console.log(parentGlossaryGuid)
-        console.log(guid)
-        console.log(categoryQaulifiedName)
-        console.log(refetchEntityType)
-        // if (guid === 'root' && parentGlossaryGuid?.value) {
         if (guid === 'root' && parentGlossaryGuid?.value) {
-            console.log(parentGlossaryGuid)
             let categoryList: Category[] | null = null
 
             let termsList: Term[] | null = null
@@ -733,12 +696,8 @@ const useGlossaryTree = ({
 
             const updateNodeNested = async (node: TreeDataItem) => {
                 const currentPath = parentStack.pop()
-                console.log(currentPath)
-                console.log(node)
-                console.log('in else')
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
-                    console.log('reached target')
                     let categoryList: Category[] | null = null
                     let termsList: Term[] | null = null
 
@@ -839,7 +798,6 @@ const useGlossaryTree = ({
 
                 // eslint-disable-next-line no-restricted-syntax
                 for (const childNode of node?.children ?? []) {
-                    console.log(childNode)
                     // if the current node is in the path that is needed to reach the target node
                     if (
                         childNode.key === currentPath ||
@@ -859,10 +817,8 @@ const useGlossaryTree = ({
 
             // find the path to the node
             parentStack = recursivelyFindPath(guid)[0]
-            console.log(parentStack)
             const parent = parentStack?.pop()
             const updatedTreeData: TreeDataItem[] = []
-            console.log(parent)
             // eslint-disable-next-line no-restricted-syntax
             for (const node of treeData.value) {
                 if (node.key === parent || node.guid === parent) {

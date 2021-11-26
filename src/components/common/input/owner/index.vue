@@ -58,7 +58,7 @@
         </template>
         <template v-if="usedForAssets">
             <template v-for="name in ownerGroups(selectedAsset)" :key="name">
-                <PopOverGroup>
+                <PopOverGroup :item="name">
                     <GroupPill
                         :name="name"
                         :allowDelete="!readOnly"
@@ -69,7 +69,7 @@
                 </PopOverGroup> </template
         ></template>
         <template v-for="name in localValue?.ownerGroups" v-else :key="name">
-            <PopOverGroup>
+            <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
                     :allow-delete="!readOnly"

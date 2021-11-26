@@ -32,7 +32,12 @@ export default function useCustomMetadataHelpers() {
 
     const formatDisplayValue = (v: any, type: string) => {
         if (v || v?.toString()) {
-            let value = JSON.parse(JSON.stringify(v))
+            let value
+            if (v?.value) {
+                value = JSON.parse(JSON.stringify(v.value))
+            } else {
+                value = JSON.parse(JSON.stringify(v))
+            }
             if (type === 'boolean') {
                 return JSON.parse(value.toString().toLowerCase()) ? 'Yes' : 'No'
             }

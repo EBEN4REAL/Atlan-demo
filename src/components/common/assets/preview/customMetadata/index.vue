@@ -4,7 +4,7 @@
     </div>
     <div
         v-else
-        class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5"
+        class="flex flex-col w-full h-full px-5 py-4 overflow-auto gap-y-6"
     >
         <div class="flex items-center justify-between">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
@@ -33,14 +33,7 @@
             </div>
         </div>
         <div v-for="(a, x) in applicableList" :key="x">
-            <div
-                class="gap-6 gap-y-0 group"
-                :class="
-                    getDatatypeOfAttribute(a) === 'text' && !readOnly
-                        ? ''
-                        : 'mb-4'
-                "
-            >
+            <div class="">
                 <div class="mb-2 font-normal text-gray-500">
                     <span>{{ a.displayName }}</span>
                     <a-tooltip>

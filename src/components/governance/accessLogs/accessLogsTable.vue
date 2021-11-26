@@ -3,7 +3,6 @@
         <a-table
             class="overflow-hidden border rounded-lg"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :style="{ cursor: 'pointer' }"
             :table-layout="'fixed'"
             :pagination="false"
             :class="$style.table_custom"
@@ -396,20 +395,10 @@
                                 </div>
                             </div>
                             <div>
-                                <router-link
-                                    :to="
-                                        assetURL(
-                                            assetMetaMap[log._source.resourceQF]
-                                        )
-                                    "
-                                    class="flex-shrink mb-0 mr-1 truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
-                                >
-                                    {{
-                                        title(
-                                            assetMetaMap[log._source.resourceQF]
-                                        )
-                                    }}
-                                </router-link>
+                                {{
+                                    title(assetMetaMap[log._source.resourceQF])
+                                }}
+
                                 <CertificateBadge
                                     v-if="
                                         certificateStatus(

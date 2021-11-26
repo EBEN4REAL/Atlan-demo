@@ -24,11 +24,11 @@
                                 color="secondary"
                                 class="px-2 rounded-tr-none rounded-br-none"
                                 :class="
-                                    queryLogsFilterDrawerVisible
+                                    accessLogsFilterDrawerVisible
                                         ? 'text-primary border-primary'
                                         : 'border-gray-300  border rounded-tl rounded-bl text-gray '
                                 "
-                                @click="queryLogsFilterDrawerVisible = true"
+                                @click="accessLogsFilterDrawerVisible = true"
                             >
                                 <AtlanIcon
                                     :icon="'FilterFunnel'"
@@ -61,7 +61,7 @@
 
             <AccessLogsTable
                 :access-logs-list="accessLogsList"
-                :is-loading="isLoading"
+                :is-loading="isLoading || assetListLoading"
                 :asset-meta-map="assetMetaMap"
             />
 
@@ -114,7 +114,7 @@
         </DefaultLayout>
 
         <a-drawer
-            :visible="queryLogsFilterDrawerVisible"
+            :visible="accessLogsFilterDrawerVisible"
             :mask="false"
             :placement="'left'"
             :width="286"
@@ -123,7 +123,7 @@
             <div class="relative">
                 <AssetFilters
                     v-model="facets"
-                    :filter-list="queryLogsFilter"
+                    :filter-list="accessLogsFilter"
                     :allow-custom-filters="false"
                     class="bg-gray-100"
                     @change="handleFilterChange"
@@ -137,12 +137,12 @@
                         @change="handleFilterChange"
                 /></AssetFilters>
                 <AtlanBtn
-                    v-if="queryLogsFilterDrawerVisible"
+                    v-if="accessLogsFilterDrawerVisible"
                     class="fixed z-10 px-0 border-l-0 rounded-none rounded-r  top-1/4 left-72"
                     color="secondary"
                     @click="
                         () => {
-                            queryLogsFilterDrawerVisible = false
+                            accessLogsFilterDrawerVisible = false
                         }
                     "
                 >
@@ -167,7 +167,7 @@ import AccessLogsTable from '@/governance/accessLogs/accessLogsTable.vue'
 import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
 import { useAccessLogs } from './composables/useAccessLogs'
 import AssetFilters from '@/common/assets/filters/index.vue'
-import { queryLogsFilter } from '~/constant/filters/logsFilter'
+import { accessLogsFilter } from '~/constant/filters/logsFilter'
 import Connector from '~/components/insights/common/connector/connector.vue'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
@@ -186,7 +186,7 @@ export default defineComponent({
         /** LOCAL STATE */
         const facets = ref({})
         const searchText: Ref<string> = ref('')
-        const queryLogsFilterDrawerVisible: Ref<boolean> = ref(false)
+        const accessLogsFilterDrawerVisible: Ref<boolean> = ref(false)
         const timeFrame = ref('30 days')
         const selectedQuery = ref({})
         const isQueryPreviewDrawerVisible = ref(false)
@@ -205,6 +205,7 @@ export default defineComponent({
             isLoading,
             filteredLogsCount,
             assetMetaMap,
+            assetListLoading,
         } = useAccessLogs(gte, lt, from, size)
         // since we always get filtered total count in response, storing the total count when we get the logs first time, i.e. when no filters are applied to find the total number of logs to decide if we want to render empty state or logs table.
         const totalLogsCount = ref(0)
@@ -212,14 +213,6 @@ export default defineComponent({
             totalLogsCount.value = filteredLogsCount.value
         })
         watch(totalLogsCount, stopWatcher)
-        const toggleQueryPreviewDrawer = (
-            val: boolean | undefined = undefined
-        ) => {
-            if (val === undefined)
-                isQueryPreviewDrawerVisible.value =
-                    !isQueryPreviewDrawerVisible.value
-            else isQueryPreviewDrawerVisible.value = val
-        }
 
         const setSelectedQuery = (query: Object) => {
             selectedQuery.value = query
@@ -314,13 +307,12 @@ export default defineComponent({
             isLoading,
             handleSearch,
             handleSelectQuery,
-            toggleQueryPreviewDrawer,
             handleRangePickerChange,
             timeFrame,
             searchText,
-            queryLogsFilterDrawerVisible,
+            accessLogsFilterDrawerVisible,
             map,
-            queryLogsFilter,
+            accessLogsFilter,
             handleFilterChange,
             handleResetEvent,
             facets,
@@ -330,6 +322,7 @@ export default defineComponent({
             assetMetaMap,
             totalLogsCount,
             EmptyLogsIllustration,
+            assetListLoading,
         }
     },
 })

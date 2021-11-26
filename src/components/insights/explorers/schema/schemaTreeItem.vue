@@ -556,6 +556,69 @@
             </div>
         </div>
     </div>
+
+    <!-- <template>
+        <a-modal
+            :visible="showContextModal"
+            :closable="false"
+            :class="$style.input"
+            :footer="null"
+            width="450px"
+        >
+            <div class="w-full p-4 text-gray-500 bg-white rounded">
+                <div class="w-full">
+                    <div>
+                        Current Tab connection context doesn't match your
+                        preview table connection context. Previewing in same tab
+                        will rewrite the context.
+                    </div>
+
+                    <div
+                        class="flex items-center justify-between text-gray-700cursor-pointer"
+                    >
+                        <AtlanBtn
+                            size="sm"
+                            color="secondary"
+                            padding="compact"
+                            class="flex items-center justify-between h-4 p-0 py-1 border-none hover:text-primary"
+                            @click="closeContextModal"
+                        >
+                            <span>Cancel</span>
+                        </AtlanBtn>
+
+                        <div class="flex items-center">
+                            <AtlanBtn
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                class="flex items-center justify-between h-6 p-0 py-1 ml-2 border-none "
+                                @click="openInCurrentTab"
+                            >
+                                <div
+                                    class="flex items-center rounded text-primary"
+                                >
+                                    <span>Open in current tab</span>
+                                </div>
+                            </AtlanBtn>
+                            <AtlanBtn
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                class="flex items-center justify-between h-6 p-0 py-1 ml-2 border-none "
+                                @click="openInNewTab"
+                            >
+                                <div
+                                    class="flex items-center rounded text-primary"
+                                >
+                                    <span>Open in new tab</span>
+                                </div>
+                            </AtlanBtn>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a-modal>
+    </template> -->
 </template>
 
 <script lang="ts">
@@ -582,6 +645,9 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { getLastMappedKeyword } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import AtlanBtn from '@/UI/button.vue'
+    import { useRouter } from 'vue-router'
+    import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 
     import {
         useMapping,
@@ -591,7 +657,7 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
-        components: { StatusBadge, PopoverAsset },
+        components: { StatusBadge, PopoverAsset, AtlanBtn },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -641,9 +707,16 @@
 
             const { item } = toRefs(props)
             const { queryRun } = useRunQuery()
-            const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
-                useInlineTab()
+            const {
+                modifyActiveInlineTabEditor,
+                modifyActiveInlineTab,
+                inlineTabAdd,
+                // activeInlineTabKey,
+            } = useInlineTab()
             // callback fxn
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
             const getData = (dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
@@ -743,11 +816,13 @@
                     case 'play': {
                         const activeInlineTabCopy: activeInlineTabInterface =
                             Object.assign({}, activeInlineTab.value)
+
+                        // new logic for preview ctc
                         // previous text
                         const prevText =
                             activeInlineTabCopy.playground.editor.text
                         // new text
-                        const newQuery = `\/* ${title(
+                        let newQuery = `\/* ${title(
                             item.value
                         )} preview *\/\nSELECT * FROM \"${title(
                             item.value
@@ -755,34 +830,250 @@
 
                         // console.log('selected query: ', item.value)
 
-                        let schemaQualifiedName =
+                        let databaseName = item.value?.databaseName
+                        let schemaName = item.value?.schemaName
+                        let tableName = title(item.value)
+
+                        let queryConnectionQualifiedName =
+                            item.value.connectionQualifiedName
+                        let queryDatabaseQualifiedName =
+                            item.value.databaseQualifiedName
+                        let querySchemaQualifiedName =
+                            item.value.databaseQualifiedName +
+                            '/' +
+                            item.value.schemaName
+
+                        let editorContext =
+                            activeInlineTabCopy.playground.editor.context
+                        let editorContextType = editorContext.attributeName
+                        let editorContextValue = editorContext.attributeValue
+
+                        // console.log('editorContextType', editorContextType)
+
+                        // 1st missing context in editor:
+                        // 2nd context mismatch in editor and query
+
+                        // console.log('run query')
+                        let updatedEditorSchemaQualifiedName =
                             item.value?.databaseQualifiedName +
                             '/' +
                             item.value?.schemaName
 
-                        const newText = `${newQuery}${prevText}`
-                        activeInlineTabCopy.playground.editor.text = newText
-                        /* Setting the current connectors context to editor context so that it can be run */
-                        // activeInlineTabCopy.playground.editor.context =
-                        //     activeInlineTabCopy.explorer.schema.connectors
+                        switch (editorContextType) {
+                            case 'connectionQualifiedName': {
+                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                if (
+                                    editorContextValue !==
+                                    queryConnectionQualifiedName
+                                ) {
+                                    // openContextModal()
+                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    let newText = `${newQuery}`
+                                    handleAddNewTab(
+                                        newText,
+                                        {
+                                            attributeName:
+                                                'schemaQualifiedName',
+                                            attributeValue:
+                                                updatedEditorSchemaQualifiedName,
+                                        },
+                                        item.value
+                                    )
+                                    return
+                                } else {
+                                    const newText = `${newQuery}${prevText}`
+                                    playQuery(
+                                        newQuery,
+                                        newText,
+                                        activeInlineTabCopy
+                                    )
+                                    return
+                                }
+                                break
+                            }
+                            case 'databaseQualifiedName': {
+                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
 
-                        // setting the editor context based on query even if we don't have a schema or database selected in explorer
-                        activeInlineTabCopy.playground.editor.context = {
-                            attributeName: 'schemaQualifiedName',
-                            attributeValue: schemaQualifiedName,
+                                if (
+                                    editorContextValue !==
+                                    queryDatabaseQualifiedName
+                                ) {
+                                    let editorContextValueArray =
+                                        editorContextValue?.split('/')
+                                    let cqn = editorContextValueArray
+                                        ?.slice(0, 3)
+                                        .join('/')
+                                    let dbqn = editorContextValueArray
+                                        ?.slice(0, 4)
+                                        .join('/')
+
+                                    if (cqn !== queryConnectionQualifiedName) {
+                                        // console.log('cqn: ', {
+                                        //     cqn,
+                                        //     queryConnectionQualifiedName,
+                                        // })
+                                        // open in new tab
+                                        // openContextModal()
+                                        newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                        let newText = `${newQuery}`
+                                        handleAddNewTab(
+                                            newText,
+                                            {
+                                                attributeName:
+                                                    'schemaQualifiedName',
+                                                attributeValue:
+                                                    updatedEditorSchemaQualifiedName,
+                                            },
+                                            item.value
+                                        )
+                                        return
+                                    } else {
+                                        if (
+                                            dbqn !== queryDatabaseQualifiedName
+                                        ) {
+                                            newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            const newText = `${newQuery}${prevText}`
+                                            playQuery(
+                                                newQuery,
+                                                newText,
+                                                activeInlineTabCopy
+                                            )
+                                            return
+                                        }
+                                    }
+                                    // here, check db--->connection
+                                } else {
+                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                    const newText = `${newQuery}${prevText}`
+                                    playQuery(
+                                        newQuery,
+                                        newText,
+                                        activeInlineTabCopy
+                                    )
+                                    return
+                                }
+                                break
+                            }
+                            case 'schemaQualifiedName' ||
+                                'defaultSchemaQualifiedName': {
+                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                console.log('run in schema')
+                                if (
+                                    editorContextValue !==
+                                    querySchemaQualifiedName
+                                ) {
+                                    let editorContextValueArray =
+                                        editorContextValue?.split('/')
+                                    let cqn = editorContextValueArray
+                                        ?.slice(0, 3)
+                                        .join('/')
+                                    let dbqn = editorContextValueArray
+                                        ?.slice(0, 4)
+                                        .join('/')
+                                    let sqn = editorContextValueArray
+                                        ?.slice(0, 5)
+                                        .join('/')
+
+                                    if (cqn !== queryConnectionQualifiedName) {
+                                        // open in new tab
+                                        // openContextModal()
+                                        let newText = `${newQuery}`
+                                        handleAddNewTab(
+                                            newText,
+                                            {
+                                                attributeName:
+                                                    'schemaQualifiedName',
+                                                attributeValue:
+                                                    updatedEditorSchemaQualifiedName,
+                                            },
+                                            item.value
+                                        )
+                                        return
+                                    } else {
+                                        if (
+                                            dbqn !== queryDatabaseQualifiedName
+                                        ) {
+                                            newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
+                                            const newText = `${newQuery}${prevText}`
+                                            playQuery(
+                                                newQuery,
+                                                newText,
+                                                activeInlineTabCopy
+                                            )
+                                            return
+                                        } else {
+                                            if (
+                                                sqn !== querySchemaQualifiedName
+                                            ) {
+                                                newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                                const newText = `${newQuery}${prevText}`
+                                                playQuery(
+                                                    newQuery,
+                                                    newText,
+                                                    activeInlineTabCopy
+                                                )
+                                                return
+                                            }
+                                        }
+                                    }
+
+                                    //here check schema-->db-->connection
+                                } else {
+                                    console.log('match here')
+                                    newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                    const newText = `${newQuery}${prevText}`
+                                    playQuery(
+                                        newQuery,
+                                        newText,
+                                        activeInlineTabCopy
+                                    )
+                                    return
+                                }
+                                break
+                            }
                         }
 
-                        modifyActiveInlineTab(
-                            activeInlineTabCopy,
-                            inlineTabs,
-                            activeInlineTabCopy.isSaved
-                        )
-                        selectionObject.value.startLineNumber = 2
-                        selectionObject.value.startColumnNumber = 1
-                        selectionObject.value.endLineNumber = 2
-                        selectionObject.value.endColumnNumber =
-                            newQuery.length + 1 // +1 for semicolon
-                        queryRun(activeInlineTab, getData)
+                        // let updatedEditorSchemaQualifiedName =
+                        //     item.value?.databaseQualifiedName +
+                        //     '/' +
+                        //     item.value?.schemaName
+
+                        // let newText = `${newQuery}${prevText}`
+
+                        // if (selectedOption.value === 'current') {
+                        //     activeInlineTabCopy.playground.editor.context = {
+                        //         attributeName: 'schemaQualifiedName',
+                        //         attributeValue:
+                        //             updatedEditorSchemaQualifiedName,
+                        //     }
+                        //     modifyActiveInlineTab(
+                        //         activeInlineTabCopy,
+                        //         inlineTabs,
+                        //         activeInlineTabCopy.isSaved
+                        //     )
+                        // } else if (selectedOption.value === 'new') {
+                        //     newText = `${newQuery}`
+                        //     handleAddNewTab(
+                        //         newText,
+                        //         {
+                        //             attributeName: 'schemaQualifiedName',
+                        //             attributeValue:
+                        //                 updatedEditorSchemaQualifiedName,
+                        //         },
+                        //         item.value
+                        //     )
+
+                        //     //     //open new query tab
+                        // }
+
+                        // console.log(' preview item: ', item.value)
+
+                        // selectionObject.value.startLineNumber = 2
+                        // selectionObject.value.startColumnNumber = 1
+                        // selectionObject.value.endLineNumber = 2
+                        // selectionObject.value.endColumnNumber =
+                        //     newQuery.length + 1 // +1 for semicolon
+                        // queryRun(activeInlineTab, getData)
 
                         break
                     }
@@ -807,6 +1098,21 @@
                 }
             }
 
+            const playQuery = (newQuery, newText, activeInlineTabCopy) => {
+                activeInlineTabCopy.playground.editor.text = newText
+
+                modifyActiveInlineTab(
+                    activeInlineTabCopy,
+                    inlineTabs,
+                    activeInlineTabCopy.isSaved
+                )
+                selectionObject.value.startLineNumber = 2
+                selectionObject.value.startColumnNumber = 1
+                selectionObject.value.endLineNumber = 2
+                selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
+                queryRun(activeInlineTab, getData)
+            }
+
             let childCount = (item) => {
                 if (assetType(item) === 'Database') {
                     return item.attributes.schemaCount
@@ -824,10 +1130,6 @@
                 }
             }
 
-            // watch(item, () => {
-            //     console.log('schema tree item: ', item.value)
-            // })
-
             const openSidebar = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
@@ -836,7 +1138,120 @@
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
             }
 
+            // let showContextModal = ref(false)
+            // const closeContextModal = () => {
+            //     showContextModal.value = false
+            // }
+            // const openContextModal = () => {
+            //     showContextModal.value = true
+            // }
+            // let selectedOption = ref(null)
+            // const openInCurrentTab = () => {
+            //     selectedOption.value = 'current'
+            // }
+
+            // const openInNewTab = () => {
+            //     selectedOption.value = 'new'
+            // }
+            // const router = useRouter()
+            // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
+            const tabs = inject('inlineTabs')
+
+            const handleAddNewTab = async (query, context, previewItem) => {
+                const key = String(new Date().getTime())
+                const inlineTabData: activeInlineTabInterface = {
+                    label: `${previewItem.title} preview`,
+                    key,
+                    favico: 'https://atlan.com/favicon.ico',
+                    isSaved: false,
+                    queryId: undefined,
+                    status: 'DRAFT',
+                    connectionId: '',
+                    description: '',
+                    qualifiedName: '',
+                    parentGuid: '',
+                    parentQualifiedName: '',
+                    isSQLSnippet: false,
+                    savedQueryParentFolderTitle: undefined,
+                    explorer: {
+                        schema: {
+                            connectors: {
+                                ...context,
+                            },
+                        },
+                        queries: {
+                            connectors: {
+                                connector:
+                                    previewItem.connectionQualifiedName.split(
+                                        '/'
+                                    )[1],
+                            },
+                        },
+                    },
+                    playground: {
+                        editor: {
+                            context: {
+                                ...context,
+                            },
+                            text: query,
+                            dataList: [],
+                            columnList: [],
+                            variables: [],
+                            savedVariables: [],
+                            limitRows: {
+                                checked: false,
+                                rowsCount: -1,
+                            },
+                        },
+                        resultsPane: {
+                            activeTab:
+                                activeInlineTab.value?.playground?.resultsPane
+                                    ?.activeTab ?? 0,
+                            result: {
+                                title: `${key} Result`,
+                                runQueryId: undefined,
+                                isQueryRunning: '',
+                                queryErrorObj: {},
+                                totalRowsCount: -1,
+                                executionTime: -1,
+                                errorDecorations: [],
+                                eventSourceInstance: undefined,
+                                buttonDisable: false,
+                                isQueryAborted: false,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
+                        },
+                    },
+                    assetSidebar: {
+                        // for taking the previous state from active tab
+                        openingPos: undefined,
+                        isVisible: false,
+                        assetInfo: {},
+                        title: activeInlineTab.value?.assetSidebar.title ?? '',
+                        id: activeInlineTab.value?.assetSidebar.id ?? '',
+                    },
+                }
+                inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
+                queryRun(activeInlineTab, getData)
+
+                selectionObject.value.startLineNumber = 2
+                selectionObject.value.startColumnNumber = 1
+                selectionObject.value.endLineNumber = 2
+                selectionObject.value.endColumnNumber = query.length + 1 // +1 for semicolon
+            }
+
             return {
+                // showContextModal,
+                // closeContextModal,
+                // openInCurrentTab,
+                // openInNewTab,
+
                 hoverActions,
                 isPopoverAllowed,
                 activeInlineTab,
@@ -932,6 +1347,17 @@
         // min-width: 440px !important;
         max-width: none !important;
         // min-height: 228px !important;
+    }
+    .input {
+        :global(.ant-input:focus
+                .ant-input:hover
+                .ant-input::selection
+                .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none border-0 px-0 !important;
+        }
     }
     :global(.ant-tree li) {
         @apply pt-0 pb-0 !important;

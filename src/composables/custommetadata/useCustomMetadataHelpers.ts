@@ -9,6 +9,8 @@ export default function useCustomMetadataHelpers() {
     const getDatatypeOfAttribute = (a) => {
         if (a?.typeName && typeof a.typeName !== 'undefined') {
             if (numberTypes.includes(a?.typeName)) return 'number'
+            if (a?.options?.isEnum?.includes('true')) return 'enum'
+
             if (a?.typeName?.includes('string')) {
                 if (a?.options?.customType?.includes('users')) return 'users'
                 if (a?.options?.customType?.includes('groups')) return 'groups'

@@ -115,7 +115,7 @@
             </a-select-option>
         </a-select>
         <a-select
-            v-else
+            v-else-if="getDatatypeOfAttribute(attribute) === 'enum'"
             v-model:value="localValue"
             class="flex-grow shadow-none border-1"
             :allow-clear="true"

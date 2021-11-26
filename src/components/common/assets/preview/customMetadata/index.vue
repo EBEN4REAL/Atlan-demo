@@ -146,7 +146,8 @@
                             if (attrIndex > -1) {
                                 if (
                                     (options?.customType === 'users' ||
-                                        options?.customType === 'groups') &&
+                                        options?.customType === 'groups' ||
+                                        options?.isEnum === 'true') &&
                                     options?.multiValueSelect === 'true'
                                 ) {
                                     value = value

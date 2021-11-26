@@ -2,18 +2,21 @@
     <div class="flex items-center self-start flex-grow break-all">
         <a
             v-if="getDatatypeOfAttribute(attribute) === 'url'"
-            class="flex items-center font-bold text-primary gap-x-1"
             target="_blank"
             :href="`//${attribute.value}`"
         >
-            <span v-if="attribute.value">
+            <div
+                v-if="attribute.value"
+                class="flex items-center font-bold text-primary gap-x-1"
+            >
                 <img
                     :src="`https://www.google.com/s2/favicons?domain=${attribute.value}`"
                     :alt="attribute.value"
                     class="w-4 h-4"
                 />
-                {{ attribute.value }}</span
-            ><span v-else>-</span></a
+                {{ attribute.value }}
+            </div>
+            <span v-else>-</span></a
         >
 
         <a-typography-paragraph
@@ -83,6 +86,30 @@
             </template>
             <template v-else>-</template>
         </div>
+        <div
+            v-else-if="getDatatypeOfAttribute(attribute) === 'enum'"
+            class="flex flex-wrap gap-1"
+        >
+            <template
+                v-if="
+                    attribute.options.multiValueSelect === 'false' &&
+                    attribute.value
+                "
+            >
+                <EnumPill :label="attribute.value" />
+            </template>
+            <template
+                v-else-if="
+                    attribute.options.multiValueSelect === 'true' &&
+                    attribute.value
+                "
+            >
+                <div v-for="e in attribute.value" :key="e">
+                    <EnumPill :label="e" />
+                </div>
+            </template>
+            <template v-else>-</template>
+        </div>
 
         <span v-else class="font-bold text-gray-700">
             {{
@@ -103,10 +130,17 @@
     import GroupPill from '@/common/pills/group.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
+    import EnumPill from '@/UI/pill/pill.vue'
 
     export default defineComponent({
         name: 'CustomMetadataReadOnly',
-        components: { UserPill, GroupPill, PopOverUser, PopOverGroup },
+        components: {
+            UserPill,
+            GroupPill,
+            PopOverUser,
+            PopOverGroup,
+            EnumPill,
+        },
         props: {
             attribute: {
                 type: Object,

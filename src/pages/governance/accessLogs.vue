@@ -1,16 +1,16 @@
 <template>
-    <QueryLogsView />
+    <AccessLogsView />
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useHead } from '@vueuse/head'
-import QueryLogsView from '@/governance/queryLogs/queryLogsView.vue'
+import AccessLogsView from '@/governance/accessLogs/accessLogsView.vue'
 
 export default defineComponent({
-    components: { QueryLogsView },
+    components: { AccessLogsView },
     setup() {
         useHead({
-            title: 'Query Logs',
+            title: 'Access Logs',
         })
     },
 })

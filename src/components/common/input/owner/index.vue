@@ -1,19 +1,19 @@
 <template>
     <div class="flex flex-wrap items-center gap-1 text-sm">
         <a-popover
-            placement="leftBottom"
-            :overlayClassName="$style.ownerPopover"
-            @visibleChange="handleVisibleChange"
-            :trigger="['click']"
             v-model:visible="isEdit"
-            :destroyTooltipOnHide="destroyTooltipOnHide"
+            placement="leftBottom"
+            :overlay-class-name="$style.ownerPopover"
+            :trigger="['click']"
+            :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            @visibleChange="handleVisibleChange"
         >
             <template #content>
                 <div class="">
                     <OwnerFacets
                         ref="ownerInputRef"
                         v-model="localValue"
-                        :showNone="false"
+                        :show-none="false"
                     ></OwnerFacets>
                 </div>
             </template>
@@ -31,7 +31,7 @@
                 v-for="username in ownerUsers(selectedAsset)"
                 :key="username"
             >
-                <PopOverUser>
+                <PopOverUser :item="username">
                     <UserPill
                         :username="username"
                         :allowDelete="!readOnly"
@@ -46,13 +46,13 @@
             v-else
             :key="username"
         >
-            <PopOverUser>
+            <PopOverUser :item="username">
                 <UserPill
                     :username="username"
-                    :allowDelete="!readOnly"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
                     @delete="handleDeleteUser"
                     @click="handleClickUser(username)"
-                    :enableHover="enableHover"
                 ></UserPill>
             </PopOverUser>
         </template>
@@ -72,10 +72,10 @@
             <PopOverGroup>
                 <GroupPill
                     :name="name"
-                    :allowDelete="!readOnly"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
                     @delete="handleDeleteGroup"
                     @click="handleClickGroup(name)"
-                    :enableHover="enableHover"
                 ></GroupPill>
             </PopOverGroup>
         </template>

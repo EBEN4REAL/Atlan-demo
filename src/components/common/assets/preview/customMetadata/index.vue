@@ -49,7 +49,7 @@
                         </template>
                         <AtlanIcon
                             v-if="a.options.description"
-                            class="inline h-4 mb-1 ml-2 text-gray-400  hover:text-gray-500"
+                            class="h-4 mb-1 ml-2 text-gray-400  hover:text-gray-500"
                             icon="Info"
                         />
                     </a-tooltip>

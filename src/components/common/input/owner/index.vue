@@ -26,7 +26,26 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-for="username in ownerUsers(selectedAsset)" :key="username">
+        <template v-if="usedForAssets">
+            <template
+                v-for="username in ownerUsers(selectedAsset)"
+                :key="username"
+            >
+                <PopOverUser>
+                    <UserPill
+                        :username="username"
+                        :allowDelete="!readOnly"
+                        @delete="handleDeleteUser"
+                        @click="handleClickUser(username)"
+                        :enableHover="enableHover"
+                    ></UserPill>
+                </PopOverUser> </template
+        ></template>
+        <template
+            v-for="username in localValue?.ownerUsers"
+            v-else
+            :key="username"
+        >
             <PopOverUser>
                 <UserPill
                     :username="username"
@@ -37,8 +56,19 @@
                 ></UserPill>
             </PopOverUser>
         </template>
-
-        <template v-for="name in ownerGroups(selectedAsset)" :key="name">
+        <template v-if="usedForAssets">
+            <template v-for="name in ownerGroups(selectedAsset)" :key="name">
+                <PopOverGroup>
+                    <GroupPill
+                        :name="name"
+                        :allowDelete="!readOnly"
+                        @delete="handleDeleteGroup"
+                        @click="handleClickGroup(name)"
+                        :enableHover="enableHover"
+                    ></GroupPill>
+                </PopOverGroup> </template
+        ></template>
+        <template v-for="name in localValue?.ownerGroups" v-else :key="name">
             <PopOverGroup>
                 <GroupPill
                     :name="name"
@@ -108,6 +138,11 @@
                 required: false,
                 default: true,
             },
+            usedForAssets: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -135,7 +170,6 @@
 
             const handleChange = () => {
                 modelValue.value = localValue.value
-                console.log('Hellooo')
                 emit('change')
             }
 

@@ -34,9 +34,7 @@ export default function useCustomMetadataHelpers() {
         if (v || v?.toString()) {
             let value = JSON.parse(JSON.stringify(v))
             if (type === 'boolean') {
-                return JSON.parse(value.toString().toLowerCase())
-                    ? 'True'
-                    : 'False'
+                return JSON.parse(value.toString().toLowerCase()) ? 'Yes' : 'No'
             }
             if (type === 'date') {
                 return formatDate(

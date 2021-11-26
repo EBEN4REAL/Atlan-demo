@@ -83,16 +83,28 @@
                         :allow-clear="true"
                         class="flex-grow border shadow-none"
                         type="number"
-                        placeholder="Type..."
+                        placeholder="Enter an integer..."
                         @change="(e) => handleChange(x, e.target.value)"
                     />
                     <a-input
-                        v-if="getDatatypeOfAttribute(a) === 'url'"
+                        v-else-if="getDatatypeOfAttribute(a) === 'float'"
+                        v-model:value="a.value"
+                        :allow-clear="true"
+                        class="flex-grow border shadow-none"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="10"
+                        placeholder="Enter decimal value..."
+                        @change="(e) => handleChange(x, e.target.value)"
+                    />
+                    <a-input
+                        v-else-if="getDatatypeOfAttribute(a) === 'url'"
                         v-model:value="a.value"
                         :allow-clear="true"
                         class="flex-grow border shadow-none"
                         type="url"
-                        placeholder="Type..."
+                        placeholder="Enter a URL..."
                         @change="(e) => handleChange(x, e.target.value)"
                     />
                     <a-radio-group
@@ -102,18 +114,17 @@
                         class="flex-grow"
                         @change="(e) => handleChange(x, e.target.value)"
                     >
-                        <a-radio class="" :value="true">Yes</a-radio>
-                        <a-radio class="" :value="false">No</a-radio>
+                        <a-radio :value="true">Yes</a-radio>
+                        <a-radio :value="false">No</a-radio>
                     </a-radio-group>
-                    <template v-else-if="getDatatypeOfAttribute(a) === 'date'">
-                        <a-date-picker
-                            :allow-clear="true"
-                            :value="(a.value || '').toString()"
-                            class="flex-grow w-100"
-                            value-format="x"
-                            @change="(e) => handleChange(x, e.target.value)"
-                        />
-                    </template>
+                    <a-date-picker
+                        v-else-if="getDatatypeOfAttribute(a) === 'date'"
+                        :allow-clear="true"
+                        :value="(a.value || '').toString()"
+                        class="flex-grow w-100"
+                        value-format="x"
+                        @change="(timestamp) => handleChange(x, timestamp)"
+                    />
                     <a-textarea
                         v-else-if="getDatatypeOfAttribute(a) === 'text'"
                         v-model:value="a.value"
@@ -128,14 +139,13 @@
                     />
                     <div v-else class="flex-grow shadow-none border-1">
                         <a-select
+                            id="enum-select"
                             v-model:value="a.value"
                             :allow-clear="true"
                             placeholder="Unassigned"
                             style="width: 100%"
                             :show-arrow="true"
-                            :options="getEnumOptions(a)"
-                            class=""
-                            @change="(e) => handleChange(x, e.target.value)"
+                            :options="getEnumOptions(a.typeName)"
                         />
                     </div>
                 </div>
@@ -145,14 +155,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        toRefs,
-        watch,
-        computed,
-        PropType,
-    } from 'vue'
+    import { defineComponent, ref, toRefs, watch, PropType } from 'vue'
     import { message } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'

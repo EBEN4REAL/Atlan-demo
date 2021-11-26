@@ -39,7 +39,7 @@
         </template>
 
         <template v-for="name in ownerGroups(selectedAsset)" :key="name">
-            <PopOverGroup>
+            <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
                     :allow-delete="!readOnly"

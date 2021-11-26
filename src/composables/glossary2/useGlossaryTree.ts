@@ -260,7 +260,7 @@ const useGlossaryTree = ({
                                         treeNode?.dataRef?.key
                                 }
                             })
-
+                            treeNode.dataRef.children = []
                             treeNode.dataRef.children.push(...map)
                             loadedKeys.value.push(treeNode.dataRef.key)
                         } else {

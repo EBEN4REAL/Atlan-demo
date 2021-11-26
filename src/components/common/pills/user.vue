@@ -14,14 +14,16 @@
             cursor-pointer
         "
         :class="
-            enableHover ? ' hover:bg-primary group hover:border-primary' : ''
+            enableHover
+                ? ' hover:bg-primary group hover:border-primary hover:text-white'
+                : ''
         "
     >
         <UserAvatar
             :username="username"
             style-class="mr-1 border-none bg-primary-light "
         ></UserAvatar>
-        <div :class="enableHover ? ' group-hover:text-white' : ''">
+        <div>
             {{ username }}
         </div>
         <div class="flex" @click.prevent="handleDelete" v-if="allowDelete">

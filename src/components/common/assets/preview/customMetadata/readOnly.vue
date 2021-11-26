@@ -23,7 +23,7 @@
 
         <div
             v-else-if="getDatatypeOfAttribute(attribute) === 'users'"
-            class="flex flex-wrap gap-1 text-gray-500"
+            class="flex flex-wrap gap-1"
         >
             <template v-if="attribute.options.multiValueSelect === 'false'">
                 <PopOverUser :item="attribute.value">
@@ -45,7 +45,7 @@
         </div>
         <div
             v-else-if="getDatatypeOfAttribute(attribute) === 'groups'"
-            class="flex flex-wrap gap-1 text-gray-500"
+            class="flex flex-wrap gap-1"
         >
             <template v-if="attribute.options.multiValueSelect === 'false'">
                 <PopOverGroup>

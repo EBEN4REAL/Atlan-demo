@@ -139,20 +139,59 @@
                 </div>
                 <!------------------------------->
                 <!-- Popover Allowed -->
-                <a-popover
+                <PopoverAsset
+                    :item="item"
                     placement="right"
                     v-else-if="item.typeName === 'Query'"
                 >
-                    <template #content>
-                        <div>
-                            <QueryItemPopover :item="item" />
+                    <template #extraHeaders>
+                        <div
+                            class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                            style="background-color: #c4c4c4"
+                        ></div>
+                        <div class="flex items-center h-full">
+                            <div
+                                class="
+                                    relative
+                                    w-4
+                                    h-4
+                                    mb-0.5
+                                    mr-1
+                                    overflow-hidden
+                                "
+                            >
+                                <AtlanIcon
+                                    v-if="savedQueryType === 'personal'"
+                                    icon="PrivateFolder"
+                                    class="h-6"
+                                />
+                                <AtlanIcon
+                                    v-else
+                                    icon="FolderClosed"
+                                    class="h-6"
+                                />
+                            </div>
+
+                            <span>{{ item?.parentTitle }}</span>
                         </div>
+                    </template>
+
+                    <template #button>
+                        <a-button class="mt-3" @click="openSidebar" block>
+                            <div class="flex justify-center w-full">
+                                <div class="flex items-center cursor-pointer">
+                                    Open preview sidebar
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="w-4 h-4 ml-0.5"
+                                    ></AtlanIcon>
+                                </div>
+                            </div>
+                        </a-button>
                     </template>
                     <div
                         class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700 "
                     >
-                        <!--SAVED QUERY NODE -->
-                        <!--For Others -->
                         <div class="parent-ellipsis-container py-1.5">
                             <AtlanIcon
                                 :icon="
@@ -248,7 +287,6 @@
                                                 "
                                                 >Make query public</a-menu-item
                                             >
-                                            <!-- DELETE QUERY PERMISSIONS -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -269,10 +307,8 @@
                                 </a-dropdown>
                             </div>
                         </div>
-                        <!------------------------------->
                     </div>
-                </a-popover>
-                <!-- ---------------- -->
+                </PopoverAsset>
             </div>
         </div>
     </div>
@@ -373,7 +409,7 @@
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
-    import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import PublishFolderPopover from '~/components/insights/common/publishFolderPopover.vue'
@@ -394,11 +430,11 @@
 
     export default defineComponent({
         components: {
-            QueryItemPopover,
             StatusBadge,
             TreeDeletePopover,
             PublishFolderPopover,
             QueryFolderSelector,
+            PopoverAsset,
         },
         props: {
             item: {
@@ -898,6 +934,14 @@
                 }
             }
 
+            const openSidebar = () => {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.assetSidebar.assetInfo = item.value
+                activeInlineTabCopy.assetSidebar.isVisible = true
+                openAssetSidebar(activeInlineTabCopy, 'not_editor')
+            }
+
             // let input = ref(null)
             // let newFolderName = ref('')
             // watch(input, () => {
@@ -1021,6 +1065,7 @@
                 changeFolder,
                 isUpdating,
                 isDeleteLoading,
+                openSidebar,
                 // input,
                 // newFolderName,
             }

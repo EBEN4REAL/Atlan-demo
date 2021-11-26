@@ -36,13 +36,23 @@
             <div
                 class="gap-6 gap-y-0 group"
                 :class="
-                    getDatatypeOfAttribute(a.typeName) === 'text' && !readOnly
+                    getDatatypeOfAttribute(a) === 'text' && !readOnly
                         ? ''
                         : 'mb-4'
                 "
             >
-                <div class="mb-2 text-gray-700">
-                    {{ a.displayName }}
+                <div class="mb-2 font-normal text-gray-500">
+                    <span>{{ a.displayName }}</span>
+                    <a-tooltip>
+                        <template #title>
+                            <span>{{ a.options.description }}</span>
+                        </template>
+                        <AtlanIcon
+                            v-if="a.options.description"
+                            class="h-4 mb-1 ml-2 text-gray-400  hover:text-gray-500"
+                            icon="Info"
+                        />
+                    </a-tooltip>
                 </div>
 
                 <div
@@ -50,82 +60,196 @@
                     class="flex items-center self-start flex-grow break-all"
                 >
                     <a
-                        v-if="isLink(a.value, a.displayName)"
+                        v-if="a?.options?.customType === 'url'"
+                        class="font-bold text-primary"
                         target="_blank"
-                        :href="a.value"
+                        :href="`//${a.value}`"
                     >
                         {{ a.value || '-' }}</a
                     >
-                    <span v-else>
+
+                    <a-typography-paragraph
+                        v-else-if="getDatatypeOfAttribute(a) === 'text'"
+                        class="font-bold text-gray-700"
+                        :ellipsis="{
+                            rows: 5,
+                            expandable: true,
+                            symbol: 'more',
+                        }"
+                        :content="a.value || '-'"
+                    >
+                    </a-typography-paragraph>
+
+                    <div
+                        v-else-if="getDatatypeOfAttribute(a) === 'users'"
+                        class="flex flex-wrap gap-1"
+                    >
+                        <template v-if="a.options.multiValueSelect === 'false'">
+                            <PopOverUser>
+                                <UserPill :username="a.value"></UserPill>
+                            </PopOverUser>
+                        </template>
+                        <template
+                            v-for="username in formatDisplayValue(
+                                a.value || '',
+                                getDatatypeOfAttribute(a)
+                            )"
+                            v-else
+                            :key="username"
+                        >
+                            <PopOverUser>
+                                <UserPill :username="username"></UserPill>
+                            </PopOverUser>
+                        </template>
+                    </div>
+                    <div
+                        v-else-if="getDatatypeOfAttribute(a) === 'groups'"
+                        class="flex flex-wrap gap-1"
+                    >
+                        <template v-if="a.options.multiValueSelect === 'false'">
+                            <PopOverGroup>
+                                <GroupPill :name="a.value"></GroupPill>
+                            </PopOverGroup>
+                        </template>
+                        <template v-for="name in a.value" v-else :key="name">
+                            <PopOverGroup>
+                                <GroupPill :name="name"></GroupPill>
+                            </PopOverGroup>
+                        </template>
+                    </div>
+
+                    <span v-else class="font-bold text-gray-700">
                         {{
                             formatDisplayValue(
                                 a.value?.toString() || '',
-                                getDatatypeOfAttribute(a.typeName)
+                                getDatatypeOfAttribute(a)
                             ) || '-'
                         }}</span
                     >
                 </div>
                 <div v-else class="flex self-start flex-grow">
                     <a-input
-                        v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
+                        v-if="getDatatypeOfAttribute(a) === 'number'"
                         v-model:value="a.value"
                         :allow-clear="true"
                         class="flex-grow border shadow-none"
                         type="number"
-                        placeholder="Type..."
+                        placeholder="Enter an integer..."
+                        @change="(e) => handleChange(x, e.target.value)"
+                    />
+                    <a-input
+                        v-else-if="getDatatypeOfAttribute(a) === 'float'"
+                        v-model:value="a.value"
+                        :allow-clear="true"
+                        class="flex-grow border shadow-none"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="10"
+                        placeholder="Enter decimal value..."
+                        @change="(e) => handleChange(x, e.target.value)"
+                    />
+                    <a-input
+                        v-else-if="getDatatypeOfAttribute(a) === 'url'"
+                        v-model:value="a.value"
+                        :allow-clear="true"
+                        class="flex-grow border shadow-none"
+                        type="url"
+                        placeholder="Enter a URL..."
                         @change="(e) => handleChange(x, e.target.value)"
                     />
                     <a-radio-group
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'boolean'
-                        "
+                        v-else-if="getDatatypeOfAttribute(a) === 'boolean'"
                         :allow-clear="true"
                         :value="a.value"
                         class="flex-grow"
                         @change="(e) => handleChange(x, e.target.value)"
                     >
-                        <a-radio class="" :value="true">True</a-radio>
-                        <a-radio class="" :value="false">False</a-radio>
+                        <a-radio :value="true">Yes</a-radio>
+                        <a-radio :value="false">No</a-radio>
                     </a-radio-group>
-                    <template
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'date'
-                        "
-                    >
-                        <a-date-picker
-                            :allow-clear="true"
-                            :value="(a.value || '').toString()"
-                            class="flex-grow w-100"
-                            value-format="x"
-                            @change="(e) => handleChange(x, e.target.value)"
-                        />
-                    </template>
+                    <a-date-picker
+                        v-else-if="getDatatypeOfAttribute(a) === 'date'"
+                        :allow-clear="true"
+                        :value="(a.value || '').toString()"
+                        class="flex-grow w-100"
+                        value-format="x"
+                        @change="(timestamp) => handleChange(x, timestamp)"
+                    />
                     <a-textarea
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'text'
-                        "
+                        v-else-if="getDatatypeOfAttribute(a) === 'text'"
                         v-model:value="a.value"
                         :allow-clear="true"
                         :auto-size="true"
-                        :show-count="true"
+                        :show-count="parseInt(a.options.maxStrLength) < 1000"
                         :maxlength="parseInt(a.options.maxStrLength)"
                         placeholder="Type..."
                         type="text"
                         class="flex-grow shadow-none"
                         @change="(e) => handleChange(x, e.target.value)"
                     />
-                    <div v-else class="flex-grow shadow-none border-1">
-                        <a-select
-                            v-model:value="a.value"
-                            :allow-clear="true"
-                            placeholder="Unassigned"
-                            style="width: 100%"
-                            :show-arrow="true"
-                            :options="getEnumOptions(a.typeName)"
-                            class=""
-                            @change="(e) => handleChange(x, e.target.value)"
-                        />
-                    </div>
+                    <a-select
+                        v-else-if="getDatatypeOfAttribute(a) === 'users'"
+                        v-model:value="a.value"
+                        class="flex-grow shadow-none border-1"
+                        :allow-clear="true"
+                        :placeholder="`Select ${
+                            a.options.multiValueSelect === 'true'
+                                ? 'users'
+                                : 'a user'
+                        }`"
+                        :mode="
+                            a.options.multiValueSelect === 'true'
+                                ? 'multiple'
+                                : null
+                        "
+                        style="width: 100%"
+                        :show-arrow="true"
+                        @search="userSearch"
+                        ><a-select-option
+                            v-for="(item, index) in userList"
+                            :key="index"
+                            :value="item.username"
+                            :label="item.username"
+                            >{{ item.username }}
+                        </a-select-option>
+                    </a-select>
+                    <a-select
+                        v-else-if="getDatatypeOfAttribute(a) === 'groups'"
+                        v-model:value="a.value"
+                        class="flex-grow shadow-none border-1"
+                        :allow-clear="true"
+                        :placeholder="`Select ${
+                            a.options.multiValueSelect === 'true'
+                                ? 'groups'
+                                : 'a group'
+                        }`"
+                        :mode="
+                            a.options.multiValueSelect === 'true'
+                                ? 'multiple'
+                                : null
+                        "
+                        style="width: 100%"
+                        :show-arrow="true"
+                        @search="groupSearch"
+                        ><a-select-option
+                            v-for="(item, index) in groupList"
+                            :key="index"
+                            :value="item.alias"
+                            :label="item.alias"
+                            >{{ item.alias }}
+                        </a-select-option>
+                    </a-select>
+                    <a-select
+                        v-else
+                        v-model:value="a.value"
+                        class="flex-grow shadow-none border-1"
+                        :allow-clear="true"
+                        placeholder="Select an enum"
+                        style="width: 100%"
+                        :show-arrow="true"
+                        :options="getEnumOptions(a.typeName)"
+                    />
                 </div>
             </div>
         </div>
@@ -133,23 +257,24 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        toRefs,
-        watch,
-        computed,
-        PropType,
-    } from 'vue'
+    import { defineComponent, ref, toRefs, watch, PropType, inject } from 'vue'
+    import { whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useFacetUsers from '~/composables/user/useFacetUsers'
+    import useFacetGroups from '~/composables/group/useFacetGroups'
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import PopOverGroup from '@/common/popover/user/groups.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
-        components: {},
+        components: { UserPill, GroupPill, PopOverUser, PopOverGroup },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -165,6 +290,8 @@
 
             const readOnly = ref(true)
             const loading = ref(false)
+            const guid = ref()
+
             const { title } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
@@ -204,6 +331,7 @@
                         }
                     })
                 }
+                console.log(applicableList.value)
             }
 
             // {"BM for facet 2":{"test for facet 2":"1","test for facet 2 date":1629294652575}}
@@ -231,13 +359,33 @@
 
                 return mappedPayload
             }
+            const { list: userList, handleSearch: handleUserSearch } =
+                useFacetUsers()
+
+            const userSearch = (val) => {
+                handleUserSearch(val)
+            }
+
+            const { list: groupList, handleSearch: handleGroupSearch } =
+                useFacetGroups()
+            const groupSearch = (val) => {
+                handleGroupSearch(val)
+            }
+
+            const {
+                asset,
+                mutate: mutateUpdate,
+                isReady: isUpdateReady,
+            } = useCurrentUpdate({
+                id: guid,
+            })
 
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
 
                 const { error, isReady, isLoading } =
-                    Types.updateAssetBMUpdateChanges(
-                        props.selectedAsset.guid,
+                    Types.updateAssetBMChanges(
+                        selectedAsset.value?.guid,
                         payload.value
                     )
                 loading.value = isLoading.value
@@ -251,22 +399,41 @@
                     } else if (isReady.value) {
                         loading.value = false
                         message.success(
-                            `BM attributes for ${title(
+                            `${data.value?.label} attributes for ${title(
                                 selectedAsset.value
                             )} updated`
                         )
+                        guid.value = selectedAsset.value.guid
+
+                        mutateUpdate()
                     }
                 })
 
                 readOnly.value = true
             }
+
             const handleCancel = () => {
+                applicableList.value.forEach((att) => {
+                    att.value = ''
+                })
                 setAttributesList()
+
                 readOnly.value = true
             }
             const handleChange = (index, value) => {
                 applicableList.value[index].value = value
             }
+
+            const updateList = inject('updateList')
+            whenever(isUpdateReady, () => {
+                if (
+                    asset.value.typeName !== 'AtlasGlossary' &&
+                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
+                    asset.value.typeName !== 'AtlasGlossaryTerm'
+                ) {
+                    updateList(asset.value)
+                }
+            })
 
             watch(
                 () => selectedAsset.value.guid,
@@ -295,6 +462,10 @@
                 getEnumOptions,
                 handleChange,
                 loading,
+                userSearch,
+                userList,
+                groupSearch,
+                groupList,
             }
         },
     })

@@ -48,12 +48,11 @@
 <script lang="ts">
     import { toRefs, computed, watch, ref } from 'vue'
     // import ClassificationPill from '@/common/pills/classification.vue'
-    import bodybuilder from 'bodybuilder'
     import UserPill from '@/common/pills/user.vue'
     import { useGroup } from '~/composables/group/useGroups'
     import useGroupMembers from '~/composables/group/useGroupMembers'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
-    import { Search } from '~/services/meta/search'
+    import usePopoverUserGroup from '~/composables/user/usePopoverUserGroup'
 
     export default {
         name: 'PopoverAsset',
@@ -72,7 +71,7 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
-            const dataAggs = ref([])
+            // const dataAggs = ref([])
             const params ={
                 limit: 1,
                 offset: 0,
@@ -80,6 +79,8 @@
             }
             const { groupList } = useGroup(params, item.value)
             const groupData = computed(() => groupList.value[0] || {})
+            const bussinesCountRef = ref(0)
+            const assetCountRef = ref(0)
             const memberListParams = {
                 groupId: groupList.value[0].id,
                 params: {
@@ -92,43 +93,11 @@
             const { memberList } = useGroupMembers(memberListParams)
             watch(memberList, () => {
                 const arrUserName = memberList.value.map((el) => el.username)
-                const query = bodybuilder()
-                .filter('terms', 'ownerUsers', arrUserName)
-                .aggregation(
-                    'terms',
-                    '__typeName.keyword',
-                    {},
-                    'group_by_typeName'
-                )
-                .size(10)
-                .build()
-                const { data } = Search.IndexSearch({ dsl: query }, {})
-                watch(data, () => {
-                    dataAggs.value = data.value.aggregations.group_by_typeName.buckets
+                const { bussinesCount, assetCount } = usePopoverUserGroup('group', arrUserName )
+                watch([assetCount, bussinesCount], ([newAssetCount, newBussinesCount]) => {
+                    assetCountRef.value = newAssetCount
+                    bussinesCountRef.value = newBussinesCount
                 })
-            })
-            const bussinesCount = computed(() => {
-                const terms = [
-                    'atlasglossary',
-                    'atlasglossarycategory',
-                    'atlasglossaryterm',
-                ]
-                const aggs = dataAggs.value || []
-                let count = 0
-                aggs.forEach((el) => {
-                    if (terms.includes(el.key.toLowerCase())) {
-                        count += el.doc_count
-                    }
-                })
-                return count
-            })
-            const assetCount = computed(() => {
-                const aggs = dataAggs.value || []
-                let count = 0
-                aggs.forEach((el) => {
-                    count += el.doc_count
-                })
-                return count
             })
             const { showGroupPreview, setGroupUniqueAttribute } =
                 useGroupPreview()
@@ -137,7 +106,12 @@
                 showGroupPreview({ allowed: ['about', 'assets', 'members'] })
             }
 
-            return { groupData, bussinesCount, assetCount, handleClickGroup }
+            return { 
+                groupData, 
+                bussinesCount: bussinesCountRef, 
+                assetCount: assetCountRef, 
+                handleClickGroup 
+            }
         },
     }
 </script>

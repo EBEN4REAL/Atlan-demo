@@ -148,13 +148,33 @@
                         :mode="a.options.multiValueSelect ? 'multiple' : ''"
                         style="width: 100%"
                         :show-arrow="true"
-                        @search="handleUserSearch"
+                        @search="userSearch"
                         ><a-select-option
                             v-for="(item, index) in userList"
                             :key="index"
                             :value="item.username"
                             :label="item.username"
                             >{{ item.username }}
+                        </a-select-option>
+                    </a-select>
+                    <a-select
+                        v-else-if="getDatatypeOfAttribute(a) === 'groups'"
+                        v-model:value="a.value"
+                        class="flex-grow shadow-none border-1"
+                        :allow-clear="true"
+                        :placeholder="`Select ${
+                            a.options.multiValueSelect ? 'groups' : 'a group'
+                        }`"
+                        :mode="a.options.multiValueSelect ? 'multiple' : ''"
+                        style="width: 100%"
+                        :show-arrow="true"
+                        @search="groupSearch"
+                        ><a-select-option
+                            v-for="(item, index) in groupList"
+                            :key="index"
+                            :value="item.alias"
+                            :label="item.alias"
+                            >{{ item.alias }}
                         </a-select-option>
                     </a-select>
                     <a-select
@@ -181,6 +201,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useFacetUsers from '~/composables/user/useFacetUsers'
+    import useFacetGroups from '~/composables/group/useFacetGroups'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -267,10 +288,17 @@
 
                 return mappedPayload
             }
-            const { list: userList, handleSearch } = useFacetUsers()
+            const { list: userList, handleSearch: handleUserSearch } =
+                useFacetUsers()
 
-            const handleUserSearch = (val) => {
-                handleSearch(val)
+            const userSearch = (val) => {
+                handleUserSearch(val)
+            }
+
+            const { list: groupList, handleSearch: handleGroupSearch } =
+                useFacetGroups()
+            const groupSearch = (val) => {
+                handleGroupSearch(val)
             }
 
             const handleUpdate = () => {
@@ -336,8 +364,10 @@
                 getEnumOptions,
                 handleChange,
                 loading,
-                handleUserSearch,
+                userSearch,
                 userList,
+                groupSearch,
+                groupList,
             }
         },
     })

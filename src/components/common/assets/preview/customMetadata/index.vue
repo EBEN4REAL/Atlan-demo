@@ -62,7 +62,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch, PropType, inject } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+        PropType,
+        inject,
+        defineAsyncComponent,
+    } from 'vue'
     import { whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
@@ -72,14 +80,13 @@
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
-    import ReadOnly from './readOnly.vue'
-    import EditState from './editState.vue'
+    import { languageTokens } from '~/components/insights/playground/editor/monaco/sqlTokens'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
-            ReadOnly,
-            EditState,
+            ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
+            EditState: defineAsyncComponent(() => import('./editState.vue')),
         },
         props: {
             selectedAsset: {
@@ -128,12 +135,27 @@
                     bmAttributes.forEach((ab) => {
                         if (data.value.id === ab.split('.')[0]) {
                             const attribute = ab.split('.')[1]
-                            const value = selectedAsset.value.attributes[ab]
+
+                            let value = selectedAsset.value.attributes[ab]
                             const attrIndex = applicableList.value.findIndex(
                                 (a) => a.name === attribute
                             )
-                            if (attrIndex > -1)
+                            const options =
+                                applicableList.value[attrIndex]?.options
+
+                            if (attrIndex > -1) {
+                                if (
+                                    (options?.customType === 'users' ||
+                                        options?.customType === 'groups') &&
+                                    options?.multiValueSelect === 'true'
+                                ) {
+                                    value = value
+                                        ?.replace(/\[|\]/g, '')
+                                        .split(',')
+                                        .map((v: string) => v.trim())
+                                }
                                 applicableList.value[attrIndex].value = value
+                            }
                         }
                     })
                 }
@@ -156,11 +178,9 @@
                 })
 
                 // ? handle new payload
-                applicableList.value
-                    .filter((a) => a.value === 0 || a?.value?.toString())
-                    .forEach((at) => {
-                        mappedPayload[data.value.id][at.name] = at.value
-                    })
+                applicableList.value.forEach((at) => {
+                    mappedPayload[data.value.id][at.name] = at.value
+                })
 
                 return mappedPayload
             }
@@ -227,6 +247,7 @@
             }
             const handleChange = (index, value) => {
                 applicableList.value[index].value = value
+                console.log('hellooooo', value)
             }
 
             const updateList = inject('updateList')
@@ -237,6 +258,7 @@
                     asset.value.typeName !== 'AtlasGlossaryTerm'
                 ) {
                     updateList(asset.value)
+                    setAttributesList()
                 }
             })
 
@@ -247,7 +269,6 @@
                         data.value,
                         selectedAsset.value.typeName
                     )
-                    setAttributesList()
                 },
                 {
                     immediate: true,

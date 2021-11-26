@@ -46,9 +46,6 @@ export default function useCustomMetadataHelpers() {
                     Number.isInteger(value) ? value : parseInt(value)
                 )
             }
-            if (type === 'users' || type === 'groups') {
-                return value
-            }
             if (Array.isArray(value)) {
                 if (!value.length) return `No value added`
                 if (

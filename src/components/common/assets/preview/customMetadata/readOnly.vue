@@ -47,13 +47,7 @@
                     attribute.options.multiValueSelect === 'true' &&
                     attribute.value
                 "
-                ><div
-                    v-for="username in formatDisplayValue(
-                        attribute.value || '',
-                        getDatatypeOfAttribute(attribute)
-                    )"
-                    :key="username"
-                >
+                ><div v-for="username in attribute.value" :key="username">
                     <PopOverUser :item="username">
                         <UserPill :username="username"></UserPill>
                     </PopOverUser>

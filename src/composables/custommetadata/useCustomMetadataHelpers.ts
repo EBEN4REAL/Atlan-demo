@@ -1,17 +1,23 @@
 import useTypedefData from '../typedefs/useTypedefData'
 import { formatDate } from '../../utils/date'
 
-const numberTypes = ['int', 'double', 'float', 'byte', 'short', 'long']
+const numberTypes = ['int', 'double', 'byte', 'short', 'long']
 
 export default function useCustomMetadataHelpers() {
     const { enumList } = useTypedefData()
 
-    const getDatatypeOfAttribute = (typeName: string) => {
-        if (typeName && typeof typeName !== 'undefined') {
-            if (numberTypes.includes(typeName)) return `number`
-            if (typeName.includes('string')) return `text`
+    const getDatatypeOfAttribute = (a) => {
+        if (a?.typeName && typeof a.typeName !== 'undefined') {
+            if (numberTypes.includes(a?.typeName)) return 'number'
+            if (a?.typeName?.includes('string')) {
+                if (a?.options?.customType?.includes('users')) return 'users'
+                if (a?.options?.customType?.includes('groups')) return 'groups'
+                if (a?.options?.customType?.includes('url')) return `url`
+
+                return 'text'
+            }
         }
-        return typeName || ''
+        return a?.typeName || ''
     }
 
     const isLink = (v: any, name: string) => {
@@ -28,14 +34,15 @@ export default function useCustomMetadataHelpers() {
         if (v || v?.toString()) {
             let value = JSON.parse(JSON.stringify(v))
             if (type === 'boolean') {
-                return JSON.parse(value.toString().toLowerCase())
-                    ? 'True'
-                    : 'False'
+                return JSON.parse(value.toString().toLowerCase()) ? 'Yes' : 'No'
             }
             if (type === 'date') {
                 return formatDate(
                     Number.isInteger(value) ? value : parseInt(value)
                 )
+            }
+            if (type === 'users' || type === 'groups') {
+                return value
             }
             if (Array.isArray(value)) {
                 if (!value.length) return `No value added`

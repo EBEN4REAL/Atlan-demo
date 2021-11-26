@@ -137,17 +137,36 @@
                         class="flex-grow shadow-none"
                         @change="(e) => handleChange(x, e.target.value)"
                     />
-                    <div v-else class="flex-grow shadow-none border-1">
-                        <a-select
-                            id="enum-select"
-                            v-model:value="a.value"
-                            :allow-clear="true"
-                            placeholder="Unassigned"
-                            style="width: 100%"
-                            :show-arrow="true"
-                            :options="getEnumOptions(a.typeName)"
-                        />
-                    </div>
+                    <a-select
+                        v-else-if="getDatatypeOfAttribute(a) === 'users'"
+                        v-model:value="a.value"
+                        class="flex-grow shadow-none border-1"
+                        :allow-clear="true"
+                        :placeholder="`Select ${
+                            a.options.multiValueSelect ? 'users' : 'a user'
+                        }`"
+                        :mode="a.options.multiValueSelect ? 'multiple' : ''"
+                        style="width: 100%"
+                        :show-arrow="true"
+                        @search="handleUserSearch"
+                        ><a-select-option
+                            v-for="(item, index) in userList"
+                            :key="index"
+                            :value="item.username"
+                            :label="item.username"
+                            >{{ item.username }}
+                        </a-select-option>
+                    </a-select>
+                    <a-select
+                        v-else
+                        v-model:value="a.value"
+                        class="flex-grow shadow-none border-1"
+                        :allow-clear="true"
+                        placeholder="Select an enum"
+                        style="width: 100%"
+                        :show-arrow="true"
+                        :options="getEnumOptions(a.typeName)"
+                    />
                 </div>
             </div>
         </div>
@@ -161,6 +180,7 @@
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useFacetUsers from '~/composables/user/useFacetUsers'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -247,6 +267,11 @@
 
                 return mappedPayload
             }
+            const { list: userList, handleSearch } = useFacetUsers()
+
+            const handleUserSearch = (val) => {
+                handleSearch(val)
+            }
 
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
@@ -311,6 +336,8 @@
                 getEnumOptions,
                 handleChange,
                 loading,
+                handleUserSearch,
+                userList,
             }
         },
     })

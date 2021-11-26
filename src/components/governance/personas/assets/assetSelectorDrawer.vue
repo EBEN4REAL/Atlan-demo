@@ -33,11 +33,7 @@
             <a-divider class="my-4" />
 
             <div
-                class="
-                    relative
-                    overflow-x-hidden overflow-y-hidden
-                    drawer_height
-                "
+                class="relative overflow-x-hidden overflow-y-hidden  drawer_height"
             >
                 <div
                     class="absolute w-full h-full bg-white"
@@ -104,7 +100,7 @@
                     size="sm"
                     padding="compact"
                     color="secondary"
-                    @click="resetAssetState"
+                    @click="closeDrawer"
                     >Cancel</AtlanBtn
                 >
                 <AtlanBtn size="sm" padding="compact" @click="saveAssets"
@@ -169,7 +165,7 @@
             })
 
             // Asset related stuff
-            const checkedKeys = ref([] as string[])
+            const checkedKeys = ref([...assets.value] as string[])
             const regexKeys = ref([] as string[])
             const BIAssets = ['powerbi', 'tableau']
 
@@ -187,10 +183,11 @@
             }
 
             function resetAssetState() {
-                checkedKeys.value = []
-                regexKeys.value = []
                 isVisible.value = false
-                bulkStore.setBulkSelectedAssets([])
+            }
+
+            function closeDrawer() {
+                isVisible.value = false
             }
 
             const getQualifiedNamesFromAssets = (assets: any[]) => {
@@ -222,12 +219,14 @@
                 resetAssetState()
             }
 
-            const selectedAssetCount = computed(
-                () =>
-                    checkedKeys.value.length +
-                    assets.value.length +
-                    bulkStore.bulkSelectedAssets?.length
-            )
+            const selectedAssetCount = computed(() => {
+                const s = new Set([
+                    ...checkedKeys?.value,
+                    ...assets.value,
+                    ...bulkStore.bulkSelectedAssets,
+                ])
+                return s.size
+            })
 
             const filterConfig = computed(() => ({
                 connectorName: getConnectorName(connectionQfName.value),
@@ -269,6 +268,7 @@
             )
 
             return {
+                closeDrawer,
                 filterConfig,
                 activeTab,
                 tabConfig,

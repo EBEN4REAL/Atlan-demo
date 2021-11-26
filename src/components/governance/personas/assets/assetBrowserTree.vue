@@ -20,26 +20,17 @@
                 :checkable="true"
                 :on-load-data="onLoadData"
                 :select-node="selectNode"
-                :expand-node="expandNode"
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
                 :selected-keys="selectedKeys"
-                :expanded-keys="expandedKeys"
+                v-model:expanded-keys="expandedKeys"
                 v-model:checkedKeys="checkedKeys"
                 :checkStrictly="true"
                 :hoverActions="false"
             />
             <div
                 v-else-if="treeData.length == 0"
-                class="
-                    flex flex-col
-                    items-center
-                    justify-center
-                    h-full
-                    text-base
-                    leading-6
-                    text-center text-gray-500
-                "
+                class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500 "
             >
                 <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                 <p class="mt-6 mb-0 text-base text-gray-700">
@@ -56,6 +47,7 @@
         defineComponent,
         PropType,
         toRefs,
+        toRaw,
         ref,
         watch,
     } from 'vue'
@@ -63,6 +55,7 @@
     import SchemaTree from '@/insights/explorers/schema/schemaTree.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import useSchemaExplorerTree from '@/insights/explorers/schema/composables/useSchemaExplorerTree'
+    import { useUtils } from './useUtils'
 
     export default defineComponent({
         name: 'AssetBrowserTree',
@@ -87,6 +80,10 @@
                 toRefs(props)
             const queryText = ref('')
             const searchResultType = ref('all')
+            const { getExpandedKeysFromConnectionQualifiedName } = useUtils()
+            const initialExapndedKeys = ref(
+                getExpandedKeysFromConnectionQualifiedName(toRaw(assets.value))
+            )
 
             const checkedKeys = computed({
                 get: () => assets.value,
@@ -110,6 +107,7 @@
                 queryText,
                 searchResultType,
                 // initSelectedKeys,
+                initialExapndedKeys,
                 connectionQualifiedName,
                 // databaseQualifiedName,
                 // schemaQualifiedName,
@@ -118,6 +116,7 @@
                 console.log('queryText Changed', queryText.value)
             })
             return {
+                assets,
                 queryText,
                 treeData,
                 loadedKeys,

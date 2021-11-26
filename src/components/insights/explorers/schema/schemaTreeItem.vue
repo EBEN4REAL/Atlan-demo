@@ -10,11 +10,19 @@
                 class="flex w-full m-0"
                 v-if="isPopoverAllowed(item?.typeName) && hoverActions"
             >
-                <a-popover placement="right">
-                    <template #content>
-                        <div>
-                            <SchemaTreeItemPopover :item="item" />
-                        </div>
+                <PopoverAsset :item="item" placement="right">
+                    <template #button>
+                        <a-button class="mt-3" @click="openSidebar" block>
+                            <div class="flex justify-center w-full">
+                                <div class="flex items-center cursor-pointer">
+                                    Open preview sidebar
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="w-4 h-4 ml-0.5"
+                                    ></AtlanIcon>
+                                </div>
+                            </div>
+                        </a-button>
                     </template>
                     <div
                         class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
@@ -302,7 +310,7 @@
                         </div>
                         <!------------------------------->
                     </div>
-                </a-popover>
+                </PopoverAsset>
             </div>
 
             <!-- FOR DB AND SCHMA -->
@@ -567,13 +575,13 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import SchemaTreeItemPopover from '~/components/insights/explorers/schema/schemaItemPopover.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import StatusBadge from '@common/badge/status/index.vue'
     import { getLastMappedKeyword } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
 
     import {
         useMapping,
@@ -583,7 +591,7 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
-        components: { SchemaTreeItemPopover, StatusBadge },
+        components: { StatusBadge, PopoverAsset },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -820,6 +828,14 @@
             //     console.log('schema tree item: ', item.value)
             // })
 
+            const openSidebar = () => {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.assetSidebar.assetInfo = item.value
+                activeInlineTabCopy.assetSidebar.isVisible = true
+                openAssetSidebar(activeInlineTabCopy, 'not_editor')
+            }
+
             return {
                 hoverActions,
                 isPopoverAllowed,
@@ -835,6 +851,7 @@
                 getEntityStatusIcon,
                 item,
                 childCount,
+                openSidebar,
             }
         },
     })

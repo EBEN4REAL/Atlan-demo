@@ -1,12 +1,15 @@
 <template>
     <div class="flex items-center justify-between w-full py-0 m-0 group">
-        <div v-if="item?.typeName === 'cta'">
+        <div
+            v-if="item?.typeName === 'cta'"
+            class="flex items-center space-x-2"
+        >
             <AddGtcModal
                 entityType="AtlasGlossaryTerm"
-                :glossaryName="item?.glossaryName"
-                :categoryName="item?.categoryName"
-                :glossary-qualified-name="item?.glossaryQualifiedName"
-                :categoryGuid="item?.categoryGuid"
+                :glossaryName="getAnchorName(item) || title(item)"
+                :categoryName="title(item)"
+                :categoryGuid="categoryId"
+                :glossary-qualified-name="glossaryQualifiedName"
                 @add="handleAdd"
             >
                 <template #trigger>
@@ -16,12 +19,27 @@
                     </div>
                 </template>
             </AddGtcModal>
+            <AddGtcModal
+                entityType="AtlasGlossaryCategory"
+                :glossaryName="getAnchorName(item) || title(item)"
+                :categoryName="title(item)"
+                :categoryGuid="categoryId"
+                :glossary-qualified-name="glossaryQualifiedName"
+                @add="handleAdd"
+            >
+                <template #trigger>
+                    <div class="flex items-center hover:underline text-primary">
+                        <AtlanIcon icon="Category" class="m-0 mr-2" />
+                        <p class="p-0 m-0">Add Category</p>
+                    </div>
+                </template>
+            </AddGtcModal>
         </div>
         <div
             v-else
             class="flex items-center justify-between w-full py-0 m-0 group"
         >
-            <div class="flex items-center py-1">
+            <div class="flex items-center py-1 pr-2">
                 <AtlanIcon
                     :icon="
                         getEntityStatusIcon(
@@ -95,13 +113,31 @@
                 getAnchorQualifiedName,
                 getAnchorName,
             } = useAssetInfo()
-
             const iconSize = computed(() => {
                 if (item.value.typeName === 'AtlasGlossary') {
                     return 'height: 18px !important'
                 }
 
                 return 'height: 16px !important'
+            })
+            const glossaryQualifiedName = computed(() => {
+                if (item.value.typeName === 'AtlasGlossary') {
+                    return item.value?.attributes?.qualifiedName
+                }
+                if (item.value.typeName === 'cta') {
+                    if (
+                        item.value?.parentCategory?.typeName === 'AtlasGlossary'
+                    )
+                        return item.value?.parentCategory?.attributes
+                            ?.qualifiedName
+                    return getAnchorQualifiedName(item.value?.parentCategory)
+                }
+                return getAnchorQualifiedName(item.value)
+            })
+            const categoryId = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossaryCategory')
+                    return props.entity?.guid
+                return ''
             })
 
             const textClass = computed(() => {
@@ -128,6 +164,8 @@
                 getAnchorQualifiedName,
                 getAnchorName,
                 handleAdd,
+                glossaryQualifiedName,
+                categoryId,
             }
         },
     })

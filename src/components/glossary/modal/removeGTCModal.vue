@@ -162,12 +162,30 @@
                     console.log(deleteError)
                     console.log(props.entity)
                     if (data && !deleteError.value) {
-                        message.success(`${props.entity?.displayText} deleted`)
-                        emit(
-                            'delete',
-                            props.entity?.attributes?.parentCategory?.guid ??
-                                'root'
-                        )
+                        if (
+                            props.entity?.typeName === 'AtlasGlossaryCategory'
+                        ) {
+                            message.success(
+                                `${props.entity?.displayText} deleted`
+                            )
+                            emit(
+                                'delete',
+                                props.entity?.attributes?.parentCategory
+                                    ?.guid ?? 'root'
+                            )
+                        } else if (
+                            props.entity?.typeName === 'AtlasGlossaryTerm'
+                        ) {
+                            if (props.entity?.attributes?.categories?.length) {
+                                props.entity?.attributes?.categories?.forEach(
+                                    (category) => {
+                                        emit('delete', category.guid)
+                                    }
+                                )
+                            }
+                        } else {
+                            emit('delete', 'root')
+                        }
                         // if (refetchGlossaryTree) {
                         //     if (
                         //         props.entity?.typeName ===

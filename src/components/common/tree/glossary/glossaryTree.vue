@@ -131,7 +131,6 @@
             onMounted(() => {
                 initTreeData(defaultGlossary.value)
             })
-            console.log(parentGlossaryGuid.value)
             watch(defaultGlossary, () => {
                 console.log('changed', defaultGlossary.value)
 
@@ -139,10 +138,6 @@
                 console.log(defaultGlossary.value)
                 initTreeData(defaultGlossary.value)
             })
-            watch(parentGlossaryGuid, () => {
-                console.log(parentGlossaryGuid)
-            })
-
             const addGlossary = (asset) => {
                 addNode(asset)
             }

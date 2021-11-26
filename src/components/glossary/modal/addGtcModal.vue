@@ -189,7 +189,9 @@
             })
 
             const { getGlossaryByQF } = useGlossaryData()
-
+            console.log(categoryGuid.value)
+            console.log(glossaryQualifiedName)
+            console.log(getGlossaryByQF(glossaryQualifiedName.value))
             // const localQualifiedName = ref(
             //     glossaryQualifiedName.value || getFirstGlossaryQF()
             // )
@@ -291,7 +293,12 @@
                                 )?.guid,
                             },
                         }
-                        if (categoryGuid.value) {
+                        if (
+                            categoryGuid.value &&
+                            categoryGuid.value !==
+                                getGlossaryByQF(glossaryQualifiedName.value)
+                                    ?.guid
+                        ) {
                             if (typeNameTitle.value === 'Category') {
                                 entity.relationshipAttributes.parentCategory = {
                                     typeName: 'AtlasGlossaryCategory',

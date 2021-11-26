@@ -100,7 +100,9 @@
                                     : ''
                             }`"
                         />
-                        <div class="text-xs tracking-tight text-gray-500">
+                        <div
+                            class="text-xs tracking-tight text-gray-500 break-all "
+                        >
                             {{ table }}
                         </div>
                     </div>

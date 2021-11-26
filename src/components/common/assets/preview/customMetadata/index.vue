@@ -55,78 +55,8 @@
                     </a-tooltip>
                 </div>
 
-                <div
-                    v-if="readOnly"
-                    class="flex items-center self-start flex-grow break-all"
-                >
-                    <a
-                        v-if="a?.options?.customType === 'url'"
-                        class="font-bold text-primary"
-                        target="_blank"
-                        :href="`//${a.value}`"
-                    >
-                        {{ a.value || '-' }}</a
-                    >
+                <ReadOnly v-if="readOnly" :attribute="a" />
 
-                    <a-typography-paragraph
-                        v-else-if="getDatatypeOfAttribute(a) === 'text'"
-                        class="font-bold text-gray-700"
-                        :ellipsis="{
-                            rows: 5,
-                            expandable: true,
-                            symbol: 'more',
-                        }"
-                        :content="a.value || '-'"
-                    >
-                    </a-typography-paragraph>
-
-                    <div
-                        v-else-if="getDatatypeOfAttribute(a) === 'users'"
-                        class="flex flex-wrap gap-1"
-                    >
-                        <template v-if="a.options.multiValueSelect === 'false'">
-                            <PopOverUser :item="a.value">
-                                <UserPill :username="a.value"></UserPill>
-                            </PopOverUser>
-                        </template>
-                        <template
-                            v-for="username in formatDisplayValue(
-                                a.value || '',
-                                getDatatypeOfAttribute(a)
-                            )"
-                            v-else
-                            :key="username"
-                        >
-                            <PopOverUser :item="username">
-                                <UserPill :username="username"></UserPill>
-                            </PopOverUser>
-                        </template>
-                    </div>
-                    <div
-                        v-else-if="getDatatypeOfAttribute(a) === 'groups'"
-                        class="flex flex-wrap gap-1"
-                    >
-                        <template v-if="a.options.multiValueSelect === 'false'">
-                            <PopOverGroup :item="a.value">
-                                <GroupPill :name="a.value"></GroupPill>
-                            </PopOverGroup>
-                        </template>
-                        <template v-for="name in a.value" v-else :key="name">
-                            <PopOverGroup :item="name">
-                                <GroupPill :name="name"></GroupPill>
-                            </PopOverGroup>
-                        </template>
-                    </div>
-
-                    <span v-else class="font-bold text-gray-700">
-                        {{
-                            formatDisplayValue(
-                                a.value?.toString() || '',
-                                getDatatypeOfAttribute(a)
-                            ) || '-'
-                        }}</span
-                    >
-                </div>
                 <div v-else class="flex self-start flex-grow">
                     <a-input
                         v-if="getDatatypeOfAttribute(a) === 'number'"
@@ -267,14 +197,13 @@
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
-    import UserPill from '@/common/pills/user.vue'
-    import GroupPill from '@/common/pills/group.vue'
-    import PopOverUser from '@/common/popover/user/user.vue'
-    import PopOverGroup from '@/common/popover/user/groups.vue'
+    import ReadOnly from './readOnly.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
-        components: { UserPill, GroupPill, PopOverUser, PopOverGroup },
+        components: {
+            ReadOnly,
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

@@ -80,6 +80,44 @@
                     >
                     </a-typography-paragraph>
 
+                    <div
+                        v-else-if="getDatatypeOfAttribute(a) === 'users'"
+                        class="flex flex-wrap gap-1"
+                    >
+                        <template v-if="a.options.multiValueSelect === 'false'">
+                            <PopOverUser>
+                                <UserPill :username="a.value"></UserPill>
+                            </PopOverUser>
+                        </template>
+                        <template
+                            v-for="username in formatDisplayValue(
+                                a.value || '',
+                                getDatatypeOfAttribute(a)
+                            )"
+                            v-else
+                            :key="username"
+                        >
+                            <PopOverUser>
+                                <UserPill :username="username"></UserPill>
+                            </PopOverUser>
+                        </template>
+                    </div>
+                    <div
+                        v-else-if="getDatatypeOfAttribute(a) === 'groups'"
+                        class="flex flex-wrap gap-1"
+                    >
+                        <template v-if="a.options.multiValueSelect === 'false'">
+                            <PopOverGroup>
+                                <GroupPill :name="a.value"></GroupPill>
+                            </PopOverGroup>
+                        </template>
+                        <template v-for="name in a.value" v-else :key="name">
+                            <PopOverGroup>
+                                <GroupPill :name="name"></GroupPill>
+                            </PopOverGroup>
+                        </template>
+                    </div>
+
                     <span v-else class="font-bold text-gray-700">
                         {{
                             formatDisplayValue(
@@ -229,10 +267,14 @@
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import PopOverGroup from '@/common/popover/user/groups.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
-        components: {},
+        components: { UserPill, GroupPill, PopOverUser, PopOverGroup },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

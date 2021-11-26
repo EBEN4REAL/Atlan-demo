@@ -47,6 +47,7 @@
     import updateAsset from '~/composables/discovery/updateAsset'
     import { generateUUID } from '~/utils/helper/generator'
     import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary.ts'
+    import useGlossaryStore from '~/store/glossary'
     import { message } from 'ant-design-vue'
 
     export default defineComponent({
@@ -82,8 +83,11 @@
             const { entityType, guid, entity } = toRefs(props)
             const visible = ref(false)
             const isLoading = ref(false)
-            const deleteGTCNode = inject('deleteGTCNode')
-
+            const glossaryStore = useGlossaryStore()
+            const selectedGlossaryQf = computed(
+                () => glossaryStore.activeGlossaryQualifiedName
+            )
+            console.log(selectedGlossaryQf)
             // const entityToDelete = reactive({
             //     attributes: {
             //         userDescription: '',
@@ -92,13 +96,6 @@
             //     },
             //     typeName: entityType.value,
             // })
-            const refetchGlossaryTree = inject<
-                (
-                    guid: string | 'root',
-                    categoryQualifiedName?: string,
-                    refreshEntityType?: 'term' | 'category'
-                ) => void
-            >('refetchGlossaryTree')
             const { deleteGlossary, deleteCategory, deleteTerm } =
                 useDeleteGlossary()
             const serviceMap = {
@@ -146,6 +143,7 @@
 
             //     mutateAsset()
             // }
+            console.log(serviceMap)
             const handleDelete = () => {
                 const {
                     data,
@@ -153,95 +151,62 @@
                     deleteError,
                 } = serviceMap[props.entity?.typeName](
                     props.entity?.guid,
-                    false,
-                    props.entity?.attributes?.anchor?.guid
+                    false
                 )
                 isLoading.value = loading.value
-                watch([data, deleteError], () => {
-                    console.log(data)
-                    console.log(deleteError)
-                    console.log(props.entity)
-                    if (data && !deleteError.value) {
-                        if (
-                            props.entity?.typeName === 'AtlasGlossaryCategory'
-                        ) {
-                            message.success(
-                                `${props.entity?.displayText} deleted`
+                console.log(data)
+                console.log(deleteError)
+                console.log('deleting')
+                console.log(props.entity)
+                if (data && !deleteError.value) {
+                    console.log('in if')
+                    console.log(selectedGlossaryQf.value.length)
+                    if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                        message.success(`${props.entity?.displayText} deleted`)
+                        if (!selectedGlossaryQf?.value?.length) {
+                            console.log(props?.entity?.attributes?.anchor)
+                            emit(
+                                'delete',
+                                props.entity?.attributes?.parentCategory
+                                    ?.guid ??
+                                    props?.entity?.attributes?.anchor?.guid ??
+                                    'root'
                             )
+                        } else {
                             emit(
                                 'delete',
                                 props.entity?.attributes?.parentCategory
                                     ?.guid ?? 'root'
                             )
-                        } else if (
-                            props.entity?.typeName === 'AtlasGlossaryTerm'
-                        ) {
-                            if (props.entity?.attributes?.categories?.length) {
-                                props.entity?.attributes?.categories?.forEach(
-                                    (category) => {
-                                        emit('delete', category.guid)
-                                    }
-                                )
-                            }
-                        } else {
-                            emit('delete', 'root')
                         }
-                        // if (refetchGlossaryTree) {
-                        //     if (
-                        //         props.entity?.typeName ===
-                        //         'AtlasGlossaryCategory'
-                        //     ) {
-                        //         refetchGlossaryTree(
-                        //             props.entity?.attributes?.parentCategory
-                        //                 ?.guid ?? 'root',
-                        //             props.entity?.attributes?.qualifiedName,
-                        //             'category'
-                        //         )
-                        //     } else if (
-                        //         props.entity?.typeName === 'AtlasGlossaryTerm'
-                        //     ) {
-                        //         if (
-                        //             props.entity?.attributes?.categories?.length
-                        //         ) {
-                        //             props.entity?.attributes?.categories?.forEach(
-                        //                 (category) => {
-                        //                     refetchGlossaryTree(
-                        //                         category.guid,
-                        //                         category?.uniqueAttributes
-                        //                             ?.qualifiedName,
-                        //                         'term'
-                        //                     )
-                        //                 }
-                        //             )
-                        //         } else {
-                        //             refetchGlossaryTree('root', '', 'term')
-                        //         }
-                        //     }
-                        // }
-                    }
-                    isLoading.value = loading.value
-                    visible.value = false
-                })
-            }
+                    } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
+                        message.success(`${props.entity?.displayText} deleted`)
+                        if (props.entity?.attributes?.categories?.length) {
+                            props.entity?.attributes?.categories?.forEach(
+                                (category) => {
+                                    emit('delete', category.guid)
+                                }
+                            )
+                        }
+                        if (!selectedGlossaryQf?.value?.length) {
+                            console.log(props?.entity?.attributes?.anchor)
 
-            // whenever(isReady, () => {
-            //     if (error.value) {
-            //         console.error(error.value)
-            //     } else {
-            //         visible.value = false
-            //         message.success(`${typeNameTitle.value} created`)
-            //         if (guidUpdatedMaps.value?.length > 0) {
-            //             guid.value = guidUpdatedMaps.value[0]
-            //         }
-            //         setTimeout(() => mutateUpdate(), 1000)
-            //     }
-            // })
-            // whenever(isUpdateReady, () => {
-            //     if (error.value) {
-            //     } else {
-            //         emit('delete', asset.value)
-            //     }
-            // })
+                            emit(
+                                'delete',
+                                props?.entity?.attributes?.anchor?.guid ??
+                                    'root'
+                            )
+                        } else emit('delete', 'root')
+                    } else {
+                        emit('delete', 'root')
+                    }
+                }
+                isLoading.value = loading.value
+                visible.value = false
+            }
+            watch(selectedGlossaryQf, () => {
+                console.log(selectedGlossaryQf.value)
+            })
             return {
                 visible,
                 showModal,

@@ -126,7 +126,7 @@
             <template v-slot:default="{ item }">
                 <GlossaryItem
                     :item="item"
-                    :selectedGuid="selectedGlossary.guid"
+                    :selectedGuid="selectedGlossary?.guid"
                     @preview="handlePreview"
                 ></GlossaryItem>
             </template>
@@ -135,7 +135,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed, provide } from 'vue'
     import { useRouter } from 'vue-router'
 
     import EmptyView from '@common/empty/index.vue'
@@ -381,7 +381,7 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
-
+            provide('selectedGlossaryQf', selectedGlossaryQf)
             return {
                 handleFilterChange,
                 isLoading,

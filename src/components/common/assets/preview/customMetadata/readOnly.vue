@@ -2,10 +2,15 @@
     <div class="flex items-center self-start flex-grow break-all">
         <a
             v-if="attribute?.options?.customType === 'url'"
-            class="font-bold text-primary"
+            class="flex items-center font-bold text-primary gap-x-1"
             target="_blank"
             :href="`//${attribute.value}`"
         >
+            <img
+                :src="`https://www.google.com/s2/favicons?domain=${attribute.value}`"
+                :alt="attribute.value"
+                class="w-4 h-4"
+            />
             {{ attribute.value || '-' }}</a
         >
 
@@ -71,7 +76,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch, PropType, inject } from 'vue'
+    import { defineComponent } from 'vue'
 
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import UserPill from '@/common/pills/user.vue'

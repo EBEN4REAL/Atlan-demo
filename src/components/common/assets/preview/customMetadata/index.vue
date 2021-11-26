@@ -253,7 +253,6 @@
                         }
                     })
                 }
-                console.log(applicableList.value)
             }
 
             // {"BM for facet 2":{"test for facet 2":"1","test for facet 2 date":1629294652575}}

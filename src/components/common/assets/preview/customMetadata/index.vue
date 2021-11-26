@@ -67,6 +67,19 @@
                     >
                         {{ a.value || '-' }}</a
                     >
+
+                    <a-typography-paragraph
+                        v-else-if="getDatatypeOfAttribute(a) === 'text'"
+                        class="font-bold text-gray-700"
+                        :ellipsis="{
+                            rows: 5,
+                            expandable: true,
+                            symbol: 'more',
+                        }"
+                        :content="a.value || '-'"
+                    >
+                    </a-typography-paragraph>
+
                     <span v-else class="font-bold text-gray-700">
                         {{
                             formatDisplayValue(
@@ -145,7 +158,7 @@
                         :placeholder="`Select ${
                             a.options.multiValueSelect ? 'users' : 'a user'
                         }`"
-                        :mode="a.options.multiValueSelect ? 'multiple' : ''"
+                        :mode="a.options.multiValueSelect ? 'multiple' : 'tags'"
                         style="width: 100%"
                         :show-arrow="true"
                         @search="userSearch"
@@ -165,7 +178,7 @@
                         :placeholder="`Select ${
                             a.options.multiValueSelect ? 'groups' : 'a group'
                         }`"
-                        :mode="a.options.multiValueSelect ? 'multiple' : ''"
+                        :mode="a.options.multiValueSelect ? 'tags' : 'multiple'"
                         style="width: 100%"
                         :show-arrow="true"
                         @search="groupSearch"

@@ -119,7 +119,16 @@
             v-model:value="localValue"
             class="flex-grow shadow-none border-1"
             :allow-clear="true"
-            placeholder="Select an enum"
+            :placeholder="`Select ${
+                attribute.options.multiValueSelect === 'true'
+                    ? 'enums'
+                    : 'an enum'
+            }`"
+            :mode="
+                attribute.options.multiValueSelect === 'true'
+                    ? 'multiple'
+                    : null
+            "
             style="width: 100%"
             :show-arrow="true"
             :options="getEnumOptions(attribute.typeName)"

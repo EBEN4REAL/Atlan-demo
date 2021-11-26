@@ -1,17 +1,19 @@
 <template>
     <div class="flex items-center self-start flex-grow break-all">
         <a
-            v-if="attribute?.options?.customType === 'url'"
+            v-if="getDatatypeOfAttribute(attribute) === 'url'"
             class="flex items-center font-bold text-primary gap-x-1"
             target="_blank"
             :href="`//${attribute.value}`"
         >
-            <img
-                :src="`https://www.google.com/s2/favicons?domain=${attribute.value}`"
-                :alt="attribute.value"
-                class="w-4 h-4"
-            />
-            {{ attribute.value || '-' }}</a
+            <span v-if="attribute.value">
+                <img
+                    :src="`https://www.google.com/s2/favicons?domain=${attribute.value}`"
+                    :alt="attribute.value"
+                    class="w-4 h-4"
+                />
+                {{ attribute.value }}</span
+            ><span v-else>-</span></a
         >
 
         <a-typography-paragraph
@@ -30,38 +32,62 @@
             v-else-if="getDatatypeOfAttribute(attribute) === 'users'"
             class="flex flex-wrap gap-1"
         >
-            <template v-if="attribute.options.multiValueSelect === 'false'">
+            <template
+                v-if="
+                    attribute.options.multiValueSelect === 'false' &&
+                    attribute.value
+                "
+            >
                 <PopOverUser :item="attribute.value">
                     <UserPill :username="attribute.value"></UserPill>
                 </PopOverUser>
             </template>
             <template
-                v-for="username in formatDisplayValue(
-                    attribute.value || '',
-                    getDatatypeOfAttribute(attribute)
-                )"
-                v-else
-                :key="username"
-            >
-                <PopOverUser :item="username">
-                    <UserPill :username="username"></UserPill>
-                </PopOverUser>
+                v-else-if="
+                    attribute.options.multiValueSelect === 'true' &&
+                    attribute.value
+                "
+                ><div
+                    v-for="username in formatDisplayValue(
+                        attribute.value || '',
+                        getDatatypeOfAttribute(attribute)
+                    )"
+                    :key="username"
+                >
+                    <PopOverUser :item="username">
+                        <UserPill :username="username"></UserPill>
+                    </PopOverUser>
+                </div>
             </template>
+            <template v-else>-</template>
         </div>
         <div
             v-else-if="getDatatypeOfAttribute(attribute) === 'groups'"
             class="flex flex-wrap gap-1"
         >
-            <template v-if="attribute.options.multiValueSelect === 'false'">
+            <template
+                v-if="
+                    attribute.options.multiValueSelect === 'false' &&
+                    attribute.value
+                "
+            >
                 <PopOverGroup>
                     <GroupPill :name="attribute.value"></GroupPill>
                 </PopOverGroup>
             </template>
-            <template v-for="name in attribute.value" v-else :key="name">
-                <PopOverGroup>
-                    <GroupPill :name="name"></GroupPill>
-                </PopOverGroup>
+            <template
+                v-else-if="
+                    attribute.options.multiValueSelect === 'true' &&
+                    attribute.value
+                "
+            >
+                <div v-for="name in attribute.value" :key="name">
+                    <PopOverGroup>
+                        <GroupPill :name="name"></GroupPill>
+                    </PopOverGroup>
+                </div>
             </template>
+            <template v-else>-</template>
         </div>
 
         <span v-else class="font-bold text-gray-700">

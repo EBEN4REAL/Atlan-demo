@@ -32,8 +32,8 @@
         />
         <a-radio-group
             v-else-if="getDatatypeOfAttribute(attribute) === 'boolean'"
+            v-model:value="localValue"
             :allow-clear="true"
-            :value="attribute.value"
             class="flex-grow"
             @change="handleChange"
         >
@@ -42,8 +42,8 @@
         </a-radio-group>
         <a-date-picker
             v-else-if="getDatatypeOfAttribute(attribute) === 'date'"
+            v-model:value="localValue"
             :allow-clear="true"
-            :value="(attribute.value || '').toString()"
             class="flex-grow w-100"
             value-format="x"
             @change="handleChange"
@@ -78,6 +78,7 @@
             style="width: 100%"
             :show-arrow="true"
             @search="userSearch"
+            @change="handleChange"
             ><a-select-option
                 v-for="(item, index) in userList"
                 :key="index"
@@ -104,6 +105,7 @@
             style="width: 100%"
             :show-arrow="true"
             @search="groupSearch"
+            @change="handleChange"
             ><a-select-option
                 v-for="(item, index) in groupList"
                 :key="index"
@@ -121,6 +123,7 @@
             style="width: 100%"
             :show-arrow="true"
             :options="getEnumOptions(attribute.typeName)"
+            @change="handleChange"
         />
     </div>
 </template>

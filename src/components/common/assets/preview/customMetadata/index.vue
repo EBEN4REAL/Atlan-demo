@@ -85,7 +85,7 @@
                         class="flex flex-wrap gap-1"
                     >
                         <template v-if="a.options.multiValueSelect === 'false'">
-                            <PopOverUser>
+                            <PopOverUser :item="a.value">
                                 <UserPill :username="a.value"></UserPill>
                             </PopOverUser>
                         </template>
@@ -97,7 +97,7 @@
                             v-else
                             :key="username"
                         >
-                            <PopOverUser>
+                            <PopOverUser :item="username">
                                 <UserPill :username="username"></UserPill>
                             </PopOverUser>
                         </template>
@@ -107,12 +107,12 @@
                         class="flex flex-wrap gap-1"
                     >
                         <template v-if="a.options.multiValueSelect === 'false'">
-                            <PopOverGroup>
+                            <PopOverGroup :item="a.value">
                                 <GroupPill :name="a.value"></GroupPill>
                             </PopOverGroup>
                         </template>
                         <template v-for="name in a.value" v-else :key="name">
-                            <PopOverGroup>
+                            <PopOverGroup :item="name">
                                 <GroupPill :name="name"></GroupPill>
                             </PopOverGroup>
                         </template>

@@ -156,9 +156,15 @@
                         class="flex-grow shadow-none border-1"
                         :allow-clear="true"
                         :placeholder="`Select ${
-                            a.options.multiValueSelect ? 'users' : 'a user'
+                            a.options.multiValueSelect === 'true'
+                                ? 'users'
+                                : 'a user'
                         }`"
-                        :mode="a.options.multiValueSelect ? 'multiple' : 'tags'"
+                        :mode="
+                            a.options.multiValueSelect === 'true'
+                                ? 'multiple'
+                                : null
+                        "
                         style="width: 100%"
                         :show-arrow="true"
                         @search="userSearch"
@@ -176,9 +182,15 @@
                         class="flex-grow shadow-none border-1"
                         :allow-clear="true"
                         :placeholder="`Select ${
-                            a.options.multiValueSelect ? 'groups' : 'a group'
+                            a.options.multiValueSelect === 'true'
+                                ? 'groups'
+                                : 'a group'
                         }`"
-                        :mode="a.options.multiValueSelect ? 'tags' : 'multiple'"
+                        :mode="
+                            a.options.multiValueSelect === 'true'
+                                ? 'multiple'
+                                : null
+                        "
                         style="width: 100%"
                         :show-arrow="true"
                         @search="groupSearch"
@@ -207,7 +219,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch, PropType } from 'vue'
+    import { defineComponent, ref, toRefs, watch, PropType, inject } from 'vue'
+    import { whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
@@ -215,6 +228,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -234,6 +248,8 @@
 
             const readOnly = ref(true)
             const loading = ref(false)
+            const guid = ref()
+
             const { title } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
@@ -314,6 +330,14 @@
                 handleGroupSearch(val)
             }
 
+            const {
+                asset,
+                mutate: mutateUpdate,
+                isReady: isUpdateReady,
+            } = useCurrentUpdate({
+                id: guid,
+            })
+
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
 
@@ -337,11 +361,15 @@
                                 selectedAsset.value
                             )} updated`
                         )
+                        guid.value = selectedAsset.value.guid
+
+                        mutateUpdate()
                     }
                 })
 
                 readOnly.value = true
             }
+
             const handleCancel = () => {
                 setAttributesList()
                 readOnly.value = true
@@ -349,6 +377,17 @@
             const handleChange = (index, value) => {
                 applicableList.value[index].value = value
             }
+
+            const updateList = inject('updateList')
+            whenever(isUpdateReady, () => {
+                if (
+                    asset.value.typeName !== 'AtlasGlossary' &&
+                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
+                    asset.value.typeName !== 'AtlasGlossaryTerm'
+                ) {
+                    updateList(asset.value)
+                }
+            })
 
             watch(
                 () => selectedAsset.value.guid,

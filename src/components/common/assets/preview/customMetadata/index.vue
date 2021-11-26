@@ -371,7 +371,11 @@
             }
 
             const handleCancel = () => {
+                applicableList.value.forEach((att) => {
+                    att.value = ''
+                })
                 setAttributesList()
+
                 readOnly.value = true
             }
             const handleChange = (index, value) => {

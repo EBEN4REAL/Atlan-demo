@@ -1,6 +1,7 @@
 import { watch, ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { Glossary } from '~/services/meta/glossary/index'
+import { message } from 'ant-design-vue'
 
 const useDeleteGlossary = () => {
     const error = ref<any>()
@@ -16,17 +17,20 @@ const useDeleteGlossary = () => {
         else router.push(`/glossary/${guid}`)
     }
 
-    // const deleteGlossary = (guid: string, redirect?: boolean) => {
-    //     // const { data, error: deleteError } = Glossary.deleteGlossary(guid)
+    const deleteGlossary = (guid: string, redirect?: boolean) => {
+        const {
+            data,
+            error: deleteError,
+            isLoading,
+        } = Glossary.deleteGlossary(guid)
 
-    //     if (redirect) redirectAfterDelete('glossary', guid)
-    //     watch([deleteError, loading], ([newError, newLoading]) => {
-    //         error.value = newError
-    //         isLoading.value = newLoading
-    //     })
+        if (redirect) redirectAfterDelete('glossary', guid)
+        watch(deleteError, (newError) => {
+            error.value = newError
+        })
 
-    //     return { data, deleteError }
-    // }
+        return { data, deleteError, isLoading }
+    }
 
     const deleteCategory = (
         guid: string,
@@ -63,14 +67,21 @@ const useDeleteGlossary = () => {
         }
 
         watch(deleteError, (newError) => {
-            error.value = newError
+            const errMsg =
+                newError?.response?.data?.errorMessage ||
+                'Something went wrong!'
+
+            message.error({
+                content: `${errMsg}`,
+                duration: 5,
+            })
         })
 
         return { data, deleteError, isLoading }
     }
 
     return {
-        // deleteGlossary,
+        deleteGlossary,
         deleteCategory,
         deleteTerm,
         error,

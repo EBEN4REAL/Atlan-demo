@@ -42,6 +42,7 @@
                         <p class="mb-1 text-sm text-gray-500">Owners</p>
                         <Owners
                             v-model="localOwners"
+                            :used-for-assets="true"
                             @change="handleOwnersChange"
                         />
                     </div>

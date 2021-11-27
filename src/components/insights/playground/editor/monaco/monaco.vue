@@ -278,7 +278,7 @@
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
                     theme: editorConfig.value.theme,
-                    fontSize: 12,
+                    fontSize: 14,
                     fontFamily: 'Hack',
                     cursorStyle: 'line',
                     cursorWidth: 2,

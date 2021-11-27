@@ -8,7 +8,7 @@ import { GET_USER_GROUPS } from '~/services/service/users/key'
 export default function getUserGroups(groupListAPIParams: {
   userId: string;
   params: { limit: number; offset: number; filter: any; sort: string };
-}) {
+}, cacheProp = "") {
   const localGroupsList: Ref<any[]> = ref([]);
   const {
     data,
@@ -17,7 +17,7 @@ export default function getUserGroups(groupListAPIParams: {
     error,
     isLoading,
   } = Users.ListUserGroups(groupListAPIParams.params, groupListAPIParams.userId, {
-    cacheKey: GET_USER_GROUPS,
+    cacheKey: cacheProp || GET_USER_GROUPS,
     cacheOptions: {
       revalidateOnFocus: false,
       dedupingInterval: 1,

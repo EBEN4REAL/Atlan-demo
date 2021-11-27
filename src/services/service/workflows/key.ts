@@ -39,7 +39,7 @@ export const map = {
     [WORKFLOW_UPDATE_BY_NAME]: ({ name }: PathParams) =>
         getAPIPath(BASE_PATH, `/workflows/${name}`),
     [WORKFLOW_RUN]: () => getAPIPath(BASE_PATH, '/runs'),
-    [GET_ARTIFACTS]: ({ workflowName, nodeName, outputName }) =>
+    [GET_ARTIFACTS]: ({ workflowName, nodeName, outputName }: PathParams) =>
         getAPIPath(
             BASE_PATH,
             `/runs/${workflowName}/${nodeName}/artifacts/${outputName}?contentDisposition=inline`

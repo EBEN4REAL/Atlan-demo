@@ -27,6 +27,8 @@
                         <span class="uppercase">{{
                             title || item?.typeName
                         }}</span>
+
+                        <slot name="extraHeaders"> </slot>
                     </div>
                     <div
                         v-if="
@@ -171,13 +173,15 @@
                         />
                     </div>
                 </div>
-                <router-link :to="path">
+                <router-link :to="path" v-if="!slots?.button">
                     <a-button class="mt-3" block>
                         <strong>
                             View {{ title?.toLowerCase() }} profile
                         </strong>
                     </a-button>
                 </router-link>
+
+                <slot name="button"></slot>
             </div>
         </template>
         <slot></slot>
@@ -212,7 +216,7 @@
             },
         },
         emits: [],
-        setup(props) {
+        setup(props, { slots }) {
             const { item } = toRefs(props)
 
             const {
@@ -277,6 +281,7 @@
                 title,
                 logoTitle,
                 path,
+                slots,
             }
         },
     }

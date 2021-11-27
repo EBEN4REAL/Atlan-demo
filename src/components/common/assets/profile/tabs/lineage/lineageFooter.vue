@@ -34,7 +34,7 @@
                 </a-tooltip>
             </div>
 
-            <div class="mr-5 cursor-pointer" @click="fit()">
+            <div class="mr-5 cursor-pointer" @click="fit(baseEntityGuid)">
                 <a-tooltip placement="top">
                     <template #title>
                         <span>fit graph</span>
@@ -100,6 +100,10 @@
             },
             lineageContainer: {
                 type: Object,
+                required: true,
+            },
+            baseEntityGuid: {
+                type: String,
                 required: true,
             },
             currZoom: {

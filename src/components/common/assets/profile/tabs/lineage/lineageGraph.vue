@@ -39,6 +39,7 @@
             :graph="graph"
             :lineage-container="lineageContainer"
             :curr-zoom="currZoom"
+            :base-entity-guid="lineage.baseEntityGuid"
             @on-zoom-change="currZoom = $event"
             @on-show-minimap="showMinimap = $event"
         >
@@ -84,7 +85,6 @@
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
     import useHighlight from './useHighlight'
-    import useUpdateGraph from './useUpdateGraph'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -108,8 +108,9 @@
             const minimapContainer = ref(null)
             const lineageContainer = ref(null)
             const graph = ref(null)
+            const graphLayout = ref({})
             const highlightLoadingCords = ref({})
-            const showProcess = ref(false)
+            const showProcess = ref(true)
             const showImpactedAssets = ref(false)
             const showAddLineage = ref(false)
             const showMinimap = ref(false)
@@ -120,6 +121,7 @@
             const highlightedNode = ref('')
             const currZoom = ref('...')
             const isComputationDone = ref(false)
+
             /** METHODS */
             // selectSearchItem
             const selectSearchItem = (guid) => {
@@ -127,37 +129,42 @@
             }
 
             // initialize
-            const initialize = async (reload = false) => {
-                const { baseEntityGuid: guid } = lineage.value
-                const defaultEntity = lineage.value.guidEntityMap[guid]
+            const initialize = async () => {
+                const { baseEntityGuid } = lineage.value
+                const defaultEntity =
+                    lineage.value.guidEntityMap[baseEntityGuid]
 
                 emit('preview', defaultEntity)
 
-                if (reload) graph.value.dispose()
-
                 // useGraph
-                const { graphLayout } = useCreateGraph(
+                useCreateGraph(
                     graph,
+                    graphLayout,
                     graphContainer,
-                    minimapContainer,
-                    showProcess
+                    minimapContainer
                 )
 
                 // useComputeGraph
-                const { baseEntityGuid } = await useComputeGraph(
+                await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
                     showProcess,
                     searchItems,
                     currZoom,
-                    reload,
-                    isComputationDone
+                    isComputationDone,
+                    emit
                 )
 
-                // save cords
+                // events
                 graph.value.on('cell:mousedown', ({ e }) => {
                     highlightLoadingCords.value = { x: e.clientX, y: e.clientY }
+                })
+                graph.value.on('blank:mousewheel', () => {
+                    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+                })
+                graph.value.on('cell:mousewheel', () => {
+                    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
                 })
 
                 // useHighlight
@@ -177,9 +184,6 @@
             const onShowProcess = (val) => {
                 showProcess.value = val
                 selectedNodeType.value = ''
-                // const { toggleProcessNodes } = useUpdateGraph()
-                // toggleProcessNodes(graph)
-                initialize(true)
             }
 
             // onShowImpactedAssets
@@ -198,7 +202,6 @@
 
             /** LIFECYCLE */
             onMounted(() => {
-                if (graph.value) graph.value.dispose()
                 initialize()
             })
 
@@ -339,7 +342,7 @@
                 border: 2px solid #5277d7;
             }
             &.isHighlightedNodePath {
-                border: 1.75px solid #5277d7;
+                border: 2px solid #5277d7;
             }
 
             & > .process-icon {
@@ -370,11 +373,11 @@
 
             &.isBase {
                 border-top-left-radius: 0;
-                border: 1.75px solid #5277d7 !important;
+                border: 2px solid #5277d7 !important;
                 background-color: #ffffff !important;
 
                 &.isHighlightedNode {
-                    border: 1.75px solid #5277d7 !important;
+                    border: 2px solid #5277d7 !important;
                 }
 
                 .inscr {
@@ -386,7 +389,7 @@
                         background: #ffffff;
                         color: #5277d7;
                         position: absolute;
-                        border: 1.75px solid #5277d7;
+                        border: 2px solid #5277d7;
                         border-bottom: 0;
                         top: -33px;
                         padding: 0 8px;
@@ -442,12 +445,12 @@
         }
 
         .isHighlightedNode {
-            border: 2px solid #5277d7 !important;
+            border: 3px solid #5277d7 !important;
             background-color: #f4f6fd !important;
         }
 
         .isHighlightedNodePath {
-            border: 1.75px solid #5277d7;
+            border: 2px solid #5277d7;
             background-color: #ffffff;
         }
     }

@@ -6,12 +6,10 @@ const { updateProcessNodesPosition } = useUpdateGraph()
 
 export default function useCreateGraph(
     graph,
+    graphLayout,
     graphContainer,
-    minimapContainer,
-    showProcess
+    minimapContainer
 ) {
-    const graphLayout = ref({})
-
     /* Build Graph Canvas */
     const { Graph } = window.X6
     const { DagreLayout } = window.layout
@@ -53,18 +51,21 @@ export default function useCreateGraph(
         },
     })
 
+    const isMounted = ref(false)
+
     /* graphLayout */
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         rankdir: 'LR',
-        nodesep: 15,
+        nodesep: 20,
         controlPoints: true,
         ranksepFunc() {
-            if (showProcess.value) return 75
-            return 150
+            if (isMounted.value) return 25
+            return 80 // 140
         },
         onLayoutEnd() {
-            updateProcessNodesPosition(graph)
+            updateProcessNodesPosition(graph, 110)
+            if (!isMounted.value) isMounted.value = true
         },
     })
 

@@ -45,8 +45,8 @@
 
             /** DATA */
             const depth = ref(1)
-            const direction = ref('BOTH')
             const guid = computed(() => route?.params?.id || '')
+            const direction = ref('BOTH')
             const config = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,

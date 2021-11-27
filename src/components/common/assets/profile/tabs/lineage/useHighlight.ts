@@ -2,7 +2,7 @@ import { ref, watch } from 'vue'
 import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 
-const { updateEdgesData, updateNodesData } = useUpdateGraph()
+const { highlightNodes, highlightEdges } = useUpdateGraph()
 const {
     getPredecessors,
     getSuccessors,
@@ -37,9 +37,9 @@ export default function useHighlight(
         highlightedNode.value = isValid ? guid : ''
         if (isValid) await getHighlights(guid)
         const edgesToHighlight = isValid ? Array.from(edgesToHighlightSet) : []
-        await updateEdgesData(graph, edgesToHighlight)
+        await highlightEdges(graph, edgesToHighlight)
         const nodesToHighlight = Array.from(nodesToHighlightSet)
-        updateNodesData(graph, highlightedNode, nodesToHighlight)
+        highlightNodes(graph, highlightedNode, nodesToHighlight)
         highlightLoadingCords.value = {}
     }
 

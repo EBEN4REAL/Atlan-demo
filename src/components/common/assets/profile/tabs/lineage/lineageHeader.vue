@@ -130,7 +130,7 @@
             /** DATA */
             const { selectedNodeType } = toRefs(props)
             const showSearch = ref(false)
-            const showProcess = ref(false)
+            const showProcess = ref(true)
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },
                 { id: 2, label: 'Depth 2' },

@@ -9,6 +9,8 @@ export default function useCustomMetadataHelpers() {
     const getDatatypeOfAttribute = (a) => {
         if (a?.typeName && typeof a.typeName !== 'undefined') {
             if (numberTypes.includes(a?.typeName)) return 'number'
+            if (a?.options?.isEnum?.includes('true')) return 'enum'
+
             if (a?.typeName?.includes('string')) {
                 if (a?.options?.customType?.includes('users')) return 'users'
                 if (a?.options?.customType?.includes('groups')) return 'groups'
@@ -32,7 +34,12 @@ export default function useCustomMetadataHelpers() {
 
     const formatDisplayValue = (v: any, type: string) => {
         if (v || v?.toString()) {
-            let value = JSON.parse(JSON.stringify(v))
+            let value
+            if (v?.value) {
+                value = JSON.parse(JSON.stringify(v.value))
+            } else {
+                value = JSON.parse(JSON.stringify(v))
+            }
             if (type === 'boolean') {
                 return JSON.parse(value.toString().toLowerCase()) ? 'Yes' : 'No'
             }
@@ -40,9 +47,6 @@ export default function useCustomMetadataHelpers() {
                 return formatDate(
                     Number.isInteger(value) ? value : parseInt(value)
                 )
-            }
-            if (type === 'users' || type === 'groups') {
-                return value
             }
             if (Array.isArray(value)) {
                 if (!value.length) return `No value added`

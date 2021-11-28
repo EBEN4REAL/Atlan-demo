@@ -138,6 +138,7 @@
     import { removeEditFlag } from '../composables/useEditPurpose'
     import Owners from '~/components/common/input/owner/index.vue'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -244,6 +245,11 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
+
+            whenever(policyNameRef, () => {
+                policyNameRef.value?.focus()
+            })
+
             return {
                 selectedPersonaDirty,
                 getPopoverContent,

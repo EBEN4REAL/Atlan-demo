@@ -75,7 +75,7 @@
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
                 :selected-keys="selectedKeys"
-                :expanded-keys="expandedKeys"
+                v-model:expanded-keys="expandedKeys"
             />
         </div>
     </div>

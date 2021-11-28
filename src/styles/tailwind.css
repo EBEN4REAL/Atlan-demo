@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .fake-bold {
+        -webkit-text-stroke: 0.65px #3e4359;
+        -moz-text-stroke: 0.65px #3e4359;
+    }
+  }

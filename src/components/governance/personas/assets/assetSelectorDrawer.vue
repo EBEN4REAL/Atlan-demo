@@ -190,13 +190,8 @@
                 return connectorName
             }
 
-            function resetAssetState() {
-                bulkStore.setBulkSelectedAssets([])
-            }
-
             function closeDrawer() {
                 isVisible.value = false
-                resetAssetState()
             }
 
             /* Adds /* to pathname */
@@ -302,7 +297,6 @@
                 checkedKeys,
                 regexKeys,
                 saveAssets,
-                resetAssetState,
                 selectedAssetCount,
             }
         },

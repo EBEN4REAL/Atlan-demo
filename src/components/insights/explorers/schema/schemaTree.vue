@@ -194,9 +194,9 @@
                 > .ant-tree-switcher_open) {
             background-color: #fff !important;
         }
-        :global(.ant-tree-treenode) {
-            @apply hover:bg-primary-light;
-        }
+        // :global(.ant-tree-treenode) {
+        //     @apply hover:bg-primary-light;
+        // }
 
         :global(.ant-tree-title) {
             width: calc(100% - 1.5rem) !important;

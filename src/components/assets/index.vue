@@ -388,6 +388,9 @@
             const bulkSelectedAssets: Ref<any[]> = ref(
                 toRaw(store.bulkSelectedAssets)
             )
+            watch(store, () => {
+                bulkSelectedAssets.value = store.$state.bulkSelectedAssets
+            })
             const updateBulkSelectedAssets = (listItem) => {
                 switch (checkedCriteria.value) {
                     case 'guid': {
@@ -425,10 +428,6 @@
                 store.setBulkMode(!!bulkSelectedAssets.value.length)
                 store.setBulkSelectedAssets(bulkSelectedAssets.value)
             }
-            watch(store, () => {
-                if (!store.bulkSelectedAssets?.length || !store.isBulkMode)
-                    bulkSelectedAssets.value = []
-            })
             /* By default it will be id, but it can be through qualifiedName */
             const checkSelectedCriteriaFxn = (item) => {
                 switch (checkedCriteria.value) {

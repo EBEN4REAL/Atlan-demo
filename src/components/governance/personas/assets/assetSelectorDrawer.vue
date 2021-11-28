@@ -118,6 +118,7 @@
         computed,
         defineComponent,
         PropType,
+        toRaw,
         ref,
         toRefs,
         watch,
@@ -161,16 +162,6 @@
             })
 
             const bulkStore = useBulkUpdateStore()
-            watch(
-                visible,
-                () => {
-                    if (visible.value) {
-                        /* Set bulk selected assets in list */
-                        bulkStore.setBulkSelectedAssets(assets.value)
-                    }
-                },
-                { immediate: true }
-            )
 
             // Drawer Visibility
             const isVisible = computed({
@@ -184,6 +175,7 @@
             const checkedKeys = ref([...assets.value] as string[])
             const regexKeys = ref([] as string[])
             const BIAssets = ['powerbi', 'tableau']
+            bulkStore.setBulkSelectedAssets(toRaw(checkedKeys.value))
 
             const getConnectorName = (qualifiedName: string) => {
                 let attributeValues: string[]
@@ -250,6 +242,24 @@
             // Tab related data
             const activeTab = ref('custom')
             const tabConfig = ref([{ key: 'custom', label: 'Custom' }])
+
+            /* For sync b/w tree and selected assets */
+            watch(checkedKeys, () => {
+                /* NOTE: If condiion is IMP otherwise this will go in infinite loop */
+                if (
+                    checkedKeys.value.length !==
+                    bulkStore.bulkSelectedAssets.length
+                )
+                    bulkStore.setBulkSelectedAssets(toRaw(checkedKeys.value))
+            })
+            watch(bulkStore, () => {
+                /* NOTE: If condiion is IMP otherwise this will go in infinite loop */
+                if (
+                    checkedKeys.value.length !==
+                    bulkStore.bulkSelectedAssets.length
+                )
+                    checkedKeys.value = [...bulkStore.bulkSelectedAssets]
+            })
 
             watch(
                 connectionQfName,

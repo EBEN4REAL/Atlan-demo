@@ -3,21 +3,23 @@
         v-if="!isReady"
         class="absolute flex items-center justify-center w-full h-full"
     >
-        <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
+        <AtlanIcon icon="Loader" class="h-5 animate-spin" />
     </div>
-    <div v-else>
-        <div class="mt-3">
-            <!-- <a-input-search
-                v-model:value="searchText"
-                placeholder="Search runs"
-                class="mr-1"
-                size="default"
-                :allow-clear="true"
-            ></a-input-search>
-            <RunSort @change="handleSortChange" /> -->
+    <template v-else>
+        <div v-if="list.length === 0 && !isLoading" class="flex-grow">
+            <EmptyView
+                :desc="
+                    !error
+                        ? 'There are no runs for this workflow. '
+                        : 'Sorry, we couldn’t find the workflow you were looking for.'
+                "
+                empty-screen="NoWf"
+                desc-class="w-56 text-center"
+                button-icon="ArrowRight"
+            />
         </div>
-
         <VirtualList
+            v-else
             v-auth="access.LIST_RUNS"
             :class="{ 'animate-pulse': isLoading }"
             :data="list"
@@ -30,7 +32,7 @@
                     :selected-run-name="selectedRunName"
                     :is-loading="isLoadingRunGraph"
                     :select-enabled="true"
-                    @select="loadRunGraph($event)" 
+                    @select="loadRunGraph($event)"
                 />
             </template>
             <template #footer>
@@ -40,56 +42,28 @@
                 >
                     <button
                         :disabled="isLoading"
-                        class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                        class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                         :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                         @click="loadMore"
                     >
                         <template v-if="!isLoading">
                             <p
-                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                             >
                                 Load more
                             </p>
                             <AtlanIcon icon="ArrowDown" />
                         </template>
-                        <svg
+                        <AtlanIcon
                             v-else
-                            class="w-5 h-5 text-primary animate-spin"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                class="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                stroke-width="4"
-                            ></circle>
-                            <path
-                                class="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
+                            icon="Loader"
+                            class="h-5 animate-spin"
+                        />
                     </button>
                 </div>
             </template>
         </VirtualList>
-        <div class="no-wf">
-          <EmptyView
-              v-if="list.length === 0 && !isLoading"
-              :desc="
-                  !error
-                      ? 'There are no runs for this workflow. '
-                      : 'Sorry, we couldn’t find the workflow you were looking for.'
-              "
-              empty-screen="NoWf"
-              desc-class="w-56 text-center"
-              button-icon="ArrowRight"
-          />
-        </div>
-    </div>
+    </template>
 </template>
 
 <script lang="ts">
@@ -111,14 +85,8 @@
     // import RunSort from './runSort.vue'
 
     // Types
-    import { assetInterface } from '~/types/assets/asset.interface'
     import access from '~/constant/accessControl/map'
-
-    // Composables
-    import {
-        getRunList,
-        getArchivedRunList,
-    } from '~/composables/workflow/useWorkflowList'
+    import useRunList from '~/composables/workflow/useRunList'
 
     export default defineComponent({
         components: {
@@ -129,7 +97,7 @@
         },
         props: {
             selectedWorkflow: {
-                type: Object as PropType<assetInterface>,
+                type: Object,
                 required: true,
             },
             isLoaded: {
@@ -144,22 +112,17 @@
             const isLoadingRunGraph = ref(false)
             const selectedRunName = ref('')
             const searchText = ref('')
-            const list = ref([])
-            const sort = ref('')
-            const isReady = ref(false)
 
-            // getRunList
-            const { liveList } = getRunList(item.value.name)
-
-            // getArchivedRunList
             const {
+                list,
+                liveList,
                 archivedList,
                 error,
                 isLoading,
-                totalCount,
-                filter_record,
+                isLoadMore,
                 loadMore,
-            } = getArchivedRunList(item.value.name)
+                isReady,
+            } = useRunList(item.value.name)
 
             // loadRunGraph
             const loadRunGraph = (runName) => {
@@ -173,69 +136,15 @@
                 }, 2500)
             }
 
-            const isLoadMore = computed(
-                () => filter_record.value > list.value.length
-            )
-
-            // watcher
             watch([liveList, archivedList], ([newX, newY]) => {
-                if (newX && newY) {
-                    let liveRunItems = []
-                    let archivedRunItems = []
-                    if (newX?.items?.length) {
-                        const mappedItems = newX.items.map((x) => {
-                            const { status, metadata, spec } = x
-                            const { name, uid } = metadata
-                            const {
-                                startedAt: started_at,
-                                finishedAt: finished_at,
-                                phase,
-                            } = status
-                            const obj = {
-                                name,
-                                uid,
-                                started_at,
-                                finished_at,
-                                phase,
-                            }
-                            obj.workflow = { status, metadata, spec }
-                            return obj
-                        })
-
-                        const orderedItems = mappedItems.sort(
-                            (a, b) =>
-                                new Date(b.finished_at) -
-                                new Date(a.finished_at)
-                        )
-
-                        liveRunItems = orderedItems
-                    }
-
-                    if (newY?.records?.length) {
-                        const orderedRecords = newY.records.sort(
-                            (a, b) =>
-                                new Date(b.finished_at) -
-                                new Date(a.finished_at)
-                        )
-
-                        archivedRunItems = orderedRecords
-                    }
-
-                    list.value = [...liveRunItems, ...archivedRunItems]
-
-                    if (!selectedRunName.value) {
-                        const idMonitoring = route.query.idmonitoring
-                        const defaultRunName = list.value.find((el) => el.uid === idMonitoring) || list.value[0]
-                        selectedRunName.value = defaultRunName?.name
-                    }
-                    setTimeout(() => {
-                        isReady.value = true
-                    }, 300)
+                if (!selectedRunName.value) {
+                    const idMonitoring = route.query.idmonitoring
+                    const defaultRunName =
+                        list.value.find((el) => el.uid === idMonitoring) ||
+                        list.value[0]
+                    selectedRunName.value = defaultRunName?.name
                 }
             })
-
-            // const handleSortChange = () => {}
-
             return {
                 item,
                 searchText,
@@ -247,8 +156,6 @@
                 isLoadingRunGraph,
                 selectedRunName,
                 isLoadMore,
-                totalCount,
-                filter_record,
                 emit,
                 loadRunGraph,
                 loadMore,
@@ -260,13 +167,6 @@
     })
 </script>
 
-<style lang="less">
-  .no-wf{
-    // svg {
-    //   height: auto!important;
-    // }
-  }
-</style>
 <style lang="less" scoped>
     .ant-timeline-item {
         margin-bottom: 0 !important;

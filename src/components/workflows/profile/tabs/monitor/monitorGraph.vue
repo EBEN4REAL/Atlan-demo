@@ -6,22 +6,18 @@
             <div
                 ref="graphContainer"
                 style="width: calc(100vw + 45px); height: 1000px"
-            >
-            </div>
+            ></div>
             <!-- Spinner -->
             <div
                 v-if="!isGraphRendered"
-                class="bg-gray-100 bg-opacity-50 absolute flex items-center justify-center w-full h-full top-0 left-0"
+                class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-100 bg-opacity-50 "
             >
-                <a-spin />
+                <AtlanIcon icon="Loader" class="h-5 animate-spin" />
             </div>
         </div>
 
         <!-- Monitor Controls -->
-        <div
-            class="monitor-control"
-            :class="isFullscreen ? 'top-7' : 'top-4'"
-        >
+        <div class="monitor-control" :class="isFullscreen ? 'top-7' : 'top-4'">
             <!-- Minimap Container -->
             <div
                 v-show="showMinimap"
@@ -30,10 +26,7 @@
             ></div>
 
             <div class="flex items-center flex-1 controls">
-                <div
-                    class="mr-3 cursor-pointer"
-                    @click="handleRefresh"
-                >
+                <div class="mr-3 cursor-pointer" @click="handleRefresh">
                     <a-tooltip placement="top">
                         <template #title>
                             <span>Refresh</span>
@@ -86,9 +79,7 @@
                     </a-tooltip>
                 </div>
 
-                <div 
-                class="mr-3 cursor-pointer"
-                @click="handleRecenter">
+                <div class="mr-3 cursor-pointer" @click="handleRecenter">
                     <a-tooltip placement="top">
                         <template #title>
                             <span>recenter</span>
@@ -210,7 +201,11 @@
             }
 
             // transform
-            const { zoom, fullscreen, handleRecenter } = useTransformGraph(graph, currZoom, firstNode)
+            const { zoom, fullscreen, handleRecenter } = useTransformGraph(
+                graph,
+                currZoom,
+                firstNode
+            )
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
                 fullscreen(monitorContainer)
@@ -237,7 +232,7 @@
                     currZoomDec,
                     reload
                 )
-                firstNode.value = nodes.value[0] 
+                firstNode.value = nodes.value[0]
                 // useHighlight
                 useHighlight(
                     graph,
@@ -260,7 +255,7 @@
                 // interactions need to take place after the render is complete.
                 // Once it is complete, change the value of the ref.
                 graph.value.on('render:done', () => {
-                    isGraphRendered.value = true;
+                    isGraphRendered.value = true
                 })
                 isLoadingRefresh.value = false
             }
@@ -281,7 +276,7 @@
                 initialize()
             })
             const handleRefresh = () => {
-              emit("refresh")
+                emit('refresh')
             }
             return {
                 minimapContainer,
@@ -300,7 +295,7 @@
                 isLoadingRefresh,
                 handleRefresh,
                 isGraphRendered,
-                handleRecenter
+                handleRecenter,
             }
         },
     })

@@ -61,11 +61,22 @@ const deleteTerm = (guid: string) =>
         },
         {}
     )
-
+const deleteGlossary = (guid: string) =>
+    useAPI(
+        map.DELETE_GLOSSARY,
+        'DELETE',
+        {
+            pathVariables: {
+                guid,
+            },
+        },
+        {}
+    )
 export const Glossary = {
     CreateGlossary,
     CreateCategory,
     CreateTerm,
     deleteTerm,
     deleteCategory,
+    deleteGlossary,
 }

@@ -24,7 +24,7 @@
         <div>
             <a-dropdown trigger="click" placement="bottomRight">
                 <a-button
-                    class="px-2 bg-transparent border-transparent shadow-none  hover:border-current hover:bg-white"
+                    class="px-2 bg-transparent border-none shadow-none  hover:bg-white hover:shadow-sm"
                 >
                     <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                 </a-button>

@@ -3,7 +3,7 @@
         <div class="w-full p-4 pb-1">
             <Connector
                 class=""
-                :filterSourceIds="['powerBI', 'tableau']"
+                :filterSourceIds="BItypes"
                 :isLeafNodeSelectable="false"
                 v-model:data="connectorsData"
                 :item="{
@@ -109,6 +109,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     import {
         Attributes,
@@ -135,6 +136,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
+            const BItypes = getBISourceTypes()
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 tabs,
@@ -357,6 +359,7 @@
                 onLoadData,
                 expandNode,
                 selectNode,
+                BItypes,
             }
         },
     })

@@ -4,7 +4,7 @@
     </div>
     <div
         v-else
-        class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5"
+        class="flex flex-col w-full h-full px-5 py-4 overflow-auto gap-y-6"
     >
         <div class="flex items-center justify-between">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
@@ -33,100 +33,29 @@
             </div>
         </div>
         <div v-for="(a, x) in applicableList" :key="x">
-            <div
-                class="gap-6 gap-y-0 group"
-                :class="
-                    getDatatypeOfAttribute(a.typeName) === 'text' && !readOnly
-                        ? ''
-                        : 'mb-4'
-                "
-            >
-                <div class="mb-2 text-gray-700">
-                    {{ a.displayName }}
+            <div class="">
+                <div class="mb-2 font-normal text-gray-500">
+                    <span>{{ a.displayName }}</span>
+                    <a-tooltip>
+                        <template #title>
+                            <span>{{ a.options.description }}</span>
+                        </template>
+                        <AtlanIcon
+                            v-if="a.options.description"
+                            class="h-4 mb-1 ml-2 text-gray-400  hover:text-gray-500"
+                            icon="Info"
+                        />
+                    </a-tooltip>
                 </div>
 
-                <div
-                    v-if="readOnly"
-                    class="flex items-center self-start flex-grow break-all"
-                >
-                    <a
-                        v-if="isLink(a.value, a.displayName)"
-                        target="_blank"
-                        :href="a.value"
-                    >
-                        {{ a.value || '-' }}</a
-                    >
-                    <span v-else>
-                        {{
-                            formatDisplayValue(
-                                a.value?.toString() || '',
-                                getDatatypeOfAttribute(a.typeName)
-                            ) || '-'
-                        }}</span
-                    >
-                </div>
-                <div v-else class="flex self-start flex-grow">
-                    <a-input
-                        v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
-                        v-model:value="a.value"
-                        :allow-clear="true"
-                        class="flex-grow border shadow-none"
-                        type="number"
-                        placeholder="Type..."
-                        @change="(e) => handleChange(x, e.target.value)"
-                    />
-                    <a-radio-group
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'boolean'
-                        "
-                        :allow-clear="true"
-                        :value="a.value"
-                        class="flex-grow"
-                        @change="(e) => handleChange(x, e.target.value)"
-                    >
-                        <a-radio class="" :value="true">True</a-radio>
-                        <a-radio class="" :value="false">False</a-radio>
-                    </a-radio-group>
-                    <template
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'date'
-                        "
-                    >
-                        <a-date-picker
-                            :allow-clear="true"
-                            :value="(a.value || '').toString()"
-                            class="flex-grow w-100"
-                            value-format="x"
-                            @change="(e) => handleChange(x, e.target.value)"
-                        />
-                    </template>
-                    <a-textarea
-                        v-else-if="
-                            getDatatypeOfAttribute(a.typeName) === 'text'
-                        "
-                        v-model:value="a.value"
-                        :allow-clear="true"
-                        :auto-size="true"
-                        :show-count="true"
-                        :maxlength="parseInt(a.options.maxStrLength)"
-                        placeholder="Type..."
-                        type="text"
-                        class="flex-grow shadow-none"
-                        @change="(e) => handleChange(x, e.target.value)"
-                    />
-                    <div v-else class="flex-grow shadow-none border-1">
-                        <a-select
-                            v-model:value="a.value"
-                            :allow-clear="true"
-                            placeholder="Unassigned"
-                            style="width: 100%"
-                            :show-arrow="true"
-                            :options="getEnumOptions(a.typeName)"
-                            class=""
-                            @change="(e) => handleChange(x, e.target.value)"
-                        />
-                    </div>
-                </div>
+                <ReadOnly v-if="readOnly" :attribute="a" />
+
+                <EditState
+                    v-else
+                    v-model="a.value"
+                    :attribute="a"
+                    @change="handleChange(x, a.value)"
+                />
             </div>
         </div>
     </div>
@@ -138,18 +67,27 @@
         ref,
         toRefs,
         watch,
-        computed,
         PropType,
+        inject,
+        defineAsyncComponent,
     } from 'vue'
+    import { whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useFacetUsers from '~/composables/user/useFacetUsers'
+    import useFacetGroups from '~/composables/group/useFacetGroups'
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import { languageTokens } from '~/components/insights/playground/editor/monaco/sqlTokens'
 
     export default defineComponent({
         name: 'CustomMetadata',
-        components: {},
+        components: {
+            ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
+            EditState: defineAsyncComponent(() => import('./editState.vue')),
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -165,6 +103,8 @@
 
             const readOnly = ref(true)
             const loading = ref(false)
+            const guid = ref()
+
             const { title } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
@@ -195,12 +135,28 @@
                     bmAttributes.forEach((ab) => {
                         if (data.value.id === ab.split('.')[0]) {
                             const attribute = ab.split('.')[1]
-                            const value = selectedAsset.value.attributes[ab]
+
+                            let value = selectedAsset.value.attributes[ab]
                             const attrIndex = applicableList.value.findIndex(
                                 (a) => a.name === attribute
                             )
-                            if (attrIndex > -1)
+                            const options =
+                                applicableList.value[attrIndex]?.options
+
+                            if (attrIndex > -1) {
+                                if (
+                                    (options?.customType === 'users' ||
+                                        options?.customType === 'groups' ||
+                                        options?.isEnum === 'true') &&
+                                    options?.multiValueSelect === 'true'
+                                ) {
+                                    value = value
+                                        ?.replace(/\[|\]/g, '')
+                                        .split(',')
+                                        .map((v: string) => v.trim())
+                                }
                                 applicableList.value[attrIndex].value = value
+                            }
                         }
                     })
                 }
@@ -223,21 +179,39 @@
                 })
 
                 // ? handle new payload
-                applicableList.value
-                    .filter((a) => a.value === 0 || a?.value?.toString())
-                    .forEach((at) => {
-                        mappedPayload[data.value.id][at.name] = at.value
-                    })
+                applicableList.value.forEach((at) => {
+                    mappedPayload[data.value.id][at.name] = at.value
+                })
 
                 return mappedPayload
             }
+            const { list: userList, handleSearch: handleUserSearch } =
+                useFacetUsers()
+
+            const userSearch = (val) => {
+                handleUserSearch(val)
+            }
+
+            const { list: groupList, handleSearch: handleGroupSearch } =
+                useFacetGroups()
+            const groupSearch = (val) => {
+                handleGroupSearch(val)
+            }
+
+            const {
+                asset,
+                mutate: mutateUpdate,
+                isReady: isUpdateReady,
+            } = useCurrentUpdate({
+                id: guid,
+            })
 
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
 
                 const { error, isReady, isLoading } =
-                    Types.updateAssetBMUpdateChanges(
-                        props.selectedAsset.guid,
+                    Types.updateAssetBMChanges(
+                        selectedAsset.value?.guid,
                         payload.value
                     )
                 loading.value = isLoading.value
@@ -251,22 +225,43 @@
                     } else if (isReady.value) {
                         loading.value = false
                         message.success(
-                            `BM attributes for ${title(
+                            `${data.value?.label} attributes for ${title(
                                 selectedAsset.value
                             )} updated`
                         )
+                        guid.value = selectedAsset.value.guid
+
+                        mutateUpdate()
                     }
                 })
 
                 readOnly.value = true
             }
+
             const handleCancel = () => {
+                applicableList.value.forEach((att) => {
+                    att.value = ''
+                })
                 setAttributesList()
+
                 readOnly.value = true
             }
             const handleChange = (index, value) => {
                 applicableList.value[index].value = value
+                console.log('hellooooo', value)
             }
+
+            const updateList = inject('updateList')
+            whenever(isUpdateReady, () => {
+                if (
+                    asset.value.typeName !== 'AtlasGlossary' &&
+                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
+                    asset.value.typeName !== 'AtlasGlossaryTerm'
+                ) {
+                    updateList(asset.value)
+                    setAttributesList()
+                }
+            })
 
             watch(
                 () => selectedAsset.value.guid,
@@ -275,7 +270,6 @@
                         data.value,
                         selectedAsset.value.typeName
                     )
-                    setAttributesList()
                 },
                 {
                     immediate: true,
@@ -295,6 +289,10 @@
                 getEnumOptions,
                 handleChange,
                 loading,
+                userSearch,
+                userList,
+                groupSearch,
+                groupList,
             }
         },
     })

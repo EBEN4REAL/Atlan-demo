@@ -67,6 +67,8 @@
                         :static-use="true"
                         :show-aggrs="false"
                         :initial-filters="filterConfig"
+                        checkedCriteria="qualifiedName"
+                        :preference="preference"
                         class="asset-list-height"
                         page="personas"
                     />
@@ -153,8 +155,22 @@
         emits: ['update:visible', 'update:assets'],
         setup(props, { emit }) {
             const { visible, assets, connectionQfName } = toRefs(props)
+            const preference = ref({
+                sort: 'default',
+                display: [],
+            })
 
             const bulkStore = useBulkUpdateStore()
+            watch(
+                visible,
+                () => {
+                    if (visible.value) {
+                        /* Set bulk selected assets in list */
+                        bulkStore.setBulkSelectedAssets(assets.value)
+                    }
+                },
+                { immediate: true }
+            )
 
             // Drawer Visibility
             const isVisible = computed({
@@ -183,16 +199,14 @@
             }
 
             function resetAssetState() {
-                isVisible.value = false
+                bulkStore.setBulkSelectedAssets([])
             }
 
             function closeDrawer() {
                 isVisible.value = false
+                resetAssetState()
             }
 
-            const getQualifiedNamesFromAssets = (assets: any[]) => {
-                return assets.map((asset) => asset?.attributes.qualifiedName)
-            }
             /* Adds /* to pathname */
             const addSufffix = (qualifiedNames: string[]) => {
                 return (
@@ -209,28 +223,28 @@
                 // use a set to maintain the state
                 const assetSet = new Set([
                     ...checkedKeys.value,
-                    ...assets.value,
                     ...regexKeys.value,
-                    ...getQualifiedNamesFromAssets(
-                        bulkStore.bulkSelectedAssets
-                    ),
+                    ...bulkStore.bulkSelectedAssets,
                 ])
                 emit('update:assets', [...assetSet])
-                resetAssetState()
+                bulkStore.setBulkSelectedAssets([])
+                closeDrawer()
             }
 
             const selectedAssetCount = computed(() => {
                 const s = new Set([
                     ...checkedKeys?.value,
-                    ...assets.value,
+                    ...regexKeys.value,
                     ...bulkStore.bulkSelectedAssets,
                 ])
                 return s.size
             })
 
             const filterConfig = computed(() => ({
-                connectorName: getConnectorName(connectionQfName.value),
-                connectionQualifiedName: connectionQfName.value,
+                hierarchy: {
+                    connectorName: getConnectorName(connectionQfName.value),
+                    connectionQualifiedName: connectionQfName.value,
+                },
             }))
 
             // Tab related data
@@ -268,6 +282,8 @@
             )
 
             return {
+                assets,
+                preference,
                 closeDrawer,
                 filterConfig,
                 activeTab,

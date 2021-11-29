@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="editor && editable"
-        class="flex items-center max-w-full min-w-full bg-white border border-gray-200 rounded shadow-xl  editor-menu"
+        class="box-border flex items-center max-w-full min-w-full bg-white border border-gray-300 rounded shadow-xl  editor-menu"
     >
         <a-dropdown
             v-if="getActiveMenu(editor)?.key !== 'uploadimage'"
@@ -25,6 +25,10 @@
                         }"
                         @click="() => menuItem.onClick(editor)"
                     >
+                        <AtlanIcon
+                            :icon="menuItem.icon"
+                            class="w-auto h-4 mb-1 mr-1"
+                        />
                         {{ menuItem.title }}
                     </a-menu-item>
                 </a-menu>
@@ -171,6 +175,7 @@
                     key: 'heading-1',
                     level: 1,
                     helpText: '',
+                    icon: 'HOne',
                     onClick: (editor) =>
                         editor
                             .chain()
@@ -183,6 +188,7 @@
                     key: 'heading-2',
                     level: 2,
                     helpText: '',
+                    icon: 'HTwo',
                     onClick: (editor) =>
                         editor
                             .chain()
@@ -194,6 +200,7 @@
                     title: 'H3',
                     key: 'heading-3',
                     level: 3,
+                    icon: 'HThree',
                     border: true,
                     helpText: '',
                     onClick: (editor) =>
@@ -208,7 +215,7 @@
                     title: 'Unordered List',
                     key: 'bulletList',
                     helpText: '',
-                    icon: 'fa list-ul',
+                    icon: 'BulletList',
                     onClick: (editor) =>
                         editor.chain().focus().toggleBulletList().run(),
                 },
@@ -216,7 +223,7 @@
                     title: 'Ordered List',
                     key: 'orderedList',
                     helpText: '',
-                    icon: 'fa list-ol',
+                    icon: 'NumberedList',
                     border: true,
                     onClick: (editor) =>
                         editor.chain().focus().toggleOrderedList().run(),
@@ -234,7 +241,7 @@
                     title: 'Blockquote',
                     key: 'blockquote',
                     helpText: '',
-                    icon: 'fa quote-left',
+                    icon: 'Quotes',
                     onClick: (editor) =>
                         editor.chain().focus().toggleBlockquote().run(),
                 },
@@ -242,7 +249,7 @@
                     title: 'Code Block',
                     key: 'codeBlock',
                     helpText: '',
-                    icon: 'fa code',
+                    icon: 'Code',
                     border: true,
                     onClick: (editor) =>
                         editor
@@ -255,23 +262,10 @@
                     title: 'Image Block',
                     key: 'uploadimage',
                     helpText: '',
-                    icon: 'fa image',
+                    icon: 'ReadmeImage',
                     border: true,
                     onClick: (editor) =>
                         editor.chain().focus().toggleImageBlock().run(),
-                },
-            ]
-
-            const linkMenu: MenuItem[] = [
-                {
-                    title: 'Link',
-                    key: 'link',
-                    helpText: '',
-                    icon: 'fa link',
-                    onClick: (editor) => {
-                        link.value = editor.getAttributes('link').href ?? ''
-                        showLinkModal.value = !showLinkModal.value
-                    },
                 },
             ]
 
@@ -403,7 +397,6 @@
                 unLink,
                 uploadImage,
                 blockMenu,
-                linkMenu,
                 handleLinkClick,
                 isMenuActive,
                 getActiveMenu,
@@ -413,7 +406,7 @@
 </script>
 <style lang="less" scoped>
     .is-active {
-        @apply text-white bg-gray-200  !important;
+        @apply bg-gray-200 text-gray-700 !important;
     }
 </style>
 

@@ -10,7 +10,7 @@
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
-                    : 'bg-white border-transparent',
+                    : noBg ? 'border-transparent' :'bg-white border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-light' : '',
             ]"
         >
@@ -59,7 +59,7 @@
 
                         <router-link
                             :to="assetURL(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -128,7 +128,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -167,7 +167,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -371,7 +371,7 @@
                                     'schema',
                                 ].includes(item.typeName?.toLowerCase())
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
@@ -494,6 +494,11 @@
                 },
             },
             showThreeDotMenu: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            noBg: {
                 type: Boolean,
                 required: false,
                 default: false,

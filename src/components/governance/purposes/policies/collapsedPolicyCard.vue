@@ -14,11 +14,21 @@
         "
     >
         <div class="flex items-center mb-4 gap-x-3">
-            <span class="text-base font-bold text-gray">{{ policy.name }}</span>
-            <span v-if="type === 'data'" class="data-policy-pill"
+            <span
+                class="text-base font-bold text-gray"
+                data-test-id="policy-name"
+                >{{ policy.name }}</span
+            >
+            <span
+                v-if="type === 'data'"
+                class="data-policy-pill"
+                data-test-id="policy-type"
                 >Data Policy</span
             >
-            <span v-else-if="type === 'meta'" class="metadata-policy-pill"
+            <span
+                v-else-if="type === 'meta'"
+                class="metadata-policy-pill"
+                data-test-id="policy-type"
                 >Metadata Policy</span
             >
             <span v-if="!policy.allow" class="denied-policy-pill">
@@ -132,6 +142,7 @@
                     color="secondary"
                     padding="compact"
                     @click.prevent="$emit('edit')"
+                    data-test-id="policy-edit"
                 >
                     <AtlanIcon icon="Pencil" class="" />
                 </AtlanBtn>
@@ -153,6 +164,7 @@
                         class="flex-none px-2 border-r border-gray-300 border-none  hover:text-red-500"
                         size="sm"
                         color="secondary"
+                        data-test-id="policy-delete"
                         padding="compact"
                     >
                         <AtlanIcon icon="Delete" class="" />

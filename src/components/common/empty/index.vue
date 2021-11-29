@@ -15,7 +15,7 @@
             style="max-width: 18rem"
             :class="descClass || 'text-center'"
         >
-            {{ desc || empty }}
+            {{ desc }}
         </p>
         <AtlanButton
             v-if="buttonText"
@@ -42,65 +42,42 @@
             headline: {
                 type: String,
                 required: false,
-                default() {
-                    return ''
-                },
+                default: '',
             },
             class: {
                 type: String,
                 required: false,
-                default() {
-                    return ''
-                },
+                default: '',
             },
             imageClass: {
                 type: String,
                 required: false,
-                default() {
-                    return 'h-32'
-                },
-            },
-            class: {
-                type: String,
-                required: false,
-                default() {
-                    return ''
-                },
+                default: 'h-32',
             },
             descClass: {
                 type: String,
                 required: false,
-                default() {
-                    return ''
-                },
+                default: '',
             },
             desc: {
                 type: String,
                 required: false,
-                default() {
-                    return ''
-                },
+                default: '',
             },
             emptyScreen: {
                 type: String,
                 required: false,
-                default() {
-                    return ''
-                },
+                default: '',
             },
             buttonText: {
                 type: String,
                 required: false,
-                default() {
-                    return ''
-                },
+                default: '',
             },
             buttonIcon: {
                 type: String,
                 required: false,
-                default() {
-                    return ''
-                },
+                default: '',
             },
         },
         emits: ['event'],

@@ -18,6 +18,7 @@
                     class="ml-auto mr-2 border-none"
                     size="sm"
                     padding="compact"
+                    data-test-id="cross"
                     color="secondary"
                     @click="() => (isVisible = false)"
                 >
@@ -65,7 +66,8 @@
                     <AssetsWrapper
                         :show-filters="false"
                         :static-use="true"
-                        :show-aggrs="false"
+                        :show-aggrs="true"
+                        :showCheckBox="true"
                         :initial-filters="filterConfig"
                         checkedCriteria="qualifiedName"
                         :preference="preference"
@@ -103,9 +105,14 @@
                     padding="compact"
                     color="secondary"
                     @click="closeDrawer"
+                    data-test-id="cancel"
                     >Cancel</AtlanBtn
                 >
-                <AtlanBtn size="sm" padding="compact" @click="saveAssets"
+                <AtlanBtn
+                    size="sm"
+                    padding="compact"
+                    data-test-id="save"
+                    @click="saveAssets"
                     >Save</AtlanBtn
                 >
             </div>
@@ -254,6 +261,14 @@
                     bulkStore.bulkSelectedAssets.length
                 )
                     checkedKeys.value = [...bulkStore.bulkSelectedAssets]
+            })
+            watch(isVisible, () => {
+                if (isVisible.value) {
+                    checkedKeys.value = [...assets.value]
+                    bulkStore.setBulkSelectedAssets([...assets.value])
+                } else {
+                    bulkStore.setBulkSelectedAssets([])
+                }
             })
 
             watch(

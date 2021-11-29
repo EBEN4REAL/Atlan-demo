@@ -412,7 +412,6 @@ const useTree = ({
         [key: string]: any
         dataRef: CustomTreeDataItem
     }) => {
-        console.log(treeNode)
         if (!treeNode.dataRef.children) {
             treeNode.dataRef.children = []
         }

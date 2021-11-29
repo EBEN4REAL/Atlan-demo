@@ -30,6 +30,7 @@
             />
             <div
                 v-else-if="treeData.length == 0"
+                data-test-id="no-assets-available"
                 class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500"
             >
                 <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
@@ -123,6 +124,7 @@
                 console.log('queryText Changed', queryText.value)
             })
             return {
+                initialExapndedKeys,
                 assets,
                 queryText,
                 treeData,

@@ -1,16 +1,19 @@
 <template>
-    <a-input-password
-        v-bind="componentProps"
-        v-model:value="formState[property.id]"
-    ></a-input-password>
+    dasd
+    <SQLTreeSelect></SQLTreeSelect>
 </template>
 
 <script>
     import { defineComponent, toRefs, computed, ref, inject } from 'vue'
-    import { useVModels, debouncedWatch } from '@vueuse/core'
+
+    import SQLTreeSelect from '@common/treeselect/sql/index.vue'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'FormBuilder',
+        components: {
+            SQLTreeSelect,
+        },
         props: {
             property: {
                 required: false,
@@ -21,13 +24,21 @@
                 required: false,
             },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { property } = toRefs(props)
+            const { property, baseKey } = toRefs(props)
             const formState = inject('formState')
+            const credentialBody = inject('credentialBody')
+
             const componentProps = computed(() => property.value.ui)
 
-            return { componentProps, formState }
+            return {
+                property,
+                componentProps,
+                formState,
+                credentialBody,
+                baseKey,
+            }
         },
     })
 </script>

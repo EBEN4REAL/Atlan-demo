@@ -256,7 +256,7 @@
                                     type: 'array',
                                 },
                                 ui: {
-                                    widget: 'includesql',
+                                    widget: 'sqltree',
                                     label: 'Include SQL',
                                 },
                             },
@@ -266,7 +266,7 @@
                                     type: 'array',
                                 },
                                 ui: {
-                                    widget: 'includesql',
+                                    widget: 'sqltree',
                                     label: 'Exclude SQL',
                                 },
                             },
@@ -294,7 +294,11 @@
                                 id: 'credential',
                                 title: 'Credential',
                                 description: 'Credential',
-                                properties: ['credential-guid'],
+                                properties: [
+                                    'credential-guid',
+                                    'include-filter',
+                                    'exclude-filter',
+                                ],
                             },
                             {
                                 id: 'metadata',
@@ -405,7 +409,7 @@
                 if (stepForm.value) {
                     stepForm.value.validateForm()
                 }
-                // currentStep.value += 1
+                currentStep.value += 1
             }
             // watch(data, (newVal) => {
             //     const meta =

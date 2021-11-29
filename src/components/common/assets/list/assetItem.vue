@@ -7,7 +7,12 @@
     >
         <div
             class="flex flex-col"
-            :class="[bulkSelectMode && isChecked ? 'bg-primary-light' : '']"
+            :class="[
+                !bulkSelectMode && isSelected
+                    ? 'border-primary bg-primary-light'
+                    : noBg ? 'border-transparent' :'bg-white border-transparent',
+                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+            ]"
         >
             <div class="flex items-start flex-1 px-3 py-3">
                 <a-checkbox
@@ -366,7 +371,7 @@
                                     'schema',
                                 ].includes(item.typeName?.toLowerCase())
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
@@ -489,6 +494,11 @@
                 },
             },
             showThreeDotMenu: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            noBg: {
                 type: Boolean,
                 required: false,
                 default: false,

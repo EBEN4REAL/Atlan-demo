@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full">
+    <div class="w-full" data-test-id="classifications-facet">
         <div class="flex items-center justify-between px-4">
             <SearchAdvanced
                 ref="classificationSearchRef"
@@ -29,6 +29,7 @@
                         <div class="status">
                             <a-checkbox
                                 :value="item.name"
+                                :data-test-id="item.displayName"
                                 :class="$style.atlanReverse"
                                 class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                             >

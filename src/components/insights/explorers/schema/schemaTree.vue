@@ -11,6 +11,7 @@
                     :tree-data="treeData"
                     :load-data="onLoadData"
                     :draggable="false"
+                    data-test-id="tree"
                     :block-node="true"
                     :auto-expand-parent="false"
                     @select="selectNode"

@@ -4,6 +4,7 @@
         :placeholder="placeholder"
         v-model:value="localValue"
         :size="size"
+        data-test-id="input-text"
         type="text"
         :class="$style.transparent"
         @change="handleChange"

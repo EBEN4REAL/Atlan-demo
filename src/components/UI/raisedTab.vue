@@ -6,6 +6,7 @@
             class="tab-btn"
             :class="{ active: item.key === active }"
             :disabled="disabled"
+            :data-test-id="item?.key ?? 'atlan-btn'"
             @click="$emit('update:active', item.key)"
         >
             {{ item.label }}

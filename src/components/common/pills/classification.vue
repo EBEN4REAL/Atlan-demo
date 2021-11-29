@@ -15,6 +15,7 @@
             group
             hover:border-pink-400
         "
+        :data-test-id="displayName"
     >
         <AtlanIcon
             icon="ShieldFilled"

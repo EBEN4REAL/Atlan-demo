@@ -7,6 +7,7 @@
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
+            data-test-id="connector"
             placeholder="Select a connector"
             dropdown-class-name="connectorDropdown"
             :allow-clear="true"

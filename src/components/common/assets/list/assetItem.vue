@@ -235,7 +235,7 @@
                                     class="font-semibold tracking-tight text-gray-500 "
                                     >{{ columnCount(item, false) }}</span
                                 >
-                                Colsb</span
+                                Cols</span
                             >
                         </div>
 

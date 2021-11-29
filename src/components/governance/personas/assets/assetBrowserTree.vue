@@ -117,6 +117,7 @@
                 console.log('queryText Changed', queryText.value)
             })
             return {
+                initialExapndedKeys,
                 assets,
                 queryText,
                 treeData,

@@ -52,7 +52,6 @@
         components: {
             EditorContent,
             BubbleMenu,
-
             SelectionMenu,
         },
         props: {

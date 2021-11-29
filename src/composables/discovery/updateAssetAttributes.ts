@@ -23,6 +23,7 @@ export default function updateAssetAttributes(selectedAsset) {
         announcementMessage,
         announcementType,
         announcementTitle,
+        readmeContent,
     } = useAssetInfo()
 
     const entity = ref({
@@ -90,6 +91,7 @@ export default function updateAssetAttributes(selectedAsset) {
         link: '',
         title: '',
     })
+    const localReadmeContent = ref(readmeContent(selectedAsset.value))
 
     const localClassifications = ref(classifications(selectedAsset.value))
 
@@ -179,7 +181,7 @@ export default function updateAssetAttributes(selectedAsset) {
         entity.value.attributes.announcementType =
             localAnnouncement.value.announcementType
         body.value.entities = [entity.value]
-        currentMessage.value = 'Announcement added'
+        currentMessage.value = 'Announcement has been updated'
         mutate()
     }
 
@@ -200,8 +202,31 @@ export default function updateAssetAttributes(selectedAsset) {
             },
         })
         body.value.entities = [resourceEntity.value]
-        currentMessage.value = 'Resource added!'
+        currentMessage.value = 'A new resource has been added'
         mutate()
+    }
+
+    // Readme Update
+    const handleUpdateReadme = () => {
+        const readmeEntity = ref<any>({
+            typeName: 'Readme',
+            attributes: {
+                qualifiedName: `${selectedAsset.value?.guid}/readme`,
+                name: `Readme`,
+                description: localReadmeContent.value,
+            },
+            relationshipAttributes: {
+                asset: {
+                    guid: selectedAsset.value?.guid,
+                    typeName: selectedAsset.value?.typeName,
+                },
+            },
+        })
+        if (readmeContent(selectedAsset.value) !== localReadmeContent.value) {
+            body.value.entities = [readmeEntity.value]
+            currentMessage.value = 'Readme has been updated'
+            mutate()
+        }
     }
 
     const rainConfettis = () => {
@@ -326,5 +351,7 @@ export default function updateAssetAttributes(selectedAsset) {
         animationPoint,
         handleAddResource,
         localResource,
+        handleUpdateReadme,
+        localReadmeContent,
     }
 }

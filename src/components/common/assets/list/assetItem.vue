@@ -7,12 +7,7 @@
     >
         <div
             class="flex flex-col"
-            :class="[
-                !bulkSelectMode && isSelected
-                    ? 'border-primary bg-primary-light'
-                    : 'bg-white border-transparent',
-                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
-            ]"
+            :class="[bulkSelectMode && isChecked ? 'bg-primary-light' : '']"
         >
             <div class="flex items-start flex-1 px-3 py-3">
                 <a-checkbox

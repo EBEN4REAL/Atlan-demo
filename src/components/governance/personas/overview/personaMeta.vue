@@ -18,6 +18,7 @@
 
             <a-switch
                 class="ml-auto"
+                data-test-id="toggle-switch"
                 style="width: 40px !important"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"

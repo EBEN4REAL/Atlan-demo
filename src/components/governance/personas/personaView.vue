@@ -86,18 +86,18 @@
 
         <ErrorView v-else :error="isPersonaError">
             <div class="mt-3">
-                <AtlanButton
-                    size="sm"
-                    color="minimal"
+                <a-button
+                    size="large"
+                    type="primary"
+                    ghost
                     @click="
                         () => {
                             reFetchList()
                         }
                     "
                 >
-                    <AtlanIcon icon="Reload" />
-                    Try again
-                </AtlanButton>
+                    <fa icon="fal sync" class="mr-2"></fa>Try again
+                </a-button>
             </div>
         </ErrorView>
     </ExplorerLayout>

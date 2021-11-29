@@ -122,6 +122,7 @@
                     color="secondary"
                     padding="compact"
                     @click.prevent="$emit('edit')"
+                    data-test-id="policy-edit"
                 >
                     <AtlanIcon icon="Pencil" class="" />
                 </AtlanBtn>
@@ -143,6 +144,7 @@
                         class="flex-none px-2 border-r border-gray-300 border-none  hover:text-red-500"
                         size="sm"
                         color="secondary"
+                        data-test-id="policy-delete"
                         padding="compact"
                     >
                         <AtlanIcon icon="Delete" class="" />

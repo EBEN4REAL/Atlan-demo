@@ -38,26 +38,19 @@
                         <AtlanIcon icon="Search" color="#6F7590" />
                     </template>
                 </a-input>
-                <a-button
-                    class="flex items-center w-8 h-8 p-2 mt-1"
-                    :class="$style.filterButton"
-                >
-                    <AtlanIcon icon="Filter" />
-                </a-button>
+                <a-popover trigger="click" placement="bottomLeft">
+                    <a-button
+                        class="flex items-center w-8 h-8 p-2 mt-1"
+                        :class="$style.filterButton"
+                    >
+                        <AtlanIcon icon="Filter" />
+                    </a-button>
+                    <template #content>
+                        <SchemaFilter @change="onFilterChange" />
+                    </template>
+                </a-popover>
             </div>
         </div>
-        <!-- <div class="w-full px-4 pb-2"> -->
-        <!-- <SearchAndFilter
-                v-model:value="queryText"
-                :placeholder="`Search `"
-                size="default"
-                class="h-8 rounded-md shadow-none"
-            >
-                <template #filter>
-                    <div></div>
-                </template>
-            </SearchAndFilter> -->
-        <!-- </div> -->
 
         <div
             class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto"
@@ -108,8 +101,8 @@
     import { storeToRefs } from 'pinia'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
+    import SchemaFilter from './schemaFilter.vue'
 
     import {
         Attributes,
@@ -121,7 +114,7 @@
     } from '~/types/insights/table.interface'
 
     export default defineComponent({
-        components: { Connector, SchemaTree, SearchAndFilter },
+        components: { Connector, SchemaTree, SchemaFilter },
         props: {},
         setup(props, { emit }) {
             const queryText = ref('')
@@ -237,6 +230,27 @@
             //     selectNode(selected, event)
             // }
 
+            const facets = ref({})
+            const sortOrderTable = ref('')
+            const sortOrderColumn = ref('')
+            const onFilterChange = (type, value) => {
+                if (type === 'sortOrderTable') {
+                    sortOrderTable.value = value
+                }
+                if (type === 'sortOrderColumn') {
+                    sortOrderColumn.value = value
+                }
+                if (type === 'facets') {
+                    facets.value = { ...value }
+                }
+
+                // console.log('filters: ', {
+                //     facets: facets.value,
+                //     sortOrderTable: sortOrderTable.value,
+                //     sortOrderColumn: sortOrderColumn.value,
+                // })
+            }
+
             let searchResultType = ref('table')
             const {
                 treeData,
@@ -251,6 +265,9 @@
             } = useSchemaExplorerTree({
                 emit,
                 queryText,
+                facets,
+                sortOrderTable,
+                sortOrderColumn,
                 searchResultType,
 
                 // connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
@@ -360,6 +377,7 @@
                 expandNode,
                 selectNode,
                 BItypes,
+                onFilterChange,
             }
         },
     })

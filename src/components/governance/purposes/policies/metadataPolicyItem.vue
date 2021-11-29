@@ -141,6 +141,7 @@
     import Owners from '~/components/common/input/owner/index.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'MetadataPolicy',
@@ -256,6 +257,9 @@
                     rules.value.metadata.show = false
                 }
             }
+            whenever(policyNameRef, () => {
+                policyNameRef.value?.focus()
+            })
             return {
                 onScopesChange,
                 getPopoverContent,

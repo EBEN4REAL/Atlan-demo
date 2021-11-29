@@ -85,14 +85,8 @@
     // import RunSort from './runSort.vue'
 
     // Types
-    import { assetInterface } from '~/types/assets/asset.interface'
     import access from '~/constant/accessControl/map'
-
-    // Composables
-    import {
-        getRunList,
-        getArchivedRunList,
-    } from '~/composables/workflow/useWorkflowList'
+    import useRunList from '~/composables/workflow/useRunList'
 
     export default defineComponent({
         components: {
@@ -103,7 +97,7 @@
         },
         props: {
             selectedWorkflow: {
-                type: Object as PropType<assetInterface>,
+                type: Object,
                 required: true,
             },
             isLoaded: {
@@ -118,22 +112,17 @@
             const isLoadingRunGraph = ref(false)
             const selectedRunName = ref('')
             const searchText = ref('')
-            const list = ref([])
-            const sort = ref('')
-            const isReady = ref(false)
 
-            // getRunList
-            const { liveList } = getRunList(item.value.name)
-
-            // getArchivedRunList
             const {
+                list,
+                liveList,
                 archivedList,
                 error,
                 isLoading,
-                totalCount,
-                filter_record,
+                isLoadMore,
                 loadMore,
-            } = getArchivedRunList(item.value.name)
+                isReady,
+            } = useRunList(item.value.name)
 
             // loadRunGraph
             const loadRunGraph = (runName) => {
@@ -147,71 +136,15 @@
                 }, 2500)
             }
 
-            const isLoadMore = computed(
-                () => filter_record.value > list.value.length
-            )
-
-            // watcher
             watch([liveList, archivedList], ([newX, newY]) => {
-                if (newX && newY) {
-                    let liveRunItems = []
-                    let archivedRunItems = []
-                    if (newX?.items?.length) {
-                        const mappedItems = newX.items.map((x) => {
-                            const { status, metadata, spec } = x
-                            const { name, uid } = metadata
-                            const {
-                                startedAt: started_at,
-                                finishedAt: finished_at,
-                                phase,
-                            } = status
-                            const obj = {
-                                name,
-                                uid,
-                                started_at,
-                                finished_at,
-                                phase,
-                            }
-                            obj.workflow = { status, metadata, spec }
-                            return obj
-                        })
-
-                        const orderedItems = mappedItems.sort(
-                            (a, b) =>
-                                new Date(b.finished_at) -
-                                new Date(a.finished_at)
-                        )
-
-                        liveRunItems = orderedItems
-                    }
-
-                    if (newY?.records?.length) {
-                        const orderedRecords = newY.records.sort(
-                            (a, b) =>
-                                new Date(b.finished_at) -
-                                new Date(a.finished_at)
-                        )
-
-                        archivedRunItems = orderedRecords
-                    }
-
-                    list.value = [...liveRunItems, ...archivedRunItems]
-
-                    if (!selectedRunName.value) {
-                        const idMonitoring = route.query.idmonitoring
-                        const defaultRunName =
-                            list.value.find((el) => el.uid === idMonitoring) ||
-                            list.value[0]
-                        selectedRunName.value = defaultRunName?.name
-                    }
-                    setTimeout(() => {
-                        isReady.value = true
-                    }, 300)
+                if (!selectedRunName.value) {
+                    const idMonitoring = route.query.idmonitoring
+                    const defaultRunName =
+                        list.value.find((el) => el.uid === idMonitoring) ||
+                        list.value[0]
+                    selectedRunName.value = defaultRunName?.name
                 }
             })
-
-            // const handleSortChange = () => {}
-
             return {
                 item,
                 searchText,
@@ -223,8 +156,6 @@
                 isLoadingRunGraph,
                 selectedRunName,
                 isLoadMore,
-                totalCount,
-                filter_record,
                 emit,
                 loadRunGraph,
                 loadMore,

@@ -121,23 +121,20 @@
             const totalRun = ref(0)
             const latRun = ref('')
             const { id } = toRefs(props)
-            const { archivedList } = getArchivedRunList(id.value)
+            const { archivedList, filter_record } = getArchivedRunList(id.value)
             watch(archivedList, (newVal) => {
-                totalRun.value = newVal.filter_record ?? 0
-                if (newVal?.records?.length > 0) {
-                    const lastRun = newVal.records[newVal?.records.length - 1]
+                totalRun.value = filter_record.value ?? 0
+                if (newVal?.length > 0) {
+                    const lastRun = newVal[newVal.length - 0]
                     latRun.value = lastRun?.finished_at
-                        ? useTimeAgo(lastRun.finished_at).value
+                        ? useTimeAgo(lastRun.finished_at as string).value
                         : ''
                 }
             })
 
             // BEGIN: USER PREVIEW
-            const {
-                showPreview,
-                showUserPreview: openPreview,
-                setUserUniqueAttribute,
-            } = useUserPreview()
+            const { showUserPreview: openPreview, setUserUniqueAttribute } =
+                useUserPreview()
             const showUserPreviewDrawer = () => {
                 setUserUniqueAttribute(props.creator.id)
                 openPreview()
@@ -149,6 +146,5 @@
                 latRun,
             }
         },
-        // emits: ['openLogs'],
     })
 </script>

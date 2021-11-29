@@ -5,8 +5,24 @@
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
         @click="handlePreview(item)"
     >
-        <div class="flex flex-col">
+        <div
+            class="flex flex-col"
+            :class="[
+                !bulkSelectMode && isSelected
+                    ? 'border-primary bg-primary-light'
+                    : 'bg-white border-transparent',
+                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+            ]"
+        >
             <div class="flex items-start flex-1 px-3 py-3">
+                <a-checkbox
+                    v-if="showCheckBox"
+                    :checked="isChecked"
+                    class="ml-2 mr-3 opacity-60 hover:opacity-100"
+                    :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+                    @click.stop
+                    @change="(e) => $emit('listItem:check', e, item)"
+                />
                 <div class="flex flex-col flex-1 lg:pr-16">
                     <div class="flex items-center overflow-hidden">
                         <div
@@ -419,6 +435,7 @@
                 </div>
             </div>
         </div>
+        <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
     </div>
 </template>
 
@@ -451,6 +468,24 @@
                     return ''
                 },
             },
+
+            isChecked: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            // If the list items are selectable or not
+            showCheckBox: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
+            bulkSelectMode: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             preference: {
                 type: Object,
                 required: false,
@@ -466,7 +501,14 @@
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview'],
         setup(props, { emit }) {
-            const { preference, selectedGuid, item } = toRefs(props)
+            const {
+                preference,
+                selectedGuid,
+                item,
+                isChecked,
+                showCheckBox,
+                bulkSelectMode,
+            } = toRefs(props)
             const {
                 title,
                 getConnectorImage,
@@ -537,6 +579,9 @@
             })
 
             return {
+                isChecked,
+                showCheckBox,
+                bulkSelectMode,
                 item,
                 isSelected,
                 title,

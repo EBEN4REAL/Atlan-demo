@@ -2,12 +2,12 @@
     <template v-if="selectedPersonaDirty">
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
             <template #label="t">
-                <div class="flex items-center">
+                <div class="flex items-center overflow-hidden">
                     <div
                         class="relative text-sm"
                         :class="
                             activeTabKey === t?.data?.key
-                                ? 'text-gray-700 '
+                                ? 'text-gray-700 fake-bold'
                                 : 'text-gray-500'
                         "
                     >

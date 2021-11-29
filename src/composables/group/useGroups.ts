@@ -9,7 +9,7 @@ import { getFormattedGroup } from '~/composables/group/formatGroup'
 import { Groups } from '~/services/service/groups'
 import { LIST_GROUPS, LIST_GROUP } from '~/services/service/groups/key'
 
-export const useGroup = (groupListAPIParams) => {
+export const useGroup = (groupListAPIParams, cacheKeyProp = "") => {
     const {
         data,
         error,
@@ -22,7 +22,7 @@ export const useGroup = (groupListAPIParams) => {
             cache: new LocalStorageCache(),
             dedupingInterval: 1,
         },
-        cacheKey: LIST_GROUP,
+        cacheKey: cacheKeyProp || LIST_GROUP,
     })
 
     const { state, STATES } = swrvState(data, error, isValidating)

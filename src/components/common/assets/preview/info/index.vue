@@ -203,6 +203,7 @@
             <Owners
                 v-model="localOwners"
                 :guid="selectedAsset.guid"
+                :used-for-assets="true"
                 @change="handleOwnersChange"
                 class="px-5"
             />

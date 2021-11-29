@@ -300,6 +300,14 @@
                     ...initialFilters.value,
                 }
             }
+            /* Watcher for parent component changes initial filters otherwise req won't be triggered */
+            watch(initialFilters, () => {
+                facets.value = {
+                    ...facets.value,
+                    ...initialFilters.value,
+                }
+                quickChange()
+            })
 
             const {
                 list,
@@ -436,7 +444,7 @@
                 store.setBulkMode(!!bulkSelectedAssets.value.length)
                 store.setBulkSelectedAssets(bulkSelectedAssets.value)
             }
-            /* By default it will be id, but it can be through qualifiedName */
+            /* By default it will be guid, but it can be through qualifiedName */
             const checkSelectedCriteriaFxn = (item) => {
                 switch (checkedCriteria.value) {
                     case 'guid': {
@@ -467,9 +475,6 @@
                 }
             }
 
-            // select first asset automatically conditionally acc to  autoSelect prop
-
-            /* NEed to add code here for autoselect */
             return {
                 checkSelectedCriteriaFxn,
                 selectedAssetId,

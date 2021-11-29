@@ -143,7 +143,7 @@
                 editable: isEditMode.value,
                 editorProps: {
                     attributes: {
-                        class: 'prose prose-sm focus:outline-none w-full',
+                        class: 'prose prose-sm w-full',
                     },
                 },
                 extensions: [
@@ -155,7 +155,6 @@
                     Link,
                     TaskList,
                     TaskItem,
-
                     TextAlign.configure({
                         types: ['heading', 'paragraph'],
                     }),
@@ -208,7 +207,6 @@
                 resetEditor,
                 applyTemplate,
                 getEditorContent,
-                isEditMode,
             }
         },
     })

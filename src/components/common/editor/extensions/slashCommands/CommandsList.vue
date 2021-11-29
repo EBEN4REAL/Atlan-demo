@@ -107,7 +107,7 @@
             },
 
             upHandler() {
-                if (this.selectedIndex == 0) {
+                if (this.selectedIndex === 0) {
                     this.selectedCategoryIndex -= 1
                     if (this.selectedCategoryIndex === -1) {
                         this.selectedCategoryIndex = this.items.length - 1

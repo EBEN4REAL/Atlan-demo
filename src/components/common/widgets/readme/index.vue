@@ -61,6 +61,7 @@
             <Editor
                 ref="editor"
                 v-model="localReadmeContent"
+                placeholder="Type '/' for commands"
                 :is-edit-mode="isEditMode"
             />
         </div>

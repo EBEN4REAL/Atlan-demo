@@ -2,6 +2,7 @@
     <div class="flex flex-wrap gap-1">
         <template v-for="item in list" :key="item.id">
             <div
+                :data-test-id="item.id"
                 class="flex items-center justify-center px-5 py-1 text-sm border rounded cursor-pointer  button hover:text-primary hover:border-primary"
                 :class="
                     isSelected(item.id)

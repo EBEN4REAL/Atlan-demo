@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="flex flex-col px-4 pt-2 pb-4 overflow-y-auto gap-y-1" v-else>
-        <span class="text-center text-gray-500">No personas found!</span>
+        <span class="text-center text-gray-500">Not found!</span>
     </div>
 </template>
 

@@ -9,7 +9,7 @@ export const UPDATE_INTEGRATION = 'UPDATE_INTEGRATION'
 export const SHARE_SLACK = 'SHARE_SLACK'
 
 export const map = {
-    [LIST_INTEGRATIONS_TYPES]: () => getAPIPath(BASE_PATH, '/integration-types'),
+    [LIST_INTEGRATIONS_TYPES]: () => getAPIPath(BASE_PATH, '/integrationtypes'),
     [LIST_INTEGRATIONS]: () => getAPIPath(BASE_PATH, '/integrations'),
     [SHARE_SLACK]: ({ id }: PathParams) => getAPIPath(BASE_PATH, `integrations/${id}/action/ShareLinkOnSlack`),
     [GET_INTEGRATION]: ({ id }: PathParams) => getAPIPath(BASE_PATH, `/integrations/${id}`),

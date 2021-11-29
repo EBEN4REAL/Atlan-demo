@@ -1,5 +1,8 @@
 <template>
-    <div class="flex flex-wrap items-center gap-1 text-sm">
+    <div
+        class="flex flex-wrap items-center gap-1 text-sm"
+        data-test-id="owners-popover"
+    >
         <a-popover
             v-model:visible="isEdit"
             placement="leftBottom"

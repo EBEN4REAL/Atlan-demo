@@ -10,6 +10,7 @@
                 class="flex-grow"
                 placeholder="database/schema/table/column"
                 @change="updateAssets"
+                data-test-id="custom-asset-input"
                 @keyup.enter="addExpr"
             >
                 <template #prefix>
@@ -24,11 +25,16 @@
             </a-input>
             <AtlanIcon
                 icon="Cross"
+                data-test-id="remove-expression"
                 class="flex-none text-gray-500 cursor-pointer hover:text-gray"
                 @click="removeExpr(idx)"
             />
         </div>
-        <button class="text-sm text-primary" @click="addExpr">
+        <button
+            class="text-sm text-primary"
+            data-test-id="add-expression"
+            @click="addExpr"
+        >
             + Add expression
         </button>
     </div>

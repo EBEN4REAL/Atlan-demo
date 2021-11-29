@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"
+        class="my-1 transition-all duration-300 hover:bg-primary-light"
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
         @click="handlePreview(item)"
     >
@@ -10,7 +10,7 @@
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
-                    : 'bg-white border-transparent',
+                    : noBg ? 'border-transparent' :'bg-white border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-light' : '',
             ]"
         >
@@ -59,7 +59,7 @@
 
                         <router-link
                             :to="assetURL(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -119,7 +119,7 @@
                             ></AtlanIcon>
 
                             <div
-                                class="text-sm tracking-wider text-gray-500 uppercase "
+                                class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
                             </div>
@@ -128,7 +128,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -167,7 +167,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -215,7 +215,7 @@
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
-                                        class="font-semibold tracking-tight text-gray-500 "
+                                        class="font-semibold tracking-tight text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
                                     Rows</span
@@ -232,10 +232,10 @@
                             </a-tooltip>
                             <span class="text-gray-500">
                                 <span
-                                    class="font-semibold tracking-tight text-gray-500 "
+                                    class="font-semibold tracking-tight text-gray-500"
                                     >{{ columnCount(item, false) }}</span
                                 >
-                                Colsb</span
+                                Cols</span
                             >
                         </div>
 
@@ -371,7 +371,7 @@
                                     'schema',
                                 ].includes(item.typeName?.toLowerCase())
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
@@ -494,6 +494,11 @@
                 },
             },
             showThreeDotMenu: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            noBg: {
                 type: Boolean,
                 required: false,
                 default: false,

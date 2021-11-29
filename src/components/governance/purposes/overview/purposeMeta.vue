@@ -18,6 +18,7 @@
             <a-switch
                 class="ml-auto"
                 style="width: 40px !important"
+                data-test-id="toggle-switch"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
             />
@@ -34,6 +35,7 @@
             <div
                 class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group hover:shadow"
                 @click="setActiveTab('policies')"
+                data-test-id="tab-policies"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
                     <AtlanIcon icon="Policy" class="h-6" />

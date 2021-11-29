@@ -76,13 +76,7 @@
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
                 v-model:checked="localValue.empty"
-                class="
-                    inline-flex
-                    flex-row-reverse
-                    items-center
-                    w-full
-                    atlan-reverse
-                "
+                class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
             >
                 <component
                     :is="noStatus"

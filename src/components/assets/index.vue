@@ -2,7 +2,7 @@
     <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"
@@ -27,7 +27,7 @@
                         :autofocus="true"
                         :allow-clear="true"
                         size="large"
-                        class="px-6"
+                        :class="page !== 'admin' ? 'px-6' : ''"
                         :placeholder="placeholder"
                         @change="handleSearchChange"
                     >
@@ -111,6 +111,9 @@
                     ></EmptyView>
                 </div>
 
+                <!--                             :show-check-box="
+                                preference?.display?.includes('enableCheckbox')
+                            " -->
                 <AssetList
                     v-else
                     ref="assetlistRef"
@@ -124,11 +127,9 @@
                         <AssetItem
                             :item="item"
                             :selectedGuid="selectedAsset.guid"
-                            :preference="preference"
                             @preview="handlePreview"
-                            :show-check-box="
-                                preference?.display?.includes('enableCheckbox')
-                            "
+                            :preference="preference"
+                            :show-check-box="showCheckBox"
                             :bulk-select-mode="
                                 bulkSelectedAssets && bulkSelectedAssets.length
                                     ? true
@@ -138,6 +139,7 @@
                             @listItem:check="
                                 (e, item) => updateBulkSelectedAssets(item)
                             "
+                            :class="page !== 'admin' ? 'mx-3' : ''"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -223,6 +225,11 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            showCheckBox: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
             checkedCriteria: {
                 type: String,
@@ -494,7 +501,6 @@
                 selectedAsset,
                 updateList,
                 updateCurrentList,
-                placeholder,
                 searchDirtyTimestamp,
                 updateBulkSelectedAssets,
                 bulkSelectedAssets,

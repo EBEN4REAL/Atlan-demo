@@ -68,7 +68,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType, computed, toRefs } from 'vue'
+    import { defineComponent, ref, PropType, toRefs } from 'vue'
 
     import Editor from '@/common/editor/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'

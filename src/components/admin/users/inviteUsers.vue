@@ -1,5 +1,8 @@
 <template>
-    <div id="invite-user-modal-content" class="relative flex flex-col mx-4">
+    <div
+        id="invite-user-modal-content"
+        class="relative flex flex-col py-8 px-9"
+    >
         <h1 class="mb-4 text-xl font-bold">
             Invite users {{ tenantName ? 'to ' + capitalize(tenantName) : '' }}
         </h1>
@@ -56,7 +59,7 @@
                 </div>
                 <div
                     v-if="emails.length > 1"
-                    class="absolute bg-transparent border-0 opacity-0 cursor-pointer  top-1 -right-5 group-hover:opacity-100"
+                    class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-1 -right-5 group-hover:opacity-100"
                     @click="deleteUserInput(index)"
                 >
                     <AtlanIcon

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="user" class="flex flex-col gap-y-1">
+    <div v-if="user" class="flex flex-col p-4 gap-y-1">
         <h3 class="text-lg font-bold">Change Role</h3>
         <p class="mb-1">
             {{

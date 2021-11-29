@@ -8,7 +8,7 @@
         type="text"
         :class="$style.transparent"
         @change="handleChange"
-        class="px-0 text-sm text-gray-500 bg-transparent rounded-none  focus:outline-none"
+        class="px-0 text-sm text-gray-500 bg-transparent rounded-none focus:outline-none"
     >
         <template #prefix>
             <a-tooltip

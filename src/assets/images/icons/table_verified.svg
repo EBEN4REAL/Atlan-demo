@@ -1,5 +1,5 @@
-<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_1435:1800)">
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1435_1800)">
 <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/>
 <line x1="14" y1="6.5" x2="2" y2="6.5" stroke="#5277D7"/>
 <line x1="8.04547" y1="13" x2="8.04547" y2="3" stroke="#5277D7"/>
@@ -7,7 +7,7 @@
 <circle cx="13" cy="12" r="3.5" fill="#00A680" stroke="white"/>
 </g>
 <defs>
-<clipPath id="clip0_1435:1800">
+<clipPath id="clip0_1435_1800">
 <rect width="16" height="16" fill="white"/>
 </clipPath>
 </defs>

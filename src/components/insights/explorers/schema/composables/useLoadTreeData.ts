@@ -35,7 +35,13 @@ const attributes = [
     ...BasicSearchAttributes,
 ]
 
-const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) => {
+const useLoadTreeData = (
+    queryText: Ref<string>,
+    searchResultType: Ref<string>,
+    facets,
+    sortOrderTable,
+    sortOrderColumn
+) => {
     const body = ref<Record<string, any>>({})
     const parentFilter = ref({
         term: {},
@@ -60,8 +66,12 @@ const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) 
             queryText?.value,
             from?.value,
             size?.value,
+            facets.value,
+            sortOrderTable.value,
+            sortOrderColumn.value
             // searchResultType?.value,
         )
+        console.log('dsl from filter: ', dsl)
         body.value = {
             dsl,
             attributes,
@@ -72,8 +82,9 @@ const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) 
         offset?: number
     ) => {
         console.log('query con: ', queryText)
-        if(searchResultType.value==='table') {
-            if(queryText.value.length==0) {
+        console.log('query fac: ', facets)
+        if (searchResultType.value === 'table') {
+            if (queryText.value.length == 0 && Object.keys(facets.value).length===0) {
                 typeName.value = 'Database'
             } else {
                 typeName.value = ['Table', 'View']
@@ -81,7 +92,7 @@ const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) 
         } else {
             typeName.value = 'Database'
         }
-        
+
         parentFilter.value.term = {
             connectionQualifiedName,
         }
@@ -101,8 +112,9 @@ const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) 
         offset?: number
     ) => {
         // console.log('query sch: ', queryText)
-        if(searchResultType.value==='table') {
-            if(queryText.value.length==0) {
+        console.log('query fac: ', facets)
+        if (searchResultType.value === 'table') {
+            if (queryText.value.length == 0 && Object.keys(facets.value).length===0) {
                 typeName.value = 'Schema'
             } else {
                 typeName.value = ['Table', 'View']
@@ -134,6 +146,7 @@ const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) 
         offset?: number
     ) => {
         // console.log('query tab: ', queryText)
+        console.log('query fac: ', facets)
         typeName.value = ['Table', 'View']
         parentFilter.value.term = {
             schemaQualifiedName,
@@ -150,8 +163,6 @@ const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) 
         }) as Promise<IndexSearchResponse<Table | View>>
     }
 
-    
-
     const getColumnsForTable = (
         tableQualifiedName: string,
         offset?: number
@@ -162,6 +173,7 @@ const useLoadTreeData = (queryText: Ref<string>, searchResultType: Ref<string>) 
         }
         from.value = offset ?? 0
         sort.value = 'asc'
+        console.log('getting columns: ', typeName.value)
 
         refreshBody()
 

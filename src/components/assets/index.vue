@@ -2,7 +2,7 @@
     <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"
@@ -27,7 +27,7 @@
                         :autofocus="true"
                         :allow-clear="true"
                         size="large"
-                        class="px-6"
+                        :class="page !== 'admin' ? 'px-6' : ''"
                         :placeholder="placeholder"
                         @change="handleSearchChange"
                     >
@@ -137,6 +137,7 @@
                             @listItem:check="
                                 (e, item) => updateBulkSelectedAssets(item)
                             "
+                            :class="page !== 'admin' ? 'mx-3' : ''"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -493,7 +494,6 @@
                 selectedAsset,
                 updateList,
                 updateCurrentList,
-                placeholder,
                 searchDirtyTimestamp,
                 updateBulkSelectedAssets,
                 bulkSelectedAssets,

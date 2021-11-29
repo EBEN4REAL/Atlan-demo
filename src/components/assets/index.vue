@@ -125,6 +125,7 @@
                             :item="item"
                             :selectedGuid="selectedAsset.guid"
                             :preference="preference"
+                            @preview="handlePreview"
                             :show-check-box="
                                 preference?.display?.includes('enableCheckbox')
                             "

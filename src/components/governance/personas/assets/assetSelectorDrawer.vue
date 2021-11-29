@@ -18,6 +18,7 @@
                     class="ml-auto mr-2 border-none"
                     size="sm"
                     padding="compact"
+                    data-test-id="cross"
                     color="secondary"
                     @click="() => (isVisible = false)"
                 >
@@ -103,9 +104,14 @@
                     padding="compact"
                     color="secondary"
                     @click="closeDrawer"
+                    data-test-id="cancel"
                     >Cancel</AtlanBtn
                 >
-                <AtlanBtn size="sm" padding="compact" @click="saveAssets"
+                <AtlanBtn
+                    size="sm"
+                    padding="compact"
+                    data-test-id="save"
+                    @click="saveAssets"
                     >Save</AtlanBtn
                 >
             </div>

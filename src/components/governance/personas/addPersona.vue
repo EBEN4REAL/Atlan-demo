@@ -10,6 +10,7 @@
                 ref="titleBar"
                 v-model="title"
                 placeholder="Untitled persona"
+                data-test-id="input-text"
                 type="text"
                 class="text-lg font-bold text-gray-700 clean-input"
                 @keyup.esc="$event?.target?.blur()"
@@ -20,6 +21,7 @@
                 class="text-sm text-gray-500 clean-input"
                 maxlength="140"
                 rows="2"
+                data-test-id="input-description"
                 placeholder="Add description..."
                 @keyup.esc="$event?.target?.blur()"
             />

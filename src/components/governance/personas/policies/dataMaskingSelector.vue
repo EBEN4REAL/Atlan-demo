@@ -3,6 +3,7 @@
         :value="maskType"
         class="mb-6 w-80"
         @update:value="$emit('update:maskType', $event)"
+        data-test-id="datamasking-select"
     >
         <a-select-option
             v-for="opt in maskingOptions"

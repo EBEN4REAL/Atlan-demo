@@ -13,6 +13,7 @@
             rounded-full
             cursor-pointer
         "
+        :data-test-id="username"
         :class="
             enableHover
                 ? ' hover:bg-primary group hover:border-primary hover:text-white'

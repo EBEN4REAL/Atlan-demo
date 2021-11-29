@@ -183,23 +183,22 @@ export default function updateAssetAttributes(selectedAsset) {
         mutate()
     }
 
-    const resourceEntity = ref<any>({
-        typeName: 'Link',
-        attributes: {
-            qualifiedName: generateUUID(),
-        },
-        relationshipAttributes: {
-            asset: {
-                guid: selectedAsset.value?.guid,
-                typeName: selectedAsset.value?.typeName,
-            },
-        },
-    })
-
     // Resource Addition
     const handleAddResource = () => {
-        resourceEntity.value.attributes.name = localResource.value.title
-        resourceEntity.value.attributes.link = localResource.value.link
+        const resourceEntity = ref<any>({
+            typeName: 'Link',
+            attributes: {
+                qualifiedName: generateUUID(),
+                name: localResource.value.title,
+                link: localResource.value.link,
+            },
+            relationshipAttributes: {
+                asset: {
+                    guid: selectedAsset.value?.guid,
+                    typeName: selectedAsset.value?.typeName,
+                },
+            },
+        })
         body.value.entities = [resourceEntity.value]
         currentMessage.value = 'Resource added!'
         mutate()

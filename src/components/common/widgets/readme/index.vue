@@ -85,7 +85,7 @@
     import { InternalAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-
+    import { assetInterface } from '~/types/assets/asset.interface'
     import SectionLoader from '@/common/loaders/section.vue'
     import updateAsset from '~/composables/discovery/updateAsset'
 
@@ -95,29 +95,23 @@
             SectionLoader,
         },
         props: {
-            guid: {
-                type: String,
-                required: false,
-                default: '',
-            },
             isEdit: {
                 type: Boolean,
                 required: false,
                 default: true,
             },
-            selectedAsset: {
-                required: false,
+            asset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
             },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { asset } = toRefs(props)
             const actions = inject('actions')
 
             const { readmeGuid } = useAssetInfo()
 
-            const guid = computed(() => {
-                return readmeGuid(selectedAsset.value)
-            })
+            const guid = computed(() => readmeGuid(asset.value))
             const isEdit = ref(true)
 
             const isEditMode = ref(false)
@@ -174,13 +168,13 @@
             const entity = ref({
                 typeName: 'Readme',
                 attributes: {
-                    qualifiedName: `${selectedAsset?.value?.guid}/readme`,
+                    qualifiedName: `${asset?.value?.guid}/readme`,
                     name: `Readme`,
                 },
                 relationshipAttributes: {
                     asset: {
-                        guid: selectedAsset?.value?.guid,
-                        typeName: selectedAsset?.value?.typeName,
+                        guid: asset?.value?.guid,
+                        typeName: asset?.value?.typeName,
                     },
                 },
             })
@@ -199,7 +193,7 @@
             watch(data, () => {
                 if (data.value?.mutatedEntities?.CREATE?.length > 0) {
                     readme.value = data.value?.mutatedEntities?.CREATE[0]
-                    selectedAsset.value.readme = {
+                    asset.value.readme = {
                         guid: readme.value?.guid,
                     }
                     handleCancel()
@@ -225,6 +219,7 @@
                 isAssetUpdateLoading,
                 entity,
                 isAssetUpdateError,
+                guid,
             }
         },
     })

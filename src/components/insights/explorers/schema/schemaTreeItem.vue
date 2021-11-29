@@ -650,6 +650,9 @@
                 return popoverAllowed.includes(typeName)
             }
 
+            const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
+
             const selectionObject: Ref<any> = ref({
                 startLineNumber: 1,
                 startColumnNumber: 1,
@@ -674,6 +677,11 @@
 
             const { item } = toRefs(props)
             const { queryRun } = useRunQuery()
+
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
             const {
                 modifyActiveInlineTabEditor,
                 modifyActiveInlineTab,
@@ -1077,7 +1085,16 @@
                 selectionObject.value.startColumnNumber = 1
                 selectionObject.value.endLineNumber = 2
                 selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                queryRun(activeInlineTab, getData)
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    '',
+                    editorInstance,
+                    monacoInstance
+                )
             }
 
             let childCount = (item) => {
@@ -1205,7 +1222,16 @@
                     },
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                queryRun(activeInlineTab, getData)
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    '',
+                    editorInstance,
+                    monacoInstance
+                )
 
                 selectionObject.value.startLineNumber = 2
                 selectionObject.value.startColumnNumber = 1

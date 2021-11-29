@@ -4,7 +4,7 @@
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="relative flex flex-col items-center text-xs  sidebar-nav-icon"
+                    class="relative flex flex-col items-center text-xs sidebar-nav-icon"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -321,6 +321,11 @@
                 }
             }
 
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
+
             const detectQuery = () => {
                 let queryTab: activeInlineTabInterface = {
                     key: String(new Date().getTime()),
@@ -424,7 +429,16 @@
                 // activeInlineTabKey.value = queryTab.key
                 // syncInlineTabsInLocalStorage(tabsArray.value)
 
-                queryRun(activeInlineTab, getData)
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    '',
+                    editorInstance,
+                    monacoInstance
+                )
             }
 
             onMounted(() => {

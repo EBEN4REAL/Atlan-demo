@@ -264,6 +264,7 @@
             })
             watch(isVisible, () => {
                 if (isVisible.value) {
+                    checkedKeys.value = [...assets.value]
                     bulkStore.setBulkSelectedAssets([...assets.value])
                 } else {
                     bulkStore.setBulkSelectedAssets([])

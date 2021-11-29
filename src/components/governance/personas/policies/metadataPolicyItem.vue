@@ -19,6 +19,7 @@
                                 else rules.policyName.show = false
                             }
                         "
+                        data-test-id="policy-edit-name"
                         :ref="
                             (el) => {
                                 policyNameRef = el
@@ -31,6 +32,7 @@
                 <div
                     class="absolute text-xs text-red-500 -bottom-5"
                     v-if="rules.policyName.show"
+                    data-test-id="policy-validation-name"
                 >
                     {{ rules.policyName.text }}
                 </div>
@@ -50,6 +52,7 @@
                     color="secondary"
                     padding="compact"
                     class="plus-btn"
+                    data-test-id="policy-delete"
                     ><AtlanIcon
                         icon="Delete"
                         class="-mx-1 text-red-400"
@@ -80,6 +83,7 @@
             />
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
+                data-test-id="policy-validation-connector"
                 v-if="rules.connection.show"
             >
                 {{ rules.connection.text }}
@@ -116,6 +120,7 @@
                                     class="group"
                                     @click="d?.item?.handleAdd"
                                     @blur="d?.item?.handleBlur"
+                                    data-test-id="add"
                                 >
                                     <template #prefix>
                                         <AtlanIcon
@@ -138,15 +143,11 @@
                                     class="group"
                                     @click="addConnectionAsset"
                                     @blur="d?.item?.handleBlur"
+                                    data-test-id="add-all"
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -161,17 +162,13 @@
                                 >
                                 <Pill
                                     class="group"
+                                    data-test-id="add-custom"
                                     @click="d?.item?.handleAdd"
                                     @blur="d?.item?.handleBlur"
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -191,18 +188,35 @@
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
                 v-if="rules.assets.show && connectorData.attributeValue"
+                data-test-id="policy-validation-assets"
             >
                 {{ rules.assets.text }}
             </div>
         </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
-            <span class="text-sm text-gray-500">Metadata permissions</span>
+            <span class="text-sm text-gray-500 required"
+                >Metadata permissions</span
+            >
         </div>
-        <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
+        <div class="relative">
+            <MetadataScopes
+                v-model:actions="policy.actions"
+                class="mb-6"
+                @change="onScopesChange"
+            />
+            <div
+                class="absolute text-xs text-red-500 -bottom-6"
+                v-if="rules.metadata.show"
+                data-test-id="policy-validation-permissions"
+            >
+                {{ rules.metadata.text }}
+            </div>
+        </div>
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? `` : 'checked'"
+                data-test-id="toggle-switch"
                 :checked="!policy.allow"
                 style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
@@ -226,6 +240,7 @@
             <AtlanBtn
                 class="ml-auto"
                 size="sm"
+                data-test-id="cancel"
                 color="secondary"
                 padding="compact"
                 @click="$emit('cancel')"
@@ -235,6 +250,7 @@
                 size="sm"
                 color="primary"
                 padding="compact"
+                data-test-id="save"
                 @click="handleSave"
                 >Save</AtlanBtn
             >
@@ -252,8 +268,7 @@
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import { useConnectionStore } from '~/store/connection'
 
-    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
-    import { selectedPersonaDirty } from '../composables/useEditPersona'
+    import { MetadataPolicies } from '~/types/accessPolicies/personas'
     import { useUtils } from '../assets/useUtils'
 
     export default defineComponent({
@@ -292,7 +307,7 @@
                 },
                 assets: { text: 'Select atleast 1 asset!', show: false },
                 metadata: {
-                    text: 'Select atleast 1 permissions!',
+                    text: 'Select atleast 1 permission!',
                     show: false,
                 },
             })
@@ -345,6 +360,9 @@
                     rules.value.connection.show = true
                 } else if (policy.value.assets.length < 1) {
                     rules.value.assets.show = true
+                } else if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                    return
                 } else {
                     emit('save')
                 }
@@ -398,8 +416,16 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
+            const onScopesChange = () => {
+                if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                } else {
+                    rules.value.metadata.show = false
+                }
+            }
 
             return {
+                onScopesChange,
                 getPopoverContent,
                 customRendererForLabel,
                 assetsIcons,

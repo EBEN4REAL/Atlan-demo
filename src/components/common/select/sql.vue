@@ -9,8 +9,12 @@
             :allowClear="true"
         >
             <template #suffixIcon>
-                <AtlanIcon icon="Error" v-if="error"></AtlanIcon>
-                <AtlanIcon icon="ChevronDown" v-else></AtlanIcon>
+                <AtlanIcon
+                    icon="Error"
+                    v-if="error"
+                    style="height: 12px"
+                ></AtlanIcon>
+                <AtlanIcon icon="Chevron" v-else></AtlanIcon>
             </template>
             <a-select-option :value="item.value" v-for="item in list">
                 {{ item.label }}
@@ -21,52 +25,56 @@
             <AtlanIcon icon="Refresh" v-else></AtlanIcon>
         </a-button>
     </a-input-group>
+    {{ body }}
 </template>
 
 <script lang="ts">
     import { defineComponent, watch, ref, computed, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
 
-    import useSQLTest from '~/composables/package/useSQLTest'
+    import { useQueryCredential } from '~/composables/credential/useQueryCredential'
     import AtlanIcon from '../icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'testQuery',
         props: {
-            queryText: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            enum: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
             modelValue: {
                 type: [Array, String],
                 required: false,
             },
-            body: {
+            query: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
+            credential: {
                 type: Object,
                 required: false,
-                default: () => {},
             },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { body } = toRefs(props)
-            const { data, refresh, isLoading, error } = useSQLTest(body.value)
-            watch(body, () => {
-                console.log('change')
+            const { credential, query } = toRefs(props)
+
+            const body = computed(() => {
+                return {
+                    ...credential.value,
+                    query: query.value,
+                }
+            })
+            const { data, refresh, isLoading, error } = useQueryCredential(body)
+
+            watch(credential, () => {
                 refresh()
             })
+
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
             }
+
             const list = ref([])
             watch(data, () => {
                 list.value = data.value.results?.map((item) => ({
@@ -82,12 +90,13 @@
             return {
                 localValue,
                 handleChange,
-                body,
+                credential,
                 list,
                 refresh,
                 handleClick,
                 isLoading,
                 error,
+                query,
             }
         },
         components: { AtlanIcon },

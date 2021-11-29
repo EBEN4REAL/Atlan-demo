@@ -238,9 +238,9 @@ import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
-import Hash from '~/assets/images/icons/hash.svg'
+import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
-//source list
+// source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
 import Column from '~/assets/images/icons/column.svg'
 import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
@@ -254,7 +254,10 @@ import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
 
+import ShieldCheck from '~/assets/images/icons/shield-check.svg'
+
 export default {
+    ShieldCheck,
     Hash,
     Column,
     CreateGroups,
@@ -500,5 +503,6 @@ export default {
     QueriesActive,
     CaretDown,
     GovernanceCenter,
-    Close
+    Close,
+    CheckCurrentColor,
 }

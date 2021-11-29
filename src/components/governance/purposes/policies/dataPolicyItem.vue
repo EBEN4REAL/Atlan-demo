@@ -7,6 +7,7 @@
                 </div>
                 <div class="" style="width: 320px">
                     <a-input
+                        data-test-id="policy-edit-name"
                         @blur="
                             () => {
                                 if (!policy.name) rules.policyName.show = true
@@ -25,6 +26,7 @@
                 <div
                     class="absolute text-xs text-red-500 -bottom-5"
                     v-if="rules.policyName.show"
+                    data-test-id="policy-validation-name"
                 >
                     {{ rules.policyName.text }}
                 </div>
@@ -43,6 +45,7 @@
                     color="secondary"
                     padding="compact"
                     class="plus-btn"
+                    data-test-id="policy-delete"
                     ><AtlanIcon
                         icon="Delete"
                         class="-mx-1 text-red-400"
@@ -64,6 +67,7 @@
             />
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
+                data-test-id="policy-validation-owners"
                 v-if="rules.users.show"
             >
                 {{ rules.users.text }}
@@ -84,13 +88,14 @@
             <span class="text-sm text-gray-500">Masking</span>
         </div>
 
-        <DataMaskingSelector v-model:mask="policy.mask" class="mb-6 w-80" />
+        <DataMaskingSelector v-model:maskType="policy.mask" class="mb-6 w-80" />
 
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
                 style="width: 40px !important"
                 :checked="!policy.allow"
+                data-test-id="toggle-switch"
                 @update:checked="policy.allow = !$event"
             />
             <span>Deny Permissions</span>
@@ -112,6 +117,7 @@
             <AtlanBtn
                 class="ml-auto"
                 size="sm"
+                data-test-id="cancel"
                 color="secondary"
                 padding="compact"
                 @click="$emit('cancel')"
@@ -121,6 +127,7 @@
                 size="sm"
                 color="primary"
                 padding="compact"
+                data-test-id="save"
                 @click="handleSave"
                 >Save</AtlanBtn
             >
@@ -129,23 +136,16 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
-    import Connector from './connector.vue'
-    import DataMaskingSelector from './dataMaskingSelector.vue'
     import Pill from '@/UI/pill/pill.vue'
+    import DataMaskingSelector from '~/components/governance/personas/policies/dataMaskingSelector.vue'
     import { DataPolicies } from '~/types/accessPolicies/purposes'
     import { removeEditFlag } from '../composables/useEditPurpose'
     import Owners from '~/components/common/input/owner/index.vue'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -153,7 +153,6 @@
             Pill,
             Owners,
             AtlanBtn,
-            Connector,
             PillGroup,
             DataMaskingSelector,
         },
@@ -206,8 +205,8 @@
                     return
                 } else if (
                     selectedOwnersData.value?.ownerUsers?.length +
-                        selectedOwnersData.value?.ownerGroups?.length <
-                    1
+                        selectedOwnersData.value?.ownerGroups?.length ===
+                    0
                 ) {
                     rules.value.users.show = true
                     return
@@ -242,7 +241,6 @@
                 } else {
                     rules.value.users.show = false
                 }
-                /* Call save purpose */
             }
 
             watch(selectedPersonaDirty, () => {
@@ -254,6 +252,11 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
+
+            whenever(policyNameRef, () => {
+                policyNameRef.value?.focus()
+            })
+
             return {
                 selectedPersonaDirty,
                 getPopoverContent,

@@ -17,6 +17,7 @@ export default function usePersonaList(params?: Ref<PersonaParams>) {
                 ...persona,
             })) ?? []
     )
+
     const filteredPersonas = computed(() => {
         if (params?.value?.searchString)
             return personaList.value.filter((ps) =>
@@ -38,5 +39,6 @@ export default function usePersonaList(params?: Ref<PersonaParams>) {
         reFetchList,
         totalPersonasCount,
         filteredPersonasCount,
+        personaList,
     }
 }

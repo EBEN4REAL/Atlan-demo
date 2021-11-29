@@ -1,52 +1,107 @@
 <template>
-    <a-popover
-        ><template #content>
-            <div class="flex flex-col w-56 text-gray">
+    <a-popover>
+        <template #content>
+            <div class="flex flex-col p-4 text-gray-700 w-96">
                 <div class="flex justify-between mb-2 text-sm">
-                    <span class="text-gray-500">CLASSIFICATION</span>
-                    <span v-if="classification?.propagate" class="text-primary"
-                        >Propagated</span
-                    >
+                    <span>
+                        <AtlanIcon icon="ShieldCheck" class="mb-1 mr-1" />
+                        <span class="text-gray-500">CLASSIFICATION</span>
+                    </span>
+                    <span v-if="classification?.propagate" class="text-primary">
+                        Propagated
+                    </span>
                 </div>
-                <span class="mb-4 text-sm font-bold">{{
-                    classification?.displayName || classification?.typeName
-                }}</span>
+                <span class="mb-3 text-sm font-bold">
+                    {{
+                        classification?.displayName || classification?.typeName
+                    }}
+                </span>
 
                 <span class="mb-1 text-xs text-gray-500">Description</span>
-                <span class="text-sm" v-if="classification.description">{{
-                    classification.description
-                }}</span>
-                <span class="text-sm" v-else>No description</span>
+                <span v-if="classification.description" class="mb-3 text-sm">
+                    {{ classification.description }}
+                </span>
+                <span v-else class="mb-3 text-sm">No description</span>
 
-                <span
-                    v-if="classification.propagatedBy"
-                    class="mt-4 mb-1 text-xs text-gray-500"
-                    >Propagated by</span
-                >
-                <div class="flex flex-wrap gap-3">
+                <div class="">
                     <span
-                        v-if="classification.propagate"
-                        class="text-primary"
-                        >{{ classification.propagatedBy }}</span
+                        v-if="classification.propagatedBy"
+                        class="mt-4 mb-1 text-xs text-gray-500"
                     >
+                        Propagated by
+                    </span>
+                    <div class="flex flex-wrap gap-3">
+                        <span
+                            v-if="classification.propagate"
+                            class="text-primary"
+                            >{{ classification.propagatedBy }}</span
+                        >
+                    </div>
                 </div>
-            </div></template
-        >
-        <slot></slot
-    ></a-popover>
+                <div class="flex gap-x-10">
+                    <div class="">
+                        <span
+                            v-if="classification.createdBy"
+                            class="mt-4 mb-1 text-xs text-gray-500"
+                        >
+                            Created by
+                        </span>
+                        <div class="flex flex-wrap gap-3">
+                            <span>
+                                {{ classification.createdBy }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="">
+                        <span
+                            v-if="classification.updatedBy"
+                            class="mt-4 mb-1 text-xs text-gray-500"
+                        >
+                            Updated by
+                        </span>
+                        <div class="flex flex-wrap gap-3">
+                            <span>
+                                {{ classification.updatedBy }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="">
+                        <span
+                            v-if="classification.updateTime"
+                            class="mt-4 mb-1 text-xs text-gray-500"
+                        >
+                            Updated at
+                        </span>
+                        <div class="flex flex-wrap gap-3">
+                            <span v-if="classification.updateTime">
+                                {{
+                                    useTimeAgo(classification.updateTime).value
+                                }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <slot></slot>
+    </a-popover>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    import { classificationInterface } from '~/types/classifications/classification.interface'
+    import { ClassificationInterface } from '~/types/classifications/classification.interface'
+    import { useTimeAgo } from '@vueuse/core'
+
     export default defineComponent({
         name: 'ClassificationInfoPopover',
         props: {
             classification: {
-                type: Object as PropType<classificationInterface>,
+                type: Object as PropType<ClassificationInterface>,
                 required: true,
             },
         },
-        setup() {},
+        setup() {
+            return { useTimeAgo }
+        },
     })
 </script>

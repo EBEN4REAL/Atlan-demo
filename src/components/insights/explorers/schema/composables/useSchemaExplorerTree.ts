@@ -46,6 +46,7 @@ interface useSchemaExplorerTreeProps {
     schemaQualifiedName?: Ref<string | undefined>
     cacheKey?: string
     initSelectedKeys?: Ref<string | undefined>
+    initialExapndedKeys?: Ref<string | undefined>
     isAccordion?: boolean
 }
 
@@ -55,10 +56,11 @@ const useTree = ({
     databaseQualifiedName,
     schemaQualifiedName,
     initSelectedKeys,
+    initialExapndedKeys,
     cacheKey,
     isAccordion,
     queryText,
-    searchResultType
+    searchResultType,
 }: useSchemaExplorerTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -70,7 +72,9 @@ const useTree = ({
     const selectedCacheKey = `${cacheKey}_selected`
     const expandedCacheKey = `${cacheKey}_expanded`
     const selectedKeys = ref<string[]>([initSelectedKeys?.value])
-    const expandedKeys = ref<string[]>([])
+    let exKeys: string = []
+    if (initialExapndedKeys?.value) exKeys = [...initialExapndedKeys.value]
+    const expandedKeys = ref<string[]>(exKeys)
 
     const selectedCache = store.get(selectedCacheKey)
     const expandedCache = store.get(expandedCacheKey)
@@ -396,7 +400,6 @@ const useTree = ({
         [key: string]: any
         dataRef: CustomTreeDataItem
     }) => {
-        console.log(treeNode)
         if (!treeNode.dataRef.children) {
             treeNode.dataRef.children = []
         }
@@ -479,22 +482,22 @@ const useTree = ({
 
     const expandNode = (expanded: string[], event: any) => {
         // triggered by select
-        console.log('expanded', expanded)
-        if (!event.node.isLeaf) {
-            const key: string = event.node.eventKey
-            const isExpanded = expandedKeys.value?.includes(key)
-            if (!isExpanded) {
-                if (isAccordion && event.node.dataRef.isRoot) {
-                    expandedKeys.value = []
-                }
-                expandedKeys.value?.push(key)
-            } else if (isExpanded) {
-                const index = expandedKeys.value?.indexOf(key)
-                expandedKeys.value?.splice(index, 1)
-            }
-            expandedKeys.value = [...expandedKeys.value]
-        }
-        store.set(expandedCacheKey, expandedKeys.value)
+        // console.log('expanded', expanded)
+        // if (!event.node.isLeaf) {
+        //     const key: string = event.node.eventKey
+        //     const isExpanded = expandedKeys.value?.includes(key)
+        //     if (!isExpanded) {
+        //         if (isAccordion && event.node.dataRef.isRoot) {
+        //             expandedKeys.value = []
+        //         }
+        //         expandedKeys.value?.push(key)
+        //     } else if (isExpanded) {
+        //         const index = expandedKeys.value?.indexOf(key)
+        //         expandedKeys.value?.splice(index, 1)
+        //     }
+        //     expandedKeys.value = [...expandedKeys.value]
+        // }
+        // store.set(expandedCacheKey, expandedKeys.value)
     }
 
     const selectNode = (selected: any, event: any) => {

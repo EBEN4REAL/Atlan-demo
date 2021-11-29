@@ -3,22 +3,22 @@
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             <div class="flex items-center text-sm">
-                <Avatar
-                    :username="persona.createdBy"
-                    styleClass="bg-white mr-1"
-                />
-                <span class="text-gray">
-                    {{ persona.createdBy }}
-                </span>
+                <PopOverUser>
+                    <UserPill
+                        :username="username"
+                        :allowDelete="false"
+                    ></UserPill>
+                </PopOverUser>
             </div>
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
-                persona.createdAt?.slice(0, -11)
+                persona.created_at?.slice(0, -17)
             }}</span>
 
             <a-switch
                 class="ml-auto"
                 style="width: 40px !important"
+                data-test-id="toggle-switch"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
             />
@@ -33,8 +33,9 @@
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group hover:shadow"
                 @click="setActiveTab('policies')"
+                data-test-id="tab-policies"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
                     <AtlanIcon icon="Policy" class="h-6" />
@@ -89,7 +90,6 @@
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
-    import Avatar from '@common/avatar/user.vue'
     import Classification from '@common/input/classification/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
@@ -98,19 +98,27 @@
         saveClassifications,
     } from '../composables/useEditPurpose'
     import { selectedPersona } from '../composables/usePurposeList'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'PurposeMeta',
-        components: { Avatar, Classification },
+        components: { Classification, PopOverUser, UserPill },
         props: {
             persona: {
                 type: Object as PropType<IPurpose>,
                 required: true,
             },
+            username: {
+                type: String,
+                required: true,
+            },
         },
         emits: ['update:persona', 'update:isEditMode'],
-        setup() {
+        setup(props) {
             const { classificationList } = useTypedefData()
+            const { username, persona } = toRefs(props)
+
             const enablePersonaCheck = ref(true)
 
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
@@ -179,6 +187,7 @@
             })
 
             return {
+                username,
                 selectedPersona,
                 updateClassifications,
                 selectedPersonaDirty,
@@ -197,15 +206,15 @@
         @apply cursor-pointer;
     }
     .user-group-pill {
-        @apply rounded-full bg-primary-light text-primary text-sm px-2 py-1;
+        @apply rounded-full bg-primary-light text-primary text-xs px-2 py-1;
     }
     .data-policy-pill {
-        @apply rounded-full text-sm px-2 py-1;
+        @apply rounded-full text-xs px-2 py-1;
         background-color: #eeffef;
         color: #00a680;
     }
     .metadata-policy-pill {
-        @apply rounded-full text-sm px-2 py-1;
+        @apply rounded-full text-xs px-2 py-1;
         background-color: #fcf3fc;
         color: #d452d7;
     }

@@ -1,51 +1,53 @@
 <template>
-      <div
-          v-if="selectedPod.id"
-          class="absolute flex items-center gap-4 toolbar-workflow"
-      >
-          <AtlanIcon icon="Shield" class="text-pink-400" />
-          <div class="w-80">
-              <p class="text-base font-bold">
-                  {{ selectedPod?.displayName }}
-              </p>
-              <p class="text-sm truncate ...">
-                  {{ selectedPod.id }}
-              </p>
-              <div class="flex items-center gap-1 mt-1">
-                  <p>{{ selectedPod.timecalc }}</p>
-                  <div class="dot" />
-                  <p class="ml-2">
-                      {{ podFinishedAt(selectedPod.finishedAt) }}
-                  </p>
-              </div>
-          </div>
-          <a-button
-              class="flex items-center gap-2"
-              type="link"
-              @click="openLog"
-          >
-              View logs
-              <AtlanIcon icon="ArrowRight" />
-          </a-button>
-      </div>
+    <div
+        v-if="selectedPod.id"
+        class="absolute flex items-center gap-4 toolbar-workflow"
+    >
+        <AtlanIcon icon="Shield" class="text-pink-400" />
+        <div class="w-80">
+            <p class="text-base font-bold">
+                {{ selectedPod?.displayName }}
+            </p>
+            <p class="text-sm truncate ...">
+                {{ selectedPod.id }}
+            </p>
+            <div class="flex items-center gap-1 mt-1">
+                <p>{{ selectedPod.timecalc }}</p>
+                <div class="dot" />
+                <p class="ml-2">
+                    {{ podFinishedAt(selectedPod.finishedAt) }}
+                </p>
+            </div>
+        </div>
+        <a-button
+            v-if="selectedPod.type == 'Pod'"
+            class="flex items-center gap-2"
+            type="link"
+            @click="openLog"
+        >
+            View logs
+            <AtlanIcon icon="ArrowRight" />
+        </a-button>
+    </div>
     <div class="relative w-full h-full">
         <div
             v-if="loadingGeneral"
             class="absolute flex items-center justify-center w-full h-full"
         >
-            <a-spin />
+            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
         </div>
-        <div  
-          v-else-if="!isLoading && !graphData?.name" 
-          class="wrapper-monitoring">
-          <EmptyView   
-              empty-screen="WFEmptyTab"
-              class="-mt-20"
-              headline="No Runs to Display"
-              desc="There are no runs for this workflow."
-              button-text="Back to Workflows"
-              @event="$router.push('/workflows')"
-          />
+        <div
+            v-else-if="!isLoading && !graphData?.name"
+            class="wrapper-monitoring"
+        >
+            <EmptyView
+                empty-screen="WFEmptyTab"
+                class="-mt-20"
+                headline="No Runs to Display"
+                desc="There are no runs for this workflow."
+                button-text="Back to Workflows"
+                @event="$router.push('/workflows')"
+            />
         </div>
         <div v-else-if="graphData.name" class="absolute w-full h-full">
             <MonitorGraph
@@ -82,6 +84,7 @@
 
     // import WorkflowMixin from '~/mixins/workflow'
     import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
+    import useRunList from '~/composables/workflow/useRunList'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
@@ -91,7 +94,7 @@
             selectedRunName: {
                 type: String,
                 required: false,
-                default: ""
+                default: '',
             },
             selectedPod: {
                 type: Object,
@@ -102,6 +105,7 @@
                 required: true,
             },
         },
+        emits: ['setSelectedGraph', 'setSelectedPod', 'openLog'],
         setup(props, { emit }) {
             const route = useRoute()
 
@@ -110,68 +114,29 @@
             const records = ref([])
             const graphData = ref({})
             const id = computed(() => route?.params?.id || '')
-            const list = ref([])
             const loadingGeneral = ref(true)
 
             /** METHODS */
-
-            // getRunList
-            const { liveList, mutate: mutateRunList } = getRunList(id.value)
-            // getArchivedRunList
             const {
+                list,
+                liveList,
                 archivedList,
+                error,
                 isLoading,
-                mutate: mutateArchivedList,
-            } = getArchivedRunList(id.value, true)
+                isLoadMore,
+                loadMore,
+                isReady,
+                execute,
+            } = useRunList(id.value)
+
             // watcher
             watch([liveList, archivedList], ([newX, newY]) => {
-              if (newX && newY) {
-                    let liveRunItems = []
-                    let archivedRunItems = []
-                    if (newX?.items?.length) {
-                        const mappedItems = newX.items.map((x) => {
-                            const { status, metadata, spec } = x
-                            const { name, uid } = metadata
-                            const {
-                                startedAt: started_at,
-                                finishedAt: finished_at,
-                                phase,
-                            } = status
-                            const obj = {
-                                name,
-                                uid,
-                                started_at,
-                                finished_at,
-                                phase,
-                            }
-                            obj.workflow = { status, metadata, spec }
-                            return obj
-                        })
-                        const orderedItems = mappedItems.sort(
-                            (a, b) =>
-                                new Date(b.finished_at) -
-                                new Date(a.finished_at)
-                        )
-
-                        liveRunItems = orderedItems
-                    }
-
-                    if (newY?.records?.length) {
-                        const orderedRecords = newY.records.sort(
-                            (a, b) =>
-                                new Date(b.finished_at) -
-                                new Date(a.finished_at)
-                        )
-
-                        archivedRunItems = orderedRecords
-                    }
-
-                    list.value = [...liveRunItems, ...archivedRunItems]
-                    records.value = list.value
-
+                if (newX && newY) {
                     if (!selectedRunName.value) {
                         const idMonitoring = route.query.idmonitoring
-                        graphData.value = list.value.find((el) => el.uid === idMonitoring) || list.value[0]
+                        graphData.value =
+                            list.value.find((el) => el.uid === idMonitoring) ||
+                            list.value[0]
                         emit('setSelectedGraph', graphData.value)
                     }
                     loadingGeneral.value = false
@@ -190,8 +155,7 @@
                 emit('setSelectedPod', clickedPod)
             }
             const handleRefresh = () => {
-                mutateRunList()
-                mutateArchivedList()
+                execute(id.value)
             }
             return {
                 graphData,
@@ -199,10 +163,9 @@
                 list,
                 openLog,
                 handleClickNode,
-                selectedPod,
                 loadingGeneral,
                 handleRefresh,
-                ...useWorkFlowHelper()
+                ...useWorkFlowHelper(),
             }
         },
     })
@@ -226,8 +189,8 @@
         width: 4px;
         border-radius: 50%;
     }
-    .wrapper-monitoring{
-      height: calc(100% - 400px);
-      margin-top: 200px;
+    .wrapper-monitoring {
+        height: calc(100% - 400px);
+        margin-top: 200px;
     }
 </style>

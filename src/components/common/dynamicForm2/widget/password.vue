@@ -1,12 +1,12 @@
 <template>
     <a-input-password
         v-bind="componentProps"
-        v-model:value="localValue"
+        v-model:value="formState[property.id]"
     ></a-input-password>
 </template>
 
 <script>
-    import { defineComponent, toRefs, computed, ref } from 'vue'
+    import { defineComponent, toRefs, computed, ref, inject } from 'vue'
     import { useVModels, debouncedWatch } from '@vueuse/core'
 
     export default defineComponent({
@@ -24,19 +24,10 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { property } = toRefs(props)
+            const formState = inject('formState')
             const componentProps = computed(() => property.value.ui)
-            const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
 
-            debouncedWatch(
-                localValue,
-                () => {
-                    modelValue.value = localValue.value
-                    emit('change')
-                },
-                { debounce: 500 }
-            )
-            return { property, componentProps, localValue }
+            return { componentProps, formState }
         },
     })
 </script>

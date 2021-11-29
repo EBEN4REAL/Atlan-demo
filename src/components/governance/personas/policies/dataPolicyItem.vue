@@ -19,6 +19,7 @@
                                 else rules.policyName.show = false
                             }
                         "
+                        data-test-id="policy-edit-name"
                         :ref="
                             (el) => {
                                 policyNameRef = el
@@ -31,6 +32,7 @@
                 <div
                     class="absolute text-xs text-red-500 -bottom-5"
                     v-if="rules.policyName.show"
+                    data-test-id="policy-validation-name"
                 >
                     {{ rules.policyName.text }}
                 </div>
@@ -49,6 +51,7 @@
                     color="secondary"
                     padding="compact"
                     class="plus-btn"
+                    data-test-id="policy-delete"
                     ><AtlanIcon
                         icon="Delete"
                         class="-mx-1 text-red-400"
@@ -56,14 +59,14 @@
                 ></AtlanBtn>
             </a-popconfirm>
         </div>
-        <!-- FIXME: Filtersource IDs should be dynamic -->
+
         <div class="relative">
             <div class="mb-2 text-sm text-gray-500 required">Connection</div>
             <Connector
                 v-model:data="connectorData"
                 class="max-w-xs mb-6"
                 :disabled="!policy?.isNew"
-                :filterSourceIds="['powerbi', 'tableau']"
+                :filterSourceIds="BItypes"
                 @change="handleConnectorChange"
                 @blur="
                     () => {
@@ -81,6 +84,7 @@
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
                 v-if="rules.connection.show"
+                data-test-id="policy-validation-connector"
             >
                 {{ rules.connection.text }}
             </div>
@@ -114,6 +118,7 @@
                                 <Pill
                                     class="group"
                                     @click="d?.item?.handleAdd"
+                                    data-test-id="add"
                                     @blur="d?.item?.handleBlur"
                                 >
                                     <template #prefix>
@@ -133,15 +138,14 @@
                                 v-else-if="assets.length === 0"
                                 class="flex items-center"
                             >
-                                <Pill class="group" @click="addConnectionAsset">
+                                <Pill
+                                    class="group"
+                                    @click="addConnectionAsset"
+                                    data-test-id="add-all"
+                                >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -157,15 +161,11 @@
                                     class="group"
                                     @click="d?.item?.handleAdd"
                                     @blur="d?.item?.handleBlur"
+                                    data-test-id="add-custom"
                                 >
                                     <template #prefix>
                                         <div
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center  text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -185,6 +185,7 @@
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
                 v-if="rules.assets.show && connectorData.attributeValue"
+                data-test-id="policy-validation-assets"
             >
                 {{ rules.assets.text }}
             </div>
@@ -212,6 +213,7 @@
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
                 style="width: 40px !important"
+                data-test-id="toggle-switch"
                 :checked="!policy.allow"
                 @update:checked="policy.allow = !$event"
             />
@@ -235,6 +237,7 @@
                 class="ml-auto"
                 size="sm"
                 color="secondary"
+                data-test-id="cancel"
                 padding="compact"
                 @click="$emit('cancel')"
                 >Cancel</AtlanBtn
@@ -242,6 +245,7 @@
             <AtlanBtn
                 size="sm"
                 color="primary"
+                data-test-id="save"
                 padding="compact"
                 @click="handleSave"
                 >Save</AtlanBtn
@@ -259,9 +263,10 @@
     import DataMaskingSelector from './dataMaskingSelector.vue'
     import Pill from '@/UI/pill/pill.vue'
     import { useConnectionStore } from '~/store/connection'
-    import { DataPolicies } from '~/types/accessPolicies/purposes'
+    import { DataPolicies } from '~/types/accessPolicies/personas'
     import { removeEditFlag } from '../composables/useEditPersona'
     import { useUtils } from '../assets/useUtils'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -282,6 +287,7 @@
         emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
+            const BItypes = getBISourceTypes()
             const { getAssetIcon } = useUtils()
             const connectorComponentRef = ref()
             const policyNameRef = ref()
@@ -407,6 +413,7 @@
                 return `Are you sure you want to delete ${policy?.name}?`
             }
             return {
+                BItypes,
                 getPopoverContent,
                 assetsIcons,
                 customRendererForLabel,

@@ -11,6 +11,7 @@
                 v-model="title"
                 placeholder="Untitled purpose"
                 type="text"
+                data-test-id="input-text"
                 class="text-lg font-bold text-gray-700 clean-input"
                 @keyup.esc="$event?.target?.blur()"
             />
@@ -22,6 +23,7 @@
                 rows="2"
                 placeholder="Add description..."
                 @keyup.esc="$event?.target?.blur()"
+                data-test-id="input-description"
             />
         </div>
         <template #extraFooterContent>
@@ -33,6 +35,7 @@
                 <span
                     class="ml-2 text-red-500"
                     v-if="rules.classification.show"
+                    data-test-id="validation-classification"
                 >
                     {{ rules.classification.text }}
                 </span>
@@ -81,7 +84,6 @@
         },
         emits: ['update:visible'],
         setup(props, { emit }) {
-            const { personaList } = toRefs(props)
             const { createPersona } = usePurposeService()
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             const rules = ref({
@@ -113,17 +115,6 @@
                     rules.value.classification.show = true
                     return
                 }
-                // if (selectedClassifications.value.length > 0) {
-                //     personaList.value.forEach((purpose) => {
-                //         selectedClassifications.value.forEach((e) => {
-                //             if (purpose.tags.includes(e)) {
-                //                 rules.value.selectedClassifications.show = true
-                //                 rules.value.selectedClassifications.text = `This classifications combination is already used in ${purpose.name} purpose!`
-                //                 return
-                //             }
-                //         })
-                //     })
-                // }
 
                 const messageKey = Date.now()
                 message.loading({
@@ -132,7 +123,7 @@
                     key: messageKey,
                 })
                 try {
-                    const newPurpose: IPurpose = await createPersona({
+                    const newPurpose: IPurpose = (await createPersona({
                         id: generateUUID(),
                         description: description.value,
                         name: title.value,
@@ -143,7 +134,7 @@
                         /* Hardcode here */
                         metadataPolicies: [],
                         dataPolicies: [],
-                    })
+                    })) as IPurpose
 
                     message.success({
                         content: `${title.value} purpose Created`,
@@ -157,30 +148,6 @@
                         selectedPersonaId.value = newPurpose.id!
                         modalVisible.value = false
                     })
-
-                    /* 
-                        metadataPolicies: [
-                            {
-                                name: 'Metadata policy 1',
-                                description: 'bro',
-                                actions: ['entity-create'],
-                                groups: ['123'],
-                                users: ['aditnegi1'],
-                                allow: true,
-                                type: 'meta',
-                            },
-                        ],
-                        dataPolicies: [
-                            {
-                                name: 'Data policy 1',
-                                description: 'bro',
-                                actions: ['entity-create'],
-                                groups: ['123'],
-                                users: ['aditnegi1'],
-                                allow: true,
-                                type: 'data',
-                            },
-                        ], */
                 } catch (error) {
                     message.error({
                         content:

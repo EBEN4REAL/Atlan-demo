@@ -3,14 +3,14 @@
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             <div class="flex items-center text-sm">
-                <Avatar
-                    :username="persona.createdBy"
-                    styleClass="bg-white mr-1"
-                />
-                <span class="text-gray">
-                    {{ persona.createdBy }}
-                </span>
+                <PopOverUser>
+                    <UserPill
+                        :username="persona.createdBy"
+                        :allowDelete="false"
+                    ></UserPill>
+                </PopOverUser>
             </div>
+
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
                 persona.createdAt?.slice(0, -11)
@@ -18,6 +18,7 @@
 
             <a-switch
                 class="ml-auto"
+                data-test-id="toggle-switch"
                 style="width: 40px !important"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
@@ -26,18 +27,8 @@
         </div>
         <div class="flex items-center py-4 pt-2">
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    mr-3
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group hover:shadow"
+                data-test-id="tab-policies"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -65,13 +56,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -82,17 +67,8 @@
                 </div>
             </div>
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group hover:shadow"
+                data-test-id="tab-users"
                 @click="setActiveTab('users')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -120,13 +96,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -142,18 +112,18 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs } from 'vue'
-    import dayjs from 'dayjs'
-    import { IPurpose } from '~/types/accessPolicies/purposes'
+    import { IPersona } from '~/types/accessPolicies/personas'
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
-    import Avatar from '@common/avatar/user.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'PersonaMeta',
-        components: { Avatar },
+        components: { PopOverUser, UserPill },
         props: {
             persona: {
-                type: Object as PropType<IPurpose>,
+                type: Object as PropType<IPersona>,
                 required: true,
             },
         },

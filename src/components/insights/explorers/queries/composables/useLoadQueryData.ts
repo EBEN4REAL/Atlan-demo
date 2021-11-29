@@ -87,6 +87,12 @@ const useLoadQueryData = ({
                     term: {
                         "connectionName": `${connector.value}`
                     }
+                },
+                    
+                {
+                    term: {
+                        "__state": "ACTIVE"
+                    }
                 }
             )
         }

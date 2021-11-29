@@ -4,12 +4,14 @@
             <div v-if="treeData.length">
                 <a-tree
                     v-bind="$attrs"
-                    :expandedKeys="expandedKeys"
+                    v-model:expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
+                    :checkedKeys="checkedKeys"
                     :loadedKeys="loadedKeys"
                     :tree-data="treeData"
                     :load-data="onLoadData"
                     :draggable="false"
+                    data-test-id="tree"
                     :block-node="true"
                     :auto-expand-parent="false"
                     @select="selectNode"
@@ -91,6 +93,7 @@
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         components: {
@@ -137,6 +140,11 @@
                 required: true,
                 default: () => [],
             },
+            checkedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
             expandedKeys: {
                 type: Array as PropType<string[]>,
                 required: true,
@@ -150,6 +158,7 @@
         inheritAttrs: false,
         setup(props, { emit }) {
             const { hoverActions } = toRefs(props)
+            const { expandedKeys } = useVModels(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -159,7 +168,7 @@
                 StatusList,
                 activeInlineTab,
                 // selectedKeys,
-                // expandedKeys,
+                expandedKeys,
                 // expandNode,
                 // selectNode,
             }
@@ -186,6 +195,9 @@
                 > .ant-tree-switcher_open) {
             background-color: #fff !important;
         }
+        // :global(.ant-tree-treenode) {
+        //     @apply hover:bg-primary-light;
+        // }
 
         :global(.ant-tree-title) {
             width: calc(100% - 1.5rem) !important;

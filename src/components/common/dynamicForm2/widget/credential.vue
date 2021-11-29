@@ -22,7 +22,7 @@
                 class="text-white bg-success border-success"
                 >Test Authentication</a-button
             >
-            <div class="flex items-center ml-2" v-if="testMessage">
+            <div class="flex ml-2" v-if="testMessage">
                 <AtlanIcon :icon="testIcon" class="mr-1"></AtlanIcon>
                 <span :class="testClass">{{ testMessage }}</span>
             </div>
@@ -40,6 +40,7 @@
         defineAsyncComponent,
         ref,
         inject,
+        provide,
         onMounted,
         onBeforeMount,
     } from 'vue'
@@ -87,24 +88,6 @@
             const testIcon = ref('')
             const testClass = ref('')
 
-            const body = reactive({
-                connector: 'Lorem veniam', // snowflake
-                authType: 'sit ullamco',
-                extra: {},
-                host: 'voluptate tempor a',
-                password: 'est ut amet quis irure',
-                username: 'occaecat incididunt deserunt',
-                port: -228305,
-            })
-            const dependentKey = ref()
-
-            const {
-                data: testData,
-                refresh,
-                isLoading: isLoadingTest,
-                error: errorTest,
-            } = useTestCredential(body)
-
             const configMap = ref({
                 title: 'Config Map',
                 description: 'Config Map for input parameters',
@@ -143,9 +126,10 @@
                         default:
                             'jv22371.ap-south-1.aws.snowflakecomputing.com',
                         ui: {
-                            label: 'Host',
+                            label: 'Account Identifiers (Host)',
                             feedback: true,
                             placeholder: 'Host Name',
+                            addonBefore: 'https://',
                             help: 'Please enter a valid host name',
                             rules: [
                                 {
@@ -339,72 +323,78 @@
                 testIcon.value = ''
                 testClass.value = ''
             }
+
             const successMessage = () => {
                 testMessage.value = 'Success'
-                testIcon.value = 'Tick'
+                testIcon.value = 'RunSuccess'
                 testClass.value = ''
             }
+
             const errorMessage = (message) => {
                 testMessage.value = message
                 testIcon.value = 'Error'
                 testClass.value = 'text-red-500'
             }
 
-            const setBody = () => {
-                body.host = formState[`${property.value.id}.host`]
-                body.port = parseInt(formState[`${property.value.id}.port`])
-                body.authType = formState[`${property.value.id}.auth-type`]
-                body.username =
-                    formState[`${property.value.id}.${body.authType}.username`]
-                body.password =
-                    formState[`${property.value.id}.${body.authType}.password`]
-
-                body.extra = {}
+            const credentialBody = computed(() => {
+                const extra = {}
                 Object.keys(formState).forEach((key) => {
                     if (key.includes(`${property.value.id}.extra.`)) {
-                        body.extra[
-                            key.replace(`${property.value.id}.extra.`, '')
-                        ] = formState[key]
+                        extra[key.replace(`${property.value.id}.extra.`, '')] =
+                            formState[key]
                     }
                 })
-                body.connectorConfigName = property.value.ui?.credentialType
-            }
+                const authType = formState[`${property.value.id}.auth-type`]
+
+                const body = {
+                    host: formState[`${property.value.id}.host`],
+                    port: parseInt(formState[`${property.value.id}.port`]),
+                    authType,
+                    username:
+                        formState[`${property.value.id}.${authType}.username`],
+                    password:
+                        formState[`${property.value.id}.${authType}.password`],
+                    extra,
+                    connectorConfigName: property.value.ui?.credentialType,
+                }
+
+                return body
+            })
+
+            watch(credentialBody, () => {
+                console.log('chaneg credentials -----')
+                // formState[`${property.value.id}`] = credentialBody.value
+            })
+
+            const {
+                data: testData,
+                refresh,
+                isLoading: isLoadingTest,
+                error: errorTest,
+            } = useTestCredential(credentialBody)
+
+            provide('credentialBody', credentialBody)
 
             const handleTestAuthentication = async () => {
                 resetError()
                 const e = await validateForm()
                 if (!e) {
-                    setBody()
-                    console.log(body)
                     refresh()
                 } else {
                     testMessage.value = 'Please enter correct credentials'
                     testIcon.value = 'Error'
                     testClass.value = 'text-red-500'
-                    console.log('error', e)
                 }
             }
 
-            watch(data, () => {
-                // if (data.value?.length > 0) {
-                //     configMap.value = data.value[0]
-                // }
-            })
-
             watch(testData, () => {
-                // console.log('test')
                 successMessage()
-                // if (data.value?.length > 0) {
-                //     configMap.value = data.value[0]
-                // }
             })
             watch(errorTest, () => {
-                console.log('test error')
-                errorMessage('Not able to authenticate your credentials')
-                // successMessage()
-                // if (data.value?.length > 0) {
-                //     configMap.value = data.value[0]
-                // }
+                console.log(errorTest.value?.response?.data.message)
+                errorMessage(
+                    `Not able to authenticate your credentials - ${errorTest.value?.response?.data?.message}`
+                )
             })
 
             return {
@@ -424,6 +414,7 @@
                 errorTest,
                 testData,
                 errorMessage,
+                credentialBody,
             }
         },
     })

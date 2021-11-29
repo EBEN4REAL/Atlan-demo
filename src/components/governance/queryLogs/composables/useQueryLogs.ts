@@ -71,7 +71,7 @@ export function useQueryLogs(
                 // get saved query logs, if present in the result
                 const savedQueryIds = (
                     data.value?.hits?.hits.filter(
-                        (log) => log._source.message.savedQueryId
+                        (log) => log._source?.message?.savedQueryId
                     ) || []
                 ).map((log) => log._source.message.savedQueryId)
                 // Check if the ids already have cached metadata

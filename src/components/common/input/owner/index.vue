@@ -1,19 +1,22 @@
 <template>
-    <div class="flex flex-wrap items-center gap-1 text-sm">
+    <div
+        class="flex flex-wrap items-center gap-1 text-sm"
+        data-test-id="owners-popover"
+    >
         <a-popover
-            placement="leftBottom"
-            :overlayClassName="$style.ownerPopover"
-            @visibleChange="handleVisibleChange"
-            :trigger="['click']"
             v-model:visible="isEdit"
-            :destroyTooltipOnHide="destroyTooltipOnHide"
+            placement="leftBottom"
+            :overlay-class-name="$style.ownerPopover"
+            :trigger="['click']"
+            :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            @visibleChange="handleVisibleChange"
         >
             <template #content>
                 <div class="">
                     <OwnerFacets
                         ref="ownerInputRef"
                         v-model="localValue"
-                        :showNone="false"
+                        :show-none="false"
                     ></OwnerFacets>
                 </div>
             </template>
@@ -26,26 +29,56 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-for="username in localValue?.ownerUsers" :key="username">
-            <PopOverUser>
+        <template v-if="usedForAssets">
+            <template
+                v-for="username in ownerUsers(selectedAsset)"
+                :key="username"
+            >
+                <PopOverUser :item="username">
+                    <UserPill
+                        :username="username"
+                        :allowDelete="!readOnly"
+                        @delete="handleDeleteUser"
+                        @click="handleClickUser(username)"
+                        :enableHover="enableHover"
+                    ></UserPill>
+                </PopOverUser> </template
+        ></template>
+        <template
+            v-for="username in localValue?.ownerUsers"
+            v-else
+            :key="username"
+        >
+            <PopOverUser :item="username">
                 <UserPill
                     :username="username"
-                    :allowDelete="!readOnly"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
                     @delete="handleDeleteUser"
                     @click="handleClickUser(username)"
-                    :enableHover="enableHover"
                 ></UserPill>
             </PopOverUser>
         </template>
-
-        <template v-for="name in localValue?.ownerGroups" :key="name">
-            <PopOverGroup>
+        <template v-if="usedForAssets">
+            <template v-for="name in ownerGroups(selectedAsset)" :key="name">
+                <PopOverGroup :item="name">
+                    <GroupPill
+                        :name="name"
+                        :allowDelete="!readOnly"
+                        @delete="handleDeleteGroup"
+                        @click="handleClickGroup(name)"
+                        :enableHover="enableHover"
+                    ></GroupPill>
+                </PopOverGroup> </template
+        ></template>
+        <template v-for="name in localValue?.ownerGroups" v-else :key="name">
+            <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
-                    :allowDelete="!readOnly"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
                     @delete="handleDeleteGroup"
                     @click="handleClickGroup(name)"
-                    :enableHover="enableHover"
                 ></GroupPill>
             </PopOverGroup>
         </template>
@@ -55,17 +88,6 @@
 <script lang="ts">
     import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
 
-    // Components
-    import UserPill from '@/common/pills/user.vue'
-    import GroupPill from '@/common/pills/group.vue'
-    import OwnerFacets from '@/common/facet/owners/index.vue'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
-    import PopOverUser from '@/common/popover/user/user.vue'
-    import PopOverGroup from '@/common/popover/user/groups.vue'
-    // Composables
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { useGroupPreview } from '~/composables/group/showGroupPreview'
-
     // Utils
     import {
         and,
@@ -74,6 +96,19 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+
+    // Components
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
+    import OwnerFacets from '@/common/facet/owners/index.vue'
+    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import PopOverGroup from '@/common/popover/user/groups.vue'
+
+    // Composables
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'OwnersWidget',
@@ -106,6 +141,11 @@
                 required: false,
                 default: true,
             },
+            usedForAssets: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -114,6 +154,7 @@
                 toRefs(props)
             const localValue = ref(modelValue.value)
 
+            const { ownerGroups, ownerUsers, selectedAsset } = useAssetInfo()
             const isEdit = ref(false)
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -205,8 +246,9 @@
             }
 
             return {
-                enableHover,
-                readOnly,
+                ownerGroups,
+                ownerUsers,
+                selectedAsset,
                 handleClickUser,
                 handleClickGroup,
                 localValue,

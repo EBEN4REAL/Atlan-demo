@@ -18,12 +18,12 @@
                     :help="property.ui?.help"
                     :required="property.required"
                     :rules="property.ui.rules"
-                    :validateTrigger="['blur']"
                     v-else
                 >
                     <Component
                         :is="componentName(property)"
                         v-model="formState[property.id]"
+                        :baseKey="baseKey"
                         :property="property"
                     ></Component>
                 </a-form-item>
@@ -55,6 +55,7 @@
     // import Form from './widget/form.vue'
     // import Section from './widget/section.vue'
     import Sql from './widget/sql.vue'
+    import Sqltree from './widget/sqltree.vue'
     import Password from './widget/password.vue'
 
     export default defineComponent({
@@ -69,6 +70,7 @@
             Sql,
             Password,
             Nested,
+            Sqltree,
         },
         props: {
             configMap: {

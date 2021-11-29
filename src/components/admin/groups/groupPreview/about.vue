@@ -1,5 +1,5 @@
 <template>
-    <div v-auth="map.LIST_GROUPS" class="tab-content-wrapper">
+    <div v-auth="map.LIST_GROUPS" class="px-4 py-2 tab-content-wrapper">
         <div class="mb-3 text-lg font-bold">Group info</div>
         <div class="mb-3">
             <UpdateName

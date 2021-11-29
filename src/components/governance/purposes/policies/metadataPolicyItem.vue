@@ -7,6 +7,7 @@
                 </div>
                 <div style="width: 320px">
                     <a-input
+                        data-test-id="policy-edit-name"
                         @blur="
                             () => {
                                 if (!policy.name) rules.policyName.show = true
@@ -25,6 +26,7 @@
                 <div
                     class="absolute text-xs text-red-500 -bottom-5"
                     v-if="rules.policyName.show"
+                    data-test-id="policy-validation-name"
                 >
                     {{ rules.policyName.text }}
                 </div>
@@ -43,6 +45,7 @@
                     color="secondary"
                     padding="compact"
                     class="plus-btn"
+                    data-test-id="policy-delete"
                     ><AtlanIcon
                         icon="Delete"
                         class="-mx-1 text-red-400"
@@ -65,6 +68,7 @@
 
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
+                data-test-id="policy-validation-owners"
                 v-if="rules.users.show"
             >
                 {{ rules.users.text }}
@@ -73,13 +77,29 @@
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
-            <span class="text-sm text-gray-500">Metadata permissions</span>
+            <span class="text-sm text-gray-500 required"
+                >Metadata permissions</span
+            >
         </div>
-        <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
+        <div class="relative">
+            <MetadataScopes
+                v-model:actions="policy.actions"
+                class="mb-6"
+                @change="onScopesChange"
+            />
+            <div
+                class="absolute text-xs text-red-500 -bottom-6"
+                v-if="rules.metadata.show"
+                data-test-id="policy-validation-permissions"
+            >
+                {{ rules.metadata.text }}
+            </div>
+        </div>
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
                 :checked="!policy.allow"
+                data-test-id="toggle-switch"
                 style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
             />
@@ -103,6 +123,7 @@
                 class="ml-auto"
                 size="sm"
                 color="secondary"
+                data-test-id="cancel"
                 padding="compact"
                 @click="$emit('cancel')"
                 >Cancel</AtlanBtn
@@ -112,6 +133,7 @@
                 color="primary"
                 padding="compact"
                 @click="handleSave"
+                data-test-id="save"
                 >Save</AtlanBtn
             >
         </div>
@@ -119,29 +141,21 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Pill from '@/UI/pill/pill.vue'
-    import Connector from './connector.vue'
-    import MetadataScopes from './metadataScopes.vue'
+    import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import Owners from '~/components/common/input/owner/index.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'MetadataPolicy',
         components: {
             Pill,
             AtlanBtn,
-            Connector,
             MetadataScopes,
             PillGroup,
             Owners,
@@ -169,7 +183,7 @@
                     show: false,
                 },
                 metadata: {
-                    text: 'Select atleast 1 permissions!',
+                    text: 'Select atleast 1 permission!',
                     show: false,
                 },
             })
@@ -193,10 +207,13 @@
                     return
                 } else if (
                     selectedOwnersData.value?.ownerUsers?.length +
-                        selectedOwnersData.value?.ownerGroups?.length <
-                    1
+                        selectedOwnersData.value?.ownerGroups?.length ===
+                    0
                 ) {
                     rules.value.users.show = true
+                    return
+                } else if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
                     return
                 } else {
                     emit('save')
@@ -240,7 +257,19 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
+
+            const onScopesChange = () => {
+                if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                } else {
+                    rules.value.metadata.show = false
+                }
+            }
+            whenever(policyNameRef, () => {
+                policyNameRef.value?.focus()
+            })
             return {
+                onScopesChange,
                 getPopoverContent,
                 selectedOwnersData,
                 handleOwnersChange,

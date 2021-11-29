@@ -7,6 +7,7 @@
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
+            data-test-id="connector"
             placeholder="Select a connector"
             dropdown-class-name="connectorDropdown"
             :allow-clear="true"
@@ -26,11 +27,7 @@
                         :icon="iconName(node)"
                         class="h-4 -ml-0.5 mr-1"
                     />
-                    {{
-                        node?.title?.length > 30
-                            ? `${node?.title.slice(0, 30)}...`
-                            : node.title
-                    }}
+                    {{ node.title }}
                 </div>
             </template>
 

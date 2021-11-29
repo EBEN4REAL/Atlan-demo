@@ -6,6 +6,7 @@ import useAssetInfo from '~/composables/discovery/useAssetInfo'
 import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import confetti from '~/utils/confetti'
+import { generateUUID } from '~/utils/helper/generator'
 
 export default function updateAssetAttributes(selectedAsset) {
     const {
@@ -83,6 +84,11 @@ export default function updateAssetAttributes(selectedAsset) {
         announcementType:
             announcementType(selectedAsset.value) || 'information',
         announcementTitle: announcementTitle(selectedAsset.value) || '',
+    })
+
+    const localResource = ref({
+        link: '',
+        title: '',
     })
 
     const localClassifications = ref(classifications(selectedAsset.value))
@@ -174,6 +180,28 @@ export default function updateAssetAttributes(selectedAsset) {
             localAnnouncement.value.announcementType
         body.value.entities = [entity.value]
         currentMessage.value = 'Announcement added'
+        mutate()
+    }
+
+    const resourceEntity = ref<any>({
+        typeName: 'Link',
+        attributes: {
+            qualifiedName: generateUUID(),
+        },
+        relationshipAttributes: {
+            asset: {
+                guid: selectedAsset.value?.guid,
+                typeName: selectedAsset.value?.typeName,
+            },
+        },
+    })
+
+    // Resource Addition
+    const handleAddResource = () => {
+        resourceEntity.value.attributes.name = localResource.value.title
+        resourceEntity.value.attributes.link = localResource.value.link
+        body.value.entities = [resourceEntity.value]
+        currentMessage.value = 'Resource added!'
         mutate()
     }
 
@@ -297,5 +325,7 @@ export default function updateAssetAttributes(selectedAsset) {
         nameRef,
         descriptionRef,
         animationPoint,
+        handleAddResource,
+        localResource,
     }
 }

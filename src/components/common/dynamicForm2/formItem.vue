@@ -1,11 +1,17 @@
 <template>
     <div class="grid grid-cols-12 gap-x-4">
         <template v-for="property in list" :key="`${property.id}`">
-            <div :class="getCol(property.ui.grid)" v-if="!property.ui?.hidden">
+            <div
+                :class="
+                    getCol(property.ui.grid, property.ui.start, property.ui.end)
+                "
+                v-if="!property.ui?.hidden"
+            >
                 <Component
                     v-if="
                         componentName(property) === 'credential' ||
-                        componentName(property) === 'nested'
+                        componentName(property) === 'nested' ||
+                        componentName(property) === 'connection'
                     "
                     :is="componentName(property)"
                     v-model="formState[property.id]"
@@ -57,6 +63,11 @@
     import Sql from './widget/sql.vue'
     import Sqltree from './widget/sqltree.vue'
     import Password from './widget/password.vue'
+    import Connection from './widget/connection.vue'
+    import Users from './widget/users.vue'
+    import UserMultiple from './widget/userMultiple.vue'
+    import Groups from './widget/groups.vue'
+    import GroupMultiple from './widget/groupMultiple.vue'
 
     export default defineComponent({
         name: 'DynamicForm',
@@ -71,6 +82,11 @@
             Password,
             Nested,
             Sqltree,
+            Connection,
+            Users,
+            Groups,
+            UserMultiple,
+            GroupMultiple,
         },
         props: {
             configMap: {
@@ -113,21 +129,27 @@
                 }
             }
 
-            const getCol = (grid = 12) => {
-                return `col-span-${grid}`
+            const getCol = (grid = 12, start, end) => {
+                let c = `col-span-${grid}`
+                if (start) c += ` col-start-${start}`
+                if (end) c += ` col-start-${start}`
+
+                return c
             }
 
             const setDefaultValue = () => {
-                Object.keys(configMap?.value?.properties).forEach((key) => {
-                    if (formState) {
-                        if (!formState[key]) {
-                            formState[getName(key)] =
-                                configMap?.value?.properties[
-                                    key
-                                ]?.default?.toString()
+                if (configMap.value?.properties) {
+                    Object.keys(configMap?.value?.properties).forEach((key) => {
+                        if (formState) {
+                            if (!formState[getName(key)]) {
+                                formState[getName(key)] =
+                                    configMap?.value?.properties[
+                                        key
+                                    ]?.default?.toString()
+                            }
                         }
-                    }
-                })
+                    })
+                }
             }
 
             watch(formState, () => {
@@ -150,32 +172,41 @@
             const calculateList = () => {
                 isImplied()
                 const temp = []
-                if (
-                    configMap.value?.properties &&
-                    currentStep.value?.properties
-                ) {
-                    Object.keys(configMap?.value?.properties).forEach((key) => {
-                        if (currentStep.value?.properties?.includes(key)) {
-                            if (!configMap.value?.properties[key].ui?.hidden) {
-                                temp.push({
-                                    id: `${getName(key)}`,
-                                    name: `${getName(key)}`,
-                                    ...configMap.value?.properties[key],
-                                })
+                if (configMap.value?.properties) {
+                    if (currentStep.value?.properties) {
+                        currentStep.value?.properties.forEach((key) => {
+                            const found = Object.keys(
+                                configMap?.value?.properties
+                            ).find((k) => k === key)
+                            if (found) {
+                                if (
+                                    !configMap.value?.properties[key].ui?.hidden
+                                ) {
+                                    temp.push({
+                                        id: `${getName(key)}`,
+                                        name: `${getName(key)}`,
+                                        ...configMap.value?.properties[key],
+                                    })
+                                }
                             }
-                        }
-                    })
-                } else {
-                    Object.keys(configMap?.value?.properties).forEach((key) => {
-                        if (!configMap.value?.properties[key]?.ui?.hidden) {
-                            temp.push({
-                                id: `${getName(key)}`,
-                                name: `${getName(key)}`,
-                                ...configMap.value?.properties[key],
-                            })
-                        }
-                    })
+                        })
+                    } else {
+                        Object.keys(configMap?.value?.properties).forEach(
+                            (key) => {
+                                if (
+                                    !configMap.value?.properties[key].ui?.hidden
+                                ) {
+                                    temp.push({
+                                        id: `${getName(key)}`,
+                                        name: `${getName(key)}`,
+                                        ...configMap.value?.properties[key],
+                                    })
+                                }
+                            }
+                        )
+                    }
                 }
+
                 list.value = temp
             }
 

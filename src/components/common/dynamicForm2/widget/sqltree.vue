@@ -1,5 +1,4 @@
 <template>
-    dasd
     <SQLTreeSelect></SQLTreeSelect>
 </template>
 

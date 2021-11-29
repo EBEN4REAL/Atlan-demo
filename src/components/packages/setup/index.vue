@@ -14,15 +14,20 @@
                         </a-step>
                     </template>
                 </a-steps>
-                <div class="flex-1 p-8 overflow-y-auto bg-white">
+
+                <div
+                    class="flex-1 p-8 overflow-y-auto bg-white"
+                    v-if="workflowTemplate"
+                >
                     <DynamicForm
+                        :key="`form_${currentStep}`"
                         ref="stepForm"
                         :config="configMapDerived"
                         :currentStep="currentStepConfig"
+                        :workflowTemplate="workflowTemplate"
                         v-model="modelValue"
                         labelAlign="left"
                     ></DynamicForm>
-                    <!-- {{ configMap }} -->
                 </div>
                 <div class="flex justify-end p-3 border-t">
                     <a-button type="primary" @click="handleNext">Next</a-button>
@@ -111,8 +116,9 @@
         toRefs,
         computed,
         onBeforeMount,
+        provide,
     } from 'vue'
-
+    import { message } from 'ant-design-vue'
     // Components
     import EmptyView from '@common/empty/index.vue'
     import SetupGraph from './setupGraph.vue'
@@ -131,203 +137,7 @@
                 type: Object,
                 required: false,
                 default() {
-                    return {
-                        title: 'Config Map',
-                        description: 'Config Map for input parameters',
-                        properties: {
-                            'connection-name': {
-                                type: 'string',
-                                required: false,
-                                ui: {
-                                    label: 'Connection Name',
-                                    placeholder: 'Connection Name',
-                                },
-                            },
-                            'connection-qualifiedName': {
-                                type: 'string',
-                                required: false,
-                                ui: {
-                                    label: 'Connection Qualified Name',
-                                    placeholder: 'Connection Name',
-                                },
-                            },
-                            mode: {
-                                type: 'string',
-                                enum: ['production', 'test', 'dev'],
-                                default: 'production',
-                                enumNames: [
-                                    'Production',
-                                    'Test',
-                                    'Development',
-                                ],
-                                ui: {
-                                    widget: 'select',
-                                    label: 'Mode',
-                                    placeholder: 'Connection Mode',
-                                },
-                            },
-                            'credentials-fetch-strategy': {
-                                type: 'string',
-                                enum: ['k8s_secret', 'credential_guid'],
-                                default: 'credential_guid',
-                                enumNames: [
-                                    'k8s Secret Key',
-                                    'Credential Guid',
-                                ],
-                                ui: {
-                                    widget: 'select',
-                                    label: 'Credential Type',
-                                    placeholder: 'Credential Type',
-                                },
-                            },
-                            'credential-guid': {
-                                type: 'string',
-                                ui: {
-                                    widget: 'credential',
-                                    label: '',
-                                    credentialType:
-                                        'atlan-connectors-snowflake',
-                                    placeholder: 'Credential Guid',
-                                    hidden: false,
-                                },
-                            },
-                            'credential-kube-secret-name': {
-                                type: 'string',
-                                ui: {
-                                    label: 'Credential Secret Name',
-                                    placeholder: 'Credential Secret Name',
-                                    hidden: true,
-                                },
-                            },
-                            crawler_name: {
-                                type: 'string',
-                                ui: {
-                                    label: 'Workflow Name',
-                                },
-                            },
-                            'atlas-auth-type': {
-                                type: 'string',
-                                enum: ['internal', 'apikey'],
-                                default: 'internal',
-                                enumNames: ['Internal', 'API Key'],
-                                ui: {
-                                    widget: 'select',
-                                    label: 'Atlas Authentication Type',
-                                    placeholder: 'Atlas Authentication  Type',
-                                },
-                            },
-                            'allow-preview': {
-                                type: 'boolean',
-                                default: true,
-                                ui: {
-                                    label: 'Allow Preview',
-                                },
-                            },
-                            'allow-query': {
-                                type: 'boolean',
-                                default: true,
-                                ui: {
-                                    label: 'Allow Query',
-                                },
-                            },
-                            'auto-classification': {
-                                type: 'boolean',
-                                default: true,
-                                ui: {
-                                    label: 'Auto-Classification',
-                                },
-                            },
-                            'row-limit': {
-                                type: 'number',
-                                default: 10000,
-                                ui: {
-                                    label: 'Row Limit',
-                                },
-                            },
-                            'runtime-properties': {
-                                type: 'object',
-                                ui: {
-                                    label: 'Run time properties',
-                                },
-                            },
-                            'include-filter': {
-                                type: 'object',
-                                additionalProperties: {
-                                    type: 'array',
-                                },
-                                ui: {
-                                    widget: 'sqltree',
-                                    label: 'Include SQL',
-                                },
-                            },
-                            'exclude-filter': {
-                                type: 'object',
-                                additionalProperties: {
-                                    type: 'array',
-                                },
-                                ui: {
-                                    widget: 'sqltree',
-                                    label: 'Exclude SQL',
-                                },
-                            },
-                        },
-                        anyOf: [
-                            {
-                                properties: {
-                                    'credentials-fetch-strategy': {
-                                        const: 'k8s_secret',
-                                    },
-                                },
-                                required: ['credential-kube-secret-name'],
-                            },
-                            {
-                                properties: {
-                                    'credentials-fetch-strategy': {
-                                        const: 'credential_guid',
-                                    },
-                                },
-                                required: ['credential-guid'],
-                            },
-                        ],
-                        steps: [
-                            {
-                                id: 'credential',
-                                title: 'Credential',
-                                description: 'Credential',
-                                properties: [
-                                    'credential-guid',
-                                    'include-filter',
-                                    'exclude-filter',
-                                ],
-                            },
-                            {
-                                id: 'metadata',
-                                title: 'Metadata',
-                                description: 'Metadata',
-                                properties: [
-                                    'include-filter',
-                                    'exclude-filter',
-                                ],
-                            },
-                            {
-                                id: 'publish',
-                                title: 'Publish',
-                                description: 'Publish',
-                                properties: ['mode', 'auto-classification'],
-                            },
-                            {
-                                id: 'details',
-                                title: 'Details',
-                                description: 'Details',
-                                properties: [
-                                    'connection-name',
-                                    'row-limit',
-                                    'allow-preview',
-                                    'allow-query',
-                                ],
-                            },
-                        ],
-                    }
+                    return {}
                 },
             },
         },
@@ -339,6 +149,9 @@
 
             const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
+
+            provide('workflowTemplate', workflowTemplate)
+
             const tasks = computed(() => {
                 if (workflowTemplate.value?.workflowtemplate) {
                     const { entrypoint } =
@@ -405,11 +218,15 @@
                 selectedStep.value = event
             }
 
-            const handleNext = () => {
+            const handleNext = async () => {
                 if (stepForm.value) {
-                    stepForm.value.validateForm()
+                    const err = await stepForm.value.validateForm()
+                    if (err) {
+                        message.error('Please review the entered details')
+                    } else {
+                        currentStep.value += 1
+                    }
                 }
-                currentStep.value += 1
             }
             // watch(data, (newVal) => {
             //     const meta =

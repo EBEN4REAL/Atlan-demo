@@ -5,6 +5,7 @@
         class="w-full"
         @change="handleChange"
         :showSearch="true"
+        mode="multiple"
         @search="handleSearch"
     >
         <a-select-option :value="item.username" v-for="item in userList">

@@ -25,7 +25,6 @@
             <AtlanIcon icon="Refresh" v-else></AtlanIcon>
         </a-button>
     </a-input-group>
-    {{ body }}
 </template>
 
 <script lang="ts">
@@ -97,6 +96,7 @@
                 isLoading,
                 error,
                 query,
+                body,
             }
         },
         components: { AtlanIcon },

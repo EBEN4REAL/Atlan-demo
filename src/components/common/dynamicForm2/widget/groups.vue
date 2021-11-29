@@ -1,21 +1,21 @@
 <template>
-    <CustomRadioButton
-        :list="list"
+    <GroupSelect
+        v-bind="componentProps"
         v-model="localValue"
         @change="handleChange"
-    ></CustomRadioButton>
+    ></GroupSelect>
 </template>
 
 <script>
     import { defineComponent, toRefs, computed, ref } from 'vue'
 
-    import CustomRadioButton from '@common/radio/customRadioButtonSingle.vue'
+    import GroupSelect from '@common/select/groups.vue'
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'FormBuilder',
         components: {
-            CustomRadioButton,
+            GroupSelect,
         },
         props: {
             property: {
@@ -27,32 +27,31 @@
                 required: false,
             },
         },
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const { property } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
+
+            const localValue = ref(modelValue.value)
 
             const list = computed(() => {
                 const temp = []
-                temp.push({
-                    id: 'true',
-                    label: 'Yes',
-                })
-                temp.push({
-                    id: 'false',
-                    label: 'No',
+
+                property.value.enum.forEach((item, index) => {
+                    temp.push({
+                        id: item,
+                        label: property.value.enumNames[index] || item,
+                    })
                 })
                 return temp
             })
 
-            const { property } = toRefs(props)
-            const componentProps = computed(() => property.value.ui)
-
-            const localValue = ref(modelValue.value)
-
             const handleChange = () => {
-                console.log('change')
                 modelValue.value = localValue.value
                 emit('change', localValue.value)
             }
+
+            const componentProps = computed(() => property.value.ui)
             return { property, componentProps, list, localValue, handleChange }
         },
     })

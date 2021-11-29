@@ -1,8 +1,19 @@
 <template>
-    <a-input
-        v-bind="componentProps"
-        v-model:value="formState[property.id]"
-    ></a-input>
+    <a-input v-bind="componentProps" v-model:value="formState[property.id]">
+        <template
+            #prefix
+            v-if="componentProps.prefixText || componentProps.prefixImage"
+        >
+            <span class="flex items-center">
+                <img
+                    :src="componentProps.prefixImage"
+                    class="w-auto h-4 pr-1"
+                />
+
+                <span>{{ componentProps.prefixText }}</span></span
+            >
+        </template>
+    </a-input>
 </template>
 
 <script>
@@ -26,6 +37,16 @@
                 required: false,
                 type: Object,
                 default: () => {},
+            },
+            prefixImage: {
+                required: false,
+                type: String,
+                default: () => '',
+            },
+            prefixText: {
+                required: false,
+                type: String,
+                default: () => '',
             },
         },
         setup(props, { emit }) {

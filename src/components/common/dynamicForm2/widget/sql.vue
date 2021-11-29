@@ -1,6 +1,5 @@
 <template>
     <SQLSelect
-        v-bind="componentProps"
         :credential="credentialBody"
         :query="property.ui.query"
         v-model="formState[property.id]"
@@ -11,7 +10,6 @@
     import { defineComponent, toRefs, computed, ref, inject } from 'vue'
 
     import SQLSelect from '@common/select/sql.vue'
-    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'FormBuilder',

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-4 bg-white rounded" style="min-height: 140px">
+    <div class="flex flex-col p-4 bg-white rounded">
         <div>
             <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center">
@@ -10,11 +10,12 @@
                 </div>
 
                 <a-button
-                    class="flex items-center"
                     v-if="!isLoading && !content && isEdit && !isEditMode"
+                    class="flex items-center"
+                    type="primary"
                     @click="handleEditMode"
                 >
-                    <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Start a
+                    <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Add a
                     readme</a-button
                 >
 
@@ -23,9 +24,9 @@
                     class="flex gap-x-1"
                 >
                     <a-button
+                        v-if="!isAssetUpdateLoading"
                         class="flex items-center"
                         @click="handleCancel"
-                        v-if="!isAssetUpdateLoading"
                     >
                         Cancel</a-button
                     >
@@ -33,16 +34,17 @@
                     <a-button
                         class="flex items-center"
                         type="primary"
-                        @click="handleUpdate"
                         :loading="isAssetUpdateLoading"
+                        @click="handleUpdate"
                     >
                         Save</a-button
                     >
                 </div>
 
                 <a-button
-                    class="flex items-center"
                     v-if="!isLoading && isEdit && content && !isEditMode"
+                    class="flex items-center"
+                    type="primary"
                     @click="handleEditMode"
                 >
                     <AtlanIcon
@@ -52,20 +54,20 @@
                 >
             </div>
             <span
-                class="text-sm text-gray-500"
                 v-if="!isLoading && !content && !isEditMode"
-                >Add some details here ...</span
+                class="text-sm text-gray-500"
+                >Add a README with an overview of your asset.</span
             >
         </div>
-        <div class="h-24" v-if="isLoading" style="min-height: 200px">
+        <div v-if="isLoading" class="h-24" style="min-height: 200px">
             <SectionLoader></SectionLoader>
         </div>
         <div
-            class="border-0"
-            style="min-height: 200px"
             v-else-if="(guid && !isLoading) || isEditMode || readme.guid"
+            class="border-0"
+            style="min-height: 200px; transition: min-height 0.3s ease-in-out"
         >
-            <Editor ref="editor" :isEditMode="isEditMode" v-model="content" />
+            <Editor ref="editor" v-model="content" :is-edit-mode="isEditMode" />
         </div>
     </div>
 </template>

@@ -9,6 +9,12 @@ const Test = (
     options?: useOptions
 ) => useAPI(map.TEST_CREDENTIAL, 'POST', { body }, options || {})
 
+const Query = (
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) => useAPI(map.QUERY_CREDENTIAL, 'POST', { body }, options || {})
+
 export const Credential = {
     Test,
+    Query,
 }

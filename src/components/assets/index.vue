@@ -111,6 +111,9 @@
                     ></EmptyView>
                 </div>
 
+                <!--                             :show-check-box="
+                                preference?.display?.includes('enableCheckbox')
+                            " -->
                 <AssetList
                     v-else
                     ref="assetlistRef"
@@ -126,9 +129,7 @@
                             :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
                             :preference="preference"
-                            :show-check-box="
-                                preference?.display?.includes('enableCheckbox')
-                            "
+                            :show-check-box="showCheckBox"
                             :bulk-select-mode="
                                 bulkSelectedAssets && bulkSelectedAssets.length
                                     ? true
@@ -223,6 +224,11 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            showCheckBox: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
             checkedCriteria: {
                 type: String,

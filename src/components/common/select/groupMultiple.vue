@@ -1,26 +1,26 @@
 <template>
     <a-select
-        placeholder="Users"
+        placeholder="Groups"
         v-model:value="localValue"
         class="w-full"
         @change="handleChange"
         :showSearch="true"
+        mode="multiple"
         @search="handleSearch"
     >
-        <a-select-option :value="item.username" v-for="item in userList">
-            {{ fullName(item) }}
+        <a-select-option :value="item.name" v-for="item in list">
+            {{ item.alias || item.name }}
         </a-select-option>
     </a-select>
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, computed, ref } from 'vue'
+    import { defineComponent, watch, ref } from 'vue'
     import { useVModels } from '@vueuse/core'
-    import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useUserData from '~/composables/user/useUserData'
+    import useFacetGroups from '~/composables/group/useFacetGroups'
 
     export default defineComponent({
-        name: 'OwnersFilter',
+        name: 'GroupsSelect',
         props: {
             queryText: {
                 type: String,
@@ -37,40 +37,15 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { list, handleSearch, total } = useFacetUsers()
-            const { username, firstName, lastName } = useUserData()
+
+            const { list, handleSearch, total } = useFacetGroups()
+
             watch(
                 () => props.queryText,
                 () => {
                     handleSearch(props.queryText)
                 }
             )
-            const userList = computed(() => {
-                if (props.queryText !== '') {
-                    return [...list.value]
-                }
-                const tempList = list.value.filter(
-                    (obj) => obj.username !== username
-                )
-                return [
-                    {
-                        username,
-                        first_name: firstName,
-                        last_name: lastName,
-                    },
-                    ...tempList,
-                ]
-            })
-
-            const fullName = (item) => {
-                if (item.first_name) {
-                    return `${item.first_name} ${item.last_name || ''}`
-                }
-                return `${item.username}`
-            }
-
-            const avatarUrl = (item) =>
-                `${window.location.origin}/api/services/avatar/${item.username}`
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -78,10 +53,8 @@
             }
 
             return {
-                userList,
-                fullName,
-                avatarUrl,
-                username,
+                list,
+
                 handleSearch,
                 total,
                 localValue,

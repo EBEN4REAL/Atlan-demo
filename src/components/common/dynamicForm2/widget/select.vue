@@ -1,6 +1,5 @@
 <template>
     <CustomSelect
-        v-bind="componentProps"
         :list="list"
         v-model="localValue"
         @change="handleChange"

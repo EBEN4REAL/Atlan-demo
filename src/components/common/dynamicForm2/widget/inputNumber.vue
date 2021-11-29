@@ -27,7 +27,6 @@
             const componentProps = computed(() => property.value.ui)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-
             debouncedWatch(
                 localValue,
                 () => {
@@ -36,7 +35,6 @@
                 },
                 { debounce: 500 }
             )
-
             return { property, componentProps, localValue, modelValue }
         },
     })

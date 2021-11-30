@@ -9,14 +9,46 @@
                 class="flex flex-col px-6 overflow-y-auto"
                 style="height: calc(100% - 100px)"
             >
-                <PackageList :list="list" @select="handleSelect"></PackageList>
+                <div
+                    v-if="isLoading"
+                    class="flex items-center justify-center flex-grow"
+                >
+                    <AtlanIcon
+                        icon="Loader"
+                        class="w-auto h-10 animate-spin"
+                    ></AtlanIcon>
+                </div>
+                <div
+                    v-if="!isLoading && error"
+                    class="flex items-center justify-center flex-grow"
+                >
+                    <ErrorView></ErrorView>
+                </div>
+                <div
+                    v-else-if="list.length === 0 && !isLoading"
+                    class="flex-grow"
+                >
+                    <EmptyView
+                        empty-screen="EmptyDiscover"
+                        desc="
+                           No packages were found
+                        "
+                        class="mb-10"
+                    ></EmptyView>
+                </div>
+
+                <PackageList
+                    :list="list"
+                    @select="handleSelect"
+                    v-else
+                ></PackageList>
             </div>
         </div>
 
         <div class="relative hidden bg-white asset-preview-container md:block">
             <div
                 class="flex flex-col h-full p-6 bg-white"
-                v-if="selectedPackage"
+                v-if="selectedPackage?.workflowtemplate"
             >
                 <div
                     class="flex items-center"
@@ -25,7 +57,7 @@
                     "
                 >
                     <div
-                        class="p-2 mr-2 bg-white border border-gray-200 rounded-full "
+                        class="p-2 mr-2 bg-white border border-gray-200 rounded-full"
                     >
                         <img
                             v-if="
@@ -42,7 +74,7 @@
                     </div>
                     <div class="flex flex-col">
                         <div
-                            class="text-base font-bold truncate  overflow-ellipsis"
+                            class="text-base font-bold truncate overflow-ellipsis"
                         >
                             {{
                                 selectedPackage.workflowtemplate.metadata
@@ -93,12 +125,20 @@
 
                 <a-button type="primary" @click="handleSetup">Setup</a-button>
             </div>
+            <EmptyView
+                empty-screen="EmptyDiscover"
+                desc="
+                           No packages selected
+                        "
+            ></EmptyView>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
 
     import PackageList from '@/packages/list/index.vue'
 
@@ -111,6 +151,8 @@
         components: {
             Editor,
             PackageList,
+            EmptyView,
+            ErrorView,
         },
         props: {
             showFilters: {
@@ -144,7 +186,7 @@
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
-            const { refresh, isLoading, list } = usePackageList({
+            const { refresh, isLoading, list, error } = usePackageList({
                 isCache: true,
                 dependentKey,
                 queryText,
@@ -174,6 +216,7 @@
                 handleSelect,
                 selectedPackage,
                 handleSetup,
+                error,
             }
         },
     })

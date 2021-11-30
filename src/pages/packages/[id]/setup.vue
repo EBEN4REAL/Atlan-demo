@@ -27,7 +27,7 @@
     } from 'vue'
 
     import Loader from '@/common/loaders/page.vue'
-    import ErrorView from '@/common/error/index.vue'
+    import ErrorView from '@common/error/discover.vue'
     import PackagesSetup from '@/packages/setup/index.vue'
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'

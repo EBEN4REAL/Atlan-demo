@@ -177,8 +177,6 @@
     .glossarySelectPopover {
         .ant-popover-inner-content {
             width: 250px !important;
-
-            @apply p-0 !important;
         }
     }
 </style>

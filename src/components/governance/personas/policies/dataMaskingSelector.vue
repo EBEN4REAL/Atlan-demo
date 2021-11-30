@@ -3,6 +3,7 @@
         :value="maskType"
         class="mb-6 w-80"
         @update:value="$emit('update:maskType', $event)"
+        data-test-id="datamasking-select"
     >
         <a-select-option
             v-for="opt in maskingOptions"
@@ -79,7 +80,7 @@
             // FIXME: Take it out to a config file
             const maskingOptions = [
                 {
-                    value: 'MASK_NONE',
+                    value: 'null',
                     label: 'None',
                     borderBottom: true,
                 },
@@ -164,9 +165,6 @@
     })
 </script>
 
-<style lang="less" module>
-    // FIXME: Styling is not working for some reason
-</style>
 <style lang="less" scoped>
     .light-border {
         border: 1px solid #bdcdf4;

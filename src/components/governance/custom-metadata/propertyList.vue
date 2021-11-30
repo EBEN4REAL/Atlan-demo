@@ -18,9 +18,9 @@
                 <div
                     v-for="(property, index) in properties"
                     :id="`prop-${property.name}`"
-                    :key="index"
+                    :key="property.name"
                     :data-property="property"
-                    class="relative flex items-center justify-between last:rounded-b"
+                    class="relative flex items-center justify-between  last:rounded-b"
                     style="height: 44px"
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
@@ -35,16 +35,21 @@
                             class="leading-none cursor-pointer align-center"
                             style="width: 248px"
                             @click="
-                                $emit('openEditDrawer', { property, index })"
+                                $emit('openEditDrawer', { property, index })
+                            "
                         >
-                            <span class="text-primary">{{ property.displayName }}</span>
+                            <span class="text-primary">{{
+                                property.displayName
+                            }}</span>
                             <a-tooltip>
                                 <template #title>
-                                    <span>{{property.options.description}}</span>
+                                    <span>{{
+                                        property.options.description
+                                    }}</span>
                                 </template>
                                 <AtlanIcon
                                     v-if="property.options.description"
-                                    class="inline h-4 ml-2 text-gray-400 hover:text-gray-500"
+                                    class="inline h-4 ml-2 text-gray-400  hover:text-gray-500"
                                     :icon="'Info'"
                                 />
                             </a-tooltip>
@@ -117,7 +122,7 @@
                 </div>
                 <div
                     v-if="isSorting"
-                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
+                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
                 >
                     <a-spin size="large" />
                 </div>
@@ -135,13 +140,11 @@
         computed,
         onMounted,
         watch,
-        Ref,
         nextTick,
     } from 'vue'
-    import { copyToClipboard } from '~/utils/clipboard'
     import { message, Modal } from 'ant-design-vue'
+    import { copyToClipboard } from '~/utils/clipboard'
     import { Types } from '~/services/meta/types'
-
     import { useTypedefStore } from '~/store/typedef'
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
 
@@ -156,7 +159,7 @@
                 default: () => {},
             },
         },
-        emits: ['openEditDrawer', 'removeProperty', 'changeOrder'],
+        emits: ['openEditDrawer', 'removeProperty'],
         setup(props, { emit }) {
             const store = useTypedefStore()
             const { metadata, properties } = toRefs(props)
@@ -166,6 +169,32 @@
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
+
+            const mapTypeToIcon = (id, property) => {
+                const foundIcon = attributesTypes.find(
+                    (x) =>
+                        x.id ===
+                        (property.options?.customType
+                            ? property.options?.customType
+                            : id) // if has customType property, use it instead of id to search for icon
+                )?.icon // find icon in attributesTypes
+                if (property.options?.isEnum === 'true') return 'Enum'
+                return foundIcon
+            }
+
+            const resolveType = (property) => {
+                if (property.options?.customType) {
+                    return property.options?.customType
+                }
+                const label = attributesTypes.find(
+                    (x) =>
+                        x.id ===
+                        (property.options?.customType
+                            ? property.options?.customType
+                            : property.typeName) // if has customType property, use it instead of id to search for icon
+                )?.label
+                return label || property.typeName
+            }
 
             const copyAPI = (text: string, theMessage: String) => {
                 copyToClipboard(text)
@@ -241,7 +270,7 @@
             const handleDrag = (item) => {
                 item.preventDefault()
                 const selectedItem = item.target
-                const list = selectedItem.parentNode
+                const parent = selectedItem.parentNode
                 const x = event.clientX
                 const y = event.clientY
 
@@ -251,12 +280,12 @@
                         ? selectedItem
                         : document.elementFromPoint(x, y)
 
-                if (list === swapItem.parentNode) {
+                if (parent === swapItem.parentNode) {
                     swapItem =
                         swapItem !== selectedItem.nextSibling
                             ? swapItem
                             : swapItem.nextSibling
-                    list.insertBefore(selectedItem, swapItem)
+                    parent.insertBefore(selectedItem, swapItem)
                 }
             }
             const updatePropertyValuesStore = () => {
@@ -277,7 +306,10 @@
                     if (isReady && !error.value) {
                         isSorting.value = false
                         message.success('Arrangement saved.')
-                        store.updateCustomMetadata(tempBM)
+                        store.updateCustomMetadata(
+                            data.value.businessMetadataDefs[0]
+                        )
+                        store.tickForceRevalidate()
                     } else if (error && error.value) {
                         isSorting.value = false
                         message.error('Unable to save order, please try again')
@@ -301,34 +333,8 @@
 
             watch(properties, async () => {
                 await nextTick() // wait for new property to be available in DOM
-                reInitializeDragSort()
+                // reInitializeDragSort()
             })
-
-            const mapTypeToIcon = (id, property) => {
-                const foundIcon = attributesTypes.find(
-                    (x) =>
-                        x.id ===
-                        (property.options?.customType
-                            ? property.options?.customType
-                            : id) // if has customType property, use it instead of id to search for icon
-                )?.icon // find icon in attributesTypes
-                if (property.options?.isEnum === 'true') return 'Enum'
-                return foundIcon
-            }
-
-            const resolveType = (property) => {
-                if (property.options?.customType) {
-                    return property.options?.customType
-                }
-                const label = attributesTypes.find(
-                    (x) =>
-                        x.id ===
-                        (property.options?.customType
-                            ? property.options?.customType
-                            : property.typeName) // if has customType property, use it instead of id to search for icon
-                )?.label
-                return label || property.typeName
-            }
 
             return {
                 copyAPI,

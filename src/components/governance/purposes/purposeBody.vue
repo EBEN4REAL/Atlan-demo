@@ -3,17 +3,27 @@
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
             <template #label="t">
                 <div class="flex items-center">
-                    <span
-                        class="text-base"
+                    <div
+                        class="relative text-sm"
                         :class="
                             activeTabKey === t?.data?.key
-                                ? 'text-gray-700'
+                                ? 'text-gray-700 fake-bold'
                                 : 'text-gray-500'
                         "
-                        >{{ t?.data?.label }}</span
                     >
+                        {{ t?.data?.label }}
+                    </div>
                     <div
-                        class="px-1 py-0.5 ml-2 text-sm font-bold rounded"
+                        class="
+                            px-1
+                            py-0.5
+                            ml-2
+                            text-xs
+                            font-bold
+                            rounded
+                            flex
+                            items-center
+                        "
                         v-if="t?.data?.key === 'policies'"
                         :class="
                             activeTabKey === t?.data?.key
@@ -21,11 +31,12 @@
                                 : 'text-gray-500 bg-gray-100'
                         "
                     >
-                        {{
-                            selectedPersonaDirty?.resourcePolicies?.length ??
-                            0 + selectedPersonaDirty?.datapolicies?.length ??
-                            0
-                        }}
+                        <div class="mt-0.5">
+                            {{
+                                selectedPersonaDirty?.metadataPolicies?.length +
+                                selectedPersonaDirty?.dataPolicies?.length
+                            }}
+                        </div>
                     </div>
                 </div>
             </template>
@@ -36,40 +47,42 @@
                 v-if="activeTabKey === 'details'"
                 class="pb-2"
                 :persona="persona"
+                :username="username"
             />
             <div v-else-if="activeTabKey === 'policies'" class="mt-2">
                 <template
                     v-for="(
                         policy, idx
-                    ) in selectedPersonaDirty.resourcePolicies"
+                    ) in selectedPersonaDirty.metadataPolicies"
                     :key="idx"
                 >
                     <!-- Render it if the policy is being edited -->
                     <MetadataPolicy
-                        v-if="policyEditMap.resourcePolicies[policy.id!]"
+                        v-if="policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
                         class="px-5"
                         :policy="policy"
-                        @delete="deletePolicyUI('meta', policy.id!)"
                         @save="savePolicyUI('meta', policy.id!)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                     />
 
                     <PolicyCard
-                        v-else
+                        v-else-if="!policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
                         class="px-5"
                         :policy="policy"
                         type="meta"
                         @edit="setEditFlag('meta', policy.id!)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
+                        @cancel="discardPolicy('meta', policy.id!)"
                     />
                 </template>
-
                 <template
                     v-for="(policy, idx) in selectedPersonaDirty.dataPolicies"
                     :key="idx"
                 >
                     <!-- Render it if the policy is being edited -->
                     <DataPolicy
-                        v-if="policyEditMap.dataPolicies[policy.id!]"
+                        v-if="policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
                         class="px-5"
                         :policy="policy"
                         @delete="deletePolicyUI('data', policy.id!)"
@@ -78,16 +91,52 @@
                     />
                     <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
                     <PolicyCard
-                        v-else
+                        v-else-if="!policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
                         class="px-5"
                         :policy="policy"
                         type="data"
                         @edit="setEditFlag('data', policy.id!)"
+                        @delete="deletePolicyUI('data', policy.id!)"
+                        @cancel="discardPolicy('data', policy.id!)"
                     />
                 </template>
+                <!-- For pusing the new edit policy to bottom -->
+                <template
+                    v-for="(
+                        policy, idx
+                    ) in selectedPersonaDirty.metadataPolicies"
+                    :key="idx"
+                >
+                    <!-- Render it if the new policy is being edited -->
+                    <MetadataPolicy
+                        v-if="policyEditMap.metadataPolicies[policy.id!] && policy?.id?.includes(newIdTag)"
+                        class="px-5"
+                        :policy="policy"
+                        @save="savePolicyUI('meta', policy.id!)"
+                        @delete="deletePolicyUI('meta', policy.id!)"
+                        @cancel="discardPolicy('meta', policy.id!)"
+                    />
+                </template>
+
+                <template
+                    v-for="(policy, idx) in selectedPersonaDirty.dataPolicies"
+                    :key="idx"
+                >
+                    <!-- Render it if the new data policy is being edited -->
+                    <DataPolicy
+                        v-if="policyEditMap.dataPolicies[policy.id!] &&  policy?.id?.includes(newIdTag)"
+                        class="px-5"
+                        :policy="policy"
+                        @delete="deletePolicyUI('data', policy.id!)"
+                        @save="savePolicyUI('data', policy.id!)"
+                        @cancel="discardPolicy('data', policy.id!)"
+                    />
+                </template>
+
+                <!-- ------------------ -->
                 <div
                     v-if="
-                        !selectedPersonaDirty.resourcePolicies?.length &&
+                        !selectedPersonaDirty.metadataPolicies?.length &&
                         !selectedPersonaDirty.dataPolicies?.length
                     "
                     class="flex flex-col items-center justify-center mt-8"
@@ -126,6 +175,7 @@
                                 <div class="flex items-center">
                                     <AtlanIcon
                                         v-if="option.icon"
+                                        class="w-4 h-4 text-gray-600"
                                         :icon="option.icon"
                                     />
                                     <span class="pl-2 text-sm">{{
@@ -137,12 +187,32 @@
                     </template>
                 </a-dropdown>
             </div>
+            <div v-else-if="activeTabKey === 'linked_assets'" class="mt-2">
+                <div class="wrapper-height">
+                    <AssetsWrapper
+                        :initialFilters="filterConfig"
+                        :showFilters="false"
+                        page="purposes"
+                    />
+                    <!-- <LinkedTerms
+                v-else-if="activeTabKey === '2'"
+                :selected-classification="selectedClassification?.name"
+            /> -->
+                </div>
+            </div>
         </div>
     </template>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        computed,
+        toRefs,
+        watch,
+    } from 'vue'
     import { message } from 'ant-design-vue'
 
     import MinimalTab from '@/UI/minimalTab.vue'
@@ -154,10 +224,12 @@
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PurposeMeta from './overview/purposeMeta.vue'
-    import { IPersona } from '~/types/accessPolicies/purposes'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import {
+        newIdTag,
         selectedPersonaDirty,
         addPolicy,
+        updateSelectedPersona,
         deletePolicy,
         policyEditMap,
         setEditFlag,
@@ -167,6 +239,9 @@
         PolicyType,
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
+    import { selectedPersona } from './composables/usePurposeList'
+    import { getUsername } from './composables/getUsername'
+    import AssetsWrapper from '@/assets/index.vue'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -177,14 +252,19 @@
             DataPolicy,
             AtlanBtn,
             PurposeMeta,
+            AssetsWrapper,
         },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },
-        setup() {
+        setup(props) {
+            const { persona } = toRefs(props)
+            const userId = computed(() => persona.value.created_by)
+            const { username } = getUsername(userId)
+
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
@@ -193,7 +273,7 @@
                 },
                 {
                     title: 'Data Policy',
-                    icon: 'Queries',
+                    icon: 'Query',
                     handleClick: () => addPolicy('data'),
                 },
             ]
@@ -207,14 +287,24 @@
                 })
                 try {
                     await savePolicy(type, id)
+                    if (type === 'meta')
+                        policyEditMap.value.metadataPolicies[id] = false
+                    else if (type === 'data')
+                        policyEditMap.value.dataPolicies[id] = false
+                    updateSelectedPersona()
+
+                    // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
                         duration: 1.5,
                         key: messageKey,
                     })
                 } catch (error) {
+                    console.log(error?.response?.data, 'error')
                     message.error({
-                        content: 'Failed to save policy',
+                        content:
+                            error?.response?.data?.message ??
+                            'Failed to delete policy',
                         duration: 1.5,
                         key: messageKey,
                     })
@@ -230,6 +320,7 @@
                 })
                 try {
                     await deletePolicy(type, id)
+                    updateSelectedPersona()
                     message.success({
                         content: 'Policy deleted',
                         duration: 1.5,
@@ -243,8 +334,18 @@
                     })
                 }
             }
+            const filterConfig = computed(() => ({
+                __traitNames: {
+                    classifications: persona.value.tags,
+                },
+            }))
 
             return {
+                filterConfig,
+                newIdTag,
+                userId,
+                username,
+                selectedPersona,
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,

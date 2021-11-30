@@ -7,15 +7,6 @@
         <slot></slot>
         <template #overlay>
             <a-menu mode="vertical">
-                <a-menu-item key="copyLink" @click="handleCopyProfileLink">
-                    <div class="flex items-center">
-                        <AtlanIcon icon="CopyOutlined" />
-                        <span class="pl-2 text-sm">
-                            Copy asset profile link
-                        </span>
-                    </div>
-                </a-menu-item>
-
                 <!-- <a-sub-menu key="status" :disabled="!editPermission">
                     <template #title>
                         <div class="flex items-center justify-between">

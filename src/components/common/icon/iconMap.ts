@@ -30,14 +30,24 @@ import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
+import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
+import DatabaseVerified from '~/assets/images/icons/database_verified.svg'
+import DatabaseDeprecated from '~/assets/images/icons/database_deprecated.svg'
+import DatabaseDraft from '~/assets/images/icons/database_draft.svg'
 import DatabaseGray from '~/assets/images/icons/database-gray.svg'
 import Schema from '~/assets/images/icons/schema.svg'
+import SchemaVerified from '~/assets/images/icons/schema_verified.svg'
+import SchemaDeprecated from '~/assets/images/icons/schema_deprecated.svg'
+import SchemaDraft from '~/assets/images/icons/schema_draft.svg'
 import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
 import TableGray from '~/assets/images/icons/table-gray.svg'
 import View from '~/assets/images/icons/view.svg'
+import ViewDeprecated from '~/assets/images/icons/view_deprecated.svg'
+import ViewDraft from '~/assets/images/icons/view_draft.svg'
+import ViewVerified from '~/assets/images/icons/view_verified.svg'
 import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
@@ -237,7 +247,11 @@ import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
+
+// source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
+import Column from '~/assets/images/icons/column.svg'
 import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
 // source list
@@ -247,8 +261,14 @@ import Tableau from '~/assets/images/source/svg/Tableau.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
+import Close from '~/assets/images/icons/close.svg'
+
+import ShieldCheck from '~/assets/images/icons/shield-check.svg'
 
 export default {
+    ShieldCheck,
+    Hash,
+    Column,
     CreateGroups,
     NoGroups,
     NoUsers,
@@ -492,4 +512,17 @@ export default {
     QueriesActive,
     CaretDown,
     GovernanceCenter,
+    Close,
+    CheckCurrentColor,
+    DatabaseVerified,
+    DatabaseDeprecated,
+    DatabaseDraft,
+    
+    SchemaVerified,
+    SchemaDeprecated,
+    SchemaDraft,
+    ViewDeprecated,
+    ViewDraft,
+    ViewVerified
+    
 }

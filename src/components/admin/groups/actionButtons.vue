@@ -17,7 +17,7 @@
                     h-8
                     border
                     rounded
-                    shadow
+                    customShadow
                     cursor-pointer
                 "
                 @click="$emit('addMembers')"
@@ -32,7 +32,7 @@
             @visibleChange="handleVisibleChange"
         >
             <div
-                class="flex items-center justify-center w-8 h-8 border rounded shadow cursor-pointer "
+                class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
             >
                 <AtlanIcon icon="KebabMenu" class="text-gray-500"></AtlanIcon>
             </div>
@@ -169,3 +169,9 @@
         },
     })
 </script>
+
+<style lang="less">
+    .customShadow {
+        box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
+    }
+</style>

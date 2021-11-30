@@ -6,25 +6,37 @@
         :closable="false"
         :mask-closable="false"
     >
-        <!-- <template #title />
+        <div class="p-4 rounded">
+            <!-- <template #title />
         <p class="mb-4 text-base font-bold text-gray">{{ title }}</p> -->
-        <slot />
-        <div class="flex items-center justify-end gap-x-4">
-            <AtlanBtn
-                color="secondary"
-                padding="compact"
-                @click="$emit('cancel')"
-                >{{ cancelText }}</AtlanBtn
+            <slot />
+            <div
+                class="flex items-center gap-x-4"
+                :class="extraFooterContent ? 'justify-between' : 'justify-end '"
             >
-            <AtlanBtn padding="compact" @click="$emit('ok')">{{
-                okText
-            }}</AtlanBtn>
+                <slot name="extraFooterContent" />
+                <div class="flex items-center gap-x-4">
+                    <AtlanBtn
+                        color="secondary"
+                        padding="compact"
+                        class="border-none"
+                        @click="$emit('cancel')"
+                        >{{ cancelText }}</AtlanBtn
+                    >
+                    <AtlanBtn
+                        :disabled="!title ? true : false"
+                        padding="compact"
+                        @click="$emit('ok')"
+                        >{{ okText }}</AtlanBtn
+                    >
+                </div>
+            </div>
         </div>
     </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, computed } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
@@ -39,5 +51,15 @@
             },
         },
         emits: ['cancel', 'ok'],
+        setup(_, { slots }) {
+            const extraFooterContent = computed(
+                () =>
+                    slots.extraFooterContent &&
+                    slots.extraFooterContent().length
+            )
+            return {
+                extraFooterContent,
+            }
+        },
     })
 </script>

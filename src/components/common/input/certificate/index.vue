@@ -2,7 +2,7 @@
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
             placement="leftBottom"
-            overlayClassName="certificatePopover"
+            :overlayClassName="$style.certificatePopover"
             @visibleChange="handleVisibleChange"
             v-model:visible="isEdit"
             :trigger="['click']"
@@ -23,15 +23,15 @@
             </template>
 
             <CertificatePill
-                class="w-full"
                 v-if="
-                    localValue.certificateStatus !== 'NONE' &&
-                    localValue.certificateStatus
+                    certificateStatus(selectedAsset) !== 'NONE' &&
+                    certificateStatus(selectedAsset)
                 "
-                :status="localValue.certificateStatus"
-                :message="localValue.certificateStatusMessage"
-                :username="localValue.certificateUpdatedBy"
-                :timestamp="localValue.certificateUpdatedAt"
+                class="w-full"
+                :status="certificateStatus(selectedAsset)"
+                :message="certificateStatusMessage(selectedAsset)"
+                :username="certificateUpdatedBy(selectedAsset)"
+                :timestamp="certificateUpdatedAt(selectedAsset)"
             ></CertificatePill>
             <a-button
                 v-else
@@ -98,6 +98,14 @@
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
 
+            const {
+                certificateStatus,
+                certificateStatusMessage,
+                certificateUpdatedBy,
+                certificateUpdatedAt,
+                selectedAsset,
+            } = useAssetInfo()
+
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -146,15 +154,20 @@
                 handleVisibleChange,
                 username,
                 isEdit,
+                certificateStatus,
+                certificateStatusMessage,
+                certificateUpdatedBy,
+                certificateUpdatedAt,
+                selectedAsset,
             }
         },
     })
 </script>
 
-<style lang="less">
+<style lang="less" module>
     .certificatePopover {
-        .ant-popover-inner-content {
-            @apply px-0 py-3;
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
             width: 250px !important;
         }
     }

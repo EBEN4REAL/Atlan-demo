@@ -15,7 +15,9 @@
                             <div
                                 :class="
                                     !enableTabs.includes('users')
-                                        ? 'pointer-events-none cursor-not-allowed'
+                                        ? hideDisabledTabs
+                                            ? 'hidden'
+                                            : 'pointer-events-none cursor-not-allowed'
                                         : ''
                                 "
                             >
@@ -35,7 +37,9 @@
                             <div
                                 :class="
                                     !enableTabs.includes('groups')
-                                        ? 'pointer-events-none cursor-not-allowed'
+                                        ? hideDisabledTabs
+                                            ? 'hidden'
+                                            : 'pointer-events-none cursor-not-allowed'
                                         : ''
                                 "
                             >
@@ -72,13 +76,7 @@
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
                 v-model:checked="localValue.empty"
-                class="
-                    inline-flex
-                    flex-row-reverse
-                    items-center
-                    w-full
-                    atlan-reverse
-                "
+                class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
             >
                 <component
                     :is="noStatus"
@@ -149,6 +147,10 @@
             enableTabs: {
                 type: Object as PropType<Array<any>>,
                 default: ['users', 'groups'],
+            },
+            hideDisabledTabs: {
+                type: Boolean,
+                default: false,
             },
         },
         emits: ['change', 'update:modelValue'],

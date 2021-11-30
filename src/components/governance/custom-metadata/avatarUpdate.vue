@@ -13,6 +13,7 @@
             "
         >
             <CustomMetadataAvatar
+                class="hover:bg-gray-100"
                 :metadata="metadata"
                 :is-updating="isUpdating"
             />
@@ -143,12 +144,18 @@
 
 <style lang="less">
     .cm-avatar-update-modal {
-        .ant-popover-inner-content {
-            padding: 0px;
-        }
-
         .emoji-mart {
             border: unset;
+
+            .emoji-mart-anchor-selected {
+                color: rgb(82, 119, 215) !important;
+            }
+            .emoji-mart-anchor:hover {
+                color: rgb(51, 81, 155) !important;
+            }
+            .emoji-mart-anchor-bar {
+                background-color: rgb(82, 119, 215) !important;
+            }
         }
 
         .ant-tabs-nav {

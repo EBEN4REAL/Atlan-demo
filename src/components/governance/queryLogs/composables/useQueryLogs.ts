@@ -1,19 +1,27 @@
-import { ref, Ref, computed } from 'vue'
+import { ref, Ref, computed, watch } from 'vue'
+import bodybuilder from 'bodybuilder'
 import useLogsService from './useQueryLogService'
 import useBody from './useBody'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { SourceList } from '~/constant/source'
+import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
 const { listQueryLogs } = useLogsService()
 const { getConnectionName, getConnectorName } = useConnector()
-export function useQueryLogs(gte: Ref<string>, lt: Ref<string>) {
+export function useQueryLogs(
+    gte: Ref<string>,
+    lt: Ref<string>,
+    from = ref(0),
+    size = ref(6)
+) {
+    const savedQueryMetaMap: Ref<Record<string, any>> = ref({})
     const body = ref<Record<string, any>>({})
-    const from = ref(0)
-    const limit = ref(100)
+    // const from = ref(0)
+    // const limit = ref(100)
 
     const dsl = useBody({
         from: from.value,
-        limit: limit.value,
+        limit: size.value,
         gte: gte.value,
         lt: lt.value,
     })
@@ -21,24 +29,118 @@ export function useQueryLogs(gte: Ref<string>, lt: Ref<string>) {
     body.value = dsl
     const { data, mutate: refetchList, isLoading } = listQueryLogs(body)
 
-    const list = computed(() => data.value?.hits?.hits)
-    const totalCount = computed(() => limit.value + from.value)
-
-    function mutateBody({ gte, lt }) {
-        body.value = useBody({
-            from: from.value,
-            limit: limit.value,
-            gte,
-            lt,
+    // fetch saved quey meta when data refreshes
+    const fetchSavedQueryMeta = (requestBody) => {
+        const {
+            data: savedQueries,
+            error,
+            isLoading,
+        } = useIndexSearch(
+            {
+                dsl: { ...requestBody },
+                attributes: ['name'],
+            },
+            ref('GET_SAVED_QUERY_META'),
+            false
+        )
+        watch([isLoading, error], () => {
+            if (!error.value && !isLoading.value) {
+                if (
+                    savedQueries &&
+                    savedQueries.value &&
+                    savedQueries.value.entities &&
+                    savedQueries.value.entities.length
+                ) {
+                    const newSavedQueries = {}
+                    savedQueries.value.entities.forEach((savedQuery) => {
+                        const { guid } = savedQuery
+                        newSavedQueries[guid] = { ...savedQuery }
+                    })
+                    savedQueryMetaMap.value = {
+                        ...savedQueryMetaMap.value,
+                        ...newSavedQueries,
+                    }
+                }
+            }
         })
     }
+    watch(
+        data,
+        () => {
+            if (data.value?.hits?.hits?.length) {
+                // get saved query logs, if present in the result
+                const savedQueryIds = (
+                    data.value?.hits?.hits.filter(
+                        (log) => log._source?.message?.savedQueryId
+                    ) || []
+                ).map((log) => log._source.message.savedQueryId)
+                // Check if the ids already have cached metadata
+                let filteredSavedQueryIds = []
+                if (savedQueryIds && savedQueryIds.length) {
+                    filteredSavedQueryIds = savedQueryIds.filter(
+                        (savedQueryId) =>
+                            !savedQueryMetaMap.value.hasOwnProperty(
+                                savedQueryId
+                            )
+                    )
+                }
+                if (filteredSavedQueryIds && filteredSavedQueryIds.length) {
+                    const base = bodybuilder()
+                    filteredSavedQueryIds.forEach((queryId) =>
+                        base.orFilter('term', '__guid', queryId)
+                    )
+                    const requestBody = base.build()
+                    fetchSavedQueryMeta(requestBody)
+                }
+            }
+        },
+        { immediate: true }
+    )
 
+    const list = computed(() => data.value?.hits?.hits)
+    const totalCount = computed(() => size.value + from.value)
+    const filteredLogsCount = computed(() => data.value?.hits?.total?.value)
+    function mutateBody({
+        from,
+        size,
+        gte,
+        lt,
+        usernames,
+        queryStatusValues,
+        schemaName,
+        dbName,
+        connectionQF,
+        connectorName,
+        searchText,
+    }) {
+        body.value = useBody({
+            from: from.value,
+            limit: size.value,
+            gte,
+            lt,
+            usernames,
+            queryStatusValues,
+            schemaName,
+            dbName,
+            connectionQF,
+            connectorName,
+            searchText,
+        })
+    }
+    const paginateLogs = (page: number) => {
+        // modify offset
+        const offset = (page - 1) * size.value
+        from.value = offset
+    }
     return {
         list,
         mutateBody,
         refetchList,
         totalCount,
         isLoading,
+        filteredLogsCount,
+        paginateLogs,
+        savedQueryMetaMap,
     }
 }
 export const getQueryMetadata = (query) => {

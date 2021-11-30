@@ -44,18 +44,8 @@
         </template>
         <template #status="{ text: user }">
             <div
-                class="
-                    inline-flex
-                    items-center
-                    px-2
-                    py-0.5
-                    rounded-xl
-                    text-gray-700
-                "
-                :style="{
-                    backgroundColor:
-                        statusColorCodes[user.status_object.status],
-                }"
+                class="inline-flex items-center px-2 py-0.5 rounded-xl text-gray-700"
+                :class="`bg-${statusColorClass[user.status_object.status]}`"
             >
                 <div>{{ user.status_object.status }}</div>
             </div>
@@ -90,7 +80,7 @@
                         </template>
                         <div
                             v-if="user.enabled"
-                            class="flex items-center justify-center w-8 h-8 border rounded shadow cursor-pointer "
+                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                             @click="emit('handleChangeRole', user)"
                         >
                             <AtlanIcon icon="StarCircled"></AtlanIcon>
@@ -116,7 +106,7 @@
                         "
                     >
                         <template #content>
-                            <div class="w-52">
+                            <div class="p-4 w-60">
                                 <h3
                                     v-html="
                                         getEnableDisablePopoverContent(
@@ -126,7 +116,7 @@
                                     "
                                 ></h3>
                                 <div
-                                    class="flex items-center justify-between mt-3  gap-x-3"
+                                    class="flex items-center justify-between mt-3 gap-x-3"
                                 >
                                     <div class="flex-grow"></div>
                                     <AtlanButton
@@ -159,7 +149,7 @@
                         </template>
                         <div
                             size="small"
-                            class="flex items-center justify-center w-8 h-8 border rounded shadow cursor-pointer "
+                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                             @click="emit('toggleDisableEnablePopover', user)"
                         >
                             <AtlanIcon
@@ -179,8 +169,8 @@
                     <template #title>
                         <span>Resend Invite</span>
                     </template>
-                    <a-button
-                        size="small"
+                    <div
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                         @click="
                             emit('resendInvite', {
                                 email: user.email,
@@ -188,18 +178,16 @@
                             })
                         "
                     >
-                        <AtlanIcon icon="ResendInvite"></AtlanIcon
-                    ></a-button>
+                        <AtlanIcon icon="ResendInvite"></AtlanIcon>
+                    </div>
                 </a-tooltip>
                 <a-dropdown v-if="!user.email_verified" :trigger="['click']">
-                    <a-button
-                        class="rounded"
-                        size="small"
-                        type="secondary"
+                    <div
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu"></AtlanIcon>
-                    </a-button>
+                    </div>
                     <template #overlay>
                         <a-menu>
                             <a-popover
@@ -212,7 +200,7 @@
                                 "
                             >
                                 <template #content>
-                                    <div class="w-52">
+                                    <div class="p-4 w-60">
                                         <h3>
                                             Revoke invitation for
                                             <b>{{
@@ -224,7 +212,7 @@
                                             ?
                                         </h3>
                                         <div
-                                            class="flex items-center justify-between mt-3  gap-x-3"
+                                            class="flex items-center justify-between mt-3 gap-x-3"
                                         >
                                             <div class="flex-grow"></div>
                                             <AtlanButton
@@ -301,7 +289,7 @@
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
 
-    import { userColumns, statusColorCodes } from '~/constant/users'
+    import { userColumns, statusColorClass } from '~/constant/users'
     import useRoles from '~/composables/roles/useRoles'
     import ChangeRole from './changeRole.vue'
     import map from '~/constant/accessControl/map'
@@ -390,7 +378,7 @@
                 imageUrl,
                 emit,
                 isCurrentUser,
-                statusColorCodes,
+                statusColorClass,
                 map,
             }
         },
@@ -403,8 +391,8 @@
         :global(.ant-table-measure-row) {
             @apply hidden;
         }
-        :global(.ant-popover-arrow) {
-            @apply hidden;
+        .customShadow {
+            box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
         }
     }
 </style>

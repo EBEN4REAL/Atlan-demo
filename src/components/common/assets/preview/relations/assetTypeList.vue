@@ -2,18 +2,22 @@
     <VirtualList :data="list" data-key="guid" variable-height>
         <template #default="{ item }">
             <div
-                class="mx-3 my-1 transition-all duration-300  hover:bg-primary-light"
+                class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"
                 :class="
                     item.guid === selectedAssetId
                         ? 'outline-primary bg-primary-light shadow-sm'
                         : ''
                 "
             >
-                <AssetItem
-                    :item="item"
-                    :preference="preference"
-                    @click="handlePreview(item)"
-                ></AssetItem>
+                <Popover :item="item">
+                    <AssetItem
+                        :no-bg="true"
+                        :item="item"
+                        :preference="preference"
+                        has-pop-hover
+                        @click="handlePreview(item)"
+                    ></AssetItem>
+                </Popover>
             </div>
         </template>
     </VirtualList>
@@ -25,12 +29,14 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
     import { useRelations } from '~/composables/discovery/useRelations'
+    import Popover from '@/common/popover/assets/index.vue'
 
     export default defineComponent({
         name: 'AssetList',
         components: {
             AssetItem,
             VirtualList,
+            Popover,
         },
         props: {
             preference: {

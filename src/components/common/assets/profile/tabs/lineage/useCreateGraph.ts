@@ -21,7 +21,7 @@ export default function useCreateGraph(
         interacting: false,
         container: graphContainer.value,
         grid: true,
-        background: { color: '#ffffff' },
+        background: { color: '#FAFAFA' },
         scroller: {
             enabled: true,
             pageVisible: false,

@@ -14,7 +14,13 @@ const listPersonas = () =>
         map.LIST_PERSONAS,
         'GET',
         { initialState: [] },
-        {}
+        {
+            asyncOptions: {
+                onError: (e) => {
+                    throw e
+                },
+            },
+        }
         // { resetOnExecute: false }
     )
 

@@ -4,10 +4,11 @@
         :placeholder="placeholder"
         v-model:value="localValue"
         :size="size"
+        data-test-id="input-text"
         type="text"
         :class="$style.transparent"
         @change="handleChange"
-        class="px-0 text-sm text-gray-500 bg-transparent rounded-none  focus:outline-none"
+        class="px-0 text-sm text-gray-500 bg-transparent rounded-none focus:outline-none"
     >
         <template #prefix>
             <a-tooltip
@@ -33,6 +34,7 @@
                 v-if="$slots.postFilter"
                 trigger="click"
                 placement="bottomRight"
+                :overlay-class-name="$style.search"
             >
                 <template #content>
                     <slot name="postFilter" />
@@ -154,6 +156,11 @@
     })
 </script>
 <style lang="less" module>
+    .search {
+        :global(.ant-popover-inner-content) {
+            @apply p-3 !important;
+        }
+    }
     .transparent {
         -webkit-transition: border 500ms ease-out;
         -moz-transition: border 500ms ease-out;

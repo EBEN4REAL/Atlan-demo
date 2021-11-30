@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
-import { watch, ref } from 'vue'
+import { watch, ref, Ref } from 'vue'
 import { Workflows } from '~/services/service/workflows'
+import { ArchivedRuns } from '~/types/workflow/runs.interface'
 
 export function useWorkflowSearchList(immediate: boolean = true) {
     const params = ref(new URLSearchParams())
@@ -37,12 +38,9 @@ export function useWorkflowSearchList(immediate: boolean = true) {
     })
 
     const loadMore = () => {
-        offset.value += limit.value
+        offset.value += offset.value > totalCount.value ? totalCount.value : limit.value
         params.value.set('offset', offset.value.toString())
-        if (offset.value > totalCount.value) {
-            offset.value = totalCount.value
-            params.value.set('offset', offset.value.toString())
-        }
+
         mutate()
     }
 
@@ -105,37 +103,34 @@ export function stopRunByName(name) {
 }
 
 export function getRunList(name, getRunning = true) {
-    const liveList = ref([])
     const params = ref(new URLSearchParams())
-    const pathVariables = ref({})
 
     const labelSelector = ref(
-        `workflows.argoproj.io/workflow-template=${name}${
-            getRunning ? '/,workflows.argoproj.iophase=Running' : ''
+        `workflows.argoproj.io/workflow-template=${name}${getRunning ? ',workflows.argoproj.io/phase=Running' : ''
         }`
     )
     params.value.append('labelSelector', labelSelector.value)
 
-    const { data, error, isLoading, mutate } = Workflows.getRunList({
-        pathVariables,
+    const { data, error, isLoading, mutate, isReady } = Workflows.getRunList({
         params,
     })
 
-    watch(data, () => {
-        liveList.value = data.value
-    })
+    const execute = (n) => {
+        params.value = new URLSearchParams()
+        params.value.append('labelSelector', `workflows.argoproj.io/workflow-template=${n},workflows.argoproj.io/phase=Running`)
+        mutate()
+    }
 
-    return { liveList, error, isLoading, mutate }
+    return { liveList: data, error, isLoading, execute, isReady }
 }
 
 export function getArchivedRunList(name) {
-    const archivedList = ref([])
+    const archivedList: Ref<ArchivedRuns[]> = ref([])
     const params = ref(new URLSearchParams())
-    const pathVariables = ref({})
     const totalCount = ref(0)
-    const filter_record = ref([])
-    // const limit = ref(10)
+    const filter_record = ref(0)
     const offset = ref(0)
+    const limit = ref(10)
     const filter = ref({
         labels: {
             $elemMatch: {
@@ -145,30 +140,48 @@ export function getArchivedRunList(name) {
     })
 
     params.value.append('filter', JSON.stringify(filter.value))
-    // params.value.append('limit', limit.value.toString())
     params.value.append('offset', offset.value.toString())
-
-    const { data, error, isLoading, mutate } = Workflows.getArchivedRunList({
+    params.value.append('limit', limit.value.toString())
+    const { data, error, isLoading, mutate, isReady } = Workflows.getArchivedRunList({
         params,
-        pathVariables,
     })
 
     const loadMore = () => {
-        // offset.value += limit.value
+        const count = data?.value?.records?.length ?? 0
+        offset.value += offset.value > count ? count : limit.value
         params.value.set('offset', offset.value.toString())
-        if (offset.value > totalCount.value) {
-            offset.value = totalCount.value
-            params.value.set('offset', offset.value.toString())
-        }
         mutate()
     }
 
     watch(data, () => {
-        if (!data?.value?.records) return (data.value = { records: [] })
+        if (!data?.value?.records) {
+            data.value = {
+                total_record: 0,
+                filter_record: 0,
+                records: []
+            }
+            return
+        }
         totalCount.value = data.value.total_record
         filter_record.value = data.value.filter_record
-        archivedList.value = data.value
+        if (offset.value > 0)
+            archivedList.value = [...archivedList.value, ...data.value.records]
+        else
+            archivedList.value = data.value.records ?? []
     })
+
+    const execute = (n) => {
+        params.value = new URLSearchParams()
+        filter.value.labels.$elemMatch = {
+            'workflows.argoproj.io/workflow-template': `${n}`,
+        }
+        params.value.append('filter', JSON.stringify(filter.value))
+        params.value.append('offset', '0')
+        params.value.append('limit', '5')
+
+
+        mutate()
+    }
     return {
         archivedList,
         error,
@@ -176,7 +189,8 @@ export function getArchivedRunList(name) {
         totalCount,
         filter_record,
         loadMore,
-        mutate,
+        isReady,
+        execute,
     }
 }
 

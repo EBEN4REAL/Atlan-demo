@@ -1,7 +1,7 @@
 <template>
     <div
-        class="flex justify-between px-3 py-2 border rounded"
         v-if="announcementTitle(selectedAsset)"
+        class="flex justify-between px-3 py-2 border rounded"
         :class="bgClass"
     >
         <div class="flex flex-col">
@@ -21,6 +21,33 @@
                 {{ announcementUpdatedAt(selectedAsset, true) }}
             </div>
         </div>
+        <div>
+            <a-dropdown trigger="click" placement="bottomRight">
+                <a-button
+                    class="px-2 bg-transparent border-none shadow-none  hover:bg-white hover:shadow-sm"
+                >
+                    <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
+                </a-button>
+
+                <template #overlay>
+                    <a-menu mode="vertical">
+                        <a-menu-item key="edit">
+                            <AnnouncementModal :asset="selectedAsset"
+                                ><template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Edit"
+                                            class="h-4 mr-2"
+                                        />
+                                        Edit
+                                    </div></template
+                                ></AnnouncementModal
+                            >
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+            </a-dropdown>
+        </div>
     </div>
 </template>
 
@@ -28,10 +55,11 @@
     import { computed, defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
 
     export default defineComponent({
-        name: 'Announcement',
-        components: {},
+        name: 'AnnouncementWidget',
+        components: { AnnouncementModal },
 
         props: {
             selectedAsset: {
@@ -76,7 +104,6 @@
             })
 
             return {
-                selectedAsset,
                 announcementTitle,
                 announcementMessage,
                 announcementType,

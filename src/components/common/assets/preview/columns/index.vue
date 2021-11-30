@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
-        <div class="px-2 py-1 border-b border-gray-200">
+        <div class="px-4 pt-3 pb-0">
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
@@ -21,7 +21,7 @@
         <!-- {{ list }} -->
 
         <AggregationTabs
-            class="mt-2"
+            class="px-3 mb-1"
             v-model="postFacets.dataType"
             :list="columnDataTypeAggregationList"
             @change="handleDataTypeChange"

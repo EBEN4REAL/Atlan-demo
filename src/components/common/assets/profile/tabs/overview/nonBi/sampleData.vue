@@ -69,6 +69,7 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import AtlanTable from '@/UI/table.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // API
     import { Insights } from '~/services/sql/query'
@@ -88,15 +89,18 @@
 
             const { asset } = toRefs(props)
 
-            const { connectionQualifiedName, databaseName, schemaName, name } =
-                { ...asset.value.attributes }
+            const { connectionQualifiedName, databaseName, schemaName, title } =
+                useAssetInfo()
 
             const body = {
-                tableName: name,
-                defaultSchema: `${databaseName}.${schemaName}`,
-                dataSourceName: connectionQualifiedName,
+                tableName: title(asset.value),
+                defaultSchema: `${databaseName(asset.value)}.${schemaName(
+                    asset.value
+                )}`,
+                dataSourceName: connectionQualifiedName(asset.value),
                 limit: 100,
             }
+
             /** METHODS */
             const { data, isLoading } = Insights.GetSampleData(body)
             const getDataType = (type: string) => {

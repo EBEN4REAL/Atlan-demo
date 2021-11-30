@@ -1,18 +1,24 @@
 <template>
-    <div class="flex flex-wrap items-center gap-1 text-sm">
+    <div
+        class="flex flex-wrap items-center gap-1 text-sm"
+        data-test-id="owners-popover"
+    >
         <a-popover
-            placement="leftBottom"
-            overlayClassName="ownerPopover"
-            @visibleChange="handleVisibleChange"
-            :trigger="['click']"
             v-model:visible="isEdit"
+            placement="leftBottom"
+            :overlay-class-name="$style.ownerPopover"
+            :trigger="['click']"
+            :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            @visibleChange="handleVisibleChange"
         >
             <template #content>
-                <OwnerFacets
-                    ref="ownerInputRef"
-                    v-model="localValue"
-                    :showNone="false"
-                ></OwnerFacets>
+                <div class="">
+                    <OwnerFacets
+                        ref="ownerInputRef"
+                        v-model="localValue"
+                        :show-none="false"
+                    ></OwnerFacets>
+                </div>
             </template>
             <a-button
                 v-if="!readOnly"
@@ -23,40 +29,64 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-for="username in localValue?.ownerUsers" :key="username">
-            <UserPill
-                :username="username"
-                :allowDelete="!readOnly"
-                @delete="handleDeleteUser"
-                @click="handleClickUser(username)"
-                :enableHover="enableHover"
-            ></UserPill>
+        <template v-if="usedForAssets">
+            <template
+                v-for="username in ownerUsers(selectedAsset)"
+                :key="username"
+            >
+                <PopOverUser :item="username">
+                    <UserPill
+                        :username="username"
+                        :allowDelete="!readOnly"
+                        @delete="handleDeleteUser"
+                        @click="handleClickUser(username)"
+                        :enableHover="enableHover"
+                    ></UserPill>
+                </PopOverUser> </template
+        ></template>
+        <template
+            v-for="username in localValue?.ownerUsers"
+            v-else
+            :key="username"
+        >
+            <PopOverUser :item="username">
+                <UserPill
+                    :username="username"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
+                    @delete="handleDeleteUser"
+                    @click="handleClickUser(username)"
+                ></UserPill>
+            </PopOverUser>
         </template>
-
-        <template v-for="name in localValue?.ownerGroups" :key="name">
-            <GroupPill
-                :name="name"
-                :allowDelete="!readOnly"
-                @delete="handleDeleteGroup"
-                @click="handleClickGroup(name)"
-                :enableHover="enableHover"
-            ></GroupPill>
+        <template v-if="usedForAssets">
+            <template v-for="name in ownerGroups(selectedAsset)" :key="name">
+                <PopOverGroup :item="name">
+                    <GroupPill
+                        :name="name"
+                        :allowDelete="!readOnly"
+                        @delete="handleDeleteGroup"
+                        @click="handleClickGroup(name)"
+                        :enableHover="enableHover"
+                    ></GroupPill>
+                </PopOverGroup> </template
+        ></template>
+        <template v-for="name in localValue?.ownerGroups" v-else :key="name">
+            <PopOverGroup :item="name">
+                <GroupPill
+                    :name="name"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
+                    @delete="handleDeleteGroup"
+                    @click="handleClickGroup(name)"
+                ></GroupPill>
+            </PopOverGroup>
         </template>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
-
-    // Components
-    import UserPill from '@/common/pills/user.vue'
-    import GroupPill from '@/common/pills/group.vue'
-    import OwnerFacets from '@/common/facet/owners/index.vue'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
-
-    // Composables
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     // Utils
     import {
@@ -67,9 +97,29 @@
         whenever,
     } from '@vueuse/core'
 
+    // Components
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
+    import OwnerFacets from '@/common/facet/owners/index.vue'
+    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import PopOverGroup from '@/common/popover/user/groups.vue'
+
+    // Composables
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
     export default defineComponent({
         name: 'OwnersWidget',
-        components: { UserPill, GroupPill, AtlanIcon, OwnerFacets },
+        components: {
+            UserPill,
+            GroupPill,
+            AtlanIcon,
+            OwnerFacets,
+            PopOverUser,
+            PopOverGroup,
+        },
         props: {
             readOnly: {
                 type: Boolean,
@@ -86,13 +136,25 @@
                 required: false,
                 default: true,
             },
+            destroyTooltipOnHide: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            usedForAssets: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, enableHover } = toRefs(props)
+            const { readOnly, enableHover, destroyTooltipOnHide } =
+                toRefs(props)
             const localValue = ref(modelValue.value)
 
+            const { ownerGroups, ownerUsers, selectedAsset } = useAssetInfo()
             const isEdit = ref(false)
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -184,8 +246,9 @@
             }
 
             return {
-                enableHover,
-                readOnly,
+                ownerGroups,
+                ownerUsers,
+                selectedAsset,
                 handleClickUser,
                 handleClickGroup,
                 localValue,
@@ -199,10 +262,10 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" module>
     .ownerPopover {
-        .ant-popover-inner-content {
-            @apply px-0 py-3;
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
             width: 250px !important;
         }
     }

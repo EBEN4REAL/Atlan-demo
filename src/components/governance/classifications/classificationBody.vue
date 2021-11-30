@@ -1,13 +1,18 @@
 <template>
     <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
     <KeepAlive>
-        <div class="overflow-y-scroll">
-            <ClassificationOverview v-if="activeTabKey === '1'" :classification="selectedClassification" @openAssetsTab="activeTabKey = '2'"/>
-            <AssetsWrapper 
-                v-if="activeTabKey === '2'" 
-                :initialFilters="filterConfig" 
-                :showFilters="false"  
+        <div class="overflow-y-scroll wrapper-height">
+            <ClassificationOverview
+                v-if="activeTabKey === '1'"
+                :classification="selectedClassification"
+                @openAssetsTab="activeTabKey = '2'"
+            />
+            <AssetsWrapper
+                v-if="activeTabKey === '2'"
+                :initialFilters="filterConfig"
+                :showFilters="false"
                 :staticUse="true"
+                page="classifications"
             />
         </div>
     </KeepAlive>
@@ -19,10 +24,7 @@
     import MinimalTab from '@/UI/minimalTab.vue'
     import ClassificationOverview from '@/governance/classifications/overview.vue'
 
-
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
-
-
 
     export default defineComponent({
         name: 'ClassificationBody',
@@ -48,11 +50,9 @@
 
             const filterConfig = computed(() => ({
                 __traitNames: {
-                    classifications: [selectedClassification.value.name]
+                    classifications: [selectedClassification.value.name],
                 },
             }))
-
-    
 
             return {
                 selectedClassification,
@@ -64,7 +64,7 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     .typeTabs {
         .ant-tabs-tab {
             padding-left: 2px !important;
@@ -87,10 +87,6 @@
             @apply font-bold !important;
             @apply tracking-normal;
         }
-        .ant-tabs-bar {
-            margin-bottom: 0px;
-            @apply border-gray-300 !important;
-        }
         .ant-tabs-content {
             padding-right: 0px;
         }
@@ -98,5 +94,9 @@
             @apply rounded-t-sm;
             margin-bottom: 1px;
         }
+    }
+    .wrapper-height {
+        height: calc(100vh - 4rem);
+        overflow: auto;
     }
 </style>

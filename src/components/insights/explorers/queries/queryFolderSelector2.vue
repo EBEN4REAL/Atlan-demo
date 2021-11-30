@@ -1,10 +1,10 @@
 <template>
     <div class="popover-container">
-        <div class="w-full h-full pt-2 pb-4 overflow-y-scroll">
+        <div class="w-full h-full pb-4 overflow-y-scroll">
             <!--explorer pane start -->
             <div
                 v-if="savedQueryType2 === 'personal'"
-                class="w-full h-full bg-white py-1.5 pl-3 pr-4"
+                class="w-full h-full bg-white py-1.5 pr-4"
             >
                 <div class="flex w-full">
                     <AtlanIcon

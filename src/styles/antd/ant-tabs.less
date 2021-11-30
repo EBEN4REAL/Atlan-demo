@@ -1,0 +1,58 @@
+
+.ant-tabs-nav .ant-tabs-tab-active {
+    text-shadow: none !important;
+}
+
+//default override 
+.ant-tabs-bar {
+    @apply mb-0 border-0 !important;
+}
+
+.inline_tabs {
+    .ant-tabs-bar {
+        @apply m-0 bg-gray-light !important;
+    }
+}
+
+.profiletab { 
+    .ant-tabs-bar {
+        @apply mb-0 pl-7;
+        @apply bg-white;
+    }
+}
+
+.typeTabs, .minimal-tab-bar {
+    .ant-tabs-bar {
+        margin-bottom: 0;
+        @apply border-gray-300 !important;
+    }
+}
+
+.preview-tab {
+    .ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child {
+        @apply ml-0 !important;
+        @apply mt-4 !important;
+    }
+
+    .ant-tabs-nav-container {
+        width: 48px !important;
+        @apply ml-0 !important;
+    }
+    .ant-tabs-tab {
+        height: 48px !important;
+        width: 48px !important;
+        @apply p-0 justify-center !important;
+    }
+
+    .ant-tabs-content {
+        @apply px-0 !important;
+    }
+    .ant-tabs-ink-bar {
+        @apply rounded-t-sm;
+        margin-bottom: 1px;
+    }
+    .ant-tabs-tabpane {
+        @apply px-0 !important;
+        @apply pb-0 !important;
+    }
+}

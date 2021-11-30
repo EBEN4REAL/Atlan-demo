@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div class="flex items-center w-full px-8 pt-3">
-        <a-button @click="$router.back()" class="px-1">
+        <a-button class="px-1" @click="back">
             <atlan-icon
                 icon="ArrowRight"
                 class="w-auto h-4 text-gray-500 transform rotate-180"
@@ -11,8 +11,8 @@
             <div class="flex flex-col">
                 <div class="flex items-center mb-0 overflow-hidden">
                     <div
-                        class="flex mr-1"
                         v-if="['column'].includes(item.typeName?.toLowerCase())"
+                        class="flex mr-1"
                     >
                         <component
                             :is="dataTypeCategoryImage(item)"
@@ -88,12 +88,12 @@
                             >
                         </div>
                         <div
-                            class="flex"
                             v-if="
                                 isPrimary(item) ||
                                 isDist(item) ||
                                 isPartition(item)
                             "
+                            class="flex"
                         >
                             <AtlanIcon
                                 icon="Key"
@@ -101,18 +101,18 @@
                             ></AtlanIcon>
 
                             <span
-                                class="ml-1 text-sm text-gray-700"
                                 v-if="isPrimary(item)"
+                                class="ml-1 text-sm text-gray-700"
                                 >Primary Key</span
                             >
                             <span
-                                class="ml-1 text-sm text-gray-700"
                                 v-if="isDist(item)"
+                                class="ml-1 text-sm text-gray-700"
                                 >Dist Key</span
                             >
                             <span
-                                class="ml-1 text-sm text-gray-700"
                                 v-if="isPartition(item)"
+                                class="ml-1 text-sm text-gray-700"
                                 >Partition Key</span
                             >
                         </div>
@@ -132,8 +132,8 @@
                         class="flex text-sm text-gray-500 gap-x-2"
                     >
                         <a-tooltip
-                            placement="bottomLeft"
                             v-if="tableName(item)"
+                            placement="bottomLeft"
                         >
                             <div
                                 v-if="tableName(item)"
@@ -151,7 +151,7 @@
                                 <span>Table - {{ tableName(item) }}</span>
                             </template>
                         </a-tooltip>
-                        <a-tooltip placement="bottomLeft" v-if="viewName(item)">
+                        <a-tooltip v-if="viewName(item)" placement="bottomLeft">
                             <div
                                 v-if="viewName(item)"
                                 class="flex items-center text-gray-500"
@@ -187,8 +187,8 @@
                         </a-tooltip>
                         <a-tooltip placement="bottomLeft">
                             <div
-                                class="flex items-center text-gray-500"
                                 v-if="databaseName(item)"
+                                class="flex items-center text-gray-500"
                             >
                                 <AtlanIcon
                                     icon="DatabaseGray"
@@ -206,17 +206,19 @@
                 </div>
             </div>
             <a-button-group>
-                <a-button block class="flex items-center justify-center"
-                    ><AtlanIcon icon="Query" class="mr-1 mb-0.5"
-                /></a-button>
-                <a-button block class="flex items-center justify-center"
-                    ><AtlanIcon icon="Share" class="mr-1 mb-0.5" /></a-button
-                ><AssetMenu :asset="item" :editPermission="true">
-                    <a-button block class="flex items-center justify-center"
-                        ><AtlanIcon
-                            icon="KebabMenu"
-                            class="mr-1 mb-0.5" /></a-button
-                ></AssetMenu>
+                <a-button block class="flex items-center justify-center">
+                    <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
+                </a-button>
+                <ShareMenu :asset="item" :edit-permission="true">
+                    <a-button block class="flex items-center justify-center">
+                        <AtlanIcon icon="Share" class="mb-0.5" />
+                    </a-button>
+                </ShareMenu>
+                <AssetMenu :asset="item" :edit-permission="true">
+                    <a-button block class="flex items-center justify-center">
+                        <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
+                    </a-button>
+                </AssetMenu>
             </a-button-group>
         </div>
     </div>
@@ -224,18 +226,20 @@
 
 <script lang="ts">
     import { defineComponent, inject, PropType, watch } from 'vue'
+    import { useMagicKeys } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AssetMenu from './assetMenu.vue'
-    import { useMagicKeys } from '@vueuse/core'
-    import { useRouter } from 'vue-router'
+    import ShareMenu from '@/common/assets/misc/shareMenu.vue'
 
     export default defineComponent({
-        name: 'AssetListItem',
+        name: 'AssetHeader',
         components: {
             CertificateBadge,
             AtlanIcon,
+            ShareMenu,
             AssetMenu,
         },
         props: {
@@ -321,16 +325,22 @@
 
             const item = inject('selectedAsset')
 
-            const assetURL = (asset) => {
-                return `/assets/${asset.guid}`
-            }
+            const assetURL = (asset) => `/assets/${asset.guid}`
 
             const { Escape /* keys you want to monitor */ } = useMagicKeys()
 
             const router = useRouter()
             watch(Escape, (v) => {
-                if (v) router.back()
+                if (v) back()
             })
+
+            const back = () => {
+                if (window.history.length <= 1) {
+                    router.push({ path: '/assets' })
+                    return false
+                }
+                router.back()
+            }
 
             return {
                 title,
@@ -357,6 +367,7 @@
                 certificateStatusMessage,
                 tableName,
                 viewName,
+                back,
             }
         },
     })

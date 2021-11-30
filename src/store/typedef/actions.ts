@@ -14,6 +14,7 @@ export interface Actions extends State {
   setError(value: object | null): void
   updateSingleClassification(value: ClassificationInterface): void
   removeClassificationByName(name: string): void
+  tickForceRevalidate(): void,
 }
 
 export const actions: Actions = {
@@ -59,5 +60,8 @@ export const actions: Actions = {
   },
   setError(value) {
     this.error = value
+  },
+  tickForceRevalidate() {
+    this.forceRevalidate += 1
   }
 }

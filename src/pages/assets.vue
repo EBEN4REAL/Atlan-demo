@@ -1,11 +1,7 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex-1 border-r border-gray-200">
-            <router-view
-                v-if="isItem"
-                :selected-asset="selectedAsset"
-                @preview="setSelectedAsset($event)"
-            />
+            <router-view v-if="isItem" />
 
             <keep-alive>
                 <AssetDiscovery
@@ -16,9 +12,7 @@
         </div>
 
         <div class="relative hidden bg-white asset-preview-container md:block">
-            <AssetPreview
-                :selected-asset="selectedAssetFromEmit || selectedAsset"
-            ></AssetPreview>
+            <AssetPreview :selected-asset="localSelected"></AssetPreview>
         </div>
     </div>
 </template>
@@ -29,7 +23,7 @@
     import { useRoute } from 'vue-router'
     import AssetDiscovery from '@/assets/index.vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         components: {
@@ -41,25 +35,30 @@
                 title: 'Assets',
             })
             const route = useRoute()
-            const { selectedAsset } = useAssetInfo()
             const assetdiscovery = ref()
-            const selectedAssetFromEmit = ref(null)
-            const setSelectedAsset = (e) => {
-                selectedAssetFromEmit.value = e
-            }
             const isItem = computed(() => !!route.params.id)
+            const localSelected = ref()
+
+            const assetStore = useAssetStore()
+
+            const handlePreview = (asset) => {
+                localSelected.value = asset
+                assetStore.setSelectedAsset(asset)
+            }
             const updateList = (asset) => {
                 if (assetdiscovery.value) {
                     assetdiscovery.value.updateCurrentList(asset)
                 }
+                localSelected.value = asset
             }
+
             provide('updateList', updateList)
+            provide('preview', handlePreview)
+
             return {
                 isItem,
-                selectedAsset,
-                selectedAssetFromEmit,
-                setSelectedAsset,
                 assetdiscovery,
+                localSelected,
             }
         },
     })

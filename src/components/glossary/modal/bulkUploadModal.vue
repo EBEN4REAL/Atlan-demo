@@ -132,16 +132,6 @@
 
 <style lang="less" module>
     .modalStyles {
-        :global(.ant-modal-header) {
-            @apply border-0 border-t-0 border-b-0 px-4 pt-6  !important;
-        }
-
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 py-4 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply px-7  py-2 !important;
-        }
         :global(.ant-upload-drag-container) {
             @apply bg-white !important;
         }

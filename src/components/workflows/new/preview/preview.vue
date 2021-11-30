@@ -11,16 +11,19 @@
         title="Create Workflow"
         :class="$style.input"
         :closable="false"
+        :body-style="{ padding: '24px !important' }"
     >
-        <a-input
-            v-model:value="workflowName"
-            :placeholder="`Untitled Workflow`"
-            class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-        ></a-input>
-        <p v-if="invalidName" class="mt-3 text-red-600">
-            Name consist of lower case alphanumeric characters, '-' or '.', and
-            must start and end with an alphanumeric character
-        </p>
+        <div class="">
+            <a-input
+                v-model:value="workflowName"
+                :placeholder="`Untitled Workflow`"
+                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+            ></a-input>
+            <p v-if="invalidName" class="mt-3 text-red-600">
+                Name consist of lower case alphanumeric characters, '-' or '.',
+                and must start and end with an alphanumeric character
+            </p>
+        </div>
         <template #footer>
             <div class="flex items-center justify-end space-x-3">
                 <a-button @click="visible = false">Cancel</a-button>
@@ -155,7 +158,7 @@
             const invalidName = computed(() => {
                 if (!workflowName.value) return false
                 const r =
-                    /[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/
+                    /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/
                 return !r.test(workflowName.value)
             })
 
@@ -320,10 +323,6 @@
             @apply ml-0 !important;
             @apply mt-4 !important;
         }
-
-        :global(.ant-tabs-bar) {
-            margin-bottom: 0px !important;
-        }
         :global(.ant-tabs-nav-container) {
             width: 48px !important;
             @apply ml-0 !important;
@@ -356,16 +355,6 @@
         }
         :global(.ant-input) {
             @apply shadow-none outline-none px-0 border-0 !important;
-        }
-        :global(.ant-modal-header) {
-            @apply border-0 border-t-0 border-b-0 px-4  !important;
-        }
-
-        :global(.ant-modal-footer) {
-            @apply border-0 border-t-0 px-4 border-b-0  !important;
-        }
-        :global(.ant-modal-body) {
-            @apply px-4 pt-0 pb-4 !important;
         }
     }
     .titleInput {

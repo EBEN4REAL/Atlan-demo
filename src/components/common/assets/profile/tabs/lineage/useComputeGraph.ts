@@ -3,14 +3,28 @@ import { getNodeSourceImage, getNodeTypeText } from './util.js'
 import useUpdateGraph from './useUpdateGraph'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { map as entityMap } from '~/services/meta/entity/key'
+import {
+    iconVerified,
+    iconDraft,
+    iconDeprecated,
+    iconProcess,
+    iconEllipse,
+} from './icons'
 
 const { updateEdgesData } = useUpdateGraph()
-
 const getType = (entity) => getNodeTypeText[entity.typeName]
 const getSource = (entity) => {
     const item = entity.attributes.qualifiedName.split('/')
     if (item[0] === 'default') return item[1]
     return item[0]
+}
+const getEntity = async (guid: string) => {
+    const { entity } = await useAPIPromise(
+        entityMap.GET_ENTITY({ guid }),
+        'GET',
+        {}
+    )
+    return entity
 }
 
 export default async function useComputeGraph(
@@ -20,7 +34,8 @@ export default async function useComputeGraph(
     showProcess,
     searchItems,
     currZoom,
-    reload
+    reload,
+    isComputationDone
 ) {
     const edges = ref([])
     const nodes = ref([])
@@ -35,67 +50,66 @@ export default async function useComputeGraph(
     const { relations, baseEntityGuid } = lineageData.value
     let baseEntity = null
 
-    if (!relations.length) {
-        const { entity } = await useAPIPromise(
-            entityMap.GET_ENTITY({ guid: baseEntityGuid }),
-            'GET',
-            {}
-        )
-        baseEntity = entity
-    }
+    if (!relations.length) baseEntity = await getEntity(baseEntityGuid)
 
     const guidEntityMap = !relations.length
         ? [baseEntity]
         : Object.values(lineageData.value.guidEntityMap)
 
     /* Nodes ( Sources and Targets ) */
-    guidEntityMap.forEach((entity) => {
-        const { guid, attributes } = entity
-        let { displayText } = entity
-        const source = getSource(entity)
-        const type = getType(entity)
-        const isBase = guid === baseEntityGuid
-        const isProcess = type === 'Process'
-        const img = getNodeSourceImage[source]
+    await Promise.all(
+        guidEntityMap.map(async (entity) => {
+            const { guid } = entity
+            const type = getType(entity)
+            const isProcess = type === 'Process'
+            const isBase = guid === baseEntityGuid
+            const source = getSource(entity)
+            const img = getNodeSourceImage[source]
 
-        if (!displayText) displayText = attributes.name
+            if (isProcess && !showProcess.value) return
 
-        let displayTextTrunc
-        if (displayText.length > 25)
-            displayTextTrunc = `${displayText.slice(0, 25)}...`
-        else displayTextTrunc = displayText
+            const enrichedEntity = !isProcess ? await getEntity(guid) : entity
+            const { attributes } = enrichedEntity
+            let { displayText } = enrichedEntity
+            const { schemaName, certificateStatus } = attributes
 
-        if (isProcess && !showProcess.value) return
+            let certificateIcon = ''
+            if (certificateStatus === 'VERIFIED') certificateIcon = iconVerified
+            else if (certificateStatus === 'DEPRECATED')
+                certificateIcon = iconDeprecated
+            else if (certificateStatus === 'DRAFT') certificateIcon = iconDraft
 
-        const searchItem = entity
-        searchItems.value.push(searchItem)
+            if (!displayText) displayText = attributes.name
 
-        const nodeData = {
-            id: guid,
-            type,
-            source,
-            isBase,
-            entity,
-            isProcess,
-            width: isProcess ? 60 : 270,
-            height: 60,
-            shape: 'html',
-            data: {
+            const searchItem = enrichedEntity
+            searchItems.value.push(searchItem)
+
+            const nodeData = {
                 id: guid,
-                isHighlightedNode: null,
-                isHighlightedNodePath: null,
-                isGrayed: false,
-            },
-            html: {
-                render(node) {
-                    const data = node.getData() as any
+                type,
+                source,
+                isBase,
+                entity: enrichedEntity,
+                isProcess,
+                width: isProcess ? 60 : 270,
+                height: 60,
+                shape: 'html',
+                data: {
+                    id: guid,
+                    isHighlightedNode: null,
+                    isHighlightedNodePath: null,
+                    isGrayed: false,
+                },
+                html: {
+                    render(node) {
+                        const data = node.getData() as any
 
-                    return !isProcess
-                        ? `<div class="lineage-node group ${
-                              data?.isHighlightedNode === data?.id
-                                  ? 'isHighlightedNode'
-                                  : ''
-                          }
+                        return !isProcess
+                            ? `<div class="lineage-node group ${
+                                  data?.isHighlightedNode === data?.id
+                                      ? 'isHighlightedNode'
+                                      : ''
+                              }
                           ${
                               data?.isHighlightedNodePath === data?.id
                                   ? 'isHighlightedNodePath'
@@ -104,38 +118,43 @@ export default async function useComputeGraph(
                           ${data?.isGrayed ? 'isGrayed' : ''}
                           ${isBase ? 'isBase' : ''}
                           ">
-                                    <img class="node-source" src="${img}" />
-                                    <div>
-                                        <div class="node-text name group-hover:underline">${displayTextTrunc}</div>
-                                        <div class="node-text type">${type}</div>
+                                <span class=" ${isBase ? 'inscr' : 'hidden'}">
+                                    <span class="inscr-item">BASE</span>
+                                </span>
+                                <div>
+                                    <div class="node-text group-hover:underline">
+                                        <div class="truncate">${displayText}</div>
+                                         ${certificateIcon}
                                     </div>
-                                </div>`
-                        : `<div class="lineage-process ${
-                              data?.isHighlightedNode === data?.id
-                                  ? 'isHighlightedNode'
-                                  : ''
-                          } ${
-                              data?.isHighlightedNodePath === data?.id
-                                  ? 'isHighlightedNodePath'
-                                  : ''
-                          }
-                          ${
-                              data?.isGrayed ? 'isGrayed' : ''
-                          }"> <svg class="process-icon" width="20" height="20" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.5 3.4375L0.625 5L2.5 6.5625" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M7.5 3.4375L9.375 5L7.5 6.5625" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M6.25 1.5625L3.75 8.4375" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                                    <div class="node-meta">
+                                        <img class="node-meta__source" src="${img}" />
+                                        <div class="node-meta__text truncate">${type}</div>
+                                        ${iconEllipse}
+                                        <div class="node-meta__text truncate">${schemaName}</div>
+                                    </div>
+                                </div>       
+                            </div>`
+                            : `<div class="lineage-process ${
+                                  data?.isHighlightedNode === data?.id
+                                      ? 'isHighlightedNode'
+                                      : ''
+                              } ${
+                                  data?.isHighlightedNodePath === data?.id
+                                      ? 'isHighlightedNodePath'
+                                      : ''
+                              }
+                          ${data?.isGrayed ? 'isGrayed' : ''}"> ${iconProcess}
                         </div>`
+                    },
+                    shouldComponentUpdate(node: Cell) {
+                        return node.hasChanged('data')
+                    },
                 },
-                shouldComponentUpdate(node: Cell) {
-                    return node.hasChanged('data')
-                },
-            },
-        }
+            }
 
-        nodes.value.push(nodeData)
-    })
+            nodes.value.push(nodeData)
+        })
+    )
 
     /* Edges */
     let computedRelations
@@ -165,7 +184,7 @@ export default async function useComputeGraph(
         computedRelations = [...relations]
     }
     computedRelations.forEach((relation) => {
-        const stroke = 'gray'
+        const stroke = '#AAAAAA'
         const edge = {
             id: `${relation.fromEntityId}@${relation.toEntityId}`,
             source: relation.fromEntityId,
@@ -175,7 +194,7 @@ export default async function useComputeGraph(
             attrs: {
                 line: {
                     stroke,
-                    strokeWidth: 1.7,
+                    strokeWidth: 1.6,
                     targetMarker: {
                         name: 'block',
                         stroke,
@@ -202,6 +221,8 @@ export default async function useComputeGraph(
     graph.value.zoomToFit({ padding: 12 })
     graph.value.scale(0.7)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+
+    isComputationDone.value = true
 
     return { baseEntityGuid }
 }

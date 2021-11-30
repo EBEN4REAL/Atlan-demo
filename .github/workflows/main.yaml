@@ -4,6 +4,9 @@ on:
     branches:
       - beta
       - alpha
+      - development
+      - main
+      - staging
 jobs:
   test:
     name: Production Deployment

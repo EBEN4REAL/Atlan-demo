@@ -13,6 +13,7 @@
                 ref="searchBar"
                 v-model="value"
                 :placeholder="placeholder"
+                data-test-id="search-input"
                 type="text"
                 class="flex-1 text-sm bg-transparent focus:outline-none"
                 @keyup.esc="$event.target.blur()"

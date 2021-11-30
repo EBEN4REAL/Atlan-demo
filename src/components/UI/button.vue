@@ -2,6 +2,7 @@
     <button
         :class="[size, color, padding]"
         :disabled="disabled"
+        :data-test-id="dataTestId"
         class="flex items-center justify-center flex-none gap-x-1 atlan-btn"
     >
         <slot name="prefix" />
@@ -51,6 +52,11 @@
             disabled: {
                 type: Boolean,
                 default: () => false,
+                required: false,
+            },
+            dataTestId: {
+                type: String,
+                default: () => 'atlan-btn',
                 required: false,
             },
             isLoading: {
@@ -135,6 +141,12 @@
 
         &.minimal {
             @apply border-0;
+            &:focus-visible {
+                @apply ring-2 ring-primary-focus;
+            }
+            &:active {
+                box-shadow: 0px 3px 4px 0px #00000033 inset;
+            }
         }
 
         &.danger {

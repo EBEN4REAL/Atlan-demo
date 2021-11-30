@@ -1,5 +1,5 @@
 <template>
-    <div class="my-3">
+    <div class="my-3 px-4 py-2">
         <template v-if="showGroupMembers">
             <div
                 v-auth="map.ADD_USER_GROUP"

@@ -152,11 +152,6 @@
             @apply p-1 pb-2 !important;
             @apply mx-3;
         }
-
-        :global(.ant-tabs-bar) {
-            margin-bottom: 0px;
-            border-bottom: none !important;
-        }
         :global(.ant-tabs-content) {
             @apply px-0 !important;
         }

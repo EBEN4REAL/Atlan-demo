@@ -43,10 +43,10 @@
                 </div>
 
                 <BusinessMetadataList
+                    v-model:selected="selectedId"
                     class="overflow-y-auto"
                     :final-list="sortedSearchedBM"
                     :selected-bm="selectedBm"
-                    @selectBm="handleSelectBm"
                 />
             </template>
 
@@ -54,7 +54,6 @@
                 v-if="selectedBm"
                 :key="selectedBm && selectedBm.guid"
                 :selected-bm="selectedBm"
-                @select-bm="handleSelectBm"
                 @update="onUpdate"
             />
         </ExplorerLayout>
@@ -80,7 +79,7 @@
         </div>
     </div>
     <!-- <NoAccess v-else /> -->
-    <MetadataModal ref="addMetaDataModal" @selectBm="handleSelectBm" />
+    <MetadataModal ref="addMetaDataModal" v-model:selected="selectedId" />
 </template>
 <script lang="ts">
     // ? components
@@ -120,11 +119,11 @@
             })
 
             const {
+                selectedId,
                 selectedBm,
                 searchText,
                 handleSelectBm,
                 onUpdate,
-                businessMetadataList,
                 error,
                 isLoading,
                 searchedBusinessMetadataList,
@@ -133,7 +132,7 @@
             } = useBusinessMetadata()
 
             return {
-                businessMetadataList,
+                selectedId,
                 error,
                 isLoading,
                 finalBusinessMetadataList,

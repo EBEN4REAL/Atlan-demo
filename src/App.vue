@@ -8,6 +8,7 @@
 
     import useTenant from '~/composables/tenant/useTenant'
     import useConnection from '~/composables/connection/useConnection'
+    import useIntegration from '~/composables/integrations/useIntegrations'
     import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from './store/auth'
     import useGlossary from './composables/glossary2/useGlossary'
@@ -34,6 +35,8 @@
 
             // // glossary list
             useGlossary()
+
+            useIntegration()
 
             // watch([data], () => {
             //     isPermissionsReady.value = true

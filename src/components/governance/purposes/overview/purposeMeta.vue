@@ -3,47 +3,39 @@
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             <div class="flex items-center text-sm">
-                <Avatar
-                    :username="persona.createdBy"
-                    styleClass="bg-white mr-1"
-                />
-                <span class="text-gray">
-                    {{ persona.createdBy }}
-                </span>
+                <PopOverUser>
+                    <UserPill
+                        :username="username"
+                        :allowDelete="false"
+                    ></UserPill>
+                </PopOverUser>
             </div>
             <span class="text-sm text-gray-500">on</span>
-            <span class="text-sm text-gray">{{ persona.createdAt }}</span>
+            <span class="text-sm text-gray">{{
+                persona.created_at?.slice(0, -17)
+            }}</span>
 
             <a-switch
                 class="ml-auto"
-                style="width: 44px"
+                style="width: 40px !important"
+                data-test-id="toggle-switch"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
             />
-            <span class="text-sm text-gray">Enable Persona</span>
+            <span class="text-sm text-gray">Enable Purpose</span>
         </div>
         <div class="py-4 text-gray-500 gap-x-2">
             <p class="mb-3 text-sm font-bold text-gray-700">Classifications</p>
             <Classification
                 v-model:modelValue="selectedClassifications"
-                :disabled="addClassificationsDisabled"
-                @change="handleClassificationChange"
+                @change="updateClassifications"
             />
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    flex-1
-                    p-4
-                    border border-gray-300
-                    rounded
-                    cursor-pointer
-                    group
-                "
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group hover:shadow"
                 @click="setActiveTab('policies')"
+                data-test-id="tab-policies"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
                     <AtlanIcon icon="Policy" class="h-6" />
@@ -54,14 +46,14 @@
                         <div
                             v-if="
                                 persona.dataPolicies?.length === 0 &&
-                                persona.resourcePolicies?.length === 0
+                                persona.metadataPolicies?.length === 0
                             "
                         >
                             No policies added
                         </div>
                         <div v-else class="flex items-center">
                             <div class="mr-3">
-                                <b>{{ persona.resourcePolicies?.length }}</b>
+                                <b>{{ persona.metadataPolicies?.length }}</b>
                                 Metadata policies
                             </div>
                             <div>
@@ -70,13 +62,7 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                absolute
-                                right-0
-                                opacity-0
-                                vertical-center
-                                group-hover:opacity-100
-                            "
+                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -91,35 +77,55 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, watch, computed } from 'vue'
-
-    import { IPersona } from '~/types/accessPolicies/purposes'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        watch,
+        computed,
+        toRaw,
+        toRefs,
+    } from 'vue'
+    import { message } from 'ant-design-vue'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
-    import Avatar from '@common/avatar/user.vue'
     import Classification from '@common/input/classification/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
-    import { selectedPersonaDirty } from '../composables/useEditPurpose'
+    import {
+        updateSelectedPersona,
+        selectedPersonaDirty,
+        saveClassifications,
+    } from '../composables/useEditPurpose'
+    import { selectedPersona } from '../composables/usePurposeList'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'PurposeMeta',
-        components: { Avatar, Classification },
+        components: { Classification, PopOverUser, UserPill },
         props: {
             persona: {
-                type: Object as PropType<IPersona>,
+                type: Object as PropType<IPurpose>,
+                required: true,
+            },
+            username: {
+                type: String,
                 required: true,
             },
         },
         emits: ['update:persona', 'update:isEditMode'],
-        setup() {
+        setup(props) {
             const { classificationList } = useTypedefData()
+            const { username, persona } = toRefs(props)
+
             const enablePersonaCheck = ref(true)
 
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
-            const mapClassificationsFromNames = (names: string[]) => {
+            const mapClassificationsFromNames = computed(() => {
                 let arr: any[] = []
                 classificationList.value.forEach((cl) => {
-                    names?.forEach((name) => {
+                    selectedPersonaDirty.value?.tags?.forEach((name) => {
                         if (name === cl.name) {
                             arr.push({
                                 typeName: cl.name,
@@ -133,38 +139,58 @@
                     })
                 })
                 return arr
-            }
-
-            /* Mimic the classification Names */
-            const classificationNames = computed(() => {
-                if (selectedPersonaDirty.value?.tag)
-                    return [selectedPersonaDirty.value?.tag]
-                else return []
             })
 
+            /* Mimic the classification Names */
+
             const selectedClassifications = ref(
-                mapClassificationsFromNames(classificationNames.value)
-            )
-            const addClassificationsDisabled = computed(() =>
-                selectedClassifications.value.length > 0 ? true : false
+                mapClassificationsFromNames.value
             )
 
-            const handleClassificationChange = () => {
-                if (classificationNames.value.length > 0)
-                    selectedPersonaDirty.value.tag =
-                        classificationNames.value[0]
-                else selectedPersonaDirty.value.tag = ''
-                /* Call save purpose */
-            }
-            watch(classificationNames, () => {
-                selectedClassifications.value = mapClassificationsFromNames(
-                    classificationNames.value
+            const updateClassifications = async (classifications) => {
+                const messageKey = Date.now()
+                selectedPersonaDirty.value.tags = classifications.map(
+                    (e) => e.typeName
                 )
+                message.loading({
+                    content: 'Saving classifications',
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await saveClassifications()
+                    updateSelectedPersona()
+                    message.success({
+                        content: 'Classifications saved',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                } catch (error) {
+                    selectedPersonaDirty.value = {
+                        ...JSON.parse(JSON.stringify(selectedPersona.value)),
+                    }
+                    selectedClassifications.value = [
+                        ...toRaw(mapClassificationsFromNames.value),
+                    ]
+                    console.log(error?.response?.data, 'error')
+                    message.error({
+                        content: error?.response?.data?.message,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                }
+            }
+
+            watch(selectedPersona, () => {
+                selectedClassifications.value =
+                    mapClassificationsFromNames.value
             })
 
             return {
-                handleClassificationChange,
-                addClassificationsDisabled,
+                username,
+                selectedPersona,
+                updateClassifications,
+                selectedPersonaDirty,
                 selectedClassifications,
                 enablePersonaCheck,
                 enablePersona,
@@ -180,15 +206,15 @@
         @apply cursor-pointer;
     }
     .user-group-pill {
-        @apply rounded-full bg-primary-light text-primary text-sm px-2 py-1;
+        @apply rounded-full bg-primary-light text-primary text-xs px-2 py-1;
     }
     .data-policy-pill {
-        @apply rounded-full text-sm px-2 py-1;
+        @apply rounded-full text-xs px-2 py-1;
         background-color: #eeffef;
         color: #00a680;
     }
     .metadata-policy-pill {
-        @apply rounded-full text-sm px-2 py-1;
+        @apply rounded-full text-xs px-2 py-1;
         background-color: #fcf3fc;
         color: #d452d7;
     }

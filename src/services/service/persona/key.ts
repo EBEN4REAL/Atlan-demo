@@ -7,12 +7,12 @@ export const UPDATE_PERSONA = 'UPDATE_PERSONA'
 
 export const map = {
     LIST_PERSONAS: () => getAPIPath('/service', '/personas'),
-        CREATE_PERSONA: () => getAPIPath('/service', '/personas'),
-        UPDATE_PERSONA: ({ guid }: PathParams) =>
-            getAPIPath('/service', `/personas/${guid}`),
-        UPDATE_PERSONA_USERS: ({ guid }: PathParams) =>
-            getAPIPath('/service', `/personas/${guid}/subjects`),
-        DELETE_PERSONA: ({ guid }: PathParams) =>
-            getAPIPath('/service', `/personas/${guid}`),
-        LIST_SCOPES: () => getAPIPath('/service', '/scopes'),
+    CREATE_PERSONA: () => getAPIPath('/service', '/personas'),
+    UPDATE_PERSONA: ({ guid }: PathParams) =>
+        getAPIPath('/service', `/personas/${guid}`),
+    UPDATE_PERSONA_USERS: ({ guid }: PathParams) =>
+        getAPIPath('/service', `/personas/${guid}/subjects`),
+    DELETE_PERSONA: ({ guid }: PathParams) =>
+        getAPIPath('/service', `/personas/${guid}`),
+    LIST_SCOPES: () => getAPIPath('/service', '/scopes'),
 }

@@ -15,6 +15,7 @@
             group
             hover:border-${color.toLowerCase()}-400
         `"
+        :data-test-id="displayName"
     >
         <AtlanIcon
             icon="ShieldFilled"
@@ -33,7 +34,7 @@
             {{ displayName || name }}
         </div>
 
-        <div class="flex" @click="handleDelete" v-if="allowDelete">
+        <div class="flex" @click="handleRemove" v-if="allowDelete">
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500 group-hover:text-white"
@@ -44,7 +45,7 @@
 
 <script lang="ts">
     import { toRefs } from 'vue'
-    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
 
     export default {
         props: {
@@ -87,7 +88,14 @@
                 emit('delete', name.value)
             }
 
-            return { name, isPropagated, displayName, handleRemove, getClassificationColorHex, color }
+            return {
+                name,
+                isPropagated,
+                displayName,
+                handleRemove,
+                getClassificationColorHex,
+                color,
+            }
         },
     }
 </script>

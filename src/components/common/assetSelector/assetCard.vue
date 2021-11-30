@@ -3,7 +3,7 @@
     <div class="flex flex-col mx-3">
         <div class="flex items-start flex-1 py-1 transition-all duration-300">
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
+                class="box-border flex flex-col flex-1 overflow-hidden gap-y-1 lg:pr-16"
             >
                 <div class="flex items-center mb-0 overflow-hidden">
                     <div
@@ -16,7 +16,7 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>

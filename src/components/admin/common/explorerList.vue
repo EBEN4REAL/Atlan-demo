@@ -1,5 +1,8 @@
 <template>
-    <div class="flex flex-col px-4 pt-2 pb-4 overflow-y-auto gap-y-1">
+    <div
+        class="flex flex-col px-4 pt-2 pb-4 overflow-y-auto gap-y-1"
+        v-if="list?.length > 0"
+    >
         <div
             v-for="(item, index) in list"
             :key="item[dataKey]"
@@ -23,6 +26,9 @@
                 :isSelected="selected === item[dataKey]"
             ></slot>
         </div>
+    </div>
+    <div class="flex flex-col px-4 pt-2 pb-4 overflow-y-auto gap-y-1" v-else>
+        <span class="text-center text-gray-500">Not found!</span>
     </div>
 </template>
 

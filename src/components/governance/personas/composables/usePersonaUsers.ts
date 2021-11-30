@@ -1,10 +1,9 @@
 import { computed, ComputedRef, Ref, watch, reactive, ref } from 'vue'
 import { getFormattedUser } from '~/composables/user/useUsers'
-// import { IUser } from '~/services/heracles/apis/users'
-import { IPurpose, IUser } from '~/types/accessPolicies/purposes'
+import { IPersona, IUser } from '~/types/accessPolicies/personas'
 import { useUsers } from '~/composables/user/useUsers'
 
-function usePersonaUserList(persona: Ref<IPurpose>) {
+function usePersonaUserList(persona: Ref<IPersona>) {
     const userListAPIParams: any = {
         limit: 15,
         offset: 0,

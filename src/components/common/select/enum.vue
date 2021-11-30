@@ -21,7 +21,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
-        name: 'GroupsSelect',
+        name: 'EnumSelect',
         props: {
             queryText: {
                 type: String,
@@ -34,9 +34,8 @@
                 default: () => '',
             },
             modelValue: {
-                type: Array,
+                type: [Array, String],
                 required: false,
-                default: () => [],
             },
         },
         emits: ['change', 'update:modelValue'],

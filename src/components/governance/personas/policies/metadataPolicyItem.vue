@@ -19,6 +19,7 @@
                                 else rules.policyName.show = false
                             }
                         "
+                        data-test-id="policy-edit-name"
                         :ref="
                             (el) => {
                                 policyNameRef = el
@@ -31,18 +32,33 @@
                 <div
                     class="absolute text-xs text-red-500 -bottom-5"
                     v-if="rules.policyName.show"
+                    data-test-id="policy-validation-name"
                 >
                     {{ rules.policyName.text }}
                 </div>
             </div>
-            <AtlanBtn
-                size="sm"
-                color="secondary"
-                padding="compact"
-                class="plus-btn"
-                @click="removePolicy"
-                ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
-            ></AtlanBtn>
+
+            <a-popconfirm
+                placement="leftTop"
+                :title="getPopoverContent(policy)"
+                ok-text="Yes"
+                :ok-type="'default'"
+                overlayClassName="popoverConfirm"
+                cancel-text="Cancel"
+                @confirm="removePolicy"
+            >
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="plus-btn"
+                    data-test-id="policy-delete"
+                    ><AtlanIcon
+                        icon="Delete"
+                        class="-mx-1 text-red-400"
+                    ></AtlanIcon
+                ></AtlanBtn>
+            </a-popconfirm>
         </div>
 
         <div class="relative">
@@ -67,6 +83,7 @@
             />
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
+                data-test-id="policy-validation-connector"
                 v-if="rules.connection.show"
             >
                 {{ rules.connection.text }}
@@ -91,6 +108,8 @@
                     v-model:data="assets"
                     label-key="label"
                     @add="openAssetSelector"
+                    :hoveredPill="false"
+                    :customRendererForLabel="customRendererForLabel"
                 >
                     <template #addBtn="d">
                         <div>
@@ -101,6 +120,7 @@
                                     class="group"
                                     @click="d?.item?.handleAdd"
                                     @blur="d?.item?.handleBlur"
+                                    data-test-id="add"
                                 >
                                     <template #prefix>
                                         <AtlanIcon
@@ -123,28 +143,36 @@
                                     class="group"
                                     @click="addConnectionAsset"
                                     @blur="d?.item?.handleBlur"
+                                    data-test-id="add-all"
                                 >
                                     <template #prefix>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center  text-primary group-hover:text-white"
+                                        >
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="h-4 mr-1"
                                             />
                                             <span class="text-xs">Add All</span>
                                         </div>
                                     </template>
                                 </Pill>
-                                <span class="mx-2 text-xs">OR</span>
+                                <span class="mx-2 text-xs text-gray-500"
+                                    >OR</span
+                                >
                                 <Pill
                                     class="group"
+                                    data-test-id="add-custom"
                                     @click="d?.item?.handleAdd"
                                     @blur="d?.item?.handleBlur"
                                 >
                                     <template #prefix>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center  text-primary group-hover:text-white"
+                                        >
                                             <AtlanIcon
                                                 icon="Add"
-                                                class="h-4 mr-1  text-gray group-hover:text-white"
+                                                class="h-4 mr-1"
                                             />
                                             <span class="text-xs"
                                                 >Custom select</span
@@ -160,20 +188,37 @@
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
                 v-if="rules.assets.show && connectorData.attributeValue"
+                data-test-id="policy-validation-assets"
             >
                 {{ rules.assets.text }}
             </div>
         </div>
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
-            <span class="text-sm text-gray-500">Metadata permissions</span>
+            <span class="text-sm text-gray-500 required"
+                >Metadata permissions</span
+            >
         </div>
-        <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
+        <div class="relative">
+            <MetadataScopes
+                v-model:actions="policy.actions"
+                class="mb-6"
+                @change="onScopesChange"
+            />
+            <div
+                class="absolute text-xs text-red-500 -bottom-6"
+                v-if="rules.metadata.show"
+                data-test-id="policy-validation-permissions"
+            >
+                {{ rules.metadata.text }}
+            </div>
+        </div>
         <div class="flex items-center gap-x-2">
             <a-switch
-                :class="policy.allow ? '' : 'checked'"
+                :class="policy.allow ? `` : 'checked'"
+                data-test-id="toggle-switch"
                 :checked="!policy.allow"
-                style="width: 44px"
+                style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
             />
             <span>Deny Permissions</span>
@@ -195,6 +240,7 @@
             <AtlanBtn
                 class="ml-auto"
                 size="sm"
+                data-test-id="cancel"
                 color="secondary"
                 padding="compact"
                 @click="$emit('cancel')"
@@ -204,6 +250,7 @@
                 size="sm"
                 color="primary"
                 padding="compact"
+                data-test-id="save"
                 @click="handleSave"
                 >Save</AtlanBtn
             >
@@ -221,8 +268,8 @@
     import AssetSelectorDrawer from '../assets/assetSelectorDrawer.vue'
     import { useConnectionStore } from '~/store/connection'
 
-    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
-    import { selectedPersonaDirty } from '../composables/useEditPersona'
+    import { MetadataPolicies } from '~/types/accessPolicies/personas'
+    import { useUtils } from '../assets/useUtils'
 
     export default defineComponent({
         name: 'MetadataPolicy',
@@ -243,6 +290,7 @@
         emits: ['delete', 'save', 'cancel'],
         setup(props, { emit }) {
             const { policy } = toRefs(props)
+            const { getAssetIcon } = useUtils()
             const assetSelectorVisible = ref(false)
             const connectorComponentRef = ref()
             const policyNameRef = ref()
@@ -259,7 +307,7 @@
                 },
                 assets: { text: 'Select atleast 1 asset!', show: false },
                 metadata: {
-                    text: 'Select atleast 1 permissions!',
+                    text: 'Select atleast 1 permission!',
                     show: false,
                 },
             })
@@ -292,6 +340,10 @@
                     else rules.value.assets.show = true
                 },
             })
+
+            const assetsIcons = computed(() => {
+                return assets.value.map((asset) => getAssetIcon(asset.label))
+            })
             const handleConnectorChange = () => {
                 policy.value.assets = []
             }
@@ -308,6 +360,9 @@
                     rules.value.connection.show = true
                 } else if (policy.value.assets.length < 1) {
                     rules.value.assets.show = true
+                } else if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                    return
                 } else {
                     emit('save')
                 }
@@ -344,6 +399,12 @@
                 },
             })
 
+            const customRendererForLabel = (label: string) => {
+                return label.split('/').length > 3
+                    ? label.split('/').slice(3).join('/')
+                    : label.split('/').slice(2).join('/')
+            }
+
             const isreadOnlyPillGroup = computed(() => {
                 return Boolean(
                     assets.value.find(
@@ -351,7 +412,23 @@
                     )
                 )
             })
+
+            const getPopoverContent = (policy: any) => {
+                return `Are you sure you want to delete ${policy?.name}?`
+            }
+            const onScopesChange = () => {
+                if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                } else {
+                    rules.value.metadata.show = false
+                }
+            }
+
             return {
+                onScopesChange,
+                getPopoverContent,
+                customRendererForLabel,
+                assetsIcons,
                 isreadOnlyPillGroup,
                 rules,
                 handleSave,

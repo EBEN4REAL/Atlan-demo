@@ -22,8 +22,10 @@
                         v-if="loginWithEmail"
                         type="primary"
                         class="rounded-md"
+                        size="sm"
                         @click="handleInviteUsers"
-                        >Invite Users
+                    >
+                        Invite Users
                     </AtlanButton>
                 </div>
             </div>
@@ -99,13 +101,13 @@
             :destroy-on-close="true"
             :footer="null"
             :closable="false"
-            :width="550"
-            wrapClassName="inviteModal"
+            :width="470"
+            wrap-class-name="inviteModal"
             @cancel="closeInviteUserModal"
         >
             <InviteUsers
+                :tenant-name="tenantName"
                 @close="closeInviteUserModal"
-                :tenantName="tenantName"
                 @handleInviteSent="handleInviteSent"
             />
         </a-modal>
@@ -156,6 +158,7 @@
             const showRevokeInvitePopover = ref<boolean>(false)
             const showInviteUserModal = ref(false)
             const showUserPreview = ref(false)
+            const showDisableEnablePopover = ref<boolean>(false)
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
@@ -253,11 +256,17 @@
                 showPreview,
                 showUserPreview: openPreview,
                 setUserUniqueAttribute,
+                closePreview,
+                userId,
             } = useUserPreview()
             const showUserPreviewDrawer = (user: any) => {
-                setUserUniqueAttribute(user.id)
-                openPreview()
-                selectedUserId.value = user.id
+                if (userId.value === user.id && showPreview.value) {
+                    closePreview()
+                } else {
+                    setUserUniqueAttribute(user.id)
+                    openPreview()
+                    selectedUserId.value = user.id
+                }
             }
 
             // END: USER PREVIEW
@@ -265,14 +274,23 @@
                 selectedUserId.value = user.id
 
                 showChangeRolePopover.value = true
+                showRevokeInvitePopover.value = false
+                showInviteUserModal.value = false
+                showUserPreview.value = false
+                showDisableEnablePopover.value = false
             }
 
-            const showDisableEnablePopover = ref<boolean>(false)
-
             const toggleDisableEnablePopover = (user: any) => {
-                if (user) selectedUserId.value = user.id
-
-                showDisableEnablePopover.value = !showDisableEnablePopover.value
+                if (user) {
+                    selectedUserId.value = user.id
+                    showDisableEnablePopover.value = true
+                } else
+                    showDisableEnablePopover.value =
+                        !showDisableEnablePopover.value
+                showChangeRolePopover.value = false
+                showRevokeInvitePopover.value = false
+                showInviteUserModal.value = false
+                showUserPreview.value = false
             }
 
             const closeChangeRolePopover = () => {
@@ -281,6 +299,10 @@
             }
             const handleInviteUsers = () => {
                 showInviteUserModal.value = true
+                showChangeRolePopover.value = false
+                showRevokeInvitePopover.value = false
+                showUserPreview.value = false
+                showDisableEnablePopover.value = false
             }
 
             const reloadTable = () => {
@@ -332,6 +354,10 @@
             const handleRevokeInvite = (id) => {
                 if (id) selectedUserId.value = id
                 showRevokeInvitePopover.value = !showRevokeInvitePopover.value
+                showChangeRolePopover.value = false
+                showInviteUserModal.value = false
+                showUserPreview.value = false
+                showDisableEnablePopover.value = false
             }
 
             const revokeInvite = (invite: { email: any; id: string }) => {
@@ -364,20 +390,35 @@
                     const requestPayload = ref({
                         enabled: !user.enabled,
                     })
+                    message.loading({
+                        key: 'enableDisable',
+                        content: `${
+                            user.enabled
+                                ? 'Disabling user...'
+                                : 'Enabling user...'
+                        }`,
+                        duration: 10,
+                    })
                     const { data, isReady, error, isLoading } =
                         Users.UpdateUser(user.id, requestPayload)
                     watch([data, isReady, error, isLoading], () => {
                         if (isReady && !error.value && !isLoading.value) {
                             getUserList()
-                            message.success(
-                                `User ${user.enabled ? 'Disabled' : 'Enabled'}`
-                            )
+                            message.success({
+                                key: 'enableDisable',
+                                content: `User ${
+                                    user.enabled ? 'Disabled' : 'Enabled'
+                                }`,
+                                duration: 2,
+                            })
                         } else if (error && error.value) {
-                            message.error(
-                                `Unable to ${
+                            message.error({
+                                key: 'enableDisable',
+                                content: `Unable to ${
                                     user.enabled ? 'disable' : 'enable'
-                                } user. Try again.`
-                            )
+                                } user. Try again.`,
+                                duration: 2,
+                            })
                         }
                     })
                 }
@@ -456,13 +497,6 @@
 </script>
 
 <style lang="less" scoped>
-    :global(.ant-popover-content) {
-        --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-            var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-    }
-
     .a-input-search-icon-left {
         .ant-input-suffix {
         }

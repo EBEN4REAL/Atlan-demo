@@ -26,6 +26,7 @@ export const InternalAttributes = [
     '__propagatedClassificationNames',
     '__customAttributes',
     '__labels',
+    '__businessAttributes',
     'anchor',
 ]
 

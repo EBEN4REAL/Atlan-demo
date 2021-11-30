@@ -4,7 +4,7 @@
             v-if="isLoading"
             class="absolute flex items-center justify-center w-full h-full"
         >
-            <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
+            <AtlanIcon icon="Loader" class="h-5 animate-spin" />
         </div>
 
         <EmptyView
@@ -104,10 +104,11 @@
             })
 
             watch(data, (newVal) => {
-              const meta = newVal?.workflowtemplate?.metadata?.annotations || {}
-              const urlLogo = meta["com.atlan.orchestration/logo"] || ""
-              emit("handleSetLogo", urlLogo)
-                const {entrypoint} = newVal.workflowtemplate.spec
+                const meta =
+                    newVal?.workflowtemplate?.metadata?.annotations || {}
+                const urlLogo = meta['com.atlan.orchestration/logo'] || ''
+                emit('handleSetLogo', urlLogo)
+                const { entrypoint } = newVal.workflowtemplate.spec
                 tasks.value = newVal.workflowtemplate.spec.templates.find(
                     (t) => t.name === entrypoint
                 ).dag.tasks

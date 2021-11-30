@@ -1,5 +1,6 @@
 <template>
     <div
+        class="h-8"
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
     >
@@ -7,19 +8,22 @@
             <div class="flex w-full m-0">
                 <div
                     v-if="item.typeName === 'QueryFolder'"
-                    class="
-                        relative
-                        flex
-                        content-center
-                        w-full
-                        my-auto
-                        overflow-hidden
-                        text-sm
-                        leading-5
-                        text-gray-700
-                    "
+                    class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <!--FOLDER NODE -->
+                    <!-- <div
+                        class="parent-ellipsis-container py-1.5"
+                        v-if="item.class === 'addInput'"
+                    >
+                        <div class="flex w-full">
+                            <AtlanIcon
+                                icon="FolderClosed"
+                                class="w-5 h-5 my-auto mr-1"
+                                color="#5277D7"
+                            ></AtlanIcon>
+                            <input ref="input" :value="newFolderName" />
+                        </div>
+                    </div> -->
 
                     <div class="parent-ellipsis-container py-1.5">
                         <div class="flex w-full">
@@ -29,31 +33,15 @@
                                         ? 'FolderOpen'
                                         : 'FolderClosed'
                                 "
-                                class="w-5 h-5 my-auto mr-1"
+                                class="w-4 h-4 my-auto mr-1"
+                                color="#5277D7"
                             ></AtlanIcon>
                             <span
-                                class="
-                                    mb-0
-                                    text-sm text-gray-700
-                                    parent-ellipsis-container-base
-                                "
+                                class="mt-0.5 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
                             <div
-                                class="
-                                    absolute
-                                    top-0
-                                    right-0
-                                    flex
-                                    items-center
-                                    h-full
-                                    text-gray-500
-                                    transition
-                                    duration-300
-                                    opacity-0
-                                    margin-align-top
-                                    group-hover:opacity-100
-                                "
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -141,36 +129,58 @@
                 <!--Empty NODE -->
                 <div
                     v-else-if="item.typeName === 'Empty'"
-                    class="text-sm font-bold text-gray-500"
+                    class="h-8 text-sm font-bold text-gray-500"
                 >
                     {{ item.title }}
                 </div>
                 <!------------------------------->
                 <!-- Popover Allowed -->
-                <a-popover
+                <PopoverAsset
+                    :item="item"
                     placement="right"
                     v-else-if="item.typeName === 'Query'"
                 >
-                    <template #content>
-                        <div>
-                            <QueryItemPopover :item="item" />
+                    <template #extraHeaders>
+                        <div
+                            class="w-1 h-1 mx-2 rounded-full -mt-0.5"
+                            style="background-color: #c4c4c4"
+                        ></div>
+                        <div class="flex items-center h-full">
+                            <div
+                                class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
+                            >
+                                <AtlanIcon
+                                    v-if="savedQueryType === 'personal'"
+                                    icon="PrivateFolder"
+                                    class="h-6"
+                                />
+                                <AtlanIcon
+                                    v-else
+                                    icon="FolderClosed"
+                                    class="h-6"
+                                />
+                            </div>
+
+                            <span>{{ item?.parentTitle }}</span>
                         </div>
                     </template>
+
+                    <template #button>
+                        <a-button class="mt-3" @click="openSidebar" block>
+                            <div class="flex justify-center w-full">
+                                <div class="flex items-center cursor-pointer">
+                                    Open preview sidebar
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="w-4 h-4 ml-0.5"
+                                    ></AtlanIcon>
+                                </div>
+                            </div>
+                        </a-button>
+                    </template>
                     <div
-                        class="
-                            relative
-                            flex
-                            content-center
-                            w-full
-                            my-auto
-                            overflow-hidden
-                            text-sm
-                            leading-5
-                            text-gray-700
-                        "
+                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                     >
-                        <!--SAVED QUERY NODE -->
-                        <!--For Others -->
                         <div class="parent-ellipsis-container py-1.5">
                             <AtlanIcon
                                 :icon="
@@ -179,31 +189,16 @@
                                         certificateStatus(item)
                                     )
                                 "
-                                class="w-5 h-5 my-auto mr-1"
+                                class="w-4 h-4 my-auto mr-1"
+                                color="#5277D7"
                             ></AtlanIcon>
                             <span
-                                class="
-                                    mb-0
-                                    text-sm text-gray-700
-                                    parent-ellipsis-container-base
-                                "
+                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
 
                             <div
-                                class="
-                                    absolute
-                                    flex
-                                    items-center
-                                    h-full
-                                    text-gray-500
-                                    transition
-                                    duration-300
-                                    opacity-0
-                                    right-6
-                                    margin-align-top
-                                    group-hover:opacity-100
-                                "
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 right-6 margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -234,20 +229,7 @@
                                 </div>
                             </div>
                             <div
-                                class="
-                                    absolute
-                                    top-0
-                                    right-0
-                                    flex
-                                    items-center
-                                    h-full
-                                    text-gray-500
-                                    transition
-                                    duration-300
-                                    opacity-0
-                                    margin-align-top
-                                    group-hover:opacity-100
-                                "
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -294,7 +276,6 @@
                                                 "
                                                 >Make query public</a-menu-item
                                             >
-                                            <!-- DELETE QUERY PERMISSIONS -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -315,10 +296,8 @@
                                 </a-dropdown>
                             </div>
                         </div>
-                        <!------------------------------->
                     </div>
-                </a-popover>
-                <!-- ---------------- -->
+                </PopoverAsset>
             </div>
         </div>
     </div>
@@ -328,6 +307,7 @@
                 :item="item"
                 @cancel="showDeletePopover = false"
                 @delete="() => delteItem(item.typeName)"
+                :isSaving="isDeleteLoading"
             />
         </template>
     </a-popover>
@@ -343,56 +323,60 @@
         </template> -->
 
         <template #content>
-            <QueryFolderSelector
-                :connector="currentConnector"
-                :savedQueryType="'all'"
-                @folderChange="getSelectedFolder"
-                :selectedNewFolder="item"
-            />
+            <div class="p-4">
+                <QueryFolderSelector
+                    :connector="currentConnector"
+                    :savedQueryType="'all'"
+                    @folderChange="getSelectedFolder"
+                    :selectedNewFolder="item"
+                />
 
-            <div class="flex justify-end w-full">
-                <a-button
-                    class="px-5 mr-4 text-sm border rounded"
-                    style="width: 100px"
-                    type="default"
-                    @click="showPublishPopover = false"
-                    >Cancel</a-button
-                >
-                <a-button
-                    class="px-5 text-sm rounded"
-                    type="primary"
-                    @click="changeFolder(item)"
-                    :loading="isUpdating"
-                    >Move</a-button
-                >
+                <div class="flex justify-end w-full">
+                    <a-button
+                        class="px-5 mr-4 text-sm border rounded"
+                        style="width: 100px"
+                        type="default"
+                        @click="showPublishPopover = false"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        class="px-5 text-sm rounded"
+                        type="primary"
+                        @click="changeFolder(item)"
+                        :loading="isUpdating"
+                        >Move</a-button
+                    >
+                </div>
             </div>
         </template>
     </a-popover>
 
     <a-popover :visible="showFolderPopover" placement="right">
         <template #content>
-            <QueryFolderSelector
-                :connector="currentConnector"
-                :savedQueryType="savedQueryType"
-                @folderChange="getSelectedFolder"
-                :selectedNewFolder="item"
-            />
+            <div class="p-4">
+                <QueryFolderSelector
+                    :connector="currentConnector"
+                    :savedQueryType="savedQueryType"
+                    @folderChange="getSelectedFolder"
+                    :selectedNewFolder="item"
+                />
 
-            <div class="flex justify-end w-full">
-                <a-button
-                    class="px-5 mr-4 text-sm border rounded"
-                    style="width: 100px"
-                    type="default"
-                    @click="showFolderPopover = false"
-                    >Cancel</a-button
-                >
-                <a-button
-                    class="px-5 text-sm rounded"
-                    type="primary"
-                    @click="changeFolder(item)"
-                    :loading="isUpdating"
-                    >Move</a-button
-                >
+                <div class="flex justify-end w-full">
+                    <a-button
+                        class="px-5 mr-4 text-sm border rounded"
+                        style="width: 100px"
+                        type="default"
+                        @click="showFolderPopover = false"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        class="px-5 text-sm rounded"
+                        type="primary"
+                        @click="changeFolder(item)"
+                        :loading="isUpdating"
+                        >Move</a-button
+                    >
+                </div>
             </div>
         </template>
     </a-popover>
@@ -414,7 +398,7 @@
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
-    import QueryItemPopover from '~/components/insights/explorers/queries/queryItemPopover.vue'
+    import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import PublishFolderPopover from '~/components/insights/common/publishFolderPopover.vue'
@@ -435,11 +419,11 @@
 
     export default defineComponent({
         components: {
-            QueryItemPopover,
             StatusBadge,
             TreeDeletePopover,
             PublishFolderPopover,
             QueryFolderSelector,
+            PopoverAsset,
         },
         props: {
             item: {
@@ -597,18 +581,34 @@
                 const input = document.createElement('input')
                 input.setAttribute(
                     'class',
-                    `outline-none border py-0 px-1 rounded mx-0 my-1 w-auto`
+                    `outline-none border py-0 px-1 rounded mx-0 my-0.5 w-auto`
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
 
-                parentNode?.prepend(input)
+                let div = document.createElement('div')
+                div.classList.add('flex', 'items-center', 'active-input', 'h-8')
+
+                let folderSvg =
+                    '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.49951 2H3.49951C2.94723 2 2.49951 2.44772 2.49951 3V11.5C2.49951 12.0523 2.94723 12.5 3.49951 12.5H11.4995C12.0518 12.5 12.4995 12.0523 12.4995 11.5V5C12.4995 4.44772 12.0518 4 11.4995 4H7.49951C6.94723 4 6.49951 3.55228 6.49951 3C6.49951 2.44772 6.0518 2 5.49951 2Z" fill="white" stroke="#5277D7"/><path d="M13.3266 6H2.61167C2.01741 6 1.55428 6.51516 1.61731 7.10607L2.20398 12.6061C2.2582 13.1144 2.68711 13.5 3.19833 13.5H12.4466C12.9379 13.5 13.3564 13.1431 13.4341 12.658L14.3141 7.15799C14.4113 6.55041 13.9419 6 13.3266 6Z" fill="white" stroke="#5277D7"/></svg></span>'
+
+                let querySvg =
+                    '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/><path d="M4 6L6 8L4 10" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H12" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+
+                const folderSvgEl = new DOMParser().parseFromString(
+                    item.value.typeName === 'Query' ? querySvg : folderSvg,
+                    'text/html'
+                ).body.firstElementChild
+
+                div.append(folderSvgEl)
+                div.append(input)
+                parentNode?.prepend(div)
                 input.focus()
                 input.value = ''
                 input.value = item.value.attributes?.name
 
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
-                        parentNode?.removeChild(input)
+                        parentNode?.removeChild(div)
                         childNode?.classList?.remove('hidden')
                     }
                     if (e.key === 'Enter') {
@@ -642,7 +642,7 @@
                         }
                         input.value = ''
                         try {
-                            parentNode?.removeChild(input)
+                            parentNode?.removeChild(div)
                         } catch {}
                         childNode?.classList?.remove('hidden')
                     }
@@ -660,26 +660,41 @@
                         })
                     }
                     try {
-                        parentNode?.removeChild(input)
+                        parentNode?.removeChild(div)
                     } catch {}
                     childNode?.classList?.remove('hidden')
                 })
             }
 
+            let isDeleteLoading = ref(false)
             const delteItem = (type: 'Query' | 'QueryFolder') => {
-                const { data, error } = Insights.DeleteEntity(item.value.guid)
-
-                watch([data, error], ([newData, newError]) => {
+                const { data, error, isLoading } = Insights.DeleteEntity(
+                    item.value.guid,
+                    {}
+                )
+                isDeleteLoading.value = true
+                watch([data, error, isLoading], ([newData, newError]) => {
+                    isDeleteLoading.value = isLoading.value
+                    console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
                         useAddEvent('insights', 'folder', 'deleted', undefined)
+                        showDeletePopover.value = false
+                        setTimeout(() => {
+                            refetchParentNode(
+                                props.item.guid,
+                                type === 'Query' ? 'query' : 'queryFolder',
+                                savedQueryType.value
+                            )
+                        }, 500)
+
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         })
-                        refetchParentNode(
-                            props.item.guid,
-                            type === 'Query' ? 'query' : 'queryFolder',
-                            savedQueryType.value
-                        )
+                        // refetchParentNode(
+                        //     props.item.guid,
+                        //     type === 'Query' ? 'query' : 'queryFolder',
+                        //     savedQueryType.value
+                        // )
                     }
                 })
             }
@@ -923,6 +938,108 @@
                     }
                 }
             }
+
+            const openSidebar = () => {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.assetSidebar.assetInfo = item.value
+                activeInlineTabCopy.assetSidebar.isVisible = true
+                openAssetSidebar(activeInlineTabCopy, 'not_editor')
+            }
+
+            // let input = ref(null)
+            // let newFolderName = ref('')
+            // watch(input, () => {
+            //     console.log('inputRef: ', input)
+            //     input.value.autofocus = true
+            //     input.value.classame = 'outline-none py-0 rounded my-1 w-auto'
+            //     input.value.placeholder = 'Name your folder'
+            //     input.value.onkeypress = (e) => {
+            //         if (e.key === 'Escape') {
+            //             newFolderName.value = ''
+            //             // ul.removeChild(div)
+            //             removeInputBox()
+            //             // showEmptyState.value = true
+            //         }
+            //         if (e.key === 'Enter') {
+            //             // create folder request
+            //             if (newFolderName.value.length) {
+            //                 makeCreateFolderRequest()
+            //                 newFolderName.value = ''
+            //                 // showEmptyState.value = false
+            //             } else {
+            //                 newFolderName.value = ''
+            //                 // ul.removeChild(div)
+            //                 // showEmptyState.value = true
+            //                 removeInputBox()
+            //             }
+            //         }
+            //     }
+            //     input.value.onblur = () => {
+            //         if (newFolderName.value.length) {
+            //             makeCreateFolderRequest()
+            //             // showEmptyState.value = false
+            //         } else {
+            //             // div.removeChild(input)
+            //             // div.setAttribute('class', 'hidden')
+            //             removeInputBox()
+            //             newFolderName.value = ''
+            //             // newFolderCreateable.value = false
+            //             // setTimeout(() => {
+            //             // newFolderCreateable.value = true
+            //             // showEmptyState.value = true
+            //             // }, 300)
+            //         }
+            //     }
+
+            //     // input.setAttribute(
+            //     //             'class',
+            //     //             `outline-none py-0 rounded my-1 w-auto ${inputClassName}`
+            //     //         )
+            //     // input.setAttribute('placeholder', 'Name your folder')
+            //     // input.addEventListener('input', (e) => {
+            //     //     newFolderName.value = e.target?.value
+            //     // })
+
+            //     // input.addEventListener('keydown', (e) => {
+            //     //     if (e.key === 'Escape') {
+            //     //         newFolderName.value = ''
+            //     //         ul.removeChild(div)
+            //     //         removeInputBox()
+            //     //         showEmptyState.value = true
+            //     //     }
+            //     //     if (e.key === 'Enter') {
+            //     //         // create folder request
+            //     //         if (newFolderName.value.length) {
+            //     //             makeCreateFolderRequest()
+            //     //             newFolderName.value = ''
+            //     //             showEmptyState.value = false
+            //     //         } else {
+            //     //             newFolderName.value = ''
+            //     //             ul.removeChild(div)
+            //     //             showEmptyState.value = true
+            //     //             removeInputBox()
+            //     //         }
+            //     //     }
+            //     // })
+            //     // input.addEventListener('blur', (e) => {
+            //     //     if (newFolderName.value.length) {
+            //     //         makeCreateFolderRequest()
+            //     //         showEmptyState.value = false
+            //     //     } else {
+            //     //         div.removeChild(input)
+            //     //         div.setAttribute('class', 'hidden')
+            //     //         removeInputBox()
+            //     //         newFolderName.value = ''
+            //     //         newFolderCreateable.value = false
+            //     //         setTimeout(() => {
+            //     //             newFolderCreateable.value = true
+            //     //             showEmptyState.value = true
+            //     //         }, 300)
+            //     //     }
+            //     // })
+            // })
+
             return {
                 evaluatePermisson,
                 permissions,
@@ -952,6 +1069,10 @@
                 selectedFolder,
                 changeFolder,
                 isUpdating,
+                isDeleteLoading,
+                openSidebar,
+                // input,
+                // newFolderName,
             }
         },
     })

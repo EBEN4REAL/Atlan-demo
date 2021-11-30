@@ -94,7 +94,7 @@
         props: {
             selectedUser: {
                 type: Object,
-                default: {},
+                default: () => {},
             },
             isCurrentUser: {
                 type: Boolean,

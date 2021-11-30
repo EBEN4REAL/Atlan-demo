@@ -154,8 +154,6 @@
     .gtcSelectPopover {
         .ant-popover-inner-content {
             width: 120px !important;
-
-            @apply p-0 !important;
         }
     }
 </style>

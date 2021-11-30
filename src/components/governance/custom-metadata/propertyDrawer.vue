@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="property-drawer">
         <a-drawer
             :visible="visible"
             :mask="false"
@@ -36,7 +36,7 @@
                         <a-form-item
                             label="Name"
                             :name="['displayName']"
-                            class=""
+                            class="ant-form-undo-flex-direction"
                         >
                             <a-input
                                 v-model:value="form.displayName"
@@ -45,7 +45,7 @@
                             />
                         </a-form-item>
                         <a-form-item
-                            class="w-full"
+                            class="ant-form-undo-flex-direction"
                             name="typeName"
                             label="Type"
                         >
@@ -56,6 +56,7 @@
                                 :get-popup-container="
                                     (target) => target.parentNode
                                 "
+                                list-height="240"
                                 @change="handleTypeNameChange"
                             >
                                 <a-select-option
@@ -162,16 +163,16 @@
                     <div class="flex">
                         <div class="relative" style="width: 100%">
                             <a-form-item
-                            label="Description"
-                            :name="['description']"
-                            class=""
-                        >
-                            <a-input
-                                v-model:value="form.options.description"
-                                type="text"
+                                label="Description"
+                                :name="['description']"
                                 class=""
-                            />
-                        </a-form-item>
+                            >
+                                <a-input
+                                    v-model:value="form.options.description"
+                                    type="text"
+                                    class=""
+                                />
+                            </a-form-item>
                         </div>
                     </div>
                     <div class="flex mb-6">
@@ -190,7 +191,9 @@
                                             <div
                                                 class="flex flex-col items-center w-60"
                                             >
-                                                This property will only be available for selected asset types
+                                                This property will only be
+                                                available for selected asset
+                                                types
                                             </div>
                                         </template>
                                         <AtlanIcon
@@ -247,7 +250,10 @@
                         class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
                     >
                         <div class="w-full">
-                            <a-form-item class="mb-2">
+                            <a-form-item
+                                v-if="form.typeName !== 'boolean'"
+                                class="mb-2"
+                            >
                                 <div class="flex justify-between">
                                     <label :for="`${form.name}-isFacet`"
                                         >Allow multiple values</label
@@ -414,7 +420,7 @@
                                 JSON.parse(customApplicableEntityTypes)
                         }
                     }
-                    form.value = theProperty
+                    form.value = { ...theProperty }
                 } else {
                     form.value = initializeForm()
                     // somehow these 2 remained, so reset them
@@ -426,6 +432,16 @@
                 propertyIndex.value = index
                 isEdit.value = makeEdit
                 visible.value = true
+            }
+
+            const handleUpdateError = (error) => {
+                const errorCode = error.response?.data.errorCode
+                if (errorCode === 'ATLAS-409-00-013') {
+                    return message.error(
+                        `Property named '${form.value.displayName}' already exists in the '${metadata.value.displayName}' metadata`
+                    )
+                }
+                message.error('Error occured, try again')
             }
 
             const handleUpdateProperty = async () => {
@@ -478,10 +494,23 @@
                         if (newValue) {
                             message.success('Attribute edited')
                             loading.value = false
+                            const returnSome = (oldData) => {
+                                console.log(oldData)
+                                return { ...oldData }
+                                // return {
+                                //     ...user,
+                                //     name: 'Sergio',
+                                // }
+                            }
+                            // mutate('DEFAULT_TYPEDEFS', {})
+                            emit(
+                                'addedProperty',
+                                data.value.businessMetadataDefs[0].attributeDefs
+                            )
                             visible.value = false
                         }
                         if (newError) {
-                            message.error('Error updating property, try again')
+                            handleUpdateError(newError)
                             loading.value = false
                         }
                     })
@@ -516,6 +545,7 @@
                         if (newValue) {
                             message.success('Attribute added')
                             loading.value = false
+
                             emit(
                                 'addedProperty',
                                 data.value.businessMetadataDefs[0].attributeDefs
@@ -523,7 +553,7 @@
                             visible.value = false
                         }
                         if (newError) {
-                            message.error('Error creating property, try again')
+                            handleUpdateError(newError)
                             loading.value = false
                         }
                     })
@@ -538,6 +568,7 @@
 
             const handleClose = () => {
                 loading.value = false
+                // form.value = initializeForm()
                 setTimeout(() => {
                     visible.value = false
                 }, 100)
@@ -712,9 +743,15 @@
 
 <style lang="less">
     .ant-form-right-asterix {
+        .ant-form-item-label {
+            overflow: unset !important;
+        }
         .ant-form-item-required::before {
             position: absolute;
             right: -12px;
         }
+    }
+    .ant-form-undo-flex-direction.ant-form-item {
+        flex-direction: unset !important;
     }
 </style>

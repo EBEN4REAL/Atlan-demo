@@ -8,6 +8,9 @@
                 class="h-6"
             />
             <img v-else-if="image" :src="imageUrl(image)" class="w-auto h-6" />
+            <span v-else-if="emoji" class="self-center float-left mr-2 text-xl">
+                {{ emoji }}
+            </span>
             <AtlanIcon
                 v-else
                 :icon="isActive ? 'Metadata' : 'Metadata'"
@@ -33,6 +36,10 @@
                 required: false,
             },
             image: {
+                type: String,
+                required: false,
+            },
+            emoji: {
                 type: String,
                 required: false,
             },

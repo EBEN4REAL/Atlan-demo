@@ -1,0 +1,85 @@
+.ProseMirror-focused .ProseMirror-gapcursor {
+    display: block;
+}
+.ProseMirror {
+    outline: none;
+
+    p {
+        @apply m-0 !important;
+        @apply text-gray-700;
+    }
+    h1 {
+        @apply mb-3 mt-0 text-gray-700 font-bold !important;
+    }
+
+    h2 {
+        @apply mb-2 mt-0 text-gray-500 font-semibold !important;
+    }
+    h3 {
+        @apply mb-1 mt-0 text-gray-500 font-semibold !important;
+    }
+
+    &.prose {
+        max-width: 100% !important;
+    }
+
+    .is-empty::before {
+        @apply text-gray-200;
+        content: attr(data-placeholder);
+        float: left;
+
+        pointer-events: none;
+        height: 0;
+    }
+
+    hr {
+        @apply my-3 !important;
+    }
+
+    a {
+        @apply text-blue-500 !important;
+    }
+
+    ul > li::before {
+        // display: none;
+        // height: 0.3571429em;
+        // width: 0.3571429em;
+        // top: calc(0.8571429em - 0.1785714em);
+        // left: 0.2142857em;
+    }
+
+    ::marker {
+        display: none !important;
+        font-size: 0;
+    }
+
+    > * + * {
+        @apply mt-1 !important;
+    }
+
+    img {
+        @apply m-0 !important;
+    }
+}
+
+.ProseMirror-gapcursor {
+    display: none;
+    pointer-events: none;
+    position: absolute;
+}
+
+.ProseMirror-gapcursor:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -2px;
+    width: 20px;
+    border-top: 1px solid black;
+    animation: ProseMirror-cursor-blink 1.1s steps(2, start) infinite;
+}
+
+@keyframes ProseMirror-cursor-blink {
+    to {
+        visibility: hidden;
+    }
+}

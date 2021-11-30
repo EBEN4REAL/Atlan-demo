@@ -79,6 +79,7 @@
                 class="w-auto h-3 ml-2 mb-0.5"
             />
         </span>
+        <p class="flex items-center px-3 mb-2 text-xs text-gray-500">Version {{getVersion}}</p>
     </div>
 </template>
 
@@ -100,7 +101,8 @@
         },
         emits: ['change', 'closeNavbar'],
         setup(props, { emit }) {
-            const { username, name } = useUserData()
+            const { username, name } = useUserData();
+            const getVersion = process.env.npm_package_version
 
             function closeNavDrawer() {
                 emit('closeNavbar')
@@ -112,7 +114,7 @@
                 workspaceCentreList,
                 username,
                 name,
-
+                getVersion,
                 map,
             }
         },

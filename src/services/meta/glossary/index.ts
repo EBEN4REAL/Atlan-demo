@@ -7,7 +7,6 @@ import { useAPI } from '~/services/api/useAPI'
 import { useOptions } from '~/services/api/common'
 import { Components } from '~/types/atlas/client'
 
-
 const CreateGlossary = (
     body: Ref<Record<string, any>> | Record<string, any>,
     options?: useOptions
@@ -40,10 +39,44 @@ const CreateTerm = (
         { body },
         options || {}
     )
-    
-
+const deleteCategory = (guid: string) =>
+    useAPI(
+        map.DELETE_GLOSSARY_CATEGORY,
+        'DELETE',
+        {
+            pathVariables: {
+                guid,
+            },
+        },
+        {}
+    )
+const deleteTerm = (guid: string) =>
+    useAPI(
+        map.DELETE_GLOSSARY_TERM,
+        'DELETE',
+        {
+            pathVariables: {
+                guid,
+            },
+        },
+        {}
+    )
+const deleteGlossary = (guid: string) =>
+    useAPI(
+        map.DELETE_GLOSSARY,
+        'DELETE',
+        {
+            pathVariables: {
+                guid,
+            },
+        },
+        {}
+    )
 export const Glossary = {
     CreateGlossary,
     CreateCategory,
-    CreateTerm
+    CreateTerm,
+    deleteTerm,
+    deleteCategory,
+    deleteGlossary,
 }

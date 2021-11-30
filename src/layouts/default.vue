@@ -19,15 +19,15 @@
                 <a-drawer
                     v-if="currentRoute.path !== '/'"
                     placement="left"
-                    :destroyOnClose="true"
+                    :destroy-on-close="true"
                     :visible="showNavbar"
                     :get-container="false"
                     :closable="false"
-                    :maskClosable="true"
+                    :mask-closable="true"
                     :style="{ position: 'absolute' }"
-                    :contentWrapperStyle="{ width: '264px' }"
+                    :content-wrapper-style="{ width: '264px' }"
                     :mask="true"
-                    :maskStyle="{
+                    :mask-style="{
                         background: 'rgba(244, 246, 253, 0.9)',
                     }"
                     :class="$style.drawerStyles"
@@ -35,22 +35,22 @@
                 >
                     <SidePanel
                         :page="activeKey"
+                        class="border-r border-gray-200"
                         @closeNavbar="closeNavbar"
                         @mouseleave="closeNavbar"
-                        class="border-r border-gray-200"
                     />
                 </a-drawer>
-                <div style="min-width: 264px" v-else>
+                <div v-else style="min-width: 264px">
                     <SidePanel
                         :page="activeKey"
-                        @closeNavbar="closeNavbar"
                         class="border-r border-gray-200"
+                        @closeNavbar="closeNavbar"
                     />
                 </div>
 
                 <div class="w-full overflow-y-auto">
                     <CmndK
-                        :isCmndKVisible="isCmndKVisible"
+                        :is-cmnd-k-visible="isCmndKVisible"
                         @closeModal="isCmndKVisible = false"
                     />
                     <router-view />
@@ -63,7 +63,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, watch } from 'vue'
     import { useRouter } from 'vue-router'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import PreviewDrawer from '@/common/drawer/previewDrawer.vue'
@@ -105,8 +105,12 @@
                     control.value = false
                 }
             })
+
+            watch(currentRoute, () => {
+                isCmndKVisible.value = false
+            })
+
             const closeNavbar = () => {
-                console.log('closing navbar')
                 showNavbar.value = false
             }
 

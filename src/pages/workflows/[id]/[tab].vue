@@ -154,7 +154,7 @@
             /** DATA */
             const graphRef: Ref<Element | null> = ref(null)
             provide('graphRef', graphRef)
-            const logo = ref("")
+            const logo = ref('')
             const activeKey = ref(1)
             const data = ref({})
             const selectedRunName = ref(null)
@@ -214,7 +214,7 @@
                         .tasks[0].templateRef.name || ''
             )
             const handleSetLogo = (prop) => {
-              logo.value = prop
+                logo.value = prop
             }
             /** METHODS */
             // selectTab
@@ -288,32 +288,32 @@
             }
 
             const handleGetUser = (userId) => {
-              const params: ComputedRef<{
-                 limit?: number
-                 offset?: number
-                 filter?: any
-                 sort?: string
-             }> = {
-                  limit: 1,
-                  offset: 0,
-                  sort: 'first_name',
-                  filter: {
-                      $and: [
-                          {
-                              $or: [
-                                  {
-                                      email_verified: true,
-                                      id: userId,
-                                  },
-                              ],
-                          },
-                      ],
-                  },
-              }
-              const { userList } = useUsers(params, null, {})
-              watch(userList, (newVal) => {
-                creator.value = newVal[0]
-              })
+                const params: ComputedRef<{
+                    limit?: number
+                    offset?: number
+                    filter?: any
+                    sort?: string
+                }> = {
+                    limit: 1,
+                    offset: 0,
+                    sort: 'first_name',
+                    filter: {
+                        $and: [
+                            {
+                                $or: [
+                                    {
+                                        email_verified: true,
+                                        id: userId,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                }
+                const { userList } = useUsers(params, null, {})
+                watch(userList, (newVal) => {
+                    creator.value = newVal[0]
+                })
             }
             // fetch
             const fetch = () => {
@@ -330,7 +330,8 @@
 
                 watch(response, (v) => {
                     // useWorkflowByName
-                    const usrId = v?.records[0]?.labels['workflows.argoproj.io/creator']
+                    const usrId =
+                        v?.records[0]?.labels['workflows.argoproj.io/creator']
                     handleGetUser(usrId)
                     // getUserList()
                     // watch(userList, (newVal) => {
@@ -404,7 +405,7 @@
                 id,
                 creator,
                 logo,
-                handleSetLogo
+                handleSetLogo,
             }
         },
     })
@@ -437,11 +438,6 @@ meta:
         :global(.ant-tabs-tab-active) {
             @apply text-gray font-bold;
         }
-        :global(.ant-tabs-bar) {
-            @apply mb-0 pl-7;
-            @apply bg-white;
-        }
-
         :global(.ant-tabs-tabpane) {
             height: 100vh !important;
             // height: calc(100vh - 170px) !important;
@@ -476,8 +472,8 @@ meta:
         .ant-tabs-tab {
             margin-right: 0px;
         }
-        .ant-tabs-tabpane-active{
-          overflow: visible!important;
+        .ant-tabs-tabpane-active {
+            overflow: visible !important;
         }
     }
 </style>

@@ -20,11 +20,15 @@
                 <div>
                     <div class="flex flex-col">
                         <p class="mb-1 text-sm text-gray-500">Description</p>
-                        <Description v-model="localDescription" />
+                        <Description
+                            ref="descriptionRef"
+                            v-model="localDescription"
+                            @change="handleChangeDescription"
+                        />
                     </div>
                 </div>
                 <div class="flex gap-x-32">
-                    <div class="flex flex-col">
+                    <div ref="animationPoint" class="flex flex-col">
                         <p class="mb-1 text-sm text-gray-500">Certificate</p>
 
                         <Certificate
@@ -38,6 +42,7 @@
                         <p class="mb-1 text-sm text-gray-500">Owners</p>
                         <Owners
                             v-model="localOwners"
+                            :used-for-assets="true"
                             @change="handleOwnersChange"
                         />
                     </div>
@@ -51,8 +56,6 @@
 <script lang="ts">
     import {
         defineComponent,
-        watch,
-        ref,
         PropType,
         toRefs,
         defineAsyncComponent,
@@ -65,7 +68,7 @@
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import updateAsset from '~/composables/discovery/updateAsset'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -105,100 +108,31 @@
         setup(props) {
             const { asset } = toRefs(props)
 
+            const { getSummaryVariants } = useAssetInfo()
+
             const {
-                rowCount,
-                columnCount,
-                sizeBytes,
-                sourceUpdatedAt,
-                sourceCreatedAt,
-                ownerGroups,
-                ownerUsers,
-                definition,
-                description,
-                getConnectorImage,
-                certificateStatus,
-                certificateUpdatedAt,
-                certificateStatusMessage,
-                certificateUpdatedBy,
-                getSummaryVariants,
-            } = useAssetInfo()
-
-            const entity = ref({
-                guid: asset.value.guid,
-                typeName: asset.value.typeName,
-                attributes: {
-                    name: asset.value.attributes?.name,
-                    qualifiedName: asset.value.attributes?.qualifiedName,
-                    tenantId: 'default',
-                },
-            })
-
-            const body = ref({
-                entities: [],
-            })
-
-            const { mutate, isLoading } = updateAsset(body)
-
-            const localDescription = ref(description(asset.value))
-
-            watch(localDescription, () => {
-                entity.value.attributes.userDescription = localDescription.value
-                body.value.entities = [entity.value]
-                mutate()
-            })
-
-            const localOwners = ref({
-                ownerUsers: ownerUsers(asset.value),
-                ownerGroups: ownerGroups(asset.value),
-            })
-
-            const handleOwnersChange = () => {
-                entity.value.attributes.ownerUsers =
-                    localOwners.value?.ownerUsers
-                entity.value.attributes.ownerGroups =
-                    localOwners.value?.ownerGroups
-                body.value.entities = [entity.value]
-                mutate()
-            }
-
-            const localCertificate = ref({
-                certificateStatus: certificateStatus(asset.value),
-                certificateUpdatedAt: certificateUpdatedAt(asset.value),
-                certificateUpdatedBy: certificateUpdatedBy(asset.value),
-                certificateStatusMessage: certificateStatusMessage(asset.value),
-            })
-
-            const handleChangeCertificate = () => {
-                if (
-                    localCertificate.value.certificateStatus !==
-                        certificateStatus(asset.value) ||
-                    localCertificate.value.certificateStatusMessage !==
-                        certificateStatusMessage(asset.value)
-                ) {
-                    entity.value.attributes.certificateStatus =
-                        localCertificate.value.certificateStatus
-
-                    entity.value.attributes.certificateStatusMessage =
-                        localCertificate.value.certificateStatusMessage
-                    body.value.entities = [entity.value]
-                    mutate()
-                }
-            }
+                isLoading,
+                localDescription,
+                localCertificate,
+                localOwners,
+                handleChangeDescription,
+                handleOwnersChange,
+                handleChangeCertificate,
+                descriptionRef,
+                animationPoint,
+            } = updateAssetAttributes(asset)
 
             return {
-                rowCount,
-                columnCount,
-                sizeBytes,
-                sourceUpdatedAt,
-                sourceCreatedAt,
-                getConnectorImage,
-                definition,
+                isLoading,
                 localDescription,
+                handleChangeDescription,
                 localOwners,
                 handleOwnersChange,
                 localCertificate,
                 handleChangeCertificate,
                 getSummaryVariants,
+                descriptionRef,
+                animationPoint,
             }
         },
     })

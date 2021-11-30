@@ -65,6 +65,12 @@
                     </a-popover>
                 </template>
             </SearchAdvanced>
+            <atlan-icon
+                icon="TreeCollapseAll"
+                class="h-4 mt-2 ml-2 cursor-pointer"
+                @click="handleCollapse"
+            >
+            </atlan-icon>
         </div>
 
         <div class="w-full px-4" v-if="queryText">
@@ -77,10 +83,9 @@
             >
             </AggregationTabs>
         </div>
-
         <GlossaryTree
-            ref="glossaryTree"
             v-if="!queryText"
+            ref="glossaryTree"
             :height="height"
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
@@ -121,7 +126,7 @@
             <template v-slot:default="{ item }">
                 <GlossaryItem
                     :item="item"
-                    :selectedGuid="selectedGlossary.guid"
+                    :selectedGuid="selectedGlossary?.guid"
                     @preview="handlePreview"
                 ></GlossaryItem>
             </template>
@@ -130,7 +135,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed, provide } from 'vue'
     import { useRouter } from 'vue-router'
 
     import EmptyView from '@common/empty/index.vue'
@@ -344,12 +349,13 @@
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryTerm') {
-                        console.log('added')
+                        console.log('added term')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryCategory') {
+                        console.log('added cat')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }
@@ -357,6 +363,9 @@
                 }
             }
 
+            const handleCollapse = () => {
+                glossaryTree.value.collapseTree()
+            }
             const handleAddTerm = (asset) => {
                 handleSelectGlossary(getAnchorQualifiedName(asset))
                 if (glossaryTree.value) {
@@ -372,7 +381,7 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
-
+            provide('selectedGlossaryQf', selectedGlossaryQf)
             return {
                 handleFilterChange,
                 isLoading,
@@ -409,6 +418,7 @@
                 handleAddTerm,
                 handleAddCategory,
                 defaultEntityType,
+                handleCollapse,
             }
         },
     })
@@ -418,8 +428,5 @@
     .filterPopover {
         max-width: 200px;
         min-width: 200px;
-        :global(.ant-popover-content) {
-            @apply shadow-sm;
-        }
     }
 </style>

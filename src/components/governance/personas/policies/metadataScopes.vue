@@ -13,6 +13,7 @@
         <a-collapse-panel v-for="(scope, idx) in scopeList" :key="scope.type">
             <template #header>
                 <a-checkbox
+                    data-test-id="checkbox"
                     :checked="
                         groupedActions[idx].scopes.length ===
                         scopeList[idx].scopes.length
@@ -50,7 +51,7 @@
                 required: true,
             },
         },
-        emits: ['update:actions'],
+        emits: ['update:actions', 'change'],
         setup(props, { emit }) {
             const { actions } = toRefs(props)
             const { scopeList } = useScopeService().listScopes()
@@ -79,6 +80,7 @@
                     [] as string[]
                 )
                 emit('update:actions', allScopes)
+                emit('change')
             }
 
             function toggleCheckAll(idx: number) {

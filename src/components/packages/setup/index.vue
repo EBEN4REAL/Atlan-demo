@@ -1,52 +1,36 @@
 <template>
     <div class="flex w-full h-full">
         <div class="flex flex-1 border-r border-gray-200">
-            <div class="flex flex-col w-full">
+            <div class="flex flex-col w-full h-full">
+                <a-steps
+                    v-if="steps.length > 0"
+                    v-model:current="currentStep"
+                    class="px-6 py-3 border-b border-gray-200"
+                >
+                    <template v-for="step in steps" :key="step.id">
+                        <a-step>
+                            <!-- <span slot="title">Finished</span> -->
+                            <template #title>{{ step.title }}</template>
+                        </a-step>
+                    </template>
+                </a-steps>
+
                 <div
-                    class="flex flex-col w-full px-6 py-3 border-b border-gray-200 "
+                    class="flex-1 p-8 overflow-y-auto bg-white"
                     v-if="workflowTemplate"
                 >
-                    <div class="mb-1 text-xl font-bold uppercase">
-                        Setup Workflow
-                    </div>
-                    <div
-                        class="flex items-center mb-1"
-                        v-if="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations
-                        "
-                    >
-                        <img
-                            v-if="
-                                workflowTemplate?.workflowtemplate.metadata
-                                    .annotations['com.atlan.orchestration/icon']
-                            "
-                            class="self-center w-5 h-auto mr-2"
-                            :src="
-                                workflowTemplate?.workflowtemplate.metadata
-                                    .annotations['com.atlan.orchestration/icon']
-                            "
-                        />
-                        <div class="text-base truncate overflow-ellipsis">
-                            {{
-                                workflowTemplate?.workflowtemplate.metadata
-                                    .annotations['workflows.argoproj.io/name']
-                            }}
-                        </div>
-                    </div>
+                    <DynamicForm
+                        :key="`form_${currentStep}`"
+                        ref="stepForm"
+                        :config="configMapDerived"
+                        :currentStep="currentStepConfig"
+                        :workflowTemplate="workflowTemplate"
+                        v-model="modelValue"
+                        labelAlign="left"
+                    ></DynamicForm>
                 </div>
-                <div class="flex-1 h-full p-12 bg-primary-light">
-                    <div class="flex flex-col p-2 bg-white border rounded-lg">
-                        <div class="flex-1 p-4">
-                            <DynamicForm
-                                :config="formConfig[selectedStep]"
-                            ></DynamicForm>
-                            <!-- {{ configMap }} -->
-                        </div>
-                        <div class="flex justify-end p-3 border-t">
-                            <a-button type="primary">Next</a-button>
-                        </div>
-                    </div>
+                <div class="flex justify-end p-3 border-t">
+                    <a-button type="primary" @click="handleNext">Next</a-button>
                 </div>
             </div>
         </div>
@@ -118,28 +102,28 @@
                     </div>
                 </div>
             </div>
-            <div class="flex-1">
-                <SetupGraph
-                    ref="graphRef"
-                    :is-allowto-run="isAllowtoRun"
-                    :graph-data="tasks"
-                    @change="handleChange($event, 'dag')"
-                />
-            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, ref, watch, toRefs, computed } from 'vue'
-
+    import {
+        defineComponent,
+        inject,
+        ref,
+        watch,
+        toRefs,
+        computed,
+        onBeforeMount,
+        provide,
+    } from 'vue'
+    import { message } from 'ant-design-vue'
     // Components
     import EmptyView from '@common/empty/index.vue'
     import SetupGraph from './setupGraph.vue'
-    import DynamicForm from '@/common/dynamicForm/index.vue'
+    import DynamicForm from '@/common/dynamicForm2/index.vue'
     // Composables
-    import { useWorkflowTemplateByName } from '~/composables/workflow/useWorkflowList'
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
@@ -152,12 +136,22 @@
             configMap: {
                 type: Object,
                 required: false,
+                default() {
+                    return {}
+                },
             },
         },
         emits: ['change', 'openLog', 'handleSetLogo'],
         setup(props, { emit }) {
-            const graphRef = inject('graphRef')
+            // const graphRef = inject('graphRef')
+
+            const stepForm = ref()
+
+            const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
+
+            provide('workflowTemplate', workflowTemplate)
+
             const tasks = computed(() => {
                 if (workflowTemplate.value?.workflowtemplate) {
                     const { entrypoint } =
@@ -169,24 +163,15 @@
                 return []
             })
 
-            const formConfig = computed(() => {
-                try {
-                    if (configMap.value.configmap.data.uiConfig) {
-                        let configCopy =
-                            configMap.value.configmap.data.uiConfig || '{}'
-                        configCopy = configCopy
-                            .replace(/\\n/g, '\\n')
-                            .replace(/\\'/g, "\\'")
-                            .replace(/\\"/g, '\\"')
-                            .replace(/\\&/g, '\\&')
-                            .replace(/\\r/g, '\\r')
-                            .replace(/\\t/g, '\\t')
-                            .replace(/\\b/g, '\\b')
-                            .replace(/\\f/g, '\\f')
-                        return JSON.parse(configCopy) ?? {}
-                    }
-                } catch (error) {
-                    return {}
+            const modelValue = ref({})
+
+            const steps = computed(() => configMapDerived?.value?.steps || [])
+
+            const configMapDerived = computed(() => configMap.value)
+
+            const currentStepConfig = computed(() => {
+                if (steps.value) {
+                    return steps.value[currentStep.value]
                 }
                 return {}
             })
@@ -232,6 +217,17 @@
                 console.log(event)
                 selectedStep.value = event
             }
+
+            const handleNext = async () => {
+                if (stepForm.value) {
+                    const err = await stepForm.value.validateForm()
+                    if (err) {
+                        message.error('Please review the entered details')
+                    } else {
+                        currentStep.value += 1
+                    }
+                }
+            }
             // watch(data, (newVal) => {
             //     const meta =
             //         newVal?.workflowtemplate?.metadata?.annotations || {}
@@ -246,13 +242,19 @@
             return {
                 tasks,
                 emit,
-                graphRef,
+
                 isAllowtoRun,
                 workflowTemplate,
                 handleChange,
-                configMap,
-                formConfig,
+                configMapDerived,
+                modelValue,
                 selectedStep,
+                currentStep,
+                steps,
+                configMap,
+                currentStepConfig,
+                handleNext,
+                stepForm,
             }
         },
     })

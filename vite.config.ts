@@ -33,6 +33,10 @@ export default defineConfig(({ mode }) => {
         },
         css: {
             postcss,
+            modules: {
+                scopeBehaviour: 'local',
+                //globalModulePaths: ['./styles/antd.less']
+            },
             preprocessorOptions: {
                 less: {
                     modifyVars: getAntDesignVariables,
@@ -67,7 +71,7 @@ export default defineConfig(({ mode }) => {
             {
                 ...strip({ include: '**/*.+(vue|js|ts)' }),
                 apply: 'build'
-              },
+            },
             // Components(),
         ],
         optimizeDeps: {

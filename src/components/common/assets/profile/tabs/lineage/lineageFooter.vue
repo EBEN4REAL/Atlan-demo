@@ -1,6 +1,6 @@
 <template>
     <!-- Lineage Legend -->
-    <div class="lineage-legend">
+    <!-- <div class="lineage-legend">
         <div class="lineage-legend__item">
             <span id="upstream"></span>
             <span>Upstream</span>
@@ -13,23 +13,11 @@
             <span id="selected"></span>
             <span>Selected Path</span>
         </div>
-    </div>
+    </div> -->
     <div class="lineage-control footer">
         <slot></slot>
 
         <div class="controls">
-            <!-- <div class="mr-3 cursor-pointer">
-                <a-tooltip placement="top">
-                    <template #title>
-                        <span>retry</span>
-                    </template>
-
-                    <AtlanIcon icon="Refresh" class="outline-none"></AtlanIcon>
-                </a-tooltip>
-            </div> -->
-
-            <!-- <a-divider type="vertical" /> -->
-
             <div class="mr-5 cursor-pointer" @click="onShowMinimap">
                 <a-tooltip placement="top">
                     <template #title>

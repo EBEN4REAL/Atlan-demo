@@ -35,6 +35,6 @@
 <style scoped>
     .scroll-container {
         @apply overflow-y-auto;
-        height: calc(100vh - 3rem);
+        height: calc(100vh - 2.5rem); /** Should be 2.5rem */
     }
 </style>

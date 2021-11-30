@@ -5,7 +5,7 @@ export const allTabs = [
         // tab icon
         iconClass: '',
         // component name in groupPreview.vue
-        component: 'About',
+        component: 'GroupAbout',
         // unique id for tab - the one that'll get passed from different components
         key: 'about',
         icon: 'Overview',

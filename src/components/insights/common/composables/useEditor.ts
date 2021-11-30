@@ -46,6 +46,7 @@ export function useEditor(
             // /* If there are any array changes show them here */
             // setSqlVariables(sqlVariables, res)
             // activeInlineTabCopy.playground.editor.variables = res
+            // console.log('editor content update')
             activeInlineTabCopy.playground.editor.text = editorText
             modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
         }
@@ -86,9 +87,12 @@ export function useEditor(
     }
     function semicolonSeparateQuery(query: string) {
         // check if it have semicolon
-        const queryTextValues = query.split(';')
+        const queryTextValues = query?.split(';')
         // always select the first one for now
-        let queryText = queryTextValues[0]
+        let queryText = ''
+        if(queryTextValues && queryTextValues.length) {
+            queryText = queryTextValues[0]
+        }
         return queryText
     }
     function getParsedQuery(
@@ -109,6 +113,104 @@ export function useEditor(
 
         return semicolonSeparateQuery(query)
     }
+
+    function getParsedQueryCursor(
+        variables: CustomVaribaleInterface[],
+        query: string,
+        type = 'auto',
+        editorInstance: any,
+        monacoInstance: any
+    ) {
+        // console.log('cursor')
+        
+            // console.log('cursor')
+            if(type==='auto') {
+                // 1. find cursor position done
+                const pos = editorInstance.getPosition()
+                console.log('position: ', pos)
+                console.log('position editor: ', editorInstance)
+
+                const queryTextValues = query?.split(';')
+
+                // 2. find seperate query with position
+                const queryPositions = []
+                if(queryTextValues && queryTextValues.length) {
+                    queryTextValues.forEach(query=> {
+                        let match = toRaw(editorInstance).getModel().findMatches(query);
+                        queryPositions.push({ match: match, token: query })
+                    })
+                }
+                
+                console.log('position match: ', queryPositions) 
+
+                let semiColonMatchs = toRaw(editorInstance).getModel().findMatches(';');
+                console.log('position semi: ', semiColonMatchs)
+
+                let lineIndex = semiColonMatchs.findIndex((match)=> {
+                    if(match.range.endLineNumber>pos.lineNumber) {
+                        return match   
+                    }
+                    if(match.range.endLineNumber===pos.lineNumber  && match.range.endColumn>pos.column) {
+                        return match
+                    }
+                })
+                console.log('position line: ', lineIndex)
+
+
+                if(lineIndex!==-1) {
+                    let queryStartLine
+                    let queryEndLine
+                    let queryStartColumn
+                    let queryEndColumn
+
+                    if(lineIndex==0) {
+                        let data = semiColonMatchs[0].range
+                        queryStartLine=1;
+                        queryStartColumn=1;
+                        queryEndLine = data.startLineNumber
+                        queryEndColumn = data.startColumn
+
+                    } else {
+                        let data1 = semiColonMatchs[lineIndex-1].range
+                        let data2 = semiColonMatchs[lineIndex].range
+
+                        queryStartLine=data1.endLineNumber;
+                        queryStartColumn=data1.endColumn;
+                        queryEndLine = data2.startLineNumber
+                        queryEndColumn = data2.startColumn
+                    }
+
+                    console.log('position query: ', {
+                        queryStartLine,
+                        queryEndLine,
+                        queryStartColumn,
+                        queryEndColumn
+                    })
+                    setSelection(toRaw(editorInstance), toRaw(monacoInstance), {
+                        startLineNumber: queryStartLine,
+                        startColumnNumber: queryStartColumn,
+                        endLineNumber: queryEndLine,
+                        endColumnNumber: queryEndColumn
+                    })
+                    
+                }
+
+
+               
+                // 3. check position and find raw query
+
+            }
+            // const queryText = semicolonSeparateQuery(query)
+            // const parseVariables: { [key: string]: string } = {}
+            // variables.forEach((v) => {
+            //     parseVariables[v.name] = v.value
+            // })
+            // return moustacheInterpolator(queryText, parseVariables)
+        
+
+        // return semicolonSeparateQuery(query)
+    }
+
     function formatter(text: string, options?: FormatOptions) {
         /* It formats and changes {{abc}}-> { {abc} } */
         const t = format(text, options)
@@ -178,13 +280,15 @@ export function useEditor(
         editorText: string
     ) => {
         const reg = /{{\s*[\w\.]+\s*}}/gm
-        const v: string[] | null = editorText.match(reg)
+        const v: string[] | null = editorText?.match(reg)
+        console.log('match: ', v)
         const matches = []
         if (editorInstance) {
             for (let i = 0; i < v?.length; i++) {
                 const t = editorInstance.getModel().findMatches(v[i])
                 matches.push({ matches: t, token: v[i] })
             }
+            // console.log('matches: ', matches)
             return matches
         }
     }
@@ -301,5 +405,6 @@ export function useEditor(
         modifyEditorContent,
         onEditorContentChange,
         getParsedQuery,
+        getParsedQueryCursor
     }
 }

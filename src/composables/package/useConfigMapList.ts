@@ -5,8 +5,8 @@ import { useOptions } from '~/services/api/common'
 import { Workflows } from '~/services/service/workflows'
 
 interface ConfigListParams {
-    isCache?: boolean | false
-    isLocal?: boolean | false
+    isCache?: boolean
+    isLocal?: boolean
     ttl?: Number | 0
     dependentKey?: Ref<any>
     queryText?: Ref<any>
@@ -19,7 +19,6 @@ interface ConfigListParams {
 export function useConfigMapList({
     isCache,
     dependentKey,
-    queryText,
     filter,
     limit = ref(20),
     isLocal,

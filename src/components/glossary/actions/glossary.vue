@@ -263,11 +263,9 @@
 
             // copy profile link
             const handleCopyProfileLink = () => {
-                // const baseUrl = window.location.origin
-                // const text = `${baseUrl}/glossary/${
-                //     assetTypeLabel[props.entity?.typeName]
-                // }/${props?.entity?.guid}`
-                // copyToClipboard(text)
+                const baseUrl = window.location.origin
+                const text = `${baseUrl}/glossary/${glossaryId.value}`
+                copyToClipboard(text)
                 message.success({
                     content: 'Copied!',
                 })

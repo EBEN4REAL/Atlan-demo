@@ -5,8 +5,9 @@
                 <div class="relative mb-2 text-sm text-gray-500 required">
                     Policy name
                 </div>
-                <div class="max-w-xs">
+                <div style="width: 320px">
                     <a-input
+                        data-test-id="policy-edit-name"
                         @blur="
                             () => {
                                 if (!policy.name) rules.policyName.show = true
@@ -25,18 +26,32 @@
                 <div
                     class="absolute text-xs text-red-500 -bottom-5"
                     v-if="rules.policyName.show"
+                    data-test-id="policy-validation-name"
                 >
                     {{ rules.policyName.text }}
                 </div>
             </div>
-            <AtlanBtn
-                size="sm"
-                color="secondary"
-                padding="compact"
-                class="plus-btn"
-                @click="removePolicy"
-                ><AtlanIcon icon="Delete" class="-mx-1 text-red-400"></AtlanIcon
-            ></AtlanBtn>
+            <a-popconfirm
+                placement="leftTop"
+                :title="getPopoverContent(policy)"
+                ok-text="Yes"
+                :ok-type="'default'"
+                overlayClassName="popoverConfirm"
+                cancel-text="Cancel"
+                @confirm="removePolicy"
+            >
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="plus-btn"
+                    data-test-id="policy-delete"
+                    ><AtlanIcon
+                        icon="Delete"
+                        class="-mx-1 text-red-400"
+                    ></AtlanIcon
+                ></AtlanBtn>
+            </a-popconfirm>
         </div>
 
         <div class="relative">
@@ -48,10 +63,12 @@
                 v-model:modelValue="selectedOwnersData"
                 :read-only="false"
                 @change="handleOwnersChange"
+                :destroyTooltipOnHide="true"
             />
 
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
+                data-test-id="policy-validation-owners"
                 v-if="rules.users.show"
             >
                 {{ rules.users.text }}
@@ -60,14 +77,30 @@
 
         <div class="flex items-center mb-2 gap-x-1">
             <AtlanIcon class="text-gray-500" icon="Lock" />
-            <span class="text-sm text-gray-500">Metadata permissions</span>
+            <span class="text-sm text-gray-500 required"
+                >Metadata permissions</span
+            >
         </div>
-        <MetadataScopes v-model:actions="policy.actions" class="mb-6" />
+        <div class="relative">
+            <MetadataScopes
+                v-model:actions="policy.actions"
+                class="mb-6"
+                @change="onScopesChange"
+            />
+            <div
+                class="absolute text-xs text-red-500 -bottom-6"
+                v-if="rules.metadata.show"
+                data-test-id="policy-validation-permissions"
+            >
+                {{ rules.metadata.text }}
+            </div>
+        </div>
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
                 :checked="!policy.allow"
-                style="width: 44px"
+                data-test-id="toggle-switch"
+                style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
             />
             <span>Deny Permissions</span>
@@ -90,6 +123,7 @@
                 class="ml-auto"
                 size="sm"
                 color="secondary"
+                data-test-id="cancel"
                 padding="compact"
                 @click="$emit('cancel')"
                 >Cancel</AtlanBtn
@@ -99,6 +133,7 @@
                 color="primary"
                 padding="compact"
                 @click="handleSave"
+                data-test-id="save"
                 >Save</AtlanBtn
             >
         </div>
@@ -106,36 +141,28 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import Pill from '@/UI/pill/pill.vue'
-    import Connector from './connector.vue'
-    import MetadataScopes from './metadataScopes.vue'
+    import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import Owners from '~/components/common/input/owner/index.vue'
-    import { ResourcePolicies } from '~/types/accessPolicies/purposes'
+    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'MetadataPolicy',
         components: {
             Pill,
             AtlanBtn,
-            Connector,
             MetadataScopes,
             PillGroup,
             Owners,
         },
         props: {
             policy: {
-                type: Object as PropType<ResourcePolicies>,
+                type: Object as PropType<MetadataPolicies>,
                 required: true,
             },
         },
@@ -156,7 +183,7 @@
                     show: false,
                 },
                 metadata: {
-                    text: 'Select atleast 1 permissions!',
+                    text: 'Select atleast 1 permission!',
                     show: false,
                 },
             })
@@ -179,11 +206,14 @@
                     rules.value.policyName.show = true
                     return
                 } else if (
-                    (selectedOwnersData.value.ownerUsers.length ??
-                        0 + selectedOwnersData.value.ownerGroups.length ??
-                        0) < 1
+                    selectedOwnersData.value?.ownerUsers?.length +
+                        selectedOwnersData.value?.ownerGroups?.length ===
+                    0
                 ) {
                     rules.value.users.show = true
+                    return
+                } else if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
                     return
                 } else {
                     emit('save')
@@ -191,18 +221,32 @@
             }
 
             const handleOwnersChange = () => {
-                policy.value.users = selectedOwnersData.value.ownerUsers
-                policy.value.groups = selectedOwnersData.value.ownerGroups
+                console.log(selectedOwnersData.value, 'owners')
+                if (selectedOwnersData.value?.ownerUsers?.length > 0) {
+                    policy.value.users = [
+                        ...selectedOwnersData.value?.ownerUsers,
+                    ]
+                    console.log(policy.value.users, 'policYUsers')
+                } else {
+                    policy.value.users = []
+                }
+                if (selectedOwnersData.value?.ownerGroups?.length > 0) {
+                    policy.value.groups = [
+                        ...selectedOwnersData.value?.ownerGroups,
+                    ]
+                } else {
+                    policy.value.groups = []
+                }
+
                 if (
-                    (selectedOwnersData.value.ownerUsers.length ??
-                        0 + selectedOwnersData.value.ownerGroups.length ??
-                        0) < 1
+                    selectedOwnersData.value?.ownerUsers?.length +
+                        selectedOwnersData.value?.ownerGroups?.length <
+                    1
                 ) {
                     rules.value.users.show = true
                 } else {
                     rules.value.users.show = false
                 }
-                /* Call save purpose */
             }
             watch(selectedPersonaDirty, () => {
                 selectedOwnersData.value = {
@@ -210,8 +254,23 @@
                     ownerGroups: policy.value.groups,
                 }
             })
+            const getPopoverContent = (policy: any) => {
+                return `Are you sure you want to delete ${policy?.name}?`
+            }
 
+            const onScopesChange = () => {
+                if (policy.value.actions.length == 0) {
+                    rules.value.metadata.show = true
+                } else {
+                    rules.value.metadata.show = false
+                }
+            }
+            whenever(policyNameRef, () => {
+                policyNameRef.value?.focus()
+            })
             return {
+                onScopesChange,
+                getPopoverContent,
                 selectedOwnersData,
                 handleOwnersChange,
                 rules,

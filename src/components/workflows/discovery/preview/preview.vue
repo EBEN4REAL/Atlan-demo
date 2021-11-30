@@ -168,10 +168,6 @@
             @apply ml-0 !important;
             @apply mt-4 !important;
         }
-
-        :global(.ant-tabs-bar) {
-            margin-bottom: 0px !important;
-        }
         :global(.ant-tabs-nav-container) {
             width: 48px !important;
             @apply ml-0 !important;

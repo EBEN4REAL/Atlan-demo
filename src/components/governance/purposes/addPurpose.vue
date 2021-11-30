@@ -1,7 +1,7 @@
 <template>
     <CreationModal
         v-model:visible="modalVisible"
-        title=""
+        :title="title"
         @cancel="() => (modalVisible = false)"
         @ok="handleCreation"
     >
@@ -11,6 +11,7 @@
                 v-model="title"
                 placeholder="Untitled purpose"
                 type="text"
+                data-test-id="input-text"
                 class="text-lg font-bold text-gray-700 clean-input"
                 @keyup.esc="$event?.target?.blur()"
             />
@@ -22,40 +23,82 @@
                 rows="2"
                 placeholder="Add description..."
                 @keyup.esc="$event?.target?.blur()"
+                data-test-id="input-description"
             />
         </div>
+        <template #extraFooterContent>
+            <div class="flex items-center">
+                <Classification
+                    v-model:modelValue="selectedClassifications"
+                    @change="handleClassificationChange"
+                />
+                <span
+                    class="ml-2 text-red-500"
+                    v-if="rules.classification.show"
+                    data-test-id="validation-classification"
+                >
+                    {{ rules.classification.text }}
+                </span>
+            </div>
+        </template>
     </CreationModal>
 </template>
 
 <script lang="ts">
     import { message } from 'ant-design-vue'
-    import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        Ref,
+        ref,
+        toRefs,
+        PropType,
+        watch,
+    } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import usePurposeService from './composables/usePurposeService'
     import {
-        reFetchList,
         selectedPersonaId,
+        reFetchList,
     } from './composables/usePurposeList'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { generateUUID } from '~/utils/helper/generator'
+    import Classification from '@common/input/classification/index.vue'
+    import usePurposeService from './composables/usePurposeService'
 
     export default defineComponent({
         name: 'AddPurpose',
         components: {
             CreationModal,
+            Classification,
         },
         props: {
             visible: {
                 type: Boolean,
                 default: false,
             },
+            personaList: {
+                type: Object as PropType<IPurpose[]>,
+                required: true,
+            },
         },
         emits: ['update:visible'],
         setup(props, { emit }) {
+            const { createPersona } = usePurposeService()
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
+            const rules = ref({
+                selectedClassifications: {
+                    text: 'This classifications combination is already used in another purpose!',
+                    show: false,
+                },
+                classification: {
+                    show: false,
+                    text: 'Select a classification first!',
+                },
+            })
             const title = ref('')
             const description = ref('')
+            const selectedClassifications = ref([])
 
             const { visible } = toRefs(props)
             const modalVisible = computed({
@@ -67,9 +110,12 @@
                 modalVisible.value = !modalVisible.value
             }
 
-            const { createPersona } = usePurposeService()
-
             async function handleCreation() {
+                if (selectedClassifications.value.length == 0) {
+                    rules.value.classification.show = true
+                    return
+                }
+
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Adding new purpose',
@@ -77,29 +123,19 @@
                     key: messageKey,
                 })
                 try {
-                    const newPersona: IPurpose = await createPersona({
+                    const newPurpose: IPurpose = (await createPersona({
+                        id: generateUUID(),
                         description: description.value,
                         name: title.value,
                         displayName: title.value,
-                        tag: 'NjsqRXpy1X9ckrw0R9G3RH',
+                        tags: selectedClassifications.value.map(
+                            (e) => e.typeName
+                        ),
                         /* Hardcode here */
-                        resourcePolicies: [
-                            {
-                                actions: [],
-                                groups: [],
-                                users: [],
-                                allow: true,
-                            },
-                        ],
-                        dataPolicies: [
-                            {
-                                actions: [],
-                                groups: [],
-                                users: [],
-                                allow: true,
-                            },
-                        ],
-                    })
+                        metadataPolicies: [],
+                        dataPolicies: [],
+                    })) as IPurpose
+
                     message.success({
                         content: `${title.value} purpose Created`,
                         duration: 1.5,
@@ -107,24 +143,44 @@
                     })
                     description.value = ''
                     title.value = ''
+
                     reFetchList().then(() => {
-                        selectedPersonaId.value = newPersona.id!
+                        selectedPersonaId.value = newPurpose.id!
                         modalVisible.value = false
                     })
                 } catch (error) {
                     message.error({
-                        content: 'Failed to create purpose',
+                        content:
+                            error?.response?.data?.message ??
+                            'Failed to delete policy',
                         duration: 1.5,
                         key: messageKey,
                     })
                 }
             }
+            const addClassificationsDisabled = computed(() =>
+                selectedClassifications.value.length > 0 ? true : false
+            )
+            const handleClassificationChange = () => {
+                if (selectedClassifications.value.length > 0) {
+                    rules.value.classification.show = false
+                } else {
+                    rules.value.classification.show = true
+                }
+            }
+            watch(modalVisible, () => {
+                if (modalVisible.value) selectedClassifications.value = []
+            })
 
             whenever(titleBar, () => {
                 titleBar.value?.focus()
             })
 
             return {
+                rules,
+                handleClassificationChange,
+                addClassificationsDisabled,
+                selectedClassifications,
                 toggleModal,
                 modalVisible,
                 handleCreation,

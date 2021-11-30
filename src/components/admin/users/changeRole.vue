@@ -1,5 +1,5 @@
 <template>
-    <div v-if="user" class="flex flex-col gap-y-1">
+    <div v-if="user" class="flex flex-col p-4 gap-y-1">
         <h3 class="text-lg font-bold">Change Role</h3>
         <p class="mb-1">
             {{
@@ -30,8 +30,8 @@
             <a-button
                 type="primary"
                 :loading="updateLoading"
-                @click="handleRoleChange"
                 :disabled="!selectedRole"
+                @click="handleRoleChange"
             >
                 Change
             </a-button>
@@ -39,13 +39,14 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, onMounted, ref, toRefs, watch } from 'vue'
     import { Users } from '~/services/service/users'
     import useRoles from '~/composables/roles/useRoles'
     import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         name: 'ChangeRolePopover',
+        components: { AtlanButton },
         props: {
             user: {
                 type: Object,
@@ -56,9 +57,10 @@
                 default: () => [],
             },
         },
-        components: { AtlanButton },
-        emits: ['updateRole', 'errorUpdateRole'],
+        emits: ['updateRole', 'errorUpdateRole', 'close'],
         setup(props, context) {
+            const { user } = toRefs(props)
+
             const selectedRole = ref('')
             const updateLoading = ref(false)
             const roles = ref<any[]>([])
@@ -88,6 +90,13 @@
                     { immediate: true }
                 )
             }
+            onMounted(() => {
+                const roleName =
+                    user.value?.role_object?.name.toLowerCase() || ''
+                const roleID =
+                    props.roleList.find((r) => r.name === roleName)?.id ?? ''
+                selectedRole.value = roleID
+            })
             return {
                 roles,
                 selectedRole,

@@ -10,7 +10,7 @@
                         <a-tooltip color="#363636">
                             <template #title>Custom variables</template>
                             <div
-                                class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
+                                class="items-center justify-center px-1 rounded cursor-pointer hover:bg-gray-300"
                                 :class="showcustomToolBar ? 'bg-gray-300' : ''"
                                 @click="toggleCustomToolbar"
                             >
@@ -20,18 +20,7 @@
                         <a-tooltip color="#363636">
                             <template #title>Format text</template>
                             <div
-                                class="
-                                    items-center
-                                    justify-center
-                                    px-1
-                                    ml-2
-                                    py-0.5
-                                    -mt-0.5
-                                    rounded
-                                    cursor-pointer
-                                    hover:bg-gray-300
-                                    group
-                                "
+                                class="items-center justify-center px-1 ml-2 py-0.5 -mt-0.5 rounded cursor-pointer hover:bg-gray-300 group"
                                 @click="formatDocument"
                             >
                                 <AtlanIcon icon="FormatText" class="w-5 h-5" />
@@ -40,28 +29,10 @@
 
                         <div
                             :class="fullSreenState ? 'bg-gray-300' : ''"
-                            class="
-                                items-center
-                                justify-center
-                                px-1
-                                ml-1
-                                py-0.5
-                                -mt-0.5
-                                rounded
-                                cursor-pointer
-                                hover:bg-gray-300
-                                group
-                            "
+                            class="items-center justify-center px-1 ml-1 py-0.5 -mt-0.5 rounded cursor-pointer hover:bg-gray-300 group"
                         >
                             <div
-                                class="
-                                    items-center
-                                    justify-center
-                                    rounded
-                                    cursor-pointer
-                                    hover:bg-gray-300
-                                    py-0.5
-                                "
+                                class="items-center justify-center rounded cursor-pointer hover:bg-gray-300 py-0.5"
                                 @click="tFullScreen"
                             >
                                 <a-tooltip
@@ -164,7 +135,7 @@
                                 activeInlineTab.queryId &&
                                 !activeInlineTab.isSaved
                             "
-                            class="flex items-center justify-between h-6 ml-2 border-none  button-shadow group"
+                            class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
                             :class="isUpdating ? 'px-4.5' : 'px-2'"
                             :disabled="
                                 activeInlineTab.isSaved &&
@@ -173,7 +144,7 @@
                             @click="saveOrUpdate"
                         >
                             <div
-                                class="flex items-center transition duration-150 rounded  group-hover:text-primary"
+                                class="flex items-center transition duration-150 rounded group-hover:text-primary"
                             >
                                 <AtlanIcon
                                     v-if="!isUpdating"
@@ -201,7 +172,7 @@
                         >
                             <a-tooltip
                                 color="#363636"
-                                class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer  opacity-70 button-shadow"
+                                class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
                             >
                                 <template #title>
                                     {{
@@ -218,11 +189,11 @@
                             color="secondary"
                             padding="compact"
                             v-else
-                            class="flex items-center h-6 px-3 ml-2 border-none  button-shadow"
+                            class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
                             @click="saveOrUpdate"
                         >
                             <div
-                                class="flex items-center transition duration-150  group-hover:text-primary"
+                                class="flex items-center transition duration-150 group-hover:text-primary"
                             >
                                 <AtlanIcon
                                     style="margin-right: 2.5px"
@@ -245,15 +216,15 @@
                                 size="sm"
                                 color="secondary"
                                 padding="compact"
-                                class="flex items-center h-6 px-3 ml-2 border-none  button-shadow group"
+                                class="flex items-center h-6 px-3 ml-2 border-none button-shadow group"
                             >
                                 <div
-                                    class="flex items-center transition duration-150  group-hover:text-primary"
+                                    class="flex items-center transition duration-150 group-hover:text-primary"
                                 >
                                     <AtlanIcon
                                         style="margin-right: 2.5px"
                                         icon="Share"
-                                        class="transition duration-150  group-hover:text-primary"
+                                        class="transition duration-150 group-hover:text-primary"
                                     ></AtlanIcon>
 
                                     <span>Share</span>
@@ -273,12 +244,14 @@
                         saveModalRef = el
                     }
                 "
+                :savedQueryType="'personal'"
+                :parentFolder="queryFolderNamespace"
                 @onSaveQuery="saveQuery"
             />
             <Monaco @editorInstance="setInstance" />
 
             <div
-                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
+                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white"
             >
                 <div class="flex items-center">
                     <!-- <WarehouseConnector /> -->
@@ -395,6 +368,8 @@
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
 
+    import { Folder } from '~/types/insights/savedQuery.interface'
+
     export default defineComponent({
         components: {
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
@@ -460,6 +435,11 @@
             const { closeAssetSidebar, openAssetSidebar } = useAssetSidebar(
                 inlineTabs,
                 activeInlineTab
+            )
+
+            const queryFolderNamespace = inject<Ref<Folder>>(
+                'queryFolderNamespace',
+                ref({}) as Ref<Folder>
             )
 
             const {
@@ -550,7 +530,9 @@
                         limitRows,
                         onRunCompletion,
                         onQueryIdGeneration,
-                        selectedText
+                        selectedText,
+                        editorInstance,
+                        monacoInstance
                     )
                 } else {
                     abortQuery(
@@ -581,7 +563,9 @@
                         limitRows,
                         onRunCompletion,
                         onQueryIdGeneration,
-                        selectedText
+                        selectedText,
+                        editorInstance,
+                        monacoInstance
                     )
                 }
             }
@@ -770,6 +754,7 @@
                 saveQuery,
                 setInstance,
                 toggleRun,
+                queryFolderNamespace,
             }
         },
     })

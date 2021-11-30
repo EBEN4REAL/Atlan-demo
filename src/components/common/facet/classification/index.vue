@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full">
+    <div class="w-full" data-test-id="classifications-facet">
         <div class="flex items-center justify-between px-4">
             <SearchAdvanced
                 ref="classificationSearchRef"
@@ -29,6 +29,7 @@
                         <div class="status">
                             <a-checkbox
                                 :value="item.name"
+                                :data-test-id="item.displayName"
                                 :class="$style.atlanReverse"
                                 class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                             >
@@ -126,19 +127,22 @@
                 return '150px'
             })
 
-            watch(localValue.value, (prev, cur) => {
-                if (!localValue.value.classifications) {
-                    delete localValue.value.classifications
+            watch(
+                () => localValue.value.classifications,
+                (prev, cur) => {
+                    if (!localValue.value.classifications) {
+                        delete localValue.value.classifications
+                    }
+                    if (!localValue.value.empty) {
+                        delete localValue.value.empty
+                    }
+                    if (localValue.value.classifications?.length === 0) {
+                        delete localValue.value.classifications
+                    }
+                    modelValue.value = localValue.value
+                    emit('change')
                 }
-                if (!localValue.value.empty) {
-                    delete localValue.value.empty
-                }
-                if (localValue.value.classifications?.length === 0) {
-                    delete localValue.value.classifications
-                }
-                modelValue.value = localValue.value
-                emit('change')
-            })
+            )
 
             const classificationSearchRef: Ref<null | HTMLInputElement> =
                 ref(null)
@@ -151,6 +155,10 @@
             const forceFocus = () => {
                 start()
             }
+            /* Adding this when parent data change, sync it with local */
+            watch(modelValue, () => {
+                localValue.value = modelValue.value
+            })
 
             return {
                 filteredList,

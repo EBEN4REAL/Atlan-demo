@@ -19,22 +19,9 @@
                     />
                 </template>
 
-                <div
-                    class="flex flex-col"
-                    :style="{ height: 'calc(100vh - 7.8rem)' }"
-                >
+                <div class="flex flex-col">
                     <div
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            px-4
-                            pt-2
-                            mt-2
-                            text-lg
-                            font-semibold
-                            text-gray-700
-                        "
+                        class="flex items-center justify-between px-4 pt-2 pb-2 mt-2 text-lg font-semibold text-gray-700"
                     >
                         {{ tab.name }}
                     </div>
@@ -44,6 +31,8 @@
                         :selected-workflow="selectedWorkflow"
                         :is-loaded="isLoaded"
                         @change="handleChange"
+                        class="overflow-auto"
+                        :style="{ height: 'calc(100vh - 11rem)' }"
                     />
                 </div>
             </a-tab-pane>

@@ -46,6 +46,7 @@ const useRunList = (wf_name) => {
 
     // watcher
     watch([liveList, archivedList], ([newX, newY]) => {
+        if (!isReady.value) return
         if (newX && newY) {
             let liveRunItems: any = []
             let archivedRunItems: ArchivedRuns[] = []

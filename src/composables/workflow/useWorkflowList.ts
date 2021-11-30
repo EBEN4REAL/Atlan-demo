@@ -176,8 +176,10 @@ export function getArchivedRunList(name) {
             'workflows.argoproj.io/workflow-template': `${n}`,
         }
         params.value.append('filter', JSON.stringify(filter.value))
-        params.value.append('offset', '0')
-        params.value.append('limit', '5')
+        offset.value = 0
+        limit.value = 10
+        params.value.append('offset', offset.value.toString())
+        params.value.append('limit', limit.value.toString())
 
 
         mutate()

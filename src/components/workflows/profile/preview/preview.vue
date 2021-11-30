@@ -5,7 +5,7 @@
                 v-if="loadingFetchPod"
                 class="absolute flex items-center justify-center w-full h-full"
             >
-                <a-spin />
+                <AtlanIcon icon="Loader" class="h-5 animate-spin" />
             </div>
 
             <div
@@ -68,7 +68,7 @@
                 :style="{ height: 'calc(100vh - 3rem)' }"
             >
                 <div
-                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
+                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700"
                 >
                     {{ tab.name }}
                 </div>
@@ -95,7 +95,7 @@
         watch,
         computed,
         onErrorCaptured,
-        provide
+        provide,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
 
@@ -180,7 +180,7 @@
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
             const formChanged = ref(false)
-            provide("creatorDetails", {})
+            provide('creatorDetails', {})
             if (selectedPreviewTab.value === 'runs') activeKey.value = 1
 
             watch(selectedPreviewTab, (n) => {
@@ -239,8 +239,8 @@
                 }
             }
             const handleChange = (v, isInit) => {
-                if(!isInit){
-                  formChanged.value = true
+                if (!isInit) {
+                    formChanged.value = true
                 }
                 Object.entries(v).forEach(([key, value]) => {
                     const index =
@@ -303,7 +303,7 @@
                 activeKey,
                 filteredTabs,
                 emit,
-                formChanged
+                formChanged,
             }
         },
     })

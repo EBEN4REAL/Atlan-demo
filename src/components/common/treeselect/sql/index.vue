@@ -89,7 +89,6 @@
                         data.value.results?.map((item) => item.TABLE_CATALOG)
                     ),
                 ]
-                console.log(db)
                 db.forEach((element) => {
                     treeData.value.push({
                         id: element,

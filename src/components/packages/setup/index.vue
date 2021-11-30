@@ -1,5 +1,8 @@
 <template>
-    <div class="flex w-full h-full">
+    <div
+        class="flex w-full h-full"
+        @click.meta.shift.space.exact="toggleSandbox"
+    >
         <div class="flex flex-1 border-r border-gray-200">
             <div class="flex flex-col w-full h-full">
                 <a-steps
@@ -101,7 +104,7 @@
         <div class="flex flex-col w-1/3">
             <div
                 class="flex flex-col w-full px-6 py-3 mb-3"
-                v-if="workflowTemplate"
+                v-if="workflowTemplate && !isSandbox"
             >
                 <div
                     class="flex items-center mb-1"
@@ -166,6 +169,54 @@
                     </div>
                 </div>
             </div>
+            <div
+                class="flex flex-col w-full px-6 py-3 mb-3"
+                v-if="workflowTemplate && !isSandbox"
+            >
+                <div
+                    class="flex items-center mb-1"
+                    v-if="
+                        workflowTemplate?.workflowtemplate.metadata.annotations
+                    "
+                >
+                    <img
+                        v-if="
+                            workflowTemplate?.workflowtemplate.metadata
+                                .annotations['com.atlan.orchestration/icon']
+                        "
+                        class="self-center w-5 h-auto mr-2"
+                        :src="
+                            workflowTemplate?.workflowtemplate.metadata
+                                .annotations['com.atlan.orchestration/icon']
+                        "
+                    />
+                    <div class="text-base font-bold truncate overflow-ellipsis">
+                        {{
+                            workflowTemplate?.workflowtemplate.metadata
+                                .annotations['workflows.argoproj.io/name']
+                        }}
+                    </div>
+                </div>
+
+                <div class="text-sm line-clamp-4">
+                    <span
+                        v-if="
+                            workflowTemplate?.workflowtemplate.metadata
+                                .annotations
+                        "
+                    >
+                        {{
+                            workflowTemplate?.workflowtemplate.metadata
+                                .annotations[
+                                'workflows.argoproj.io/description'
+                            ]
+                        }}</span
+                    >
+                </div>
+            </div>
+            <div class="flex mt-1 text-gray-500" v-else>
+                <div class="px-3 py-1 bg-gray-100 border-b">Sandbox</div>
+            </div>
         </div>
     </div>
 </template>
@@ -212,6 +263,8 @@
             // const graphRef = inject('graphRef')
 
             const stepForm = ref()
+
+            const isSandbox = ref(false)
 
             const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
@@ -299,6 +352,10 @@
                 currentStep.value -= 1
             }
 
+            const toggleSandbox = () => {
+                isSandbox.value = !isSandbox.value
+            }
+
             // watch(data, (newVal) => {
             //     const meta =
             //         newVal?.workflowtemplate?.metadata?.annotations || {}
@@ -327,6 +384,8 @@
                 handleNext,
                 stepForm,
                 handlePrevious,
+                isSandbox,
+                toggleSandbox,
             }
         },
     })

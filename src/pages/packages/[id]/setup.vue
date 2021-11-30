@@ -1,7 +1,14 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
+        <Loader v-if="isLoadingPackage || isLoadingConfigMap"></Loader>
+        <div
+            v-else-if="!isLoadingPackage && !isLoadingConfigMap && error"
+            class="flex items-center justify-center flex-grow"
+        >
+            <ErrorView></ErrorView>
+        </div>
         <PackagesSetup
-            v-if="localConfig"
+            v-else-if="localConfig"
             :workflowTemplate="localSelected"
             :configMap="localConfig"
         ></PackagesSetup>
@@ -19,6 +26,8 @@
         provide,
     } from 'vue'
 
+    import Loader from '@/common/loaders/page.vue'
+    import ErrorView from '@/common/error/index.vue'
     import PackagesSetup from '@/packages/setup/index.vue'
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'
@@ -29,6 +38,8 @@
         name: 'WorkflowSetupPage',
         components: {
             PackagesSetup,
+            Loader,
+            ErrorView,
         },
         props: {
             selectedPackage: {
@@ -47,9 +58,17 @@
 
             const localSelected = ref(props.selectedPackage)
             const localConfig = ref(null)
-            const { workflowPackage } = usePackageByName(id, fetch.value)
+            const {
+                workflowPackage,
+                isLoading: isLoadingPackage,
+                error,
+            } = usePackageByName(id, fetch.value)
 
-            const { list, data } = useConfigMapList({
+            const {
+                list,
+                data,
+                isLoading: isLoadingConfigMap,
+            } = useConfigMapList({
                 dependentKey: ref(true),
                 limit: ref(1),
                 filter: ref({
@@ -76,18 +95,6 @@
                             list.value[0].configmap.data.config
                         )
 
-                        if (localConfig.value) {
-                            localConfig.value['_schedule'] = {
-                                type: 'string',
-                                ui: {
-                                    widget: 'schedule',
-                                    label: '',
-                                    placeholder: 'Credential Guid',
-                                    hidden: false,
-                                },
-                            }
-                        }
-
                         // Add Schedule
                     } catch (e) {
                         console.log(e)
@@ -98,6 +105,9 @@
             return {
                 localSelected,
                 localConfig,
+                isLoadingPackage,
+                isLoadingConfigMap,
+                error,
             }
         },
     })

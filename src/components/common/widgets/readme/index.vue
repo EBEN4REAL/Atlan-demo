@@ -135,7 +135,7 @@
 
 <style lang="less" scoped>
     .editor-open {
-        min-height: 20vh;
+        min-height: 200px;
         transition: min-height 0.3s ease-in-out;
     }
     .editor-close {

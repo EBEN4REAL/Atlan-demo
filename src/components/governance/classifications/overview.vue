@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="flex py-6 px-4 text-gray-500 text-sm space-x-4">
+    <div class="flex py-6 px-4 text-gray-500 text-sm space-x-4 items-center">
         <div class="flex items-center">
             Created By
             <UserPill

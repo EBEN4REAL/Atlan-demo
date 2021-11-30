@@ -3,7 +3,7 @@
         <div class="flex items-center mb-2 gap-x-2 justify-between">
             <div>
                 <AtlanIcon icon="Shield" :style="`color: ${getClassificationColorHex(selectedClassification?.options?.color)}`"/>
-                <span class="text-sm tracking-wide text-gray-500 uppercase"
+                <span class="ml-2 text-sm tracking-wide text-gray-500 uppercase"
                     >Classification</span
                 >
             </div>

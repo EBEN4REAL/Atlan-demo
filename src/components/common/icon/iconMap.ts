@@ -33,12 +33,21 @@ import Search from '~/assets/images/icons/search.svg'
 import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
+import DatabaseVerified from '~/assets/images/icons/database_verified.svg'
+import DatabaseDeprecated from '~/assets/images/icons/database_deprecated.svg'
+import DatabaseDraft from '~/assets/images/icons/database_draft.svg'
 import DatabaseGray from '~/assets/images/icons/database-gray.svg'
 import Schema from '~/assets/images/icons/schema.svg'
+import SchemaVerified from '~/assets/images/icons/schema_verified.svg'
+import SchemaDeprecated from '~/assets/images/icons/schema_deprecated.svg'
+import SchemaDraft from '~/assets/images/icons/schema_draft.svg'
 import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
 import TableGray from '~/assets/images/icons/table-gray.svg'
 import View from '~/assets/images/icons/view.svg'
+import ViewDeprecated from '~/assets/images/icons/view_deprecated.svg'
+import ViewDraft from '~/assets/images/icons/view_draft.svg'
+import ViewVerified from '~/assets/images/icons/view_verified.svg'
 import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
@@ -505,4 +514,15 @@ export default {
     GovernanceCenter,
     Close,
     CheckCurrentColor,
+    DatabaseVerified,
+    DatabaseDeprecated,
+    DatabaseDraft,
+    
+    SchemaVerified,
+    SchemaDeprecated,
+    SchemaDraft,
+    ViewDeprecated,
+    ViewDraft,
+    ViewVerified
+    
 }

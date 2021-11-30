@@ -11,7 +11,7 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 
 export default function useProject() {
-    const { getParsedQuery, resetErrorDecorations, setErrorDecorations } =
+    const { getParsedQuery, resetErrorDecorations, setErrorDecorations, getParsedQueryCursor } =
         useEditor()
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
@@ -83,7 +83,9 @@ export default function useProject() {
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         onCompletion?: Function,
         onQueryIdGeneration?: Function,
-        selectedText?: string
+        selectedText?: string,
+        editorInstance: Ref<any>,
+        monacoInstance: Ref<any>
     ) => {
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
@@ -97,18 +99,50 @@ export default function useProject() {
             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                 undefined
         }
+
+        // console.log('selected text: ', selectedText)
         /* Checking If any text is selected */
+        
         if (selectedText && selectedText !== '') {
             queryText = getParsedQuery(
                 activeInlineTab.value.playground.editor.variables,
                 selectedText
             )
         } else {
-            queryText = getParsedQuery(
+            // queryText = getParsedQuery(
+            //     activeInlineTab.value.playground.editor.variables,
+            //     activeInlineTab.value.playground.editor.text
+            // )
+            // console.log('query: ', queryText)
+            getParsedQueryCursor(
                 activeInlineTab.value.playground.editor.variables,
-                activeInlineTab.value.playground.editor.text
+                activeInlineTab.value.playground.editor.text,
+                'auto',
+                editorInstance.value,
+                monacoInstance.value
             )
+            const selectedQuery = toRaw(editorInstance.value)
+                .getModel()
+                .getValueInRange(
+                    toRaw(editorInstance.value).getSelection()
+                )
+            console.log('selected query: ', selectedQuery)
+
+            if(selectedQuery && selectedQuery.length) {
+                queryText = getParsedQuery(
+                    activeInlineTab.value.playground.editor.variables,
+                    selectedQuery
+                )
+            } else {
+                queryText = getParsedQuery(
+                    activeInlineTab.value.playground.editor.variables,
+                    activeInlineTab.value.playground.editor.text
+                )
+            }
+            
         }
+        // console.log('selected query: ', queryText)
+        
 
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))

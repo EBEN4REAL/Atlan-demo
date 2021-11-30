@@ -31,7 +31,7 @@
             <div
                 v-else-if="treeData.length == 0"
                 data-test-id="no-assets-available"
-                class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500 "
+                class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500"
             >
                 <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                 <p class="mt-6 mb-0 text-base text-gray-700">
@@ -94,6 +94,10 @@
                 },
             })
 
+            const facets = ref({})
+            const sortOrderTable = ref('')
+            const sortOrderColumn = ref('')
+
             const {
                 treeData,
                 loadedKeys,
@@ -106,6 +110,9 @@
             } = useSchemaExplorerTree({
                 emit,
                 queryText,
+                facets,
+                sortOrderTable,
+                sortOrderColumn,
                 searchResultType,
                 // initSelectedKeys,
                 initialExapndedKeys,

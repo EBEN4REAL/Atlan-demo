@@ -3,19 +3,18 @@
         v-if="items.length"
         class="flex flex-col overflow-y-scroll bg-white border rounded-sm shadow-lg  overflow-ellipsis h-52 w-72"
     >
-        <a-menu>
-            <a-menu-item
-                v-for="menuItem in items"
+        <div class="items">
+            <button
+                v-for="(menuItem, index) in items"
                 :key="menuItem.key"
-                :class="{
-                    'is-active bg-gray-200': isMenuActive(editor, menuItem),
-                }"
-                @click="() => menuItem.onClick(editor)"
+                class="item"
+                :class="{ 'is-selected': index === selectedIndex }"
+                @click="selectItem(index)"
             >
                 <AtlanIcon :icon="menuItem.icon" class="w-auto h-4 mb-1 mr-1" />
                 {{ menuItem.title }}
-            </a-menu-item>
-        </a-menu>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -37,7 +36,6 @@
 
         data() {
             return {
-                selectedCategoryIndex: 0,
                 selectedIndex: 0,
             }
         },
@@ -45,7 +43,6 @@
         watch: {
             items() {
                 this.selectedIndex = 0
-                this.selectedCategoryIndex = 0
             },
         },
 
@@ -70,62 +67,22 @@
             },
 
             upHandler() {
-                if (this.selectedIndex === 0) {
-                    this.selectedCategoryIndex -= 1
-                    if (this.selectedCategoryIndex === -1) {
-                        this.selectedCategoryIndex = this.items.length - 1
-                    }
-                    this.selectedIndex =
-                        this.items[this.selectedCategoryIndex].content.length -
-                        1
-                } else {
-                    this.selectedIndex =
-                        (this.selectedIndex +
-                            this.items[this.selectedCategoryIndex].content
-                                .length -
-                            1) %
-                        this.items[this.selectedCategoryIndex].content.length
-                }
-                const selected = document.getElementsByClassName('is-selected')
-
-                if (selected[0]) {
-                    selected[0]?.scrollIntoView(false, {
-                        behaviour: 'smooth',
-                        block: 'nearest',
-                    })
-                }
+                this.selectedIndex =
+                    (this.selectedIndex + this.items.length - 1) %
+                    this.items.length
             },
 
             downHandler() {
-                if (
-                    this.selectedIndex ==
-                    this.items[this.selectedCategoryIndex].content.length - 1
-                ) {
-                    this.selectedCategoryIndex += 1
-                    this.selectedIndex = 0
-                    if (this.selectedCategoryIndex === this.items.length) {
-                        this.selectedCategoryIndex = 0
-                    }
-                } else {
-                    this.selectedIndex =
-                        (this.selectedIndex + 1) %
-                        this.items[this.selectedCategoryIndex].content.length
-                }
-                const selected = document.getElementsByClassName('is-selected')
-                if (selected[0]) {
-                    selected[0]?.scrollIntoView(true, {
-                        behaviour: 'smooth',
-                        block: 'nearest',
-                    })
-                }
+                this.selectedIndex =
+                    (this.selectedIndex + 1) % this.items.length
             },
 
             enterHandler() {
-                this.selectItem(this.selectedCategoryIndex, this.selectedIndex)
+                this.selectItem(this.selectedIndex)
             },
 
-            selectItem(categoryIndex, index) {
-                const item = this.items[categoryIndex].content[index]
+            selectItem(index) {
+                const item = this.items[index]
 
                 if (item) {
                     this.command(item)
@@ -148,9 +105,11 @@
         border: none;
         padding: 0.2rem 0.5rem;
 
-        &.is-selected,
         &:hover {
             @apply bg-gray-100;
+        }
+        .is-selected {
+            @apply bg-gray-200 text-gray-700 !important;
         }
     }
 </style>

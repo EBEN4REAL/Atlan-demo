@@ -7,6 +7,8 @@
                 duration: 100,
                 zIndex: 1,
                 placement: 'top-start',
+                maxWidth: 'none',
+                animation: 'fade',
             }"
             :editor="editor"
         >
@@ -36,7 +38,7 @@
     import Document from '@tiptap/extension-document'
 
     import SelectionMenu from './selectionMenu.vue'
-    // import SlashCommands from './extensions/slashCommands/commands'
+    import SlashCommands from './extensions/slashCommands/commands'
     import ImageUpload from './extensions/imageUpload/extension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
@@ -155,7 +157,7 @@
                     TextAlign.configure({
                         types: ['heading', 'paragraph'],
                     }),
-
+                    SlashCommands,
                     LinkPreview,
                     ImageUpload,
                     Highlight.configure({ multicolor: true }),
@@ -167,7 +169,7 @@
 
                             return props.placeholder
                         },
-                        showOnlyWhenEditable: false,
+                        showOnlyWhenEditable: true,
                     }),
                 ],
                 onUpdate({ editor }) {

@@ -1,9 +1,10 @@
-import { CommandProps, Editor, Extension, Range } from '@tiptap/core'
+import { Editor, Extension, Range } from '@tiptap/core'
 import { VueRenderer } from '@tiptap/vue-3'
 import Suggestion, { SuggestionProps } from '@tiptap/suggestion'
-import tippy, { Instance, Tippy } from 'tippy.js'
+import tippy, { Instance } from 'tippy.js'
 import { blockMenu } from '~/constant/readmeMenuItems'
 import CommandsList from './CommandsList.vue'
+
 interface commandsProps {
     editor: Editor
     range: Range
@@ -17,9 +18,10 @@ export default Extension.create({
         suggestion: {
             char: '/',
             command: ({ editor, range, props }: commandsProps) => {
-                props.command({ editor, range })
+                props.command(editor)
             },
             items: () => blockMenu,
+
             render: () => {
                 let component: VueRenderer
                 let popup: Instance[]
@@ -48,6 +50,11 @@ export default Extension.create({
                         })
                     },
                     onKeyDown(props: SuggestionProps) {
+                        /* if (props.event.key === 'Escape') {
+                    popup[0].hide()
+
+                    return true
+                } */
                         return component.ref?.onKeyDown(props)
                     },
                     onExit() {
@@ -58,7 +65,6 @@ export default Extension.create({
             },
         },
     },
-
     addProseMirrorPlugins() {
         return [
             Suggestion({

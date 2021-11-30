@@ -5,7 +5,7 @@ export interface CommandItem {
     icon?: string
     level?: number
     border?: boolean
-    onClick: (editor: Editor) => void
+    command: (editor: Editor) => void
 }
 
 export const blockMenu: CommandItem[] = [
@@ -15,7 +15,7 @@ export const blockMenu: CommandItem[] = [
         level: 1,
         helpText: '',
         icon: 'HOne',
-        onClick: (editor) =>
+        command: (editor) =>
             editor.chain().focus().toggleHeading({ level: 1 }).run(),
     },
     {
@@ -24,7 +24,7 @@ export const blockMenu: CommandItem[] = [
         level: 2,
         helpText: '',
         icon: 'HTwo',
-        onClick: (editor) =>
+        command: (editor) =>
             editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     {
@@ -34,7 +34,7 @@ export const blockMenu: CommandItem[] = [
         icon: 'HThree',
         border: true,
         helpText: '',
-        onClick: (editor) =>
+        command: (editor) =>
             editor.chain().focus().toggleHeading({ level: 3 }).run(),
     },
 
@@ -43,7 +43,7 @@ export const blockMenu: CommandItem[] = [
         key: 'bulletList',
         helpText: '',
         icon: 'BulletList',
-        onClick: (editor) => editor.chain().focus().toggleBulletList().run(),
+        command: (editor) => editor.chain().focus().toggleBulletList().run(),
     },
     {
         title: 'Ordered List',
@@ -51,7 +51,7 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'NumberedList',
         border: true,
-        onClick: (editor) => editor.chain().focus().toggleOrderedList().run(),
+        command: (editor) => editor.chain().focus().toggleOrderedList().run(),
     },
 
     {
@@ -59,14 +59,14 @@ export const blockMenu: CommandItem[] = [
         key: 'taskList',
         helpText: '',
         icon: 'fa square',
-        onClick: (editor) => editor.chain().focus().toggleTaskList().run(),
+        command: (editor) => editor.chain().focus().toggleTaskList().run(),
     },
     {
         title: 'Blockquote',
         key: 'blockquote',
         helpText: '',
         icon: 'Quotes',
-        onClick: (editor) => editor.chain().focus().toggleBlockquote().run(),
+        command: (editor) => editor.chain().focus().toggleBlockquote().run(),
     },
     {
         title: 'Code Block',
@@ -74,7 +74,7 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'Code',
         border: true,
-        onClick: (editor) =>
+        command: (editor) =>
             editor.chain().focus().toggleCodeBlock({ language: 'json' }).run(),
     },
     {
@@ -83,7 +83,7 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'ReadmeImage',
         border: true,
-        onClick: (editor) => editor.chain().focus().toggleImageBlock().run(),
+        command: (editor) => editor.chain().focus().toggleImageBlock().run(),
     },
 ]
 
@@ -93,7 +93,7 @@ export const menuData: CommandItem[] = [
         key: 'bold',
         helpText: '',
         icon: 'Bold',
-        onClick: (editor) => {
+        command: (editor) => {
             editor.chain().focus().toggleBold().run()
         },
     },
@@ -102,28 +102,28 @@ export const menuData: CommandItem[] = [
         key: 'italic',
         helpText: '',
         icon: 'Italic',
-        onClick: (editor) => editor.chain().focus().toggleItalic().run(),
+        command: (editor) => editor.chain().focus().toggleItalic().run(),
     },
     {
         title: 'Underline',
         key: 'underline',
         helpText: '',
         icon: 'Underline',
-        onClick: (editor) => editor.chain().focus().toggleUnderline().run(),
+        command: (editor) => editor.chain().focus().toggleUnderline().run(),
     },
     {
         title: 'Strikethrough',
         key: 'strike',
         helpText: '',
         icon: 'Strike',
-        onClick: (editor) => editor.chain().focus().toggleStrike().run(),
+        command: (editor) => editor.chain().focus().toggleStrike().run(),
     },
     {
         title: 'Align Center',
         key: 'alignCenter',
         helpText: '',
         icon: 'TextCenter',
-        onClick: (editor) =>
+        command: (editor) =>
             editor.chain().focus().setTextAlign('center').run(),
     },
 
@@ -132,21 +132,21 @@ export const menuData: CommandItem[] = [
         key: 'alignLeft',
         helpText: '',
         icon: 'TextLeft',
-        onClick: (editor) => editor.chain().focus().setTextAlign('left').run(),
+        command: (editor) => editor.chain().focus().setTextAlign('left').run(),
     },
     {
         title: 'Align Right',
         key: 'alignRight',
         helpText: '',
         icon: 'TextRight',
-        onClick: (editor) => editor.chain().focus().setTextAlign('right').run(),
+        command: (editor) => editor.chain().focus().setTextAlign('right').run(),
     },
     {
         title: 'Justify Text',
         key: 'justify',
         helpText: '',
         icon: 'JustifyText',
-        onClick: (editor) =>
+        command: (editor) =>
             editor.chain().focus().setTextAlign('justify').run(),
     },
     {
@@ -154,14 +154,14 @@ export const menuData: CommandItem[] = [
         key: 'undo',
         helpText: '',
         icon: 'Undo',
-        onClick: (editor) => editor.chain().focus().undo().run(),
+        command: (editor) => editor.chain().focus().undo().run(),
     },
     {
         title: 'Redo',
         key: 'redo',
         helpText: '',
         icon: 'Redo',
-        onClick: (editor) => editor.chain().focus().redo().run(),
+        command: (editor) => editor.chain().focus().redo().run(),
     },
     // table
 ]

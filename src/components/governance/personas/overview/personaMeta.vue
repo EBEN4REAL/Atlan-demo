@@ -18,6 +18,7 @@
 
             <a-switch
                 class="ml-auto"
+                data-test-id="toggle-switch"
                 style="width: 40px !important"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
@@ -26,7 +27,8 @@
         </div>
         <div class="flex items-center py-4 pt-2">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group hover:shadow"
+                data-test-id="tab-policies"
                 @click="setActiveTab('policies')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
@@ -65,7 +67,8 @@
                 </div>
             </div>
             <div
-                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group"
+                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group hover:shadow"
+                data-test-id="tab-users"
                 @click="setActiveTab('users')"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">

@@ -1,11 +1,12 @@
 <template>
     <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
     <KeepAlive>
-        <div>
-            <AssetsWrapper 
-                v-if="activeTabKey === '1'" 
-                :initialFilters="filterConfig" 
-                :showFilters="false"  
+        <div class="wrapper-height">
+            <AssetsWrapper
+                v-if="activeTabKey === '1'"
+                :initialFilters="filterConfig"
+                :showFilters="false"
+                page="classifications"
             />
             <!-- <LinkedTerms
                 v-else-if="activeTabKey === '2'"
@@ -45,7 +46,9 @@
             ]
 
             const filterConfig = computed(() => ({
-                __traitNames: [selectedClassification.value.name],
+                __traitNames: {
+                    classifications: [selectedClassification.value.name],
+                },
             }))
 
             return {
@@ -58,7 +61,7 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     .typeTabs {
         .ant-tabs-tab {
             padding-left: 2px !important;
@@ -88,5 +91,9 @@
             @apply rounded-t-sm;
             margin-bottom: 1px;
         }
+    }
+    .wrapper-height {
+        height: calc(100vh - 4rem);
+        overflow: auto;
     }
 </style>

@@ -73,7 +73,7 @@
         }
         .ant-tabs-tab-active {
             @apply text-gray !important;
-            @apply font-bold !important;
+
             text-shadow: 0 0 0.01px;
         }
         .ant-tabs-content {

@@ -3,12 +3,11 @@
         <div class="w-2/3 text-gray-600 bg-white rounded smtpForm">
             <a-form
                 ref="formRef"
-                layout="vertical"
                 label-align="left"
                 :rules="rules"
-                :label-col="{ span: 6 }"
                 :model="smtpServer"
-                :wrapper-col="{ span: 14, offset: 4 }"
+                :labelCol="{ span: 4 }"
+                :wrapper-col="{ span: 18, offset: 4 }"
             >
                 <a-form-item
                     v-for="config in smtpConfig"
@@ -142,7 +141,7 @@
                     <div class="flex">
                         <div
                             v-if="saveSmtpConfigState === 'SUCCESS'"
-                            class="flex items-center justify-center px-3 py-2 mr-3 rounded  bg-blue-50"
+                            class="flex items-center justify-center px-3 py-2 mr-3 rounded bg-blue-50"
                         >
                             <fa
                                 icon="fal check-circle"
@@ -152,7 +151,7 @@
                         </div>
                         <div
                             v-else-if="saveSmtpConfigState === 'ERROR'"
-                            class="flex items-center px-3 py-2 mr-3 rounded  bg-red-50"
+                            class="flex items-center px-3 py-2 mr-3 rounded bg-red-50"
                         >
                             <a-popover trigger="hover" placement="right">
                                 <template #content>
@@ -184,74 +183,74 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
-import DefaultLayout from '@/admin/layout.vue'
-import { useSmtp } from '@/admin/smtp/useSmtp'
+    import { defineComponent } from 'vue'
+    import DefaultLayout from '@/admin/layout.vue'
+    import { useSmtp } from '@/admin/smtp/useSmtp'
 
-export default defineComponent({
-    name: 'SmtpForm',
-    components: { DefaultLayout },
-    setup() {
-        const {
-            formRef,
-            userFieldRef,
-            rules,
-            smtpConfig,
-            testSmtpConfigState,
-            testSmtpConfigError,
-            saveSmtpConfigState,
-            saveSmtpConfigError,
-            passwordReentered,
-            updateSmtpProperty,
-            testSmtpConfig,
-            saveSmtpConfig,
-            smtpServer,
-            finalTestSmtpConfigError,
-            triggerBlur,
-        } = useSmtp()
-        // const smtpServer = reactive(ss)
-        return {
-            formRef,
-            rules,
-            userFieldRef,
-            smtpConfig,
-            testSmtpConfigState,
-            testSmtpConfigError,
-            saveSmtpConfigState,
-            saveSmtpConfigError,
-            passwordReentered,
-            updateSmtpProperty,
-            testSmtpConfig,
-            saveSmtpConfig,
-            smtpServer,
-            finalTestSmtpConfigError,
-            triggerBlur,
-        }
-    },
-})
+    export default defineComponent({
+        name: 'SmtpForm',
+        components: { DefaultLayout },
+        setup() {
+            const {
+                formRef,
+                userFieldRef,
+                rules,
+                smtpConfig,
+                testSmtpConfigState,
+                testSmtpConfigError,
+                saveSmtpConfigState,
+                saveSmtpConfigError,
+                passwordReentered,
+                updateSmtpProperty,
+                testSmtpConfig,
+                saveSmtpConfig,
+                smtpServer,
+                finalTestSmtpConfigError,
+                triggerBlur,
+            } = useSmtp()
+
+            return {
+                formRef,
+                rules,
+                userFieldRef,
+                smtpConfig,
+                testSmtpConfigState,
+                testSmtpConfigError,
+                saveSmtpConfigState,
+                saveSmtpConfigError,
+                passwordReentered,
+                updateSmtpProperty,
+                testSmtpConfig,
+                saveSmtpConfig,
+                smtpServer,
+                finalTestSmtpConfigError,
+                triggerBlur,
+            }
+        },
+    })
 </script>
 
 <style lang="less" module>
-:global(.smtpForm .ant-form-item) {
-    @apply flex items-center flex-row;
-}
+    :global(.smtpForm .ant-form-item) {
+        @apply flex items-center flex-row;
+    }
 
-:global(.smtpForm .test-config-button) {
-    @apply text-green-500 border-green-500;
-}
-:global(.ant-form-item-label
-        > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
-    @apply hidden;
-}
-// Aesterik in right side
-:global(.ant-form-item-label
-        > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
-    display: inline-block;
-    margin-left: 4px;
-    color: #ff4d4f;
-    font-size: 14px;
-    font-family: SimSun, sans-serif;
-    line-height: 1;
-    content: '*';
-}
+    :global(.smtpForm .test-config-button) {
+        @apply text-green-500 border-green-500;
+    }
+    :global(.ant-form-item-label
+            > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
+        @apply hidden;
+    }
+    // Aesterik in right side
+    :global(.ant-form-item-label
+            > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
+        display: inline-block;
+        margin-left: 4px;
+        color: #ff4d4f;
+        font-size: 14px;
+        font-family: SimSun, sans-serif;
+        line-height: 1;
+        content: '*';
+    }
 </style>

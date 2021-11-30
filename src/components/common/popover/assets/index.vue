@@ -27,6 +27,8 @@
                         <span class="uppercase">{{
                             title || item?.typeName
                         }}</span>
+
+                        <slot name="extraHeaders"> </slot>
                     </div>
                     <div
                         v-if="
@@ -100,7 +102,9 @@
                                     : ''
                             }`"
                         />
-                        <div class="text-xs tracking-tight text-gray-500">
+                        <div
+                            class="text-xs tracking-tight text-gray-500 break-all "
+                        >
                             {{ table }}
                         </div>
                     </div>
@@ -169,13 +173,15 @@
                         />
                     </div>
                 </div>
-                <router-link :to="path">
+                <router-link v-if="!slots?.button" :to="path">
                     <a-button class="mt-3" block>
                         <strong>
                             View {{ title?.toLowerCase() }} profile
                         </strong>
                     </a-button>
                 </router-link>
+
+                <slot name="button"></slot>
             </div>
         </template>
         <slot></slot>
@@ -184,7 +190,6 @@
 
 <script lang="ts">
     import { toRefs, computed } from 'vue'
-    // import UserAvatar from '@/common/avatar/user.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
@@ -195,7 +200,6 @@
     export default {
         name: 'PopoverAsset',
         components: {
-            // UserAvatar,
             ClassificationPill,
             UserPill,
             CertificateBadge,
@@ -210,7 +214,7 @@
             },
         },
         emits: [],
-        setup(props) {
+        setup(props, { slots }) {
             const { item } = toRefs(props)
 
             const {
@@ -275,6 +279,7 @@
                 title,
                 logoTitle,
                 path,
+                slots,
             }
         },
     }

@@ -9,16 +9,6 @@
     >
         <a-select-option :value="item.username" v-for="item in userList">
             {{ fullName(item) }}
-
-            <!-- <div class="text-sm leading-none capitalize text-gray">
-                {{ item }}
-                <span
-                    class="text-sm text-gray-500"
-                    v-if="item.username === username"
-                >
-                    (me)
-                </span>
-            </div> -->
         </a-select-option>
     </a-select>
 </template>
@@ -49,14 +39,12 @@
             const localValue = ref(modelValue.value)
             const { list, handleSearch, total } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
-
             watch(
                 () => props.queryText,
                 () => {
                     handleSearch(props.queryText)
                 }
             )
-
             const userList = computed(() => {
                 if (props.queryText !== '') {
                     return [...list.value]

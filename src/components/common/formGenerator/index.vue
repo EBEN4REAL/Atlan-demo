@@ -31,7 +31,7 @@
                                     >*</sup
                                 >
 
-                                <a-popover v-if="c.helpText" title="Help">
+                                <a-popover v-if="c.helpText">
                                     <template #content>
                                         <div
                                             class="p-3 text-gray-500"
@@ -108,7 +108,7 @@
                     >
                         Include All
                     </a-checkbox>
-                    <a-popover v-if="f.helpText" title="Help">
+                    <a-popover v-if="f.helpText">
                         <template #content>
                             <div
                                 class="p-3 text-gray-500"
@@ -274,4 +274,8 @@
     })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="less">
+    .link {
+        @apply text-blue-500;
+    }
+</style>

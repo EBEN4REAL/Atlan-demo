@@ -243,7 +243,9 @@
             const isFilterAppplied = ref(false)
 
             const shootQuery = () => {
+                console.log(AllFilters.value)
                 const filters = transformToFilters(AllFilters.value)
+                console.log(filters)
                 //! check if filter is user specific applied check to show empty state
                 const filterCopy = filters?.filter
                 if (filterCopy.$and?.length === 1) delete filterCopy.$and
@@ -308,12 +310,11 @@
             )
 
             const handleGetUser = () => {
-              const { userList } = useUsers(params, null, {})
-              watch(userList, (newVal) => {
-                users.value = newVal
-              })
+                const { userList } = useUsers(params, null, {})
+                watch(userList, (newVal) => {
+                    users.value = newVal
+                })
             }
-
 
             watch(iDs, () => {
                 handleGetUser()
@@ -324,7 +325,7 @@
                     return users.value.filter(
                         (el: { id: any }) =>
                             el?.id ===
-                            selected.value?.labels[
+                            selected.value?.metadata.labels[
                                 'workflows.argoproj.io/creator'
                             ]
                     )[0]

@@ -33,12 +33,21 @@ import Search from '~/assets/images/icons/search.svg'
 import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
+import DatabaseVerified from '~/assets/images/icons/database_verified.svg'
+import DatabaseDeprecated from '~/assets/images/icons/database_deprecated.svg'
+import DatabaseDraft from '~/assets/images/icons/database_draft.svg'
 import DatabaseGray from '~/assets/images/icons/database-gray.svg'
 import Schema from '~/assets/images/icons/schema.svg'
+import SchemaVerified from '~/assets/images/icons/schema_verified.svg'
+import SchemaDeprecated from '~/assets/images/icons/schema_deprecated.svg'
+import SchemaDraft from '~/assets/images/icons/schema_draft.svg'
 import SchemaGray from '~/assets/images/icons/schema-gray.svg'
 import Table from '~/assets/images/icons/table.svg'
 import TableGray from '~/assets/images/icons/table-gray.svg'
 import View from '~/assets/images/icons/view.svg'
+import ViewDeprecated from '~/assets/images/icons/view_deprecated.svg'
+import ViewDraft from '~/assets/images/icons/view_draft.svg'
+import ViewVerified from '~/assets/images/icons/view_verified.svg'
 import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
@@ -202,6 +211,18 @@ import Italic from '~/assets/images/readme/text-italic.svg'
 import Strike from '~/assets/images/readme/text-strike.svg'
 import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
+import ReadmeImage from '~/assets/images/readme/ImageSquare.svg'
+import BulletList from '~/assets/images/readme/ListBullets.svg'
+import NumberedList from '~/assets/images/readme/ListNumbers.svg'
+import Quotes from '~/assets/images/readme/Quotes.svg'
+import HOne from '~/assets/images/readme/TextHOne.svg'
+import HTwo from '~/assets/images/readme/TextHTwo.svg'
+import HThree from '~/assets/images/readme/TextHThree.svg'
+import TextCenter from '~/assets/images/readme/TextAlignCenter.svg'
+import TextLeft from '~/assets/images/readme/TextAlignLeft.svg'
+import TextRight from '~/assets/images/readme/TextAlignRight.svg'
+import JustifyText from '~/assets/images/readme/TextAlignJustify.svg'
+
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
@@ -238,9 +259,9 @@ import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
-import Hash from '~/assets/images/icons/hash.svg'
+import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
-//source list
+// source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
 import Column from '~/assets/images/icons/column.svg'
 import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
@@ -254,7 +275,10 @@ import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
 
+import ShieldCheck from '~/assets/images/icons/shield-check.svg'
+
 export default {
+    ShieldCheck,
     Hash,
     Column,
     CreateGroups,
@@ -467,6 +491,17 @@ export default {
     Strike,
     Undo,
     Redo,
+    ReadmeImage,
+    BulletList,
+    NumberedList,
+    Quotes,
+    HOne,
+    HTwo,
+    HThree,
+    TextCenter,
+    TextLeft,
+    TextRight,
+    JustifyText,
     Running,
     Refresh,
     ErrorLogs,
@@ -500,5 +535,17 @@ export default {
     QueriesActive,
     CaretDown,
     GovernanceCenter,
-    Close
+    Close,
+    CheckCurrentColor,
+    DatabaseVerified,
+    DatabaseDeprecated,
+    DatabaseDraft,
+    
+    SchemaVerified,
+    SchemaDeprecated,
+    SchemaDraft,
+    ViewDeprecated,
+    ViewDraft,
+    ViewVerified
+    
 }

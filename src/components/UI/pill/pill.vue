@@ -2,6 +2,7 @@
     <!-- TODO: Add disabled styles -->
     <button
         :tabindex="!disabled && $attrs.onClick ? 0 : undefined"
+        :data-test-id="dataTestId"
         class="relative flex items-center text-gray-700 transition duration-300 border border-gray-300 rounded-full cursor-pointer  gap-x-1 group hover:border-primary hover:bg-primary hover:text-white"
         :class="size === 'sm' ? 'px-2' : 'px-3'"
         :style="{ height: size === 'sm' ? '22px' : '30px' }"
@@ -22,6 +23,7 @@
             v-if="!disabled && hasAction"
             :tabindex="!disabled && hasAction ? 0 : undefined"
             @click.stop="emitActions"
+            data-test-id="cancel"
             @blur="blur"
         >
             <slot v-if="$slots.action" name="action" />
@@ -54,6 +56,11 @@
             hoveredPill: {
                 type: Boolean,
                 default: true,
+            },
+            dataTestId: {
+                type: String,
+                default: () => 'add',
+                required: false,
             },
             size: {
                 type: String as PropType<'md' | 'sm'>,

@@ -47,6 +47,7 @@
     import updateAsset from '~/composables/discovery/updateAsset'
     import { generateUUID } from '~/utils/helper/generator'
     import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary.ts'
+    import useGlossaryStore from '~/store/glossary'
     import { message } from 'ant-design-vue'
 
     export default defineComponent({
@@ -77,27 +78,23 @@
                 },
             },
         },
-        emits: ['add', 'update:visible'],
+        emits: ['delete', 'update:visible'],
         setup(props, { emit }) {
             const { entityType, guid, entity } = toRefs(props)
-            console.log(entity.value)
             const visible = ref(false)
-
-            const entityToDelete = reactive({
-                attributes: {
-                    userDescription: '',
-                    name: '',
-                    qualifiedName: '',
-                },
-                typeName: entityType.value,
-            })
-            const refetchGlossaryTree = inject<
-                (
-                    guid: string | 'root',
-                    categoryQualifiedName?: string,
-                    refreshEntityType?: 'term' | 'category'
-                ) => void
-            >('refetchGlossaryTree')
+            const isLoading = ref(false)
+            const glossaryStore = useGlossaryStore()
+            const selectedGlossaryQf = computed(
+                () => glossaryStore.activeGlossaryQualifiedName
+            )
+            // const entityToDelete = reactive({
+            //     attributes: {
+            //         userDescription: '',
+            //         name: '',
+            //         qualifiedName: '',
+            //     },
+            //     typeName: entityType.value,
+            // })
             const { deleteGlossary, deleteCategory, deleteTerm } =
                 useDeleteGlossary()
             const serviceMap = {
@@ -108,16 +105,16 @@
             const showModal = async () => {
                 visible.value = true
             }
-            const body = ref({
-                entities: [],
-            })
-            const {
-                mutate: mutateAsset,
-                isLoading,
-                isReady,
-                guidUpdatedMaps,
-                error,
-            } = updateAsset(body)
+            // const body = ref({
+            //     entities: [],
+            // })
+            // const {
+            //     mutate: mutateAsset,
+            //     isLoading,
+            //     isReady,
+            //     guidUpdatedMaps,
+            //     error,
+            // } = updateAsset(body)
             const typeNameTitle = computed(() => {
                 switch (entityType.value) {
                     case 'AtlasGlossary':
@@ -130,94 +127,77 @@
                         return 'Glossary'
                 }
             })
-            const handleSave = () => {
-                if (typeNameTitle.value === 'Glossary') {
-                    entityToDelete.attributes.qualifiedName = generateUUID()
-                }
-                entityToDelete.attributes.name = entity.value.attributes.name
-                entityToDelete.attributes.name = entity.value.attributes.name
-                entityToDelete.attributes.anchor =
-                    entity.value.attributes.anchor
-                body.value = {
-                    entities: [entityToDelete],
-                }
-                console.log(entityToDelete)
+            // const handleSave = () => {
+            //     if (typeNameTitle.value === 'Glossary') {
+            //         entityToDelete.attributes.qualifiedName = generateUUID()
+            //     }
+            //     entityToDelete.attributes.name = entity.value.attributes.name
+            //     entityToDelete.attributes.name = entity.value.attributes.name
+            //     entityToDelete.attributes.anchor =
+            //         entity.value.attributes.anchor
+            //     body.value = {
+            //         entities: [entityToDelete],
+            //     }
+            //     console.log(entityToDelete)
 
-                mutateAsset()
-            }
+            //     mutateAsset()
+            // }
             const handleDelete = () => {
-                const { data } = serviceMap[props.entity?.typeName](
+                const {
+                    data,
+                    isLoading: loading,
+                    deleteError,
+                } = serviceMap[props.entity?.typeName](
                     props.entity?.guid,
-                    false,
-                    props.entity?.attributes?.anchor?.guid
+                    false
                 )
-                watch(data, () => {
-                    setTimeout(() => {
-                        if (refetchGlossaryTree) {
-                            if (
-                                props.entity?.typeName ===
-                                'AtlasGlossaryCategory'
-                            ) {
-                                refetchGlossaryTree(
-                                    props.entity?.attributes?.parentCategory
-                                        ?.guid ?? 'root',
-                                    props.entity?.attributes?.qualifiedName,
-                                    'category'
-                                )
-                            } else if (
-                                props.entity?.typeName === 'AtlasGlossaryTerm'
-                            ) {
-                                if (
-                                    props.entity?.attributes?.categories?.length
-                                ) {
-                                    props.entity?.attributes?.categories?.forEach(
-                                        (category) => {
-                                            refetchGlossaryTree(
-                                                category.guid,
-                                                category?.uniqueAttributes
-                                                    ?.qualifiedName,
-                                                'term'
-                                            )
-                                        }
-                                    )
-                                } else {
-                                    refetchGlossaryTree('root', '', 'term')
-                                }
-                            }
+                isLoading.value = loading.value
+                if (data && !deleteError.value) {
+                    if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                        message.success(`${props.entity?.displayText} deleted`)
+                        if (!selectedGlossaryQf?.value?.length) {
+                            emit(
+                                'delete',
+                                props.entity?.attributes?.parentCategory
+                                    ?.guid ??
+                                    props?.entity?.attributes?.anchor?.guid ??
+                                    'root'
+                            )
+                        } else {
+                            emit(
+                                'delete',
+                                props.entity?.attributes?.parentCategory
+                                    ?.guid ?? 'root'
+                            )
                         }
-                    }, 500)
-                })
+                    } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
+                        message.success(`${props.entity?.displayText} deleted`)
+                        if (props.entity?.attributes?.categories?.length) {
+                            props.entity?.attributes?.categories?.forEach(
+                                (category) => {
+                                    emit('delete', category.guid)
+                                }
+                            )
+                        }
+                        if (!selectedGlossaryQf?.value?.length) {
+                            emit(
+                                'delete',
+                                props?.entity?.attributes?.anchor?.guid ??
+                                    'root'
+                            )
+                        } else emit('delete', 'root')
+                    } else {
+                        emit('delete', 'root')
+                    }
+                }
+                isLoading.value = loading.value
+                visible.value = false
             }
-
-            // whenever(isReady, () => {
-            //     if (error.value) {
-            //         console.error(error.value)
-            //     } else {
-            //         visible.value = false
-            //         message.success(`${typeNameTitle.value} created`)
-            //         if (guidUpdatedMaps.value?.length > 0) {
-            //             guid.value = guidUpdatedMaps.value[0]
-            //         }
-            //         setTimeout(() => mutateUpdate(), 1000)
-            //     }
-            // })
-            // whenever(isUpdateReady, () => {
-            //     if (error.value) {
-            //     } else {
-            //         emit('delete', asset.value)
-            //     }
-            // })
             return {
                 visible,
                 showModal,
-                entityType,
                 typeNameTitle,
-                handleSave,
-                guid,
-                entity,
                 isLoading,
-                isReady,
-                error,
                 handleDelete,
             }
         },

@@ -7,6 +7,7 @@
                 </div>
                 <div style="width: 320px">
                     <a-input
+                        data-test-id="policy-edit-name"
                         @blur="
                             () => {
                                 if (!policy.name) rules.policyName.show = true
@@ -25,6 +26,7 @@
                 <div
                     class="absolute text-xs text-red-500 -bottom-5"
                     v-if="rules.policyName.show"
+                    data-test-id="policy-validation-name"
                 >
                     {{ rules.policyName.text }}
                 </div>
@@ -43,6 +45,7 @@
                     color="secondary"
                     padding="compact"
                     class="plus-btn"
+                    data-test-id="policy-delete"
                     ><AtlanIcon
                         icon="Delete"
                         class="-mx-1 text-red-400"
@@ -65,6 +68,7 @@
 
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
+                data-test-id="policy-validation-owners"
                 v-if="rules.users.show"
             >
                 {{ rules.users.text }}
@@ -86,6 +90,7 @@
             <div
                 class="absolute text-xs text-red-500 -bottom-6"
                 v-if="rules.metadata.show"
+                data-test-id="policy-validation-permissions"
             >
                 {{ rules.metadata.text }}
             </div>
@@ -94,6 +99,7 @@
             <a-switch
                 :class="policy.allow ? '' : 'checked'"
                 :checked="!policy.allow"
+                data-test-id="toggle-switch"
                 style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
             />
@@ -117,6 +123,7 @@
                 class="ml-auto"
                 size="sm"
                 color="secondary"
+                data-test-id="cancel"
                 padding="compact"
                 @click="$emit('cancel')"
                 >Cancel</AtlanBtn
@@ -126,6 +133,7 @@
                 color="primary"
                 padding="compact"
                 @click="handleSave"
+                data-test-id="save"
                 >Save</AtlanBtn
             >
         </div>
@@ -141,6 +149,7 @@
     import Owners from '~/components/common/input/owner/index.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import { selectedPersonaDirty } from '../composables/useEditPurpose'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'MetadataPolicy',
@@ -256,6 +265,9 @@
                     rules.value.metadata.show = false
                 }
             }
+            whenever(policyNameRef, () => {
+                policyNameRef.value?.focus()
+            })
             return {
                 onScopesChange,
                 getPopoverContent,

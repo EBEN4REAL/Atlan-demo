@@ -18,6 +18,7 @@
                     class="ml-auto mr-2 border-none"
                     size="sm"
                     padding="compact"
+                    data-test-id="cross"
                     color="secondary"
                     @click="() => (isVisible = false)"
                 >
@@ -33,11 +34,7 @@
             <a-divider class="my-4" />
 
             <div
-                class="
-                    relative
-                    overflow-x-hidden overflow-y-hidden
-                    drawer_height
-                "
+                class="relative overflow-x-hidden overflow-y-hidden  drawer_height"
             >
                 <div
                     class="absolute w-full h-full bg-white"
@@ -69,8 +66,11 @@
                     <AssetsWrapper
                         :show-filters="false"
                         :static-use="true"
-                        :show-aggrs="false"
+                        :show-aggrs="true"
+                        :showCheckBox="true"
                         :initial-filters="filterConfig"
+                        checkedCriteria="qualifiedName"
+                        :preference="preference"
                         class="asset-list-height"
                         page="personas"
                     />
@@ -104,10 +104,15 @@
                     size="sm"
                     padding="compact"
                     color="secondary"
-                    @click="resetAssetState"
+                    @click="closeDrawer"
+                    data-test-id="cancel"
                     >Cancel</AtlanBtn
                 >
-                <AtlanBtn size="sm" padding="compact" @click="saveAssets"
+                <AtlanBtn
+                    size="sm"
+                    padding="compact"
+                    data-test-id="save"
+                    @click="saveAssets"
                     >Save</AtlanBtn
                 >
             </div>
@@ -120,6 +125,7 @@
         computed,
         defineComponent,
         PropType,
+        toRaw,
         ref,
         toRefs,
         watch,
@@ -157,6 +163,10 @@
         emits: ['update:visible', 'update:assets'],
         setup(props, { emit }) {
             const { visible, assets, connectionQfName } = toRefs(props)
+            const preference = ref({
+                sort: 'default',
+                display: [],
+            })
 
             const bulkStore = useBulkUpdateStore()
 
@@ -169,9 +179,10 @@
             })
 
             // Asset related stuff
-            const checkedKeys = ref([] as string[])
+            const checkedKeys = ref([...assets.value] as string[])
             const regexKeys = ref([] as string[])
             const BIAssets = ['powerbi', 'tableau']
+            bulkStore.setBulkSelectedAssets(toRaw(checkedKeys.value))
 
             const getConnectorName = (qualifiedName: string) => {
                 let attributeValues: string[]
@@ -186,16 +197,10 @@
                 return connectorName
             }
 
-            function resetAssetState() {
-                checkedKeys.value = []
-                regexKeys.value = []
+            function closeDrawer() {
                 isVisible.value = false
-                bulkStore.setBulkSelectedAssets([])
             }
 
-            const getQualifiedNamesFromAssets = (assets: any[]) => {
-                return assets.map((asset) => asset?.attributes.qualifiedName)
-            }
             /* Adds /* to pathname */
             const addSufffix = (qualifiedNames: string[]) => {
                 return (
@@ -212,31 +217,59 @@
                 // use a set to maintain the state
                 const assetSet = new Set([
                     ...checkedKeys.value,
-                    ...assets.value,
                     ...regexKeys.value,
-                    ...getQualifiedNamesFromAssets(
-                        bulkStore.bulkSelectedAssets
-                    ),
+                    ...bulkStore.bulkSelectedAssets,
                 ])
                 emit('update:assets', [...assetSet])
-                resetAssetState()
+                bulkStore.setBulkSelectedAssets([])
+                closeDrawer()
             }
 
-            const selectedAssetCount = computed(
-                () =>
-                    checkedKeys.value.length +
-                    assets.value.length +
-                    bulkStore.bulkSelectedAssets?.length
-            )
+            const selectedAssetCount = computed(() => {
+                const s = new Set([
+                    ...checkedKeys?.value,
+                    ...regexKeys.value,
+                    ...bulkStore.bulkSelectedAssets,
+                ])
+                return s.size
+            })
 
             const filterConfig = computed(() => ({
-                connectorName: getConnectorName(connectionQfName.value),
-                connectionQualifiedName: connectionQfName.value,
+                hierarchy: {
+                    connectorName: getConnectorName(connectionQfName.value),
+                    connectionQualifiedName: connectionQfName.value,
+                },
             }))
 
             // Tab related data
             const activeTab = ref('custom')
             const tabConfig = ref([{ key: 'custom', label: 'Custom' }])
+
+            /* For sync b/w tree and selected assets */
+            watch(checkedKeys, () => {
+                /* NOTE: If condiion is IMP otherwise this will go in infinite loop */
+                if (
+                    checkedKeys.value.length !==
+                    bulkStore.bulkSelectedAssets.length
+                )
+                    bulkStore.setBulkSelectedAssets(toRaw(checkedKeys.value))
+            })
+            watch(bulkStore, () => {
+                /* NOTE: If condiion is IMP otherwise this will go in infinite loop */
+                if (
+                    checkedKeys.value.length !==
+                    bulkStore.bulkSelectedAssets.length
+                )
+                    checkedKeys.value = [...bulkStore.bulkSelectedAssets]
+            })
+            watch(isVisible, () => {
+                if (isVisible.value) {
+                    checkedKeys.value = [...assets.value]
+                    bulkStore.setBulkSelectedAssets([...assets.value])
+                } else {
+                    bulkStore.setBulkSelectedAssets([])
+                }
+            })
 
             watch(
                 connectionQfName,
@@ -269,6 +302,9 @@
             )
 
             return {
+                assets,
+                preference,
+                closeDrawer,
                 filterConfig,
                 activeTab,
                 tabConfig,
@@ -276,7 +312,6 @@
                 checkedKeys,
                 regexKeys,
                 saveAssets,
-                resetAssetState,
                 selectedAssetCount,
             }
         },

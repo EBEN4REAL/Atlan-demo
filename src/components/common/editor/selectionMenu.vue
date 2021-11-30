@@ -1,11 +1,11 @@
 <template>
     <div
         v-if="editor && editable"
-        class="flex items-center max-w-full min-w-full bg-white border border-gray-200 rounded shadow-sm  editor-menu"
+        class="box-border flex items-center bg-white border border-gray-300 rounded shadow-xl  editor-menu"
     >
         <a-dropdown
-            :trigger="['click']"
             v-if="getActiveMenu(editor)?.key !== 'uploadimage'"
+            :trigger="['click']"
         >
             <div class="flex items-center p-2">
                 {{ getActiveMenu(editor)?.title || 'Text' }}
@@ -15,16 +15,20 @@
             <template #overlay>
                 <a-menu>
                     <a-menu-item
+                        v-for="menuItem in blockMenu"
+                        :key="menuItem.key"
                         :class="{
                             'is-active bg-gray-200': isMenuActive(
                                 editor,
                                 menuItem
                             ),
                         }"
-                        v-for="menuItem in blockMenu"
-                        :key="menuItem.key"
-                        @click="() => menuItem.onClick(editor)"
+                        @click="() => menuItem.command(editor)"
                     >
+                        <AtlanIcon
+                            :icon="menuItem.icon"
+                            class="w-auto h-4 mb-1 mr-1"
+                        />
                         {{ menuItem.title }}
                     </a-menu-item>
                 </a-menu>
@@ -74,91 +78,27 @@
 
         <div
             v-if="getActiveMenu(editor)?.key !== 'uploadimage'"
-            class="flex items-center"
+            class="flex items-center m-1"
         >
             <a-tooltip
                 v-for="menuItem in menuData"
                 :key="menuItem.key"
                 placement="bottom"
             >
-                <a-dropdown
-                    v-if="menuItem.key === 'image'"
-                    v-model:visible="showImageDropdown"
-                    :trigger="['click']"
-                    placement="bottomCenter"
-                >
-                    <a-button
-                        class="p-2 border-0"
-                        :class="{
-                            'is-active': editor.isActive(`${menuItem.key}`),
-                            'border-r-2': menuItem.border,
-                        }"
-                        @click="showImageDropdown = true"
-                    >
-                        <fa
-                            v-if="menuItem.icon"
-                            :icon="menuItem.icon"
-                            class="m-1"
-                        />
-                        <span v-else>{{ menuItem.title }}</span>
-                    </a-button>
-
-                    <template #overlay @blur="showImageDropdown = false">
-                        <a-menu>
-                            <div class="p-3 rounded w-96">
-                                <div
-                                    class=" d-flex align-items-center justify-content-start"
-                                >
-                                    <label>By Url</label>
-                                    <div class="flex">
-                                        <a-input
-                                            v-model:value="imageLink"
-                                            type="url"
-                                            focused
-                                            @keydown.enter="
-                                                () => menuItem.onClick(editor)
-                                            "
-                                        />
-                                        <a-button
-                                            type="primary"
-                                            class="ml-3 mr-2"
-                                            @click="
-                                                () => menuItem.onClick(editor)
-                                            "
-                                        >
-                                            Add
-                                        </a-button>
-                                    </div>
-                                </div>
-                                <div
-                                    class="justify-center mt-3 text-center  d-flex align-items-center"
-                                >
-                                    <label>OR</label>
-                                    <div
-                                        class="flex flex-col content-center mt-4  align-items-center"
-                                    >
-                                        <a-upload-dragger
-                                            class="content-center justify-center mx-5 "
-                                            name="file"
-                                            list-type="picture"
-                                            :multiple="false"
-                                            :custom-request="uploadImage"
-                                        >
-                                            <fa icon="fal plus" />
-                                            <div class="text-sm">
-                                                Click or drag and drop to upload
-                                            </div>
-                                        </a-upload-dragger>
-                                    </div>
-                                </div>
-                            </div>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
-
                 <div
-                    v-else
-                    class="flex p-2 text-gray-500 transition duration-100 ease-in border-0 shadow-none  hover:text-primary inline-center"
+                    class="
+                        flex
+                        p-2
+                        text-gray-500
+                        transition
+                        duration-100
+                        ease-in
+                        border-0
+                        rounded
+                        shadow-none
+                        hover:bg-gray-100
+                        mx-0.5
+                    "
                     :class="{
                         'is-active':
                             editor.isActive(`${menuItem.key}`) ||
@@ -170,9 +110,9 @@
                                     textAlign: menuItem.key.split('-')[1],
                                 })),
                     }"
-                    @click="() => menuItem.onClick(editor)"
+                    @click="() => menuItem.command(editor)"
                 >
-                    <AtlanIcon :icon="menuItem.icon" class="w-auto h-4 mr-1" />
+                    <AtlanIcon :icon="menuItem.icon" class="w-auto h-4" />
                 </div>
 
                 <template #title>{{
@@ -189,16 +129,7 @@
 
     import useUploadImage from '~/composables/image/uploadImage'
     import { getAPIPath } from '~/services/api/common'
-
-    interface MenuItem {
-        title: string
-        key: string
-        helpText: string
-        icon?: string
-        level?: number
-        border?: boolean
-        onClick: (editor: Editor) => void
-    }
+    import { blockMenu, menuData } from '~/constant/readmeMenuItems'
 
     interface Props {
         editor: Editor
@@ -228,168 +159,6 @@
                 isLoading: imageUploadLoading,
                 upload,
             } = useUploadImage()
-
-            const blockMenu: MenuItem[] = [
-                {
-                    title: 'H1',
-                    key: 'heading-1',
-                    level: 1,
-                    helpText: '',
-                    onClick: (editor) =>
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleHeading({ level: 1 })
-                            .run(),
-                },
-                {
-                    title: 'H2',
-                    key: 'heading-2',
-                    level: 2,
-                    helpText: '',
-                    onClick: (editor) =>
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleHeading({ level: 2 })
-                            .run(),
-                },
-                {
-                    title: 'H3',
-                    key: 'heading-3',
-                    level: 3,
-                    border: true,
-                    helpText: '',
-                    onClick: (editor) =>
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleHeading({ level: 3 })
-                            .run(),
-                },
-
-                {
-                    title: 'Unordered List',
-                    key: 'bulletList',
-                    helpText: '',
-                    icon: 'fa list-ul',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleBulletList().run(),
-                },
-                {
-                    title: 'Ordered List',
-                    key: 'orderedList',
-                    helpText: '',
-                    icon: 'fa list-ol',
-                    border: true,
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleOrderedList().run(),
-                },
-
-                {
-                    title: 'TaskList',
-                    key: 'taskList',
-                    helpText: '',
-                    icon: 'fa square',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleTaskList().run(),
-                },
-                {
-                    title: 'Blockquote',
-                    key: 'blockquote',
-                    helpText: '',
-                    icon: 'fa quote-left',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleBlockquote().run(),
-                },
-                {
-                    title: 'Code Block',
-                    key: 'codeBlock',
-                    helpText: '',
-                    icon: 'fa code',
-                    border: true,
-                    onClick: (editor) =>
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleCodeBlock({ language: 'json' })
-                            .run(),
-                },
-                {
-                    title: 'Image Block',
-                    key: 'uploadimage',
-                    helpText: '',
-                    icon: 'fa image',
-                    border: true,
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleImageBlock().run(),
-                },
-            ]
-
-            const linkMenu: MenuItem[] = [
-                {
-                    title: 'Link',
-                    key: 'link',
-                    helpText: '',
-                    icon: 'fa link',
-                    onClick: (editor) => {
-                        link.value = editor.getAttributes('link').href ?? ''
-                        showLinkModal.value = !showLinkModal.value
-                    },
-                },
-            ]
-
-            const menuData: MenuItem[] = [
-                {
-                    title: 'Bold',
-                    key: 'bold',
-                    helpText: '',
-                    icon: 'Bold',
-                    onClick: (editor) => {
-                        editor.chain().focus().toggleBold().run()
-                    },
-                },
-                {
-                    title: 'Italic',
-                    key: 'italic',
-                    helpText: '',
-                    icon: 'Italic',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleItalic().run(),
-                },
-                {
-                    title: 'Underline',
-                    key: 'underline',
-                    helpText: '',
-                    icon: 'Underline',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleUnderline().run(),
-                },
-                {
-                    title: 'Strikethrough',
-                    key: 'strike',
-                    helpText: '',
-                    icon: 'Strike',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleStrike().run(),
-                },
-
-                {
-                    title: 'Undo',
-                    key: 'undo',
-                    helpText: '',
-                    icon: 'Undo',
-                    onClick: (editor) => editor.chain().focus().undo().run(),
-                },
-                {
-                    title: 'Redo',
-                    key: 'redo',
-                    helpText: '',
-                    icon: 'Redo',
-                    onClick: (editor) => editor.chain().focus().redo().run(),
-                },
-                // table
-            ]
 
             const handleLinkClick = (editor: Editor) => {
                 link.value = editor.getAttributes('link').href ?? ''
@@ -467,7 +236,6 @@
                 unLink,
                 uploadImage,
                 blockMenu,
-                linkMenu,
                 handleLinkClick,
                 isMenuActive,
                 getActiveMenu,
@@ -477,7 +245,7 @@
 </script>
 <style lang="less" scoped>
     .is-active {
-        @apply text-primary !important;
+        @apply bg-gray-200 text-gray-700 !important;
     }
 </style>
 

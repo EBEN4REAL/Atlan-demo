@@ -1,6 +1,6 @@
 <template>
     <div class="flex px-5 py-3 border-b gap-x-3">
-        <img v-if="icon" :src="icon" class="h-11" />
+        <img v-if="icon" :src="icon" class="h-11 w-11" />
         <div class="w-full">
             <div class="flex items-center justify-between mb-0 text-sm">
                 <div class="flex items-center flex-none">

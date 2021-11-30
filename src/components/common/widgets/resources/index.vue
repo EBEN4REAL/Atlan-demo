@@ -7,10 +7,7 @@
                     >Resources</span
                 >
             </div>
-            <AddResources
-                v-if="links(asset)?.length > 0"
-                :asset="asset"
-                placement="left"
+            <AddResources v-if="links(asset)?.length > 0" :asset="asset"
                 ><template #trigger>
                     <a-button
                         class="text-gray-500 border border-transparent rounded shadow-none  hover:border-gray-400"
@@ -20,9 +17,9 @@
             </AddResources>
         </div>
         <div>
-            <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-2">
+            <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-4">
                 <div v-for="(item, index) in links(asset)" :key="index">
-                    <div v-if="isSlackLink(item.attributes.link)" class="mb-2">
+                    <div v-if="isSlackLink(item.attributes.link)" class="">
                         <div
                             v-if="!slackUnfurls[item.guid].isLoading.value"
                             class="flex p-2 border rounded"
@@ -156,7 +153,7 @@
                 <p class="text-sm text-center text-gray-700">
                     Add URLs related to this asset
                 </p>
-                <AddResources :asset="asset" placement="top"
+                <AddResources :asset="asset"
                     ><template #trigger>
                         <AtlanButton
                             size="lg"
@@ -178,7 +175,7 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-import { defineComponent, PropType, computed } from 'vue'
+import { defineComponent, PropType, computed, toRefs } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 import AddResources from './addResource.vue'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -201,87 +198,87 @@ export default defineComponent({
             required: true,
         },
     },
-    setup() {
+    setup(props) {
         const timeAgo = (time: string) => dayjs().from(time, true)
-        // const { links } = useAssetInfo()
-        // console.log('links', links)
+        const { links } = useAssetInfo()
+        console.log('links', links)
 
-        const links = () => [
-            {
-                typeName: 'Link',
-                attributes: {
-                    qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1ee1',
-                    name: 'Notion doc',
-                    link: 'https://www.notion.so',
-                },
-                guid: '519bb87d-deec-488b-a896-3fc4840edc4c',
-                status: 'ACTIVE',
-                displayText: 'Notion doc',
-                classificationNames: [],
-                classifications: [],
-                meaningNames: [],
-                meanings: [],
-                isIncomplete: false,
-                labels: [],
-            },
-            {
-                typeName: 'Link',
-                attributes: {
-                    qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1eeb',
-                    name: 'Insights discussion',
-                    link: 'https://atlanhq.slack.com/archives/C02DDQ79H6Z/p1638282533490900',
-                },
-                guid: '519bb87d-deec-488b-a896-6fc4840edc4c',
-                status: 'ACTIVE',
-                displayText: 'Insights discussion',
-                classificationNames: [],
-                classifications: [],
-                meaningNames: [],
-                meanings: [],
-                isIncomplete: false,
-                labels: [],
-            },
-            {
-                typeName: 'Link',
-                attributes: {
-                    qualifiedName: 'c82b5454-0b52-34c3-446b-1212ef0d1eeb',
-                    name: 'Discovery discussion',
-                    link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638280885031500?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
-                },
-                guid: '519bb87d-deec-488b-a896-6fc48422dc4c',
-                status: 'ACTIVE',
-                displayText: 'Discovery discussion',
-                classificationNames: [],
-                classifications: [],
-                meaningNames: [],
-                meanings: [],
-                isIncomplete: false,
-                labels: [],
-            },
-            {
-                typeName: 'Link',
-                attributes: {
-                    qualifiedName: 'c82b5454-0b52-3453-436b-1212ef0d1111',
-                    name: 'Discovery discussion',
-                    link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638283148036400?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
-                },
-                guid: '519bb87d-deec-488b-a896-87578422dc4c',
-                status: 'ACTIVE',
-                displayText: 'Discovery discussion',
-                classificationNames: [],
-                classifications: [],
-                meaningNames: [],
-                meanings: [],
-                isIncomplete: false,
-                labels: [],
-            },
-        ]
+        // const links = () => [
+        //     {
+        //         typeName: 'Link',
+        //         attributes: {
+        //             qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1ee1',
+        //             name: 'Notion doc',
+        //             link: 'https://www.notion.so',
+        //         },
+        //         guid: '519bb87d-deec-488b-a896-3fc4840edc4c',
+        //         status: 'ACTIVE',
+        //         displayText: 'Notion doc',
+        //         classificationNames: [],
+        //         classifications: [],
+        //         meaningNames: [],
+        //         meanings: [],
+        //         isIncomplete: false,
+        //         labels: [],
+        //     },
+        //     {
+        //         typeName: 'Link',
+        //         attributes: {
+        //             qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1eeb',
+        //             name: 'Insights discussion',
+        //             link: 'https://atlanhq.slack.com/archives/C02DDQ79H6Z/p1638282533490900',
+        //         },
+        //         guid: '519bb87d-deec-488b-a896-6fc4840edc4c',
+        //         status: 'ACTIVE',
+        //         displayText: 'Insights discussion',
+        //         classificationNames: [],
+        //         classifications: [],
+        //         meaningNames: [],
+        //         meanings: [],
+        //         isIncomplete: false,
+        //         labels: [],
+        //     },
+        //     {
+        //         typeName: 'Link',
+        //         attributes: {
+        //             qualifiedName: 'c82b5454-0b52-34c3-446b-1212ef0d1eeb',
+        //             name: 'Discovery discussion',
+        //             link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638280885031500?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
+        //         },
+        //         guid: '519bb87d-deec-488b-a896-6fc48422dc4c',
+        //         status: 'ACTIVE',
+        //         displayText: 'Discovery discussion',
+        //         classificationNames: [],
+        //         classifications: [],
+        //         meaningNames: [],
+        //         meanings: [],
+        //         isIncomplete: false,
+        //         labels: [],
+        //     },
+        //     {
+        //         typeName: 'Link',
+        //         attributes: {
+        //             qualifiedName: 'c82b5454-0b52-3453-436b-1212ef0d1111',
+        //             name: 'Discovery discussion',
+        //             link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638283148036400?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
+        //         },
+        //         guid: '519bb87d-deec-488b-a896-87578422dc4c',
+        //         status: 'ACTIVE',
+        //         displayText: 'Discovery discussion',
+        //         classificationNames: [],
+        //         classifications: [],
+        //         meaningNames: [],
+        //         meanings: [],
+        //         isIncomplete: false,
+        //         labels: [],
+        //     },
+        // ]
 
         const pV = { id: '80c84f2f-ba68-410b-b099-91aacf38ec6f' }
-
+        const { asset } = toRefs(props)
         const slackUnfurls = computed(() => {
             const linkUnfurlMap = {}
-            links().forEach((linkItem) => {
+            links(asset.value).forEach((linkItem) => {
                 const { link } = linkItem.attributes
                 const isSlack = isSlackLink(link)
                 if (isSlack) {
@@ -306,7 +303,7 @@ export default defineComponent({
         })
 
         const hasSlackLink = computed(() => {
-            const linkArr = links()
+            const linkArr = links(asset.value)
             const slackLink = linkArr.some((link) =>
                 isSlackLink(link.attributes.link)
             )

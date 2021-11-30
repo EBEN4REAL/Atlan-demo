@@ -1,15 +1,13 @@
 <template>
     <div :class="`flex items-center ${className}`">
-        <a-avatar
-            :shape="avatarShape"
-            :size="avatarSize"
-            :class="styleClass"
-            class="text-sm align-middle border text-primary"
-            :src="url"
-            ><div class="-mt-0.5">
-                {{ getNameInitials(username) }}
-            </div></a-avatar
-        >
+        <Avatar
+            :image-url="url"
+            :allow-upload="false"
+            :avatar-name="username"
+            :avatar-size="16"
+            :avatar-shape="'circle'"
+            class="mr-1"
+        />
         <div v-if="showUsername">{{ username }}</div>
     </div>
 </template>
@@ -17,9 +15,10 @@
 <script lang="ts">
     import { ref, watch, PropType, toRefs, computed } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     export default {
-        name: 'Avatar',
+        name: 'UserPill',
         props: {
             styleClass: {
                 type: String,
@@ -42,9 +41,10 @@
             },
             className: {
                 type: String,
-                default: ""
+                default: '',
             },
         },
+        components: { Avatar },
         setup(props, context) {
             const { username, styleClass } = toRefs(props)
 

@@ -4,7 +4,7 @@
             <AtlanButton icon="Loader" class="h-5 animate-spin" />
         </div>
         <div
-            v-if="error "
+            v-if="error"
             class="flex flex-col items-center justify-center h-full bg-white"
         >
             <ErrorView>
@@ -16,10 +16,7 @@
                     />
                 </div>
                 <div class="mt-3">
-                    <AtlanButton
-                        color="secondary"
-                        @click="reload"
-                    >
+                    <AtlanButton color="secondary" @click="reload">
                         <AtlanIcon icon="Reload" />
                         Try again
                     </AtlanButton>
@@ -61,7 +58,7 @@
             <a-tabs
                 v-model:activeKey="activeKey"
                 tab-position="left"
-                class="preview-tab border-t"
+                class="border-t preview-tab"
             >
                 <a-tab-pane v-for="(tab, index) in tabs" :key="tab.key">
                     <template #tab>
@@ -90,7 +87,9 @@
 <script lang="ts">
     import {
         defineComponent,
-        defineAsyncComponent, computed, toRefs,
+        defineAsyncComponent,
+        computed,
+        toRefs,
     } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import Avatar from '@common/avatar/index.vue'
@@ -101,13 +100,27 @@
     export default defineComponent({
         name: 'UserOrGroupPreview',
         components: {
-            UserAbout: defineAsyncComponent(() => import('../users/userPreview/about.vue')),
-            Groups: defineAsyncComponent(() => import('../users/userPreview/groups.vue')),
-            AccessLogs: defineAsyncComponent(() => import('../users/userPreview/accessLogs.vue')),
-            Sessions: defineAsyncComponent(() => import('../users/userPreview/sessions.vue')),
-            UserAssets: defineAsyncComponent(() => import('../users/userPreview/assets.vue')),
-            GroupAbout: defineAsyncComponent(() => import('../groups/groupPreview/about.vue')),
-            Members: defineAsyncComponent(() => import('../groups/groupPreview/members.vue')),
+            UserAbout: defineAsyncComponent(
+                () => import('../users/userPreview/about.vue')
+            ),
+            Groups: defineAsyncComponent(
+                () => import('../users/userPreview/groups.vue')
+            ),
+            AccessLogs: defineAsyncComponent(
+                () => import('../users/userPreview/accessLogs.vue')
+            ),
+            Sessions: defineAsyncComponent(
+                () => import('../users/userPreview/sessions.vue')
+            ),
+            UserAssets: defineAsyncComponent(
+                () => import('../users/userPreview/assets.vue')
+            ),
+            GroupAbout: defineAsyncComponent(
+                () => import('../groups/groupPreview/about.vue')
+            ),
+            Members: defineAsyncComponent(
+                () => import('../groups/groupPreview/members.vue')
+            ),
             Assets: defineAsyncComponent(
                 () => import('@/admin/users/userPreview/assets.vue')
             ),
@@ -119,14 +132,14 @@
         props: {
             previewType: {
                 type: String,
-                required: true
-            }
+                required: true,
+            },
         },
         emits: ['close'],
         setup(props) {
             // Is it a user preview drawer or a group one.
             const { previewType } = toRefs(props)
-            const isUserPreview = computed(() => previewType.value === "user")
+            const isUserPreview = computed(() => previewType.value === 'user')
 
             const {
                 isLoading,
@@ -138,11 +151,23 @@
                 handleUpdate,
                 tabs,
                 imageUrl,
-                activeKey
+                activeKey,
             } = useUserOrGroupPreview(previewType.value)
-            const isValidUser = computed(() => Boolean(selectedUser && selectedUser.value && selectedUser.value.id))
-            const isValidGroup = computed(() => Boolean(selectedGroup && selectedGroup.value && selectedGroup.value.id))
-            const isValidEntity = computed(() => isUserPreview.value ? isValidUser.value : isValidGroup.value)
+            const isValidUser = computed(() =>
+                Boolean(
+                    selectedUser && selectedUser.value && selectedUser.value.id
+                )
+            )
+            const isValidGroup = computed(() =>
+                Boolean(
+                    selectedGroup &&
+                        selectedGroup.value &&
+                        selectedGroup.value.id
+                )
+            )
+            const isValidEntity = computed(() =>
+                isUserPreview.value ? isValidUser.value : isValidGroup.value
+            )
 
             /**
              * A utility function for obtaining a property given a key.
@@ -150,31 +175,41 @@
              * @param {string} groupKey
              * @return {string}
              */
-            const getUserOrGroupValue = (userKey: string, groupKey: string): string => {
+            const getUserOrGroupValue = (
+                userKey: string,
+                groupKey: string
+            ): string => {
                 if (isValidUser.value) {
                     return selectedUser.value[userKey]
                 }
-                else if (isValidGroup.value) {
+                if (isValidGroup.value) {
                     return selectedGroup.value[groupKey]
                 }
-                return ""
+                return ''
             }
 
             // The title of the drawer.
-            const title = computed(() => getUserOrGroupValue("name", "name"))
+            const title = computed(() => getUserOrGroupValue('name', 'name'))
 
             // The name, maybe a username or a group alias.
-            const name = computed(() => getUserOrGroupValue("username", "alias"))
+            const name = computed(() =>
+                getUserOrGroupValue('username', 'alias')
+            )
 
             // The details to be displayed.
             const details = computed(() => {
                 if (isValidUser.value) {
-                    return (selectedUser.value.role_object && selectedUser.value.role_object.name) ? selectedUser.value.role_object.name : ""
+                    return selectedUser.value.role_object &&
+                        selectedUser.value.role_object.name
+                        ? selectedUser.value.role_object.name
+                        : ''
                 }
-                else if (isValidGroup.value) {
-                    return selectedGroup.value.memberCountString ? selectedGroup.value.memberCountString : ""
+                if (isValidGroup.value) {
+                    return selectedGroup.value.memberCountString
+                        ? selectedGroup.value.memberCountString
+                        : ''
                 }
-                return ""
+                return ''
             })
             return {
                 tabs,

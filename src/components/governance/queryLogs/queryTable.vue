@@ -17,7 +17,13 @@
             <template #queryInfo="{ text: queryInfo }">
                 <div class="flex items-center h-full py-1">
                     <div
-                        v-if="queryInfo._source.log.message.savedQueryId"
+                        v-if="
+                            queryInfo &&
+                            queryInfo._source &&
+                            queryInfo._source.log &&
+                            queryInfo._source.log.message &&
+                            queryInfo._source.log.message.savedQueryId
+                        "
                         class="flex items-center justify-center"
                     >
                         <div class="items-center">
@@ -84,7 +90,13 @@
                     </div>
 
                     <div
-                        v-else-if="queryInfo._source.log.message.userSqlQuery"
+                        v-else-if="
+                            queryInfo &&
+                            queryInfo._source &&
+                            queryInfo._source.log &&
+                            queryInfo._source.log.message &&
+                            queryInfo._source.log.message.userSqlQuery
+                        "
                         class="overflow-hidden"
                     >
                         <div class="items-center">
@@ -133,7 +145,13 @@
             <template #details="{ text: queryInfo }">
                 <div class="flex items-center h-full">
                     <div
-                        v-if="queryInfo._source.log.message.totalTime"
+                        v-if="
+                            queryInfo &&
+                            queryInfo._source &&
+                            queryInfo._source.log &&
+                            queryInfo._source.log.message &&
+                            queryInfo._source.log.message.totalTime
+                        "
                         class="flex items-center"
                     >
                         <AtlanIcon
@@ -268,7 +286,7 @@
                                 {{
                                     dayjs(
                                         timestamp._source['@timestamp']
-                                    ).format('HH:MM')
+                                    ).format('HH:mm')
                                 }}
                             </span>
                         </div>

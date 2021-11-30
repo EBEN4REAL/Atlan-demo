@@ -18,6 +18,7 @@
             <a-switch
                 class="ml-auto"
                 style="width: 40px !important"
+                data-test-id="toggle-switch"
                 :class="enablePersonaCheck ? 'btn-checked' : 'btn-unchecked'"
                 v-model:checked="enablePersonaCheck"
             />
@@ -32,8 +33,9 @@
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group"
+                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group hover:shadow"
                 @click="setActiveTab('policies')"
+                data-test-id="tab-policies"
             >
                 <div class="p-3 mr-3 rounded text-primary bg-primary-light">
                     <AtlanIcon icon="Policy" class="h-6" />
@@ -204,15 +206,15 @@
         @apply cursor-pointer;
     }
     .user-group-pill {
-        @apply rounded-full bg-primary-light text-primary text-sm px-2 py-1;
+        @apply rounded-full bg-primary-light text-primary text-xs px-2 py-1;
     }
     .data-policy-pill {
-        @apply rounded-full text-sm px-2 py-1;
+        @apply rounded-full text-xs px-2 py-1;
         background-color: #eeffef;
         color: #00a680;
     }
     .metadata-policy-pill {
-        @apply rounded-full text-sm px-2 py-1;
+        @apply rounded-full text-xs px-2 py-1;
         background-color: #fcf3fc;
         color: #d452d7;
     }

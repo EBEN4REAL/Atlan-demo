@@ -13,6 +13,7 @@
         <a-collapse-panel v-for="(scope, idx) in scopeList" :key="scope.type">
             <template #header>
                 <a-checkbox
+                    data-test-id="checkbox"
                     :checked="
                         groupedActions[idx].scopes.length ===
                         scopeList[idx].scopes.length

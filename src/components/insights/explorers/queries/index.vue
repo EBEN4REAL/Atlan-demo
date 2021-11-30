@@ -6,7 +6,7 @@
             <Connector
                 :connector="connector"
                 @update:data="updateConnector"
-                :filterSourceIds="['tableau', 'athena']"
+                :filterSourceIds="BItypes"
             />
             <div class="flex flex-row space-x-2">
                 <a-input
@@ -353,6 +353,7 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     export default defineComponent({
         components: {
@@ -434,6 +435,7 @@
                 )
             )
             const { focusEditor } = useEditor()
+            const BItypes = getBISourceTypes()
 
             const isSelectedType = (type: 'personal' | 'all') => {
                 return savedQueryType.value === type
@@ -1049,6 +1051,7 @@
                 showEmptyState,
                 selectedFolder,
                 queryFolderNamespace,
+                BItypes,
                 // refetchTreeData,
             }
         },

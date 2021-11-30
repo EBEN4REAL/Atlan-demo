@@ -87,14 +87,14 @@
                         "
                     >
                         <div
-                            class="flex capitalize truncate cursor-pointer  text-primary"
+                            class="flex capitalize truncate cursor-pointer text-primary"
                         >
                             <div class="mr-2 truncate max-w-3/4">
                                 {{ group.name }}
                             </div>
                             <div
                                 v-if="group.isDefault === 'true'"
-                                class="px-2 py-1 text-xs rounded-full  bg-blue-50 text-gray"
+                                class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
                             >
                                 Default
                             </div>
@@ -204,16 +204,21 @@
                 setGroupUniqueAttribute,
                 setDefaultTab,
                 closePreview,
+                groupId,
             } = useGroupPreview()
 
             const showGroupPreviewDrawer = (
                 group: any,
                 activeTabKey = 'about'
             ) => {
-                selectedGroupId.value = group.id
-                setDefaultTab(activeTabKey)
-                setGroupUniqueAttribute(group.id)
-                openPreview()
+                if (showPreview.value && groupId.value === group.id) {
+                    closePreview()
+                } else {
+                    selectedGroupId.value = group.id
+                    setDefaultTab(activeTabKey)
+                    setGroupUniqueAttribute(group.id)
+                    openPreview()
+                }
             }
             watch(showPreview, () => {
                 if (!showPreview.value) getGroupList()

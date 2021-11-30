@@ -277,12 +277,10 @@
 
                         const filteredRecords = config.value.records.filter(
                             (x) =>
-                                x?.configmap?.data?.templateName ===
-                                workflowTemplate.value
+                                x?.data?.templateName === workflowTemplate.value
                         )
 
-                        data.value.uiConfig =
-                            filteredRecords[0]?.configmap?.data?.uiConfig
+                        data.value.uiConfig = filteredRecords[0]?.data?.uiConfig
                     }
                 })
             }
@@ -331,14 +329,16 @@
                 watch(response, (v) => {
                     // useWorkflowByName
                     const usrId =
-                        v?.records[0]?.labels['workflows.argoproj.io/creator']
+                        v?.records[0]?.metadata.labels[
+                            'workflows.argoproj.io/creator'
+                        ]
                     handleGetUser(usrId)
                     // getUserList()
                     // watch(userList, (newVal) => {
                     //   console.log(newVal, '<<<sdshdsgdgsdhjs')
                     // })
                     workflowTemplate.value =
-                        v.records[0].workflowtemplate.spec?.templates[0]?.dag?.tasks[0]?.templateRef.name
+                        v.records[0].spec?.templates[0]?.dag?.tasks[0]?.templateRef.name
                     data.value.asset = v.records[0]
                     data.value.error = error.value
                     data.value.isLoading = isLoading.value

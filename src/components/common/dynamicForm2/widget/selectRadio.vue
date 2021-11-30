@@ -1,6 +1,5 @@
 <template>
     <CustomRadioButton
-        v-bind="componentProps"
         :list="list"
         v-model="localValue"
         @change="handleChange"
@@ -33,7 +32,6 @@
 
             const list = computed(() => {
                 const temp = []
-
                 property.value.enum.forEach((item, index) => {
                     temp.push({
                         id: item,
@@ -49,10 +47,10 @@
             const localValue = ref(modelValue.value)
 
             const handleChange = () => {
+                console.log('change')
                 modelValue.value = localValue.value
                 emit('change', localValue.value)
             }
-
             return { property, componentProps, list, localValue, handleChange }
         },
     })

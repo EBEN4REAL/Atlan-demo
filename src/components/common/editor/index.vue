@@ -2,11 +2,13 @@
     <div class="w-full h-full bg-white editor">
         <bubble-menu
             v-if="!editor?.isActive('uploadimage') && editor"
-            class="bubble-menu"
+            class="w-full bubble-menu"
             :tippy-options="{
                 duration: 100,
                 zIndex: 1,
                 placement: 'top-start',
+                maxWidth: 'none',
+                animation: 'fade',
             }"
             :editor="editor"
         >
@@ -18,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed, toRefs } from 'vue'
+import { defineComponent, ref, watch, toRefs } from 'vue'
 import { useDebounceFn, useVModels } from '@vueuse/core'
 
 import { useEditor, EditorContent, BubbleMenu, Editor } from '@tiptap/vue-3'
@@ -29,9 +31,6 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import TextAlign from '@tiptap/extension-text-align'
 import Placeholder from '@tiptap/extension-placeholder'
-
-import Gapcursor from '@tiptap/extension-gapcursor'
-
 import Image from '@tiptap/extension-image'
 
 import Highlight from '@tiptap/extension-highlight'
@@ -43,7 +42,6 @@ import SlashCommands from './extensions/slashCommands/commands'
 import ImageUpload from './extensions/imageUpload/extension'
 
 import LinkPreview from './extensions/linkPreview/linkPreview'
-import SlackPreview from './extensions/slack/slackPreview'
 
 const CustomDocument = Document.extend({
     content: 'heading block*',
@@ -53,7 +51,6 @@ export default defineComponent({
     components: {
         EditorContent,
         BubbleMenu,
-
         SelectionMenu,
     },
     props: {
@@ -145,26 +142,22 @@ export default defineComponent({
             editable: isEditMode.value,
             editorProps: {
                 attributes: {
-                    class: 'prose prose-sm focus:outline-none w-full',
+                    class: 'prose prose-sm w-full',
                 },
             },
+            autofocus: true,
             extensions: [
+                StarterKit,
                 CustomDocument,
-                StarterKit.configure({
-                    document: false,
-                }),
                 Underline,
                 Link,
                 TaskList,
                 TaskItem,
-
                 TextAlign.configure({
                     types: ['heading', 'paragraph'],
                 }),
-
                 SlashCommands,
                 LinkPreview,
-                // SlackPreview,
                 ImageUpload,
                 Highlight.configure({ multicolor: true }),
                 Placeholder.configure({
@@ -175,7 +168,7 @@ export default defineComponent({
 
                         return props.placeholder
                     },
-                    showOnlyWhenEditable: false,
+                    showOnlyWhenEditable: true,
                 }),
             ],
             onUpdate({ editor }) {
@@ -211,7 +204,6 @@ export default defineComponent({
             resetEditor,
             applyTemplate,
             getEditorContent,
-            isEditMode,
         }
     },
 })
@@ -220,7 +212,6 @@ export default defineComponent({
 <style lang="less">
 .editor {
     position: relative;
-    min-height: 15vh;
     min-width: inherit;
     max-width: inherit;
 }

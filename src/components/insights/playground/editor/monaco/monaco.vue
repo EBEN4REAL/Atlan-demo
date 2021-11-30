@@ -278,7 +278,7 @@
                     value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
                     theme: editorConfig.value.theme,
-                    fontSize: 12,
+                    fontSize: 14,
                     fontFamily: 'Hack',
                     cursorStyle: 'line',
                     cursorWidth: 2,
@@ -566,6 +566,10 @@
     }
     :global(.monaco-editor) {
         padding-top: 8px !important;
+    }
+    :global(.mtkz) {
+        color: rgba(51, 51, 51, 0.2) !important;
+        width: 8.53px !important;
     }
     // }
 </style>

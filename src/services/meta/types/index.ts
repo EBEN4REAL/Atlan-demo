@@ -24,11 +24,7 @@ const updateCustomMetadata = (
     options?: useOptions
 ) => useAPI<TypedefsInterface>(map.GET_TYPEDEFS, 'PUT', { body }, options || {})
 
-const updateAssetBMUpdateChanges = (
-    guid: any,
-    payload: any,
-    options?: useOptions
-) =>
+const updateAssetBMChanges = (guid: any, payload: any, options?: useOptions) =>
     useAPI<TypedefsInterface>(
         map.UPDATE_ASSET_BUSINESS_METADATA,
         'POST',
@@ -44,5 +40,5 @@ export const Types = {
     GetTypedefs,
     CreateTypedefs,
     updateCustomMetadata,
-    updateAssetBMUpdateChanges,
+    updateAssetBMChanges,
 }

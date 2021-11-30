@@ -14,15 +14,14 @@
             group
         "
         :class="
-            enableHover ? ' hover:bg-primary group hover:border-primary' : ''
+            enableHover
+                ? ' hover:bg-primary group hover:border-primary hover:text-white'
+                : ''
         "
+        :data-test-id="name"
     >
-        <AtlanIcon
-            icon="Group"
-            class="mr-1"
-            :class="enableHover ? 'group-hover:text-white' : ''"
-        />
-        <div :class="enableHover ? 'group-hover:text-white' : ''">
+        <AtlanIcon icon="Group" class="mr-1" />
+        <div>
             {{ name }}
         </div>
 

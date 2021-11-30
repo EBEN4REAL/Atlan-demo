@@ -53,11 +53,7 @@
         >
             Add a README with an overview of your asset.
         </div>
-        <div
-            v-if="isEditMode || readmeGuid(asset)"
-            class="border-0"
-            style="min-height: 200px; transition: min-height 0.3s ease-in-out"
-        >
+        <div v-if="isEditMode || readmeGuid(asset)" class="border-0">
             <Editor
                 ref="editor"
                 v-model="localReadmeContent"
@@ -116,6 +112,7 @@
                 if (editor.value) {
                     editor.value.resetEditor(readmeContent(asset.value))
                 }
+                localReadmeContent.value = readmeContent(asset.value)
                 isEditMode.value = false
             }
 

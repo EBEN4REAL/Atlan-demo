@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed, toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs } from 'vue'
     import { useDebounceFn, useVModels } from '@vueuse/core'
 
     import { useEditor, EditorContent, BubbleMenu, Editor } from '@tiptap/vue-3'
@@ -29,9 +29,6 @@
     import TaskItem from '@tiptap/extension-task-item'
     import TextAlign from '@tiptap/extension-text-align'
     import Placeholder from '@tiptap/extension-placeholder'
-
-    import Gapcursor from '@tiptap/extension-gapcursor'
-
     import Image from '@tiptap/extension-image'
 
     import Highlight from '@tiptap/extension-highlight'
@@ -215,7 +212,7 @@
 <style lang="less">
     .editor {
         position: relative;
-        min-height: 15vh;
+        min-height: 10vh;
         min-width: inherit;
         max-width: inherit;
     }

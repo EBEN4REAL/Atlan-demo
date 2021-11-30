@@ -212,7 +212,7 @@ export default function updateAssetAttributes(selectedAsset) {
             typeName: 'Readme',
             attributes: {
                 qualifiedName: `${selectedAsset.value?.guid}/readme`,
-                name: `Readme`,
+                name: `${title(selectedAsset?.value)} Readme`,
                 description: localReadmeContent.value,
             },
             relationshipAttributes: {

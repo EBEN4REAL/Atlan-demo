@@ -1,4 +1,4 @@
-import { Editor, Extension, Range , Node, mergeAttributes } from '@tiptap/core'
+import { Editor, Extension, Range, Node, mergeAttributes } from '@tiptap/core'
 import { VueRenderer } from '@tiptap/vue-3'
 
 import { Plugin } from 'prosemirror-state'
@@ -11,6 +11,39 @@ interface commandsProps {
     range: Range;
     props: any;
 }
+
+const nodePasteRule = (regexp: RegExp, type, getAttrs) => {
+    console.log("linkPreview: nodePasteRule called")
+    const handler = fragment => {
+        const nodes = [];
+
+        fragment.forEach(c => {
+            const textNodes = c.content;
+            nodes.push(c)
+
+            textNodes.forEach((child) => {
+                if (!child.isText) {
+                    nodes.push(child.copy(handler(child.content)));
+                }
+                if (child.text.match(pasteRegex)) {
+                    const attrs = getAttrs;
+                    nodes.push(type.create(attrs));
+                }
+            })
+
+
+        });
+
+        return Fragment.fromArray(nodes);
+    };
+
+    return new Plugin({
+        props: {
+            transformPasted: slice => new Slice(handler(slice.content), slice.openStart, slice.openEnd),
+        },
+    });
+}
+
 
 export interface CommandItem {
     title: string;
@@ -51,12 +84,12 @@ export default Node.create({
 
     parseHTML() {
         return [
-            { tag: 'p' },
+            { tag: 'a' },
         ]
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['p', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
+        return ['a', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
     },
 
     addNodeView() {
@@ -76,7 +109,7 @@ export default Node.create({
             imageDiv.append(image)
 
             const infoDiv = document.createElement('p');
-            
+
             const titleDiv = document.createElement('p');
             titleDiv.innerText = "The Atlan Data Wiki"
             titleDiv.classList.add('text-lg', 'text-gray-700', 'p-2', 'm-0')
@@ -105,35 +138,3 @@ export default Node.create({
         ]
     }
 })
-
-
-const nodePasteRule = (regexp: RegExp, type, getAttrs) => {
-    const handler = fragment => {
-        const nodes = [];
-
-        fragment.forEach(c => {
-            const textNodes = c.content;
-            nodes.push(c)
-
-            textNodes.forEach((child) => {
-                if (!child.isText) {
-                    nodes.push(child.copy(handler(child.content)));
-                }
-                if(child.text.match(pasteRegex)){
-                    const attrs = getAttrs;
-                    nodes.push(type.create(attrs));
-                }
-            })
-
-
-        });
-
-        return Fragment.fromArray(nodes);
-    };
-
-    return new Plugin({
-        props: {
-            transformPasted: slice => new Slice(handler(slice.content), slice.openStart, slice.openEnd),
-        },
-    });
-}

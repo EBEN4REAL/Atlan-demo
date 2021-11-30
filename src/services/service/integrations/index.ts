@@ -9,8 +9,9 @@ const getIntegrationById = (pathVariables: Ref) => useAPI(map.GET_INTEGRATION, '
 const UpdateIntegration = (pathVariables: Ref, body, options: useOptions) => useAPI(map.GET_INTEGRATION, 'POST', { pathVariables, body }, options);
 const archiveIntegration = (pathVariables: Ref, options: useOptions) => useAPI(map.ARCHIVE_INTEGRATION, 'POST', { pathVariables }, options);
 const ShareSlack = (id, body: Ref, options: useOptions) => useAPI(map.SHARE_SLACK, 'POST', { body, pathVariables: { id } }, options);
+const UnfurlSlackMessage = (pathVariables: Ref, body, options: useOptions) => useAPI(map.UNFURL_SLACK_MESSAGE, 'POST', { pathVariables, body }, options);
 
 
 export const Integrations = {
-    ListTypes, List, getIntegrationById, UpdateIntegration, archiveIntegration, ShareSlack
+    ListTypes, List, getIntegrationById, UpdateIntegration, archiveIntegration, ShareSlack, UnfurlSlackMessage
 }

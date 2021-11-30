@@ -68,7 +68,7 @@ const useIntegrations = () => {
     } = getIntegrationsList()
 
     watch(data, () => {
-        if (data.value.length)
+        if (data?.value?.length)
             store.setAllIntegrationsList(data.value)
     })
 
@@ -77,6 +77,12 @@ const useIntegrations = () => {
         error,
         isReady,
     }
+}
+
+export const UnfurlSlackMessage = (pV, body, asyncOptions) => {
+    console.log("UnfurlSlackMessage called");
+    const { data, isLoading, error, isReady, mutate } = Integrations.UnfurlSlackMessage(pV, body, { asyncOptions })
+    return { data, isLoading, error, mutate }
 }
 
 export default useIntegrations;

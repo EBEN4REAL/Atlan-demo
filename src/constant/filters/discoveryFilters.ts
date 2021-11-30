@@ -98,6 +98,13 @@ export const discoveryFilters = [
                 description: 'User who created the asset on Atlan',
                 isMandatory: true,
             },
+            {
+                name: '__hasLineage',
+                displayName: 'Lineage',
+                typeName: 'boolean',
+                description: 'All assets which have lineage relationship',
+                isMandatory: true,
+            },
         ],
         overallCondition: 'OR',
         isDeleted: false,

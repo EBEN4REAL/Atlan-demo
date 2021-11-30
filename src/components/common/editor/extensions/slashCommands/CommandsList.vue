@@ -1,57 +1,19 @@
 <template>
     <div
         v-if="items.length"
-        class="flex flex-col overflow-y-scroll bg-white border rounded-sm shadow-lg  overflow-ellipsis h-52 w-72"
+        class="flex flex-col py-1 bg-white border rounded shadow-xl  border-gray-light"
     >
-        <div
-            v-for="(category, categoryIndex) in items"
-            :key="category.categoryTitle"
-        >
-            <p
-                v-if="category.content.length"
-                class="p-2 m-0 ml-2 text-gray-500"
+        <div class="items">
+            <button
+                v-for="(menuItem, index) in items"
+                :key="menuItem.key"
+                class="item"
+                :class="{ 'is-selected': index === selectedIndex }"
+                @click="selectItem(index)"
             >
-                {{ category.categoryTitle }}
-            </p>
-            <div
-                v-for="(item, index) in category.content"
-                :key="item.title"
-                class="w-64 item"
-                :class="{
-                    'is-selected':
-                        index === selectedIndex &&
-                        categoryIndex === selectedCategoryIndex,
-                }"
-                @click="selectItem(categoryIndex, index)"
-            >
-                <div class="flex">
-                    <div
-                        :class="{
-                            'mr-2 border-2': true,
-                            'p-2': category.categoryTitle !== 'Highlights',
-                            'p-0 flex w-5 h-5':
-                                category.categoryTitle === 'Highlights',
-                        }"
-                    >
-                        <fa v-if="item.icon" :icon="item.icon" />
-                        <span v-else-if="item.textIcon" class="text-xs">{{
-                            item.textIcon
-                        }}</span>
-                        <span
-                            v-else-if="category.categoryTitle === 'Highlights'"
-                            class="w-full pl-1 text-xs"
-                            :style="`background-color: ${item.color}`"
-                            >A</span
-                        >
-                    </div>
-                    <div class="flex flex-col justify-center">
-                        <div>{{ item.title }}</div>
-                        <div v-if="item.description" class="text-xs text-gray">
-                            {{ item.description }}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <AtlanIcon :icon="menuItem.icon" class="w-auto h-4 mb-1 mr-1" />
+                {{ menuItem.title }}
+            </button>
         </div>
     </div>
 </template>
@@ -74,7 +36,6 @@
 
         data() {
             return {
-                selectedCategoryIndex: 0,
                 selectedIndex: 0,
             }
         },
@@ -82,7 +43,6 @@
         watch: {
             items() {
                 this.selectedIndex = 0
-                this.selectedCategoryIndex = 0
             },
         },
 
@@ -107,62 +67,22 @@
             },
 
             upHandler() {
-                if (this.selectedIndex == 0) {
-                    this.selectedCategoryIndex -= 1
-                    if (this.selectedCategoryIndex === -1) {
-                        this.selectedCategoryIndex = this.items.length - 1
-                    }
-                    this.selectedIndex =
-                        this.items[this.selectedCategoryIndex].content.length -
-                        1
-                } else {
-                    this.selectedIndex =
-                        (this.selectedIndex +
-                            this.items[this.selectedCategoryIndex].content
-                                .length -
-                            1) %
-                        this.items[this.selectedCategoryIndex].content.length
-                }
-                const selected = document.getElementsByClassName('is-selected')
-
-                if (selected[0]) {
-                    selected[0]?.scrollIntoView(false, {
-                        behaviour: 'smooth',
-                        block: 'nearest',
-                    })
-                }
+                this.selectedIndex =
+                    (this.selectedIndex + this.items.length - 1) %
+                    this.items.length
             },
 
             downHandler() {
-                if (
-                    this.selectedIndex ==
-                    this.items[this.selectedCategoryIndex].content.length - 1
-                ) {
-                    this.selectedCategoryIndex += 1
-                    this.selectedIndex = 0
-                    if (this.selectedCategoryIndex === this.items.length) {
-                        this.selectedCategoryIndex = 0
-                    }
-                } else {
-                    this.selectedIndex =
-                        (this.selectedIndex + 1) %
-                        this.items[this.selectedCategoryIndex].content.length
-                }
-                const selected = document.getElementsByClassName('is-selected')
-                if (selected[0]) {
-                    selected[0]?.scrollIntoView(true, {
-                        behaviour: 'smooth',
-                        block: 'nearest',
-                    })
-                }
+                this.selectedIndex =
+                    (this.selectedIndex + 1) % this.items.length
             },
 
             enterHandler() {
-                this.selectItem(this.selectedCategoryIndex, this.selectedIndex)
+                this.selectItem(this.selectedIndex)
             },
 
-            selectItem(categoryIndex, index) {
-                const item = this.items[categoryIndex].content[index]
+            selectItem(index) {
+                const item = this.items[index]
 
                 if (item) {
                     this.command(item)
@@ -183,11 +103,13 @@
         text-align: left;
         background: transparent;
         border: none;
-        padding: 0.2rem 0.5rem;
+        padding: 5px 12px;
 
-        &.is-selected,
         &:hover {
             @apply bg-gray-100;
+        }
+        &.is-selected {
+            @apply bg-gray-200 text-gray-700 !important;
         }
     }
 </style>

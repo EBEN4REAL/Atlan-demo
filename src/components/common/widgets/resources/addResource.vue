@@ -55,11 +55,12 @@
         toRefs,
         nextTick,
         watch,
+        Ref,
     } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useAddResource from '~/composables/resources/useAddResource'
-    import { useDebounceFn } from '@vueuse/core'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
         components: {},
@@ -77,6 +78,9 @@
             const { asset } = toRefs(props)
 
             const { title } = useAssetInfo()
+
+            const { handleAddResource, localResource } =
+                updateAssetAttributes(asset)
 
             const link = ref('')
             const faviconLink = ref('')
@@ -97,13 +101,9 @@
             }
 
             function handleAdd() {
-                const { newResource } = useAddResource(
-                    asset.value,
-                    link.value,
-                    linkTitle.value
-                )
-
-                newResource()
+                localResource.value.link = link.value
+                localResource.value.title = linkTitle.value
+                handleAddResource()
                 visible.value = false
                 link.value = ''
                 linkTitle.value = ''

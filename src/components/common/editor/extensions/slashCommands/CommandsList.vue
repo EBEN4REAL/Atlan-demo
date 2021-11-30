@@ -3,56 +3,19 @@
         v-if="items.length"
         class="flex flex-col overflow-y-scroll bg-white border rounded-sm shadow-lg  overflow-ellipsis h-52 w-72"
     >
-        <div
-            v-for="(category, categoryIndex) in items"
-            :key="category.categoryTitle"
-        >
-            <p
-                v-if="category.content.length"
-                class="p-2 m-0 ml-2 text-gray-500"
-            >
-                {{ category.categoryTitle }}
-            </p>
-            <div
-                v-for="(item, index) in category.content"
-                :key="item.title"
-                class="w-64 item"
+        <a-menu>
+            <a-menu-item
+                v-for="menuItem in items"
+                :key="menuItem.key"
                 :class="{
-                    'is-selected':
-                        index === selectedIndex &&
-                        categoryIndex === selectedCategoryIndex,
+                    'is-active bg-gray-200': isMenuActive(editor, menuItem),
                 }"
-                @click="selectItem(categoryIndex, index)"
+                @click="() => menuItem.onClick(editor)"
             >
-                <div class="flex">
-                    <div
-                        :class="{
-                            'mr-2 border-2': true,
-                            'p-2': category.categoryTitle !== 'Highlights',
-                            'p-0 flex w-5 h-5':
-                                category.categoryTitle === 'Highlights',
-                        }"
-                    >
-                        <fa v-if="item.icon" :icon="item.icon" />
-                        <span v-else-if="item.textIcon" class="text-xs">{{
-                            item.textIcon
-                        }}</span>
-                        <span
-                            v-else-if="category.categoryTitle === 'Highlights'"
-                            class="w-full pl-1 text-xs"
-                            :style="`background-color: ${item.color}`"
-                            >A</span
-                        >
-                    </div>
-                    <div class="flex flex-col justify-center">
-                        <div>{{ item.title }}</div>
-                        <div v-if="item.description" class="text-xs text-gray">
-                            {{ item.description }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <AtlanIcon :icon="menuItem.icon" class="w-auto h-4 mb-1 mr-1" />
+                {{ menuItem.title }}
+            </a-menu-item>
+        </a-menu>
     </div>
 </template>
 

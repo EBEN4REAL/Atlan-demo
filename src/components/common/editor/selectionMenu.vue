@@ -129,16 +129,7 @@
 
     import useUploadImage from '~/composables/image/uploadImage'
     import { getAPIPath } from '~/services/api/common'
-
-    interface MenuItem {
-        title: string
-        key: string
-        helpText: string
-        icon?: string
-        level?: number
-        border?: boolean
-        onClick: (editor: Editor) => void
-    }
+    import { blockMenu, menuData } from '~/constant/readmeMenuItems'
 
     interface Props {
         editor: Editor
@@ -168,90 +159,6 @@
                 isLoading: imageUploadLoading,
                 upload,
             } = useUploadImage()
-
-            const menuData: MenuItem[] = [
-                {
-                    title: 'Bold',
-                    key: 'bold',
-                    helpText: '',
-                    icon: 'Bold',
-                    onClick: (editor) => {
-                        editor.chain().focus().toggleBold().run()
-                    },
-                },
-                {
-                    title: 'Italic',
-                    key: 'italic',
-                    helpText: '',
-                    icon: 'Italic',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleItalic().run(),
-                },
-                {
-                    title: 'Underline',
-                    key: 'underline',
-                    helpText: '',
-                    icon: 'Underline',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleUnderline().run(),
-                },
-                {
-                    title: 'Strikethrough',
-                    key: 'strike',
-                    helpText: '',
-                    icon: 'Strike',
-                    onClick: (editor) =>
-                        editor.chain().focus().toggleStrike().run(),
-                },
-                {
-                    title: 'Align Center',
-                    key: 'alignCenter',
-                    helpText: '',
-                    icon: 'TextCenter',
-                    onClick: (editor) =>
-                        editor.chain().focus().setTextAlign('center').run(),
-                },
-
-                {
-                    title: 'Align Left',
-                    key: 'alignLeft',
-                    helpText: '',
-                    icon: 'TextLeft',
-                    onClick: (editor) =>
-                        editor.chain().focus().setTextAlign('left').run(),
-                },
-                {
-                    title: 'Align Right',
-                    key: 'alignRight',
-                    helpText: '',
-                    icon: 'TextRight',
-                    onClick: (editor) =>
-                        editor.chain().focus().setTextAlign('right').run(),
-                },
-                {
-                    title: 'Justify Text',
-                    key: 'justify',
-                    helpText: '',
-                    icon: 'JustifyText',
-                    onClick: (editor) =>
-                        editor.chain().focus().setTextAlign('justify').run(),
-                },
-                {
-                    title: 'Undo',
-                    key: 'undo',
-                    helpText: '',
-                    icon: 'Undo',
-                    onClick: (editor) => editor.chain().focus().undo().run(),
-                },
-                {
-                    title: 'Redo',
-                    key: 'redo',
-                    helpText: '',
-                    icon: 'Redo',
-                    onClick: (editor) => editor.chain().focus().redo().run(),
-                },
-                // table
-            ]
 
             const handleLinkClick = (editor: Editor) => {
                 link.value = editor.getAttributes('link').href ?? ''

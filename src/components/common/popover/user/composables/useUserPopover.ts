@@ -2,7 +2,7 @@ import bodybuilder from 'bodybuilder'
 import { computed } from 'vue'
 import { Search } from '~/services/meta/search'
 
-function usePopoverUserGroup(type: string, item: any) {
+function useUserPopover(type: string, item: any) {
     const query = bodybuilder()
         .filter(type === 'group' ? 'terms' : 'term', 'ownerUsers', item)
         .aggregation('terms', '__typeName.keyword', {}, 'group_by_typeName')
@@ -39,4 +39,4 @@ function usePopoverUserGroup(type: string, item: any) {
     }
 }
 
-export default usePopoverUserGroup
+export default useUserPopover

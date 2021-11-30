@@ -1,60 +1,5 @@
 <template>
     <div class="container">
-        <div class="p-4 order_by">
-            <div class="flex flex-col order_table_by">
-                <div class="title">Order tables by</div>
-                <div>
-                    <a-select
-                        placeholder="Sort by"
-                        class="w-full"
-                        v-model:value="sortOrderTable"
-                        :allowClear="false"
-                        :showSearch="false"
-                        @change="handleSortOrderChange"
-                        :get-popup-container="(target) => target.parentNode"
-                    >
-                        <a-select-option
-                            :value="item.id"
-                            v-for="item in sortListTable"
-                            :key="item.id"
-                            class="py-1.5 px-3 text-gray-700 text-sm"
-                        >
-                            {{ item.label }}
-                        </a-select-option>
-                        <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" class="-mt-0.5" />
-                        </template>
-                    </a-select>
-                </div>
-            </div>
-
-            <div class="order_column_by mt-3.5">
-                <div class="title">Order columns by</div>
-                <div>
-                    <a-select
-                        placeholder="Sort by"
-                        class="w-full"
-                        v-model:value="sortOrderColumn"
-                        :allowClear="false"
-                        :showSearch="false"
-                        @change="handleSortOrderChange"
-                        :get-popup-container="(target) => target.parentNode"
-                    >
-                        <a-select-option
-                            :value="item.id"
-                            v-for="item in sortListColumn"
-                            :key="item.id"
-                            class="py-1.5 px-3 text-gray-700 text-sm"
-                        >
-                            {{ item.label }}
-                        </a-select-option>
-                        <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" class="-mt-0.5" />
-                        </template>
-                    </a-select>
-                </div>
-            </div>
-        </div>
         <div class="filters">
             <AssetFilters
                 :key="dirtyTimestamp"
@@ -85,7 +30,6 @@
         ComputedRef,
     } from 'vue'
 
-    import { insightsSorting } from './insightsSorting'
     import { insightsFilters } from './insightsFilters'
     import AssetFilters from '@/common/assets/filters/index.vue'
 
@@ -96,41 +40,41 @@
         setup(props, { emit }) {
             const facets = ref({})
 
-            let sortListColumn = computed(() => {
-                const arr = insightsSorting.filter((el) => {
-                    if (el.includes) {
-                        if (el.includes.includes('Column')) {
-                            return true
-                        }
-                        return false
-                    }
-                    return true
-                })
-                return [...arr]
-            })
-            let sortListTable = computed(() => {
-                const arr = insightsSorting.filter((el) => {
-                    if (el.includes) {
-                        if (el.includes.includes('Table')) {
-                            return true
-                        }
-                        return false
-                    }
-                    return true
-                })
-                return [...arr]
-            })
-            const sortOrderTable = ref('name.keyword-asc')
-            const sortOrderColumn = ref('order-asc')
-            emit('change', 'sortOrderTable', sortOrderTable.value)
-            emit('change', 'sortOrderColumn', sortOrderColumn.value)
+            // let sortListColumn = computed(() => {
+            //     const arr = insightsSorting.filter((el) => {
+            //         if (el.includes) {
+            //             if (el.includes.includes('Column')) {
+            //                 return true
+            //             }
+            //             return false
+            //         }
+            //         return true
+            //     })
+            //     return [...arr]
+            // })
+            // let sortListTable = computed(() => {
+            //     const arr = insightsSorting.filter((el) => {
+            //         if (el.includes) {
+            //             if (el.includes.includes('Table')) {
+            //                 return true
+            //             }
+            //             return false
+            //         }
+            //         return true
+            //     })
+            //     return [...arr]
+            // })
+            // const sortOrderTable = ref('name.keyword-asc')
+            // const sortOrderColumn = ref('order-asc')
+            // emit('change', 'sortOrderTable', sortOrderTable.value)
+            // emit('change', 'sortOrderColumn', sortOrderColumn.value)
 
-            const handleSortOrderChange = () => {
-                emit('change', 'sortOrderTable', sortOrderTable.value)
-                emit('change', 'sortOrderColumn', sortOrderColumn.value)
-                // console.log('sortOrderTable: ', sortOrderTable.value)
-                // console.log('sortOrderColumn: ', sortOrderColumn.value)
-            }
+            // const handleSortOrderChange = () => {
+            //     emit('change', 'sortOrderTable', sortOrderTable.value)
+            //     emit('change', 'sortOrderColumn', sortOrderColumn.value)
+            //     // console.log('sortOrderTable: ', sortOrderTable.value)
+            //     // console.log('sortOrderColumn: ', sortOrderColumn.value)
+            // }
 
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const activeKey: Ref<string[]> = ref([])
@@ -171,17 +115,17 @@
                 handleResetEvent,
                 typeList,
                 handleTypeChange,
-                sortOrderColumn,
-                sortOrderTable,
-                handleSortOrderChange,
+                // sortOrderColumn,
+                // sortOrderTable,
+                // handleSortOrderChange,
                 dirtyTimestamp,
                 activeKey,
                 handleFilterChange,
                 handleActiveKeyChange,
                 insightsFilters,
                 facets,
-                sortListTable,
-                sortListColumn,
+                // sortListTable,
+                // sortListColumn,
             }
         },
     })
@@ -190,7 +134,7 @@
     .container {
         width: 240px;
         min-height: 440px;
-        border-radius: 8px !important;
+        border-radius: 8px;
         background: #ffffff;
 
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);
@@ -210,8 +154,8 @@
     }
     .filters {
         overflow-y: scroll;
-        height: 280px !important;
         border-radius: 8px !important;
+        height: 447px !important;
     }
 </style>
 

@@ -532,6 +532,11 @@
         color: #d77252 !important;
         background-color: #faf1ef !important;
     }
+    .myLineDecoration {
+        background: green;
+        width: 2px !important;
+        margin-left: 1px;
+    }
     .ghostCursor {
         position: relative;
     }
@@ -567,6 +572,7 @@
     :global(.monaco-editor) {
         padding-top: 8px !important;
     }
+
     :global(.mtkz) {
         color: rgba(51, 51, 51, 0.2) !important;
         width: 8.53px !important;

@@ -10,6 +10,7 @@ import {
     BasicSearchResponse,
     RelationshipSearchResponse,
 } from '~/types/common/atlasSearch.interface'
+import { IndexSearchResponse } from '~/services/meta/search/index'
 
 import { Components } from '~/types/atlas/client'
 
@@ -354,8 +355,8 @@ const useTree = ({
     ) => {
         // if the root level of the tree needs a refetch
         if (guid === queryFolderNamespace.value?.guid) {
-            let folderResponse: BasicSearchResponse<Folder> | null = null
-            let queryResponse: BasicSearchResponse<SavedQuery> | null = null
+            let folderResponse: IndexSearchResponse<Folder> | null = null
+            let queryResponse: IndexSearchResponse<SavedQuery> | null = null
 
             if (refetchEntityType === 'queryFolder' || !refetchEntityType) {
                 folderResponse = await getQueryFolders()
@@ -394,9 +395,10 @@ const useTree = ({
 
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
-                    let folderResponse: BasicSearchResponse<Folder> | null =
+                    console.log('parent update start: ', node)
+                    let folderResponse: IndexSearchResponse<Folder> | null =
                         null
-                    let queryResponse: BasicSearchResponse<SavedQuery> | null =
+                    let queryResponse: IndexSearchResponse<SavedQuery> | null =
                         null
 
                     if (
@@ -410,6 +412,13 @@ const useTree = ({
                             node.qualifiedName
                         )
                     }
+
+                    console.log('parent update: ', {
+                        folderResponse,
+                        queryResponse
+                    })
+
+                    //correct till here
 
                     const updatedFolders = checkAndAppendNewNodes(
                         folderResponse,
@@ -460,18 +469,22 @@ const useTree = ({
             // find the path to the node
             parentStack = recursivelyFindPath(guid)
             const parent = parentStack.pop()
+            console.log('parent here: ', parent)
 
             const updatedTreeData: CustomTreeDataItem[] = []
 
             // eslint-disable-next-line no-restricted-syntax
             for (const node of treeData.value) {
                 if (node.key === parent) {
+                    console.log('parent found: ', node)
                     const updatedNode = await updateNodeNested(node)
+                    console.log('parent updated new nodes: ', updatedNode)
                     updatedTreeData.push(updatedNode)
                 } else {
                     updatedTreeData.push(node)
                 }
             }
+            console.log('parent update: ', updatedTreeData)
 
             treeData.value = updatedTreeData
         }
@@ -543,7 +556,7 @@ const useTree = ({
     }
 
     const checkAndAppendNewNodes = (
-        response: BasicSearchResponse<SavedQuery | Folder> | null,
+        response: IndexSearchResponse<SavedQuery | Folder> | null,
         typeName: 'Query' | 'QueryFolder',
         isRoot: boolean,
         node?: CustomTreeDataItem

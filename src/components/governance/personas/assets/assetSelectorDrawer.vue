@@ -66,7 +66,8 @@
                     <AssetsWrapper
                         :show-filters="false"
                         :static-use="true"
-                        :show-aggrs="false"
+                        :show-aggrs="true"
+                        :showCheckBox="true"
                         :initial-filters="filterConfig"
                         checkedCriteria="qualifiedName"
                         :preference="preference"
@@ -260,6 +261,14 @@
                     bulkStore.bulkSelectedAssets.length
                 )
                     checkedKeys.value = [...bulkStore.bulkSelectedAssets]
+            })
+            watch(isVisible, () => {
+                if (isVisible.value) {
+                    checkedKeys.value = [...assets.value]
+                    bulkStore.setBulkSelectedAssets([...assets.value])
+                } else {
+                    bulkStore.setBulkSelectedAssets([])
+                }
             })
 
             watch(

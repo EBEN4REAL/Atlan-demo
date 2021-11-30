@@ -1,6 +1,6 @@
 /* eslint-disable vue/require-default-prop */
 <template>
-    <div class="w-full">
+    <a-input-group compact class="flex w-full mb-0">
         <a-tree-select
             style="width: 100%"
             :dropdown-style="{
@@ -17,29 +17,17 @@
         >
             <template #title="node">
                 {{ node }}
-                <!-- <div class="flex items-center" v-if="node.type == 'connector'">
-                    <img :src="node.image" class="w-auto h-4 mr-1" />
-                    <div v-if="node.type == 'connector'" class="text-gray-700">
-                        {{ capitalizeFirstLetter(node.name) }}
-                    </div>
-                </div>
-                <div class="flex flex-col" v-else>
-                    <div class="flex items-center">
-                        <img :src="node.image" class="w-auto h-4 mr-1" />
-                        <div class="">{{ node.name }}</div>
-                    </div>
-
-                    <div class="text-xs text-gray-500">
-                        {{ node.count }} assets
-                    </div>
-                </div> -->
             </template>
 
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-tree-select>
-    </div>
+        <a-button style="width: 20%" @click="handleClick">
+            <a-spin size="small" class="mt-1" v-if="isLoading"></a-spin>
+            <AtlanIcon icon="Refresh" v-else></AtlanIcon>
+        </a-button>
+    </a-input-group>
 </template>
 
 <script lang="ts">
@@ -89,20 +77,24 @@
 
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
-            watch(credential, () => {
+            const handleClick = () => {
                 refresh()
-            })
+            }
+
+            // watch(credential, () => {
+            //     refresh()
+            // })
 
             const treeData = ref([])
             watch(data, () => {
-                treeData.value = data.value.results?.map((item) => ({
-                    id: item.name,
-                    value: item.name,
-                    label: item.name,
-                    slots: {
-                        title: 'title',
-                    },
-                }))
+                // treeData.value = data.value.results?.map((item) => ({
+                //     id: item.name,
+                //     value: item.name,
+                //     label: item.name,
+                //     slots: {
+                //         title: 'title',
+                //     },
+                // }))
             })
 
             // const treeData = computed(() => {
@@ -144,6 +136,7 @@
 
             return {
                 treeData,
+                handleClick,
             }
         },
     })

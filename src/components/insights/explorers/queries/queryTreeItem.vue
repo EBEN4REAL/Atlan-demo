@@ -8,7 +8,7 @@
             <div class="flex w-full m-0">
                 <div
                     v-if="item.typeName === 'QueryFolder'"
-                    class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <!--FOLDER NODE -->
                     <!-- <div
@@ -33,19 +33,15 @@
                                         ? 'FolderOpen'
                                         : 'FolderClosed'
                                 "
-                                class="w-5 h-5 my-auto mr-1"
+                                class="w-4 h-4 my-auto mr-1"
                                 color="#5277D7"
                             ></AtlanIcon>
                             <span
-                                class="
-                                    mt-0.5
-                                    text-sm text-gray-700
-                                    parent-ellipsis-container-base
-                                "
+                                class="mt-0.5 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -151,14 +147,7 @@
                         ></div>
                         <div class="flex items-center h-full">
                             <div
-                                class="
-                                    relative
-                                    w-4
-                                    h-4
-                                    mb-0.5
-                                    mr-1
-                                    overflow-hidden
-                                "
+                                class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
                             >
                                 <AtlanIcon
                                     v-if="savedQueryType === 'personal'"
@@ -190,7 +179,7 @@
                         </a-button>
                     </template>
                     <div
-                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                     >
                         <div class="parent-ellipsis-container py-1.5">
                             <AtlanIcon
@@ -200,16 +189,16 @@
                                         certificateStatus(item)
                                     )
                                 "
-                                class="w-5 h-5 my-auto mr-1"
+                                class="w-4 h-4 my-auto mr-1"
                                 color="#5277D7"
                             ></AtlanIcon>
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0  right-6 margin-align-top group-hover:opacity-100"
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 right-6 margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -240,7 +229,7 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
@@ -592,18 +581,34 @@
                 const input = document.createElement('input')
                 input.setAttribute(
                     'class',
-                    `outline-none border py-0 px-1 rounded mx-0 my-1 w-auto`
+                    `outline-none border py-0 px-1 rounded mx-0 my-0.5 w-auto`
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
 
-                parentNode?.prepend(input)
+                let div = document.createElement('div')
+                div.classList.add('flex', 'items-center', 'active-input', 'h-8')
+
+                let folderSvg =
+                    '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.49951 2H3.49951C2.94723 2 2.49951 2.44772 2.49951 3V11.5C2.49951 12.0523 2.94723 12.5 3.49951 12.5H11.4995C12.0518 12.5 12.4995 12.0523 12.4995 11.5V5C12.4995 4.44772 12.0518 4 11.4995 4H7.49951C6.94723 4 6.49951 3.55228 6.49951 3C6.49951 2.44772 6.0518 2 5.49951 2Z" fill="white" stroke="#5277D7"/><path d="M13.3266 6H2.61167C2.01741 6 1.55428 6.51516 1.61731 7.10607L2.20398 12.6061C2.2582 13.1144 2.68711 13.5 3.19833 13.5H12.4466C12.9379 13.5 13.3564 13.1431 13.4341 12.658L14.3141 7.15799C14.4113 6.55041 13.9419 6 13.3266 6Z" fill="white" stroke="#5277D7"/></svg></span>'
+
+                let querySvg =
+                    '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/><path d="M4 6L6 8L4 10" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H12" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+
+                const folderSvgEl = new DOMParser().parseFromString(
+                    item.value.typeName === 'Query' ? querySvg : folderSvg,
+                    'text/html'
+                ).body.firstElementChild
+
+                div.append(folderSvgEl)
+                div.append(input)
+                parentNode?.prepend(div)
                 input.focus()
                 input.value = ''
                 input.value = item.value.attributes?.name
 
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
-                        parentNode?.removeChild(input)
+                        parentNode?.removeChild(div)
                         childNode?.classList?.remove('hidden')
                     }
                     if (e.key === 'Enter') {
@@ -637,7 +642,7 @@
                         }
                         input.value = ''
                         try {
-                            parentNode?.removeChild(input)
+                            parentNode?.removeChild(div)
                         } catch {}
                         childNode?.classList?.remove('hidden')
                     }
@@ -655,7 +660,7 @@
                         })
                     }
                     try {
-                        parentNode?.removeChild(input)
+                        parentNode?.removeChild(div)
                     } catch {}
                     childNode?.classList?.remove('hidden')
                 })

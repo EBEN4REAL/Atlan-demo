@@ -25,27 +25,20 @@
                         </a-button>
                     </template>
                     <div
-                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                     >
                         <!--For Column-->
                         <div
                             v-if="assetType(item) == 'Column'"
-                            class="relative flex items-center justify-between w-full "
+                            class="relative flex items-center justify-between w-full"
                         >
                             <div class="relative parent-ellipsis-container">
                                 <component
                                     :is="dataTypeImage(item)"
-                                    class="
-                                        flex-none
-                                        w-auto
-                                        h-4
-                                        mr-1
-                                        -mt-0.5
-                                        text-gray-500
-                                    "
+                                    class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
                                 ></component>
                                 <span
-                                    class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                     >{{ title(item) }}
                                     <!-- <span> {{ childCount(item) }}</span> -->
                                 </span>
@@ -55,16 +48,12 @@
                                     :key="item?.guid"
                                     :show-no-status="false"
                                     :status-id="certificateStatus(item)"
-                                    class="
-                                        ml-1.5
-                                        mb-1
-                                        parent-ellipsis-container-extension
-                                    "
+                                    class="ml-1.5 mb-1 parent-ellipsis-container-extension"
                                 ></StatusBadge>
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -141,7 +130,7 @@
                                 </div>-->
                             </div>
                             <div
-                                class="flex items-center text-xs leading-5 text-gray-500 "
+                                class="flex items-center text-xs leading-5 text-gray-500"
                                 style="margin-right: 1px !important"
                             >
                                 <div
@@ -151,7 +140,7 @@
                                     <div class="flex items-center mr-2">
                                         <AtlanIcon
                                             icon="PrimaryKey"
-                                            class="w-4 h-4 my-auto mr-1  primary-key-color"
+                                            class="w-4 h-4 my-auto mr-1 primary-key-color"
                                         ></AtlanIcon>
                                         <span class="primary-key-color"
                                             >Pkey</span
@@ -176,32 +165,23 @@
                                                 certificateStatus(item)
                                             )
                                         "
-                                        class="
-                                            w-4
-                                            h-4
-                                            mr-1
-                                            -mt-0.5
-                                            parent-ellipsis-container-extension
-                                        "
+                                        class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
                                     ></AtlanIcon>
 
                                     <span
-                                        class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                        class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                         >{{ title(item)?.slice(0, 20) }}
                                         {{
                                             title(item).length > 20 ? '...' : ''
                                         }}
                                     </span>
-                                    <StatusBadge
+                                    <!-- <StatusBadge
                                         v-if="certificateStatus(item)"
                                         :key="item?.guid"
                                         :show-no-status="false"
                                         :status-id="certificateStatus(item)"
-                                        class="
-                                            ml-1.5
-                                            parent-ellipsis-container-extension
-                                        "
-                                    ></StatusBadge>
+                                        class="ml-1.5 parent-ellipsis-container-extension"
+                                    ></StatusBadge> -->
                                 </div>
                                 <div>
                                     <span class="z-10 count-box">
@@ -212,7 +192,7 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected
@@ -319,12 +299,12 @@
                 class="flex w-full m-0"
             >
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <!-- <div class="parent-ellipsis-container"> -->
                     <div class="flex items-center justify-between w-full">
                         <div class="flex items-center">
-                            <AtlanIcon
+                            <!-- <AtlanIcon
                                 :icon="assetType(item)"
                                 class="
                                     w-4
@@ -333,23 +313,29 @@
                                     -mt-0.5
                                     parent-ellipsis-container-extension
                                 "
+                            ></AtlanIcon> -->
+                            <AtlanIcon
+                                :icon="
+                                    getEntityStatusIcon(
+                                        assetType(item),
+                                        certificateStatus(item)
+                                    )
+                                "
+                                class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
                             ></AtlanIcon>
 
                             <span
-                                class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ title(item)?.slice(0, 20) }}
                                 {{ title(item).length > 20 ? '...' : '' }}
                             </span>
-                            <StatusBadge
+                            <!-- <StatusBadge
                                 v-if="certificateStatus(item)"
                                 :key="item?.guid"
                                 :show-no-status="false"
                                 :status-id="certificateStatus(item)"
-                                class="
-                                    ml-1.5
-                                    parent-ellipsis-container-extension
-                                "
-                            ></StatusBadge>
+                                class="ml-1.5 parent-ellipsis-container-extension"
+                            ></StatusBadge> -->
                         </div>
                         <div>
                             <span class="z-10 count-box">
@@ -360,7 +346,7 @@
 
                     <div
                         v-if="hoverActions"
-                        class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                        class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                         :class="
                             item?.selected
                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -394,22 +380,15 @@
             <!-- For others component which does not need hoverActions -->
             <div v-if="item?.typeName === 'Column' && !hoverActions">
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div
                         v-if="assetType(item) == 'Column'"
-                        class="relative flex items-center justify-between w-full "
+                        class="relative flex items-center justify-between w-full"
                     >
                         <component
                             :is="dataTypeImage(item)"
-                            class="
-                                flex-none
-                                w-auto
-                                h-4
-                                mr-1
-                                -mt-0.5
-                                text-gray-500
-                            "
+                            class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
                         ></component>
                         <span class="mb-0 text-sm text-gray-700"
                             >{{ title(item) }}
@@ -430,17 +409,11 @@
                                     certificateStatus(item)
                                 )
                             "
-                            class="
-                                w-4
-                                h-4
-                                mr-1.5
-                                -mt-0.5
-                                parent-ellipsis-container-extension
-                            "
+                            class="w-4 h-4 mr-1.5 -mt-0.5 parent-ellipsis-container-extension"
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                             >{{ title(item) }}
                             <span class="count-box">
                                 {{ childCount(item) }}</span
@@ -448,7 +421,7 @@
                         </span>
                         <div
                             v-if="hoverActions"
-                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0  margin-align-top group-hover:opacity-100"
+                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                             @click.stop="() => {}"
                             :class="
                                 item?.selected
@@ -530,22 +503,16 @@
                 class="flex w-full m-0"
             >
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700 "
+                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="parent-ellipsis-container">
                         <AtlanIcon
                             :icon="assetType(item)"
-                            class="
-                                w-4
-                                h-4
-                                mr-1.5
-                                -mt-0.5
-                                parent-ellipsis-container-extension
-                            "
+                            class="w-4 h-4 mr-1.5 -mt-0.5 parent-ellipsis-container-extension"
                         ></AtlanIcon>
 
                         <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                             >{{ title(item) }}
                             <!-- <span class="count-box">
                                 ({{ childCount(item) }})</span
@@ -683,6 +650,9 @@
                 return popoverAllowed.includes(typeName)
             }
 
+            const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
+
             const selectionObject: Ref<any> = ref({
                 startLineNumber: 1,
                 startColumnNumber: 1,
@@ -707,6 +677,11 @@
 
             const { item } = toRefs(props)
             const { queryRun } = useRunQuery()
+
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
             const {
                 modifyActiveInlineTabEditor,
                 modifyActiveInlineTab,
@@ -1110,7 +1085,16 @@
                 selectionObject.value.startColumnNumber = 1
                 selectionObject.value.endLineNumber = 2
                 selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                queryRun(activeInlineTab, getData)
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    '',
+                    editorInstance,
+                    monacoInstance
+                )
             }
 
             let childCount = (item) => {
@@ -1238,7 +1222,16 @@
                     },
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                queryRun(activeInlineTab, getData)
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    '',
+                    editorInstance,
+                    monacoInstance
+                )
 
                 selectionObject.value.startLineNumber = 2
                 selectionObject.value.startColumnNumber = 1

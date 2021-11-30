@@ -11,8 +11,4 @@ export const displayProperties = [
         id: 'classifications',
         label: 'Classifications',
     },
-    {
-        id: 'enableCheckbox',
-        label: 'Checkbox',
-    },
 ]

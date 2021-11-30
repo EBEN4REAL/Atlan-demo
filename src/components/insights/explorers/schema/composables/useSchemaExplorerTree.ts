@@ -40,6 +40,9 @@ type CustomTreeDataItem =
 interface useSchemaExplorerTreeProps {
     emit: any
     queryText: Ref<string>
+    facets: Ref<object>
+    sortOrderTable: Ref<string>
+    sortOrderColumn: Ref<string>
     searchResultType: Ref<string>
     connectionQualifiedName?: Ref<string | undefined>
     databaseQualifiedName?: Ref<string | undefined>
@@ -60,6 +63,9 @@ const useTree = ({
     cacheKey,
     isAccordion,
     queryText,
+    facets,
+    sortOrderTable,
+    sortOrderColumn,
     searchResultType,
 }: useSchemaExplorerTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
@@ -86,7 +92,13 @@ const useTree = ({
         getColumnsForTable,
         // getViewsForSchema,
         getColumnsForView,
-    } = useLoadTreeData(queryText, searchResultType)
+    } = useLoadTreeData(
+        queryText,
+        searchResultType,
+        facets,
+        sortOrderTable,
+        sortOrderColumn
+    )
 
     const serviceMap = {
         Connection: getDatabaseForConnection,
@@ -400,7 +412,6 @@ const useTree = ({
         [key: string]: any
         dataRef: CustomTreeDataItem
     }) => {
-        console.log(treeNode)
         if (!treeNode.dataRef.children) {
             treeNode.dataRef.children = []
         }
@@ -707,9 +718,13 @@ const useTree = ({
             databaseQualifiedName,
             schemaQualifiedName,
             queryText,
+            facets,
+            sortOrderTable,
+            sortOrderColumn,
         ],
         ([c, d, s]) => {
             console.log('reinitialized')
+            console.log('tree filters: ', {facets, sortOrderColumn, sortOrderTable})
             isInitingTree.value = true
             initTreeData(c, d, s)
         }

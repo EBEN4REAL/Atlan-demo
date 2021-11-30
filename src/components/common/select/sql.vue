@@ -25,7 +25,6 @@
             <AtlanIcon icon="Refresh" v-else></AtlanIcon>
         </a-button>
     </a-input-group>
-    {{ body }}
 </template>
 
 <script lang="ts">
@@ -66,10 +65,6 @@
             })
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
-            watch(credential, () => {
-                refresh()
-            })
-
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -97,6 +92,7 @@
                 isLoading,
                 error,
                 query,
+                body,
             }
         },
         components: { AtlanIcon },

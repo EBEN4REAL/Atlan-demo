@@ -1,6 +1,10 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
-        <PackagesSetup :workflowTemplate="localSelected"></PackagesSetup>
+        <PackagesSetup
+            v-if="localConfig"
+            :workflowTemplate="localSelected"
+            :configMap="localConfig"
+        ></PackagesSetup>
     </div>
 </template>
 
@@ -67,7 +71,27 @@
 
             watch(data, () => {
                 if (list.value.length > 0) {
-                    localConfig.value = list.value[0]
+                    try {
+                        localConfig.value = JSON.parse(
+                            list.value[0].configmap.data.config
+                        )
+
+                        if (localConfig.value) {
+                            localConfig.value['_schedule'] = {
+                                type: 'string',
+                                ui: {
+                                    widget: 'schedule',
+                                    label: '',
+                                    placeholder: 'Credential Guid',
+                                    hidden: false,
+                                },
+                            }
+                        }
+
+                        // Add Schedule
+                    } catch (e) {
+                        console.log(e)
+                    }
                 }
             })
 

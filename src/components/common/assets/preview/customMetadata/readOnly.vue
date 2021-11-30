@@ -74,7 +74,7 @@
                     attribute.value
                 "
             >
-                <PopOverGroup>
+                <PopOverGroup :item="attribute.value">
                     <GroupPill
                         :name="attribute.value"
                         @click="handleClickGroup(attribute.value)"
@@ -88,7 +88,7 @@
                 "
             >
                 <div v-for="name in attribute.value" :key="name">
-                    <PopOverGroup>
+                    <PopOverGroup :item="name">
                         <GroupPill
                             :name="name"
                             @click="handleClickGroup(name)"

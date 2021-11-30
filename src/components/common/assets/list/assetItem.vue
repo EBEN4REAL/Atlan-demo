@@ -10,7 +10,7 @@
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
-                    : 'bg-white border-transparent',
+                    : noBg ? 'border-transparent' :'bg-white border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-light' : '',
             ]"
         >
@@ -371,7 +371,7 @@
                                     'schema',
                                 ].includes(item.typeName?.toLowerCase())
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
@@ -494,6 +494,11 @@
                 },
             },
             showThreeDotMenu: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            noBg: {
                 type: Boolean,
                 required: false,
                 default: false,

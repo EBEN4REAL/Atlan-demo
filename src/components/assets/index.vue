@@ -111,6 +111,9 @@
                     ></EmptyView>
                 </div>
 
+                <!--                             :show-check-box="
+                                preference?.display?.includes('enableCheckbox')
+                            " -->
                 <AssetList
                     v-else
                     ref="assetlistRef"
@@ -126,9 +129,7 @@
                             :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
                             :preference="preference"
-                            :show-check-box="
-                                preference?.display?.includes('enableCheckbox')
-                            "
+                            :show-check-box="showCheckBox"
                             :bulk-select-mode="
                                 bulkSelectedAssets && bulkSelectedAssets.length
                                     ? true
@@ -225,6 +226,11 @@
                 required: false,
                 default: true,
             },
+            showCheckBox: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             checkedCriteria: {
                 type: String,
                 required: false,
@@ -294,6 +300,14 @@
                     ...initialFilters.value,
                 }
             }
+            /* Watcher for parent component changes initial filters otherwise req won't be triggered */
+            watch(initialFilters, () => {
+                facets.value = {
+                    ...facets.value,
+                    ...initialFilters.value,
+                }
+                quickChange()
+            })
 
             const {
                 list,
@@ -430,7 +444,7 @@
                 store.setBulkMode(!!bulkSelectedAssets.value.length)
                 store.setBulkSelectedAssets(bulkSelectedAssets.value)
             }
-            /* By default it will be id, but it can be through qualifiedName */
+            /* By default it will be guid, but it can be through qualifiedName */
             const checkSelectedCriteriaFxn = (item) => {
                 switch (checkedCriteria.value) {
                     case 'guid': {
@@ -461,9 +475,6 @@
                 }
             }
 
-            // select first asset automatically conditionally acc to  autoSelect prop
-
-            /* NEed to add code here for autoselect */
             return {
                 checkSelectedCriteriaFxn,
                 selectedAssetId,

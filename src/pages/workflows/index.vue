@@ -308,12 +308,11 @@
             )
 
             const handleGetUser = () => {
-              const { userList } = useUsers(params, null, {})
-              watch(userList, (newVal) => {
-                users.value = newVal
-              })
+                const { userList } = useUsers(params, null, {})
+                watch(userList, (newVal) => {
+                    users.value = newVal
+                })
             }
-
 
             watch(iDs, () => {
                 handleGetUser()

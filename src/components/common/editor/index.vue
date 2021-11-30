@@ -2,7 +2,7 @@
     <div class="w-full h-full bg-white editor">
         <bubble-menu
             v-if="!editor?.isActive('uploadimage') && editor"
-            class="bubble-menu"
+            class="w-full bubble-menu"
             :tippy-options="{
                 duration: 100,
                 zIndex: 1,

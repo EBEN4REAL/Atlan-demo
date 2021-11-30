@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="editor && editable"
-        class="box-border flex items-center max-w-full min-w-full bg-white border border-gray-300 rounded shadow-xl  editor-menu"
+        class="box-border flex items-center bg-white border border-gray-300 rounded shadow-xl  editor-menu"
     >
         <a-dropdown
             v-if="getActiveMenu(editor)?.key !== 'uploadimage'"
@@ -303,7 +303,39 @@
                     onClick: (editor) =>
                         editor.chain().focus().toggleStrike().run(),
                 },
+                {
+                    title: 'Align Center',
+                    key: 'alignCenter',
+                    helpText: '',
+                    icon: 'TextCenter',
+                    onClick: (editor) =>
+                        editor.chain().focus().setTextAlign('center').run(),
+                },
 
+                {
+                    title: 'Align Left',
+                    key: 'alignLeft',
+                    helpText: '',
+                    icon: 'TextLeft',
+                    onClick: (editor) =>
+                        editor.chain().focus().setTextAlign('left').run(),
+                },
+                {
+                    title: 'Align Right',
+                    key: 'alignRight',
+                    helpText: '',
+                    icon: 'TextRight',
+                    onClick: (editor) =>
+                        editor.chain().focus().setTextAlign('right').run(),
+                },
+                {
+                    title: 'Justify Text',
+                    key: 'justify',
+                    helpText: '',
+                    icon: 'JustifyText',
+                    onClick: (editor) =>
+                        editor.chain().focus().setTextAlign('justify').run(),
+                },
                 {
                     title: 'Undo',
                     key: 'undo',

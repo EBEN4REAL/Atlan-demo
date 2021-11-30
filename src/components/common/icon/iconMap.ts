@@ -211,6 +211,18 @@ import Italic from '~/assets/images/readme/text-italic.svg'
 import Strike from '~/assets/images/readme/text-strike.svg'
 import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
+import ReadmeImage from '~/assets/images/readme/ImageSquare.svg'
+import BulletList from '~/assets/images/readme/ListBullets.svg'
+import NumberedList from '~/assets/images/readme/ListNumbers.svg'
+import Quotes from '~/assets/images/readme/Quotes.svg'
+import HOne from '~/assets/images/readme/TextHOne.svg'
+import HTwo from '~/assets/images/readme/TextHTwo.svg'
+import HThree from '~/assets/images/readme/TextHThree.svg'
+import TextCenter from '~/assets/images/readme/TextAlignCenter.svg'
+import TextLeft from '~/assets/images/readme/TextAlignLeft.svg'
+import TextRight from '~/assets/images/readme/TextAlignRight.svg'
+import JustifyText from '~/assets/images/readme/TextAlignJustify.svg'
+
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
@@ -479,6 +491,17 @@ export default {
     Strike,
     Undo,
     Redo,
+    ReadmeImage,
+    BulletList,
+    NumberedList,
+    Quotes,
+    HOne,
+    HTwo,
+    HThree,
+    TextCenter,
+    TextLeft,
+    TextRight,
+    JustifyText,
     Running,
     Refresh,
     ErrorLogs,

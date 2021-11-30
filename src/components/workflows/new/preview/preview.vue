@@ -1,6 +1,10 @@
 <template>
     <PreviewHeader
-        :name="selectedWorkflow?.display_name || selectedWorkflow?.name || ''"
+        :name="
+            selectedWorkflow?.data.displayName ||
+            selectedWorkflow?.metadata.name ||
+            ''
+        "
         type="workflow template"
         :show-utility-buttons="false"
         :icon="images.icon"
@@ -174,7 +178,7 @@
                 isLoading: workflowTemplateLoading,
                 changeName,
             } = useWorkflowTemplateByName(
-                selectedWorkflow.value.configmap?.data?.templateName,
+                selectedWorkflow.value.data?.templateName,
                 true
             )
             const body = computed(() => ({
@@ -194,14 +198,13 @@
                                         name: 'run',
                                         arguments: {
                                             parameters: [
-                                                ...workflowTemplate.value?.workflowtemplate.spec.templates
+                                                ...workflowTemplate.value?.spec.templates
                                                     ?.find(
                                                         (t) =>
                                                             t.name ===
                                                             workflowTemplate
-                                                                .value
-                                                                ?.workflowtemplate
-                                                                .spec.entrypoint
+                                                                .value?.spec
+                                                                .entrypoint
                                                     )
                                                     ?.inputs?.parameters?.filter(
                                                         (p) =>
@@ -217,8 +220,8 @@
                                             ],
                                         },
                                         templateRef: {
-                                            name: selectedWorkflow.value
-                                                .configmap.data.templateName,
+                                            name: selectedWorkflow.value.data
+                                                .templateName,
                                             template: 'main',
                                             clusterScope: true,
                                         },
@@ -269,7 +272,7 @@
 
             const overview = computed(() => {
                 const info = {
-                    ...selectedWorkflow.value.configmap.data,
+                    ...selectedWorkflow.value.data,
                 }
                 delete info.templates
                 delete info.uiConfig
@@ -280,12 +283,12 @@
             })
 
             const images = computed(() => ({
-                icon: selectedWorkflow.value.configmap.data.icon,
-                logo: selectedWorkflow.value.configmap.data.logo,
+                icon: selectedWorkflow.value.data.icon,
+                logo: selectedWorkflow.value.data.logo,
             }))
 
             function init() {
-                changeName(selectedWorkflow.value.configmap?.data?.templateName)
+                changeName(selectedWorkflow.value?.data?.templateName)
             }
 
             watch(selectedWorkflow, init, { deep: true })

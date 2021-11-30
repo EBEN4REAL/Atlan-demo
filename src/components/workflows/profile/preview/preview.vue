@@ -191,10 +191,14 @@
                 isLoaded.value = false
             }
 
-            const body = ref(selectedWorkflow.value.workflowtemplate)
+            const body = ref(selectedWorkflow.value)
 
             const { workflow, error, isLoading, mutate, isReady } =
-                updateWorkflowByName(selectedWorkflow.value.name, body, false)
+                updateWorkflowByName(
+                    selectedWorkflow.value.metadata.name,
+                    body,
+                    false
+                )
 
             watch(selectedWorkflow, init, { deep: true })
             onMounted(init)
@@ -264,8 +268,8 @@
             const defaultValues = computed(() => {
                 const temp = {}
                 const valueArr =
-                    selectedWorkflow.value.workflowtemplate.spec.templates[0]
-                        .dag.tasks[0].arguments.parameters
+                    selectedWorkflow.value.spec.templates[0].dag.tasks[0]
+                        .arguments.parameters
                 if (valueArr?.length)
                     valueArr.forEach((v) => {
                         const some = props.formConfig[props.selectedDag]?.find(

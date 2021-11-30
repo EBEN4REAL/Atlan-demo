@@ -8,9 +8,7 @@
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :is-selected="
-                    item.workflowtemplate.metadata.uid === selectedItemId
-                "
+                :is-selected="item.metadata.uid === selectedItemId"
                 @click="handlePreview(item)"
             />
         </template>
@@ -83,7 +81,7 @@
             const selectedItemId = ref('')
             let shouldReSelect = false
             function handlePreview(item: any) {
-                selectedItemId.value = item.workflowtemplate.metadata.uid
+                selectedItemId.value = item.metadata.uid
                 emit('preview', item)
             }
 

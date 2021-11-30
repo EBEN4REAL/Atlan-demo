@@ -27,10 +27,7 @@
                             v-if="!slackUnfurls[item.guid].isLoading.value"
                             class="flex p-2 border rounded"
                         >
-                            <div
-                                class="relative h-8 mr-3"
-                                style="min-width: 2rem"
-                            >
+                            <div class="relative h-8 mr-3 min-w-link-left-col">
                                 <!-- avatar -->
                                 <img
                                     class="rounded-full"
@@ -71,7 +68,7 @@
                                             .message.text
                                     }}
                                 </div>
-                                <div class="flex text-xs text-gray-500">
+                                <div class="flex text-sm text-gray-500">
                                     <!-- v-if="
                                             slackUnfurls[item.guid].data.value
                                                 ?.channel?.name
@@ -102,22 +99,29 @@
                             </div>
                         </div>
                     </div>
-                    <div v-else class="flex">
-                        <a
-                            class="flex cursor-pointer gap-x-2 hover:underline"
-                            :href="`//${item?.attributes?.link}`"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
+                    <div v-else class="flex p-2 border rounded">
+                        <div class="mr-2 min-w-link-left-col">
                             <img
                                 :src="`https://www.google.com/s2/favicons?domain=${item?.attributes?.link}&sz=64`"
                                 :alt="item?.attributes?.name"
-                                class="w-4 h-4 mr-1"
+                                class="h-7"
                             />
-                            <span class="text-sm text-gray-500">{{
-                                item?.attributes?.name
-                            }}</span>
-                        </a>
+                        </div>
+                        <div class="flex flex-col">
+                            <a
+                                class="flex cursor-pointer  gap-x-2 hover:underline"
+                                :href="`//${item?.attributes?.link}`"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                <span class="font-bold">{{
+                                    item?.attributes?.name
+                                }}</span>
+                            </a>
+                            <span class="text-sm text-gray-500"
+                                >Added by Rohan 10 minutes ago</span
+                            >
+                        </div>
                     </div>
                 </div>
                 <div
@@ -206,6 +210,23 @@ export default defineComponent({
             {
                 typeName: 'Link',
                 attributes: {
+                    qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1ee1',
+                    name: 'Notion doc',
+                    link: 'https://www.notion.so',
+                },
+                guid: '519bb87d-deec-488b-a896-3fc4840edc4c',
+                status: 'ACTIVE',
+                displayText: 'Notion doc',
+                classificationNames: [],
+                classifications: [],
+                meaningNames: [],
+                meanings: [],
+                isIncomplete: false,
+                labels: [],
+            },
+            {
+                typeName: 'Link',
+                attributes: {
                     qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1eeb',
                     name: 'Insights discussion',
                     link: 'https://atlanhq.slack.com/archives/C02DDQ79H6Z/p1638282533490900',
@@ -237,40 +258,23 @@ export default defineComponent({
                 isIncomplete: false,
                 labels: [],
             },
-            // {
-            //     typeName: 'Link',
-            //     attributes: {
-            //         qualifiedName: 'c82b5454-0b52-3453-436b-1212ef0d1111',
-            //         name: 'Discovery discussion',
-            //         link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638280885031500?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
-            //     },
-            //     guid: '519bb87d-deec-488b-a896-87578422dc4c',
-            //     status: 'ACTIVE',
-            //     displayText: 'Discovery discussion',
-            //     classificationNames: [],
-            //     classifications: [],
-            //     meaningNames: [],
-            //     meanings: [],
-            //     isIncomplete: false,
-            //     labels: [],
-            // },
-            // {
-            //     typeName: 'Link',
-            //     attributes: {
-            //         qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1ee1',
-            //         name: 'Notion doc',
-            //         link: 'https://www.notion.so',
-            //     },
-            //     guid: '519bb87d-deec-488b-a896-3fc4840edc4c',
-            //     status: 'ACTIVE',
-            //     displayText: 'Notion doc',
-            //     classificationNames: [],
-            //     classifications: [],
-            //     meaningNames: [],
-            //     meanings: [],
-            //     isIncomplete: false,
-            //     labels: [],
-            // },
+            {
+                typeName: 'Link',
+                attributes: {
+                    qualifiedName: 'c82b5454-0b52-3453-436b-1212ef0d1111',
+                    name: 'Discovery discussion',
+                    link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638283148036400?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
+                },
+                guid: '519bb87d-deec-488b-a896-87578422dc4c',
+                status: 'ACTIVE',
+                displayText: 'Discovery discussion',
+                classificationNames: [],
+                classifications: [],
+                meaningNames: [],
+                meanings: [],
+                isIncomplete: false,
+                labels: [],
+            },
         ]
 
         const pV = { id: '80c84f2f-ba68-410b-b099-91aacf38ec6f' }
@@ -330,5 +334,8 @@ export default defineComponent({
     /* box-shadow: -1px 1px 4px white; */
     background: white;
     padding: 0.9px;
+}
+.min-w-link-left-col {
+    min-width: 2rem;
 }
 </style>

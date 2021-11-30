@@ -1,39 +1,36 @@
 /* eslint-disable vue/require-default-prop */
 <template>
-    <a-input-group compact class="flex w-full mb-0">
-        <a-tree-select
-            style="width: 100%"
-            :dropdown-style="{
-                maxHeight: '400px',
-                maxWidth: '300px;',
-                overflow: 'auto',
-            }"
-            :tree-data="treeData"
-            :class="$style.connector"
-            placeholder=""
-            dropdown-class-name="sqlDropdown"
-            :allow-clear="true"
-            :tree-data-simple-mode="true"
-        >
-            <template #title="node">
-                {{ node }}
-            </template>
+    <a-tree-select
+        style="width: 100%"
+        :dropdown-style="{
+            maxHeight: '400px',
+            maxWidth: '300px;',
+            overflow: 'auto',
+        }"
+        :multiple="true"
+        :tree-data="treeData"
+        :class="$style.connector"
+        placeholder=""
+        dropdown-class-name="sqlDropdown"
+        :allow-clear="true"
+        :tree-data-simple-mode="true"
+        :treeCheckable="true"
+    >
+        <template #title="node">
+            {{ node.title }}
+        </template>
 
-            <template #suffixIcon>
-                <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-            </template>
-        </a-tree-select>
-        <a-button style="width: 20%" @click="handleClick">
-            <a-spin size="small" class="mt-1" v-if="isLoading"></a-spin>
-            <AtlanIcon icon="Refresh" v-else></AtlanIcon>
-        </a-button>
-    </a-input-group>
+        <template #suffixIcon>
+            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
+        </template>
+    </a-tree-select>
 </template>
 
 <script lang="ts">
     import {
         computed,
         defineComponent,
+        onMounted,
         PropType,
         ref,
         Ref,
@@ -44,23 +41,22 @@
     import { useVModels } from '@vueuse/core'
 
     import { useQueryCredential } from '~/composables/credential/useQueryCredential'
+    import { useTestCredential } from '~/composables/credential/useTestCredential'
 
     export default defineComponent({
         props: {
-            props: {
-                modelValue: {
-                    type: [Array, String],
-                    required: false,
-                },
-                query: {
-                    type: String,
-                    required: false,
-                    default: () => '',
-                },
-                credential: {
-                    type: Object,
-                    required: false,
-                },
+            modelValue: {
+                type: [Array, String],
+                required: false,
+            },
+            query: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
+            credential: {
+                type: Object,
+                required: false,
             },
         },
         setup(props, { emit }) {
@@ -68,18 +64,19 @@
             // const localValue = ref(modelValue.value)
             const { credential, query } = toRefs(props)
 
-            const body = computed(() => {
-                return {
-                    ...credential.value,
-                    query: query.value,
-                }
-            })
-
+            const body = computed(() => ({
+                ...credential?.value,
+                query: query?.value,
+            }))
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
             const handleClick = () => {
                 refresh()
             }
+
+            onMounted(() => {
+                refresh()
+            })
 
             // watch(credential, () => {
             //     refresh()
@@ -87,14 +84,33 @@
 
             const treeData = ref([])
             watch(data, () => {
-                // treeData.value = data.value.results?.map((item) => ({
-                //     id: item.name,
-                //     value: item.name,
-                //     label: item.name,
-                //     slots: {
-                //         title: 'title',
-                //     },
-                // }))
+                const db = [
+                    ...new Set(
+                        data.value.results?.map((item) => item.TABLE_CATALOG)
+                    ),
+                ]
+                console.log(db)
+                db.forEach((element) => {
+                    treeData.value.push({
+                        id: element,
+                        key: element,
+                        value: element,
+                        isLeaf: false,
+                        title: element,
+                    })
+                })
+
+                console.log(treeData)
+                data.value.results?.forEach((element) => {
+                    treeData.value.push({
+                        id: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
+                        key: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
+                        isLeaf: true,
+                        pId: element.TABLE_CATALOG,
+                        value: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
+                        title: element.TABLE_SCHEM,
+                    })
+                })
             })
 
             // const treeData = computed(() => {
@@ -132,11 +148,17 @@
             //     }))
             //     mappedConnection.push(...mappedConnector)
             //     return mappedConnection
-            // })
+            // })  //     value: item.name,
+            //     label: item.name,
+            //     slots: {
+            //         title: 'title',
 
             return {
                 treeData,
                 handleClick,
+                isLoading,
+                credential,
+                query,
             }
         },
     })

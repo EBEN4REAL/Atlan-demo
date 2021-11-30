@@ -57,26 +57,32 @@
                         ></AtlanIcon
                     ></a-button>
 
-                    <a-popconfirm
-                        ok-text="Confirm"
-                        :overlay-class-name="$style.popConfirm"
-                        cancel-text="Cancel"
-                        placement="topRight"
+                    <div
+                        class="flex gap-x-2"
+                        v-if="currentStep == steps.length - 1"
                     >
-                        <template #icon> </template>
-                        <template #title>
-                            <Schedule class="mb-3"></Schedule>
-                        </template>
-                        <a-button
-                            type="primary"
-                            class="px-6 bg-green-500 border-green-500"
-                            >Schedule & Run
-                            <AtlanIcon
-                                icon="ChevronRight"
-                                class="ml-1 text-white"
-                            ></AtlanIcon
-                        ></a-button>
-                    </a-popconfirm>
+                        <a-button type="primary" class="px-6">Run</a-button>
+                        <a-popconfirm
+                            ok-text="Confirm"
+                            :overlay-class-name="$style.popConfirm"
+                            cancel-text="Cancel"
+                            placement="topRight"
+                        >
+                            <template #icon> </template>
+                            <template #title>
+                                <Schedule class="mb-3"></Schedule>
+                            </template>
+                            <a-button
+                                type="primary"
+                                class="px-6 bg-green-500 border-green-500"
+                                >Schedule & Run
+                                <AtlanIcon
+                                    icon="ChevronRight"
+                                    class="ml-1 text-white"
+                                ></AtlanIcon
+                            ></a-button>
+                        </a-popconfirm>
+                    </div>
                 </div>
 
                 <!-- <div

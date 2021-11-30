@@ -1,7 +1,7 @@
 <template>
     <SQLTreeSelect
         :credential="credentialBody"
-        :query="property.ui.query"
+        query="show atlan schemas"
     ></SQLTreeSelect>
 </template>
 
@@ -9,6 +9,7 @@
     import { defineComponent, toRefs, computed, ref, inject } from 'vue'
 
     import SQLTreeSelect from '@common/treeselect/sql/index.vue'
+    import { useCredential } from '~/composables/credential/useCredential'
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
@@ -30,9 +31,18 @@
         setup(props, { emit }) {
             const { property, baseKey } = toRefs(props)
             const formState = inject('formState')
-            const credentialBody = inject('credentialBody')
 
             const componentProps = computed(() => property.value.ui)
+
+            const { buildCredentialBody } = useCredential()
+
+            const credentialBody = computed(() =>
+                buildCredentialBody(
+                    formState,
+                    'credential-guid',
+                    'atlan-connectors-snowflake-beta'
+                )
+            )
 
             return {
                 property,

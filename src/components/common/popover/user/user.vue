@@ -1,5 +1,5 @@
 <template>
-    <a-popover title="">
+    <a-popover>
         <template #content>
             <div class="user-popover">
                 <div class="flex justify-between">
@@ -16,6 +16,7 @@
                             text-gray-500
                             bg-gray-100
                             border border-gray-300 border-solid
+                            rounded
                         "
                     >
                         {{ admin }}
@@ -95,14 +96,12 @@
 
 <script lang="ts">
     import { toRefs, computed, watch, ref } from 'vue'
-    // import bodybuilder from 'bodybuilder'
     import getUserGroups from '~/composables/user/getUserGroups'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    // import { Search } from '~/services/meta/search'
     import { useUsers } from '~/composables/user/useUsers'
     import usePersonaList from '../persona/usePersonaList'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-    import usePopoverUserGroup from '~/composables/user/usePopoverUserGroup'
+    import useUserPopover from './composables/useUserPopover'
 
     export default {
         name: 'PopoverUser',
@@ -149,8 +148,11 @@
                 groupListAPIParams,
                 selectedUser?.value.id
             )
-            const { bussinesCount, assetCount } = usePopoverUserGroup('user', item.value )
-       
+            const { bussinesCount, assetCount } = useUserPopover(
+                'user',
+                item.value
+            )
+
             const handleClickViewUser = () => {
                 setUserUniqueAttribute(item.value, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
@@ -162,7 +164,9 @@
                 watch(personaList, (newValue) => {
                     if (newValue) {
                         const user = selectedUser.value.id
-                        listOfPersona.value = newValue.filter((element) => element.users.includes(user))
+                        listOfPersona.value = newValue.filter((element) =>
+                            element.users.includes(user)
+                        )
                     }
                 })
             }
@@ -179,13 +183,6 @@
         },
     }
 </script>
-<style lang="less">
-    .icon-blue-color {
-        path {
-            stroke: #5277d7;
-        }
-    }
-</style>
 <style lang="less" scoped>
     .user-popover {
         width: 370px;

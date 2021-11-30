@@ -31,9 +31,9 @@ function installSlackUrl() {
 // id that we get in slack message link
 function getTimestampFromSlackMessageId(id) {
     const removePchar = id.substring(1)
-    const position = 10
+    const position = 11
     const dot = "."
-    const ts = [removePchar.slice(0, position), dot, id.slice(position)].join('');
+    const ts = `${removePchar.substring(0, 10)}.${removePchar.substring(10)}`
     return ts
 }
 

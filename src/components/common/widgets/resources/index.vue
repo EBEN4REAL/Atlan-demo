@@ -76,16 +76,22 @@
                                             slackUnfurls[item.guid].data.value
                                                 ?.channel?.name
                                         " -->
-                                    <span class="">
+                                    <span
+                                        class=""
+                                        v-if="
+                                            slackUnfurls[item.guid].data.value
+                                                .message.reply_count
+                                        "
+                                    >
                                         {{
                                             slackUnfurls[item.guid].data.value
                                                 .message.reply_count
                                         }}
                                         replies
+                                        <span class="ml-1 mr-1 text-gray-300"
+                                            >•</span
+                                        >
                                     </span>
-                                    <span class="ml-1 mr-1 text-gray-300"
-                                        >•</span
-                                    >
                                     <span>
                                         #{{
                                             slackUnfurls[item.guid].data.value
@@ -202,7 +208,7 @@ export default defineComponent({
                 attributes: {
                     qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1eeb',
                     name: 'Insights discussion',
-                    link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638256807025900',
+                    link: 'https://atlanhq.slack.com/archives/C02DDQ79H6Z/p1638282533490900',
                 },
                 guid: '519bb87d-deec-488b-a896-6fc4840edc4c',
                 status: 'ACTIVE',
@@ -219,7 +225,7 @@ export default defineComponent({
                 attributes: {
                     qualifiedName: 'c82b5454-0b52-34c3-446b-1212ef0d1eeb',
                     name: 'Discovery discussion',
-                    link: 'https://atlanhq.slack.com/archives/C02CS1YQMFU/p1637818120335700',
+                    link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638280885031500?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
                 },
                 guid: '519bb87d-deec-488b-a896-6fc48422dc4c',
                 status: 'ACTIVE',
@@ -231,6 +237,23 @@ export default defineComponent({
                 isIncomplete: false,
                 labels: [],
             },
+            // {
+            //     typeName: 'Link',
+            //     attributes: {
+            //         qualifiedName: 'c82b5454-0b52-3453-436b-1212ef0d1111',
+            //         name: 'Discovery discussion',
+            //         link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638280885031500?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
+            //     },
+            //     guid: '519bb87d-deec-488b-a896-87578422dc4c',
+            //     status: 'ACTIVE',
+            //     displayText: 'Discovery discussion',
+            //     classificationNames: [],
+            //     classifications: [],
+            //     meaningNames: [],
+            //     meanings: [],
+            //     isIncomplete: false,
+            //     labels: [],
+            // },
             // {
             //     typeName: 'Link',
             //     attributes: {

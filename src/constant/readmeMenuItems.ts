@@ -120,7 +120,7 @@ export const menuData: CommandItem[] = [
     },
     {
         title: 'Align Center',
-        key: 'alignCenter',
+        key: 'align-center',
         helpText: '',
         icon: 'TextCenter',
         command: (editor) =>
@@ -129,21 +129,21 @@ export const menuData: CommandItem[] = [
 
     {
         title: 'Align Left',
-        key: 'alignLeft',
+        key: 'align-left',
         helpText: '',
         icon: 'TextLeft',
         command: (editor) => editor.chain().focus().setTextAlign('left').run(),
     },
     {
         title: 'Align Right',
-        key: 'alignRight',
+        key: 'align-right',
         helpText: '',
         icon: 'TextRight',
         command: (editor) => editor.chain().focus().setTextAlign('right').run(),
     },
     {
         title: 'Justify Text',
-        key: 'justify',
+        key: 'align-justify',
         helpText: '',
         icon: 'JustifyText',
         command: (editor) =>

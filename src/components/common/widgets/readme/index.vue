@@ -1,5 +1,8 @@
 <template>
-    <div class="flex flex-col p-4 bg-white rounded">
+    <div
+        class="flex flex-col p-4 bg-white rounded"
+        :class="isEditMode ? 'editor-open' : 'editor-close'"
+    >
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center">
                 <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
@@ -130,11 +133,14 @@
     })
 </script>
 
-<style lang="less">
-    .container {
-        display: flex;
-        width: 100vw !important;
-        align-items: center;
+<style lang="less" scoped>
+    .editor-open {
+        min-height: 20vh;
+        transition: min-height 0.3s ease-in-out;
+    }
+    .editor-close {
+        min-height: 0;
+        transition: min-height 0.3s ease-in-out;
     }
 </style>
 

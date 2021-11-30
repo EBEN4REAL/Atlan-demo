@@ -145,11 +145,10 @@
                         class: 'prose prose-sm w-full',
                     },
                 },
+                autofocus: true,
                 extensions: [
+                    StarterKit,
                     CustomDocument,
-                    StarterKit.configure({
-                        document: false,
-                    }),
                     Underline,
                     Link,
                     TaskList,
@@ -213,7 +212,6 @@
 <style lang="less">
     .editor {
         position: relative;
-        min-height: 10vh;
         min-width: inherit;
         max-width: inherit;
     }

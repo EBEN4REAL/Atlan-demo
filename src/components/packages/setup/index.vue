@@ -108,39 +108,34 @@
             >
                 <div
                     class="flex items-center mb-1"
-                    v-if="
-                        workflowTemplate?.workflowtemplate.metadata.annotations
-                    "
+                    v-if="workflowTemplate?.metadata.annotations"
                 >
                     <img
                         v-if="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['com.atlan.orchestration/icon']
+                            workflowTemplate?.metadata.annotations[
+                                'com.atlan.orchestration/icon'
+                            ]
                         "
                         class="self-center w-5 h-auto mr-2"
                         :src="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['com.atlan.orchestration/icon']
+                            workflowTemplate?.metadata.annotations[
+                                'com.atlan.orchestration/icon'
+                            ]
                         "
                     />
                     <div class="text-base font-bold truncate overflow-ellipsis">
                         {{
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['workflows.argoproj.io/name']
+                            workflowTemplate?.metadata.annotations[
+                                'workflows.argoproj.io/name'
+                            ]
                         }}
                     </div>
                 </div>
 
                 <div class="text-sm line-clamp-4">
-                    <span
-                        v-if="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations
-                        "
-                    >
+                    <span v-if="workflowTemplate?.metadata.annotations">
                         {{
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations[
+                            workflowTemplate?.metadata.annotations[
                                 'workflows.argoproj.io/description'
                             ]
                         }}</span
@@ -148,21 +143,18 @@
                 </div>
                 <div
                     class="flex mt-1 text-gray-500"
-                    v-if="
-                        workflowTemplate?.workflowtemplate.metadata.annotations
-                    "
+                    v-if="workflowTemplate?.metadata.annotations"
                 >
                     <div class="text-sm truncate overflow-ellipsis">
                         {{
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations[
+                            workflowTemplate?.metadata.annotations[
                                 'com.atlan.orchestration/packageName'
                             ]
                         }}
                     </div>
                     <div class="text-sm truncate overflow-ellipsis">
                         (v{{
-                            workflowTemplate?.labels[
+                            workflowTemplate?.metadata.labels[
                                 'org.argopm.package.version'
                             ]
                         }})
@@ -175,39 +167,34 @@
             >
                 <div
                     class="flex items-center mb-1"
-                    v-if="
-                        workflowTemplate?.workflowtemplate.metadata.annotations
-                    "
+                    v-if="workflowTemplate?.metadata.annotations"
                 >
                     <img
                         v-if="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['com.atlan.orchestration/icon']
+                            workflowTemplate?.metadata.annotations[
+                                'com.atlan.orchestration/icon'
+                            ]
                         "
                         class="self-center w-5 h-auto mr-2"
                         :src="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['com.atlan.orchestration/icon']
+                            workflowTemplate?.metadata.annotations[
+                                'com.atlan.orchestration/icon'
+                            ]
                         "
                     />
                     <div class="text-base font-bold truncate overflow-ellipsis">
                         {{
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['workflows.argoproj.io/name']
+                            workflowTemplate?.metadata.annotations[
+                                'workflows.argoproj.io/name'
+                            ]
                         }}
                     </div>
                 </div>
 
                 <div class="text-sm line-clamp-4">
-                    <span
-                        v-if="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations
-                        "
-                    >
+                    <span v-if="workflowTemplate?.metadata.annotations">
                         {{
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations[
+                            workflowTemplate?.metadata.annotations[
                                 'workflows.argoproj.io/description'
                             ]
                         }}</span

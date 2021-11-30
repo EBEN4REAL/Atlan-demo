@@ -62,13 +62,14 @@
             const testClass = ref('')
 
             const connector = computed(() => {
-                return workflowTemplate.value?.workflowtemplate.metadata.labels[
+                return workflowTemplate.value?.metadata.labels[
                     'com.atlan.orchestration/source'
                 ]
             })
             const connectorImage = computed(() => {
-                return workflowTemplate.value?.workflowtemplate.metadata
-                    .annotations['com.atlan.orchestration/icon']
+                return workflowTemplate.value?.metadata.annotations[
+                    'com.atlan.orchestration/icon'
+                ]
             })
 
             const configMap = ref({

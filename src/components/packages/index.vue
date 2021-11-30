@@ -48,27 +48,27 @@
         <div class="relative hidden bg-white asset-preview-container md:block">
             <div
                 class="flex flex-col h-full p-6 bg-white"
-                v-if="selectedPackage?.workflowtemplate"
+                v-if="selectedPackage"
             >
                 <div
                     class="flex items-center"
-                    v-if="
-                        selectedPackage?.workflowtemplate?.metadata?.annotations
-                    "
+                    v-if="selectedPackage?.metadata?.annotations"
                 >
                     <div
                         class="p-2 mr-2 bg-white border border-gray-200 rounded-full"
                     >
                         <img
                             v-if="
-                                selectedPackage.workflowtemplate.metadata
-                                    .annotations['com.atlan.orchestration/icon']
+                                selectedPackage.metadata.annotations[
+                                    'com.atlan.orchestration/icon'
+                                ]
                             "
                             class="self-center h-auto"
                             style="width: 30px"
                             :src="
-                                selectedPackage.workflowtemplate.metadata
-                                    .annotations['com.atlan.orchestration/icon']
+                                selectedPackage.metadata.annotations[
+                                    'com.atlan.orchestration/icon'
+                                ]
                             "
                         />
                     </div>
@@ -77,22 +77,22 @@
                             class="text-base font-bold truncate overflow-ellipsis"
                         >
                             {{
-                                selectedPackage.workflowtemplate.metadata
-                                    .annotations['workflows.argoproj.io/name']
+                                selectedPackage.metadata.annotations[
+                                    'workflows.argoproj.io/name'
+                                ]
                             }}
                         </div>
                         <div class="flex">
                             <div class="text-sm truncate overflow-ellipsis">
                                 {{
-                                    selectedPackage.workflowtemplate.metadata
-                                        .annotations[
+                                    selectedPackage.metadata.annotations[
                                         'com.atlan.orchestration/packageName'
                                     ]
                                 }}
                             </div>
                             <div class="text-sm truncate overflow-ellipsis">
                                 (v{{
-                                    selectedPackage.labels[
+                                    selectedPackage.metadata.labels[
                                         'org.argopm.package.version'
                                     ]
                                 }})
@@ -102,15 +102,9 @@
                 </div>
 
                 <div class="mt-3 text-sm line-clamp-5">
-                    <span
-                        v-if="
-                            selectedPackage.workflowtemplate?.metadata
-                                .annotations
-                        "
-                    >
+                    <span v-if="selectedPackage?.metadata.annotations">
                         {{
-                            selectedPackage.workflowtemplate.metadata
-                                .annotations[
+                            selectedPackage.metadata.annotations[
                                 'workflows.argoproj.io/description'
                             ]
                         }}</span
@@ -200,6 +194,7 @@
             const selectedPackage = ref<any>(null)
 
             const handleSelect = (item) => {
+                console.log('handleSelect', item)
                 selectedPackage.value = item
             }
 

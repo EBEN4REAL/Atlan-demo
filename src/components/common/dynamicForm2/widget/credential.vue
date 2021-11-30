@@ -113,9 +113,7 @@
             watch(data, () => {
                 if (list.value.length > 0) {
                     try {
-                        configMap.value = JSON.parse(
-                            list.value[0].configmap.data.config
-                        )
+                        configMap.value = JSON.parse(list.value[0].data.config)
                     } catch (e) {
                         console.error(e)
                     }

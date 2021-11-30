@@ -74,9 +74,11 @@
                 filter: ref({
                     $or: [
                         {
-                            labels: {
+                            metadata: {
                                 $elemMatch: {
-                                    'com.atlan.orchestration/workflow-template-name': `${id.value}`,
+                                    labels: {
+                                        'com.atlan.orchestration/workflow-template-name': `${id.value}`,
+                                    },
                                 },
                             },
                         },
@@ -92,7 +94,7 @@
                 if (list.value.length > 0) {
                     try {
                         localConfig.value = JSON.parse(
-                            list.value[0].configmap.data.config
+                            list.value[0].data.config
                         )
 
                         // Add Schedule

@@ -186,12 +186,31 @@ export function useEditor(
                         queryStartColumn,
                         queryEndColumn
                     })
+
+                    console.log('position query: ', queryPositions)
                     setSelection(toRaw(editorInstance), toRaw(monacoInstance), {
                         startLineNumber: queryStartLine,
                         startColumnNumber: queryStartColumn,
                         endLineNumber: queryEndLine,
                         endColumnNumber: queryEndColumn
                     })
+                    let monaco = toRaw(monacoInstance)
+                    decorations = toRaw(editorInstance).deltaDecorations(decorations??
+                        [],
+                        []
+                    );
+                    decorations = toRaw(editorInstance).deltaDecorations(
+                        [],
+                        [
+                            {
+                                range: new monaco.Range(Number(queryStartLine), 1, Number(queryEndLine), 1),
+                                options: {
+                                    isWholeLine: true,
+                                    linesDecorationsClassName: 'myLineDecoration'
+                                }
+                            }
+                        ]
+                    );
                     
                 }
 
@@ -210,6 +229,10 @@ export function useEditor(
 
         // return semicolonSeparateQuery(query)
     }
+    // const clearLineDecoration = (editorInstance: any) => {
+    //     // older moustacheDecorations needed
+    //     decorations = editorInstance?.deltaDecorations(decorations ?? [], [])
+    // }
 
     function formatter(text: string, options?: FormatOptions) {
         /* It formats and changes {{abc}}-> { {abc} } */

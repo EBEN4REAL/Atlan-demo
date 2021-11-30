@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="items.length"
-        class="flex flex-col overflow-y-scroll bg-white border rounded-sm shadow-lg  overflow-ellipsis h-52 w-72"
+        class="flex flex-col py-1 bg-white border rounded shadow-xl  border-gray-light"
     >
         <div class="items">
             <button
@@ -103,12 +103,12 @@
         text-align: left;
         background: transparent;
         border: none;
-        padding: 0.2rem 0.5rem;
+        padding: 5px 12px;
 
         &:hover {
             @apply bg-gray-100;
         }
-        .is-selected {
+        &.is-selected {
             @apply bg-gray-200 text-gray-700 !important;
         }
     }

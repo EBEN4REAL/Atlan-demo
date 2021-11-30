@@ -21,6 +21,7 @@
                 <template #overlay>
                     <a-menu>
                         <a-menu-item
+                            v-auth="map.UPDATE_CLASSIFICATION"
                             @click="editClassification"
                         >
                             <div class="flex items-center">
@@ -29,6 +30,7 @@
                             </div>
                         </a-menu-item>
                         <a-menu-item
+                            v-auth="map.DELETE_CLASSIFICATION"
                             @click="deleteClassification"
                         >
                             <div class="flex items-center text-red-700">
@@ -36,7 +38,9 @@
                                 <span class="pl-2 text-sm">Delete</span>
                             </div>
                         </a-menu-item>
-                        <a-sub-menu>
+                        <a-sub-menu
+                            v-auth="map.UPDATE_CLASSIFICATION"
+                        >
                             <template #title>
                                 <span class="flex items-center">
                                     <AtlanIcon icon="Shield" class="self-center mr-1" :style="`color: ${getClassificationColorHex(classificationColor)}`"/>
@@ -88,6 +92,7 @@
 
     import useEditTypedefs from '~/composables/typedefs/useEditTypedefs'
     import { useTypedefStore } from '~/store/typedef'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'ClassificationHeader',
@@ -187,6 +192,7 @@
                 getClassificationColorHex,
                 editClassification,
                 classificationColor,
+                map
             }
         },
     })

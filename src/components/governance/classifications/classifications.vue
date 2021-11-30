@@ -1,10 +1,12 @@
 <template>
     <ExplorerLayout
-        title="Classification   "
+        v-if="false"
+        title="Classification"
         sub-title="Manage classification tags to build access policies."
     >
         <template #action>
             <AtlanBtn
+                v-auth="map.CREATE_CLASSIFICATION"
                 class="flex-none"
                 size="sm"
                 color="secondary"
@@ -14,7 +16,9 @@
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
             </AtlanBtn>
         </template>
-        <template #sidebar>
+        <template #sidebar
+            v-auth="map.LIST_CLASSIFICATION"
+        >
             <div class="flex px-3 py-1">
                 <SearchAdvanced
                     v-model:value="searchQuery"
@@ -53,7 +57,8 @@
             v-model:modalVisible="createClassificationModalVisible"
         />
     </ExplorerLayout>
-    <!-- <NoAcces v-else /> -->
+
+    
 </template>
 
 <script lang="ts">
@@ -79,6 +84,7 @@
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
@@ -150,7 +156,8 @@
                 selectedClassificationName,
                 selectClassification,
                 createClassificationModalVisible,
-                getClassificationColorHex
+                getClassificationColorHex,
+                map
             }
         },
     })

@@ -1,51 +1,36 @@
 /* eslint-disable vue/require-default-prop */
 <template>
-    <div class="w-full">
-        <a-tree-select
-            style="width: 100%"
-            :dropdown-style="{
-                maxHeight: '400px',
-                maxWidth: '300px;',
-                overflow: 'auto',
-            }"
-            :tree-data="treeData"
-            :class="$style.connector"
-            placeholder=""
-            dropdown-class-name="sqlDropdown"
-            :allow-clear="true"
-            :tree-data-simple-mode="true"
-        >
-            <template #title="node">
-                {{ node }}
-                <!-- <div class="flex items-center" v-if="node.type == 'connector'">
-                    <img :src="node.image" class="w-auto h-4 mr-1" />
-                    <div v-if="node.type == 'connector'" class="text-gray-700">
-                        {{ capitalizeFirstLetter(node.name) }}
-                    </div>
-                </div>
-                <div class="flex flex-col" v-else>
-                    <div class="flex items-center">
-                        <img :src="node.image" class="w-auto h-4 mr-1" />
-                        <div class="">{{ node.name }}</div>
-                    </div>
+    <a-tree-select
+        style="width: 100%"
+        :dropdown-style="{
+            maxHeight: '400px',
+            maxWidth: '300px;',
+            overflow: 'auto',
+        }"
+        :multiple="true"
+        :tree-data="treeData"
+        :class="$style.connector"
+        placeholder=""
+        dropdown-class-name="sqlDropdown"
+        :allow-clear="true"
+        :tree-data-simple-mode="true"
+        :treeCheckable="true"
+    >
+        <template #title="node">
+            {{ node.title }}
+        </template>
 
-                    <div class="text-xs text-gray-500">
-                        {{ node.count }} assets
-                    </div>
-                </div> -->
-            </template>
-
-            <template #suffixIcon>
-                <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-            </template>
-        </a-tree-select>
-    </div>
+        <template #suffixIcon>
+            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
+        </template>
+    </a-tree-select>
 </template>
 
 <script lang="ts">
     import {
         computed,
         defineComponent,
+        onMounted,
         PropType,
         ref,
         Ref,
@@ -56,23 +41,22 @@
     import { useVModels } from '@vueuse/core'
 
     import { useQueryCredential } from '~/composables/credential/useQueryCredential'
+    import { useTestCredential } from '~/composables/credential/useTestCredential'
 
     export default defineComponent({
         props: {
-            props: {
-                modelValue: {
-                    type: [Array, String],
-                    required: false,
-                },
-                query: {
-                    type: String,
-                    required: false,
-                    default: () => '',
-                },
-                credential: {
-                    type: Object,
-                    required: false,
-                },
+            modelValue: {
+                type: [Array, String],
+                required: false,
+            },
+            query: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
+            credential: {
+                type: Object,
+                required: false,
             },
         },
         setup(props, { emit }) {
@@ -80,29 +64,52 @@
             // const localValue = ref(modelValue.value)
             const { credential, query } = toRefs(props)
 
-            const body = computed(() => {
-                return {
-                    ...credential.value,
-                    query: query.value,
-                }
-            })
-
+            const body = computed(() => ({
+                ...credential?.value,
+                query: query?.value,
+            }))
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
-            watch(credential, () => {
+            const handleClick = () => {
+                refresh()
+            }
+
+            onMounted(() => {
                 refresh()
             })
 
+            // watch(credential, () => {
+            //     refresh()
+            // })
+
             const treeData = ref([])
             watch(data, () => {
-                treeData.value = data.value.results?.map((item) => ({
-                    id: item.name,
-                    value: item.name,
-                    label: item.name,
-                    slots: {
-                        title: 'title',
-                    },
-                }))
+                const db = [
+                    ...new Set(
+                        data.value.results?.map((item) => item.TABLE_CATALOG)
+                    ),
+                ]
+                db.forEach((element) => {
+                    treeData.value.push({
+                        id: element,
+                        key: element,
+                        value: element,
+                        isLeaf: false,
+                        title: element,
+                    })
+                })
+
+                console.log(treeData)
+                data.value.results?.forEach((element) => {
+                    treeData.value.push({
+                        id: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
+                        key: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
+                        isLeaf: true,
+                        pId: element.TABLE_CATALOG,
+                        value: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
+                        title: element.TABLE_SCHEM,
+                    })
+                })
             })
 
             // const treeData = computed(() => {
@@ -140,10 +147,17 @@
             //     }))
             //     mappedConnection.push(...mappedConnector)
             //     return mappedConnection
-            // })
+            // })  //     value: item.name,
+            //     label: item.name,
+            //     slots: {
+            //         title: 'title',
 
             return {
                 treeData,
+                handleClick,
+                isLoading,
+                credential,
+                query,
             }
         },
     })

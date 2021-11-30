@@ -39,10 +39,6 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
-            const enumSelected = computed(() => {
-                return list.value.find((item) => item.name === props.enum)
-            })
-
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -50,7 +46,6 @@
 
             return {
                 list,
-                enumSelected,
                 localValue,
                 handleChange,
             }

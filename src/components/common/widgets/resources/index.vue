@@ -7,10 +7,7 @@
                     >Resources</span
                 >
             </div>
-            <AddResources
-                v-if="links(asset)?.length > 0"
-                :asset="asset"
-                placement="left"
+            <AddResources v-if="links(asset)?.length > 0" :asset="asset"
                 ><template #trigger>
                     <a-button
                         class="text-gray-500 border border-transparent rounded shadow-none  hover:border-gray-400"
@@ -51,7 +48,7 @@
                 <p class="text-sm text-center text-gray-700">
                     Add URLs related to this asset
                 </p>
-                <AddResources :asset="asset" placement="top"
+                <AddResources :asset="asset"
                     ><template #trigger>
                         <AtlanButton
                             size="lg"

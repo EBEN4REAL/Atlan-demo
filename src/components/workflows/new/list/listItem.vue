@@ -9,7 +9,7 @@
         "
     >
         <div
-            class="flex items-start flex-1 px-3 py-4 border-b border-transparent  w-96"
+            class="flex items-start flex-1 px-3 py-4 border-b border-transparent w-96"
             :class="{ ' border-gray-200': !isSelected }"
         >
             <a-checkbox
@@ -20,16 +20,13 @@
                 @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
+                class="box-border flex flex-col flex-1 overflow-hidden gap-y-1 lg:pr-16"
             >
                 <div class="flex items-center gap-x-3">
                     <div class="flex text-sm text-gray-500">
-                        <div
-                            v-if="item?.configmap?.data?.logo"
-                            class="mr-2 p-0.5"
-                        >
+                        <div v-if="item?.data?.logo" class="mr-2 p-0.5">
                             <img
-                                :src="item?.configmap?.data?.logo"
+                                :src="item?.data?.logo"
                                 class="flex-none w-auto h-3.5 mb-0.5"
                             />
                         </div>
@@ -39,22 +36,22 @@
                 </div>
                 <div class="flex items-center mb-0 overflow-hidden">
                     <h3
-                        class="flex-shrink mb-0 overflow-hidden text-xl font-bold truncate cursor-pointer  t text-primary overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-xl font-bold truncate cursor-pointer t text-primary overflow-ellipsis whitespace-nowrap"
                     >
-                        {{ item?.configmap?.data?.displayName || '' }}
+                        {{ item?.data?.displayName || '' }}
                     </h3>
                 </div>
                 <div class="flex items-center gap-x-3">
                     <div class="flex text-sm text-gray-500">
                         <span class="text-gray-500">
-                            {{ item?.configmap?.data?.description || '' }}</span
+                            {{ item?.data?.description || '' }}</span
                         >
                     </div>
                 </div>
                 <div class="flex items-center gap-x-3">
                     <div class="flex text-sm text-gray-500">
                         <span class="text-gray-500">
-                            {{ item?.configmap?.data?.packageName || '' }}</span
+                            {{ item?.data?.packageName || '' }}</span
                         >
                     </div>
                     <!-- <div

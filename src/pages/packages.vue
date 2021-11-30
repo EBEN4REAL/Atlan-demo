@@ -26,7 +26,7 @@
             const router = useRouter()
             const handleSetup = (item: any) => {
                 selectedPackage.value = item
-                const url = selectedPackage.value.name
+                const url = selectedPackage.value.metadata.name
 
                 router.push(`/packages/${url}`)
             }

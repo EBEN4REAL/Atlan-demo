@@ -86,9 +86,9 @@
                             el.rules?.forEach((elc) => {
                                 if (elc.type === 'required') {
                                     const defaultValue =
-                                        dataProp.value?.asset?.workflowtemplate
-                                            ?.spec?.templates[0]?.dag?.tasks[0]
-                                            ?.arguments?.parameters
+                                        dataProp.value?.asset?.spec.templates[0]
+                                            ?.dag?.tasks[0]?.arguments
+                                            ?.parameters
                                     const finded = defaultValue.find(
                                         (d) => d.name === el.id
                                     )
@@ -104,12 +104,11 @@
             })
 
             watch(data, (newVal) => {
-                const meta =
-                    newVal?.workflowtemplate?.metadata?.annotations || {}
+                const meta = newVal?.metadata?.annotations || {}
                 const urlLogo = meta['com.atlan.orchestration/logo'] || ''
                 emit('handleSetLogo', urlLogo)
-                const { entrypoint } = newVal.workflowtemplate.spec
-                tasks.value = newVal.workflowtemplate.spec.templates.find(
+                const { entrypoint } = newVal.spec
+                tasks.value = newVal.spec.templates.find(
                     (t) => t.name === entrypoint
                 ).dag.tasks
             })

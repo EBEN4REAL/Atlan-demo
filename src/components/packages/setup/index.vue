@@ -1,5 +1,8 @@
 <template>
-    <div class="flex w-full h-full">
+    <div
+        class="flex w-full h-full"
+        @click.meta.shift.space.exact="toggleSandbox"
+    >
         <div class="flex flex-1 border-r border-gray-200">
             <div class="flex flex-col w-full h-full">
                 <a-steps
@@ -16,8 +19,8 @@
                 </a-steps>
 
                 <div
-                    class="flex-1 p-8 overflow-y-auto bg-white"
-                    v-if="workflowTemplate"
+                    class="flex-1 px-6 py-8 overflow-y-auto bg-white"
+                    v-if="workflowTemplate && currentStep < steps.length"
                 >
                     <DynamicForm
                         :key="`form_${currentStep}`"
@@ -29,51 +32,110 @@
                         labelAlign="left"
                     ></DynamicForm>
                 </div>
-                <div class="flex justify-end p-3 border-t">
-                    <a-button type="primary" @click="handleNext">Next</a-button>
+
+                <div
+                    class="flex px-6 py-3 border-t"
+                    :class="
+                        currentStep !== 0 ? 'justify-between' : 'justify-end'
+                    "
+                    v-if="currentStep < steps.length"
+                >
+                    <a-button
+                        type=""
+                        @click="handlePrevious"
+                        v-if="currentStep !== 0"
+                    >
+                        <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
+                        >Back</a-button
+                    >
+                    <a-button
+                        @click="handleNext"
+                        class="text-primary"
+                        v-if="currentStep < steps.length - 1"
+                    >
+                        Next
+                        <AtlanIcon
+                            icon="ChevronRight"
+                            class="ml-1 text-primary"
+                        ></AtlanIcon
+                    ></a-button>
+
+                    <div
+                        class="flex gap-x-2"
+                        v-if="currentStep == steps.length - 1"
+                    >
+                        <a-button type="primary" class="px-6">Run</a-button>
+                        <a-popconfirm
+                            ok-text="Confirm"
+                            :overlay-class-name="$style.popConfirm"
+                            cancel-text="Cancel"
+                            placement="topRight"
+                        >
+                            <template #icon> </template>
+                            <template #title>
+                                <Schedule class="mb-3"></Schedule>
+                            </template>
+                            <a-button
+                                type="primary"
+                                class="px-6 bg-green-500 border-green-500"
+                                >Schedule & Run
+                                <AtlanIcon
+                                    icon="ChevronRight"
+                                    class="ml-1 text-white"
+                                ></AtlanIcon
+                            ></a-button>
+                        </a-popconfirm>
+                    </div>
                 </div>
+
+                <!-- <div
+                    class="flex items-center flex-1 px-6 py-8 overflow-y-auto bg-white"
+                >
+                    <p class="w-full">Ready to Schedule</p>
+                   
+                </div>
+                <div class="flex px-6 py-3 border-t">
+                    <a-button type="primary" @click="handleNext" block
+                        >Setup</a-button
+                    >
+                </div> -->
             </div>
         </div>
         <div class="flex flex-col w-1/3">
             <div
                 class="flex flex-col w-full px-6 py-3 mb-3"
-                v-if="workflowTemplate"
+                v-if="workflowTemplate && !isSandbox"
             >
                 <div
                     class="flex items-center mb-1"
-                    v-if="
-                        workflowTemplate?.workflowtemplate.metadata.annotations
-                    "
+                    v-if="workflowTemplate?.metadata.annotations"
                 >
                     <img
                         v-if="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['com.atlan.orchestration/icon']
+                            workflowTemplate?.metadata.annotations[
+                                'com.atlan.orchestration/icon'
+                            ]
                         "
                         class="self-center w-5 h-auto mr-2"
                         :src="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['com.atlan.orchestration/icon']
+                            workflowTemplate?.metadata.annotations[
+                                'com.atlan.orchestration/icon'
+                            ]
                         "
                     />
                     <div class="text-base font-bold truncate overflow-ellipsis">
                         {{
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations['workflows.argoproj.io/name']
+                            workflowTemplate?.metadata.annotations[
+                                'workflows.argoproj.io/name'
+                            ]
                         }}
                     </div>
                 </div>
 
                 <div class="text-sm line-clamp-4">
-                    <span
-                        v-if="
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations
-                        "
-                    >
+                    <span v-if="workflowTemplate?.metadata.annotations">
                         {{
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations[
+                            workflowTemplate?.metadata.annotations[
                                 'workflows.argoproj.io/description'
                             ]
                         }}</span
@@ -81,26 +143,66 @@
                 </div>
                 <div
                     class="flex mt-1 text-gray-500"
-                    v-if="
-                        workflowTemplate?.workflowtemplate.metadata.annotations
-                    "
+                    v-if="workflowTemplate?.metadata.annotations"
                 >
                     <div class="text-sm truncate overflow-ellipsis">
                         {{
-                            workflowTemplate?.workflowtemplate.metadata
-                                .annotations[
+                            workflowTemplate?.metadata.annotations[
                                 'com.atlan.orchestration/packageName'
                             ]
                         }}
                     </div>
                     <div class="text-sm truncate overflow-ellipsis">
                         (v{{
-                            workflowTemplate?.labels[
+                            workflowTemplate?.metadata.labels[
                                 'org.argopm.package.version'
                             ]
                         }})
                     </div>
                 </div>
+            </div>
+            <div
+                class="flex flex-col w-full px-6 py-3 mb-3"
+                v-if="workflowTemplate && !isSandbox"
+            >
+                <div
+                    class="flex items-center mb-1"
+                    v-if="workflowTemplate?.metadata.annotations"
+                >
+                    <img
+                        v-if="
+                            workflowTemplate?.metadata.annotations[
+                                'com.atlan.orchestration/icon'
+                            ]
+                        "
+                        class="self-center w-5 h-auto mr-2"
+                        :src="
+                            workflowTemplate?.metadata.annotations[
+                                'com.atlan.orchestration/icon'
+                            ]
+                        "
+                    />
+                    <div class="text-base font-bold truncate overflow-ellipsis">
+                        {{
+                            workflowTemplate?.metadata.annotations[
+                                'workflows.argoproj.io/name'
+                            ]
+                        }}
+                    </div>
+                </div>
+
+                <div class="text-sm line-clamp-4">
+                    <span v-if="workflowTemplate?.metadata.annotations">
+                        {{
+                            workflowTemplate?.metadata.annotations[
+                                'workflows.argoproj.io/description'
+                            ]
+                        }}</span
+                    >
+                </div>
+            </div>
+            <div class="flex mt-1 text-gray-500" v-else>
+                <div class="px-3 py-1 bg-gray-100 border-b">Sandbox</div>
             </div>
         </div>
     </div>
@@ -123,11 +225,13 @@
     import EmptyView from '@common/empty/index.vue'
     import SetupGraph from './setupGraph.vue'
     import DynamicForm from '@/common/dynamicForm2/index.vue'
+    import Schedule from './schedule.vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     // Composables
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
-        components: { SetupGraph, EmptyView, DynamicForm },
+        components: { SetupGraph, EmptyView, DynamicForm, Schedule, AtlanIcon },
         props: {
             workflowTemplate: {
                 type: Object,
@@ -146,6 +250,8 @@
             // const graphRef = inject('graphRef')
 
             const stepForm = ref()
+
+            const isSandbox = ref(false)
 
             const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
@@ -228,6 +334,15 @@
                     }
                 }
             }
+
+            const handlePrevious = () => {
+                currentStep.value -= 1
+            }
+
+            const toggleSandbox = () => {
+                isSandbox.value = !isSandbox.value
+            }
+
             // watch(data, (newVal) => {
             //     const meta =
             //         newVal?.workflowtemplate?.metadata?.annotations || {}
@@ -255,7 +370,27 @@
                 currentStepConfig,
                 handleNext,
                 stepForm,
+                handlePrevious,
+                isSandbox,
+                toggleSandbox,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .popConfirm {
+        :global(.ant-popover-inner-content) {
+            @apply px-6 py-3 !important;
+            width: 400px !important;
+
+            :global(.ant-popover-message-title) {
+                @apply px-0 !important;
+            }
+        }
+
+        :global(.ant-popover-arrow) {
+            @apply block !important;
+        }
+    }
+</style>

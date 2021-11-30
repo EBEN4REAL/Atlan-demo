@@ -424,6 +424,9 @@ export default function useAssetInfo() {
     const readmeGuid = (asset: assetInterface) =>
         attributes(asset)?.readme?.guid
 
+    const readmeContent = (asset: assetInterface) =>
+        attributes(asset)?.readme?.attributes?.description
+
     const isEditAllowed = (asset: assetInterface) => {}
 
     // const modifiedBy = (asset: assetInterface) =>
@@ -852,6 +855,7 @@ export default function useAssetInfo() {
         getPreviewTabs,
         getProfileTabs,
         selectedAsset,
+        readmeContent,
         getSummaryVariants,
         sourceUpdatedAt,
         sourceCreatedAt,

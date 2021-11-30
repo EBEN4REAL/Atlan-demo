@@ -4,16 +4,7 @@
             <!-- back button -->
             <div class="self-start mt-5 mr-2">
                 <router-link
-                    class="
-                        rounded
-                        block
-                        border border-gray-200
-                        px-1
-                        border-transparent
-                        shadow-none
-                        hover:border-gray-300
-                        py-0.5
-                    "
+                    class="rounded block border border-gray-200 px-1 border-transparent shadow-none hover:border-gray-300 py-0.5"
                     to="/workflows"
                 >
                     <atlan-icon
@@ -35,7 +26,7 @@
                 </div>
                 <div>
                     <h3 class="text-xl">
-                        {{ workflow?.name }}
+                        {{ workflow?.metadata.name }}
                         <!-- <span
                             class="px-2 py-1 text-xs border border-transparent border-gray-200 rounded shadow-none hover:border-gray-300"
                             @click="$router.back()"
@@ -46,7 +37,7 @@
                 </div>
                 <div class="flex items-center gap-x-3">
                     <div
-                        class="flex items-center text-sm text-gray-500 cursor-pointer  gap-x-1"
+                        class="flex items-center text-sm text-gray-500 cursor-pointer gap-x-1"
                         @click="showUserPreviewDrawer"
                     >
                         <AtlanIcon v-if="creator?.first_name" icon="User" />

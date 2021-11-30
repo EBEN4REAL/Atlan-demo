@@ -173,7 +173,7 @@
                         />
                     </div>
                 </div>
-                <router-link :to="path" v-if="!slots?.button">
+                <router-link v-if="!slots?.button" :to="path">
                     <a-button class="mt-3" block>
                         <strong>
                             View {{ title?.toLowerCase() }} profile
@@ -190,7 +190,6 @@
 
 <script lang="ts">
     import { toRefs, computed } from 'vue'
-    // import UserAvatar from '@/common/avatar/user.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
@@ -201,7 +200,6 @@
     export default {
         name: 'PopoverAsset',
         components: {
-            // UserAvatar,
             ClassificationPill,
             UserPill,
             CertificateBadge,

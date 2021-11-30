@@ -1,12 +1,12 @@
 <template>
-    <div class="flex flex-col py-1 rounded gap-y-3 preference-container">
+    <div class="flex flex-col w-auto p-4 rounded gap-y-3 preference-container">
         <div class="flex items-center justify-between text-gray">
             <span class="mr-6 text-sm text-gray">Order By</span>
             <a-select
-                class="text-gray-500"
                 v-model:value="sorting"
-                @change="handeChangeSorting"
+                class="text-gray-500"
                 style="width: 135px"
+                @change="handeChangeSorting"
             >
                 <!-- <a-select-option value="default">Relevance</a-select-option>
                 <a-select-option value="Catalog.popularityScore|descending"
@@ -79,9 +79,8 @@
             const handleChange = () => {
                 emit('change', projection.value)
             }
-            const isProjectionSelected = (property) => {
-                return projection.value.includes(property.id)
-            }
+            const isProjectionSelected = (property) =>
+                projection.value.includes(property.id)
             const togglePropertySelect = (property) => {
                 if (projection.value.includes(property.id)) {
                     const index = projection.value.indexOf(property.id)

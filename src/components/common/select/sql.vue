@@ -65,10 +65,6 @@
             })
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
-            watch(credential, () => {
-                refresh()
-            })
-
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -99,7 +95,6 @@
                 body,
             }
         },
-        components: { AtlanIcon },
     })
 </script>
 

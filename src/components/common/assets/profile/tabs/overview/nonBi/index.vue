@@ -28,7 +28,7 @@
                 />
             </div>
         </Summary>
-        <Readme :guid="readmeGuid(selectedAsset)" />
+        <Readme :asset="selectedAsset" />
         <Resources :asset="selectedAsset" />
     </div>
 </template>
@@ -76,8 +76,6 @@
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
-            const { readmeGuid } = useAssetInfo()
-
             const activePreviewTabKey: Ref<'column' | 'table'> = ref('column')
             const tabConfig = [
                 { key: 'column', label: 'Column Preview' },
@@ -94,7 +92,6 @@
             )
 
             return {
-                readmeGuid,
                 activePreviewTabKey,
                 tabConfig,
                 showTablePreview,

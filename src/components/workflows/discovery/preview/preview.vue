@@ -30,9 +30,9 @@
                         :is="tab.component"
                         :selected-workflow="selectedWorkflow"
                         :is-loaded="isLoaded"
-                        @change="handleChange"
                         class="overflow-auto"
                         :style="{ height: 'calc(100vh - 11rem)' }"
+                        @change="handleChange"
                     />
                 </div>
             </a-tab-pane>

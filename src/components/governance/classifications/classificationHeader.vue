@@ -130,6 +130,9 @@
             const deleteClassification = () => {
                 Modal.confirm({
                     title: 'Delete Classification',
+                    bodyStyle: {
+                        padding: '8px !important'
+                    },
                     content: 'Are you sure to delete this Classification?',
                     okType: 'danger',
                     okText: 'Yes',

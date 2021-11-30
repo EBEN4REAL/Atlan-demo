@@ -1,6 +1,6 @@
 <template>
     <ExplorerLayout
-        v-if="false"
+        v-if="filteredClassificationList.length"
         title="Classification"
         sub-title="Manage classification tags to build access policies."
     >
@@ -16,9 +16,7 @@
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
             </AtlanBtn>
         </template>
-        <template #sidebar
-            v-auth="map.LIST_CLASSIFICATION"
-        >
+        <template #sidebar v-auth="map.LIST_CLASSIFICATION">
             <div class="flex px-3 py-1">
                 <SearchAdvanced
                     v-model:value="searchQuery"
@@ -36,7 +34,12 @@
             >
                 <template #default="{ item, isSelected }">
                     <div class="flex items-center gap-x-1">
-                        <AtlanIcon icon="Shield"  :style="`color: ${getClassificationColorHex(item.options?.color)}`"/>
+                        <AtlanIcon
+                            icon="Shield"
+                            :style="`color: ${getClassificationColorHex(
+                                item.options?.color
+                            )}`"
+                        />
                         <span
                             class="text-sm truncate"
                             :class="
@@ -53,12 +56,33 @@
         </template>
 
         <router-view />
-        <AddClassificationModal
-            v-model:modalVisible="createClassificationModalVisible"
-        />
-    </ExplorerLayout>
 
-    
+    </ExplorerLayout>
+    <div v-else class="flex items-center justify-center h-full">
+        <a-empty
+            :image-style="{
+                height: '0px',
+            }"
+        >
+            <template #description>
+                <AtlanIcon icon="EmptyClassifications" class="h-32 mb-6" />
+                <p class="text-2xl font-bold mb-8">
+                    Create a new classifiaction!
+                </p>
+                <a-button
+                    v-auth="map.CREATE_CLASSIFICATION"
+                    type="primary"
+                    @click="createClassificationModalVisible = true"
+                >
+                    <AtlanIcon icon="Add" class="inline" />
+                    Add classification
+                </a-button>
+            </template>
+        </a-empty>
+    </div>
+    <AddClassificationModal
+        v-model:modalVisible="createClassificationModalVisible"
+    />
 </template>
 
 <script lang="ts">
@@ -83,8 +107,10 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
-    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
+
     import map from '~/constant/accessControl/map'
+    import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
@@ -134,7 +160,10 @@
             })
 
             watch(selectedClassificationName, (newClassificationName) => {
-                if(newClassificationName !== router.currentRoute.value.params?.classificationId) {
+                if (
+                    newClassificationName !==
+                    router.currentRoute.value.params?.classificationId
+                ) {
                     router.push(
                         `/governance/classifications/${encodeURIComponent(
                             newClassificationName as string
@@ -144,8 +173,12 @@
             })
 
             watch(router.currentRoute, (newRoute) => {
-                if(newRoute.params?.classificationId !== selectedClassificationName.value) {
-                    selectedClassificationName.value = newRoute.params.classificationId as string;
+                if (
+                    newRoute.params?.classificationId !==
+                    selectedClassificationName.value
+                ) {
+                    selectedClassificationName.value = newRoute.params
+                        .classificationId as string
                 }
             })
 
@@ -157,7 +190,8 @@
                 selectClassification,
                 createClassificationModalVisible,
                 getClassificationColorHex,
-                map
+                map,
+                EmptyClassifications,
             }
         },
     })

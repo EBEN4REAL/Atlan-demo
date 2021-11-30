@@ -131,7 +131,6 @@
                             </div>
                             <div
                                 class="flex items-center text-xs leading-5 text-gray-500"
-                                style="margin-right: 1px !important"
                             >
                                 <div
                                     class="flex items-center"
@@ -157,7 +156,9 @@
                             <div
                                 class="flex items-center justify-between w-full"
                             >
-                                <div class="flex items-center">
+                                <div
+                                    class="flex items-center parent-ellipsis-container"
+                                >
                                     <AtlanIcon
                                         :icon="
                                             getEntityStatusIcon(
@@ -170,18 +171,8 @@
 
                                     <span
                                         class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >{{ title(item)?.slice(0, 20) }}
-                                        {{
-                                            title(item).length > 20 ? '...' : ''
-                                        }}
+                                        >{{ title(item) }}
                                     </span>
-                                    <!-- <StatusBadge
-                                        v-if="certificateStatus(item)"
-                                        :key="item?.guid"
-                                        :show-no-status="false"
-                                        :status-id="certificateStatus(item)"
-                                        class="ml-1.5 parent-ellipsis-container-extension"
-                                    ></StatusBadge> -->
                                 </div>
                                 <div>
                                     <span class="z-10 count-box">
@@ -303,17 +294,9 @@
                 >
                     <!-- <div class="parent-ellipsis-container"> -->
                     <div class="flex items-center justify-between w-full">
-                        <div class="flex items-center">
-                            <!-- <AtlanIcon
-                                :icon="assetType(item)"
-                                class="
-                                    w-4
-                                    h-4
-                                    mr-1
-                                    -mt-0.5
-                                    parent-ellipsis-container-extension
-                                "
-                            ></AtlanIcon> -->
+                        <div
+                            class="flex items-center parent-ellipsis-container"
+                        >
                             <AtlanIcon
                                 :icon="
                                     getEntityStatusIcon(
@@ -326,17 +309,10 @@
 
                             <span
                                 class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >{{ title(item)?.slice(0, 20) }}
-                                {{ title(item).length > 20 ? '...' : '' }}
+                                >{{ title(item) }}
                             </span>
-                            <!-- <StatusBadge
-                                v-if="certificateStatus(item)"
-                                :key="item?.guid"
-                                :show-no-status="false"
-                                :status-id="certificateStatus(item)"
-                                class="ml-1.5 parent-ellipsis-container-extension"
-                            ></StatusBadge> -->
                         </div>
+
                         <div>
                             <span class="z-10 count-box">
                                 {{ childCount(item) }}</span

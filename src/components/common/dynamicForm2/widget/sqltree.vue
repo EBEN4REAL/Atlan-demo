@@ -1,5 +1,8 @@
 <template>
-    <SQLTreeSelect></SQLTreeSelect>
+    <SQLTreeSelect
+        :credential="credentialBody"
+        :query="property.ui.query"
+    ></SQLTreeSelect>
 </template>
 
 <script>

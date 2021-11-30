@@ -5,7 +5,11 @@
         class="w-full"
         @change="handleChange"
     >
-        <a-select-option v-for="item in list" :value="item.id" :key="item.id">
+        <a-select-option
+            v-for="item in list"
+            :value="item.value"
+            :key="item.value"
+        >
             {{ item.label }}
         </a-select-option>
     </a-select>
@@ -16,17 +20,12 @@
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
-        name: 'Custom Select',
+        name: 'Timezone Select',
         props: {
             queryText: {
                 type: String,
                 required: false,
                 default: () => '',
-            },
-            list: {
-                type: Array,
-                required: false,
-                default: () => [],
             },
             modelValue: {
                 type: [Array, String],
@@ -35,9 +34,19 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { list } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+
+            const list = computed(() => {
+                const temp = []
+                for (let i = 1; i < 31; i++) {
+                    temp.push({
+                        value: i.toString(),
+                        label: i,
+                    })
+                }
+                return temp
+            })
 
             const handleChange = () => {
                 modelValue.value = localValue.value

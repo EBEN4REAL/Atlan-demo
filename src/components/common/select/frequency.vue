@@ -4,8 +4,13 @@
         v-model:value="localValue"
         class="w-full"
         @change="handleChange"
+        :allowClear="true"
     >
-        <a-select-option v-for="item in list" :value="item.id" :key="item.id">
+        <a-select-option
+            v-for="item in list"
+            :value="item.value"
+            :key="item.value"
+        >
             {{ item.label }}
         </a-select-option>
     </a-select>
@@ -15,18 +20,15 @@
     import { defineComponent, watch, ref, computed, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
 
+    import { frequency } from '~/constant/frequency'
+
     export default defineComponent({
-        name: 'Custom Select',
+        name: 'Timezone Select',
         props: {
             queryText: {
                 type: String,
                 required: false,
                 default: () => '',
-            },
-            list: {
-                type: Array,
-                required: false,
-                default: () => [],
             },
             modelValue: {
                 type: [Array, String],
@@ -35,9 +37,10 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { list } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+
+            const list = ref(frequency)
 
             const handleChange = () => {
                 modelValue.value = localValue.value

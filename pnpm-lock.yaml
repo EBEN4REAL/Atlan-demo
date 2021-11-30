@@ -57,6 +57,7 @@ specifiers:
   chartjs-plugin-datalabels: ^2.0.0
   clusterize.js: ^0.18.1
   cron-parser: ^4.2.0
+  cronstrue: ^1.122.0
   dagrejs: ^0.2.1
   dayjs: ^1.10.7
   dotenv: ^10.0.0
@@ -152,6 +153,7 @@ dependencies:
   chartjs-plugin-datalabels: 2.0.0_chart.js@3.6.0
   clusterize.js: 0.18.1
   cron-parser: 4.2.0
+  cronstrue: 1.122.0
   dagrejs: 0.2.1
   dayjs: 1.10.7
   emoji-mart-vue-fast: 10.2.0_vue@3.2.23
@@ -3368,6 +3370,10 @@ packages:
     engines: {node: '>=0.8'}
     dependencies:
       luxon: 1.28.0
+    dev: false
+
+  /cronstrue/1.122.0:
+    resolution: {integrity: sha512-PFuhZd+iPQQ0AWTXIEYX+t3nFGzBrWxmTWUKJOrsGRewaBSLKZ4I1f8s2kryU75nNxgyugZgiGh2OJsCTA/XlA==}
     dev: false
 
   /cross-blob/2.0.1:

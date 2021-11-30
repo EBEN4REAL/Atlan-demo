@@ -71,11 +71,24 @@
 
             watch(data, () => {
                 if (list.value.length > 0) {
-                    console.log(list.value[0].configmap.data.config)
                     try {
                         localConfig.value = JSON.parse(
                             list.value[0].configmap.data.config
                         )
+
+                        if (localConfig.value) {
+                            localConfig.value['_schedule'] = {
+                                type: 'string',
+                                ui: {
+                                    widget: 'schedule',
+                                    label: '',
+                                    placeholder: 'Credential Guid',
+                                    hidden: false,
+                                },
+                            }
+                        }
+
+                        // Add Schedule
                     } catch (e) {
                         console.log(e)
                     }

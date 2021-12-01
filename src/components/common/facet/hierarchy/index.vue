@@ -6,6 +6,7 @@
         ></ConnectorSelect>
         <ConnectionSelect
             v-if="localValue.connectorName"
+            :key="localValue.connectorName"
             :connector="localValue.connectorName"
             class="w-full"
             v-model="localValue.connectionQualifiedName"

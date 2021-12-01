@@ -276,6 +276,7 @@ import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
 
 import ShieldCheck from '~/assets/images/icons/shield-check.svg'
+import CustomVariable from '~/assets/images/icons/customVariable.svg'
 
 export default {
     ShieldCheck,
@@ -546,6 +547,6 @@ export default {
     SchemaDraft,
     ViewDeprecated,
     ViewDraft,
-    ViewVerified
-    
+    ViewVerified,
+    CustomVariable
 }

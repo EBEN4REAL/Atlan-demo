@@ -87,6 +87,7 @@ export default function useProject() {
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>
     ) => {
+        resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
@@ -108,26 +109,28 @@ export default function useProject() {
                 activeInlineTab.value.playground.editor.variables,
                 selectedText
             )
-            console.log('position match selected query: ', queryText)
+            // console.log('error data query: ', queryText)
         } else {
             // queryText = getParsedQuery(
             //     activeInlineTab.value.playground.editor.variables,
             //     activeInlineTab.value.playground.editor.text
             // )
             // console.log('query: ', queryText)
-            getParsedQueryCursor(
+            let queryData = getParsedQueryCursor(
                 activeInlineTab.value.playground.editor.variables,
                 activeInlineTab.value.playground.editor.text,
                 'auto',
                 editorInstance.value,
                 monacoInstance.value
             )
-            const selectedQuery = toRaw(editorInstance.value)
-                .getModel()
-                .getValueInRange(
-                    toRaw(editorInstance.value).getSelection()
-                )
-            console.log('selected query: ', selectedQuery)
+            // const selectedQuery = toRaw(editorInstance.value)
+            //     .getModel()
+            //     .getValueInRange(
+            //         toRaw(editorInstance.value).getSelection()
+            //     )
+
+            let selectedQuery = queryData.rawQuery
+            // console.log('selected query: ', selectedQuery)
 
             if(selectedQuery && selectedQuery.length) {
                 queryText = getParsedQuery(
@@ -142,11 +145,12 @@ export default function useProject() {
             }
             
         }
-        // console.log('selected query: ', queryText)
+        console.log('selected query: ', queryText)
         
 
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))
+        console.log('selected query encoded: ', query)
         /* -------- NOTE -----------
         Here defaultSchema -  'ATLAN_TRIAL.PUBLIC' instead of 'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC'
         dataSourceName -  connectionQualifiedName
@@ -249,6 +253,7 @@ export default function useProject() {
                                 console.log('coonection closed')
                                 eventSource.close()
                             }
+                            console.log('error data: ', message)
                             /* Query related data */
                             activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
                                 message

@@ -161,7 +161,7 @@ export function useEditor(
                     queryTextValues.forEach(query=> {
                         let q = `${query};`
                         let match = toRaw(editorInstance).getModel().findMatches(`${q.replace(/^\s+|\s+$/g, '')}`);
-                        queryPositions.push({ match: match, token: query.replace(/^\s+|\s+$/g, '')})
+                        queryPositions.push({ match: match, token: query.replace(/^\s+|\s+$/g, ''), rawQuery: query})
                     })
                 }
                 
@@ -171,9 +171,20 @@ export function useEditor(
                 console.log('position match semi: ', semiColonMatchs)
 
                 let independentQueryMatches = semiColonMatchs.map((match, index)=> {
-                    return queryPositions[index].match.find(m=> 
-                        (m.range.endLineNumber ===match.range.endLineNumber && (m.range.endColumn) ===match.range.endColumn)
-                    )
+                    let data = queryPositions[index].match.map(m=> {
+                        if(m.range.endLineNumber ===match.range.endLineNumber && (m.range.endColumn) ===match.range.endColumn){
+                            return {
+                                range:m.range,
+                                rawQuery: queryPositions[index].rawQuery
+                            }
+                        }
+                        
+                    })
+                    for(var i=0;i<data.length;i++) {
+                        if(data[i]!==undefined) {
+                            return data[i];
+                        }
+                    }
                 })
 
                 console.log('position match final: ', independentQueryMatches)
@@ -283,7 +294,7 @@ export function useEditor(
                             }
                         ]
                     );
-                    
+                    return lineIndex
                 }
 
 
@@ -298,7 +309,7 @@ export function useEditor(
             // })
             // return moustacheInterpolator(queryText, parseVariables)
         
-
+            return null
         // return semicolonSeparateQuery(query)
     }
     // const clearLineDecoration = (editorInstance: any) => {
@@ -441,6 +452,7 @@ export function useEditor(
             activeInlineTab.value.playground.resultsPane.result.errorDecorations
                 ?.length > 0
         ) {
+            console.log('error deco: ', activeInlineTab.value.playground.resultsPane.result.errorDecorations)
             const lineRegex = /(?:line )([0-9]+)/gim
             /* [["Line 3", "3"], ["line 3", "3"]] */
             const linesInfo = [

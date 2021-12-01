@@ -4,12 +4,10 @@ module.exports = {
     jit: true,
     important: true,
     purge: {
-        options: {
-            safelist: [ './safelist.txt']   
-        },
         content: [
             './index.html',
             './src/**/*.{vue,js,ts,jsx,tsx}',
+            './safelist.txt'
             // etc.
         ],
     },

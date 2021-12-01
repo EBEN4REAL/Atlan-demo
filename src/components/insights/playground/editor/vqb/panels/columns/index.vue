@@ -93,6 +93,7 @@
                                 items-center
                                 justify-center
                             "
+                            @click.stop="() => {}"
                         >
                             <a-checkbox v-model:checked="checkbox"></a-checkbox>
                         </div>
@@ -106,7 +107,7 @@
                                 "
                                 size="sm"
                                 color="secondary"
-                                @click="() => handleAdd(index)"
+                                @click.stop="() => handleAdd(index)"
                                 padding="compact"
                             >
                                 <AtlanIcon
@@ -117,7 +118,7 @@
                         </div>
                         <div class="border-r border-gray-300">
                             <AtlanBtn
-                                @click="() => handleDelete(index)"
+                                @click.stop="() => handleDelete(index)"
                                 :disabled="
                                     activeInlineTab.playground.vqb.panels
                                         .length == 1

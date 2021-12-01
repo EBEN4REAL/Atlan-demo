@@ -289,7 +289,14 @@
 
                     playground: {
                         vqb: {
-                            panels: [],
+                            panels: [
+                                {
+                                    order: 1,
+                                    id: 'columns',
+                                    hide: false,
+                                    columns: [],
+                                },
+                            ],
                         },
                         editor: {
                             context: {

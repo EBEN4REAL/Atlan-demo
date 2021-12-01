@@ -11,7 +11,18 @@
             v-else-if="localConfig"
             :workflowTemplate="localSelected"
             :configMap="localConfig"
+            :sandboxValue="sandbox"
         ></PackagesSetup>
+        <div
+            class="flex flex-col"
+            v-if="sandbox && localConfig"
+            style="width: 33%; min-width: 33%"
+        >
+            <Sandbox
+                v-model:configMap="localConfig"
+                v-model:workflowTemplate="localSelected"
+            ></Sandbox>
+        </div>
     </div>
 </template>
 
@@ -29,6 +40,7 @@
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@common/error/discover.vue'
     import PackagesSetup from '@/packages/setup/index.vue'
+    import Sandbox from '@/packages/setup/sandbox.vue'
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'
     import { useRoute } from 'vue-router'
@@ -40,6 +52,7 @@
             PackagesSetup,
             Loader,
             ErrorView,
+            Sandbox,
         },
         props: {
             selectedPackage: {
@@ -52,6 +65,9 @@
             const id = computed(() => route?.params?.id || '')
             const { getTemplateName } = usePackageInfo()
             const fetch = ref(true)
+
+            const sandbox = computed(() => route?.query?.sandbox || '')
+
             if (getTemplateName(props.selectedPackage)) {
                 fetch.value = false
             }
@@ -110,6 +126,7 @@
                 isLoadingPackage,
                 isLoadingConfigMap,
                 error,
+                sandbox,
             }
         },
     })

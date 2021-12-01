@@ -50,7 +50,7 @@
     import ErrorView from '@common/error/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
-    import { useCredential } from '~/composables/credential/useCredential'
+    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
 
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
@@ -257,7 +257,7 @@
                 testClass.value = 'text-red-500'
             }
 
-            const { buildCredentialBody } = useCredential()
+            const { buildCredentialBody } = useWorkflowHelper()
 
             const credentialBody = computed(() =>
                 buildCredentialBody(

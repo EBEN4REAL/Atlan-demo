@@ -57,7 +57,10 @@
                         ></AtlanIcon
                     ></a-button>
 
-                    <div class="flex gap-x-2">
+                    <div
+                        class="flex gap-x-2"
+                        v-if="currentStep == steps.length - 1"
+                    >
                         <a-button
                             type="primary"
                             class="px-6"
@@ -100,7 +103,7 @@
                 </div> -->
             </div>
         </div>
-        <div class="flex flex-col w-1/3" v-if="!sandbox">
+        <div class="flex flex-col w-1/3" v-if="!sandboxValue">
             <div
                 class="flex flex-col w-full px-6 py-3 mb-3 overflow-y-auto"
                 v-if="workflowTemplate"
@@ -212,7 +215,7 @@
                     return {}
                 },
             },
-            sandbox: {
+            sandboxValue: {
                 type: String,
                 required: false,
                 default() {
@@ -227,7 +230,7 @@
             const stepForm = ref()
 
             const currentStep = ref(0)
-            const { workflowTemplate, configMap, sandbox } = toRefs(props)
+            const { workflowTemplate, configMap, sandboxValue } = toRefs(props)
 
             provide('workflowTemplate', workflowTemplate)
             provide('configMap', configMap)
@@ -247,7 +250,6 @@
 
             const selectedStep = ref('')
             const handleChange = (event) => {
-                console.log(event)
                 selectedStep.value = event
             }
 
@@ -372,6 +374,7 @@
                 currentStep,
                 steps,
                 configMap,
+                sandboxValue,
                 currentStepConfig,
                 handleNext,
                 stepForm,

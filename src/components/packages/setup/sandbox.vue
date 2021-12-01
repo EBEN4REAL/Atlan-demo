@@ -4,17 +4,21 @@
             <a-tab-pane key="template" tab="Template"> </a-tab-pane>
             <a-tab-pane key="config" tab="Parameters"> </a-tab-pane>
         </a-tabs>
-        <a-radio-group v-model:value="mode" button-style="solid" class="mb-3">
-            <a-radio-button value="tree">Tree</a-radio-button>
-            <a-radio-button value="code">Code</a-radio-button>
+        <div class="flex items-center justify-between mb-3">
+            <a-radio-group v-model:value="mode" button-style="solid">
+                <a-radio-button value="tree">Tree</a-radio-button>
+                <a-radio-button value="code">Code</a-radio-button>
 
-            <a-radio-button value="text">Raw</a-radio-button>
-        </a-radio-group>
+                <a-radio-button value="text">Raw</a-radio-button>
+            </a-radio-group>
+
+            <a-button>Refresh UI</a-button>
+        </div>
 
         <Vue3JsonEditor
             v-if="activeKey == 'config'"
             :key="`config_${mode}`"
-            v-model="configMap"
+            v-model="localConfigMap"
             :mode="mode"
             :show-btns="false"
             class="overflow-y-auto"
@@ -24,7 +28,7 @@
         <Vue3JsonEditor
             v-else
             :key="`workflow_${mode}`"
-            v-model="workflowTemplate"
+            v-model="localTemplate"
             :mode="mode"
             :show-btns="false"
             class="overflow-y-auto"
@@ -58,7 +62,7 @@
                 },
             },
         },
-        emits: ['update:configMap', 'update:workflowTemplate'],
+        emits: ['update:configMap', 'update:workflowTemplate', 'change'],
         setup(props, { emit }) {
             const activeKey = ref('config')
 
@@ -66,11 +70,16 @@
 
             const { workflowTemplate, configMap } = useVModels(props, emit)
 
+            const localConfigMap = ref(configMap.value)
+            const localTemplate = ref(workflowTemplate.value)
+
             const handleConfigInput = useDebounceFn((e) => {
+                localConfigMap.value = e
                 configMap.value = e
             }, 500)
 
             const handleWorkflowChange = useDebounceFn((e) => {
+                localTemplate.value = e
                 workflowTemplate.value = e
             }, 500)
 
@@ -81,6 +90,8 @@
                 handleConfigInput,
                 mode,
                 handleWorkflowChange,
+                localConfigMap,
+                localTemplate,
             }
         },
     })

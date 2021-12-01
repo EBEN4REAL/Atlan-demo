@@ -11,11 +11,11 @@
             v-else-if="localConfig"
             :workflowTemplate="localSelected"
             :configMap="localConfig"
-            :sandbox="sandbox"
+            :sandboxValue="sandbox"
         ></PackagesSetup>
         <div
             class="flex flex-col"
-            v-if="sandbox"
+            v-if="sandbox && localConfig"
             style="width: 33%; min-width: 33%"
         >
             <Sandbox

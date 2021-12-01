@@ -14,7 +14,10 @@
                                 :class="showcustomToolBar ? 'bg-gray-300' : ''"
                                 @click="toggleCustomToolbar"
                             >
-                                {&nbsp;}
+                                <AtlanIcon
+                                    icon="CustomVariable"
+                                    class="w-4 h-4"
+                                />
                             </div>
                         </a-tooltip>
                         <a-tooltip color="#363636">
@@ -34,7 +37,7 @@
                                 "
                                 @click="formatDocument"
                             >
-                                <AtlanIcon icon="FormatText" class="w-5 h-5" />
+                                <AtlanIcon icon="FormatText" class="w-4 h-4" />
                             </div>
                         </a-tooltip>
 
@@ -525,10 +528,17 @@
                         activeInlineTab,
                         toRaw(editorInstance.value)
                     )
+                    // console.log('error deco:', status)
                     /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
                     const errorName =
                         activeInlineTab.value?.playground?.resultsPane?.result
                             ?.queryErrorObj?.errorName
+
+                    console.log(
+                        'error data: ',
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    )
                     if (LINE_ERROR_NAMES.includes(errorName)) {
                         setErrorDecorations(
                             activeInlineTab,

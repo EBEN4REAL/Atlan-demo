@@ -1,8 +1,5 @@
 <template>
-    <div
-        class="absolute w-full h-full px-4 bg-white rounded vqb"
-        style="z-index: 1"
-    >
+    <div class="absolute w-full px-4 bg-white rounded vqb" style="z-index: 1">
         <template
             v-for="(item, index) in activeInlineTab.playground.vqb.panels"
             :key="item?.id + index"
@@ -87,6 +84,7 @@
         background-color: #f4f4f4;
     }
     .vqb {
-        height: 85vh;
+        height: calc(100% - 7rem);
+        overflow-y: auto;
     }
 </style>

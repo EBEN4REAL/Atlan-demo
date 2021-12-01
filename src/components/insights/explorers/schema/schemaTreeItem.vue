@@ -16,21 +16,19 @@
                             <div class="flex justify-center w-full">
                                 <div class="flex items-center cursor-pointer">
                                     Open preview sidebar
-                                    <AtlanIcon
-                                        icon="Info"
-                                        class="w-4 h-4 ml-0.5"
-                                    ></AtlanIcon>
                                 </div>
                             </div>
                         </a-button>
                     </template>
                     <div
                         class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                        style="height: 34px !important"
                     >
                         <!--For Column-->
                         <div
                             v-if="assetType(item) == 'Column'"
                             class="relative flex items-center justify-between w-full"
+                            style="height: 34px !important"
                         >
                             <div class="relative parent-ellipsis-container">
                                 <component
@@ -54,6 +52,7 @@
                             <div
                                 v-if="hoverActions"
                                 class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                style="width: "
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -149,12 +148,10 @@
                                 <span>{{ dataType(item) }}</span>
                             </div>
                         </div>
-                        <!------------------------------->
-                        <!--For Others -->
-                        <!-- <div v-else> -->
-                        <div v-else class="flex w-full m-0">
+                        <!--For Others: Table Item -->
+                        <div v-else class="flex w-full h-8 m-0">
                             <div
-                                class="flex items-center justify-between w-full"
+                                class="flex items-center justify-between w-full h-8"
                             >
                                 <div
                                     class="flex items-center parent-ellipsis-container"

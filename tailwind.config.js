@@ -4,9 +4,9 @@ module.exports = {
     jit: true,
     important: true,
     purge: {
-        safelist: [
-            './safelist.txt',
-          ],
+        options: {
+            safelist: [ './safelist.txt']   
+        },
         content: [
             './index.html',
             './src/**/*.{vue,js,ts,jsx,tsx}',

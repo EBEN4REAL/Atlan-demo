@@ -4,7 +4,9 @@ module.exports = {
     jit: true,
     important: true,
     purge: {
-        safeList: [],
+        safelist: [
+            './safelist.txt',
+          ],
         content: [
             './index.html',
             './src/**/*.{vue,js,ts,jsx,tsx}',
@@ -83,5 +85,12 @@ module.exports = {
     plugins: [
         require('@tailwindcss/line-clamp'),
         require('@tailwindcss/typography'),
+        require('tailwind-safelist-generator')({
+            patterns: [
+              'col-{gridColumn}',
+              'col-start-{gridColumnStart}',
+              'col-end-{gridColumnEnd}',
+            ],
+          }),
     ],
 }

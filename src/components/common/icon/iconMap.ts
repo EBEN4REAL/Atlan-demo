@@ -51,6 +51,7 @@ import ViewVerified from '~/assets/images/icons/view_verified.svg'
 import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
+import Union from '~/assets/images/icons/union.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
 import RemoveUser from '~/assets/images/icons/remove-user.svg'
 import Link from '~/assets/images/icons/link.svg'
@@ -278,6 +279,7 @@ import Close from '~/assets/images/icons/close.svg'
 import ShieldCheck from '~/assets/images/icons/shield-check.svg'
 
 export default {
+    Union,
     ShieldCheck,
     Hash,
     Column,
@@ -540,12 +542,11 @@ export default {
     DatabaseVerified,
     DatabaseDeprecated,
     DatabaseDraft,
-    
+
     SchemaVerified,
     SchemaDeprecated,
     SchemaDraft,
     ViewDeprecated,
     ViewDraft,
-    ViewVerified
-    
+    ViewVerified,
 }

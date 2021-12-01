@@ -286,7 +286,11 @@
                             },
                         },
                     },
+
                     playground: {
+                        vqb: {
+                            panels: [],
+                        },
                         editor: {
                             context: {
                                 attributeName:

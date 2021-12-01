@@ -282,6 +282,7 @@
 
             <div
                 class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
+                style="z-index: 2"
             >
                 <div class="flex items-center">
                     <!-- <WarehouseConnector /> -->
@@ -442,7 +443,7 @@
                 rowsCount: 100,
             })
             const showcustomToolBar = ref(false)
-            const showVQB = ref(false)
+            const showVQB = ref(true)
 
             const activeInlineTab = inject(
                 'activeInlineTab'

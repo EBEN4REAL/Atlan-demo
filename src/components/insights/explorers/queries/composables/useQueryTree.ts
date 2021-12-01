@@ -73,6 +73,7 @@ const useTree = ({
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
+    let currentSelectedNode = ref(queryFolderNamespace.value)
 
     const selectedCacheKey = `${cacheKey ?? 'queryTree'}_selected`
     const expandedCacheKey = `${cacheKey ?? 'queryTree'}_expanded`
@@ -296,6 +297,8 @@ const useTree = ({
         // )
         // console.log('opened query: ', event.node)
         const parentTitle = event.node.dataRef?.parentTitle;
+        currentSelectedNode.value = event.node;
+
 
         if (item.typeName === 'Query') {
             immediateParentFolderQF.value =
@@ -309,8 +312,11 @@ const useTree = ({
                 pushGuidToURL(item.guid)
             }
         } else if (item.typeName === 'QueryFolder') {
+            
             immediateParentFolderQF.value = item.attributes.qualifiedName
             immediateParentGuid.value = item.guid
+
+            // currentSelectedNode.value = item;
         }
 
         // if (!event.node.isLeaf) {
@@ -339,6 +345,8 @@ const useTree = ({
             immediateParentFolderQF.value =
                 queryFolderNamespace.value?.attributes?.qualifiedName
             immediateParentGuid.value = queryFolderNamespace.value?.guid
+
+            currentSelectedNode.value = queryFolderNamespace.value
         }
         emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
@@ -644,6 +652,7 @@ const useTree = ({
         isInitingTree.value = true
         loadedKeys.value = []
         expandedKeys.value = []
+        // currentSelectedNode.value = queryFolderNamespace
         initTreeData()
     })
     onMounted(() => {
@@ -656,6 +665,7 @@ const useTree = ({
             immediateParentFolderQF.value =
                 newQueryFolderNamespace.attributes?.qualifiedName
             immediateParentGuid.value = newQueryFolderNamespace.guid
+            currentSelectedNode.value = newQueryFolderNamespace
             initTreeData()
         }
     })
@@ -678,6 +688,7 @@ const useTree = ({
         expandNode,
         selectNode,
         refetchNode,
+        currentSelectedNode
         // addInputBox,
         // removeInputBox
     }

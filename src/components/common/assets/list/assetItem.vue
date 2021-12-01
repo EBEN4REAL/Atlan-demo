@@ -424,12 +424,18 @@
                             v-for="classification in list"
                             :key="classification.guid"
                         >
-                            <ClassificationPill
-                                :name="classification.name"
-                                :display-name="classification?.displayName"
-                                :is-propagated="isPropagated(classification)"
-                                :allow-delete="false"
-                            ></ClassificationPill>
+                            <PopoverClassification
+                                :classification="classification"
+                            >
+                                <ClassificationPill
+                                    :name="classification.name"
+                                    :display-name="classification?.displayName"
+                                    :is-propagated="
+                                        isPropagated(classification)
+                                    "
+                                    :allow-delete="false"
+                                ></ClassificationPill>
+                            </PopoverClassification>
                         </template>
                     </div>
                 </div>
@@ -446,12 +452,14 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import PopoverClassification from '@/common/popover/classification.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
             ClassificationPill,
+            PopoverClassification,
         },
         props: {
             item: {

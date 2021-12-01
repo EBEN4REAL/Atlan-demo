@@ -23,7 +23,7 @@
                     <div class="tab-container">
                         <div class="tab-options">
                             <span
-                                class="text-gray-700 cursor-pointer  tab hover:text-primary-400"
+                                class="text-gray-700 cursor-pointer tab hover:text-primary-400"
                                 :class="
                                     isSelectedType('personal')
                                         ? 'selected-underline'
@@ -33,7 +33,7 @@
                                 >Private</span
                             >
                             <span
-                                class="text-gray-700 cursor-pointer  tab tab-2 hover:text-primary-400"
+                                class="text-gray-700 cursor-pointer tab tab-2 hover:text-primary-400"
                                 :class="
                                     isSelectedType('all')
                                         ? 'selected-underline'
@@ -74,7 +74,7 @@
                                     class="w-2 h-5 my-auto mr-1"
                                 ></AtlanIcon>
                                 <span
-                                    class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                     >Your Personal Folder</span
                                 >
                             </div>
@@ -120,7 +120,7 @@
                                     class="w-2 h-5 my-auto mr-1"
                                 ></AtlanIcon>
                                 <span
-                                    class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
+                                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                     >Atlan's Public Folder</span
                                 >
                             </div>
@@ -170,6 +170,7 @@
     import AtlanBtn from '@/UI/button.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
+    import { colSize } from 'ant-design-vue/lib/grid/Col'
 
     export default defineComponent({
         components: {
@@ -212,12 +213,13 @@
             let dropdownVisible = ref(false)
 
             // console.log('already selected: ', props.selectedFolderQF)
-            console.log('already selected: ', parentFolder)
+            // console.log('already selected: ', parentFolder)
 
             watch(
                 parentFolder,
                 () => {
                     let item = parentFolder.value
+                    // console.log('parent folder 1: ', parentFolder.value)
 
                     if (item?.typeName === 'QueryFolderNamespace') {
                         let rootData = {

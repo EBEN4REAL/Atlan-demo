@@ -7,6 +7,7 @@
             @change="handleChange"
             class="flex-1"
             :allowClear="true"
+            @dropdownVisibleChange="handleDropdownVisibleChange"
         >
             <template #suffixIcon>
                 <AtlanIcon
@@ -82,6 +83,12 @@
                 refresh()
             }
 
+            const handleDropdownVisibleChange = (open) => {
+                if (list.value?.length === 0 && open) {
+                    refresh()
+                }
+            }
+
             return {
                 localValue,
                 handleChange,
@@ -93,6 +100,7 @@
                 error,
                 query,
                 body,
+                handleDropdownVisibleChange,
             }
         },
     })

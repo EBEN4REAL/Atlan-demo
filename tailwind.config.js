@@ -4,10 +4,10 @@ module.exports = {
     jit: true,
     important: true,
     purge: {
-        safeList: [],
         content: [
             './index.html',
             './src/**/*.{vue,js,ts,jsx,tsx}',
+            './safelist.txt'
             // etc.
         ],
     },
@@ -23,6 +23,9 @@ module.exports = {
                     DEFAULT: '#5277D7',
                     focus: '#BDCDF4',
                     light: '#F4F6FD',
+                    selected: {
+                        focus: '#dbeafe',
+                    }
                 },
                 body: '#fff',
                 gray: {
@@ -81,5 +84,12 @@ module.exports = {
     plugins: [
         require('@tailwindcss/line-clamp'),
         require('@tailwindcss/typography'),
+        require('tailwind-safelist-generator')({
+            patterns: [
+              'col-{gridColumn}',
+              'col-start-{gridColumnStart}',
+              'col-end-{gridColumnEnd}',
+            ],
+          }),
     ],
 }

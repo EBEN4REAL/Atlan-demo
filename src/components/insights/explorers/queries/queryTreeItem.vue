@@ -170,10 +170,6 @@
                             <div class="flex justify-center w-full">
                                 <div class="flex items-center cursor-pointer">
                                     Open preview sidebar
-                                    <AtlanIcon
-                                        icon="Info"
-                                        class="w-4 h-4 ml-0.5"
-                                    ></AtlanIcon>
                                 </div>
                             </div>
                         </a-button>

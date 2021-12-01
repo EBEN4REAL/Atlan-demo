@@ -117,9 +117,15 @@
                     ></a-button>
                 </div>
 
-                <a-button type="primary" @click="handleSetup">Setup</a-button>
+                <a-button
+                    type="primary"
+                    @click.shift.exact="handleSetupSandbox"
+                    @click.exact="handleSetup"
+                    >Setup</a-button
+                >
             </div>
             <EmptyView
+                v-else
                 empty-screen="EmptyDiscover"
                 desc="
                            No packages selected
@@ -170,6 +176,7 @@
                 default: false,
             },
         },
+        emits: ['setup', 'sandbox'],
         setup(props, { emit }) {
             const limit = ref(20)
             const offset = ref(0)
@@ -194,12 +201,14 @@
             const selectedPackage = ref<any>(null)
 
             const handleSelect = (item) => {
-                console.log('handleSelect', item)
                 selectedPackage.value = item
             }
 
             const handleSetup = (item) => {
                 emit('setup', selectedPackage.value)
+            }
+            const handleSetupSandbox = (item) => {
+                emit('sandbox', selectedPackage.value)
             }
 
             return {
@@ -212,6 +221,7 @@
                 selectedPackage,
                 handleSetup,
                 error,
+                handleSetupSandbox,
             }
         },
     })

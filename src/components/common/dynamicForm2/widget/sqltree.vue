@@ -9,7 +9,7 @@
     import { defineComponent, toRefs, computed, ref, inject } from 'vue'
 
     import SQLTreeSelect from '@common/treeselect/sql/index.vue'
-    import { useCredential } from '~/composables/credential/useCredential'
+    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
@@ -34,7 +34,7 @@
 
             const componentProps = computed(() => property.value.ui)
 
-            const { buildCredentialBody } = useCredential()
+            const { buildCredentialBody } = useWorkflowHelper()
 
             const credentialBody = computed(() =>
                 buildCredentialBody(

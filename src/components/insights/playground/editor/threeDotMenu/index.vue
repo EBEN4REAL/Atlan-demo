@@ -454,6 +454,11 @@
                     <a-menu-item @click="openCommandPallete" class="px-4 py-2"
                         >Open command pallete</a-menu-item
                     >
+                    <a-menu-item @click="toggleVQB" class="px-4 py-2">
+                        <span v-if="showVQB">Close </span>
+                        <span v-else>Open </span>
+                        VQB</a-menu-item
+                    >
                 </a-menu>
             </template>
         </a-dropdown>
@@ -478,11 +483,19 @@
     import { useRouter } from 'vue-router'
     import { themes } from '~/components/insights/playground/editor/monaco/themeLoader'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         components: {},
-        props: {},
+        props: {
+            showVQB: {
+                type: Boolean,
+                required: true,
+                default: false,
+            },
+        },
         setup(props) {
+            const { showVQB } = useVModels(props)
             const router = useRouter()
             const {
                 setEditorTheme,
@@ -632,8 +645,12 @@
                     undefined
                 )
             }
-
+            const toggleVQB = () => {
+                showVQB.value = !showVQB.value
+            }
             return {
+                showVQB,
+                toggleVQB,
                 getThemeLabelFromName,
                 openCommandPallete,
                 activeInlineTab,

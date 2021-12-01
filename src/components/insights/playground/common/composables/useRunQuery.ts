@@ -108,6 +108,7 @@ export default function useProject() {
                 activeInlineTab.value.playground.editor.variables,
                 selectedText
             )
+            console.log('position match selected query: ', queryText)
         } else {
             // queryText = getParsedQuery(
             //     activeInlineTab.value.playground.editor.variables,

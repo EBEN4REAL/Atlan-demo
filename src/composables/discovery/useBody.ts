@@ -56,6 +56,9 @@ export function useBody(
     base.from(offset || 0)
     base.size(limit || 0)
 
+    // Only showing ACTIVE assets for a connection
+    base.filter('term', '__state', 'ACTIVE')
+
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
         const filterObject = facets[mkey]

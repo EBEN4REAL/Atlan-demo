@@ -149,7 +149,7 @@ export const useUsers = (
         getUserList,
         isLoading,
         isValidating,
-        error,
+        error
     }
 }
 interface params {

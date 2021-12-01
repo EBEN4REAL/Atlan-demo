@@ -4,7 +4,7 @@
             :image-url="url"
             :allow-upload="false"
             :avatar-name="username"
-            :avatar-size="16"
+            :avatar-size="avatarSize"
             :avatar-shape="'circle'"
             class="mr-1"
         />
@@ -13,60 +13,60 @@
 </template>
 
 <script lang="ts">
-    import { ref, watch, PropType, toRefs, computed } from 'vue'
-    import { getNameInitials, getNameInTitleCase } from '~/utils/string'
-    import Avatar from '~/components/common/avatar/index.vue'
+import { ref, watch, PropType, toRefs, computed } from 'vue'
+import { getNameInitials, getNameInTitleCase } from '~/utils/string'
+import Avatar from '~/components/common/avatar/index.vue'
 
-    export default {
-        name: 'UserPill',
-        props: {
-            styleClass: {
-                type: String,
-                default: '',
-            },
-            username: {
-                type: String,
-                default: '',
-            },
-            avatarShape: {
-                type: String,
-                default: 'circle',
-            },
-            avatarSize: {
-                type: Number as PropType<Number | String>,
-                default: 20,
-            },
-            showUsername: {
-                type: Boolean,
-            },
-            className: {
-                type: String,
-                default: '',
-            },
+export default {
+    name: 'UserPill',
+    props: {
+        styleClass: {
+            type: String,
+            default: '',
         },
-        components: { Avatar },
-        setup(props, context) {
-            const { username, styleClass } = toRefs(props)
-
-            const url = computed(
-                () =>
-                    `${window.location.origin}/api/services/avatar/${username.value}`
-            )
-
-            return {
-                url,
-                getNameInitials,
-                getNameInTitleCase,
-                styleClass,
-                username,
-            }
+        username: {
+            type: String,
+            default: '',
         },
-    }
+        avatarShape: {
+            type: String,
+            default: 'circle',
+        },
+        avatarSize: {
+            type: Number as PropType<Number | String>,
+            default: 16,
+        },
+        showUsername: {
+            type: Boolean,
+        },
+        className: {
+            type: String,
+            default: '',
+        },
+    },
+    components: { Avatar },
+    setup(props, context) {
+        const { username, styleClass } = toRefs(props)
+
+        const url = computed(
+            () =>
+                `${window.location.origin}/api/services/avatar/${username.value}`
+        )
+
+        return {
+            url,
+            getNameInitials,
+            getNameInTitleCase,
+            styleClass,
+            username,
+        }
+    },
+}
 </script>
 
 <style>
-    .test {
-        height: 100%;
-        width: 100%;
-    }
+.test {
+    height: 100%;
+    width: 100%;
+}
 </style>

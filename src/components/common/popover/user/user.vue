@@ -23,10 +23,23 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3 mt-2">
-                    <a-avatar size="large">{{ item[0] }}</a-avatar>
+                    <!-- <a-avatar size="large">{{ item[0] }}</a-avatar> -->
+                    <UserAvatar
+                        :username="item"
+                        style-class="mr-1 border-none bg-primary-light "
+                        :avatarSize="40"
+                    ></UserAvatar>
                     <div>
-                        <div class="text-sm font-semibold">
-                            {{ selectedUser.name }}
+                        <div class="flex text-sm font-semibold">
+                            <span>{{ selectedUser.name }}</span>
+                            <span
+                                v-if="userProfiles?.slack"
+                                class="ml-2 text-sm font-semibold"
+                            >
+                                <SlackMessageCta
+                                    :slackLink="userProfiles.slack"
+                                />
+                            </span>
                         </div>
                         <div class="text-xs text-gray-500">
                             {{ selectedUser.email }}
@@ -95,97 +108,101 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, watch, ref } from 'vue'
-    import getUserGroups from '~/composables/user/getUserGroups'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { useUsers } from '~/composables/user/useUsers'
-    import usePersonaList from '../persona/usePersonaList'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
-    import useUserPopover from './composables/useUserPopover'
+import { toRefs, computed, watch, ref } from 'vue'
+import getUserGroups from '~/composables/user/getUserGroups'
+import { useUserPreview } from '~/composables/user/showUserPreview'
+import { useUsers } from '~/composables/user/useUsers'
+import usePersonaList from '../persona/usePersonaList'
+import AtlanIcon from '../../icon/atlanIcon.vue'
+import useUserPopover from './composables/useUserPopover'
+import SlackMessageCta from './slackMessageCta.vue'
+import UserAvatar from '@/common/avatar/user.vue'
 
-    export default {
-        name: 'PopoverUser',
-        components: { AtlanIcon },
-        props: {
-            item: {
-                type: String,
-                required: false,
-                default: '',
+export default {
+    name: 'PopoverUser',
+    components: { AtlanIcon, SlackMessageCta, UserAvatar },
+    props: {
+        item: {
+            type: String,
+            required: false,
+            default: '',
+        },
+    },
+    emits: [],
+    setup(props) {
+        const { item } = toRefs(props)
+        const { setUserUniqueAttribute, showUserPreview } = useUserPreview()
+        const params = {
+            limit: 1,
+            offset: 0,
+            filter: {
+                $and: [{ email_verified: true }, { username: item.value }],
             },
-        },
-        emits: [],
-        setup(props) {
-            const { item } = toRefs(props)
-            const { setUserUniqueAttribute, showUserPreview } = useUserPreview()
-            const params = {
-                limit: 1,
+        }
+        const { userList, isLoading } = useUsers(params, item.value)
+        const selectedUser = computed(() =>
+            userList && userList.value && userList.value.length
+                ? userList.value[0]
+                : []
+        )
+        const admin = computed(() =>
+            selectedUser.value?.roles?.includes('$admin' || 'admin')
+                ? 'Admin'
+                : ''
+        )
+        const groupListAPIParams = {
+            userId: selectedUser?.value.id,
+            params: {
+                limit: 10,
                 offset: 0,
-                filter: {
-                    $and: [{ email_verified: true }, { username: item.value }],
-                },
-            }
-            const { userList, isLoading } = useUsers(params, item.value)
-            const selectedUser = computed(() =>
-                userList && userList.value && userList.value.length
-                    ? userList.value[0]
-                    : []
-            )
-            const admin = computed(() =>
-                selectedUser.value?.roles?.includes('$admin' || 'admin')
-                    ? 'Admin'
-                    : ''
-            )
-            const groupListAPIParams = {
-                userId: selectedUser?.value.id,
-                params: {
-                    limit: 10,
-                    offset: 0,
-                    sort: 'name',
-                    filter: {},
-                },
-            }
-            const { groupList } = getUserGroups(
-                groupListAPIParams,
-                selectedUser?.value.id
-            )
-            const { bussinesCount, assetCount } = useUserPopover(
-                'user',
-                item.value
-            )
-
-            const handleClickViewUser = () => {
-                setUserUniqueAttribute(item.value, 'username')
-                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
-            }
-            const listOfPersona = ref([])
-            const flag = ref(true)
-            if (flag.value) {
-                const { personaList } = usePersonaList()
-                watch(personaList, (newValue) => {
-                    if (newValue) {
-                        const user = selectedUser.value.id
-                        listOfPersona.value = newValue.filter((element) =>
-                            element.users.includes(user)
-                        )
-                    }
-                })
-            }
-            return {
-                selectedUser,
-                isLoading,
-                bussinesCount,
-                assetCount,
-                groupList,
-                handleClickViewUser,
-                listOfPersona,
-                admin,
-            }
-        },
-    }
+                sort: 'name',
+                filter: {},
+            },
+        }
+        // const profileObj = getProfilesObj()
+        const { groupList } = getUserGroups(
+            groupListAPIParams,
+            selectedUser?.value.id
+        )
+        const { bussinesCount, assetCount, getUserProfiles } = useUserPopover(
+            'user',
+            item.value
+        )
+        const userProfiles = getUserProfiles(selectedUser?.value)
+        const handleClickViewUser = () => {
+            setUserUniqueAttribute(item.value, 'username')
+            showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+        }
+        const listOfPersona = ref([])
+        const flag = ref(true)
+        if (flag.value) {
+            const { personaList } = usePersonaList()
+            watch(personaList, (newValue) => {
+                if (newValue) {
+                    const user = selectedUser.value.id
+                    listOfPersona.value = newValue.filter((element) =>
+                        element.users.includes(user)
+                    )
+                }
+            })
+        }
+        return {
+            selectedUser,
+            isLoading,
+            bussinesCount,
+            assetCount,
+            groupList,
+            handleClickViewUser,
+            listOfPersona,
+            admin,
+            userProfiles,
+        }
+    },
+}
 </script>
 <style lang="less" scoped>
-    .user-popover {
-        width: 370px;
-        padding: 16px;
-    }
+.user-popover {
+    width: 370px;
+    padding: 16px;
+}
 </style>

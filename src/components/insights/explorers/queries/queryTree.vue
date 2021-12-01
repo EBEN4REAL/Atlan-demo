@@ -30,7 +30,7 @@ TR
                         <div
                             :data-test-id="'loadMore'"
                             v-else
-                            class="flex flex-row w-full h-8 text-sm font-bold leading-5  text-primary"
+                            class="flex flex-row w-full h-8 text-sm font-bold leading-5 text-primary"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -50,7 +50,7 @@ TR
             <div
                 :data-test-id="'noData'"
                 v-else-if="!treeData.length && showEmptyState"
-                class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
             >
                 <div class="flex flex-col items-center justify-center">
                     <AtlanIcon
@@ -64,7 +64,7 @@ TR
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="my-2 mb-0 mb-6 text-base text-gray-700  max-width-text"
+                        class="my-2 mb-0 mb-6 text-base text-gray-700 max-width-text"
                     >
                         Your {{ savedQueryType }} queries will appear here
                     </p>
@@ -72,7 +72,7 @@ TR
                 <div>
                     <a-button
                         @click="toggleCreateQueryModal"
-                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
+                        class="flex items-center w-48 text-sm text-gray-700 border rounded hover:text-primary h-9"
                     >
                         <span
                             ><AtlanIcon
@@ -83,7 +83,7 @@ TR
                     <p class="my-2 text-sm text-base text-gray-500">OR</p>
                     <a-button
                         @click="createFolderInput"
-                        class="flex items-center w-48 text-sm text-gray-700 border rounded  hover:text-primary h-9"
+                        class="flex items-center w-48 text-sm text-gray-700 border rounded hover:text-primary h-9"
                     >
                         <span
                             ><AtlanIcon
@@ -280,12 +280,30 @@ TR
         :global(.ant-tree-switcher) {
             width: 20px !important;
         }
-        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-            @apply bg-gray-light;
-        }
+
         :global(.ant-tree .ant-tree-node-content-wrapper) {
             padding: 0 !important;
             overflow: hidden;
+        }
+
+        :global(.ant-tree-treenode) {
+            padding-bottom: 0px !important;
+            @apply hover:bg-gray-light rounded !important;
+            transition: none !important;
+        }
+        :global(.ant-tree-node-content-wrapper) {
+            @apply hover:bg-gray-light rounded !important;
+            transition: none !important;
+        }
+
+        :global(.ant-tree-node-selected) {
+            @apply bg-primary-selected-focus !important;
+            @apply hover:bg-primary-selected-focus !important;
+            // @apply hover:bg-gray-light !important;
+        }
+        :global(.ant-tree-treenode-selected) {
+            @apply bg-primary-selected-focus !important;
+            @apply hover:bg-primary-selected-focus !important;
         }
     }
 </style>

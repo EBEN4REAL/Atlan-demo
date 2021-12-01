@@ -60,7 +60,7 @@
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
-                                                queryFolderNamespace
+                                                per_currentSelectedNode
                                             )
                                     "
                                     icon="NewQuery"
@@ -83,7 +83,7 @@
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
-                                                queryFolderNamespace
+                                                all_currentSelectedNode
                                             )
                                     "
                                     icon="NewQuery"
@@ -434,21 +434,27 @@
             const toggleCreateQueryModal = (item) => {
                 // console.log('selected Parent: ', item)
 
-                if (item.typeName === 'QueryFolderNamespace') {
+                if (item?.typeName === 'QueryFolderNamespace') {
                     selectedFolder.value = item
-                    getRelevantTreeData().parentGuid.value = item.guid
-                } else {
-                    if (item.value.guid) {
+                    showSaveQueryModal.value = !showSaveQueryModal.value
+                } else if (
+                    item?.typeName === 'QueryFolder' ||
+                    item?.value?.typeName === 'QueryFolder'
+                ) {
+                    if (item?.value?.guid) {
                         selectedFolder.value = item
-                        getRelevantTreeData().parentGuid.value = item.value.guid
+                    } else if (item?.guid) {
+                        selectedFolder.value = item
                     }
-                    if (item.value.qualifiedName) {
-                        getRelevantTreeData().parentQualifiedName.value =
-                            item.value.qualifiedName
-                    }
+                    showSaveQueryModal.value = !showSaveQueryModal.value
+                    // if (item?.value?.qualifiedName) {
+                    //     getRelevantTreeData().parentQualifiedName.value =
+                    //         item.value.qualifiedName
+                    // } else if (item?.qualifiedName) {
+                    //     getRelevantTreeData().parentQualifiedName.value =
+                    //         item.qualifiedName
+                    // }
                 }
-
-                showSaveQueryModal.value = !showSaveQueryModal.value
             }
 
             const newFolderName = ref('')
@@ -461,6 +467,7 @@
                 const existingInputs =
                     document.getElementsByClassName(inputClassName)
                 const guid = getRelevantTreeData().parentGuid.value
+                // console.log('tree data: ', getRelevantTreeData())
 
                 // appends the input element into the DOM with all the event listeners attached
                 const appendInput = () => {
@@ -714,6 +721,7 @@
                 immediateParentGuid: per_immediateParentGuid,
                 nodeToParentKeyMap: per_nodeToParentKeyMap,
                 updateNode: per_updateNode,
+                currentSelectedNode: per_currentSelectedNode,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -741,6 +749,7 @@
                 immediateParentGuid: all_immediateParentGuid,
                 nodeToParentKeyMap: all_nodeToParentKeyMap,
                 updateNode: all_updateNode,
+                currentSelectedNode: all_currentSelectedNode,
                 // addInputBox,
                 // removeInputBox,
             } = useQueryTree({
@@ -793,12 +802,9 @@
                 }
             })
             const saveQuery = async (saveQueryData: {
-                title: string
-                description: string
-                isSQLSnippet: boolean
-                certificateStatus: string
-                parentQF?: string
-                parentGuid?: string
+                saveQueryData: any
+                assetTerms: any
+                selectedParentType
             }) => {
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
                     saveQueryData,
@@ -816,7 +822,10 @@
                 focusEditor(toRaw(editorInstance.value))
 
                 watch(data, (data) => {
+                    // console.log('query data: ', data)
+                    // console.log('query saveQueryData: ', saveQueryData)
                     if (data) {
+                        // if(savedQueryType.value==='all')
                         per_refetchNode(
                             saveQueryData.parentGuid ??
                                 getRelevantTreeData().parentGuid.value,
@@ -1053,6 +1062,8 @@
                 selectedFolder,
                 queryFolderNamespace,
                 BItypes,
+                all_currentSelectedNode,
+                per_currentSelectedNode,
                 // refetchTreeData,
             }
         },

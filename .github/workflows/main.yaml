@@ -67,7 +67,7 @@ jobs:
 
       # Send a slack notification message on the specified channel with the failure github actions workflow report.
       - name: Copy static site to S3 bucket
-        run: aws s3 cp ./dist s3://$AWS_S3_BUCKET/$CHANNEL_NAME --recursive --region $AWS_REGION
+        run: aws s3 cp ./dist s3://$AWS_S3_BUCKET/$CHANNEL_NAME/frontend --recursive --region $AWS_REGION
         env:
           AWS_REGION: "ap-south-1"
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_DEPLOYMENT_BUCKET }}

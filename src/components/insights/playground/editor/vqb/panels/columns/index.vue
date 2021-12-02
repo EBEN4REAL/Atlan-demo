@@ -3,13 +3,9 @@
         <div
             :class="
                 expand
-                    ? [' border-gray-300', ' rounded', 'group', 'border']
+                    ? [' border-gray-300 rounded group border']
                     : [
-                          ' border-white',
-                          'hover:border-gray-300',
-                          'rounded',
-                          'border',
-                          'group',
+                          ' border-white hover:border-gray-300 rounded border group',
                       ]
             "
         >
@@ -43,28 +39,10 @@
                             :class="
                                 !expand
                                     ? [
-                                          'flex',
-                                          'items-center',
-                                          'justify-center',
-                                          'mr-2',
-                                          'bg-gray-100',
-                                          'border',
-                                          'border-gray-300',
-                                          'rounded-full',
-                                          'p-1.5',
-                                          'text-gray-500',
+                                          'flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5 text-gray-500',
                                       ]
                                     : [
-                                          'flex',
-                                          'items-center',
-                                          'justify-center',
-                                          'mr-2',
-                                          'bg-primary-light',
-                                          'border',
-                                          'border-primary',
-                                          'rounded-full',
-                                          'p-1.5',
-                                          'text-primary',
+                                          'flex items-center justify-center mr-2 bg-primary-light  border-primary-focus rounded-full p-1.5 text-primary',
                                       ]
                             "
                             style="z-index: 2"
@@ -75,7 +53,7 @@
                             <p class="text-sm font-bold text-gray">
                                 Columns {{ panel.order }}
                             </p>
-                            <p class="text-xs text-gray-500">
+                            <p class="text-xs text-gray-500" v-if="!expand">
                                 from Instacart_beverages_master
                             </p>
                         </div>
@@ -107,7 +85,7 @@
                                 "
                                 size="sm"
                                 color="secondary"
-                                @click.stop="() => handleAdd(index)"
+                                @click.stop="toggleActionPanel"
                                 padding="compact"
                             >
                                 <AtlanIcon
@@ -157,12 +135,8 @@
                 ></div>
             </div>
             <!-- Show on expand -->
-            <div
-                class="h-24 p-3 mx-3 mt-1 mb-4 bg-gray-100 rounded"
-                v-if="expand"
-                @click.stop="() => {}"
-            ></div>
-            <Actions v-if="expand" />
+            <ColumnSubPanel :expand="expand" />
+            <Actions v-if="actionPanel" />
         </div>
         <div
             @click.stop="() => {}"
@@ -195,12 +169,14 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { VQBPanelType } from '~/types/insights/VQB.interface'
     import Actions from '../action/index.vue'
+    import ColumnSubPanel from './subpanel/index.vue'
 
     export default defineComponent({
         name: 'Columns',
         components: {
             Actions,
             AtlanBtn,
+            ColumnSubPanel,
         },
         props: {
             index: {
@@ -215,6 +191,7 @@
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
             const expand = ref(false)
+            const actionPanel = ref(false)
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as ComputedRef<string>
@@ -261,8 +238,13 @@
             const toggleExpand = () => {
                 expand.value = !expand.value
             }
+            const toggleActionPanel = () => {
+                actionPanel.value = !actionPanel.value
+            }
 
             return {
+                toggleActionPanel,
+                actionPanel,
                 toggleExpand,
                 expand,
                 activeInlineTab,

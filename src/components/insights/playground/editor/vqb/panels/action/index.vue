@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center w-full p-3 bg-gray-100 border-t rounded rounded-b "
+        class="flex items-center w-full p-3 bg-gray-100 border-t border-b border-l border-r border-gray-300 rounded-b  group-hover:border-white"
     >
         <template v-for="item in items" :key="item.label">
             <AtlanBtn
@@ -29,6 +29,11 @@
         name: 'Columns',
         setup(props, { emit }) {
             const items = [
+                {
+                    icon: 'Columns',
+                    label: 'Column',
+                    class: '',
+                },
                 {
                     icon: 'Trigger',
                     label: 'Aggregate',

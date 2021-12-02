@@ -68,7 +68,7 @@ const useIntegrations = () => {
     } = getIntegrationsList()
 
     watch(data, () => {
-        if (data.value?.length)
+        if (data?.value?.length)
             store.setAllIntegrationsList(data.value)
     })
 

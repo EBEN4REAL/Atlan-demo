@@ -25,7 +25,7 @@
                 />
                 <div class="flex flex-col flex-1">
                     <!-- Info bar -->
-                    <div v-if="item.typeName?.toLowerCase() === 'column'" class="flex flex-wrap items-center mt-1">
+                    <div v-if="['table', 'column'].includes(item.typeName?.toLowerCase())" class="flex flex-wrap items-center mt-1">
                         <a-tooltip
                             v-if="connectorName(item)"
                             placement="left"
@@ -46,13 +46,14 @@
                         >
                             {{ assetTypeLabel(item) || item.typeName }}
                         </div>
-                        <div class="flex flex-wrap ml-2 text-sm text-gray-500 gap-x-2">
+                        <div v-if="item.typeName?.toLowerCase() === 'table'"  class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2">
+                            <div class="dot"/>
                             <a-tooltip placement="bottomLeft">
                                 <div
                                     v-if="databaseName(item)"
                                     class="flex items-center text-gray-500"
                                 >
-                                    <div class="text-sm tracking-tight text-gray-500 ">
+                                    <div class="text-xs tracking-tight text-gray-500 ">
                                         {{ databaseName(item) }}
                                     </div>
                                 </div>
@@ -67,7 +68,7 @@
                             <a-tooltip placement="bottomLeft">
                                 <div
                                     v-if="schemaName(item)"
-                                    class="flex items-center text-sm text-gray-500 "
+                                    class="flex items-center text-xs text-gray-500 "
                                 >
                                     <div class="tracking-tight text-gray-500">
                                         {{ schemaName(item) }}
@@ -75,6 +76,29 @@
                                 </div>
                                 <template #title>
                                     <span>Schema - {{ schemaName(item) }}</span>
+                                </template>
+                            </a-tooltip>
+                        </div>
+                        <div v-if="item.typeName?.toLowerCase() === 'column'"  class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2">
+                            <div class="dot"/>
+                            <a-tooltip
+                                v-if="viewName(item)"
+                                placement="bottomLeft"
+                            >
+                                <div
+                                    v-if="viewName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ViewGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ viewName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>View - {{ viewName(item) }}</span>
                                 </template>
                             </a-tooltip>
                         </div>
@@ -424,13 +448,12 @@
                             :username="certificateUpdatedBy(item)"
                             :timestamp="certificateUpdatedAt(item)"
                             class="mb-0.5"
-                        ></CertificateBadge>
+                        />
                     </div>
-
                     <div v-if="description(item)" class="flex mt-0.5">
                         <span
                             v-if="preference?.display?.includes('description')"
-                            class="text-xs text-gray-500"
+                            class="max-w-xs text-xs text-gray-500 truncate"
                             >{{ description(item) }}</span
                         >
                     </div>
@@ -663,6 +686,6 @@
         height: 4px;
         border-radius: 50%;
         background-color: #C4C4C4;
-        margin-right: 7px;
+        // margin-right: 7px;
     }
 </style>

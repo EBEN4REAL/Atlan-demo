@@ -40,24 +40,26 @@
                                 ? cssClasses?.textSize
                                 : 'text-xl'
                         "
-                        :to="`/workflows/${item.workflowtemplate.metadata.name}/setup`"
+                        :to="`/workflows/${item.metadata.name}/setup`"
                         class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
-                        {{ item.workflowtemplate.metadata.name }}
+                        {{ item.metadata.name }}
                     </router-link>
                 </div>
                 <div class="flex items-center gap-x-3">
                     <div class="flex text-sm text-gray-500">
                         <span class="text-gray-500">
                             {{
-                                item?.workflowtemplate?.spec?.templates[0]?.dag
-                                    ?.tasks[0]?.templateRef.name ?? '-'
+                                item?.spec?.templates[0]?.dag?.tasks[0]
+                                    ?.templateRef.name ?? '-'
                             }}</span
                         >
                     </div>
                     <div
                         v-if="
-                            item?.labels['com.atlan.orchestration/created-by']
+                            item?.metadata.labels[
+                                'com.atlan.orchestration/created-by'
+                            ]
                         "
                         style="color: rgb(196, 196, 196)"
                     >
@@ -65,13 +67,17 @@
                     </div>
                     <div
                         v-if="
-                            item?.labels['com.atlan.orchestration/created-by']
+                            item?.metadata.labels[
+                                'com.atlan.orchestration/created-by'
+                            ]
                         "
                         class="flex items-center text-sm text-gray-500 gap-x-1"
                     >
                         <AtlanIcon icon="User" />
                         <span>{{
-                            item?.labels['com.atlan.orchestration/created-by']
+                            item?.metadata.labels[
+                                'com.atlan.orchestration/created-by'
+                            ]
                         }}</span>
                     </div>
                     <!-- <div style="color: rgb(196, 196, 196)">•</div> -->

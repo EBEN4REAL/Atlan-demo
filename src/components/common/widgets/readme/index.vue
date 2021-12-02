@@ -1,155 +1,104 @@
 <template>
-    <div class="flex flex-col p-4 bg-white rounded" style="min-height: 140px">
-        <div>
-            <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center">
-                    <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
-                        class="text-base font-bold text-gray"
-                        >Readme</span
-                    >
-                </div>
-
-                <a-button
-                    class="flex items-center"
-                    v-if="!isLoading && !content && isEdit && !isEditMode"
-                    @click="handleEditMode"
-                >
-                    <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Start a
-                    readme</a-button
-                >
-
-                <div
-                    v-if="!isLoading && isEdit && isEditMode"
-                    class="flex gap-x-1"
-                >
-                    <a-button
-                        class="flex items-center"
-                        @click="handleCancel"
-                        v-if="!isAssetUpdateLoading"
-                    >
-                        Cancel</a-button
-                    >
-
-                    <a-button
-                        class="flex items-center"
-                        type="primary"
-                        @click="handleUpdate"
-                        :loading="isAssetUpdateLoading"
-                    >
-                        Save</a-button
-                    >
-                </div>
-
-                <a-button
-                    class="flex items-center"
-                    v-if="!isLoading && isEdit && content && !isEditMode"
-                    @click="handleEditMode"
-                >
-                    <AtlanIcon
-                        icon="Edit"
-                        class="w-auto h-4 mr-1"
-                    />Edit</a-button
+    <div
+        class="flex flex-col p-4 bg-white rounded"
+        :class="isEditMode ? 'editor-open' : 'editor-close'"
+    >
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
+                    class="text-base font-bold text-gray"
+                    >Readme</span
                 >
             </div>
-            <span
-                class="text-sm text-gray-500"
-                v-if="!isLoading && !content && !isEditMode"
-                >Add some details here ...</span
+
+            <a-button
+                v-if="!localReadmeContent && isEdit && !isEditMode"
+                class="flex items-center"
+                type="primary"
+                @click="handleEditMode"
+            >
+                <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Add a
+                readme</a-button
+            >
+
+            <div v-if="isEdit && isEditMode" class="flex gap-x-1">
+                <a-button
+                    v-if="!isLoading"
+                    class="flex items-center"
+                    @click="handleCancel"
+                >
+                    Cancel</a-button
+                >
+
+                <a-button
+                    class="flex items-center"
+                    type="primary"
+                    :loading="isLoading"
+                    @click="handleUpdate"
+                >
+                    Save</a-button
+                >
+            </div>
+
+            <a-button
+                v-if="isEdit && localReadmeContent && !isEditMode"
+                class="flex items-center"
+                type="primary"
+                @click="handleEditMode"
+            >
+                <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Edit</a-button
             >
         </div>
-        <div class="h-24" v-if="isLoading" style="min-height: 200px">
-            <SectionLoader></SectionLoader>
-        </div>
+
         <div
-            class="border-0"
-            style="min-height: 200px"
-            v-else-if="(guid && !isLoading) || isEditMode || readme.guid"
+            v-if="!localReadmeContent && !isEditMode"
+            class="text-sm text-gray-500"
         >
-            <Editor ref="editor" :isEditMode="isEditMode" v-model="content" />
+            Add a README with an overview of your asset.
+        </div>
+        <div v-if="isEditMode || readmeGuid(asset)" class="border-0">
+            <Editor
+                ref="editor"
+                v-model="localReadmeContent"
+                placeholder="Type '/' for commands"
+                :is-edit-mode="isEditMode"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        PropType,
-        watch,
-        computed,
-        toRefs,
-        inject,
-    } from 'vue'
+    import { defineComponent, ref, PropType, toRefs } from 'vue'
 
     import Editor from '@/common/editor/index.vue'
-    import { InternalAttributes } from '~/constant/projection'
-    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-
-    import SectionLoader from '@/common/loaders/section.vue'
-    import updateAsset from '~/composables/discovery/updateAsset'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
         components: {
             Editor,
-            SectionLoader,
         },
         props: {
-            guid: {
-                type: String,
-                required: false,
-                default: '',
-            },
             isEdit: {
                 type: Boolean,
                 required: false,
                 default: true,
             },
-            selectedAsset: {
-                required: false,
+            asset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
             },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
-            const actions = inject('actions')
+            const { asset } = toRefs(props)
 
-            const { readmeGuid } = useAssetInfo()
+            const { readmeContent, readmeGuid } = useAssetInfo()
 
-            const guid = computed(() => {
-                return readmeGuid(selectedAsset.value)
-            })
-            const isEdit = ref(true)
+            const { handleUpdateReadme, localReadmeContent, isLoading } =
+                updateAssetAttributes(asset)
 
             const isEditMode = ref(false)
-
-            const limit = ref(1)
-            const offset = ref(0)
-            const facets = ref({
-                guid: guid.value,
-            })
-            const dependentKey = ref(guid?.value)
-            const defaultAttributes = ref([...InternalAttributes])
-            const readme = ref({})
-            const content = ref('')
-
-            const { list, isLoading } = useDiscoverList({
-                isCache: false,
-                dependentKey,
-                facets,
-                limit,
-                offset,
-                attributes: defaultAttributes,
-            })
-
-            watch(list, () => {
-                if (list?.value?.length > 0) {
-                    readme.value = list.value[0]
-                    console.log(description(readme?.value))
-                    content.value = description(readme?.value)
-                }
-            })
-
-            const { description } = useAssetInfo()
 
             const handleEditMode = () => {
                 isEditMode.value = !isEditMode.value
@@ -158,83 +107,40 @@
             const editor = ref()
 
             const handleUpdate = () => {
-                entity.value.attributes.description = content.value
-                body.value.entities = [entity.value]
-                mutate()
+                handleUpdateReadme()
+                isEditMode.value = false
             }
 
             const handleCancel = () => {
                 if (editor.value) {
-                    console.log(readme.value)
-                    console.log(description(readme.value))
-                    editor.value.resetEditor(description(readme?.value))
+                    editor.value.resetEditor(readmeContent(asset.value))
                 }
+                localReadmeContent.value = readmeContent(asset.value)
                 isEditMode.value = false
             }
-            const entity = ref({
-                typeName: 'Readme',
-                attributes: {
-                    qualifiedName: `${selectedAsset?.value?.guid}/readme`,
-                    name: `Readme`,
-                },
-                relationshipAttributes: {
-                    asset: {
-                        guid: selectedAsset?.value?.guid,
-                        typeName: selectedAsset?.value?.typeName,
-                    },
-                },
-            })
-
-            const body = ref({
-                entities: [],
-            })
-
-            const {
-                data,
-                mutate,
-                isLoading: isAssetUpdateLoading,
-                error: isAssetUpdateError,
-            } = updateAsset(body)
-
-            watch(data, () => {
-                if (data.value?.mutatedEntities?.CREATE?.length > 0) {
-                    readme.value = data.value?.mutatedEntities?.CREATE[0]
-                    selectedAsset.value.readme = {
-                        guid: readme.value?.guid,
-                    }
-                    handleCancel()
-                } else if (data.value?.mutatedEntities?.UPDATE?.length > 0) {
-                    readme.value.attributes.description =
-                        data.value?.mutatedEntities?.UPDATE[0].attributes?.description
-                    isEditMode.value = false
-                } else {
-                    isEditMode.value = false
-                }
-            })
 
             return {
                 isLoading,
-                isEdit,
-                content,
-                readme,
                 handleUpdate,
                 isEditMode,
                 handleEditMode,
                 handleCancel,
                 editor,
-                isAssetUpdateLoading,
-                entity,
-                isAssetUpdateError,
+                localReadmeContent,
+                readmeGuid,
             }
         },
     })
 </script>
 
-<style lang="less">
-    .container {
-        display: flex;
-        width: 100vw !important;
-        align-items: center;
+<style lang="less" scoped>
+    .editor-open {
+        min-height: 200px;
+        transition: min-height 0.3s ease-in-out;
+    }
+    .editor-close {
+        min-height: 0;
+        transition: min-height 0.3s ease-in-out;
     }
 </style>
 

@@ -37,13 +37,14 @@
                 <PopOverUser :item="username">
                     <UserPill
                         :username="username"
-                        :allowDelete="!readOnly"
-                        @delete="handleDeleteUser"
+                        :allow-delete="!readOnly"
+                        :enable-hover="enableHover"
                         @click="handleClickUser(username)"
-                        :enableHover="enableHover"
+                        @delete="handleDeleteUser"
                     ></UserPill>
-                </PopOverUser> </template
-        ></template>
+                </PopOverUser>
+            </template>
+        </template>
         <template
             v-for="username in localValue?.ownerUsers"
             v-else
@@ -197,7 +198,9 @@
             const notUsingInput = computed(
                 () =>
                     activeElement.value?.tagName !== 'INPUT' &&
-                    activeElement.value?.tagName !== 'TEXTAREA'
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
             )
             const { o, Escape } = useMagicKeys()
             whenever(and(o, notUsingInput), () => {

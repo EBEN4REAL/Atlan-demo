@@ -2,7 +2,7 @@
     <template v-if="selectedPersonaDirty">
         <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
             <template #label="t">
-                <div class="flex items-center" style="width: 66px">
+                <div class="flex items-center">
                     <div
                         class="relative text-sm"
                         :class="
@@ -187,6 +187,19 @@
                     </template>
                 </a-dropdown>
             </div>
+            <div v-else-if="activeTabKey === 'linked_assets'" class="mt-2">
+                <div class="wrapper-height">
+                    <AssetsWrapper
+                        :initialFilters="filterConfig"
+                        :showFilters="false"
+                        page="purposes"
+                    />
+                    <!-- <LinkedTerms
+                v-else-if="activeTabKey === '2'"
+                :selected-classification="selectedClassification?.name"
+            /> -->
+                </div>
+            </div>
         </div>
     </template>
 </template>
@@ -228,6 +241,7 @@
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
     import { selectedPersona } from './composables/usePurposeList'
     import { getUsername } from './composables/getUsername'
+    import AssetsWrapper from '@/assets/index.vue'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -238,6 +252,7 @@
             DataPolicy,
             AtlanBtn,
             PurposeMeta,
+            AssetsWrapper,
         },
         props: {
             persona: {
@@ -319,8 +334,14 @@
                     })
                 }
             }
+            const filterConfig = computed(() => ({
+                __traitNames: {
+                    classifications: persona.value.tags,
+                },
+            }))
 
             return {
+                filterConfig,
                 newIdTag,
                 userId,
                 username,

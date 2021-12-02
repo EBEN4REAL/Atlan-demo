@@ -35,9 +35,11 @@ export function useConfigMapList({
         let temp = {
             $and: [
                 {
-                    labels: {
+                    metadata: {
                         $elemMatch: {
-                            'com.atlan.orchestration/verified': 'true',
+                            labels: {
+                                'com.atlan.orchestration/verified': 'true',
+                            },
                         },
                     },
                 },
@@ -48,9 +50,11 @@ export function useConfigMapList({
             temp = {
                 $and: [
                     {
-                        labels: {
+                        metadata: {
                             $elemMatch: {
-                                'com.atlan.orchestration/verified': 'true',
+                                labels: {
+                                    'com.atlan.orchestration/verified': 'true',
+                                },
                             },
                         },
                     },

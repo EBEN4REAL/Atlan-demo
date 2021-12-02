@@ -1,6 +1,28 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
-        <PackagesSetup :workflowTemplate="localSelected"></PackagesSetup>
+        <Loader v-if="isLoadingPackage || isLoadingConfigMap"></Loader>
+        <div
+            v-else-if="!isLoadingPackage && !isLoadingConfigMap && error"
+            class="flex items-center justify-center flex-grow"
+        >
+            <ErrorView></ErrorView>
+        </div>
+        <PackagesSetup
+            v-else-if="localConfig"
+            :workflowTemplate="localSelected"
+            :configMap="localConfig"
+        ></PackagesSetup>
+        <div class="flex flex-col" style="width: 33%; min-width: 33%">
+            <Preview
+                v-if="!sandbox && localConfig"
+                :workflowTemplate="localSelected"
+            ></Preview>
+            <Sandbox
+                v-if="sandbox && localConfig"
+                v-model:configMap="localConfig"
+                v-model:workflowTemplate="localSelected"
+            ></Sandbox>
+        </div>
     </div>
 </template>
 
@@ -15,7 +37,11 @@
         provide,
     } from 'vue'
 
+    import Loader from '@/common/loaders/page.vue'
+    import ErrorView from '@common/error/discover.vue'
     import PackagesSetup from '@/packages/setup/index.vue'
+    import Preview from '@/packages/setup/preview.vue'
+    import Sandbox from '@/packages/setup/sandbox.vue'
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'
     import { useRoute } from 'vue-router'
@@ -25,6 +51,10 @@
         name: 'WorkflowSetupPage',
         components: {
             PackagesSetup,
+            Loader,
+            ErrorView,
+            Sandbox,
+            Preview,
         },
         props: {
             selectedPackage: {
@@ -37,23 +67,36 @@
             const id = computed(() => route?.params?.id || '')
             const { getTemplateName } = usePackageInfo()
             const fetch = ref(true)
+
+            const sandbox = computed(() => route?.query?.sandbox || '')
+
             if (getTemplateName(props.selectedPackage)) {
                 fetch.value = false
             }
 
             const localSelected = ref(props.selectedPackage)
             const localConfig = ref(null)
-            const { workflowPackage } = usePackageByName(id, fetch.value)
+            const {
+                workflowPackage,
+                isLoading: isLoadingPackage,
+                error,
+            } = usePackageByName(id, fetch.value)
 
-            const { list, data } = useConfigMapList({
+            const {
+                list,
+                data,
+                isLoading: isLoadingConfigMap,
+            } = useConfigMapList({
                 dependentKey: ref(true),
                 limit: ref(1),
                 filter: ref({
                     $or: [
                         {
-                            labels: {
+                            metadata: {
                                 $elemMatch: {
-                                    'com.atlan.orchestration/workflow-template-name': `${id.value}`,
+                                    labels: {
+                                        'com.atlan.orchestration/workflow-template-name': `${id.value}`,
+                                    },
                                 },
                             },
                         },
@@ -67,13 +110,25 @@
 
             watch(data, () => {
                 if (list.value.length > 0) {
-                    localConfig.value = list.value[0]
+                    try {
+                        localConfig.value = JSON.parse(
+                            list.value[0].data.config
+                        )
+
+                        // Add Schedule
+                    } catch (e) {
+                        console.log(e)
+                    }
                 }
             })
 
             return {
                 localSelected,
                 localConfig,
+                isLoadingPackage,
+                isLoadingConfigMap,
+                error,
+                sandbox,
             }
         },
     })

@@ -1,0 +1,42 @@
+export const insightsFilters = [
+    {
+        id: 'certificateStatus',
+        label: 'Certificate',
+        component: 'certificate',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
+        id: 'owners',
+        label: 'Owners',
+        component: 'owners',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
+        id: 'terms',
+        label: 'Terms',
+        component: 'governance',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
+        id: '__traitNames',
+        label: 'Classifications',
+        component: 'classifications',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    }
+]

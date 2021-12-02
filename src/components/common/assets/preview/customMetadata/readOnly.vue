@@ -7,7 +7,7 @@
         >
             <div
                 v-if="attribute.value"
-                class="flex items-center font-bold text-primary gap-x-1"
+                class="flex items-center text-primary gap-x-1"
             >
                 <img
                     :src="`https://www.google.com/s2/favicons?domain=${attribute.value}`"
@@ -21,7 +21,7 @@
 
         <a-typography-paragraph
             v-else-if="getDatatypeOfAttribute(attribute) === 'text'"
-            class="font-bold text-gray-700"
+            class="text-gray-700"
             :ellipsis="{
                 rows: 5,
                 expandable: true,
@@ -123,7 +123,7 @@
             <template v-else>-</template>
         </div>
 
-        <span v-else class="font-bold text-gray-700">
+        <span v-else class="text-gray-700">
             {{
                 formatDisplayValue(
                     attribute.value?.toString() || '',

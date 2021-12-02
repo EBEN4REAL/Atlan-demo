@@ -11,27 +11,32 @@
             <div class="flex flex-row space-x-2">
                 <a-input
                     v-model:value="searchQuery"
-                    class="mt-2 rounded"
+                    class="h-8 mt-2 rounded"
                     :class="$style.inputSearch"
                     placeholder="Search"
                 >
                     <template #suffix>
-                        <AtlanIcon icon="Search" />
+                        <AtlanIcon icon="Search" color="#6F7590" />
                     </template>
                 </a-input>
-                <a-button
-                    class="flex items-center w-8 h-8 p-2 mt-2"
-                    :class="$style.filterButton"
-                >
-                    <AtlanIcon icon="Filter" />
-                </a-button>
+                <a-popover trigger="click" placement="bottomLeft">
+                    <a-button
+                        class="flex items-center w-8 h-8 p-2 mt-2"
+                        :class="$style.filterButton"
+                    >
+                        <AtlanIcon icon="Filter" />
+                    </a-button>
+                    <template #content>
+                        <QueryFilter @change="onFilterChange" />
+                    </template>
+                </a-popover>
             </div>
         </div>
         <!-- <div class="w-full my-4 border-b"></div> -->
         <div class="w-full h-full mt-2 h-9">
             <div class="w-full px-4">
                 <div
-                    class="flex items-end justify-between mb-2 text-gray-500  h-9"
+                    class="flex items-end justify-between mb-2 text-gray-500 h-9"
                 >
                     <RaisedTab
                         v-model:active="savedQueryType"
@@ -55,19 +60,12 @@
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
-                                                queryFolderNamespace
+                                                per_currentSelectedNode
                                             )
                                     "
                                     icon="NewQuery"
                                     color="#5277D7"
-                                    class="
-                                        h-4
-                                        m-0
-                                        mr-4
-                                        -mt-0.5
-                                        hover:text-primary
-                                        outline-none
-                                    "
+                                    class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
                                 />
                             </a-tooltip>
                             <a-tooltip
@@ -85,19 +83,12 @@
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
-                                                queryFolderNamespace
+                                                all_currentSelectedNode
                                             )
                                     "
                                     icon="NewQuery"
                                     color="#5277D7"
-                                    class="
-                                        h-4
-                                        m-0
-                                        mr-4
-                                        -mt-0.5
-                                        hover:text-primary
-                                        outline-none
-                                    "
+                                    class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
                                 />
                             </a-tooltip>
                             <!-- ----------- -->
@@ -119,13 +110,7 @@
                                     @click="createFolderInput"
                                     color="#5277D7"
                                     icon="NewFolder"
-                                    class="
-                                        h-4
-                                        m-0
-                                        -mt-0.5
-                                        hover:text-primary
-                                        outline-none
-                                    "
+                                    class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
                                 />
                             </a-tooltip>
                             <a-tooltip
@@ -143,13 +128,7 @@
                                     @click="createFolderInput"
                                     color="#5277D7"
                                     icon="NewFolder"
-                                    class="
-                                        h-4
-                                        m-0
-                                        -mt-0.5
-                                        hover:text-primary
-                                        outline-none
-                                    "
+                                    class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
                                 />
                             </a-tooltip>
                             <!-- CREATE FOLDER PERMISSIONS -->
@@ -158,7 +137,7 @@
                 </div>
             </div>
             <div
-                v-if="!searchQuery?.length"
+                v-if="!searchQuery?.length && !Object.keys(facets).length"
                 class="relative w-full px-4 pt-0 overflow-y-auto"
                 :style="
                     fullSreenState
@@ -222,23 +201,6 @@
                     <LoadingView />
                 </div>
                 <div v-else-if="searchResults?.entities?.length">
-                    <!-- <div
-                        v-for="query in searchResults?.entities"
-                        :key="query.guid"
-                    >
-                        <QueryTreeItem
-                            :item="{
-                                selected: false,
-                                title: query.displayText,
-                                ...query,
-                            }"
-                            :expandedKeys="per_expandedKeys"
-                            :parentFolderQF="
-                                getRelevantTreeData().parentQualifiedName.value
-                            "
-                        />
-                    </div> -->
-
                     <div
                         v-if="savedQueryType === 'personal'"
                         class="w-full h-full bg-white"
@@ -287,7 +249,7 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700  max-width-text"
+                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
                     >
                         Sorry, we couldn’t find
                         <br />the query you were looking for
@@ -354,13 +316,14 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
-
+    import QueryFilter from './queryFilter.vue'
     export default defineComponent({
         components: {
             RaisedTab,
             QueryTree,
             Connector,
             // SaveQueryModal,
+            QueryFilter,
             LoadingView,
             QueryTreeItem,
             SaveQueryModal: defineAsyncComponent(
@@ -471,21 +434,27 @@
             const toggleCreateQueryModal = (item) => {
                 // console.log('selected Parent: ', item)
 
-                if (item.typeName === 'QueryFolderNamespace') {
+                if (item?.typeName === 'QueryFolderNamespace') {
                     selectedFolder.value = item
-                    getRelevantTreeData().parentGuid.value = item.guid
-                } else {
-                    if (item.value.guid) {
+                    showSaveQueryModal.value = !showSaveQueryModal.value
+                } else if (
+                    item?.typeName === 'QueryFolder' ||
+                    item?.value?.typeName === 'QueryFolder'
+                ) {
+                    if (item?.value?.guid) {
                         selectedFolder.value = item
-                        getRelevantTreeData().parentGuid.value = item.value.guid
+                    } else if (item?.guid) {
+                        selectedFolder.value = item
                     }
-                    if (item.value.qualifiedName) {
-                        getRelevantTreeData().parentQualifiedName.value =
-                            item.value.qualifiedName
-                    }
+                    showSaveQueryModal.value = !showSaveQueryModal.value
+                    // if (item?.value?.qualifiedName) {
+                    //     getRelevantTreeData().parentQualifiedName.value =
+                    //         item.value.qualifiedName
+                    // } else if (item?.qualifiedName) {
+                    //     getRelevantTreeData().parentQualifiedName.value =
+                    //         item.qualifiedName
+                    // }
                 }
-
-                showSaveQueryModal.value = !showSaveQueryModal.value
             }
 
             const newFolderName = ref('')
@@ -498,6 +467,7 @@
                 const existingInputs =
                     document.getElementsByClassName(inputClassName)
                 const guid = getRelevantTreeData().parentGuid.value
+                // console.log('tree data: ', getRelevantTreeData())
 
                 // appends the input element into the DOM with all the event listeners attached
                 const appendInput = () => {
@@ -722,6 +692,20 @@
             const pushGuidToURL = (guid: string) => {
                 router.push(`/insights?id=${guid}`)
             }
+            const facets = ref({})
+            // const sortOrderTable = ref('')
+            // const sortOrderColumn = ref('')
+            const onFilterChange = (type, value) => {
+                // if (type === 'sortOrderTable') {
+                //     sortOrderTable.value = value
+                // }
+                // if (type === 'sortOrderColumn') {
+                //     sortOrderColumn.value = value
+                // }
+                if (type === 'facets') {
+                    facets.value = { ...value }
+                }
+            }
 
             const {
                 treeData: per_treeData,
@@ -737,6 +721,7 @@
                 immediateParentGuid: per_immediateParentGuid,
                 nodeToParentKeyMap: per_nodeToParentKeyMap,
                 updateNode: per_updateNode,
+                currentSelectedNode: per_currentSelectedNode,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -764,6 +749,7 @@
                 immediateParentGuid: all_immediateParentGuid,
                 nodeToParentKeyMap: all_nodeToParentKeyMap,
                 updateNode: all_updateNode,
+                currentSelectedNode: all_currentSelectedNode,
                 // addInputBox,
                 // removeInputBox,
             } = useQueryTree({
@@ -781,7 +767,7 @@
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =
-                useSearchQueries(searchQuery, savedQueryType)
+                useSearchQueries(searchQuery, savedQueryType, facets)
 
             const getRelevantTreeData = (type?: 'personal' | 'all') => {
                 const currentType = type ?? savedQueryType.value
@@ -816,12 +802,9 @@
                 }
             })
             const saveQuery = async (saveQueryData: {
-                title: string
-                description: string
-                isSQLSnippet: boolean
-                certificateStatus: string
-                parentQF?: string
-                parentGuid?: string
+                saveQueryData: any
+                assetTerms: any
+                selectedParentType
             }) => {
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
                     saveQueryData,
@@ -839,7 +822,10 @@
                 focusEditor(toRaw(editorInstance.value))
 
                 watch(data, (data) => {
+                    // console.log('query data: ', data)
+                    // console.log('query saveQueryData: ', saveQueryData)
                     if (data) {
+                        // if(savedQueryType.value==='all')
                         per_refetchNode(
                             saveQueryData.parentGuid ??
                                 getRelevantTreeData().parentGuid.value,
@@ -881,6 +867,16 @@
                     per_refetchNode(per_guid, type)
                 if (!tree || tree === 'all') all_refetchNode(all_guid, type)
             }
+
+            const refetchNode = (
+                guid: string,
+                type: 'query' | 'queryFolder',
+                tree?: 'personal' | 'all'
+            ) => {
+                if (!tree || tree === 'personal') per_refetchNode(guid, type)
+                if (!tree || tree === 'all') all_refetchNode(guid, type)
+            }
+
             onMounted(() => {
                 per_selectedKeys.value = [activeInlineTabKey.value]
                 all_selectedKeys.value = [activeInlineTabKey.value]
@@ -891,6 +887,7 @@
             provide('savedQueryType', savedQueryType)
             provide('savedQueryType', savedQueryType)
             provide('refetchParentNode', refetchParentNode)
+            provide('refetchNode', refetchNode)
 
             /* Watcher for updating the node in tree */
             watch(selectedAsset, () => {
@@ -952,12 +949,15 @@
             watch(
                 [searchResults, searchLoading],
                 () => {
+                    console.log('queries: ', searchResults.value)
+                    console.log('queries loading: ', searchLoading.value)
                     searchTreeData.value = []
                     if (searchResults.value?.entities?.length) {
                         searchResults.value.entities.forEach((query) => {
-                            searchTreeData.value.push({
-                                ...returnTreeDataItemAttributes(query),
-                            })
+                            console.log('queries append')
+                            searchTreeData.value.push(
+                                returnTreeDataItemAttributes(query)
+                            )
                         })
                     }
                 },
@@ -977,10 +977,18 @@
                         console.log('reset id: ', resetParentGuid.value)
 
                         if (Array.isArray(resetParentGuid.value)) {
-                            resetParentGuid.value.forEach(async (guid) => {
-                                await all_refetchNode(guid, resetType.value)
-                                await per_refetchNode(guidre, resetType.value)
-                            })
+                            console.log(
+                                'reset parent guid: ',
+                                resetParentGuid.value
+                            )
+                            resetParentGuid.value.forEach(
+                                async (guid, index) => {
+                                    // console.log('reset: ', index)
+
+                                    await all_refetchNode(guid, resetType.value)
+                                    await per_refetchNode(guid, resetType.value)
+                                }
+                            )
                         } else {
                             await all_refetchNode(
                                 resetParentGuid.value,
@@ -1009,6 +1017,7 @@
 
             return {
                 searchTreeData,
+                onFilterChange,
                 resolvePublicFolderCreationPermission,
                 permissions,
                 raisedTabConfig,
@@ -1043,6 +1052,7 @@
                 all_expandNode,
                 all_selectNode,
                 searchQuery,
+                facets,
                 searchResults,
                 searchLoading,
                 all_immediateParentGuid,
@@ -1052,6 +1062,8 @@
                 selectedFolder,
                 queryFolderNamespace,
                 BItypes,
+                all_currentSelectedNode,
+                per_currentSelectedNode,
                 // refetchTreeData,
             }
         },

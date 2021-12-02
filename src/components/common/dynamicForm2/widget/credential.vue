@@ -13,7 +13,7 @@
     >
         <ErrorView :error="error"></ErrorView>
     </div>
-    <template v-else>
+    <template v-else-if="configMap">
         <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
         <div class="flex items-center">
             <a-button
@@ -49,6 +49,8 @@
     import { useConfigMapList } from '~/composables/package/useConfigMapList'
     import ErrorView from '@common/error/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
+
+    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
 
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
@@ -88,225 +90,9 @@
             const testIcon = ref('')
             const testClass = ref('')
 
-            const configMap = ref({
-                title: 'Config Map',
-                description: 'Config Map for input parameters',
-                properties: {
-                    name: {
-                        type: 'string',
-                        required: false,
-                        ui: {
-                            label: 'Name',
-                            hidden: true,
-                            placeholder: 'Host Name',
-                        },
-                    },
-                    connector: {
-                        type: 'string',
-                        required: false,
-                        ui: {
-                            label: 'Connector',
-                            hidden: true,
-                            placeholder: 'Connector',
-                        },
-                    },
-                    connectorType: {
-                        type: 'string',
-                        required: false,
-                        ui: {
-                            key: '_host',
-                            label: 'connectorType',
-                            placeholder: 'connectorType',
-                            hidden: true,
-                        },
-                    },
-                    host: {
-                        type: 'string',
-                        required: true,
-                        default:
-                            'jv22371.ap-south-1.aws.snowflakecomputing.com',
-                        ui: {
-                            label: 'Account Identifiers (Host)',
-                            feedback: true,
-                            placeholder: 'Host Name',
-                            addonBefore: 'https://',
-                            help: 'Please enter a valid host name',
-                            rules: [
-                                {
-                                    required: true,
-                                    message: 'Please enter a valid host name',
-                                },
-                            ],
-                            grid: 6,
-                        },
-                    },
-                    port: {
-                        type: 'number',
-                        default: 443,
-                        required: true,
-                        ui: {
-                            label: 'Port',
-                            placeholder: 'Port',
-                            disabled: true,
-                            grid: 2,
-                            rules: [
-                                {
-                                    required: true,
-                                    message: 'Please enter a valid port name',
-                                },
-                            ],
-                        },
-                    },
-                    'auth-type': {
-                        type: 'string',
-                        enum: ['basic', 'private'],
-                        default: 'basic',
-                        required: true,
-                        enumNames: ['Basic', 'Private'],
-                        ui: {
-                            widget: 'radio',
-                            label: 'Authentication',
-                            placeholder: 'Credential Type',
+            const configMap = ref()
 
-                            rules: [
-                                {
-                                    required: true,
-                                    message:
-                                        'Please enter a valid authentication type',
-                                },
-                            ],
-                        },
-                    },
-                    basic: {
-                        type: 'object',
-                        properties: {
-                            username: {
-                                type: 'string',
-                                required: true,
-                                default: 'atlanadmin',
-                                ui: {
-                                    label: 'Username',
-                                    placeholder: 'Username',
-                                    feedback: true,
-                                    message: 'Please enter a valid username',
-                                    grid: 4,
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message:
-                                                'Please enter a valid username',
-                                        },
-                                    ],
-                                },
-                            },
-                            password: {
-                                type: 'string',
-                                required: true,
-                                ui: {
-                                    widget: 'password',
-                                    label: 'Password',
-                                    feedback: true,
-                                    placeholder: 'Password',
-                                    grid: 4,
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message:
-                                                'Please enter a valid password',
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                        ui: {
-                            widget: 'nested',
-                            label: '',
-                            placeholder: 'Credential Type',
-                            nestedValue: false,
-                            hidden: true,
-                        },
-                    },
-                    private: {
-                        type: 'object',
-                        properties: {
-                            username: {
-                                type: 'string',
-                                ui: {
-                                    label: 'private',
-                                    placeholder: 'Username',
-                                    grid: 4,
-                                },
-                            },
-                            password: {
-                                type: 'string',
-                                ui: {
-                                    label: 'private',
-                                    placeholder: 'Password',
-                                    grid: 4,
-                                },
-                            },
-                        },
-                        ui: {
-                            widget: 'nested',
-                            label: 'Private Key',
-                            nestedValue: false,
-                            placeholder: 'Credential Type',
-                            hidden: true,
-                        },
-                    },
-                    extra: {
-                        type: 'object',
-                        properties: {
-                            role: {
-                                type: 'string',
-                                ui: {
-                                    widget: 'sql',
-                                    label: 'Role',
-                                    placeholder: 'Role',
-                                    query: 'show roles',
-                                    grid: 4,
-                                },
-                            },
-                            warehouse: {
-                                type: 'string',
-                                ui: {
-                                    widget: 'sql',
-                                    label: 'Warehouse',
-                                    placeholder: 'Warehouse',
-                                    query: 'show warehouses',
-                                    grid: 4,
-                                },
-                            },
-                        },
-                        ui: {
-                            widget: 'nested',
-                            label: '',
-                            header: 'Advanced',
-                            hidden: false,
-                        },
-                    },
-                },
-                anyOf: [
-                    {
-                        properties: {
-                            'auth-type': {
-                                const: 'basic',
-                            },
-                        },
-                        required: ['basic'],
-                    },
-                    {
-                        properties: {
-                            'auth-type': {
-                                const: 'private',
-                            },
-                        },
-                        required: ['private'],
-                    },
-                ],
-            })
-
-            const { isLoading, error, data } = useConfigMapList({
+            const { isLoading, error, data, list } = useConfigMapList({
                 dependentKey: ref(true),
                 limit: ref(1),
                 filter: ref({
@@ -324,6 +110,141 @@
                 testClass.value = ''
             }
 
+            watch(data, () => {
+                if (list.value.length > 0) {
+                    try {
+                        configMap.value = JSON.parse(list.value[0].data.config)
+                    } catch (e) {
+                        console.error(e)
+                    }
+                } else {
+                    configMap.value = {
+                        properties: {
+                            name: {
+                                type: 'string',
+                                required: false,
+                                ui: {
+                                    label: 'Name',
+                                    hidden: true,
+                                    placeholder: 'Host Name',
+                                },
+                            },
+                            connector: {
+                                type: 'string',
+                                required: false,
+                                ui: {
+                                    label: 'Connector',
+                                    hidden: true,
+                                    placeholder: 'Connector',
+                                },
+                            },
+                            connectorType: {
+                                type: 'string',
+                                required: false,
+                                ui: {
+                                    key: '_host',
+                                    label: 'connectorType',
+                                    placeholder: 'connectorType',
+                                    hidden: true,
+                                },
+                            },
+                            host: {
+                                type: 'string',
+                                required: true,
+                                default:
+                                    'jv22371.ap-south-1.aws.snowflakecomputing.com',
+                                ui: {
+                                    label: 'Account Identifiers (Host)',
+                                    feedback: true,
+                                    placeholder: 'Host Name',
+                                    addonBefore: 'https://',
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message:
+                                                'Please enter a valid host name',
+                                        },
+                                    ],
+                                    grid: 6,
+                                },
+                            },
+                            port: {
+                                type: 'number',
+                                default: 443,
+                                required: true,
+                                ui: {
+                                    label: 'Port',
+                                    placeholder: 'Port',
+                                    disabled: true,
+                                    grid: 2,
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message:
+                                                'Please enter a valid port name',
+                                        },
+                                    ],
+                                },
+                            },
+                            basic: {
+                                type: 'object',
+                                properties: {
+                                    username: {
+                                        type: 'string',
+                                        required: true,
+                                        default: 'atlanadmin',
+                                        ui: {
+                                            label: 'Username',
+                                            placeholder: 'Username',
+                                            feedback: true,
+                                            message:
+                                                'Please enter a valid username',
+                                            grid: 4,
+                                            rules: [
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        'Please enter a valid username',
+                                                },
+                                            ],
+                                        },
+                                    },
+                                    password: {
+                                        type: 'string',
+                                        required: true,
+                                        ui: {
+                                            widget: 'password',
+                                            label: 'Password',
+                                            feedback: true,
+                                            placeholder: 'Password',
+                                            grid: 4,
+                                            rules: [
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        'Please enter a valid password',
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                                ui: {
+                                    widget: 'nested',
+                                    label: '',
+                                    placeholder: 'Credential Type',
+                                    nestedValue: false,
+                                    hidden: false,
+                                },
+                            },
+                        },
+                    }
+                }
+            })
+
+            // watch(data, () => {
+            //     console.log('cinfig data', data.value)
+            // })
+
             const successMessage = () => {
                 testMessage.value = 'Success'
                 testIcon.value = 'RunSuccess'
@@ -336,30 +257,15 @@
                 testClass.value = 'text-red-500'
             }
 
-            const credentialBody = computed(() => {
-                const extra = {}
-                Object.keys(formState).forEach((key) => {
-                    if (key.includes(`${property.value.id}.extra.`)) {
-                        extra[key.replace(`${property.value.id}.extra.`, '')] =
-                            formState[key]
-                    }
-                })
-                const authType = formState[`${property.value.id}.auth-type`]
+            const { buildCredentialBody } = useWorkflowHelper()
 
-                const body = {
-                    host: formState[`${property.value.id}.host`],
-                    port: parseInt(formState[`${property.value.id}.port`]),
-                    authType,
-                    username:
-                        formState[`${property.value.id}.${authType}.username`],
-                    password:
-                        formState[`${property.value.id}.${authType}.password`],
-                    extra,
-                    connectorConfigName: property.value.ui?.credentialType,
-                }
-
-                return body
-            })
+            const credentialBody = computed(() =>
+                buildCredentialBody(
+                    formState,
+                    property.value.id,
+                    property.value.ui.credentialType
+                )
+            )
 
             watch(credentialBody, () => {
                 console.log('chaneg credentials -----')
@@ -414,6 +320,7 @@
                 errorTest,
                 testData,
                 errorMessage,
+                list,
                 credentialBody,
             }
         },

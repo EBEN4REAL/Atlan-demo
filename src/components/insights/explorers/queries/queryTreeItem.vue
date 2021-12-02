@@ -170,10 +170,6 @@
                             <div class="flex justify-center w-full">
                                 <div class="flex items-center cursor-pointer">
                                     Open preview sidebar
-                                    <AtlanIcon
-                                        icon="Info"
-                                        class="w-4 h-4 ml-0.5"
-                                    ></AtlanIcon>
                                 </div>
                             </div>
                         </a-button>
@@ -492,6 +488,15 @@
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchParentNode', () => {})
+
+            const refetchNode = inject<
+                (
+                    guid: string | 'root',
+                    type: 'query' | 'queryFolder',
+                    tree?: 'personal' | 'all'
+                ) => void
+            >('refetchNode', () => {})
+
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
@@ -869,21 +874,33 @@
                                         content: `Folder moved successfully`,
                                     })
                                     // props.refreshQueryTree(
-                                    //     selectedFolder.value.guid,
+                                    //     previousParentGuId,
                                     //     'queryFolder'
                                     // )
                                     // props.refreshQueryTree(
-                                    //     item.attributes.parent.guid,
+                                    //     selectedParentGuid,
                                     //     'queryFolder'
                                     // )
 
-                                    props.refreshQueryTree(
-                                        [
+                                    // props.refreshQueryTree(
+                                    //     [
+                                    //         previousParentGuId,
+                                    //         selectedParentGuid,
+                                    //     ],
+                                    //     'queryFolder'
+                                    // )
+                                    setTimeout(() => {
+                                        refetchNode(
                                             previousParentGuId,
+                                            'queryFolder',
+                                            savedQueryType.value
+                                        )
+                                        refetchNode(
                                             selectedParentGuid,
-                                        ],
-                                        'queryFolder'
-                                    )
+                                            'queryFolder',
+                                            savedQueryType.value
+                                        )
+                                    }, 750)
                                 } else {
                                     message.success({
                                         content: `Folder move failed`,
@@ -919,13 +936,26 @@
                                     //     item.attributes.parent.guid,
                                     //     'query'
                                     // )
-                                    props.refreshQueryTree(
-                                        [
+                                    // props.refreshQueryTree(
+                                    //     [
+                                    //         previousParentGuId,
+                                    //         selectedParentGuid,
+                                    //     ],
+                                    //     'query'
+                                    // )
+
+                                    setTimeout(() => {
+                                        refetchNode(
                                             previousParentGuId,
+                                            'query',
+                                            savedQueryType.value
+                                        )
+                                        refetchNode(
                                             selectedParentGuid,
-                                        ],
-                                        'query'
-                                    )
+                                            'query',
+                                            savedQueryType.value
+                                        )
+                                    }, 750)
                                 } else {
                                     message.success({
                                         content: `Query move failed`,

@@ -65,13 +65,19 @@
                     return ''
                 },
             },
+            workflowTemplate: {
+                required: false,
+                type: Object,
+                default: () => {},
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const formRef = ref()
 
             const { modelValue } = useVModels(props, emit)
-            const { config, currentStep, baseKey } = toRefs(props)
+            const { config, currentStep, baseKey, workflowTemplate } =
+                toRefs(props)
 
             const localConfig = ref(config.value)
 
@@ -94,6 +100,7 @@
 
             provide('formState', formState)
             provide('validateForm', validateForm)
+            provide('workflowTemplate', workflowTemplate)
 
             // watch(formState, () => {
             //     // console.log(formState)
@@ -114,6 +121,7 @@
 
                 validateForm,
                 formRef,
+                workflowTemplate,
             }
         },
     })

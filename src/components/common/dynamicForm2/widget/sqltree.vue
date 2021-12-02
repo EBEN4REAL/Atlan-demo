@@ -1,12 +1,15 @@
 <template>
-    dasd
-    <SQLTreeSelect></SQLTreeSelect>
+    <SQLTreeSelect
+        :credential="credentialBody"
+        query="show atlan schemas"
+    ></SQLTreeSelect>
 </template>
 
 <script>
     import { defineComponent, toRefs, computed, ref, inject } from 'vue'
 
     import SQLTreeSelect from '@common/treeselect/sql/index.vue'
+    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
@@ -28,9 +31,18 @@
         setup(props, { emit }) {
             const { property, baseKey } = toRefs(props)
             const formState = inject('formState')
-            const credentialBody = inject('credentialBody')
 
             const componentProps = computed(() => property.value.ui)
+
+            const { buildCredentialBody } = useWorkflowHelper()
+
+            const credentialBody = computed(() =>
+                buildCredentialBody(
+                    formState,
+                    'credential-guid',
+                    'atlan-connectors-snowflake-beta'
+                )
+            )
 
             return {
                 property,

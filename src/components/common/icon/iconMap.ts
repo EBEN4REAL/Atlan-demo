@@ -51,6 +51,7 @@ import ViewVerified from '~/assets/images/icons/view_verified.svg'
 import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
+import Union from '~/assets/images/icons/union.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
 import RemoveUser from '~/assets/images/icons/remove-user.svg'
 import Link from '~/assets/images/icons/link.svg'
@@ -124,6 +125,8 @@ import Pencil from '~/assets/images/icons/pencil.svg'
 import Check from '~/assets/images/icons/check.svg'
 import CheckCircled from '~/assets/images/icons/check-circled.svg'
 import Dots from '~/assets/images/icons/dots.svg'
+import Sort from '~/assets/images/icons/sort.svg'
+import BuilderGroup from '~/assets/images/icons/builder-group.svg'
 import Cross from '~/assets/images/icons/cross.svg'
 import FullScreen from '~/assets/images/icons/fullscreen.svg'
 import ExitFullScreen from '~/assets/images/icons/exit-fullscreen.svg'
@@ -194,6 +197,9 @@ import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
+import LeftJoin from '~/assets/images/icons/left-join.svg'
+import Trigger from '~/assets/images/icons/trigger.svg'
+import RightJoin from '~/assets/images/icons/right-join.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
@@ -211,6 +217,18 @@ import Italic from '~/assets/images/readme/text-italic.svg'
 import Strike from '~/assets/images/readme/text-strike.svg'
 import Undo from '~/assets/images/readme/undo.svg'
 import Redo from '~/assets/images/readme/redo.svg'
+import ReadmeImage from '~/assets/images/readme/ImageSquare.svg'
+import BulletList from '~/assets/images/readme/ListBullets.svg'
+import NumberedList from '~/assets/images/readme/ListNumbers.svg'
+import Quotes from '~/assets/images/readme/Quotes.svg'
+import HOne from '~/assets/images/readme/TextHOne.svg'
+import HTwo from '~/assets/images/readme/TextHTwo.svg'
+import HThree from '~/assets/images/readme/TextHThree.svg'
+import TextCenter from '~/assets/images/readme/TextAlignCenter.svg'
+import TextLeft from '~/assets/images/readme/TextAlignLeft.svg'
+import TextRight from '~/assets/images/readme/TextAlignRight.svg'
+import JustifyText from '~/assets/images/readme/TextAlignJustify.svg'
+
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
@@ -264,8 +282,15 @@ import QueriesActive from '~/assets/images/icons/queriesActive.svg'
 import Close from '~/assets/images/icons/close.svg'
 
 import ShieldCheck from '~/assets/images/icons/shield-check.svg'
+import CustomVariable from '~/assets/images/icons/customVariable.svg'
 
 export default {
+    BuilderGroup,
+    Trigger,
+    LeftJoin,
+    RightJoin,
+    Sort,
+    Union,
     ShieldCheck,
     Hash,
     Column,
@@ -479,6 +504,17 @@ export default {
     Strike,
     Undo,
     Redo,
+    ReadmeImage,
+    BulletList,
+    NumberedList,
+    Quotes,
+    HOne,
+    HTwo,
+    HThree,
+    TextCenter,
+    TextLeft,
+    TextRight,
+    JustifyText,
     Running,
     Refresh,
     ErrorLogs,
@@ -517,12 +553,12 @@ export default {
     DatabaseVerified,
     DatabaseDeprecated,
     DatabaseDraft,
-    
+
     SchemaVerified,
     SchemaDeprecated,
     SchemaDraft,
     ViewDeprecated,
     ViewDraft,
-    ViewVerified
-    
+    ViewVerified,
+    CustomVariable
 }

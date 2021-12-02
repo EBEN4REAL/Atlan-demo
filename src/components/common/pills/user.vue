@@ -27,7 +27,7 @@
         <div class="capitalize">
             {{ username }}
         </div>
-        <div v-if="allowDelete" class="flex" @click.prevent="handleDelete">
+        <div v-if="allowDelete" class="flex" @click.prevent.stop="handleDelete">
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500"

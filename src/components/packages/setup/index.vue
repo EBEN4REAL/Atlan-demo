@@ -1,166 +1,86 @@
 <template>
-    <div class="flex w-full h-full">
-        <div class="flex flex-1 border-r border-gray-200">
-            <div class="flex flex-col w-full h-full">
-                <a-steps
-                    v-if="steps.length > 0"
-                    v-model:current="currentStep"
-                    class="px-6 py-3 border-b border-gray-200"
+    <div class="flex flex-1 border-r border-gray-200">
+        <div class="flex flex-col w-full h-full">
+            <a-steps
+                v-if="steps.length > 0"
+                v-model:current="currentStep"
+                class="px-6 py-3 border-b border-gray-200"
+            >
+                <template v-for="step in steps" :key="step.id">
+                    <a-step>
+                        <!-- <span slot="title">Finished</span> -->
+                        <template #title>{{ step.title }}</template>
+                    </a-step>
+                </template>
+            </a-steps>
+
+            <div
+                class="flex-1 px-6 py-8 overflow-y-auto bg-white"
+                v-if="workflowTemplate && currentStep < steps.length"
+            >
+                <DynamicForm
+                    :key="`form_${currentStep}`"
+                    ref="stepForm"
+                    :config="configMapDerived"
+                    :currentStep="currentStepConfig"
+                    :workflowTemplate="workflowTemplate"
+                    v-model="modelValue"
+                    labelAlign="left"
+                ></DynamicForm>
+            </div>
+
+            <div
+                class="flex px-6 py-3 border-t"
+                :class="currentStep !== 0 ? 'justify-between' : 'justify-end'"
+                v-if="currentStep < steps.length"
+            >
+                <a-button
+                    type=""
+                    @click="handlePrevious"
+                    v-if="currentStep !== 0"
                 >
-                    <template v-for="step in steps" :key="step.id">
-                        <a-step>
-                            <!-- <span slot="title">Finished</span> -->
-                            <template #title>{{ step.title }}</template>
-                        </a-step>
-                    </template>
-                </a-steps>
+                    <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
+                    >Back</a-button
+                >
+                <a-button
+                    @click="handleNext"
+                    class="text-primary"
+                    v-if="currentStep < steps.length - 1"
+                >
+                    Next
+                    <AtlanIcon
+                        icon="ChevronRight"
+                        class="ml-1 text-primary"
+                    ></AtlanIcon
+                ></a-button>
 
                 <div
-                    class="flex-1 px-6 py-8 overflow-y-auto bg-white"
-                    v-if="workflowTemplate && currentStep < steps.length"
+                    class="flex gap-x-2"
+                    v-if="currentStep == steps.length - 1"
                 >
-                    <DynamicForm
-                        :key="`form_${currentStep}`"
-                        ref="stepForm"
-                        :config="configMapDerived"
-                        :currentStep="currentStepConfig"
-                        :workflowTemplate="workflowTemplate"
-                        v-model="modelValue"
-                        labelAlign="left"
-                    ></DynamicForm>
-                </div>
-
-                <div
-                    class="flex px-6 py-3 border-t"
-                    :class="
-                        currentStep !== 0 ? 'justify-between' : 'justify-end'
-                    "
-                    v-if="currentStep < steps.length"
-                >
-                    <a-button
-                        type=""
-                        @click="handlePrevious"
-                        v-if="currentStep !== 0"
+                    <a-button type="primary" class="px-6" @click="handleSubmit"
+                        >Run</a-button
                     >
-                        <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
-                        >Back</a-button
+                    <a-popconfirm
+                        ok-text="Confirm"
+                        :overlay-class-name="$style.popConfirm"
+                        cancel-text="Cancel"
+                        placement="topRight"
                     >
-                    <a-button
-                        @click="handleNext"
-                        class="text-primary"
-                        v-if="currentStep < steps.length - 1"
-                    >
-                        Next
-                        <AtlanIcon
-                            icon="ChevronRight"
-                            class="ml-1 text-primary"
-                        ></AtlanIcon
-                    ></a-button>
-
-                    <div
-                        class="flex gap-x-2"
-                        v-if="currentStep == steps.length - 1"
-                    >
+                        <template #icon> </template>
+                        <template #title>
+                            <Schedule class="mb-3"></Schedule>
+                        </template>
                         <a-button
                             type="primary"
-                            class="px-6"
-                            @click="handleSubmit"
-                            >Run</a-button
-                        >
-                        <a-popconfirm
-                            ok-text="Confirm"
-                            :overlay-class-name="$style.popConfirm"
-                            cancel-text="Cancel"
-                            placement="topRight"
-                        >
-                            <template #icon> </template>
-                            <template #title>
-                                <Schedule class="mb-3"></Schedule>
-                            </template>
-                            <a-button
-                                type="primary"
-                                class="px-6 bg-green-500 border-green-500"
-                                >Schedule & Run
-                                <AtlanIcon
-                                    icon="ChevronRight"
-                                    class="ml-1 text-white"
-                                ></AtlanIcon
-                            ></a-button>
-                        </a-popconfirm>
-                    </div>
-                </div>
-
-                <!-- <div
-                    class="flex items-center flex-1 px-6 py-8 overflow-y-auto bg-white"
-                >
-                    <p class="w-full">Ready to Schedule</p>
-                   
-                </div>
-                <div class="flex px-6 py-3 border-t">
-                    <a-button type="primary" @click="handleNext" block
-                        >Setup</a-button
-                    >
-                </div> -->
-            </div>
-        </div>
-        <div class="flex flex-col w-1/3" v-if="!sandboxValue">
-            <div
-                class="flex flex-col w-full px-6 py-3 mb-3 overflow-y-auto"
-                v-if="workflowTemplate"
-            >
-                <div
-                    class="flex items-center mb-1"
-                    v-if="workflowTemplate?.metadata.annotations"
-                >
-                    <img
-                        v-if="
-                            workflowTemplate?.metadata.annotations[
-                                'com.atlan.orchestration/icon'
-                            ]
-                        "
-                        class="self-center w-5 h-auto mr-2"
-                        :src="
-                            workflowTemplate?.metadata.annotations[
-                                'com.atlan.orchestration/icon'
-                            ]
-                        "
-                    />
-                    <div class="text-base font-bold truncate overflow-ellipsis">
-                        {{
-                            workflowTemplate?.metadata.annotations[
-                                'workflows.argoproj.io/name'
-                            ]
-                        }}
-                    </div>
-                </div>
-
-                <div class="text-sm line-clamp-4">
-                    <span v-if="workflowTemplate?.metadata.annotations">
-                        {{
-                            workflowTemplate?.metadata.annotations[
-                                'workflows.argoproj.io/description'
-                            ]
-                        }}</span
-                    >
-                </div>
-                <div
-                    class="flex mt-1 text-gray-500"
-                    v-if="workflowTemplate?.metadata.annotations"
-                >
-                    <div class="text-sm truncate overflow-ellipsis">
-                        {{
-                            workflowTemplate?.metadata.annotations[
-                                'com.atlan.orchestration/packageName'
-                            ]
-                        }}
-                    </div>
-                    <div class="text-sm truncate overflow-ellipsis">
-                        (v{{
-                            workflowTemplate?.metadata.labels[
-                                'org.argopm.package.version'
-                            ]
-                        }})
-                    </div>
+                            class="px-6 bg-green-500 border-green-500"
+                            >Schedule & Run
+                            <AtlanIcon
+                                icon="ChevronRight"
+                                class="ml-1 text-white"
+                            ></AtlanIcon
+                        ></a-button>
+                    </a-popconfirm>
                 </div>
             </div>
         </div>
@@ -215,13 +135,6 @@
                     return {}
                 },
             },
-            sandboxValue: {
-                type: String,
-                required: false,
-                default() {
-                    return ''
-                },
-            },
         },
         emits: ['change', 'openLog', 'handleSetLogo'],
         setup(props, { emit }) {
@@ -230,7 +143,7 @@
             const stepForm = ref()
 
             const currentStep = ref(0)
-            const { workflowTemplate, configMap, sandboxValue } = toRefs(props)
+            const { workflowTemplate, configMap } = toRefs(props)
 
             provide('workflowTemplate', workflowTemplate)
             provide('configMap', configMap)
@@ -285,11 +198,6 @@
             } = useWorkflowHelper()
 
             const handleSubmit = () => {
-                console.log(modelValue.value)
-                console.log(configMap.value)
-                console.log(getCredentialPropertyList(configMap.value))
-                console.log(getConnectionPropertyList(configMap.value))
-
                 const credentialBody = getCredentialBody(
                     configMap.value,
                     modelValue.value
@@ -374,7 +282,6 @@
                 currentStep,
                 steps,
                 configMap,
-                sandboxValue,
                 currentStepConfig,
                 handleNext,
                 stepForm,

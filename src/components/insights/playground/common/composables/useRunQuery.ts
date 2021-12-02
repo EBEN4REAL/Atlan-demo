@@ -129,8 +129,11 @@ export default function useProject() {
             //         toRaw(editorInstance.value).getSelection()
             //     )
 
-            let selectedQuery = queryData.rawQuery
-            // console.log('selected query: ', selectedQuery)
+            let selectedQuery = queryData.rawQuery.replace(/^\s+|\s+$/g, '')
+            let newLines = "\n".repeat(queryData.range.startLineNumber-1)
+            selectedQuery=newLines+selectedQuery;
+
+            console.log('selected query: ', selectedQuery)
 
             if(selectedQuery && selectedQuery.length) {
                 queryText = getParsedQuery(

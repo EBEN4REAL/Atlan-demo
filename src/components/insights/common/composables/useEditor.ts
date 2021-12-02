@@ -208,28 +208,52 @@ export function useEditor(
                         break;
                     } else if(pos.lineNumber===independentQueryMatches[i+1].range.startLineNumber) {
                         // same line, check start column of second
-                        if(pos.column<independentQueryMatches[i+1].range.startColumn) {
-                            lineIndex = independentQueryMatches[i]
-                            // console.log('position match line equal1: ', {
-                            //     pos: pos.column,
-                            //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
-                            //     lineIndex
-                            // })
-                            
-                            break;
-                        } else {
-                            if(pos.lineNumber===independentQueryMatches[i].range.endLineNumber && pos.column===independentQueryMatches[i+1].range.startColumn) { 
-                                lineIndex = independentQueryMatches[i]
+
+                        // find all lines with starting point on this line
+                        var start = i+1;
+                        var end=i+1
+
+                        while(end<independentQueryMatches.length) {
+                            if(pos.lineNumber===independentQueryMatches[end].range.startLineNumber) {
+                                end++;
                             } else {
-                                lineIndex = independentQueryMatches[i+1]
+                                end=end-1
+                                break;
                             }
-                            // console.log('position match line equal2: ', {
-                            //     pos: pos.column,
-                            //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
-                            //     lineIndex
-                            // })
-                            break;
                         }
+                        if(end===independentQueryMatches.length) {
+                            end=end-1
+                        }
+                        console.log('position match here: ', {start, end})
+                        lineIndex = independentQueryMatches[start]
+                        for(var j=start;j+1<=end;j++) {
+                            if(pos.column>independentQueryMatches[j+1].range.startColumn) {
+                                lineIndex = independentQueryMatches[j+1]
+                            }
+                        }
+                        break;
+                        // if(pos.column<independentQueryMatches[i+1].range.startColumn) {
+                        //     lineIndex = independentQueryMatches[i]
+                        //     // console.log('position match line equal1: ', {
+                        //     //     pos: pos.column,
+                        //     //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
+                        //     //     lineIndex
+                        //     // })
+                            
+                        //     break;
+                        // } else {
+                        //     if(pos.lineNumber===independentQueryMatches[i].range.endLineNumber && pos.column===independentQueryMatches[i+1].range.startColumn) { 
+                        //         lineIndex = independentQueryMatches[i]
+                        //     } else {
+                        //         lineIndex = independentQueryMatches[i+1]
+                        //     }
+                        //     // console.log('position match line equal2: ', {
+                        //     //     pos: pos.column,
+                        //     //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
+                        //     //     lineIndex
+                        //     // })
+                        //     break;
+                        // }
                     } else {
                         
                     }

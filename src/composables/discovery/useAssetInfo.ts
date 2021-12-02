@@ -197,6 +197,18 @@ export default function useAssetInfo() {
         })
     }
 
+    const getProfilePath = (asset) => {
+        if (assetType(asset) === 'Column') {
+            const tableGuid = asset?.attributes?.table?.guid
+            return `/assets/${tableGuid}/overview?column=${asset?.guid}`
+        } else if (isGTC(asset)) {
+            return `/glossary/${asset?.guid}`
+        } else if (assetType(asset) === 'Query') {
+            return `/insights?id=${asset.guid}`
+        }
+        return `/assets/${asset?.guid}`
+    }
+
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
         let databaseQualifiedName =
@@ -899,6 +911,7 @@ export default function useAssetInfo() {
         categories,
         parentCategory,
         isGTC,
+        getProfilePath,
         isGTCByType,
         getAnchorQualifiedName,
     }

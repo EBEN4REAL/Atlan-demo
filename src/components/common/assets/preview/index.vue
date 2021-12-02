@@ -329,7 +329,7 @@
             const handleAction = (key) => {
                 switch (key) {
                     case 'open':
-                        router.push(assetURL(selectedAsset.value))
+                        router.push(getProfilePath(selectedAsset.value))
                         break
                     case 'query':
                         router.push(getAssetQueryPath(selectedAsset.value))

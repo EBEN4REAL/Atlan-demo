@@ -109,7 +109,29 @@ export default function useProject() {
                 activeInlineTab.value.playground.editor.variables,
                 selectedText
             )
-            // console.log('error data query: ', queryText)
+            var count=0;
+            let text = queryText
+
+            console.log('selected query text1: ', {queryText})
+            
+            while(text.startsWith('\n')) {
+                text=text.slice(1);
+                console.log('selected query text: ', {text})
+                count++;
+            }
+
+            let selection = toRaw(editorInstance.value).getSelection()
+
+            queryText = queryText.replace(/^\s+|\s+$/g, '')
+
+            for(var i=0;i<count+selection.startLineNumber-1;i++) {
+                queryText = '\n'+queryText
+            }
+        
+            // console.log('selected query text2: ', {text, count})
+            // console.log('selected query text1: ', queryText)
+
+            // console.log('selected query text: ', toRaw(editorInstance.value).getSelection())
         } else {
             // queryText = getParsedQuery(
             //     activeInlineTab.value.playground.editor.variables,

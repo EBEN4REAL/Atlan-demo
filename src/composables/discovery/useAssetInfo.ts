@@ -549,6 +549,10 @@ export default function useAssetInfo() {
         )
     }
 
+    const isNonBiAsset = (asset: assetInterface) => {
+        return assetType(asset) === 'Table' || assetType(asset) === 'View'
+    }
+
     const discoveryStore = useAssetStore()
 
     const selectedAsset = computed(() => {
@@ -914,5 +918,6 @@ export default function useAssetInfo() {
         getProfilePath,
         isGTCByType,
         getAnchorQualifiedName,
+        isNonBiAsset,
     }
 }

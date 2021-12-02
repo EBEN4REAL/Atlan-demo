@@ -1,10 +1,15 @@
 <template>
     <div class="absolute w-full px-4 bg-white rounded vqb" style="z-index: 1">
         <template
-            v-for="(item, index) in activeInlineTab.playground.vqb.panels"
+            v-for="(item, index) in activeInlineTab?.playground?.vqb?.panels"
             :key="item?.id + index"
         >
-            <component :is="item?.id" :index="index" :panel="item"></component>
+            <component
+                :is="item?.id"
+                :index="index"
+                :panel="item"
+                v-if="item"
+            ></component>
         </template>
     </div>
 </template>

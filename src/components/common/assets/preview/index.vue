@@ -37,7 +37,7 @@
                     class="h-4 mb-0.5 mr-1"
                 ></AtlanIcon>
                 <router-link
-                    :to="assetURL(selectedAsset)"
+                    :to="getProfilePath(selectedAsset)"
                     class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
@@ -274,6 +274,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 assetTypeLabel,
+                getProfilePath,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -283,8 +284,6 @@
             if (route.params.id) {
                 isProfile.value = true
             }
-
-            const assetURL = (asset) => `/assets/${asset.guid}`
 
             watch(
                 () => route.params.id,
@@ -330,7 +329,7 @@
             const handleAction = (key) => {
                 switch (key) {
                     case 'open':
-                        router.push(assetURL(selectedAsset.value))
+                        router.push(getProfilePath(selectedAsset.value))
                         break
                     case 'query':
                         router.push(getAssetQueryPath(selectedAsset.value))
@@ -339,37 +338,6 @@
                         break
                 }
             }
-
-            // let queryPath = ref(`/insights`)
-            // watch(
-            //     selectedAsset,
-            //     () => {
-            //         console.log('selected asste update: ', selectedAsset.value)
-            // CTA to insights
-            // let databaseQualifiedName =
-            //     selectedAsset?.value?.attributes
-            //         ?.connectionQualifiedName +
-            //     '/' +
-            //     selectedAsset?.value?.attributes?.databaseName
-            // let schema = selectedAsset?.value?.attributes?.schemaName
-            // if (selectedAsset?.value?.typeName === 'Column') {
-            //     let tableName =
-            //         selectedAsset?.value?.attributes?.tableName
-            //     let columnName = selectedAsset?.value?.attributes?.name
-            //     queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&columnNameFromURL=${columnName}`
-            // } else if (
-            //     selectedAsset?.value?.typeName === 'Table' ||
-            //     selectedAsset?.value?.typeName === 'View'
-            // ) {
-            //     let tableName = selectedAsset?.value?.attributes.name
-            //     queryPath.value = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
-            // } else {
-            //     queryPath.value = `/insights`
-            // }
-            // console.log('query path: ', queryPath.value)
-            //     },
-            //     { immediate: true }
-            // )
 
             return {
                 title,
@@ -397,11 +365,11 @@
                 certificateStatusMessage,
                 isProfile,
                 actions,
-                assetURL,
                 assetTypeLabel,
                 getActions,
                 getAssetQueryPath,
                 handleAction,
+                getProfilePath,
             }
         },
     })

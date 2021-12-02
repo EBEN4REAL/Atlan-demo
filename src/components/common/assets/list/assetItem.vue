@@ -58,7 +58,7 @@
                         ></AtlanIcon>
 
                         <router-link
-                            :to="assetURL(item)"
+                            :to="getProfilePath(item)"
                             class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
@@ -553,11 +553,8 @@
                 categories,
                 parentCategory,
                 classifications,
+                getProfilePath,
             } = useAssetInfo()
-
-            const assetURL = (asset) => ({
-                path: `/assets/${asset.guid}`,
-            })
 
             const handlePreview = (item: any) => {
                 emit('preview', item)
@@ -602,7 +599,6 @@
                 getConnectorImage,
                 assetType,
                 dataType,
-                assetURL,
                 rowCount,
                 columnCount,
                 sizeBytes,
@@ -632,6 +628,7 @@
                 isPropagated,
                 list,
                 classifications,
+                getProfilePath,
             }
         },
     })

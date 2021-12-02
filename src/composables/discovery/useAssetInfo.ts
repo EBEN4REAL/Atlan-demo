@@ -197,6 +197,24 @@ export default function useAssetInfo() {
         })
     }
 
+    const getProfilePath = (asset) => {
+        if (assetType(asset) === 'Column') {
+            const tableGuid = asset?.attributes?.table?.guid
+            if (tableGuid) {
+                return `/assets/${tableGuid}/overview?column=${asset?.guid}`
+            }
+            const viewGuid = asset?.attributes?.view?.guid
+            if (viewGuid) {
+                return `/assets/${viewGuid}/overview?column=${asset?.guid}`
+            }
+        } else if (isGTC(asset)) {
+            return `/glossary/${asset?.guid}`
+        } else if (assetType(asset) === 'Query') {
+            return `/insights?id=${asset.guid}`
+        }
+        return `/assets/${asset?.guid}`
+    }
+
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
         let databaseQualifiedName =
@@ -535,6 +553,10 @@ export default function useAssetInfo() {
             assetType(asset)?.includes('Tableau') ||
             assetType(asset)?.includes('BI')
         )
+    }
+
+    const isNonBiAsset = (asset: assetInterface) => {
+        return assetType(asset) === 'Table' || assetType(asset) === 'View'
     }
 
     const discoveryStore = useAssetStore()
@@ -899,7 +921,9 @@ export default function useAssetInfo() {
         categories,
         parentCategory,
         isGTC,
+        getProfilePath,
         isGTCByType,
         getAnchorQualifiedName,
+        isNonBiAsset,
     }
 }

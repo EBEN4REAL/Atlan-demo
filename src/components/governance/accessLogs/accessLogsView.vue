@@ -28,7 +28,7 @@
                                         ? 'text-primary border-primary'
                                         : 'border-gray-300  border rounded-tl rounded-bl text-gray '
                                 "
-                                @click="accessLogsFilterDrawerVisible = true"
+                                @click="accessLogsFilterDrawerVisible = !accessLogsFilterDrawerVisible"
                             >
                                 <AtlanIcon
                                     :icon="'FilterFunnel'"
@@ -140,11 +140,7 @@
                     v-if="accessLogsFilterDrawerVisible"
                     class="fixed z-10 px-0 border-l-0 rounded-none rounded-r  top-1/4 left-72"
                     color="secondary"
-                    @click="
-                        () => {
-                            accessLogsFilterDrawerVisible = false
-                        }
-                    "
+                    @click="accessLogsFilterDrawerVisible = false"
                 >
                     <AtlanIcon
                         icon="ChevronDown"
@@ -157,22 +153,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref, watch, computed } from 'vue'
-import dayjs from 'dayjs'
-import { useDebounceFn } from '@vueuse/core'
-import map from '~/constant/accessControl/map'
-import DefaultLayout from '~/components/admin/layout.vue'
-import AtlanBtn from '@/UI/button.vue'
-import AccessLogsTable from '@/governance/accessLogs/accessLogsTable.vue'
-import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
-import { useAccessLogs } from './composables/useAccessLogs'
-import AssetFilters from '@/common/assets/filters/index.vue'
-import { accessLogsFilter } from '~/constant/filters/logsFilter'
-import Connector from '~/components/insights/common/connector/connector.vue'
-import { useConnector } from '~/components/insights/common/composables/useConnector'
-import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
+    import { computed, defineComponent, Ref, ref, watch } from 'vue'
+    import dayjs from 'dayjs'
+    import { useDebounceFn } from '@vueuse/core'
+    import map from '~/constant/accessControl/map'
+    import DefaultLayout from '~/components/admin/layout.vue'
+    import AtlanBtn from '@/UI/button.vue'
+    import AccessLogsTable from '@/governance/accessLogs/accessLogsTable.vue'
+    import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
+    import { useAccessLogs } from './composables/useAccessLogs'
+    import AssetFilters from '@/common/assets/filters/index.vue'
+    import { accessLogsFilter } from '~/constant/filters/logsFilter'
+    import Connector from '~/components/insights/common/connector/connector.vue'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
 
-export default defineComponent({
+    export default defineComponent({
     name: 'AccessLogsView',
     components: {
         DefaultLayout,
@@ -188,12 +184,12 @@ export default defineComponent({
         const searchText: Ref<string> = ref('')
         const accessLogsFilterDrawerVisible: Ref<boolean> = ref(false)
         const timeFrame = ref('30 days')
-        const selectedQuery = ref({})
-        const isQueryPreviewDrawerVisible = ref(false)
+        const THIRTY_DAYS_IN_SECONDS = 30 * 24 * 60 * 60 * 1000
         const gte = ref(
-            dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
+            dayjs(new Date(Date.now() - THIRTY_DAYS_IN_SECONDS)).format('YYYY-MM-DD[T]HH:mm:ss.SSS[Z]')
         )
-        const lt = ref(dayjs().format())
+        const lt = ref(dayjs().format('YYYY-MM-DD[T]HH:mm:ss.SSS[Z]'))
+        const timezone = ref(dayjs().format('Z'))
         const from = ref(0)
         const size = ref(20)
         const { getDatabaseName, getSchemaName, getConnectionQualifiedName } =
@@ -207,32 +203,13 @@ export default defineComponent({
             assetMetaMap,
             assetListLoading,
         } = useAccessLogs(gte, lt, from, size)
+
         // since we always get filtered total count in response, storing the total count when we get the logs first time, i.e. when no filters are applied to find the total number of logs to decide if we want to render empty state or logs table.
         const totalLogsCount = ref(0)
         const stopWatcher = watch(filteredLogsCount, () => {
             totalLogsCount.value = filteredLogsCount.value
         })
         watch(totalLogsCount, stopWatcher)
-
-        const setSelectedQuery = (query: Object) => {
-            selectedQuery.value = query
-        }
-        const handleSelectQuery = (query: Object) => {
-            if (
-                isQueryPreviewDrawerVisible.value &&
-                query._id === selectedQuery.value._id
-            ) {
-                isQueryPreviewDrawerVisible.value = false
-            } else if (!isQueryPreviewDrawerVisible.value) {
-                isQueryPreviewDrawerVisible.value = true
-            }
-            setSelectedQuery(query)
-        }
-        const selectedRowKeys = computed(() =>
-            selectedQuery.value?._id !== undefined
-                ? [selectedQuery.value?._id]
-                : []
-        )
         const pagination = computed(() => ({
             total: filteredLogsCount.value / size.value,
             pageSize: size.value,
@@ -240,9 +217,12 @@ export default defineComponent({
         }))
         const refreshList = () => {
             const usernames = facets.value?.users?.ownerUsers
-            const queryStatusValues = facets.value?.queryStatus?.status
             const connectorFacet = facets.value?.connector?.attributeName
             const facetValue = facets.value?.connector?.attributeValue
+            const logStatusValues = facets.value?.logStatus?.status
+            const logActionValues = facets.value?.logAction?.actions
+            const userTypes = facets.value?.userType?.userTypes
+            const properties = facets.value?.properties
             let schemaName = ''
             let dbName = ''
             let connectionQF = ''
@@ -267,12 +247,16 @@ export default defineComponent({
                 gte,
                 lt,
                 usernames,
-                queryStatusValues,
+                logStatusValues,
+                logActionValues,
+                userTypes,
+                properties,
                 dbName,
                 schemaName,
                 connectionQF,
                 connectorName,
                 searchText: searchText.value,
+                timezone
             })
             refetchList()
         }
@@ -281,15 +265,20 @@ export default defineComponent({
             refreshList()
         }
         const handlePagination = (page) => {
-            const offset = (page - 1) * size.value
-            from.value = offset
+            from.value = (page - 1) * size.value
             refreshList()
         }
 
+        /**
+         * Return a dayjs object to manipulate dates.
+         * @param stamp The string of the timestamp.
+         */
+        const getDateObject = (stamp: string) => dayjs(stamp, 'YYYY-MM-DD[T]HH:mm:ssZ')
+
         const handleRangePickerChange = (e) => {
-            gte.value = e[0]
-            lt.value = e[1]
-            refreshList()
+            gte.value = getDateObject(e[0]).format("YYYY-MM-DD[T]HH:mm:ss.SSS[Z]")
+            lt.value = getDateObject(e[1]).format("YYYY-MM-DD[T]HH:mm:ss.SSS[Z]")
+            handleFilterChange()
         }
         const handleSearch = useDebounceFn(() => {
             from.value = 0
@@ -300,13 +289,9 @@ export default defineComponent({
             handleFilterChange()
         }
         return {
-            selectedRowKeys,
-            isQueryPreviewDrawerVisible,
-            selectedQuery,
             accessLogsList,
             isLoading,
             handleSearch,
-            handleSelectQuery,
             handleRangePickerChange,
             timeFrame,
             searchText,

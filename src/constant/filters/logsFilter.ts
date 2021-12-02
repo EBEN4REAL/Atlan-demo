@@ -40,9 +40,9 @@ export const accessLogsFilter = [
         class: 'bg-transparent',
     },
     {
-        id: 'logActionStatus',
+        id: 'logStatus',
         label: 'Status',
-        component: 'logActionStatus',
+        component: 'logStatus',
         overallCondition: 'OR',
         attributes: [],
         isDeleted: false,
@@ -53,7 +53,7 @@ export const accessLogsFilter = [
     {
         id: 'userType',
         label: 'User Type',
-        component: 'userType',
+        component: 'userTypes',
         overallCondition: 'OR',
         attributes: [],
         isDeleted: false,
@@ -83,8 +83,8 @@ export const accessLogsFilter = [
         component: 'properties',
         attributes: [
             {
-                name: 'qualifiedName',
-                displayName: 'Qualified name',
+                name: 'resource.keyword',
+                displayName: 'Qualified Name',
                 description: 'Unique name for asset',
                 typeName: 'string',
                 isMandatory: true,

@@ -503,7 +503,7 @@
                         <div class="items-center">
                             <div class="parent-ellipsis-container">
                                 <div v-if="log._source.result">
-                                    <div class="px-2 py-0.5 border rounded-2xl">
+                                    <div class="px-2 py-0.5 border flex items-center rounded-2xl">
                                         <AtlanIcon
                                             icon="CheckCurrentColor"
                                             class="
@@ -514,11 +514,11 @@
                                                 border-success
                                             "
                                         ></AtlanIcon>
-                                        Allowed
+                                        <span class="ml-1">Allowed</span>
                                     </div>
                                 </div>
                                 <div v-else>
-                                    <div class="px-2 py-0.5 border rounded-2xl">
+                                    <div class="px-2 py-0.5 border flex items-center rounded-2xl">
                                         <AtlanIcon
                                             icon="Cross"
                                             class="
@@ -529,7 +529,7 @@
                                                 border-error
                                             "
                                         ></AtlanIcon>
-                                        Denied
+                                        <span class="ml-1">Denied</span>
                                     </div>
                                 </div>
                             </div>

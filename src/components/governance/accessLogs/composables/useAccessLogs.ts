@@ -129,12 +129,16 @@ export function useAccessLogs(
         gte,
         lt,
         usernames,
-        queryStatusValues,
+        logStatusValues,
+        logActionValues,
+        userTypes,
+        properties,
         schemaName,
         dbName,
         connectionQF,
         connectorName,
         searchText,
+        timezone,
     }) {
         body.value = useBody({
             from: from.value,
@@ -142,12 +146,16 @@ export function useAccessLogs(
             gte,
             lt,
             usernames,
-            queryStatusValues,
+            logStatusValues,
+            logActionValues,
+            userTypes,
+            properties,
             schemaName,
             dbName,
             connectionQF,
             connectorName,
             searchText,
+            timezone,
         })
     }
     const paginateLogs = (page: number) => {

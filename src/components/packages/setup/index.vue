@@ -198,77 +198,88 @@
             } = useWorkflowHelper()
 
             const handleSubmit = () => {
-                const credentialBody = getCredentialBody(
-                    configMap.value,
-                    modelValue.value
-                )
-                const connectionBody = getConnectionBody(
-                    configMap.value,
-                    modelValue.value
-                )
+                const parameters = []
 
-                const seconds = Math.round(new Date().getTime() / 1000)
-                const connectionName = modelValue.value['connection.name']
-                let workflowName = ''
-                if (connectionName) {
-                    workflowName = `${
-                        workflowTemplate.value.metadata.name
-                    }-${connectionName}-${seconds.toString()}`
-                } else {
-                    workflowName = `${
-                        workflowTemplate.value.metadata.name
-                    }-${seconds.toString()}`
-                }
-                body.value.metadata.name = workflowName
-                body.value.metadata.labels =
-                    workflowTemplate.value.metadata.labels
-                body.value.metadata.annotations =
-                    workflowTemplate.value.metadata.annotations
-                body.value.metadata.labels['com.atlan.orchestration/ui'] =
-                    'true'
-                body.value.spec = {
-                    templates: [
-                        {
-                            name: 'main',
-                            dag: {
-                                tasks: [
-                                    {
-                                        name: 'run',
-                                        arguments: {
-                                            parameters: [
-                                                {
-                                                    name: 'connection',
-                                                    value: '',
-                                                },
-                                                {
-                                                    name: 'connection-name',
-                                                    value: '',
-                                                },
-                                                {
-                                                    name: 'host',
-                                                    value: '',
-                                                },
-                                                {
-                                                    name: 'crawler-name',
-                                                    value: '',
-                                                },
-                                            ],
-                                        },
-                                        templateRef: {
-                                            name: workflowTemplate.value
-                                                .metadata.name,
-                                            template: 'main',
-                                            clusterScope: true,
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    ],
-                    entrypoint: 'main',
-                }
-                body.value.payload = [...credentialBody, ...connectionBody]
-                execute()
+                console.log(workflowTemplate.value)
+
+                // const credentialBody = getCredentialBody(
+                //     configMap.value,
+                //     modelValue.value
+                // )
+                // const connectionBody = getConnectionBody(
+                //     configMap.value,
+                //     modelValue.value
+                // )
+
+                // console.log(connectionBody)
+                // console.log(modelValue)
+
+                // connectionBody.forEach((i) => {
+                //     modelValue.value[i.parameter] = i.body
+                // })
+
+                // const seconds = Math.round(new Date().getTime() / 1000)
+                // const connectionName = modelValue.value['connection.name']
+                // let workflowName = ''
+                // if (connectionName) {
+                //     workflowName = `${
+                //         workflowTemplate.value.metadata.name
+                //     }-${connectionName}-${seconds.toString()}`
+                // } else {
+                //     workflowName = `${
+                //         workflowTemplate.value.metadata.name
+                //     }-${seconds.toString()}`
+                // }
+                // body.value.metadata.name = workflowName
+                // body.value.metadata.labels =
+                //     workflowTemplate.value.metadata.labels
+                // body.value.metadata.annotations =
+                //     workflowTemplate.value.metadata.annotations
+                // body.value.metadata.labels['com.atlan.orchestration/ui'] =
+                //     'true'
+                // body.value.spec = {
+                //     templates: [
+                //         {
+                //             name: 'main',
+                //             dag: {
+                //                 tasks: [
+                //                     {
+                //                         name: 'run',
+                //                         arguments: {
+                //                             parameters: [
+                //                                 {
+                //                                     name: 'connection',
+                //                                     value: '',
+                //                                 },
+                //                                 {
+                //                                     name: 'connection-name',
+                //                                     value: '',
+                //                                 },
+                //                                 {
+                //                                     name: 'host',
+                //                                     value: '',
+                //                                 },
+                //                                 {
+                //                                     name: 'crawler-name',
+                //                                     value: '',
+                //                                 },
+                //                             ],
+                //                         },
+                //                         templateRef: {
+                //                             name: workflowTemplate.value
+                //                                 .metadata.name,
+                //                             template: 'main',
+                //                             clusterScope: true,
+                //                         },
+                //                     },
+                //                 ],
+                //             },
+                //         },
+                //     ],
+                //     entrypoint: 'main',
+                // }
+                // body.value.payload = [...credentialBody, ...connectionBody]
+                // execute()
             }
 
             return {

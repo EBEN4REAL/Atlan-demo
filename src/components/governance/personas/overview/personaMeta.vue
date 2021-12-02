@@ -2,14 +2,16 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
-            <div class="flex items-center text-sm">
-                <PopOverUser>
+            <div v-if="Object.keys(creator).length > 0" class="flex items-center text-sm" >
+                <PopOverUser :item="creator.username">
                     <UserPill
-                        :username="persona.createdBy"
-                        :allowDelete="false"
+                        :username="creator.username"
+                        :allow-delete="false"
+                        :enable-hover="true"
                     ></UserPill>
                 </PopOverUser>
             </div>
+            <span v-else class="text-sm font-semibold text-gray-500">Unknown</span>
 
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
@@ -111,12 +113,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, reactive, ref, toRefs } from 'vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
+    import { useUsers } from '~/composables/user/useUsers'
 
     export default defineComponent({
         name: 'PersonaMeta',
@@ -130,6 +133,29 @@
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
             const { persona } = toRefs(props)
+            // Params for obtaining that one user.
+            const params = computed(() => ({
+                limit: 1,
+                offset: 0,
+                filter:
+                    {
+                        $and: [
+                            { email_verified: true },
+                            { id: persona.value.createdBy },
+                        ],
+                    }
+            }))
+
+            // Fetch the details of the user, and use the unique identifier as
+            // the cache key.
+            const { userList } = useUsers(
+                params,
+                persona.value.createdBy
+            )
+
+            // Get the details of the creator.
+            const creator = computed(() => userList.value.length > 0 ? userList.value[0] : {})
+
             const enablePersonaCheck = ref(true)
             const formatDate = (val) => {}
             return {
@@ -137,6 +163,7 @@
                 enablePersonaCheck,
                 enablePersona,
                 setActiveTab,
+                creator
             }
         },
     })

@@ -6,6 +6,7 @@ import useAssetInfo from '~/composables/discovery/useAssetInfo'
 import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import confetti from '~/utils/confetti'
+import { generateUUID } from '~/utils/helper/generator'
 
 export default function updateAssetAttributes(selectedAsset) {
     const {
@@ -22,6 +23,7 @@ export default function updateAssetAttributes(selectedAsset) {
         announcementMessage,
         announcementType,
         announcementTitle,
+        readmeContent,
     } = useAssetInfo()
 
     const entity = ref({
@@ -84,6 +86,12 @@ export default function updateAssetAttributes(selectedAsset) {
             announcementType(selectedAsset.value) || 'information',
         announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
+
+    const localResource = ref({
+        link: '',
+        title: '',
+    })
+    const localReadmeContent = ref(readmeContent(selectedAsset.value))
 
     const localClassifications = ref(classifications(selectedAsset.value))
 
@@ -173,8 +181,52 @@ export default function updateAssetAttributes(selectedAsset) {
         entity.value.attributes.announcementType =
             localAnnouncement.value.announcementType
         body.value.entities = [entity.value]
-        currentMessage.value = 'Announcement added'
+        currentMessage.value = 'Announcement has been updated'
         mutate()
+    }
+
+    // Resource Addition
+    const handleAddResource = () => {
+        const resourceEntity = ref<any>({
+            typeName: 'Link',
+            attributes: {
+                qualifiedName: generateUUID(),
+                name: localResource.value.title,
+                link: localResource.value.link,
+            },
+            relationshipAttributes: {
+                asset: {
+                    guid: selectedAsset.value?.guid,
+                    typeName: selectedAsset.value?.typeName,
+                },
+            },
+        })
+        body.value.entities = [resourceEntity.value]
+        currentMessage.value = 'A new resource has been added'
+        mutate()
+    }
+
+    // Readme Update
+    const handleUpdateReadme = () => {
+        const readmeEntity = ref<any>({
+            typeName: 'Readme',
+            attributes: {
+                qualifiedName: `${selectedAsset.value?.guid}/readme`,
+                name: `${title(selectedAsset?.value)} Readme`,
+                description: localReadmeContent.value,
+            },
+            relationshipAttributes: {
+                asset: {
+                    guid: selectedAsset.value?.guid,
+                    typeName: selectedAsset.value?.typeName,
+                },
+            },
+        })
+        if (readmeContent(selectedAsset.value) !== localReadmeContent.value) {
+            body.value.entities = [readmeEntity.value]
+            currentMessage.value = 'Readme has been updated'
+            mutate()
+        }
     }
 
     const rainConfettis = () => {
@@ -297,5 +349,9 @@ export default function updateAssetAttributes(selectedAsset) {
         nameRef,
         descriptionRef,
         animationPoint,
+        handleAddResource,
+        localResource,
+        handleUpdateReadme,
+        localReadmeContent,
     }
 }

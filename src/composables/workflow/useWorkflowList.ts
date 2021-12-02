@@ -28,7 +28,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
     watch(data, () => {
         if (!data?.value?.records) return
         const filtered = data.value.records.map((el) => ({
-            id: el?.labels['workflows.argoproj.io/creator'],
+            id: el?.metadata.labels['workflows.argoproj.io/creator'],
             email_verified: true,
         }))
         iDs.value = [...iDs.value, ...filtered]
@@ -38,7 +38,8 @@ export function useWorkflowSearchList(immediate: boolean = true) {
     })
 
     const loadMore = () => {
-        offset.value += offset.value > totalCount.value ? totalCount.value : limit.value
+        offset.value +=
+            offset.value > totalCount.value ? totalCount.value : limit.value
         params.value.set('offset', offset.value.toString())
 
         mutate()
@@ -56,9 +57,11 @@ export function useWorkflowSearchList(immediate: boolean = true) {
         const temp = {
             $and: [
                 {
-                    labels: {
+                    metadata: {
                         $elemMatch: {
-                            'com.atlan.orchestration/atlan-ui': 'true',
+                            labels: {
+                                'com.atlan.orchestration/atlan-ui': 'true',
+                            },
                         },
                     },
                 },
@@ -106,7 +109,8 @@ export function getRunList(name, getRunning = true) {
     const params = ref(new URLSearchParams())
 
     const labelSelector = ref(
-        `workflows.argoproj.io/workflow-template=${name}${getRunning ? ',workflows.argoproj.io/phase=Running' : ''
+        `workflows.argoproj.io/workflow-template=${name}${
+            getRunning ? ',workflows.argoproj.io/phase=Running' : ''
         }`
     )
     params.value.append('labelSelector', labelSelector.value)
@@ -117,7 +121,10 @@ export function getRunList(name, getRunning = true) {
 
     const execute = (n) => {
         params.value = new URLSearchParams()
-        params.value.append('labelSelector', `workflows.argoproj.io/workflow-template=${n},workflows.argoproj.io/phase=Running`)
+        params.value.append(
+            'labelSelector',
+            `workflows.argoproj.io/workflow-template=${n},workflows.argoproj.io/phase=Running`
+        )
         mutate()
     }
 
@@ -132,9 +139,11 @@ export function getArchivedRunList(name) {
     const offset = ref(0)
     const limit = ref(10)
     const filter = ref({
-        labels: {
+        metadata: {
             $elemMatch: {
-                'workflows.argoproj.io/workflow-template': `${name}`,
+                labels: {
+                    'workflows.argoproj.io/workflow-template': name,
+                },
             },
         },
     })
@@ -142,9 +151,10 @@ export function getArchivedRunList(name) {
     params.value.append('filter', JSON.stringify(filter.value))
     params.value.append('offset', offset.value.toString())
     params.value.append('limit', limit.value.toString())
-    const { data, error, isLoading, mutate, isReady } = Workflows.getArchivedRunList({
-        params,
-    })
+    const { data, error, isLoading, mutate, isReady } =
+        Workflows.getArchivedRunList({
+            params,
+        })
 
     const loadMore = () => {
         const count = data?.value?.records?.length ?? 0
@@ -158,7 +168,7 @@ export function getArchivedRunList(name) {
             data.value = {
                 total_record: 0,
                 filter_record: 0,
-                records: []
+                records: [],
             }
             return
         }
@@ -166,8 +176,7 @@ export function getArchivedRunList(name) {
         filter_record.value = data.value.filter_record
         if (offset.value > 0)
             archivedList.value = [...archivedList.value, ...data.value.records]
-        else
-            archivedList.value = data.value.records ?? []
+        else archivedList.value = data.value.records ?? []
     })
 
     const execute = (n) => {
@@ -176,9 +185,10 @@ export function getArchivedRunList(name) {
             'workflows.argoproj.io/workflow-template': `${n}`,
         }
         params.value.append('filter', JSON.stringify(filter.value))
-        params.value.append('offset', '0')
-        params.value.append('limit', '5')
-
+        offset.value = 0
+        limit.value = 10
+        params.value.append('offset', offset.value.toString())
+        params.value.append('limit', limit.value.toString())
 
         mutate()
     }
@@ -243,10 +253,12 @@ export function useWorkflowConfigMaps(immediate: boolean = true) {
         const temp = {
             $and: [
                 {
-                    labels: {
+                    metadata: {
                         $elemMatch: {
-                            'com.atlan.orchestration/verified': 'true',
-                            'com.atlan.orchestration/type': 'package',
+                            labels: {
+                                'com.atlan.orchestration/verified': 'true',
+                                'com.atlan.orchestration/type': 'package',
+                            },
                         },
                     },
                 },
@@ -325,9 +337,11 @@ export function useWorkflowTemplates(immediate: boolean = true) {
         const temp = {
             $and: [
                 {
-                    labels: {
+                    metadata: {
                         $elemMatch: {
-                            'com.atlan.orchestration/verified': 'true',
+                            labels: {
+                                'com.atlan.orchestration/verified': 'true',
+                            },
                         },
                     },
                 },
@@ -387,9 +401,15 @@ export function useWorkflowTemplateByName(name, immediate: boolean = true) {
 
 export function useWorkflowByName(name, immediate: boolean = true) {
     const filter = ref({
-        name: {
-            $ilike: name,
-        },
+        $and: [
+            {
+                metadata: {
+                    $elemMatch: {
+                        name,
+                    },
+                },
+            },
+        ],
     })
     const params = ref(new URLSearchParams())
     params.value.append('filter', JSON.stringify(filter.value))
@@ -429,10 +449,12 @@ export function getWorkflowConfigMapByName(name, immediate: boolean = true) {
         filter: {
             $or: [
                 {
-                    labels: {
+                    metadata: {
                         $elemMatch: {
-                            'com.atlan.orchestration/workflow-template-name':
-                                name,
+                            labels: {
+                                'com.atlan.orchestration/workflow-template-name':
+                                    name,
+                            },
                         },
                     },
                 },

@@ -21,7 +21,9 @@
                 <span v-if="classification.description" class="mb-3 text-sm">
                     {{ classification.description }}
                 </span>
-                <span v-else class="mb-3 text-sm">No description</span>
+                <span v-else class="mb-3 text-sm"
+                    >This classification has no description added</span
+                >
 
                 <div class="">
                     <span
@@ -89,8 +91,8 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import { useTimeAgo } from '@vueuse/core'
+    import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: 'ClassificationInfoPopover',

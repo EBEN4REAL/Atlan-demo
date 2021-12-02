@@ -1,6 +1,10 @@
 <template>
     <PreviewHeader
-        :name="selectedWorkflow?.display_name || selectedWorkflow?.name || ''"
+        :name="
+            selectedWorkflow?.data.displayName ||
+            selectedWorkflow?.metadata.name ||
+            ''
+        "
         type="workflow template"
         :show-utility-buttons="false"
         :icon="images.icon"
@@ -11,29 +15,31 @@
         title="Create Workflow"
         :class="$style.input"
         :closable="false"
-        :body-style="{ padding: '24px !important' }"
     >
-        <div class="">
+        <div class="px-8 py-3">
             <a-input
                 v-model:value="workflowName"
                 :placeholder="`Untitled Workflow`"
-                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
             ></a-input>
             <p v-if="invalidName" class="mt-3 text-red-600">
-                Name consist of lower case alphanumeric characters, '-' or '.',
-                and must start and end with an alphanumeric character
+                Name may consist of lower case alphanumeric characters, '-' or
+                '.', and must start and end with an alphanumeric character
             </p>
         </div>
         <template #footer>
             <div class="flex items-center justify-end space-x-3">
-                <a-button @click="visible = false">Cancel</a-button>
-                <a-button
+                <AtlanButton color="minimal" @click="visible = false">
+                    Cancel
+                </AtlanButton>
+                <AtlanButton
                     type="primary"
                     :loading="isLoading"
                     :disabled="invalidName || !workflowName"
                     @click="handleCreate"
-                    >Create</a-button
                 >
+                    Create
+                </AtlanButton>
             </div>
         </template>
     </a-modal>
@@ -46,7 +52,7 @@
         ></ErrorView>
         <template v-else>
             <div
-                class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
+                class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700"
             >
                 Overview
             </div>
@@ -57,7 +63,7 @@
             >
                 <div v-for="(v, k) in overview" :key="v" class="mb-3">
                     <p
-                        class="mb-1 text-sm tracking-wide text-gray-500 capitalize "
+                        class="mb-1 text-sm tracking-wide text-gray-500 capitalize"
                     >
                         {{
                             k
@@ -172,7 +178,7 @@
                 isLoading: workflowTemplateLoading,
                 changeName,
             } = useWorkflowTemplateByName(
-                selectedWorkflow.value.configmap?.data?.templateName,
+                selectedWorkflow.value.data?.templateName,
                 true
             )
             const body = computed(() => ({
@@ -192,14 +198,13 @@
                                         name: 'run',
                                         arguments: {
                                             parameters: [
-                                                ...workflowTemplate.value?.workflowtemplate.spec.templates
+                                                ...workflowTemplate.value?.spec.templates
                                                     ?.find(
                                                         (t) =>
                                                             t.name ===
                                                             workflowTemplate
-                                                                .value
-                                                                ?.workflowtemplate
-                                                                .spec.entrypoint
+                                                                .value?.spec
+                                                                .entrypoint
                                                     )
                                                     ?.inputs?.parameters?.filter(
                                                         (p) =>
@@ -215,8 +220,8 @@
                                             ],
                                         },
                                         templateRef: {
-                                            name: selectedWorkflow.value
-                                                .configmap.data.templateName,
+                                            name: selectedWorkflow.value.data
+                                                .templateName,
                                             template: 'main',
                                             clusterScope: true,
                                         },
@@ -267,7 +272,7 @@
 
             const overview = computed(() => {
                 const info = {
-                    ...selectedWorkflow.value.configmap.data,
+                    ...selectedWorkflow.value.data,
                 }
                 delete info.templates
                 delete info.uiConfig
@@ -278,12 +283,12 @@
             })
 
             const images = computed(() => ({
-                icon: selectedWorkflow.value.configmap.data.icon,
-                logo: selectedWorkflow.value.configmap.data.logo,
+                icon: selectedWorkflow.value.data.icon,
+                logo: selectedWorkflow.value.data.logo,
             }))
 
             function init() {
-                changeName(selectedWorkflow.value.configmap?.data?.templateName)
+                changeName(selectedWorkflow.value?.data?.templateName)
             }
 
             watch(selectedWorkflow, init, { deep: true })

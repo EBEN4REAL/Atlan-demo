@@ -7,6 +7,7 @@
             @change="handleChange"
             class="flex-1"
             :allowClear="true"
+            @dropdownVisibleChange="handleDropdownVisibleChange"
         >
             <template #suffixIcon>
                 <AtlanIcon
@@ -65,10 +66,6 @@
             })
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
-            watch(credential, () => {
-                refresh()
-            })
-
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -86,6 +83,12 @@
                 refresh()
             }
 
+            const handleDropdownVisibleChange = (open) => {
+                if (list.value?.length === 0 && open) {
+                    refresh()
+                }
+            }
+
             return {
                 localValue,
                 handleChange,
@@ -97,9 +100,9 @@
                 error,
                 query,
                 body,
+                handleDropdownVisibleChange,
             }
         },
-        components: { AtlanIcon },
     })
 </script>
 

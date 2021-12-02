@@ -1,5 +1,5 @@
 <template>
-    <a-popover title="">
+    <a-popover>
         <template #content>
             <div class="user-popover">
                 <div class="flex justify-between">
@@ -16,16 +16,17 @@
                             text-gray-500
                             bg-gray-100
                             border border-gray-300 border-solid
+                            rounded
                         "
                     >
                         {{ admin }}
                     </div>
                 </div>
                 <div class="flex items-center gap-3 mt-2">
-                    <a-avatar size="large">{{ item[0] }}</a-avatar>
+                    <a-avatar class="text-primary bg-primary-light" size="large">{{ item[0].toUpperCase() }}</a-avatar>
                     <div>
-                        <div class="text-sm font-semibold">
-                            {{ selectedUser.name }}
+                        <div class="text-sm font-semibold capitalize">
+                            {{ item }}
                         </div>
                         <div class="text-xs text-gray-500">
                             {{ selectedUser.email }}
@@ -34,7 +35,7 @@
                 </div>
                 <div class="mt-3">
                     <div class="text-xs text-gray-500">Ownership</div>
-                    <div class="flex gap-5 mt-1">
+                    <div v-if="assetCount || bussinesCount" class="flex gap-5 mt-1">
                         <div>
                             <strong>{{ assetCount }}</strong> Assets
                         </div>
@@ -42,8 +43,11 @@
                             <strong>{{ bussinesCount }}</strong> Business Terms
                         </div>
                     </div>
+                    <div v-else>
+                        You have no asset added
+                    </div>
                 </div>
-                <div class="mt-3">
+                <div v-if="groupList.length > 0"  class="mt-3">
                     <div class="text-xs text-gray-500">Groups</div>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <span
@@ -60,10 +64,9 @@
                         >
                             {{ group.name }}
                         </span>
-                        <span v-if="groupList.length === 0">-</span>
                     </div>
                 </div>
-                <div class="mt-3">
+                <div v-if="listOfPersona.length > 0" class="mt-3">
                     <div class="text-xs text-gray-500">Personas</div>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <span
@@ -80,7 +83,6 @@
                             "
                             >{{ persona?.displayName }}</span
                         >
-                        <span v-if="listOfPersona.length === 0">-</span>
                     </div>
                 </div>
                 <a-button class="mt-3" block @click="handleClickViewUser">
@@ -95,14 +97,12 @@
 
 <script lang="ts">
     import { toRefs, computed, watch, ref } from 'vue'
-    // import bodybuilder from 'bodybuilder'
     import getUserGroups from '~/composables/user/getUserGroups'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    // import { Search } from '~/services/meta/search'
     import { useUsers } from '~/composables/user/useUsers'
     import usePersonaList from '../persona/usePersonaList'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-    import usePopoverUserGroup from '~/composables/user/usePopoverUserGroup'
+    import useUserPopover from './composables/useUserPopover'
 
     export default {
         name: 'PopoverUser',
@@ -149,8 +149,11 @@
                 groupListAPIParams,
                 selectedUser?.value.id
             )
-            const { bussinesCount, assetCount } = usePopoverUserGroup('user', item.value )
-       
+            const { bussinesCount, assetCount } = useUserPopover(
+                'user',
+                item.value
+            )
+
             const handleClickViewUser = () => {
                 setUserUniqueAttribute(item.value, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
@@ -162,7 +165,9 @@
                 watch(personaList, (newValue) => {
                     if (newValue) {
                         const user = selectedUser.value.id
-                        listOfPersona.value = newValue.filter((element) => element.users.includes(user))
+                        listOfPersona.value = newValue.filter((element) =>
+                            element.users.includes(user)
+                        )
                     }
                 })
             }
@@ -179,13 +184,6 @@
         },
     }
 </script>
-<style lang="less">
-    .icon-blue-color {
-        path {
-            stroke: #5277d7;
-        }
-    }
-</style>
 <style lang="less" scoped>
     .user-popover {
         width: 370px;

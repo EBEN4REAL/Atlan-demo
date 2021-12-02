@@ -62,13 +62,14 @@
             const testClass = ref('')
 
             const connector = computed(() => {
-                return workflowTemplate.value?.workflowtemplate.metadata.labels[
+                return workflowTemplate.value?.metadata.labels[
                     'com.atlan.orchestration/source'
                 ]
             })
             const connectorImage = computed(() => {
-                return workflowTemplate.value?.workflowtemplate.metadata
-                    .annotations['com.atlan.orchestration/icon']
+                return workflowTemplate.value?.metadata.annotations[
+                    'com.atlan.orchestration/icon'
+                ]
             })
 
             const configMap = ref({
@@ -76,8 +77,10 @@
                     name: {
                         type: 'string',
                         ui: {
+                            widget: 'alias',
                             label: 'Connection Name',
                             placeholder: 'Connection Name',
+                            linkedProperty: `${property.value.id}.qualifiedName`,
                             required: true,
                             grid: 5,
                             rules: [
@@ -92,9 +95,11 @@
                         type: 'string',
                         required: true,
                         ui: {
+                            widget: 'alias',
+
                             label: 'Qualified Name',
                             placeholder: '',
-
+                            disabled: true,
                             prefixImage: connectorImage.value,
                             prefixText: `${connector.value}/`,
                             grid: 4,

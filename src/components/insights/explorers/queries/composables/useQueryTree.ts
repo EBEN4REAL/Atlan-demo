@@ -10,6 +10,7 @@ import {
     BasicSearchResponse,
     RelationshipSearchResponse,
 } from '~/types/common/atlasSearch.interface'
+import { IndexSearchResponse } from '~/services/meta/search/index'
 
 import { Components } from '~/types/atlas/client'
 
@@ -72,6 +73,7 @@ const useTree = ({
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
+    let currentSelectedNode = ref(queryFolderNamespace.value)
 
     const selectedCacheKey = `${cacheKey ?? 'queryTree'}_selected`
     const expandedCacheKey = `${cacheKey ?? 'queryTree'}_expanded`
@@ -295,6 +297,8 @@ const useTree = ({
         // )
         // console.log('opened query: ', event.node)
         const parentTitle = event.node.dataRef?.parentTitle;
+        currentSelectedNode.value = event.node;
+
 
         if (item.typeName === 'Query') {
             immediateParentFolderQF.value =
@@ -308,8 +312,11 @@ const useTree = ({
                 pushGuidToURL(item.guid)
             }
         } else if (item.typeName === 'QueryFolder') {
+            
             immediateParentFolderQF.value = item.attributes.qualifiedName
             immediateParentGuid.value = item.guid
+
+            // currentSelectedNode.value = item;
         }
 
         // if (!event.node.isLeaf) {
@@ -338,6 +345,8 @@ const useTree = ({
             immediateParentFolderQF.value =
                 queryFolderNamespace.value?.attributes?.qualifiedName
             immediateParentGuid.value = queryFolderNamespace.value?.guid
+
+            currentSelectedNode.value = queryFolderNamespace.value
         }
         emit('select', event.node.eventKey)
         store.set(selectedCacheKey, selectedKeys.value)
@@ -354,8 +363,8 @@ const useTree = ({
     ) => {
         // if the root level of the tree needs a refetch
         if (guid === queryFolderNamespace.value?.guid) {
-            let folderResponse: BasicSearchResponse<Folder> | null = null
-            let queryResponse: BasicSearchResponse<SavedQuery> | null = null
+            let folderResponse: IndexSearchResponse<Folder> | null = null
+            let queryResponse: IndexSearchResponse<SavedQuery> | null = null
 
             if (refetchEntityType === 'queryFolder' || !refetchEntityType) {
                 folderResponse = await getQueryFolders()
@@ -394,9 +403,10 @@ const useTree = ({
 
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
-                    let folderResponse: BasicSearchResponse<Folder> | null =
+                    console.log('parent update start: ', node)
+                    let folderResponse: IndexSearchResponse<Folder> | null =
                         null
-                    let queryResponse: BasicSearchResponse<SavedQuery> | null =
+                    let queryResponse: IndexSearchResponse<SavedQuery> | null =
                         null
 
                     if (
@@ -410,6 +420,13 @@ const useTree = ({
                             node.qualifiedName
                         )
                     }
+
+                    console.log('parent update: ', {
+                        folderResponse,
+                        queryResponse
+                    })
+
+                    //correct till here
 
                     const updatedFolders = checkAndAppendNewNodes(
                         folderResponse,
@@ -460,18 +477,22 @@ const useTree = ({
             // find the path to the node
             parentStack = recursivelyFindPath(guid)
             const parent = parentStack.pop()
+            console.log('parent here: ', parent)
 
             const updatedTreeData: CustomTreeDataItem[] = []
 
             // eslint-disable-next-line no-restricted-syntax
             for (const node of treeData.value) {
                 if (node.key === parent) {
+                    console.log('parent found: ', node)
                     const updatedNode = await updateNodeNested(node)
+                    console.log('parent updated new nodes: ', updatedNode)
                     updatedTreeData.push(updatedNode)
                 } else {
                     updatedTreeData.push(node)
                 }
             }
+            console.log('parent update: ', updatedTreeData)
 
             treeData.value = updatedTreeData
         }
@@ -543,7 +564,7 @@ const useTree = ({
     }
 
     const checkAndAppendNewNodes = (
-        response: BasicSearchResponse<SavedQuery | Folder> | null,
+        response: IndexSearchResponse<SavedQuery | Folder> | null,
         typeName: 'Query' | 'QueryFolder',
         isRoot: boolean,
         node?: CustomTreeDataItem
@@ -631,6 +652,7 @@ const useTree = ({
         isInitingTree.value = true
         loadedKeys.value = []
         expandedKeys.value = []
+        // currentSelectedNode.value = queryFolderNamespace
         initTreeData()
     })
     onMounted(() => {
@@ -643,6 +665,7 @@ const useTree = ({
             immediateParentFolderQF.value =
                 newQueryFolderNamespace.attributes?.qualifiedName
             immediateParentGuid.value = newQueryFolderNamespace.guid
+            currentSelectedNode.value = newQueryFolderNamespace
             initTreeData()
         }
     })
@@ -665,6 +688,7 @@ const useTree = ({
         expandNode,
         selectNode,
         refetchNode,
+        currentSelectedNode
         // addInputBox,
         // removeInputBox
     }

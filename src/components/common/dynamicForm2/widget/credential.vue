@@ -50,6 +50,8 @@
     import ErrorView from '@common/error/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
+    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
@@ -111,9 +113,7 @@
             watch(data, () => {
                 if (list.value.length > 0) {
                     try {
-                        configMap.value = JSON.parse(
-                            list.value[0].configmap.data.config
-                        )
+                        configMap.value = JSON.parse(list.value[0].data.config)
                     } catch (e) {
                         console.error(e)
                     }
@@ -257,30 +257,15 @@
                 testClass.value = 'text-red-500'
             }
 
-            const credentialBody = computed(() => {
-                const extra = {}
-                Object.keys(formState).forEach((key) => {
-                    if (key.includes(`${property.value.id}.extra.`)) {
-                        extra[key.replace(`${property.value.id}.extra.`, '')] =
-                            formState[key]
-                    }
-                })
-                const authType = formState[`${property.value.id}.auth-type`]
+            const { buildCredentialBody } = useWorkflowHelper()
 
-                const body = {
-                    host: formState[`${property.value.id}.host`],
-                    port: parseInt(formState[`${property.value.id}.port`]),
-                    authType,
-                    username:
-                        formState[`${property.value.id}.${authType}.username`],
-                    password:
-                        formState[`${property.value.id}.${authType}.password`],
-                    extra,
-                    connectorConfigName: property.value.ui?.credentialType,
-                }
-
-                return body
-            })
+            const credentialBody = computed(() =>
+                buildCredentialBody(
+                    formState,
+                    property.value.id,
+                    property.value.ui.credentialType
+                )
+            )
 
             watch(credentialBody, () => {
                 console.log('chaneg credentials -----')

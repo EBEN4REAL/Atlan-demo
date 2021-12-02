@@ -200,7 +200,13 @@ export default function useAssetInfo() {
     const getProfilePath = (asset) => {
         if (assetType(asset) === 'Column') {
             const tableGuid = asset?.attributes?.table?.guid
-            return `/assets/${tableGuid}/overview?column=${asset?.guid}`
+            if (tableGuid) {
+                return `/assets/${tableGuid}/overview?column=${asset?.guid}`
+            }
+            const viewGuid = asset?.attributes?.view?.guid
+            if (viewGuid) {
+                return `/assets/${viewGuid}/overview?column=${asset?.guid}`
+            }
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {

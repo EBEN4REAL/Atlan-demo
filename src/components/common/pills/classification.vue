@@ -17,18 +17,19 @@
         `"
         :data-test-id="displayName"
     >
-        <AtlanIcon
+
+        <ClassificationIcon
             icon="ShieldFilled"
             class="group-hover:text-white"
-            :style="`color: ${getClassificationColorHex(color)}`"
+            :color="color"
             v-if="isPropagated"
-        ></AtlanIcon>
-        <AtlanIcon
+        ></ClassificationIcon>
+        <ClassificationIcon
             icon="Shield"
             class="group-hover:text-white"
-            :style="`color: ${getClassificationColorHex(color)}`"
+            :color="color"
             v-else
-        ></AtlanIcon>
+        ></ClassificationIcon>
 
         <div class="ml-1 group-hover:text-white">
             {{ displayName || name }}
@@ -45,7 +46,7 @@
 
 <script lang="ts">
     import { toRefs } from 'vue'
-    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
 
     export default {
         props: {
@@ -79,7 +80,7 @@
                 },
             },
         },
-        components: {},
+        components: { ClassificationIcon },
         emits: ['delete'],
         setup(props, { emit }) {
             const { name, isPropagated, displayName, color } = toRefs(props)
@@ -93,7 +94,6 @@
                 isPropagated,
                 displayName,
                 handleRemove,
-                getClassificationColorHex,
                 color,
             }
         },

@@ -34,12 +34,7 @@
             >
                 <template #default="{ item, isSelected }">
                     <div class="flex items-center gap-x-1">
-                        <AtlanIcon
-                            icon="Shield"
-                            :style="`color: ${getClassificationColorHex(
-                                item.options?.color
-                            )}`"
-                        />
+                        <ClassificationIcon :color="item.options?.color" />
                         <span
                             class="text-sm truncate"
                             :class="
@@ -103,11 +98,11 @@
     import NoAcces from '@/common/secured/access.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
-    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
 
     import map from '~/constant/accessControl/map'
     import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
@@ -127,6 +122,7 @@
             NoAcces,
             SearchAdvanced,
             AddClassificationModal,
+            ClassificationIcon
         },
         setup(props) {
             const router = useRouter()
@@ -189,7 +185,6 @@
                 selectedClassificationName,
                 selectClassification,
                 createClassificationModalVisible,
-                getClassificationColorHex,
                 map,
                 EmptyClassifications,
             }

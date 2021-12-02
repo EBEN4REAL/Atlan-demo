@@ -2,7 +2,7 @@
     <div class="flex flex-col px-5">
         <div class="flex items-center mb-2 gap-x-2 justify-between">
             <div>
-                <AtlanIcon icon="Shield" :style="`color: ${getClassificationColorHex(selectedClassification?.options?.color)}`"/>
+                <ClassificationIcon :color="selectedClassification?.options?.color" />
                 <span class="ml-2 text-sm tracking-wide text-gray-500 uppercase"
                     >Classification</span
                 >
@@ -43,8 +43,8 @@
                         >
                             <template #title>
                                 <span class="flex items-center">
-                                    <AtlanIcon icon="Shield" class="self-center mr-1" :style="`color: ${getClassificationColorHex(classificationColor)}`"/>
-                                    <span>Color</span>
+                                    <ClassificationIcon class="self-center mr-1" :color="classificationColor" />
+                                    <span class="self-center">Color</span>
                                 </span>
                             </template>
                             <a-menu-item class="m-0 bg-white p-0 w-28">
@@ -85,10 +85,10 @@
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import ClassificationColorSelector from '@/governance/classifications/classificationColorSelector.vue';
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
 
     import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
-    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
 
     import useEditTypedefs from '~/composables/typedefs/useEditTypedefs'
     import { useTypedefStore } from '~/store/typedef'
@@ -100,7 +100,8 @@
             Dropdown,
             AddClassificationModal,
             AtlanBtn,
-            ClassificationColorSelector
+            ClassificationColorSelector,
+            ClassificationIcon
         },
         props: {
             classification: {
@@ -192,7 +193,6 @@
                 deleteClassification,
                 selectedClassification,
                 displayName,
-                getClassificationColorHex,
                 editClassification,
                 classificationColor,
                 map

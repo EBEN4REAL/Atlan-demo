@@ -34,10 +34,7 @@
                                 class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                             >
                                 <div class="flex items-center">
-                                    <AtlanIcon
-                                        icon="Shield"
-                                        :style="`color: ${getClassificationColorHex(item.options?.color)}`"
-                                    ></AtlanIcon>
+                                    <ClassificationIcon :color="item.options?.color" />
                                     <span class="mb-0 ml-1 text-gray">
                                         {{ item.displayName }}
                                     </span>
@@ -78,12 +75,13 @@
     import { useTimeoutFn, useVModels } from '@vueuse/core'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
 
     export default defineComponent({
         components: {
             SearchAdvanced,
+            ClassificationIcon,
         },
         props: {
             modelValue: {
@@ -169,7 +167,6 @@
                 queryText,
                 showNone,
                 height,
-                getClassificationColorHex
             }
         },
     })

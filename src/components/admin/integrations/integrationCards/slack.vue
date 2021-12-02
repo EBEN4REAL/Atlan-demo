@@ -19,10 +19,10 @@
                 class="flex flex-wrap items-center gap-3 p-3 py-2 border rounded "
             >
                 <Chip
-                    v-for="(c, x) in channels"
-                    :id="x"
-                    :key="c"
-                    :content="c"
+                    v-for="channel in channels"
+                    :id="channel.name"
+                    :key="channel"
+                    :content="channel.name"
                     icon="Number"
                     @remove="removeChannel"
                 />
@@ -32,7 +32,7 @@
                         v-model="channelValue"
                         class="focus:outline-none"
                         placeholder="Enter to add channels"
-                        @keydown.enter="AddChannel"
+                        @keydown.enter="addChannel"
                     />
                 </div>
             </div>
@@ -41,7 +41,7 @@
             <AtlanButton
                 v-auth="access.DELETE_INTEGRATION"
                 color="minimal"
-                class="text-red-500"
+                class="px-0 text-red-500"
                 :is-loading="isLoading"
                 @click="disconnect"
             >
@@ -94,7 +94,7 @@ export default defineComponent({
 
         const pV = { id: integration.id }
 
-        const channels: Ref<string[]> = ref([])
+        const channels: Ref<object[]> = ref([])
 
         const channelValue = ref('')
 
@@ -102,13 +102,13 @@ export default defineComponent({
 
         const getChannels = () => {
             if (!integration) return []
-            return integration?.source_metadata?.default_channels ?? []
+            return integration?.config?.channels ?? []
         }
 
-        const AddChannel = (e) => {
-            const v = e?.target?.value ?? null
-            if (v) {
-                channels.value.push(v)
+        const addChannel = (e) => {
+            const value = e?.target?.value ?? null
+            if (value) {
+                channels.value.push({ name: value })
                 isEdit.value = true
             }
             channelValue.value = ''
@@ -124,9 +124,7 @@ export default defineComponent({
         })
 
         const body = computed(() => ({
-            source_metadata: {
-                default_channels: channels.value,
-            },
+            channels: channels.value,
         }))
 
         const {
@@ -202,7 +200,7 @@ export default defineComponent({
             updateLoading,
             channelValue,
             integration,
-            AddChannel,
+            addChannel,
             disconnect,
             update,
             channels,

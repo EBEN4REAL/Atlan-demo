@@ -657,3 +657,12 @@
         },
     })
 </script>
+<style scoped lang="less">
+    .dot{
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background-color: #C4C4C4;
+        margin-right: 7px;
+    }
+</style>

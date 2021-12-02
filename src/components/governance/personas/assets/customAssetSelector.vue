@@ -8,7 +8,7 @@
             <a-input
                 v-model:value="regexes[idx]"
                 class="flex-grow"
-                placeholder="database/schema/table/column"
+                :placeholder="connectionQfName.includes('tableau') ? 'database/schema/table/column' : ''"
                 @change="updateAssets"
                 data-test-id="custom-asset-input"
                 @keyup.enter="addExpr"

@@ -8,34 +8,15 @@ on:
       - main
       - staging
 jobs:
-  test:
+  deploy:
     name: Production Deployment
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: AWS CLI Install
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y awscli
-      - name: Install
-        run: npm install
-      - name: Setup AWS CLI
-        run: |
-          mkdir ~/.aws
-          touch ~/.aws/credentials
-          echo [default] >> ~/.aws/credentials
-          echo aws_access_key_id = $AWS_ACCESS_KEY_ID >> ~/.aws/credentials
-          echo aws_secret_access_key = $AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Get branch name
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: get_branch
+
       - name: Get previous tag from charts repo
         id: get_channel
         run: |
@@ -56,22 +37,58 @@ jobs:
           fi
           echo "##[set-output name=channel;]$(echo $channel)"
         shell: bash
+
+      - name: Check out branch
+        uses: actions/checkout@v2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.23.2
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: pnpm Install
+        run: pnpm install
+
       - name: Build
-        run: NODE_OPTIONS=--max_old_space_size=8000 npm run build
+        run: NODE_OPTIONS=--max_old_space_size=8000 pnpm run build
+
+      - name: AWS CLI Install
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Setup AWS CLI
+        run: |
+          mkdir ~/.aws
+          touch ~/.aws/credentials
+          echo [default] >> ~/.aws/credentials
+          echo aws_access_key_id = $AWS_ACCESS_KEY_ID >> ~/.aws/credentials
+          echo aws_secret_access_key = $AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: COPY DIST TO S3
         run: aws s3 cp ./dist s3://$AWS_S3_BUCKET/$CHANNEL_NAME --recursive --region $AWS_REGION
         env:
           AWS_REGION: "ap-south-1"
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_DEPLOYMENT_BUCKET }}
           CHANNEL_NAME: ${{ steps.get_channel.outputs.channel }}
-      # Send a slack notification message on the specified channel with the failure github actions workflow report.
+
+          # Send a slack notification message on the specified channel with the failure github actions workflow report.
       - name: Slack notification
         uses: 8398a7/action-slack@v3
         with:
-            status: ${{ job.status }}
-            author_name: Github-Actions # default: 8398a7@action-slack
-            fields: repo,commit,workflow,message,author,took # default: repo,commit
-            text: '- @infra, Job ${{ job.status }} :rocket:'
+          status: ${{ job.status }}
+          author_name: Github-Actions # default: 8398a7@action-slack
+          fields: repo,commit,workflow,message,author,took # default: repo,commit
+          text: "- @infra, Job ${{ job.status }} :rocket:"
         env:
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         if: failure() # Pick up events even if the job fails or is canceled.

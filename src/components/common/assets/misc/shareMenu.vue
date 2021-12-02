@@ -17,7 +17,7 @@
                 </a-menu-item>
 
                 <a-menu-item
-                    v-if="!!store.getIntegration('slack')"
+                    v-if="!!store.getIntegration('slack', true)"
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"
                     class="flex items-center"
@@ -35,59 +35,59 @@
     </a-dropdown>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs, computed } from 'vue'
+import { defineComponent, ref, PropType, toRefs, computed } from 'vue'
 
-    // utils
-    import { message } from 'ant-design-vue'
-    import { copyToClipboard } from '~/utils/clipboard'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import SlackModal from './slackModal.vue'
-    import access from '~/constant/accessControl/map'
-    import integrationStore from '~/store/integrations/index'
+// utils
+import { message } from 'ant-design-vue'
+import { copyToClipboard } from '~/utils/clipboard'
+import { assetInterface } from '~/types/assets/asset.interface'
+import SlackModal from './slackModal.vue'
+import access from '~/constant/accessControl/map'
+import integrationStore from '~/store/integrations/index'
 
-    export default defineComponent({
-        name: 'ShareMenu',
-        components: { SlackModal },
-        props: {
-            asset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-                default: () => {},
-            },
-            editPermission: {
-                type: Boolean,
-                required: true,
-            },
+export default defineComponent({
+    name: 'ShareMenu',
+    components: { SlackModal },
+    props: {
+        asset: {
+            type: Object as PropType<assetInterface>,
+            required: true,
+            default: () => {},
         },
-        setup(props, context) {
-            // data
-            const isVisible = ref(false)
-
-            const store = integrationStore()
-
-            const { asset } = toRefs(props)
-            const closeMenu = () => {
-                isVisible.value = false
-            }
-            const link = computed(() => {
-                const baseUrl = window.location.origin
-                const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
-                return text
-            })
-            async function handleCopyProfileLink() {
-                await copyToClipboard(link.value)
-                message.success('Link copied!')
-                closeMenu()
-            }
-
-            return {
-                store,
-                access,
-                link,
-                handleCopyProfileLink,
-                isVisible,
-                closeMenu,
-            }
+        editPermission: {
+            type: Boolean,
+            required: true,
         },
-    })
+    },
+    setup(props, context) {
+        // data
+        const isVisible = ref(false)
+
+        const store = integrationStore()
+
+        const { asset } = toRefs(props)
+        const closeMenu = () => {
+            isVisible.value = false
+        }
+        const link = computed(() => {
+            const baseUrl = window.location.origin
+            const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
+            return text
+        })
+        async function handleCopyProfileLink() {
+            await copyToClipboard(link.value)
+            message.success('Link copied!')
+            closeMenu()
+        }
+
+        return {
+            store,
+            access,
+            link,
+            handleCopyProfileLink,
+            isVisible,
+            closeMenu,
+        }
+    },
+})
 </script>

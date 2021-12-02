@@ -57,89 +57,89 @@
 </template>
 
 <script setup lang="ts">
-    import { defineProps, defineEmits, ref, watch } from 'vue'
-    import { message as toast } from 'ant-design-vue'
+import { defineProps, defineEmits, ref, watch } from 'vue'
+import { message as toast } from 'ant-design-vue'
 
-    import intStore from '~/store/integrations/index'
-    import AtlanButton from '@/UI/button.vue'
-    import { shareOnSlack } from '~/composables/integrations/useSlack'
-    import access from '~/constant/accessControl/map'
+import intStore from '~/store/integrations/index'
+import AtlanButton from '@/UI/button.vue'
+import { shareOnSlack } from '~/composables/integrations/useSlack'
+import access from '~/constant/accessControl/map'
 
-    const props = defineProps({
-        link: {
-            type: String,
-            required: true,
-        },
+const props = defineProps({
+    link: {
+        type: String,
+        required: true,
+    },
+})
+
+const emit = defineEmits(['closeParent'])
+
+const store = intStore()
+
+const slack = store.getIntegration('slack', true)
+
+const channels = ref([])
+
+const getChannels = () => {
+    if (!slack) return []
+    channels.value =
+        slack?.source_metadata?.default_channels.map((c) => ({
+            value: c,
+            label: `# ${c}`,
+        })) ?? []
+    return null
+}
+
+getChannels()
+
+const visible = ref(false)
+const channel = ref('')
+const message = ref('')
+
+const clearAll = () => {
+    channel.value = ''
+    message.value = ''
+}
+const open = () => {
+    visible.value = true
+    emit('closeParent')
+}
+
+const shareToSlack = () => {
+    visible.value = false
+    toast.loading({
+        key: 'shareSlack',
+        content: 'Sharing on slack ...',
+        duration: 10,
     })
 
-    const emit = defineEmits(['closeParent'])
+    const { data, isLoading, error, isReady } = shareOnSlack(
+        slack.id,
+        slack.integration_type ?? '',
+        channel.value,
+        message.value,
+        props.link
+    )
 
-    const store = intStore()
-
-    const slack = store.getIntegration('slack')
-
-    const channels = ref([])
-
-    const getChannels = () => {
-        if (!slack) return []
-        channels.value =
-            slack?.source_metadata?.default_channels.map((c) => ({
-                value: c,
-                label: `# ${c}`,
-            })) ?? []
-        return null
-    }
-
-    getChannels()
-
-    const visible = ref(false)
-    const channel = ref('')
-    const message = ref('')
-
-    const clearAll = () => {
-        channel.value = ''
-        message.value = ''
-    }
-    const open = () => {
-        visible.value = true
-        emit('closeParent')
-    }
-
-    const shareToSlack = () => {
-        visible.value = false
-        toast.loading({
-            key: 'shareSlack',
-            content: 'Sharing on slack ...',
-            duration: 10,
-        })
-
-        const { data, isLoading, error, isReady } = shareOnSlack(
-            slack.id,
-            slack.integration_type ?? '',
-            channel.value,
-            message.value,
-            props.link
-        )
-
-        watch([isLoading, error], () => {
-            if (!isLoading.value && !error.value) {
-                toast.success({
-                    key: 'shareSlack',
-                    content: 'Successfully shared.',
-                    duration: 2,
-                })
-            } else if (error.value) {
-                const errMsg = error.value?.response?.data?.errorMessage
-                const generalError = 'Network error'
-                const e = errMsg || generalError
-                toast.error({
-                    content: e,
-                    key: 'shareSlack',
-                    duration: 2,
-                })
-            }
-        })
-    }
+    watch([isLoading, error], () => {
+        if (!isLoading.value && !error.value) {
+            toast.success({
+                key: 'shareSlack',
+                content: 'Successfully shared.',
+                duration: 2,
+            })
+        } else if (error.value) {
+            const errMsg = error.value?.response?.data?.errorMessage
+            const generalError = 'Network error'
+            const e = errMsg || generalError
+            toast.error({
+                content: e,
+                key: 'shareSlack',
+                duration: 2,
+            })
+        }
+    })
+}
 </script>
 
 <style scoped></style>

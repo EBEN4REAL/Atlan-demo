@@ -17,25 +17,24 @@
             <AtlanIcon icon="Slack" class="h-12 bg-white" />
         </div>
         <div class="flex-grow">
-            <h2 class="mb-2 text-xl font-bold">
-                Connect {{ integrationData.name }} with {{ tenantName }}
-            </h2>
+            <h2 class="mb-2 text-xl font-bold">Connect Atlan with Slack</h2>
             <p class="font-lg tex-gray-500">
-                {{ integrationData.description }}
+                🚀 Share asset profile, terms, queries with your team
             </p>
         </div>
         <div class="">
-            <!-- <router-link :to="`//${integrationData.link}`" target="_blank">
-                <AtlanButton v-auth="access.CREATE_INTEGRATION">
-                    Add to Slack <AtlanIcon icon="ArrowRight" />
-                </AtlanButton>
-            </router-link> -->
             <AtlanButton
+                v-if="!isIntegrationConfigured(integration.name)"
                 v-auth="access.CREATE_INTEGRATION"
                 @click="openSlackConfigModal"
             >
                 Configure <AtlanIcon icon="ArrowRight" />
             </AtlanButton>
+            <router-link v-else :to="`//${'google.com'}`" target="_blank">
+                <AtlanButton v-auth="access.CREATE_INTEGRATION">
+                    Add to Slack <AtlanIcon icon="ArrowRight" />
+                </AtlanButton>
+            </router-link>
         </div>
     </section>
 </template>
@@ -46,29 +45,48 @@ import AtlanButton from '@/UI/button.vue'
 import useTenantData from '~/composables/tenant/useTenantData'
 import access from '~/constant/accessControl/map'
 import SlackConfigModal from './slack/slackConfigModal.vue'
+import integrationStore from '~/store/integrations/index'
 
 export default defineComponent({
     name: 'AddIntegrationCard',
     components: { AtlanButton, SlackConfigModal },
     props: {
         integration: { type: Object, required: true },
-        integrationData: { type: Object, required: true },
     },
     setup() {
+        // store
+        const intStore = integrationStore()
+
+        // variables
         const showSlackConfigModal = ref(false)
         const { name: tenantName } = useTenantData()
+
+        // methods
         const closeSlackConfigModal = () => {
             showSlackConfigModal.value = false
         }
         const openSlackConfigModal = () => {
             showSlackConfigModal.value = true
         }
+        const isTenantIntegrationPresent = (alias): boolean => {
+            const integration = intStore.getIntegration(alias, true)
+            return !!integration
+        }
+
+        const isIntegrationConfigured = (alias): boolean => {
+            const isTenantLevelIntegrationConfigured =
+                intStore.hasConfiguredTenantLevelIntegration(alias)
+            return isTenantLevelIntegrationConfigured
+        }
+
         return {
             tenantName,
             access,
             showSlackConfigModal,
             closeSlackConfigModal,
             openSlackConfigModal,
+            isTenantIntegrationPresent,
+            isIntegrationConfigured,
         }
     },
 })

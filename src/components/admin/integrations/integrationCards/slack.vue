@@ -90,7 +90,7 @@ export default defineComponent({
         const intStore = integrationStore()
 
         const meta = inject('data')
-        const integration = intStore.getIntegration('slack')
+        const integration = intStore.getIntegration('slack', true)
 
         const pV = { id: integration.id }
 

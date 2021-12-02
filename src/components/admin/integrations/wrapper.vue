@@ -7,16 +7,12 @@
     </div>
     <main v-else-if="isReady" class="mx-4 my-9">
         <h1 class="mb-8 text-3xl">Integrations</h1>
-        <template v-for="i in allIntegrations" :key="i.id">
+        <template v-for="integration in allIntegrations" :key="integration.id">
             <IntegrationCardWrapper
-                v-if="integrationExist(i.name)"
-                :integration-data="getData(i.name)"
+                v-if="isIntegrationConfigured(integration.name)"
+                :integration-data="integration"
             />
-            <AddIntegrationCard
-                v-else
-                :integration="i"
-                :integration-data="getData(i.name)"
-            />
+            <AddIntegrationCard v-else :integration="integration" />
         </template>
     </main>
 </template>
@@ -46,18 +42,16 @@ export default defineComponent({
             isReady,
         } = getIntegrationTypes()
         console.log('authStore.id', authStore.id)
-        const getData = (alias) => ({
-            ...integrationData[alias],
-            link: getIntegrationLink(alias, true, authStore.id),
-        })
 
-        const integrationExist = (alias): boolean =>
-            !!store.getIntegration(alias)
+        const isIntegrationConfigured = (alias): boolean => {
+            const isTenantLevelIntegrationConfigured =
+                store.hasConfiguredTenantLevelIntegration(alias)
+            return isTenantLevelIntegrationConfigured
+        }
 
         return {
-            integrationExist,
+            isIntegrationConfigured,
             allIntegrations,
-            getData,
             isLoading,
             error,
             isReady,

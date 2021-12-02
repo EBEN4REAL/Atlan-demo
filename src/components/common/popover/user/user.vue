@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3 mt-2">
-                    <a-avatar style="backgroundColor: rgb(244, 246, 253); color: #5277D7" size="large">{{ item[0].toUpperCase() }}</a-avatar>
+                    <a-avatar class="text-primary bg-primary-light" size="large">{{ item[0].toUpperCase() }}</a-avatar>
                     <div>
                         <div class="text-sm font-semibold capitalize">
                             {{ item }}

@@ -120,7 +120,7 @@ export default function useProject() {
                 count++;
             }
 
-            let selection = toRaw(editorInstance.value).getSelection()
+            let selection = toRaw(editorInstance.value)?.getSelection()
 
             queryText = queryText.replace(/^\s+|\s+$/g, '')
 

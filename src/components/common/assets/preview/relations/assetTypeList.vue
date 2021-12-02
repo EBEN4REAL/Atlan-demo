@@ -10,13 +10,13 @@
                 "
             >
                 <Popover :item="item">
-                    <AssetItem
+                    <MiniAssetItem
                         :no-bg="true"
                         :item="item"
                         :preference="preference"
                         has-pop-hover
                         @click="handlePreview(item)"
-                    ></AssetItem>
+                    />
                 </Popover>
             </div>
         </template>
@@ -24,8 +24,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
-    import AssetItem from '@/common/assets/list/assetItem.vue'
+    import { defineComponent, ref } from 'vue'
+    import MiniAssetItem from '@/common/assets/list/miniAssetItem.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
     import { useRelations } from '~/composables/discovery/useRelations'
@@ -34,7 +34,7 @@
     export default defineComponent({
         name: 'AssetList',
         components: {
-            AssetItem,
+            MiniAssetItem,
             VirtualList,
             Popover,
         },

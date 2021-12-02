@@ -16,21 +16,19 @@
                             <div class="flex justify-center w-full">
                                 <div class="flex items-center cursor-pointer">
                                     Open preview sidebar
-                                    <AtlanIcon
-                                        icon="Info"
-                                        class="w-4 h-4 ml-0.5"
-                                    ></AtlanIcon>
                                 </div>
                             </div>
                         </a-button>
                     </template>
                     <div
                         class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                        style="height: 34px !important"
                     >
                         <!--For Column-->
                         <div
                             v-if="assetType(item) == 'Column'"
                             class="relative flex items-center justify-between w-full"
+                            style="height: 34px !important"
                         >
                             <div class="relative parent-ellipsis-container">
                                 <component
@@ -54,6 +52,7 @@
                             <div
                                 v-if="hoverActions"
                                 class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                style="width: "
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -131,7 +130,6 @@
                             </div>
                             <div
                                 class="flex items-center text-xs leading-5 text-gray-500"
-                                style="margin-right: 1px !important"
                             >
                                 <div
                                     class="flex items-center"
@@ -150,14 +148,14 @@
                                 <span>{{ dataType(item) }}</span>
                             </div>
                         </div>
-                        <!------------------------------->
-                        <!--For Others -->
-                        <!-- <div v-else> -->
-                        <div v-else class="flex w-full m-0">
+                        <!--For Others: Table Item -->
+                        <div v-else class="flex w-full h-8 m-0">
                             <div
-                                class="flex items-center justify-between w-full"
+                                class="flex items-center justify-between w-full h-8"
                             >
-                                <div class="flex items-center">
+                                <div
+                                    class="flex items-center parent-ellipsis-container"
+                                >
                                     <AtlanIcon
                                         :icon="
                                             getEntityStatusIcon(
@@ -170,18 +168,8 @@
 
                                     <span
                                         class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >{{ title(item)?.slice(0, 20) }}
-                                        {{
-                                            title(item).length > 20 ? '...' : ''
-                                        }}
+                                        >{{ title(item) }}
                                     </span>
-                                    <!-- <StatusBadge
-                                        v-if="certificateStatus(item)"
-                                        :key="item?.guid"
-                                        :show-no-status="false"
-                                        :status-id="certificateStatus(item)"
-                                        class="ml-1.5 parent-ellipsis-container-extension"
-                                    ></StatusBadge> -->
                                 </div>
                                 <div>
                                     <span class="z-10 count-box">
@@ -303,17 +291,9 @@
                 >
                     <!-- <div class="parent-ellipsis-container"> -->
                     <div class="flex items-center justify-between w-full">
-                        <div class="flex items-center">
-                            <!-- <AtlanIcon
-                                :icon="assetType(item)"
-                                class="
-                                    w-4
-                                    h-4
-                                    mr-1
-                                    -mt-0.5
-                                    parent-ellipsis-container-extension
-                                "
-                            ></AtlanIcon> -->
+                        <div
+                            class="flex items-center parent-ellipsis-container"
+                        >
                             <AtlanIcon
                                 :icon="
                                     getEntityStatusIcon(
@@ -326,17 +306,10 @@
 
                             <span
                                 class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >{{ title(item)?.slice(0, 20) }}
-                                {{ title(item).length > 20 ? '...' : '' }}
+                                >{{ title(item) }}
                             </span>
-                            <!-- <StatusBadge
-                                v-if="certificateStatus(item)"
-                                :key="item?.guid"
-                                :show-no-status="false"
-                                :status-id="certificateStatus(item)"
-                                class="ml-1.5 parent-ellipsis-container-extension"
-                            ></StatusBadge> -->
                         </div>
+
                         <div>
                             <span class="z-10 count-box">
                                 {{ childCount(item) }}</span
@@ -615,6 +588,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import { useRouter } from 'vue-router'
     import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
+    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
 
     import {
         useMapping,
@@ -820,10 +794,10 @@
 
                         let editorContext =
                             activeInlineTabCopy.playground.editor.context
-                        let editorContextType = editorContext.attributeName
-                        let editorContextValue = editorContext.attributeValue
+                        let editorContextType = editorContext?.attributeName
+                        let editorContextValue = editorContext?.attributeValue
 
-                        // console.log('editorContextType', editorContextType)
+                        console.log('editorContextType', editorContextType)
 
                         // 1st missing context in editor:
                         // 2nd context mismatch in editor and query
@@ -929,9 +903,14 @@
                                 }
                                 break
                             }
-                            case 'schemaQualifiedName' ||
-                                'defaultSchemaQualifiedName': {
+                            case 'schemaQualifiedName':
+                            case 'defaultSchemaQualifiedName': {
                                 newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                console.log(
+                                    'defaultSchemaQualifiedName',
+                                    newQuery
+                                )
+
                                 console.log('run in schema')
                                 if (
                                     editorContextValue !==
@@ -1008,48 +987,6 @@
                             }
                         }
 
-                        // let updatedEditorSchemaQualifiedName =
-                        //     item.value?.databaseQualifiedName +
-                        //     '/' +
-                        //     item.value?.schemaName
-
-                        // let newText = `${newQuery}${prevText}`
-
-                        // if (selectedOption.value === 'current') {
-                        //     activeInlineTabCopy.playground.editor.context = {
-                        //         attributeName: 'schemaQualifiedName',
-                        //         attributeValue:
-                        //             updatedEditorSchemaQualifiedName,
-                        //     }
-                        //     modifyActiveInlineTab(
-                        //         activeInlineTabCopy,
-                        //         inlineTabs,
-                        //         activeInlineTabCopy.isSaved
-                        //     )
-                        // } else if (selectedOption.value === 'new') {
-                        //     newText = `${newQuery}`
-                        //     handleAddNewTab(
-                        //         newText,
-                        //         {
-                        //             attributeName: 'schemaQualifiedName',
-                        //             attributeValue:
-                        //                 updatedEditorSchemaQualifiedName,
-                        //         },
-                        //         item.value
-                        //     )
-
-                        //     //     //open new query tab
-                        // }
-
-                        // console.log(' preview item: ', item.value)
-
-                        // selectionObject.value.startLineNumber = 2
-                        // selectionObject.value.startColumnNumber = 1
-                        // selectionObject.value.endLineNumber = 2
-                        // selectionObject.value.endColumnNumber =
-                        //     newQuery.length + 1 // +1 for semicolon
-                        // queryRun(activeInlineTab, getData)
-
                         break
                     }
                     case 'info': {
@@ -1081,17 +1018,23 @@
                     inlineTabs,
                     activeInlineTabCopy.isSaved
                 )
+
                 selectionObject.value.startLineNumber = 2
                 selectionObject.value.startColumnNumber = 1
                 selectionObject.value.endLineNumber = 2
                 selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
+                setSelection(
+                    toRaw(editorInstanceRef.value),
+                    toRaw(monacoInstanceRef.value),
+                    selectionObject.value
+                )
                 queryRun(
                     activeInlineTab,
                     getData,
                     limitRows,
                     null,
                     null,
-                    '',
+                    newText,
                     editorInstance,
                     monacoInstance
                 )
@@ -1143,21 +1086,23 @@
 
             const handleAddNewTab = async (query, context, previewItem) => {
                 const key = String(new Date().getTime())
-                const inlineTabData: activeInlineTabInterface = {
-                    label: `${previewItem.title} preview`,
-                    key,
-                    favico: 'https://atlan.com/favicon.ico',
-                    isSaved: false,
-                    queryId: undefined,
-                    status: 'DRAFT',
-                    connectionId: '',
-                    description: '',
-                    qualifiedName: '',
-                    parentGuid: '',
-                    parentQualifiedName: '',
-                    isSQLSnippet: false,
-                    savedQueryParentFolderTitle: undefined,
-                    explorer: {
+
+                const inlineTabData: activeInlineTabInterface =
+                    inlineTabsDemoData[0]
+                ;(inlineTabData.label = `${previewItem.title} preview`),
+                    (inlineTabData.key = key),
+                    (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
+                    (inlineTabData.isSaved = false),
+                    (inlineTabData.queryId = undefined),
+                    (inlineTabData.status = 'DRAFT'),
+                    (inlineTabData.connectionId = ''),
+                    (inlineTabData.description = ''),
+                    (inlineTabData.qualifiedName = ''),
+                    (inlineTabData.parentGuid = ''),
+                    (inlineTabData.parentQualifiedName = ''),
+                    (inlineTabData.isSQLSnippet = false),
+                    (inlineTabData.savedQueryParentFolderTitle = undefined),
+                    (inlineTabData.explorer = {
                         schema: {
                             connectors: {
                                 ...context,
@@ -1171,56 +1116,131 @@
                                     )[1],
                             },
                         },
-                    },
-                    playground: {
-                        editor: {
-                            context: {
-                                ...context,
-                            },
-                            text: query,
-                            dataList: [],
-                            columnList: [],
-                            variables: [],
-                            savedVariables: [],
-                            limitRows: {
-                                checked: false,
-                                rowsCount: -1,
-                            },
+                    }),
+                    (inlineTabData.playground.editor = {
+                        context: {
+                            ...context,
                         },
-                        resultsPane: {
-                            activeTab:
-                                activeInlineTab.value?.playground?.resultsPane
-                                    ?.activeTab ?? 0,
-                            result: {
-                                title: `${key} Result`,
-                                runQueryId: undefined,
-                                isQueryRunning: '',
-                                queryErrorObj: {},
-                                totalRowsCount: -1,
-                                executionTime: -1,
-                                errorDecorations: [],
-                                eventSourceInstance: undefined,
-                                buttonDisable: false,
-                                isQueryAborted: false,
-                            },
-                            metadata: {},
-                            queries: {},
-                            joins: {},
-                            filters: {},
-                            impersonation: {},
-                            downstream: {},
-                            sqlHelp: {},
+                        text: query,
+                        dataList: [],
+                        columnList: [],
+                        variables: [],
+                        savedVariables: [],
+                        limitRows: {
+                            checked: false,
+                            rowsCount: -1,
                         },
+                    })
+                ;(inlineTabData.playground.resultsPane = {
+                    activeTab:
+                        activeInlineTab.value?.playground?.resultsPane
+                            ?.activeTab ?? 0,
+                    result: {
+                        title: `${key} Result`,
+                        runQueryId: undefined,
+                        isQueryRunning: '',
+                        queryErrorObj: {},
+                        totalRowsCount: -1,
+                        executionTime: -1,
+                        errorDecorations: [],
+                        eventSourceInstance: undefined,
+                        buttonDisable: false,
+                        isQueryAborted: false,
                     },
-                    assetSidebar: {
+                    metadata: {},
+                    queries: {},
+                    joins: {},
+                    filters: {},
+                    impersonation: {},
+                    downstream: {},
+                    sqlHelp: {},
+                }),
+                    (inlineTabData.assetSidebar = {
                         // for taking the previous state from active tab
                         openingPos: undefined,
                         isVisible: false,
                         assetInfo: {},
                         title: activeInlineTab.value?.assetSidebar.title ?? '',
                         id: activeInlineTab.value?.assetSidebar.id ?? '',
-                    },
-                }
+                    })
+                // const inlineTabData: activeInlineTabInterface = {
+                //     label: `${previewItem.title} preview`,
+                //     key,
+                //     favico: 'https://atlan.com/favicon.ico',
+                //     isSaved: false,
+                //     queryId: undefined,
+                //     status: 'DRAFT',
+                //     connectionId: '',
+                //     description: '',
+                //     qualifiedName: '',
+                //     parentGuid: '',
+                //     parentQualifiedName: '',
+                //     isSQLSnippet: false,
+                //     savedQueryParentFolderTitle: undefined,
+                //     explorer: {
+                //         schema: {
+                //             connectors: {
+                //                 ...context,
+                //             },
+                //         },
+                //         queries: {
+                //             connectors: {
+                //                 connector:
+                //                     previewItem.connectionQualifiedName.split(
+                //                         '/'
+                //                     )[1],
+                //             },
+                //         },
+                //     },
+                //     playground: {
+                //         editor: {
+                //             context: {
+                //                 ...context,
+                //             },
+                //             text: query,
+                //             dataList: [],
+                //             columnList: [],
+                //             variables: [],
+                //             savedVariables: [],
+                //             limitRows: {
+                //                 checked: false,
+                //                 rowsCount: -1,
+                //             },
+                //         },
+                //         resultsPane: {
+                //             activeTab:
+                //                 activeInlineTab.value?.playground?.resultsPane
+                //                     ?.activeTab ?? 0,
+                //             result: {
+                //                 title: `${key} Result`,
+                //                 runQueryId: undefined,
+                //                 isQueryRunning: '',
+                //                 queryErrorObj: {},
+                //                 totalRowsCount: -1,
+                //                 executionTime: -1,
+                //                 errorDecorations: [],
+                //                 eventSourceInstance: undefined,
+                //                 buttonDisable: false,
+                //                 isQueryAborted: false,
+                //             },
+                //             metadata: {},
+                //             queries: {},
+                //             joins: {},
+                //             filters: {},
+                //             impersonation: {},
+                //             downstream: {},
+                //             sqlHelp: {},
+                //         },
+                //     },
+                //     assetSidebar: {
+                //         // for taking the previous state from active tab
+                //         openingPos: undefined,
+                //         isVisible: false,
+                //         assetInfo: {},
+                //         title: activeInlineTab.value?.assetSidebar.title ?? '',
+                //         id: activeInlineTab.value?.assetSidebar.id ?? '',
+                //     },
+                // }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 queryRun(
                     activeInlineTab,

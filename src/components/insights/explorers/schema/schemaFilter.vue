@@ -1,32 +1,6 @@
 <template>
     <div class="container">
         <div class="p-4 order_by">
-            <!-- <div class="flex flex-col order_table_by">
-                <div class="title">Assset Type</div>
-                <div>
-                    <a-select
-                        placeholder="Sorting"
-                        class="w-full"
-                        v-model:value="typeName"
-                        :allowClear="false"
-                        :showSearch="false"
-                        @change="handleTypeChange"
-                    >
-                        <a-select-option
-                            :value="item.value"
-                            v-for="item in typeList"
-                            :key="item.value"
-                            class="py-1.5 px-3 text-gray-700 text-sm"
-                        >
-                            {{ item.label }}
-                        </a-select-option>
-                        <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" class="-mt-0.5" />
-                        </template>
-                    </a-select>
-                </div>
-            </div> -->
-
             <div class="flex flex-col order_table_by">
                 <div class="title">Order tables by</div>
                 <div>
@@ -91,6 +65,7 @@
                 @change="handleFilterChange"
                 @change-active-key="handleActiveKeyChange"
                 @reset="handleResetEvent"
+                :allow-custom-filters="false"
             ></AssetFilters>
         </div>
     </div>
@@ -215,7 +190,7 @@
     .container {
         width: 240px;
         min-height: 440px;
-        border-radius: 8px;
+        border-radius: 8px !important;
         background: #ffffff;
 
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);
@@ -236,6 +211,7 @@
     .filters {
         overflow-y: scroll;
         height: 280px !important;
+        border-radius: 8px !important;
     }
 </style>
 

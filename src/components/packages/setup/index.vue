@@ -1,208 +1,87 @@
 <template>
-    <div
-        class="flex w-full h-full"
-        @click.meta.shift.space.exact="toggleSandbox"
-    >
-        <div class="flex flex-1 border-r border-gray-200">
-            <div class="flex flex-col w-full h-full">
-                <a-steps
-                    v-if="steps.length > 0"
-                    v-model:current="currentStep"
-                    class="px-6 py-3 border-b border-gray-200"
-                >
-                    <template v-for="step in steps" :key="step.id">
-                        <a-step>
-                            <!-- <span slot="title">Finished</span> -->
-                            <template #title>{{ step.title }}</template>
-                        </a-step>
-                    </template>
-                </a-steps>
-
-                <div
-                    class="flex-1 px-6 py-8 overflow-y-auto bg-white"
-                    v-if="workflowTemplate && currentStep < steps.length"
-                >
-                    <DynamicForm
-                        :key="`form_${currentStep}`"
-                        ref="stepForm"
-                        :config="configMapDerived"
-                        :currentStep="currentStepConfig"
-                        :workflowTemplate="workflowTemplate"
-                        v-model="modelValue"
-                        labelAlign="left"
-                    ></DynamicForm>
-                </div>
-
-                <div
-                    class="flex px-6 py-3 border-t"
-                    :class="
-                        currentStep !== 0 ? 'justify-between' : 'justify-end'
-                    "
-                    v-if="currentStep < steps.length"
-                >
-                    <a-button
-                        type=""
-                        @click="handlePrevious"
-                        v-if="currentStep !== 0"
-                    >
-                        <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
-                        >Back</a-button
-                    >
-                    <a-button
-                        @click="handleNext"
-                        class="text-primary"
-                        v-if="currentStep < steps.length - 1"
-                    >
-                        Next
-                        <AtlanIcon
-                            icon="ChevronRight"
-                            class="ml-1 text-primary"
-                        ></AtlanIcon
-                    ></a-button>
-
-                    <div
-                        class="flex gap-x-2"
-                        v-if="currentStep == steps.length - 1"
-                    >
-                        <a-button type="primary" class="px-6">Run</a-button>
-                        <a-popconfirm
-                            ok-text="Confirm"
-                            :overlay-class-name="$style.popConfirm"
-                            cancel-text="Cancel"
-                            placement="topRight"
-                        >
-                            <template #icon> </template>
-                            <template #title>
-                                <Schedule class="mb-3"></Schedule>
-                            </template>
-                            <a-button
-                                type="primary"
-                                class="px-6 bg-green-500 border-green-500"
-                                >Schedule & Run
-                                <AtlanIcon
-                                    icon="ChevronRight"
-                                    class="ml-1 text-white"
-                                ></AtlanIcon
-                            ></a-button>
-                        </a-popconfirm>
-                    </div>
-                </div>
-
-                <!-- <div
-                    class="flex items-center flex-1 px-6 py-8 overflow-y-auto bg-white"
-                >
-                    <p class="w-full">Ready to Schedule</p>
-                   
-                </div>
-                <div class="flex px-6 py-3 border-t">
-                    <a-button type="primary" @click="handleNext" block
-                        >Setup</a-button
-                    >
-                </div> -->
-            </div>
-        </div>
-        <div class="flex flex-col w-1/3">
-            <div
-                class="flex flex-col w-full px-6 py-3 mb-3"
-                v-if="workflowTemplate && !isSandbox"
+    <div class="flex flex-1 border-r border-gray-200">
+        <div class="flex flex-col w-full h-full">
+            <a-steps
+                v-if="steps.length > 0"
+                v-model:current="currentStep"
+                class="px-6 py-3 border-b border-gray-200"
             >
-                <div
-                    class="flex items-center mb-1"
-                    v-if="workflowTemplate?.metadata.annotations"
-                >
-                    <img
-                        v-if="
-                            workflowTemplate?.metadata.annotations[
-                                'com.atlan.orchestration/icon'
-                            ]
-                        "
-                        class="self-center w-5 h-auto mr-2"
-                        :src="
-                            workflowTemplate?.metadata.annotations[
-                                'com.atlan.orchestration/icon'
-                            ]
-                        "
-                    />
-                    <div class="text-base font-bold truncate overflow-ellipsis">
-                        {{
-                            workflowTemplate?.metadata.annotations[
-                                'workflows.argoproj.io/name'
-                            ]
-                        }}
-                    </div>
-                </div>
+                <template v-for="step in steps" :key="step.id">
+                    <a-step>
+                        <!-- <span slot="title">Finished</span> -->
+                        <template #title>{{ step.title }}</template>
+                    </a-step>
+                </template>
+            </a-steps>
 
-                <div class="text-sm line-clamp-4">
-                    <span v-if="workflowTemplate?.metadata.annotations">
-                        {{
-                            workflowTemplate?.metadata.annotations[
-                                'workflows.argoproj.io/description'
-                            ]
-                        }}</span
-                    >
-                </div>
-                <div
-                    class="flex mt-1 text-gray-500"
-                    v-if="workflowTemplate?.metadata.annotations"
-                >
-                    <div class="text-sm truncate overflow-ellipsis">
-                        {{
-                            workflowTemplate?.metadata.annotations[
-                                'com.atlan.orchestration/packageName'
-                            ]
-                        }}
-                    </div>
-                    <div class="text-sm truncate overflow-ellipsis">
-                        (v{{
-                            workflowTemplate?.metadata.labels[
-                                'org.argopm.package.version'
-                            ]
-                        }})
-                    </div>
-                </div>
-            </div>
             <div
-                class="flex flex-col w-full px-6 py-3 mb-3"
-                v-if="workflowTemplate && !isSandbox"
+                class="flex-1 px-6 py-8 overflow-y-auto bg-white"
+                v-if="workflowTemplate && currentStep < steps.length"
             >
-                <div
-                    class="flex items-center mb-1"
-                    v-if="workflowTemplate?.metadata.annotations"
-                >
-                    <img
-                        v-if="
-                            workflowTemplate?.metadata.annotations[
-                                'com.atlan.orchestration/icon'
-                            ]
-                        "
-                        class="self-center w-5 h-auto mr-2"
-                        :src="
-                            workflowTemplate?.metadata.annotations[
-                                'com.atlan.orchestration/icon'
-                            ]
-                        "
-                    />
-                    <div class="text-base font-bold truncate overflow-ellipsis">
-                        {{
-                            workflowTemplate?.metadata.annotations[
-                                'workflows.argoproj.io/name'
-                            ]
-                        }}
-                    </div>
-                </div>
-
-                <div class="text-sm line-clamp-4">
-                    <span v-if="workflowTemplate?.metadata.annotations">
-                        {{
-                            workflowTemplate?.metadata.annotations[
-                                'workflows.argoproj.io/description'
-                            ]
-                        }}</span
-                    >
-                </div>
+                <DynamicForm
+                    :key="`form_${currentStep}`"
+                    ref="stepForm"
+                    :config="configMapDerived"
+                    :currentStep="currentStepConfig"
+                    :workflowTemplate="workflowTemplate"
+                    v-model="modelValue"
+                    labelAlign="left"
+                ></DynamicForm>
             </div>
-            <div class="flex mt-1 text-gray-500" v-else>
-                <div class="px-3 py-1 bg-gray-100 border-b">Sandbox</div>
+
+            <div
+                class="flex px-6 py-3 border-t"
+                :class="currentStep !== 0 ? 'justify-between' : 'justify-end'"
+                v-if="currentStep < steps.length"
+            >
+                <a-button
+                    type=""
+                    @click="handlePrevious"
+                    v-if="currentStep !== 0"
+                >
+                    <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
+                    >Back</a-button
+                >
+                <a-button
+                    @click="handleNext"
+                    class="text-primary"
+                    v-if="currentStep < steps.length - 1"
+                >
+                    Next
+                    <AtlanIcon
+                        icon="ChevronRight"
+                        class="ml-1 text-primary"
+                    ></AtlanIcon
+                ></a-button>
+
+                <div
+                    class="flex gap-x-2"
+                    v-if="currentStep == steps.length - 1"
+                >
+                    <a-button type="primary" class="px-6" @click="handleSubmit"
+                        >Run</a-button
+                    >
+                    <a-popconfirm
+                        ok-text="Confirm"
+                        :overlay-class-name="$style.popConfirm"
+                        cancel-text="Cancel"
+                        placement="topRight"
+                    >
+                        <template #icon> </template>
+                        <template #title>
+                            <Schedule class="mb-3"></Schedule>
+                        </template>
+                        <a-button
+                            type="primary"
+                            class="px-6 bg-green-500 border-green-500"
+                            >Schedule & Run
+                            <AtlanIcon
+                                icon="ChevronRight"
+                                class="ml-1 text-white"
+                            ></AtlanIcon
+                        ></a-button>
+                    </a-popconfirm>
+                </div>
             </div>
         </div>
     </div>
@@ -220,18 +99,30 @@
         onBeforeMount,
         provide,
     } from 'vue'
+
     import { message } from 'ant-design-vue'
+
     // Components
     import EmptyView from '@common/empty/index.vue'
     import SetupGraph from './setupGraph.vue'
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import Sandbox from './sandbox.vue'
+
+    import { createWorkflow } from '~/composables/package/useWorkflow'
+    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+
     // Composables
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
-        components: { SetupGraph, EmptyView, DynamicForm, Schedule, AtlanIcon },
+        components: {
+            SetupGraph,
+            EmptyView,
+            DynamicForm,
+            Schedule,
+            Sandbox,
+        },
         props: {
             workflowTemplate: {
                 type: Object,
@@ -251,23 +142,11 @@
 
             const stepForm = ref()
 
-            const isSandbox = ref(false)
-
             const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
 
             provide('workflowTemplate', workflowTemplate)
-
-            const tasks = computed(() => {
-                if (workflowTemplate.value?.workflowtemplate) {
-                    const { entrypoint } =
-                        workflowTemplate.value?.workflowtemplate.spec
-                    return workflowTemplate.value?.workflowtemplate.spec.templates.find(
-                        (t) => t.name === entrypoint
-                    ).dag.tasks
-                }
-                return []
-            })
+            provide('configMap', configMap)
 
             const modelValue = ref({})
 
@@ -282,45 +161,8 @@
                 return {}
             })
 
-            /** DATA */
-            // const { data, isLoading } = useWorkflowTemplateByName(
-            //     workflowTemplate.value
-            // )
-
-            // watch(isLoading, (newVal) => {
-            //     emit('setLoadingFetchPod', newVal)
-            // })
-
-            const isAllowtoRun = computed(() => {
-                let allow = true
-                // const data = formConfig.value
-                // for (const prop in data) {
-                //     const pod = data[prop]
-                //     pod.forEach((el) => {
-                //         if (el.type !== 'template') {
-                //             el.rules?.forEach((elc) => {
-                //                 if (elc.type === 'required') {
-                //                     const defaultValue =
-                //                         dataProp.value?.asset?.workflowtemplate
-                //                             ?.spec?.templates[0]?.dag?.tasks[0]
-                //                             ?.arguments?.parameters
-                //                     const finded = defaultValue.find(
-                //                         (d) => d.name === el.id
-                //                     )
-                //                     if (!finded?.value) {
-                //                         allow = false
-                //                     }
-                //                 }
-                //             })
-                //         }
-                //     })
-                // }
-                return allow
-            })
-
             const selectedStep = ref('')
             const handleChange = (event) => {
-                console.log(event)
                 selectedStep.value = event
             }
 
@@ -339,26 +181,110 @@
                 currentStep.value -= 1
             }
 
-            const toggleSandbox = () => {
-                isSandbox.value = !isSandbox.value
+            const body = ref({
+                metadata: {
+                    labels: {},
+                },
+                spec: {},
+                payload: [],
+            })
+            const { isLoading, isReady, execute } = createWorkflow(body)
+
+            const {
+                getCredentialPropertyList,
+                getCredentialBody,
+                getConnectionBody,
+                getConnectionPropertyList,
+            } = useWorkflowHelper()
+
+            const handleSubmit = () => {
+                const parameters = []
+
+                console.log(workflowTemplate.value)
+
+                // const credentialBody = getCredentialBody(
+                //     configMap.value,
+                //     modelValue.value
+                // )
+                // const connectionBody = getConnectionBody(
+                //     configMap.value,
+                //     modelValue.value
+                // )
+
+                // console.log(connectionBody)
+                // console.log(modelValue)
+
+                // connectionBody.forEach((i) => {
+                //     modelValue.value[i.parameter] = i.body
+                // })
+
+                // const seconds = Math.round(new Date().getTime() / 1000)
+                // const connectionName = modelValue.value['connection.name']
+                // let workflowName = ''
+                // if (connectionName) {
+                //     workflowName = `${
+                //         workflowTemplate.value.metadata.name
+                //     }-${connectionName}-${seconds.toString()}`
+                // } else {
+                //     workflowName = `${
+                //         workflowTemplate.value.metadata.name
+                //     }-${seconds.toString()}`
+                // }
+                // body.value.metadata.name = workflowName
+                // body.value.metadata.labels =
+                //     workflowTemplate.value.metadata.labels
+                // body.value.metadata.annotations =
+                //     workflowTemplate.value.metadata.annotations
+                // body.value.metadata.labels['com.atlan.orchestration/ui'] =
+                //     'true'
+                // body.value.spec = {
+                //     templates: [
+                //         {
+                //             name: 'main',
+                //             dag: {
+                //                 tasks: [
+                //                     {
+                //                         name: 'run',
+                //                         arguments: {
+                //                             parameters: [
+                //                                 {
+                //                                     name: 'connection',
+                //                                     value: '',
+                //                                 },
+                //                                 {
+                //                                     name: 'connection-name',
+                //                                     value: '',
+                //                                 },
+                //                                 {
+                //                                     name: 'host',
+                //                                     value: '',
+                //                                 },
+                //                                 {
+                //                                     name: 'crawler-name',
+                //                                     value: '',
+                //                                 },
+                //                             ],
+                //                         },
+                //                         templateRef: {
+                //                             name: workflowTemplate.value
+                //                                 .metadata.name,
+                //                             template: 'main',
+                //                             clusterScope: true,
+                //                         },
+                //                     },
+                //                 ],
+                //             },
+                //         },
+                //     ],
+                //     entrypoint: 'main',
+                // }
+                // body.value.payload = [...credentialBody, ...connectionBody]
+                // execute()
             }
 
-            // watch(data, (newVal) => {
-            //     const meta =
-            //         newVal?.workflowtemplate?.metadata?.annotations || {}
-            //     const urlLogo = meta['com.atlan.orchestration/logo'] || ''
-            //     emit('handleSetLogo', urlLogo)
-            //     const { entrypoint } = newVal.workflowtemplate.spec
-            //     tasks.value = newVal.workflowtemplate.spec.templates.find(
-            //         (t) => t.name === entrypoint
-            //     ).dag.tasks
-            // })
-
             return {
-                tasks,
                 emit,
 
-                isAllowtoRun,
                 workflowTemplate,
                 handleChange,
                 configMapDerived,
@@ -371,8 +297,8 @@
                 handleNext,
                 stepForm,
                 handlePrevious,
-                isSandbox,
-                toggleSandbox,
+                handleSubmit,
+                getCredentialPropertyList,
             }
         },
     })

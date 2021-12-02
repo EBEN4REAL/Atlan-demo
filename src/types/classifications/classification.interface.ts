@@ -19,4 +19,5 @@ export interface ClassificationInterface {
     typeVersion: string
     version: number
     propagatedBy: string
+    options: Record<string, any>
 }

@@ -15,7 +15,7 @@
             read-only
         >
             <template #pillPrefix>
-                <AtlanIcon icon="Shield" class="text-pink-500"></AtlanIcon>
+                <ClassificationIcon :color="classificationColor" />
             </template>
             <template #popover="{ item }">
                 <ClassificationInfoCard :classification="item" class="w-32"
@@ -30,6 +30,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import ClassificationInfoCard from '~/components/common/hovercards/classificationInfo.vue'
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
 
     export default defineComponent({
         props: {
@@ -39,7 +40,7 @@
             },
             typeName: { type: String, default: () => '' },
         },
-        components: { PillGroup, ClassificationInfoCard },
+        components: { PillGroup, ClassificationInfoCard, ClassificationIcon },
         setup(props) {
             const { data, typeName } = toRefs(props)
             const { classificationList } = useTypedefData()

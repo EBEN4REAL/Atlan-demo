@@ -133,6 +133,7 @@
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
 
     export default defineComponent({
         components: {
@@ -327,20 +328,21 @@
             })
 
             const detectQuery = () => {
-                let queryTab: activeInlineTabInterface = {
-                    key: String(new Date().getTime()),
-                    label: `${tableNameFromURL} preview`,
-                    isSaved: false,
-                    queryId: undefined,
-                    status: 'DRAFT',
-                    connectionId: '',
-                    description: '',
-                    qualifiedName: '',
-                    parentGuid: '',
-                    parentQualifiedName: '',
-                    isSQLSnippet: false,
-                    savedQueryParentFolderTitle: undefined,
-                    explorer: {
+                let queryTab: activeInlineTabInterface = inlineTabsDemoData[0]
+
+                ;(queryTab.key = String(new Date().getTime())),
+                    (queryTab.label = `${tableNameFromURL} preview`),
+                    (queryTab.isSaved = false),
+                    (queryTab.queryId = undefined),
+                    (queryTab.status = 'DRAFT'),
+                    (queryTab.connectionId = ''),
+                    (queryTab.description = ''),
+                    (queryTab.qualifiedName = ''),
+                    (queryTab.parentGuid = ''),
+                    (queryTab.parentQualifiedName = ''),
+                    (queryTab.isSQLSnippet = false),
+                    (queryTab.savedQueryParentFolderTitle = undefined),
+                    (queryTab.explorer = {
                         schema: {
                             connectors: {
                                 attributeName: undefined,
@@ -352,54 +354,124 @@
                                 connector: undefined,
                             },
                         },
-                    },
-                    playground: {
-                        editor: {
-                            text: '',
-                            context: {
-                                attributeName: undefined,
-                                attributeValue: undefined,
-                            },
-                            dataList: [],
-                            columnList: [],
-                            variables: [],
-                            savedVariables: [],
-                            limitRows: {
-                                checked: false,
-                                rowsCount: -1,
-                            },
+                    }),
+                    (queryTab.playground.editor = {
+                        text: '',
+                        context: {
+                            attributeName: undefined,
+                            attributeValue: undefined,
                         },
-                        resultsPane: {
-                            activeTab: 0,
-                            result: {
-                                title: `Result`,
-                                runQueryId: undefined,
-                                isQueryRunning: '',
-                                queryErrorObj: {},
-                                totalRowsCount: -1,
-                                executionTime: -1,
-                                errorDecorations: [],
-                                eventSourceInstance: undefined,
-                                buttonDisable: false,
-                                isQueryAborted: false,
-                            },
-                            metadata: {},
-                            queries: {},
-                            joins: {},
-                            filters: {},
-                            impersonation: {},
-                            downstream: {},
-                            sqlHelp: {},
+                        dataList: [],
+                        columnList: [],
+                        variables: [],
+                        savedVariables: [],
+                        limitRows: {
+                            checked: false,
+                            rowsCount: -1,
                         },
-                    },
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
+                    }),
+                    (queryTab.playground.resultsPane = {
+                        activeTab: 0,
+                        result: {
+                            title: `Result`,
+                            runQueryId: undefined,
+                            isQueryRunning: '',
+                            queryErrorObj: {},
+                            totalRowsCount: -1,
+                            executionTime: -1,
+                            errorDecorations: [],
+                            eventSourceInstance: undefined,
+                            buttonDisable: false,
+                            isQueryAborted: false,
+                        },
+                        metadata: {},
+                        queries: {},
+                        joins: {},
+                        filters: {},
+                        impersonation: {},
+                        downstream: {},
+                        sqlHelp: {},
+                    }),
+                    (queryTab.favico = 'https://atlan.com/favicon.ico'),
+                    (queryTab.assetSidebar = {
                         isVisible: false,
                         assetInfo: {},
                         title: '',
                         id: '',
-                    },
-                }
+                    })
+                // let queryTab: activeInlineTabInterface = {
+                //     key: String(new Date().getTime()),
+                //     label: `${tableNameFromURL} preview`,
+                //     isSaved: false,
+                //     queryId: undefined,
+                //     status: 'DRAFT',
+                //     connectionId: '',
+                //     description: '',
+                //     qualifiedName: '',
+                //     parentGuid: '',
+                //     parentQualifiedName: '',
+                //     isSQLSnippet: false,
+                //     savedQueryParentFolderTitle: undefined,
+                //     explorer: {
+                //         schema: {
+                //             connectors: {
+                //                 attributeName: undefined,
+                //                 attributeValue: undefined,
+                //             },
+                //         },
+                //         queries: {
+                //             connectors: {
+                //                 connector: undefined,
+                //             },
+                //         },
+                //     },
+                //     playground: {
+                //         editor: {
+                //             text: '',
+                //             context: {
+                //                 attributeName: undefined,
+                //                 attributeValue: undefined,
+                //             },
+                //             dataList: [],
+                //             columnList: [],
+                //             variables: [],
+                //             savedVariables: [],
+                //             limitRows: {
+                //                 checked: false,
+                //                 rowsCount: -1,
+                //             },
+                //         },
+                //         resultsPane: {
+                //             activeTab: 0,
+                //             result: {
+                //                 title: `Result`,
+                //                 runQueryId: undefined,
+                //                 isQueryRunning: '',
+                //                 queryErrorObj: {},
+                //                 totalRowsCount: -1,
+                //                 executionTime: -1,
+                //                 errorDecorations: [],
+                //                 eventSourceInstance: undefined,
+                //                 buttonDisable: false,
+                //                 isQueryAborted: false,
+                //             },
+                //             metadata: {},
+                //             queries: {},
+                //             joins: {},
+                //             filters: {},
+                //             impersonation: {},
+                //             downstream: {},
+                //             sqlHelp: {},
+                //         },
+                //     },
+                //     favico: 'https://atlan.com/favicon.ico',
+                //     assetSidebar: {
+                //         isVisible: false,
+                //         assetInfo: {},
+                //         title: '',
+                //         id: '',
+                //     },
+                // }
 
                 let newQuery
                 if (columnNameFromURL) {
@@ -429,16 +501,27 @@
                 // activeInlineTabKey.value = queryTab.key
                 // syncInlineTabsInLocalStorage(tabsArray.value)
 
-                queryRun(
-                    activeInlineTab,
-                    getData,
-                    limitRows,
-                    null,
-                    null,
-                    '',
-                    editorInstance,
-                    monacoInstance
-                )
+                const range = toRaw(editorInstance.value)
+                    ?.getModel()
+                    ?.getFullModelRange()
+                toRaw(editorInstance.value)?.setSelection(range)
+
+                const selectedQuery = toRaw(editorInstance.value)
+                    ?.getModel()
+                    ?.getValueInRange(
+                        toRaw(editorInstance.value)?.getSelection()
+                    )
+
+                // queryRun(
+                //     activeInlineTab,
+                //     getData,
+                //     limitRows,
+                //     null,
+                //     null,
+                //     selectedQuery,
+                //     editorInstance,
+                //     monacoInstance
+                // )
             }
 
             onMounted(() => {
@@ -513,7 +596,7 @@
         box-sizing: border-box;
         position: relative;
         -ms-flex-negative: 0;
-
+        z-index: 3 !important;
         flex-shrink: 0;
     }
 

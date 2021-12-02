@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+import { Ref } from 'vue'
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
 
@@ -11,11 +12,28 @@ const GetTypedefs = (
     options?: useOptions
 ) => useAPI(map.GET_TYPEDEFS, 'GET', { params }, options || {})
 
-const CreateTypedefs = (body: Record<string, any>, options?: useOptions) =>
+const CreateTypedefs = (
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) =>
     useAPI<TypedefsInterface>(
         map.CREATE_TYPEDEFS,
         'POST',
         { body },
+        options || {}
+    )
+
+const EditTypedefs = (
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) =>
+    useAPI<TypedefsInterface>(map.EDIT_TYPEDEFS, 'PUT', { body }, options || {})
+
+const DeleteTypedefs = (name: string, options?: useOptions) =>
+    useAPI<TypedefsInterface>(
+        map.DELETE_TYPEDEF,
+        'DELETE',
+        { pathVariables: { name } },
         options || {}
     )
 
@@ -39,6 +57,8 @@ const updateAssetBMChanges = (guid: any, payload: any, options?: useOptions) =>
 export const Types = {
     GetTypedefs,
     CreateTypedefs,
+    EditTypedefs,
+    DeleteTypedefs,
     updateCustomMetadata,
     updateAssetBMChanges,
 }

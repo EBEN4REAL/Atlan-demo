@@ -11,17 +11,43 @@
                         Propagated
                     </span>
                 </div>
-                <span class="mb-3 text-sm font-bold">
+                <span class="mb-1 text-sm font-bold">
                     {{
                         classification?.displayName || classification?.typeName
                     }}
                 </span>
 
-                <span class="mb-1 text-xs text-gray-500">Description</span>
+                <div class="flex gap-2 mt-1 mb-1">
+                    <div
+                        v-if="classification.updateTime"
+                        class="text-xs text-gray-500"
+                    >
+                        Last updated
+
+                        <strong class="font-bold text-black">
+                            {{ useTimeAgo(classification.updateTime).value }}
+                        </strong>
+                    </div>
+
+                    <div
+                        v-if="classification.updatedBy"
+                        class="text-xs text-gray-500"
+                    >
+                        By
+                        <AtlanIcon icon="User" class="mr-1 text-xs" />
+                        <span class="font-bold text-black capitalize">{{
+                            classification.updatedBy
+                        }}</span>
+                    </div>
+                </div>
+
+                <span class="mt-1 mb-1 text-xs text-gray-500">Description</span>
                 <span v-if="classification.description" class="mb-3 text-sm">
                     {{ classification.description }}
                 </span>
-                <span v-else class="mb-3 text-sm">No description</span>
+                <span v-else class="mb-3 text-sm"
+                    >This classification has no description added</span
+                >
 
                 <div class="">
                     <span
@@ -38,46 +64,16 @@
                         >
                     </div>
                 </div>
-                <div class="flex gap-x-10">
+                <div v-if="classification.createdBy" class="flex gap-x-10">
                     <div class="">
-                        <span
-                            v-if="classification.createdBy"
-                            class="mt-4 mb-1 text-xs text-gray-500"
-                        >
+                        <span class="mt-4 mb-1 text-xs text-gray-500">
                             Created by
                         </span>
                         <div class="flex flex-wrap gap-3">
-                            <span>
-                                {{ classification.createdBy }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="">
-                        <span
-                            v-if="classification.updatedBy"
-                            class="mt-4 mb-1 text-xs text-gray-500"
-                        >
-                            Updated by
-                        </span>
-                        <div class="flex flex-wrap gap-3">
-                            <span>
-                                {{ classification.updatedBy }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="">
-                        <span
-                            v-if="classification.updateTime"
-                            class="mt-4 mb-1 text-xs text-gray-500"
-                        >
-                            Updated at
-                        </span>
-                        <div class="flex flex-wrap gap-3">
-                            <span v-if="classification.updateTime">
-                                {{
-                                    useTimeAgo(classification.updateTime).value
-                                }}
-                            </span>
+                            <UserPill
+                                :enable-hover="false"
+                                :username="classification.createdBy"
+                            ></UserPill>
                         </div>
                     </div>
                 </div>
@@ -89,11 +85,15 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import { useTimeAgo } from '@vueuse/core'
+    import { ClassificationInterface } from '~/types/classifications/classification.interface'
+    import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'ClassificationInfoPopover',
+        components: {
+            UserPill,
+        },
         props: {
             classification: {
                 type: Object as PropType<ClassificationInterface>,

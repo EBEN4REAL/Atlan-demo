@@ -1,4 +1,4 @@
-import { Editor, Extension, Range, Node, mergeAttributes } from '@tiptap/core'
+import { Editor, Extension, Range, Node, mergeAttributes, pasteRulesPlugin, PasteRule } from '@tiptap/core'
 import { VueRenderer } from '@tiptap/vue-3'
 
 import { Plugin } from 'prosemirror-state'
@@ -138,3 +138,39 @@ export default Node.create({
         ]
     }
 })
+
+
+const nodePasteRule = (regexp: RegExp, type, getAttrs) => {
+
+    const handler = fragment => {
+        const nodes = [];
+        console.log(fragment, 'bro please')
+        fragment.commands.setNode(type)
+        // fragment.forEach(c => {
+        //     const textNodes = c.content;
+        //     nodes.push(c)
+
+        //     textNodes.forEach((child) => {
+        //         if (!child.isText) {
+        //             nodes.push(child.copy(handler(child.content)));
+        //         }
+        //         if(child.text.match(pasteRegex)){
+        //             const attrs = getAttrs;
+        //             nodes.push(type.create(attrs));
+        //         }
+        //     })
+
+
+        // });
+
+        return Fragment.fromArray(nodes);
+    };
+
+    return new PasteRule({
+        find: pasteRegexExact,
+        handler
+        // props: {
+        //     transformPasted: slice => new Slice(handler(slice.content), slice.openStart, slice.openEnd),
+        // },
+    });
+}

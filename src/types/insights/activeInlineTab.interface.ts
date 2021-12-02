@@ -2,6 +2,7 @@ import { CustomVaribaleInterface } from './customVariable.interface'
 import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { Attributes } from '~/types/insights/savedQuery.interface'
+import { VQBInterface } from './VQB.interface'
 
 export interface activeInlineTabInterface {
     attributes: Attributes
@@ -47,6 +48,7 @@ export interface activeInlineTabInterface {
                 rowsCount: number
             }
         }
+        vqb: VQBInterface
         resultsPane: {
             activeTab: number
             result: {

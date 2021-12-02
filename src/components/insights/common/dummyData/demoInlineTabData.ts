@@ -2,6 +2,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 export const inlineTabsDemoData: activeInlineTabInterface[] = [
     {
         key: '1',
+        attributes: undefined,
         label: 'Untitled',
         isSaved: false,
         queryId: undefined,
@@ -27,12 +28,14 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             },
         },
         playground: {
+            vqb: {
+                panels: [{ order: 1, id: 'columns', hide: false, columns: [] }],
+            },
             editor: {
-                
                 text: '',
                 context: {
                     attributeName: undefined,
-                    attributeValue: undefined
+                    attributeValue: undefined,
                 },
                 dataList: [],
                 columnList: [],
@@ -55,7 +58,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                     errorDecorations: [],
                     eventSourceInstance: undefined,
                     buttonDisable: false,
-                    isQueryAborted: false
+                    isQueryAborted: false,
                 },
                 metadata: {},
                 queries: {},

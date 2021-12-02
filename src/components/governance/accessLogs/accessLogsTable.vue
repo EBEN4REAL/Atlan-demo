@@ -463,11 +463,16 @@
                             ></AtlanIcon>
                             <div>API Key</div>
                         </div>
-                        <span v-else
-                            ><AtlanIcon icon="Admin" class="mr-1"
-                                >Atlan BOT</AtlanIcon
-                            ></span
+                        <div
+                            v-else
+                            class="flex items-center justify-center"
                         >
+                            <AtlanIcon
+                                icon="AtlanBot"
+                                class="h-5 px-1 mr-1"
+                            ></AtlanIcon>
+                            <div>BOT</div>
+                        </div>
                     </span>
                     <div v-else class="flex items-center h-full">
                         <Avatar

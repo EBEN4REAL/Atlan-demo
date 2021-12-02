@@ -1,10 +1,12 @@
 <template>
     <ExplorerLayout
-        title="Classification   "
+        v-if="filteredClassificationList.length"
+        title="Classification"
         sub-title="Manage classification tags to build access policies."
     >
         <template #action>
             <AtlanBtn
+                v-auth="map.CREATE_CLASSIFICATION"
                 class="flex-none"
                 size="sm"
                 color="secondary"
@@ -14,7 +16,7 @@
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
             </AtlanBtn>
         </template>
-        <template #sidebar>
+        <template #sidebar v-auth="map.LIST_CLASSIFICATION">
             <div class="flex px-3 py-1">
                 <SearchAdvanced
                     v-model:value="searchQuery"
@@ -32,7 +34,7 @@
             >
                 <template #default="{ item, isSelected }">
                     <div class="flex items-center gap-x-1">
-                        <AtlanIcon icon="Shield" class="text-pink-400" />
+                        <ClassificationIcon :color="item.options?.color" />
                         <span
                             class="text-sm truncate"
                             :class="
@@ -49,53 +51,33 @@
         </template>
 
         <router-view />
-        <AddClassificationModal
-            v-model:modalVisible="createClassificationModalVisible"
-        />
-        <!-- <a-modal
-            :visible="modalVisible"
-            title="Add"
-            @cancel="closeModal"
-            :destroyOnClose="true"
-            :footer="null"
-        >
-            <a-form
-                ref="createClassificationFormRef"
-                :model="formState"
-                :rules="rules"
-                layout="vertical"
-            >
-                <a-form-item ref="name" label="Name" name="name">
-                    <a-input v-model:value="formState.name" />
-                </a-form-item>
-                <a-form-item
-                    ref="description"
-                    label="Description"
-                    name="description"
-                >
-                    <a-textarea v-model:value="formState.description" />
-                </a-form-item>
 
-                <div class="flex justify-end w-full">
-                    <a-button class="mr-4" @click="closeModal">Cancel</a-button>
-                    <a-button
-                        type="primary"
-                        :loading="
-                            createClassificationStatus === 'loading'
-                                ? true
-                                : false
-                        "
-                        @click="createClassification"
-                        >Create</a-button
-                    >
-                </div>
-            </a-form>
-            <p v-if="createErrorText" class="mt-4 mb-0 text-sm text-red-500">
-                {{ createErrorText }}
-            </p>
-        </a-modal> -->
     </ExplorerLayout>
-    <!-- <NoAcces v-else /> -->
+    <div v-else class="flex items-center justify-center h-full">
+        <a-empty
+            :image-style="{
+                height: '0px',
+            }"
+        >
+            <template #description>
+                <AtlanIcon icon="EmptyClassifications" class="h-32 mb-6" />
+                <p class="text-2xl font-bold mb-8">
+                    Create a new classifiaction!
+                </p>
+                <a-button
+                    v-auth="map.CREATE_CLASSIFICATION"
+                    type="primary"
+                    @click="createClassificationModalVisible = true"
+                >
+                    <AtlanIcon icon="Add" class="inline" />
+                    Add classification
+                </a-button>
+            </template>
+        </a-empty>
+    </div>
+    <AddClassificationModal
+        v-model:modalVisible="createClassificationModalVisible"
+    />
 </template>
 
 <script lang="ts">
@@ -116,10 +98,14 @@
     import NoAcces from '@/common/secured/access.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
+
+    import map from '~/constant/accessControl/map'
+    import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
@@ -136,6 +122,7 @@
             NoAcces,
             SearchAdvanced,
             AddClassificationModal,
+            ClassificationIcon
         },
         setup(props) {
             const router = useRouter()
@@ -169,11 +156,26 @@
             })
 
             watch(selectedClassificationName, (newClassificationName) => {
-                router.push(
-                    `/governance/classifications/${encodeURIComponent(
-                        newClassificationName as string
-                    )}`
-                )
+                if (
+                    newClassificationName !==
+                    router.currentRoute.value.params?.classificationId
+                ) {
+                    router.push(
+                        `/governance/classifications/${encodeURIComponent(
+                            newClassificationName as string
+                        )}`
+                    )
+                }
+            })
+
+            watch(router.currentRoute, (newRoute) => {
+                if (
+                    newRoute.params?.classificationId !==
+                    selectedClassificationName.value
+                ) {
+                    selectedClassificationName.value = newRoute.params
+                        .classificationId as string
+                }
             })
 
             return {
@@ -183,6 +185,8 @@
                 selectedClassificationName,
                 selectClassification,
                 createClassificationModalVisible,
+                map,
+                EmptyClassifications,
             }
         },
     })

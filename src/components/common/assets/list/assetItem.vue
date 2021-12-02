@@ -434,6 +434,7 @@
                                         isPropagated(classification)
                                     "
                                     :allow-delete="false"
+                                    :color="classification.options?.color"
                                 ></ClassificationPill>
                             </PopoverClassification>
                         </template>

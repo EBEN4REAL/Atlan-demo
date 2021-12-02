@@ -34,10 +34,7 @@
                                 class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                             >
                                 <div class="flex items-center">
-                                    <AtlanIcon
-                                        icon="Shield"
-                                        class="text-pink-400"
-                                    ></AtlanIcon>
+                                    <ClassificationIcon :color="item.options?.color" />
                                     <span class="mb-0 ml-1 text-gray">
                                         {{ item.displayName }}
                                     </span>
@@ -78,11 +75,13 @@
     import { useTimeoutFn, useVModels } from '@vueuse/core'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
     export default defineComponent({
         components: {
             SearchAdvanced,
+            ClassificationIcon,
         },
         props: {
             modelValue: {

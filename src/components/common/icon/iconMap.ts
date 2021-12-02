@@ -149,6 +149,7 @@ import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
 import EmptyResource from '~/assets/images/icons/empty-resources.svg'
+import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
 import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
@@ -560,5 +561,7 @@ export default {
     ViewDeprecated,
     ViewDraft,
     ViewVerified,
+
+    EmptyClassifications,
     CustomVariable
 }

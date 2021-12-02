@@ -23,9 +23,63 @@
                     @click.stop
                     @change="(e) => $emit('listItem:check', e, item)"
                 />
-                <div class="flex flex-col flex-1 lg:pr-16">
+                <div class="flex flex-col flex-1">
                     <!-- Info bar -->
-                    <div class="flex flex-wrap items-center mt-1">
+                    <div v-if="item.typeName?.toLowerCase() === 'column'" class="flex flex-wrap items-center mt-1">
+                        <a-tooltip
+                            v-if="connectorName(item)"
+                            placement="left"
+                        >
+                            <template #title>
+                                <span>{{ connectorName(item) }} </span>
+                                <span v-if="connectionName(item)">{{
+                                    `/${connectionName(item)}`
+                                }}</span>
+                            </template>
+                            <img
+                                :src="getConnectorImage(item)"
+                                class="h-3 mr-1 mb-0.5"
+                            />
+                        </a-tooltip>
+                        <div
+                            class="text-sm tracking-wider text-gray-500 uppercase"
+                        >
+                            {{ assetTypeLabel(item) || item.typeName }}
+                        </div>
+                        <div class="flex flex-wrap ml-2 text-sm text-gray-500 gap-x-2">
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="databaseName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <div class="text-sm tracking-tight text-gray-500 ">
+                                        {{ databaseName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Database -
+                                        {{ databaseName(item) }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                            /
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="schemaName(item)"
+                                    class="flex items-center text-sm text-gray-500 "
+                                >
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ schemaName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>Schema - {{ schemaName(item) }}</span>
+                                </template>
+                            </a-tooltip>
+                        </div>
+                    </div>
+                    <div v-else class="flex flex-wrap items-center mt-1">
                         <div class="flex items-center mr-2">
                             <a-tooltip
                                 v-if="connectorName(item)"
@@ -42,6 +96,7 @@
                                     class="h-3 mr-1 mb-0.5"
                                 />
                             </a-tooltip>
+
                             <AtlanIcon
                                 v-if="
                                     ['atlasglossarycategory'].includes(
@@ -53,20 +108,21 @@
                             />
                             <AtlanIcon
                                 v-if="
-                                    ['atlasglossaryterm', 'atlasglossary'].includes(
+                                    ['atlasglossaryterm'].includes(
                                         item.typeName?.toLowerCase()
                                     )
                                 "
                                 icon="Term"
                                 class="h-4 mb-0.5 mr-1"
                             />
+
                             <div
                                 class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
                             </div>
                         </div>
-                        <div class="dot"/>
+
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
@@ -136,8 +192,49 @@
                                     icon="Glossary"
                                     class="h-4 mr-1"
                                 />
-                                {{ getAnchorName(item) || '-'}}
+                                {{ getAnchorName(item) }}
                             </div>
+                        </div>
+
+                        <div
+                            v-if="
+                                ['table', 'view', 'tablepartition'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex mr-2 text-sm text-gray-500"
+                        >
+                            <a-tooltip placement="bottomLeft">
+                                <span
+                                    v-if="
+                                        ['table', 'tablepartition'].includes(
+                                            item.typeName?.toLowerCase()
+                                        ) && rowCount(item, false) !== '-'
+                                    "
+                                    class="mr-2 text-gray-500"
+                                    ><span
+                                        class="font-semibold tracking-tight text-gray-500"
+                                        >{{ rowCount(item, false) }}
+                                    </span>
+                                    Rows</span
+                                >
+                                <template #title>
+                                    <span
+                                        v-if="sizeBytes(item, false)"
+                                        class="font-semibold"
+                                        >{{ rowCount(item, true) }} rows ({{
+                                            sizeBytes(item, false)
+                                        }})</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ columnCount(item, false) }}</span
+                                >
+                                Cols</span
+                            >
                         </div>
 
                         <div
@@ -160,13 +257,64 @@
                                 }}</span>
                             </div>
                         </div>
+
+                        <div
+                            v-if="item.typeName?.toLowerCase() === 'column'"
+                            class="flex items-center mr-2"
+                        >
+                            <div class="flex items-center">
+                                <!-- <component
+                                :is="dataTypeImage(item)"
+                                class="w-auto h-4 text-gray-500"
+                                style="margin-top: 1px"
+                            ></component> -->
+
+                                <component
+                                    :is="dataTypeCategoryImage(item)"
+                                    class="h-4 text-gray-500 mr-0.5 mb-0.5"
+                                />
+                                <span
+                                    class="text-sm tracking-wider text-gray-500"
+                                    >{{ dataType(item) }}</span
+                                >
+                            </div>
+                            <div
+                                v-if="
+                                    isPrimary(item) ||
+                                    isDist(item) ||
+                                    isPartition(item)
+                                "
+                                class="flex"
+                            >
+                                <AtlanIcon
+                                    icon="PrimaryKey"
+                                    class="mb-0.5 text-yellow-500"
+                                />
+
+                                <span
+                                    v-if="isPrimary(item)"
+                                    class="ml-1 text-sm text-gray-700"
+                                    >Primary</span
+                                >
+                                <span
+                                    v-if="isDist(item)"
+                                    class="ml-1 text-sm text-gray-700"
+                                    >Dist</span
+                                >
+                                <span
+                                    v-if="isPartition(item)"
+                                    class="ml-1 text-sm text-gray-700"
+                                    >Partition</span
+                                >
+                            </div>
+                        </div>
                         <div
                             v-if="
                                 ['column'].includes(
                                     item.typeName?.toLowerCase()
                                 )
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex mr-2 text-sm text-gray-500 gap-x-2"
                         >
                             <a-tooltip
                                 v-if="tableName(item)"
@@ -217,7 +365,7 @@
                                     'view',
                                     'tablepartition',
                                     'materialisedview',
-                                    // 'column',
+                                    'column',
                                     'schema',
                                 ].includes(item.typeName?.toLowerCase())
                             "
@@ -225,13 +373,30 @@
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
+                                    v-if="schemaName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="SchemaGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ schemaName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>Schema - {{ schemaName(item) }}</span>
+                                </template>
+                            </a-tooltip>
+                            <a-tooltip placement="bottomLeft">
+                                <div
                                     v-if="databaseName(item)"
                                     class="flex items-center text-gray-500"
                                 >
-                                    <!-- <AtlanIcon
+                                    <AtlanIcon
                                         icon="DatabaseGray"
                                         class="mr-1 mb-0.5"
-                                    /> -->
+                                    />
                                     <div class="tracking-tight text-gray-500">
                                         {{ databaseName(item) }}
                                     </div>
@@ -243,60 +408,10 @@
                                     >
                                 </template>
                             </a-tooltip>
-                            /
-                            <a-tooltip placement="bottomLeft">
-                                <div
-                                    v-if="schemaName(item)"
-                                    class="flex items-center text-gray-500"
-                                >
-                                    <!-- <AtlanIcon
-                                        icon="SchemaGray"
-                                        class="mr-1 mb-0.5"
-                                    /> -->
-                                    <div class="tracking-tight text-gray-500">
-                                        {{ schemaName(item) }}
-                                    </div>
-                                </div>
-                                <template #title>
-                                    <span>Schema - {{ schemaName(item) }}</span>
-                                </template>
-                            </a-tooltip>
-                            
                         </div>
                     </div>
-                    <div class="flex items-center overflow-hidden">
-                        <!-- <div
-                            v-if="
-                                ['column'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            class="flex items-center mr-1"
-                        >
-                            <component
-                                :is="dataTypeCategoryImage(item)"
-                                class="h-4 mb-1 text-gray-500"
-                            />
-                        </div> -->
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossarycategory'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Category"
-                            class="h-4 mb-0.5 mr-1"
-                        />
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossaryterm'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Term"
-                            class="h-4 mb-0.5 mr-1"
-                        />
 
+                    <div class="flex items-center overflow-hidden">
                         <router-link
                             :to="assetURL(item)"
                             class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
@@ -309,7 +424,7 @@
                             :username="certificateUpdatedBy(item)"
                             :timestamp="certificateUpdatedAt(item)"
                             class="mb-0.5"
-                        />
+                        ></CertificateBadge>
                     </div>
 
                     <div v-if="description(item)" class="flex mt-0.5">
@@ -319,7 +434,6 @@
                             >{{ description(item) }}</span
                         >
                     </div>
-
 
                     <div
                         v-if="
@@ -354,7 +468,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, computed } from 'vue'
+    import { defineComponent, PropType, toRefs, computed } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -498,7 +612,7 @@
                 )
                 return matchingIdsResult
             })
-            console.log(item, 'sjkdhskdjhks')
+
             return {
                 isChecked,
                 showCheckBox,
@@ -543,12 +657,3 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .dot{
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background-color: #C4C4C4;
-        margin-right: 7px;
-    }
-</style>

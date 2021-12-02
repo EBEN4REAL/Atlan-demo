@@ -30,13 +30,16 @@
                                     class="text-red-600"
                                     >*</sup
                                 >
-
                                 <a-popover v-if="c.helpText">
                                     <template #content>
                                         <div
+                                            :id="c.id"
                                             class="p-3 text-gray-500"
-                                            v-html="c.helpText"
-                                        ></div>
+                                        >
+                                            <PopOverContent
+                                                :content="c.helpText"
+                                            />
+                                        </div>
                                     </template>
                                     <AtlanIcon
                                         icon="Info"
@@ -110,10 +113,9 @@
                     </a-checkbox>
                     <a-popover v-if="f.helpText">
                         <template #content>
-                            <div
-                                class="p-3 text-gray-500"
-                                v-html="f.helpText"
-                            ></div>
+                            <div :id="f.id" class="p-3 text-gray-500">
+                                <PopOverContent :content="f.helpText" />
+                            </div>
                         </template>
                         <AtlanIcon icon="Info" class="inline-block mb-1" />
                     </a-popover>
@@ -193,13 +195,15 @@
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import DynamicInput from '~/components/common/input/dynamicInput.vue'
     import useFormGenerator from './useFormGenerator'
+    import PopOverContent from './popOverContent.vue'
+    // import LinkPreview from './extensions/linkPreview/linkPreview'
 
     export default defineComponent({
         name: 'FormBuilder',
         components: {
             DynamicInput,
             CustomRadioButton,
-            // Suspense,
+            PopOverContent,
         },
         props: {
             config: {
@@ -225,7 +229,6 @@
         setup(props, { emit }) {
             const formRef = ref()
             const configX = computed(() => props.config)
-            // const errorCaptured = ref(null)
             const { defaultValues } = toRefs(props)
             const {
                 processedSchema: formModel,
@@ -251,10 +254,7 @@
                 init()
                 formRef.value.resetFields()
             })
-            // onErrorCaptured((e) => {
-            //     console.log('>>>>', e)
-            //     errorCaptured.value = e
-            // })
+
             return {
                 setGlobal,
                 handleFormSubmit,
@@ -268,7 +268,6 @@
                 validate,
                 getGridClass,
                 isRequiredField,
-                // errorCaptured,
             }
         },
     })

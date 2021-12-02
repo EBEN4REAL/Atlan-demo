@@ -108,7 +108,6 @@
             return {
                 list,
                 filteredList,
-
                 selectedValue,
                 handleChange,
                 handleSearch,

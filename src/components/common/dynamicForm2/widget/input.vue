@@ -53,6 +53,7 @@
             const { property } = toRefs(props)
             const formState = inject('formState')
             const componentProps = computed(() => property.value.ui)
+
             return { property, componentProps, formState }
         },
     })

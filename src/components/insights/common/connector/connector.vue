@@ -1,10 +1,10 @@
 <template>
     <div class="w-full">
         <a-tree-select
-        :class="[
-            $style.tree_selecttor,
-            bgGrayForSelector ? `${$style.selector_bg}` : '',
-        ]"
+            :class="[
+                $style.tree_selecttor,
+                bgGrayForSelector ? `${$style.selector_bg}` : '',
+            ]"
             :value="selectedValue"
             style="width: 100%"
             v-model:treeExpandedKeys="expandedKeys"
@@ -21,9 +21,9 @@
                 <div class="flex items-center truncate">
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
                     {{
-                        node?.title.length > 30
-                            ? `${node?.title.slice(0, 30)}...`
-                            : node.title
+                        node?.title?.length > 30
+                            ? `${node?.title?.slice(0, 30)}...`
+                            : node?.title
                     }}
                 </div>
             </template>

@@ -4,12 +4,10 @@ module.exports = {
     jit: true,
     important: true,
     purge: {
-        safelist: [
-            './safelist.txt',
-          ],
         content: [
             './index.html',
             './src/**/*.{vue,js,ts,jsx,tsx}',
+            './safelist.txt'
             // etc.
         ],
     },
@@ -78,6 +76,7 @@ module.exports = {
             borderColor: ['hover', 'focus'],
             display: ['group-hover'],
             textColor: ['group-focus'],
+            backgroundColor: ['group-hover'],
             fill: ['group-hover'],
             textDecoration: ['group-hover'],
         },

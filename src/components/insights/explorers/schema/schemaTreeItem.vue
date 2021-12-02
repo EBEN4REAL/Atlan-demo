@@ -793,10 +793,10 @@
 
                         let editorContext =
                             activeInlineTabCopy.playground.editor.context
-                        let editorContextType = editorContext.attributeName
-                        let editorContextValue = editorContext.attributeValue
+                        let editorContextType = editorContext?.attributeName
+                        let editorContextValue = editorContext?.attributeValue
 
-                        // console.log('editorContextType', editorContextType)
+                        console.log('editorContextType', editorContextType)
 
                         // 1st missing context in editor:
                         // 2nd context mismatch in editor and query
@@ -902,9 +902,14 @@
                                 }
                                 break
                             }
-                            case 'schemaQualifiedName' ||
-                                'defaultSchemaQualifiedName': {
+                            case 'schemaQualifiedName':
+                            case 'defaultSchemaQualifiedName': {
                                 newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                console.log(
+                                    'defaultSchemaQualifiedName',
+                                    newQuery
+                                )
+
                                 console.log('run in schema')
                                 if (
                                     editorContextValue !==
@@ -1054,17 +1059,23 @@
                     inlineTabs,
                     activeInlineTabCopy.isSaved
                 )
+
                 selectionObject.value.startLineNumber = 2
                 selectionObject.value.startColumnNumber = 1
                 selectionObject.value.endLineNumber = 2
                 selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
+                setSelection(
+                    toRaw(editorInstanceRef.value),
+                    toRaw(monacoInstanceRef.value),
+                    selectionObject.value
+                )
                 queryRun(
                     activeInlineTab,
                     getData,
                     limitRows,
                     null,
                     null,
-                    '',
+                    newText,
                     editorInstance,
                     monacoInstance
                 )

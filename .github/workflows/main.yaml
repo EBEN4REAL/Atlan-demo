@@ -41,7 +41,7 @@ jobs:
         run: |
           repo_branch=${{ steps.get_branch.outputs.branch }}
           if [[ "$repo_branch" == "main" ]]; then
-            channel="prod"
+            channel="main"
           elif [[ "$repo_branch" == "alpha" ]]; then
             channel="alpha"
           elif [[ "$repo_branch" == "beta" ]]; then

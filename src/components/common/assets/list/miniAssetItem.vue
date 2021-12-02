@@ -25,7 +25,7 @@
                 />
                 <div class="flex flex-col flex-1">
                     <!-- Info bar -->
-                    <div v-if="['table', 'column'].includes(item.typeName?.toLowerCase())" class="flex flex-wrap items-center mt-1">
+                    <div v-if="['table', 'column', 'powerbidashboard'].includes(item.typeName?.toLowerCase())" class="flex flex-wrap items-center mt-1">
                         <a-tooltip
                             v-if="connectorName(item)"
                             placement="left"
@@ -486,7 +486,7 @@
                 </div>
             </div>
         </div>
-        <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
+        <!-- <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" /> -->
     </div>
 </template>
 
@@ -635,7 +635,6 @@
                 )
                 return matchingIdsResult
             })
-
             return {
                 isChecked,
                 showCheckBox,

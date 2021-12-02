@@ -1,4 +1,4 @@
-name: Production Website Workflow
+name: Atlan Product Workflow
 on:
   push:
     branches:

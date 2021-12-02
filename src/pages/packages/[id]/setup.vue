@@ -11,14 +11,14 @@
             v-else-if="localConfig"
             :workflowTemplate="localSelected"
             :configMap="localConfig"
-            :sandboxValue="sandbox"
         ></PackagesSetup>
-        <div
-            class="flex flex-col"
-            v-if="sandbox && localConfig"
-            style="width: 33%; min-width: 33%"
-        >
+        <div class="flex flex-col" style="width: 33%; min-width: 33%">
+            <Preview
+                v-if="!sandbox && localConfig"
+                :workflowTemplate="localSelected"
+            ></Preview>
             <Sandbox
+                v-if="sandbox && localConfig"
                 v-model:configMap="localConfig"
                 v-model:workflowTemplate="localSelected"
             ></Sandbox>
@@ -40,6 +40,7 @@
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@common/error/discover.vue'
     import PackagesSetup from '@/packages/setup/index.vue'
+    import Preview from '@/packages/setup/preview.vue'
     import Sandbox from '@/packages/setup/sandbox.vue'
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'
@@ -53,6 +54,7 @@
             Loader,
             ErrorView,
             Sandbox,
+            Preview,
         },
         props: {
             selectedPackage: {

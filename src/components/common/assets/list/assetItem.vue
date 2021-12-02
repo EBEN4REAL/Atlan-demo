@@ -10,7 +10,7 @@
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
-                    : noBg ? 'border-transparent' :'bg-white border-transparent',
+                    : 'bg-white border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-light' : '',
             ]"
         >

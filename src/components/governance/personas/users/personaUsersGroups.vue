@@ -197,6 +197,7 @@
                             </template>
                             <a-popconfirm
                                 placement="leftTop"
+                                overlay-class-name="popoverConfirm"
                                 :title="
                                     getPopoverContent(user, 'remove', 'user')
                                 "
@@ -212,8 +213,9 @@
                                 >
                                     <AtlanIcon
                                         icon="RemoveUser"
-                                    ></AtlanIcon> </a-button
-                            ></a-popconfirm>
+                                    ></AtlanIcon>
+                                </a-button>
+                            </a-popconfirm>
                         </a-tooltip>
                     </a-button-group>
                 </template>

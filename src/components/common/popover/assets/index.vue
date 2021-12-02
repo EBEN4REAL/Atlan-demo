@@ -176,7 +176,7 @@
                 <router-link v-if="!slots?.button" :to="path">
                     <a-button class="mt-3" block>
                         <strong>
-                            View {{ title?.toLowerCase() }} profile
+                            View {{ title?.toLowerCase() === 'view' ? "" : title?.toLowerCase()}} profile
                         </strong>
                     </a-button>
                 </router-link>

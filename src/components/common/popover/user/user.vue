@@ -23,10 +23,10 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3 mt-2">
-                    <a-avatar size="large">{{ item[0] }}</a-avatar>
+                    <a-avatar class="text-primary bg-primary-light" size="large">{{ item[0].toUpperCase() }}</a-avatar>
                     <div>
-                        <div class="text-sm font-semibold">
-                            {{ selectedUser.name }}
+                        <div class="text-sm font-semibold capitalize">
+                            {{ item }}
                         </div>
                         <div class="text-xs text-gray-500">
                             {{ selectedUser.email }}
@@ -35,7 +35,7 @@
                 </div>
                 <div class="mt-3">
                     <div class="text-xs text-gray-500">Ownership</div>
-                    <div class="flex gap-5 mt-1">
+                    <div v-if="assetCount || bussinesCount" class="flex gap-5 mt-1">
                         <div>
                             <strong>{{ assetCount }}</strong> Assets
                         </div>
@@ -43,8 +43,11 @@
                             <strong>{{ bussinesCount }}</strong> Business Terms
                         </div>
                     </div>
+                    <div v-else>
+                        You have no asset added
+                    </div>
                 </div>
-                <div class="mt-3">
+                <div v-if="groupList.length > 0"  class="mt-3">
                     <div class="text-xs text-gray-500">Groups</div>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <span
@@ -61,10 +64,9 @@
                         >
                             {{ group.name }}
                         </span>
-                        <span v-if="groupList.length === 0">-</span>
                     </div>
                 </div>
-                <div class="mt-3">
+                <div v-if="listOfPersona.length > 0" class="mt-3">
                     <div class="text-xs text-gray-500">Personas</div>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <span
@@ -81,7 +83,6 @@
                             "
                             >{{ persona?.displayName }}</span
                         >
-                        <span v-if="listOfPersona.length === 0">-</span>
                     </div>
                 </div>
                 <a-button class="mt-3" block @click="handleClickViewUser">

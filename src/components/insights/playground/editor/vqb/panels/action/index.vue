@@ -94,14 +94,11 @@
 
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
-                submenuHovered.value = true
-
-                console.log('hover', submenuHovered.value)
+                if (!submenuHovered.value) submenuHovered.value = true
             }
             const handleMouseOut = () => {
-                submenuHovered.value = false
                 if (containerHovered.value) containerHovered.value = false
-                console.log('hover out submenuHovered', submenuHovered.value)
+                if (submenuHovered.value) submenuHovered.value = false
             }
             return {
                 handleMouseOut,

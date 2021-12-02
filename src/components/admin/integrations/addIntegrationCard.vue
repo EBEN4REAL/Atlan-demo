@@ -1,4 +1,15 @@
 <template>
+    <a-modal
+        :visible="showSlackConfigModal"
+        :destroy-on-close="true"
+        :footer="null"
+        :closable="false"
+        :width="470"
+        wrap-class-name="inviteModal"
+        @cancel="closeSlackConfigModal"
+    >
+        <SlackConfigModal @close="closeSlackConfigModal" />
+    </a-modal>
     <section
         class="flex items-center h-32 p-6 border rounded shadow gap-x-5 addCard"
     >
@@ -14,31 +25,51 @@
             </p>
         </div>
         <div class="">
-            <router-link :to="`//${integrationData.link}`" target="_blank">
+            <!-- <router-link :to="`//${integrationData.link}`" target="_blank">
                 <AtlanButton v-auth="access.CREATE_INTEGRATION">
                     Add to Slack <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
-            </router-link>
+            </router-link> -->
+            <AtlanButton
+                v-auth="access.CREATE_INTEGRATION"
+                @click="openSlackConfigModal"
+            >
+                Configure <AtlanIcon icon="ArrowRight" />
+            </AtlanButton>
         </div>
     </section>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import AtlanButton from '@/UI/button.vue'
 import useTenantData from '~/composables/tenant/useTenantData'
 import access from '~/constant/accessControl/map'
+import SlackConfigModal from './slack/slackConfigModal.vue'
 
 export default defineComponent({
     name: 'AddIntegrationCard',
-    components: { AtlanButton },
+    components: { AtlanButton, SlackConfigModal },
     props: {
         integration: { type: Object, required: true },
         integrationData: { type: Object, required: true },
     },
     setup() {
+        const showSlackConfigModal = ref(false)
         const { name: tenantName } = useTenantData()
-        return { tenantName, access }
+        const closeSlackConfigModal = () => {
+            showSlackConfigModal.value = false
+        }
+        const openSlackConfigModal = () => {
+            showSlackConfigModal.value = true
+        }
+        return {
+            tenantName,
+            access,
+            showSlackConfigModal,
+            closeSlackConfigModal,
+            openSlackConfigModal,
+        }
     },
 })
 </script>

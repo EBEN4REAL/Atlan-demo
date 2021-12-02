@@ -8,20 +8,29 @@ if (origin.includes('localhost')) {
     origin = `http://localhost:5008`
 }
 
-function installSlackUrl() {
+export const getSlackInstallUrlState = (isTenant: boolean, userId: string) => {
+    const api = `${origin}/api/service/slack/auth`
+    const state = {
+        api,
+        origin,
+        isTenant,
+        userId
+    }
+
+    console.log("slack auth state", state)
+
+    const base64State = btoa(JSON.stringify(state))
+    return base64State
+}
+
+function installSlackUrl(isTenant: boolean, userId: string) {
     const scopes = [
         'chat:write',
         'chat:write.public',
         'channels:read',
     ]
 
-    const api = `${origin}/api/service/slack/auth`
-    const state = {
-        api,
-        origin
-    }
-
-    const base64State = btoa(JSON.stringify(state))
+    const base64State = getSlackInstallUrlState(isTenant, userId)
     // tood: slack client id should come from env
     return `slack.com/oauth/v2/authorize?client_id=521029643301.2774249192164&scope=${scopes.join(
         ','
@@ -37,10 +46,10 @@ function getTimestampFromSlackMessageId(id) {
     return ts
 }
 
-export const getIntegrationLink = (alias) => {
+export const getIntegrationLink = (alias, isTenant: boolean, userId: string) => {
     switch (alias.toLowerCase()) {
         case 'slack':
-            return installSlackUrl()
+            return installSlackUrl(isTenant, userId)
         default: return ''
     }
 }

@@ -22,46 +22,48 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch } from 'vue'
-    import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
-    import { getIntegrationLink } from '~/composables/integrations/useSlack'
-    import AddIntegrationCard from './addIntegrationCard.vue'
-    import IntegrationCardWrapper from './integrationCardWrapper.vue'
-    import { integrationData } from '~/constant/integrations'
-    import integrationStore from '~/store/integrations/index'
-    import ErrorView from '@/common/error/index.vue'
+import { defineComponent, watch } from 'vue'
+import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
+import { getIntegrationLink } from '~/composables/integrations/useSlack'
+import AddIntegrationCard from './addIntegrationCard.vue'
+import IntegrationCardWrapper from './integrationCardWrapper.vue'
+import { integrationData } from '~/constant/integrations'
+import integrationStore from '~/store/integrations/index'
+import { useAuthStore } from '~/store/auth'
+import ErrorView from '@/common/error/index.vue'
 
-    export default defineComponent({
-        name: 'IntegrationsWrapper',
-        components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
-        setup() {
-            const store = integrationStore()
+export default defineComponent({
+    name: 'IntegrationsWrapper',
+    components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
+    setup() {
+        const store = integrationStore()
+        const authStore = useAuthStore()
 
-            const {
-                data: allIntegrations,
-                isLoading,
-                error,
-                isReady,
-            } = getIntegrationTypes()
+        const {
+            data: allIntegrations,
+            isLoading,
+            error,
+            isReady,
+        } = getIntegrationTypes()
+        console.log('authStore.id', authStore.id)
+        const getData = (alias) => ({
+            ...integrationData[alias],
+            link: getIntegrationLink(alias, true, authStore.id),
+        })
 
-            const getData = (alias) => ({
-                ...integrationData[alias],
-                link: getIntegrationLink(alias),
-            })
+        const integrationExist = (alias): boolean =>
+            !!store.getIntegration(alias)
 
-            const integrationExist = (alias): boolean =>
-                !!store.getIntegration(alias)
-
-            return {
-                integrationExist,
-                allIntegrations,
-                getData,
-                isLoading,
-                error,
-                isReady,
-            }
-        },
-    })
+        return {
+            integrationExist,
+            allIntegrations,
+            getData,
+            isLoading,
+            error,
+            isReady,
+        }
+    },
+})
 </script>
 
 <style scoped></style>

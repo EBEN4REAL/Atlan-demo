@@ -1,19 +1,22 @@
 <template>
-    <div class="flex flex-wrap items-center gap-1 text-sm">
+    <div
+        class="flex flex-wrap items-center gap-1 text-sm"
+        data-test-id="owners-popover"
+    >
         <a-popover
-            placement="leftBottom"
-            :overlayClassName="$style.ownerPopover"
-            @visibleChange="handleVisibleChange"
-            :trigger="['click']"
             v-model:visible="isEdit"
-            :destroyTooltipOnHide="destroyTooltipOnHide"
+            placement="leftBottom"
+            :overlay-class-name="$style.ownerPopover"
+            :trigger="['click']"
+            :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            @visibleChange="handleVisibleChange"
         >
             <template #content>
                 <div class="">
                     <OwnerFacets
                         ref="ownerInputRef"
                         v-model="localValue"
-                        :showNone="false"
+                        :show-none="false"
                     ></OwnerFacets>
                 </div>
             </template>
@@ -26,26 +29,57 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-for="username in ownerUsers(selectedAsset)" :key="username">
-            <PopOverUser>
+        <template v-if="usedForAssets">
+            <template
+                v-for="username in ownerUsers(selectedAsset)"
+                :key="username"
+            >
+                <PopOverUser :item="username">
+                    <UserPill
+                        :username="username"
+                        :allow-delete="!readOnly"
+                        :enable-hover="enableHover"
+                        @click="handleClickUser(username)"
+                        @delete="handleDeleteUser"
+                    ></UserPill>
+                </PopOverUser>
+            </template>
+        </template>
+        <template
+            v-for="username in localValue?.ownerUsers"
+            v-else
+            :key="username"
+        >
+            <PopOverUser :item="username">
                 <UserPill
                     :username="username"
-                    :allowDelete="!readOnly"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
                     @delete="handleDeleteUser"
                     @click="handleClickUser(username)"
-                    :enableHover="enableHover"
                 ></UserPill>
             </PopOverUser>
         </template>
-
-        <template v-for="name in ownerGroups(selectedAsset)" :key="name">
-            <PopOverGroup>
+        <template v-if="usedForAssets">
+            <template v-for="name in ownerGroups(selectedAsset)" :key="name">
+                <PopOverGroup :item="name">
+                    <GroupPill
+                        :name="name"
+                        :allowDelete="!readOnly"
+                        @delete="handleDeleteGroup"
+                        @click="handleClickGroup(name)"
+                        :enableHover="enableHover"
+                    ></GroupPill>
+                </PopOverGroup> </template
+        ></template>
+        <template v-for="name in localValue?.ownerGroups" v-else :key="name">
+            <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
-                    :allowDelete="!readOnly"
+                    :allow-delete="!readOnly"
+                    :enable-hover="enableHover"
                     @delete="handleDeleteGroup"
                     @click="handleClickGroup(name)"
-                    :enableHover="enableHover"
                 ></GroupPill>
             </PopOverGroup>
         </template>
@@ -108,6 +142,11 @@
                 required: false,
                 default: true,
             },
+            usedForAssets: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -135,7 +174,6 @@
 
             const handleChange = () => {
                 modelValue.value = localValue.value
-                console.log('Hellooo')
                 emit('change')
             }
 
@@ -160,7 +198,9 @@
             const notUsingInput = computed(
                 () =>
                     activeElement.value?.tagName !== 'INPUT' &&
-                    activeElement.value?.tagName !== 'TEXTAREA'
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
             )
             const { o, Escape } = useMagicKeys()
             whenever(and(o, notUsingInput), () => {

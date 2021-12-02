@@ -1,20 +1,23 @@
 <template>
-    <div class="flex flex-wrap items-center gap-1 text-sm">
+    <div
+        class="flex flex-wrap items-center gap-1 text-sm"
+        data-test-id="classification-popover"
+    >
         <a-popover
-            placement="leftBottom"
-            :overlayClassName="$style.classificationPopover"
-            @visibleChange="handleVisibleChange"
-            :trigger="['click']"
             v-model:visible="isEdit"
-            :destroyTooltipOnHide="destroyTooltipOnHide"
+            placement="leftBottom"
+            :overlay-class-name="$style.classificationPopover"
+            :trigger="['click']"
+            :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            @visibleChange="handleVisibleChange"
         >
             <template #content>
                 <div>
                     <ClassificationFacet
-                        v-model="selectedValue"
                         ref="classificationFacetRef"
+                        v-model="selectedValue"
+                        :show-none="false"
                         @change="handleSelectedChange"
-                        :showNone="false"
                     ></ClassificationFacet>
                 </div>
             </template>
@@ -29,13 +32,15 @@
         </a-popover>
 
         <template v-for="classification in list" :key="classification.guid">
-            <ClassificationPill
-                :name="classification.name"
-                :displayName="classification?.displayName"
-                :isPropagated="isPropagated(classification)"
-                :allowDelete="true"
-                @delete="handleDeleteClassification"
-            ></ClassificationPill>
+            <Popover :classification="classification">
+                <ClassificationPill
+                    :name="classification.name"
+                    :display-name="classification?.displayName"
+                    :is-propagated="isPropagated(classification)"
+                    :allow-delete="true"
+                    @delete="handleDeleteClassification"
+                />
+            </Popover>
         </template>
     </div>
 </template>
@@ -53,16 +58,21 @@
     import { mergeArray } from '~/utils/array'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import Popover from '@/common/popover/classification.vue'
 
     export default defineComponent({
         components: {
             ClassificationFacet,
             ClassificationPill,
+            Popover,
         },
         props: {
             guid: {
                 type: String,
                 required: false,
+                default() {
+                    return ''
+                },
             },
             modelValue: {
                 type: Array,
@@ -174,7 +184,9 @@
             const notUsingInput = computed(
                 () =>
                     activeElement.value?.tagName !== 'INPUT' &&
-                    activeElement.value?.tagName !== 'TEXTAREA'
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
             )
             const { t, Escape } = useMagicKeys()
             whenever(and(t, notUsingInput), () => {

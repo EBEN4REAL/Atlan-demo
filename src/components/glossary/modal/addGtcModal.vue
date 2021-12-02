@@ -189,7 +189,9 @@
             })
 
             const { getGlossaryByQF } = useGlossaryData()
-
+            console.log(categoryGuid.value)
+            console.log(glossaryQualifiedName)
+            console.log(getGlossaryByQF(glossaryQualifiedName.value))
             // const localQualifiedName = ref(
             //     glossaryQualifiedName.value || getFirstGlossaryQF()
             // )
@@ -207,28 +209,26 @@
                 },
             })
 
-            if (
-                ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
-                    entityType.value
-                )
-            ) {
-                entity.relationshipAttributes = {
-                    anchor: {
-                        typeName: 'AtlasGlossary',
-                        guid: getGlossaryByQF(glossaryQualifiedName.value)
-                            ?.guid,
-                    },
-                }
+            // if (
+            //     ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+            //         entityType.value
+            //     )
+            // ) {
+            //     entity.relationshipAttributes = {
+            //         anchor: {
+            //             typeName: 'AtlasGlossary',
+            //             guid: getGlossaryByQF(glossaryQualifiedName.value)
+            //                 ?.guid,
+            //         },
+            //     }
 
-                if (categoryGuid.value) {
-                    entity.relationshipAttributes.categories = [
-                        {
-                            typeName: 'AtlasGlossaryCategory',
-                            guid: categoryGuid.value,
-                        },
-                    ]
-                }
-            }
+            //     if (categoryGuid.value) {
+            //         entity.relationshipAttributes.parentCategory = {
+            //             typeName: 'AtlasGlossaryCategory',
+            //             guid: categoryGuid.value,
+            //         }
+            //     }
+            // }
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
@@ -293,13 +293,26 @@
                                 )?.guid,
                             },
                         }
-                        if (categoryGuid.value) {
-                            entity.relationshipAttributes.categories = [
-                                {
+                        if (
+                            categoryGuid.value &&
+                            categoryGuid.value !==
+                                getGlossaryByQF(glossaryQualifiedName.value)
+                                    ?.guid
+                        ) {
+                            if (typeNameTitle.value === 'Category') {
+                                entity.relationshipAttributes.parentCategory = {
                                     typeName: 'AtlasGlossaryCategory',
                                     guid: categoryGuid.value,
-                                },
-                            ]
+                                }
+                            }
+                            if (typeNameTitle.value === 'Term') {
+                                entity.relationshipAttributes.categories = [
+                                    {
+                                        typeName: 'AtlasGlossaryCategory',
+                                        guid: categoryGuid.value,
+                                    },
+                                ]
+                            }
                         }
                     }
 

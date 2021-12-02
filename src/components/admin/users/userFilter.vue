@@ -3,8 +3,7 @@
         <template #overlay>
             <div class="bg-gray-100 rounded shadow-xl" style="width: 240px">
                 <a-collapse
-                    v-model="activeCollapse"
-                    s
+                    v-model:activeKey="activeCollapse"
                     :bordered="false"
                     class=""
                 >

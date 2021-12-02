@@ -1,9 +1,15 @@
 <template>
-    <div id="invite-user-modal-content" class="relative flex flex-col mx-4">
+    <div
+        id="invite-user-modal-content"
+        class="relative flex flex-col py-8 px-9"
+    >
         <h1 class="mb-4 text-xl font-bold">
             Invite users {{ tenantName ? 'to ' + capitalize(tenantName) : '' }}
         </h1>
-        <div class="flex items-center px-2 py-4 rounded bg-blue-50 mb-7">
+        <div
+            v-if="groupList?.length"
+            class="flex items-center px-2 py-4 rounded bg-blue-50 mb-7"
+        >
             <AtlanIcon icon="Info" class="mr-2 text-xs text-gray-500" />
             <span>
                 Invited users will be added to default groups.
@@ -33,6 +39,7 @@
                         :id="`email-${index}`"
                         v-model:value="email.value"
                         class="inputHeight"
+                        placeholder="email"
                         @keyup.enter="onAddNewUser"
                     >
                     </a-input>
@@ -56,7 +63,7 @@
                 </div>
                 <div
                     v-if="emails.length > 1"
-                    class="absolute bg-transparent border-0 opacity-0 cursor-pointer  top-1 -right-5 group-hover:opacity-100"
+                    class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-1 -right-5 group-hover:opacity-100"
                     @click="deleteUserInput(index)"
                 >
                     <AtlanIcon
@@ -112,11 +119,11 @@
         <div
             v-if="showDefaultGroups"
             class="absolute w-56 bg-white rounded top-12"
-            style="right: -17rem"
+            style="right: -14.5rem"
         >
             <AtlanIcon
                 icon="Cross"
-                class="absolute h-4 cursor-pointer top-1.5 right-1.5"
+                class="absolute h-3.5 cursor-pointer top-1.5 right-1.5"
                 @click="showDefaultGroups = false"
             />
             <template v-if="groupList.length">

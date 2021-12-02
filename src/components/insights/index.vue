@@ -321,6 +321,11 @@
                 }
             }
 
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
+
             const detectQuery = () => {
                 let queryTab: activeInlineTabInterface = {
                     key: String(new Date().getTime()),
@@ -424,7 +429,16 @@
                 // activeInlineTabKey.value = queryTab.key
                 // syncInlineTabsInLocalStorage(tabsArray.value)
 
-                queryRun(activeInlineTab, getData)
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    '',
+                    editorInstance,
+                    monacoInstance
+                )
             }
 
             onMounted(() => {
@@ -499,7 +513,7 @@
         box-sizing: border-box;
         position: relative;
         -ms-flex-negative: 0;
-
+        z-index: 3 !important;
         flex-shrink: 0;
     }
 

@@ -1,13 +1,14 @@
 <template>
     <div class="px-4 py-2 mb-3">
         <div class="mb-4 text-lg font-bold">Assets Owned</div>
-        <div v-auth="map.LIST_USERS" class="flex flex-col border rounded-lg">
+        <div v-auth="map.LIST_USERS" class="flex flex-col rounded-lg">
             <AssetsWrapper
                 :initial-filters="ownerFilter"
                 :show-filters="false"
                 :static-use="true"
                 :show-aggrs="false"
-                class="asset-list-height"
+                class="asset-list"
+                page="admin"
             />
         </div>
     </div>
@@ -55,7 +56,7 @@
 </script>
 
 <style lang="less" scoped>
-    .asset-list-height {
+    .asset-list {
         max-height: calc(100vh - 11rem);
     }
 </style>

@@ -20,6 +20,7 @@
                 <AtlanBtn
                     color="secondary"
                     padding="compact"
+                    data-test-id="add-users"
                     class="items-center ml-auto"
                     @click="() => setPopoverState(!popoverVisible)"
                     ><span class="text-xl">+</span>
@@ -81,6 +82,7 @@
                                     padding="compact"
                                     class="w-26"
                                     style="width: 80px"
+                                    data-test-id="cancel-owners"
                                     >Cancel</AtlanBtn
                                 >
                                 <AtlanBtn
@@ -96,6 +98,7 @@
                                         v-if="addUsersLoading"
                                         icon="CircleLoader"
                                         style="margin-right: 2.5px"
+                                        data-test-id="add-owners"
                                         class="w-4 h-4 animate-spin"
                                     ></AtlanIcon>
                                     <span>Add</span></AtlanBtn
@@ -124,6 +127,7 @@
                 :data-source="filteredList"
                 :columns="userColumns"
                 :row-key="(user) => user.id"
+                data-test-id="user-table"
                 :class="$style.table"
                 :loading="
                     [USER_STATES.PENDING].includes(userState) ||
@@ -137,7 +141,10 @@
                     </div>
                 </template>
                 <template #name="{ text: user }">
-                    <div class="flex items-center align-middle">
+                    <div
+                        class="flex items-center align-middle"
+                        :data-test-id="user.username"
+                    >
                         <avatar
                             :image-url="imageUrl(user.username)"
                             :allow-upload="false"
@@ -169,6 +176,7 @@
                 </template>
                 <template #role="{ text: user }">
                     <div
+                        :data-test-id="user.role_object.name"
                         class="
                             inline-flex
                             items-center
@@ -189,6 +197,7 @@
                             </template>
                             <a-popconfirm
                                 placement="leftTop"
+                                overlay-class-name="popoverConfirm"
                                 :title="
                                     getPopoverContent(user, 'remove', 'user')
                                 "
@@ -199,12 +208,14 @@
                             >
                                 <a-button
                                     size="small"
+                                    data-test-id="remove-user"
                                     class="ml-3.5 w-8 h-8 rounded"
                                 >
                                     <AtlanIcon
                                         icon="RemoveUser"
-                                    ></AtlanIcon> </a-button
-                            ></a-popconfirm>
+                                    ></AtlanIcon>
+                                </a-button>
+                            </a-popconfirm>
                         </a-tooltip>
                     </a-button-group>
                 </template>
@@ -224,6 +235,7 @@
                     <a-button
                         size="large"
                         type="primary"
+                        data-test-id="try-again"
                         ghost
                         @click="getUserList()"
                     >
@@ -248,6 +260,7 @@
                 :class="$style.table"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
+                data-test-id="group-table"
                 :data-source="filteredList"
                 :columns="groupColumns"
                 :row-key="(group) => group.id"
@@ -263,7 +276,10 @@
                     </div>
                 </template>
                 <template #group="{ text: group }">
-                    <div class="flex items-center align-middle">
+                    <div
+                        class="flex items-center align-middle"
+                        :data-test-id="group.alias"
+                    >
                         <avatar
                             :image-url="imageUrl(group.alias)"
                             :allow-upload="false"
@@ -332,6 +348,7 @@
                     <a-button
                         size="large"
                         type="primary"
+                        data-test-id="try-again"
                         ghost
                         @click="getGroupList()"
                     >

@@ -1,12 +1,28 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"
+        class="my-1 transition-all duration-300 hover:bg-primary-light"
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
         @click="handlePreview(item)"
     >
-        <div class="flex flex-col">
+        <div
+            class="flex flex-col"
+            :class="[
+                !bulkSelectMode && isSelected
+                    ? 'border-primary bg-primary-light'
+                    : 'border-transparent',
+                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+            ]"
+        >
             <div class="flex items-start flex-1 px-3 py-3">
+                <a-checkbox
+                    v-if="showCheckBox"
+                    :checked="isChecked"
+                    class="ml-2 mr-3 opacity-60 hover:opacity-100"
+                    :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+                    @click.stop
+                    @change="(e) => $emit('listItem:check', e, item)"
+                />
                 <div class="flex flex-col flex-1 lg:pr-16">
                     <div class="flex items-center overflow-hidden">
                         <div
@@ -219,7 +235,7 @@
                                     class="font-semibold tracking-tight text-gray-500 "
                                     >{{ columnCount(item, false) }}</span
                                 >
-                                Colsb</span
+                                Cols</span
                             >
                         </div>
 
@@ -355,7 +371,7 @@
                                     'schema',
                                 ].includes(item.typeName?.toLowerCase())
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
@@ -408,17 +424,24 @@
                             v-for="classification in list"
                             :key="classification.guid"
                         >
-                            <ClassificationPill
-                                :name="classification.name"
-                                :display-name="classification?.displayName"
-                                :is-propagated="isPropagated(classification)"
-                                :allow-delete="false"
-                            ></ClassificationPill>
+                            <PopoverClassification
+                                :classification="classification"
+                            >
+                                <ClassificationPill
+                                    :name="classification.name"
+                                    :display-name="classification?.displayName"
+                                    :is-propagated="
+                                        isPropagated(classification)
+                                    "
+                                    :allow-delete="false"
+                                ></ClassificationPill>
+                            </PopoverClassification>
                         </template>
                     </div>
                 </div>
             </div>
         </div>
+        <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
     </div>
 </template>
 
@@ -429,12 +452,14 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import PopoverClassification from '@/common/popover/classification.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
             ClassificationPill,
+            PopoverClassification,
         },
         props: {
             item: {
@@ -451,6 +476,24 @@
                     return ''
                 },
             },
+
+            isChecked: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            // If the list items are selectable or not
+            showCheckBox: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
+            bulkSelectMode: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             preference: {
                 type: Object,
                 required: false,
@@ -463,10 +506,22 @@
                 required: false,
                 default: false,
             },
+            noBg: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview'],
         setup(props, { emit }) {
-            const { preference, selectedGuid, item } = toRefs(props)
+            const {
+                preference,
+                selectedGuid,
+                item,
+                isChecked,
+                showCheckBox,
+                bulkSelectMode,
+            } = toRefs(props)
             const {
                 title,
                 getConnectorImage,
@@ -537,6 +592,9 @@
             })
 
             return {
+                isChecked,
+                showCheckBox,
+                bulkSelectMode,
                 item,
                 isSelected,
                 title,

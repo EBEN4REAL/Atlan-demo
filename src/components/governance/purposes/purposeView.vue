@@ -7,6 +7,7 @@
                 size="sm"
                 color="secondary"
                 padding="compact"
+                data-test-id="add-purpose"
                 @click="() => (modalVisible = true)"
             >
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
@@ -36,7 +37,10 @@
                 data-key="id"
             >
                 <template #default="{ item, isSelected }">
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center justify-between"
+                        :data-test-id="item.displayName"
+                    >
                         <span
                             style="width: 95%"
                             class="text-sm truncate"
@@ -79,6 +83,7 @@
                 class="flex-none mx-auto mt-6"
                 color="primary"
                 padding="compact"
+                data-test-id="add-new-purpose"
                 size="sm"
                 @click.prevent="() => (modalVisible = true)"
             >
@@ -90,18 +95,19 @@
         </div>
         <ErrorView v-else :error="isPersonaError">
             <div class="mt-3">
-                <AtlanButton
-                    size="sm"
-                    color="minimal"
+                <a-button
+                    data-test-id="try-again"
+                    size="large"
+                    type="primary"
+                    ghost
                     @click="
                         () => {
                             reFetchList()
                         }
                     "
                 >
-                    <AtlanIcon icon="Reload" />
-                    Try again
-                </AtlanButton>
+                    <fa icon="fal sync" class="mr-2"></fa>Try again
+                </a-button>
             </div>
         </ErrorView>
     </ExplorerLayout>

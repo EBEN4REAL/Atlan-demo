@@ -19,6 +19,7 @@
                                 else rules.policyName.show = false
                             }
                         "
+                        data-test-id="policy-edit-name"
                         :ref="
                             (el) => {
                                 policyNameRef = el
@@ -31,6 +32,7 @@
                 <div
                     class="absolute text-xs text-red-500 -bottom-5"
                     v-if="rules.policyName.show"
+                    data-test-id="policy-validation-name"
                 >
                     {{ rules.policyName.text }}
                 </div>
@@ -50,6 +52,7 @@
                     color="secondary"
                     padding="compact"
                     class="plus-btn"
+                    data-test-id="policy-delete"
                     ><AtlanIcon
                         icon="Delete"
                         class="-mx-1 text-red-400"
@@ -80,6 +83,7 @@
             />
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
+                data-test-id="policy-validation-connector"
                 v-if="rules.connection.show"
             >
                 {{ rules.connection.text }}
@@ -116,6 +120,7 @@
                                     class="group"
                                     @click="d?.item?.handleAdd"
                                     @blur="d?.item?.handleBlur"
+                                    data-test-id="add"
                                 >
                                     <template #prefix>
                                         <AtlanIcon
@@ -138,6 +143,7 @@
                                     class="group"
                                     @click="addConnectionAsset"
                                     @blur="d?.item?.handleBlur"
+                                    data-test-id="add-all"
                                 >
                                     <template #prefix>
                                         <div
@@ -156,6 +162,7 @@
                                 >
                                 <Pill
                                     class="group"
+                                    data-test-id="add-custom"
                                     @click="d?.item?.handleAdd"
                                     @blur="d?.item?.handleBlur"
                                 >
@@ -181,6 +188,7 @@
             <div
                 class="absolute text-xs text-red-500 -bottom-5"
                 v-if="rules.assets.show && connectorData.attributeValue"
+                data-test-id="policy-validation-assets"
             >
                 {{ rules.assets.text }}
             </div>
@@ -200,6 +208,7 @@
             <div
                 class="absolute text-xs text-red-500 -bottom-6"
                 v-if="rules.metadata.show"
+                data-test-id="policy-validation-permissions"
             >
                 {{ rules.metadata.text }}
             </div>
@@ -207,6 +216,7 @@
         <div class="flex items-center gap-x-2">
             <a-switch
                 :class="policy.allow ? `` : 'checked'"
+                data-test-id="toggle-switch"
                 :checked="!policy.allow"
                 style="width: 40px !important"
                 @update:checked="policy.allow = !$event"
@@ -230,6 +240,7 @@
             <AtlanBtn
                 class="ml-auto"
                 size="sm"
+                data-test-id="cancel"
                 color="secondary"
                 padding="compact"
                 @click="$emit('cancel')"
@@ -239,6 +250,7 @@
                 size="sm"
                 color="primary"
                 padding="compact"
+                data-test-id="save"
                 @click="handleSave"
                 >Save</AtlanBtn
             >

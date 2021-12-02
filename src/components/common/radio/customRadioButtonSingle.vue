@@ -33,53 +33,29 @@
                 type: Array as PropType<CheckboxArray>,
                 required: false,
             },
-            isMultiple: {
-                type: Boolean,
-                required: false,
-                default() {
-                    return false
-                },
-            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { list, isMultiple } = toRefs(props)
+            const { list } = toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
 
             const localValue = ref(modelValue.value)
 
             const handleClick = (id) => {
-                if (isMultiple.value) {
-                    if (!localValue.value || localValue.value?.length == 0) {
-                        localValue.value = [id]
-                    } else {
-                        const index = localValue.value?.indexOf(id)
-
-                        if (index > -1) {
-                            localValue.value?.splice(index, 1)
-                        } else {
-                            localValue.value?.push(id)
-                        }
-                    }
-                } else {
-                    localValue.value = id
-                }
+                localValue.value = id
                 modelValue.value = localValue.value
+                console.log('dd')
                 emit('change', id)
             }
 
             const isSelected = (id) => {
-                if (isMultiple.value) {
-                    return !!localValue.value?.includes(id)
-                } else {
-                    return id === localValue.value
-                }
+                return id === localValue.value
             }
 
             return {
                 handleClick,
-                isMultiple,
+
                 localValue,
                 list,
                 isSelected,

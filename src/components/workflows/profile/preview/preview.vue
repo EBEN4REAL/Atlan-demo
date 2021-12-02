@@ -5,7 +5,7 @@
                 v-if="loadingFetchPod"
                 class="absolute flex items-center justify-center w-full h-full"
             >
-                <a-spin />
+                <AtlanIcon icon="Loader" class="h-5 animate-spin" />
             </div>
 
             <div
@@ -68,7 +68,7 @@
                 :style="{ height: 'calc(100vh - 3rem)' }"
             >
                 <div
-                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700 "
+                    class="flex items-center justify-between px-4 pt-2 mt-2 text-lg font-semibold text-gray-700"
                 >
                     {{ tab.name }}
                 </div>
@@ -95,7 +95,7 @@
         watch,
         computed,
         onErrorCaptured,
-        provide
+        provide,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
 
@@ -180,7 +180,7 @@
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
             const formChanged = ref(false)
-            provide("creatorDetails", {})
+            provide('creatorDetails', {})
             if (selectedPreviewTab.value === 'runs') activeKey.value = 1
 
             watch(selectedPreviewTab, (n) => {
@@ -191,10 +191,14 @@
                 isLoaded.value = false
             }
 
-            const body = ref(selectedWorkflow.value.workflowtemplate)
+            const body = ref(selectedWorkflow.value)
 
             const { workflow, error, isLoading, mutate, isReady } =
-                updateWorkflowByName(selectedWorkflow.value.name, body, false)
+                updateWorkflowByName(
+                    selectedWorkflow.value.metadata.name,
+                    body,
+                    false
+                )
 
             watch(selectedWorkflow, init, { deep: true })
             onMounted(init)
@@ -239,8 +243,8 @@
                 }
             }
             const handleChange = (v, isInit) => {
-                if(!isInit){
-                  formChanged.value = true
+                if (!isInit) {
+                    formChanged.value = true
                 }
                 Object.entries(v).forEach(([key, value]) => {
                     const index =
@@ -263,9 +267,10 @@
 
             const defaultValues = computed(() => {
                 const temp = {}
-                const valueArr =
-                    selectedWorkflow.value.workflowtemplate.spec.templates[0]
-                        .dag.tasks[0].arguments.parameters
+                const { entrypoint } = selectedWorkflow.value.spec
+                const valueArr = selectedWorkflow.value.spec.templates.find(
+                    (t) => t.name === entrypoint
+                ).dag.tasks[0].arguments.parameters
                 if (valueArr?.length)
                     valueArr.forEach((v) => {
                         const some = props.formConfig[props.selectedDag]?.find(
@@ -303,7 +308,7 @@
                 activeKey,
                 filteredTabs,
                 emit,
-                formChanged
+                formChanged,
             }
         },
     })

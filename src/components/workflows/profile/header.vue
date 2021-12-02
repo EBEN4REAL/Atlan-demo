@@ -4,16 +4,7 @@
             <!-- back button -->
             <div class="self-start mt-5 mr-2">
                 <router-link
-                    class="
-                        rounded
-                        block
-                        border border-gray-200
-                        px-1
-                        border-transparent
-                        shadow-none
-                        hover:border-gray-300
-                        py-0.5
-                    "
+                    class="rounded block border border-gray-200 px-1 border-transparent shadow-none hover:border-gray-300 py-0.5"
                     to="/workflows"
                 >
                     <atlan-icon
@@ -35,7 +26,7 @@
                 </div>
                 <div>
                     <h3 class="text-xl">
-                        {{ workflow?.name }}
+                        {{ workflow?.metadata.name }}
                         <!-- <span
                             class="px-2 py-1 text-xs border border-transparent border-gray-200 rounded shadow-none hover:border-gray-300"
                             @click="$router.back()"
@@ -46,7 +37,7 @@
                 </div>
                 <div class="flex items-center gap-x-3">
                     <div
-                        class="flex items-center text-sm text-gray-500 cursor-pointer  gap-x-1"
+                        class="flex items-center text-sm text-gray-500 cursor-pointer gap-x-1"
                         @click="showUserPreviewDrawer"
                     >
                         <AtlanIcon v-if="creator?.first_name" icon="User" />
@@ -121,23 +112,20 @@
             const totalRun = ref(0)
             const latRun = ref('')
             const { id } = toRefs(props)
-            const { archivedList } = getArchivedRunList(id.value)
+            const { archivedList, filter_record } = getArchivedRunList(id.value)
             watch(archivedList, (newVal) => {
-                totalRun.value = newVal.filter_record ?? 0
-                if (newVal?.records?.length > 0) {
-                    const lastRun = newVal.records[newVal?.records.length - 1]
+                totalRun.value = filter_record.value ?? 0
+                if (newVal?.length > 0) {
+                    const lastRun = newVal[newVal.length - 0]
                     latRun.value = lastRun?.finished_at
-                        ? useTimeAgo(lastRun.finished_at).value
+                        ? useTimeAgo(lastRun.finished_at as string).value
                         : ''
                 }
             })
 
             // BEGIN: USER PREVIEW
-            const {
-                showPreview,
-                showUserPreview: openPreview,
-                setUserUniqueAttribute,
-            } = useUserPreview()
+            const { showUserPreview: openPreview, setUserUniqueAttribute } =
+                useUserPreview()
             const showUserPreviewDrawer = () => {
                 setUserUniqueAttribute(props.creator.id)
                 openPreview()
@@ -149,6 +137,5 @@
                 latRun,
             }
         },
-        // emits: ['openLogs'],
     })
 </script>

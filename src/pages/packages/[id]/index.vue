@@ -7,7 +7,15 @@
             const route = useRoute()
             const router = useRouter()
             const id = computed(() => route?.params?.id || '')
-            router.replace(`/packages/${id.value}/setup`)
+            const sandbox = computed(() => route?.query?.sandbox || '')
+            if (sandbox.value) {
+                router.replace({
+                    path: `/packages/${id.value}/setup`,
+                    query: { sandbox: 'true' },
+                })
+            } else {
+                router.replace(`/packages/${id.value}/setup`)
+            }
         },
     })
 </script>

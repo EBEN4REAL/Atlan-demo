@@ -3,7 +3,13 @@ import { getNodeSourceImage, getNodeTypeText } from './util.js'
 import useUpdateGraph from './useUpdateGraph'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { map as entityMap } from '~/services/meta/entity/key'
-import { iconVerified, iconProcess, iconEllipse } from './icons'
+import {
+    iconVerified,
+    iconDraft,
+    iconDeprecated,
+    iconProcess,
+    iconEllipse,
+} from './icons'
 
 const { updateEdgesData } = useUpdateGraph()
 const getType = (entity) => getNodeTypeText[entity.typeName]
@@ -67,6 +73,12 @@ export default async function useComputeGraph(
             let { displayText } = enrichedEntity
             const { schemaName, certificateStatus } = attributes
 
+            let certificateIcon = ''
+            if (certificateStatus === 'VERIFIED') certificateIcon = iconVerified
+            else if (certificateStatus === 'DEPRECATED')
+                certificateIcon = iconDeprecated
+            else if (certificateStatus === 'DRAFT') certificateIcon = iconDraft
+
             if (!displayText) displayText = attributes.name
 
             const searchItem = enrichedEntity
@@ -112,11 +124,7 @@ export default async function useComputeGraph(
                                 <div>
                                     <div class="node-text group-hover:underline">
                                         <div class="truncate">${displayText}</div>
-                                         ${
-                                             certificateStatus === 'VERIFIED'
-                                                 ? iconVerified
-                                                 : ''
-                                         }
+                                         ${certificateIcon}
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />

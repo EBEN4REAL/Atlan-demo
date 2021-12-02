@@ -84,6 +84,7 @@
 
     // import WorkflowMixin from '~/mixins/workflow'
     import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
+    import useRunList from '~/composables/workflow/useRunList'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
@@ -104,6 +105,7 @@
                 required: true,
             },
         },
+        emits: ['setSelectedGraph', 'setSelectedPod', 'openLog'],
         setup(props, { emit }) {
             const route = useRoute()
 
@@ -112,65 +114,24 @@
             const records = ref([])
             const graphData = ref({})
             const id = computed(() => route?.params?.id || '')
-            const list = ref([])
             const loadingGeneral = ref(true)
 
             /** METHODS */
-
-            // getRunList
-            const { liveList, mutate: mutateRunList } = getRunList(id.value)
-            // getArchivedRunList
             const {
+                list,
+                liveList,
                 archivedList,
+                error,
                 isLoading,
-                mutate: mutateArchivedList,
-            } = getArchivedRunList(id.value, true)
+                isLoadMore,
+                loadMore,
+                isReady,
+                execute,
+            } = useRunList(id.value)
+
             // watcher
             watch([liveList, archivedList], ([newX, newY]) => {
                 if (newX && newY) {
-                    let liveRunItems = []
-                    let archivedRunItems = []
-                    if (newX?.items?.length) {
-                        const mappedItems = newX.items.map((x) => {
-                            const { status, metadata, spec } = x
-                            const { name, uid } = metadata
-                            const {
-                                startedAt: started_at,
-                                finishedAt: finished_at,
-                                phase,
-                            } = status
-                            const obj = {
-                                name,
-                                uid,
-                                started_at,
-                                finished_at,
-                                phase,
-                            }
-                            obj.workflow = { status, metadata, spec }
-                            return obj
-                        })
-                        const orderedItems = mappedItems.sort(
-                            (a, b) =>
-                                new Date(b.finished_at) -
-                                new Date(a.finished_at)
-                        )
-
-                        liveRunItems = orderedItems
-                    }
-
-                    if (newY?.records?.length) {
-                        const orderedRecords = newY.records.sort(
-                            (a, b) =>
-                                new Date(b.finished_at) -
-                                new Date(a.finished_at)
-                        )
-
-                        archivedRunItems = orderedRecords
-                    }
-
-                    list.value = [...liveRunItems, ...archivedRunItems]
-                    records.value = list.value
-
                     if (!selectedRunName.value) {
                         const idMonitoring = route.query.idmonitoring
                         graphData.value =
@@ -194,8 +155,7 @@
                 emit('setSelectedPod', clickedPod)
             }
             const handleRefresh = () => {
-                mutateRunList()
-                mutateArchivedList()
+                execute(id.value)
             }
             return {
                 graphData,
@@ -203,7 +163,6 @@
                 list,
                 openLog,
                 handleClickNode,
-                selectedPod,
                 loadingGeneral,
                 handleRefresh,
                 ...useWorkFlowHelper(),

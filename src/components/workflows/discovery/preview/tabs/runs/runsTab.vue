@@ -1,31 +1,53 @@
 <template>
     <div
         v-if="isLoading"
-        class="flex items-center justify-center h-full text-sm leading-none"
+        class="flex items-center justify-center text-sm leading-none"
     >
-        <a-spin size="small" class="mr-2 leading-none"></a-spin
-        ><span>Getting Runs</span>
+        <AtlanIcon icon="Loader" class="h-5 mr-2 animate-spin" />
+        <span>Getting Runs</span>
     </div>
     <div v-else-if="list.length" v-auth="access.LIST_RUNS">
-        <!-- <div class="flex px-4 mt-4 mb-4">
-            <a-input-search
-                v-model:value="searchText"
-                placeholder="Search Members"
-                class="mr-1"
-                size="default"
-                :allow-clear="true"
-            ></a-input-search>
-            <a-button class="p-2 ml-2 rounded">
-                <AtlanIcon icon="FilterDot" class="h-4" />
-            </a-button>
-        </div> -->
-        <RunCard
-            v-for="(r, x) in searchText ? filterList(searchText) : list"
-            :key="x"
-            :r="r"
-            :select-enabled="true"
-            @click="handleClickRunCard(r)"
-        />
+        <VirtualList
+            :class="{ 'animate-pulse': isLoading }"
+            :data="list"
+            data-key="metadata"
+            variable-height
+        >
+            <template #default="{ item }">
+                <RunCard
+                    :r="item"
+                    :select-enabled="true"
+                    @select="handleClickRunCard($event)"
+                />
+            </template>
+            <template #footer>
+                <div
+                    v-if="isLoadMore || isLoading"
+                    class="flex items-center justify-center"
+                >
+                    <button
+                        :disabled="isLoading"
+                        class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                        :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
+                        @click="loadMore"
+                    >
+                        <template v-if="!isLoading">
+                            <p
+                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                            >
+                                Load more
+                            </p>
+                            <AtlanIcon icon="ArrowDown" />
+                        </template>
+                        <AtlanIcon
+                            v-else
+                            icon="Loader"
+                            class="h-5 animate-spin"
+                        />
+                    </button>
+                </div>
+            </template>
+        </VirtualList>
     </div>
     <EmptyView
         v-else
@@ -54,17 +76,17 @@
     // Assets
 
     // Types
-    import { assetInterface } from '~/types/assets/asset.interface'
 
     // Composables
-    import { getArchivedRunList } from '~/composables/workflow/useWorkflowList'
     import access from '~/constant/accessControl/map'
+    import useRunList from '~/composables/workflow/useRunList'
+    import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
-        components: { RunCard, EmptyView },
+        components: { RunCard, EmptyView, VirtualList },
         props: {
             selectedWorkflow: {
-                type: Object as PropType<assetInterface>,
+                type: Object,
                 required: true,
             },
             isLoaded: {
@@ -76,54 +98,33 @@
             const router = useRouter()
             const { selectedWorkflow: item } = toRefs(props)
             const searchText = ref('')
-            const list = ref([])
-            const error = ref("")
-            const isLoading = ref(false)
-            const filterList = ref([])
-            const archivedList = ref([])
 
-            // getArchivedRunList
-            const handleGetDataRun = () => {
-              isLoading.value = true
-              const { archivedList: archivedListW, error: errorW, isLoading: isLoadingW, filterList: filterListW } =
-                  getArchivedRunList(item.value.name, true)
-              // watcher
-              watch(isLoadingW, (newVal) => isLoading.value = newVal)
-              watch(errorW, (newVal) => error = newVal)
-              watch(filterListW, (newVal) => filterList.value = newVal)
-              watch(archivedListW, (newVal) => {
-                  archivedList.value = newVal
-                  if (newVal) {
-                      let archivedRunItems = []
+            const { list, error, isLoading, isLoadMore, loadMore, execute } =
+                useRunList(item.value.name)
 
-                      if (newVal?.records?.length)
-                          archivedRunItems = newVal.records
+            watch(
+                () => item.value.name,
+                (v) => {
+                    execute(v)
+                }
+            )
 
-                      list.value = [...archivedRunItems]
-                  }
-              })
-            } 
-            // for first Time Run
-            handleGetDataRun()           
-            watch(item, () => {
-              handleGetDataRun()
-            })
             const handleClickRunCard = (prop) => {
-              const {name} = item.value
-              const id = prop.uid
-              router.push(`/workflows/${name}/monitor?idmonitoring=${id}`)
+                const { name } = item.value
+                const id = prop.uid
+                router.push(`/workflows/${name}/monitor?idmonitoring=${id}`)
             }
 
             return {
                 access,
                 searchText,
                 list,
-                filterList,
-                archivedList,
                 error,
                 isLoading,
                 emit,
-                handleClickRunCard
+                isLoadMore,
+                loadMore,
+                handleClickRunCard,
             }
         },
     })

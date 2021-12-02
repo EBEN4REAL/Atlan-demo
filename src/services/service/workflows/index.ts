@@ -1,5 +1,9 @@
 import { useAPI } from '~/services/api/useAPI'
 import { map } from './key'
+import {
+    ArchivedRunsResponse,
+    LiveRunsResponse,
+} from '~/types/workflow/runs.interface'
 
 export const URL = {
     WorkflowList: '/workflows/default',
@@ -45,6 +49,17 @@ const getWorkflowPackagesByName = ({ pathVariables, options }) => {
         options || {}
     )
 }
+
+const createWorkflowPackage = ({ params, body, options }) =>
+    useAPI(
+        map.CREATE_WORKFLOW,
+        'POST',
+        {
+            params,
+            body,
+        },
+        options || {}
+    )
 
 const getWorkflowPackagesConfigMap = ({ params, options }) =>
     useAPI(
@@ -126,13 +141,18 @@ const stopRun = (pathVariables) =>
     )
 
 const getRunList = (reqOptions) =>
-    useAPI(map.WORKFLOW_RUN, 'GET', reqOptions, {})
+    useAPI<LiveRunsResponse>(map.WORKFLOW_RUN, 'GET', reqOptions, {})
 
 const getArtifacts = (reqOptions) =>
     useAPI(map.GET_ARTIFACTS, 'GET', reqOptions, {})
 
 const getArchivedRunList = (reqOptions) =>
-    useAPI(map.ARCHIVED_WORKFLOW_RUN, 'GET', reqOptions, {})
+    useAPI<ArchivedRunsResponse>(
+        map.ARCHIVED_WORKFLOW_RUN,
+        'GET',
+        reqOptions,
+        {}
+    )
 
 const deleteWorkflowByName = ({ pathVariables, immediate, options }) =>
     useAPI(
@@ -233,4 +253,5 @@ export const Workflows = {
     getSchedules,
     getArchivedRunLogs,
     getArtifacts,
+    createWorkflowPackage,
 }

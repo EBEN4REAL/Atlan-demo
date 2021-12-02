@@ -4,7 +4,7 @@
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
         <Summary :asset="selectedAsset" />
-        <Readme :guid="readmeGuid(selectedAsset)" />
+        <Readme :asset="selectedAsset" />
         <Resources :asset="selectedAsset" />
     </div>
 </template>
@@ -17,7 +17,6 @@
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Readme from '@/common/widgets/readme/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'GlossaryOverview',
@@ -27,11 +26,6 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-        },
-        setup() {
-            const { readmeGuid } = useAssetInfo()
-
-            return { readmeGuid }
         },
     })
 </script>

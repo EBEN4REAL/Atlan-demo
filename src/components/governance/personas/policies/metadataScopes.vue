@@ -13,6 +13,7 @@
         <a-collapse-panel v-for="(scope, idx) in scopeList" :key="scope.type">
             <template #header>
                 <a-checkbox
+                    data-test-id="checkbox"
                     :checked="
                         groupedActions[idx].scopes.length ===
                         scopeList[idx].scopes.length
@@ -23,13 +24,15 @@
                             scopeList[idx].scopes.length
                     "
                     @click.stop="toggleCheckAll(idx)"
-                ></a-checkbox>
-                {{ scope.type }}
+                >
+                    {{ scope.type }}
+                </a-checkbox>
             </template>
             <a-checkbox-group
                 :value="groupedActions[idx].scopes"
                 :name="scope.type"
                 :options="scope.scopes"
+                class="capitalize"
                 @update:value="updateSelection(scope.type, $event)"
             />
         </a-collapse-panel>

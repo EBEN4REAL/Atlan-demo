@@ -55,7 +55,7 @@
                         <template v-for="user in userList" :key="user.id">
                             <a-checkbox
                                 :value="user.id"
-                                class="flex items-center w-full py-2 border-b border-gray-100 "
+                                class="flex items-center w-full py-2 border-b border-gray-100"
                                 @change="handleChange"
                             >
                                 <UserCard :user="user" :minimal="true" />
@@ -141,7 +141,7 @@
                 getUserList,
                 isLoading,
                 error,
-            } = useUsers(userListAPIParams)
+            } = useUsers(userListAPIParams, 'LIST_ALL_USERS')
 
             const handleSearch = useDebounceFn(() => {
                 userListAPIParams.filter = {

@@ -1,10 +1,10 @@
 <template>
-    <div class="z-20 flex flex-col bg-white" v-if="selectedAsset?.guid">
+    <div v-if="selectedAsset?.guid" class="z-20 flex flex-col bg-white">
         <AssetPreview
-            :mutateTooltip="true"
-            :selectedAsset="selectedAsset"
-            @asset-mutation="() => {}"
+            :mutate-tooltip="true"
+            :selected-asset="selectedAsset"
             page="discovery"
+            @asset-mutation="() => {}"
         ></AssetPreview>
     </div>
     <div></div>

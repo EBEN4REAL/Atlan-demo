@@ -3,6 +3,7 @@
         v-if="!isItem"
         ref="assetdiscovery"
         @setup="handleSetup"
+        @sandbox="handleSandbox"
     ></PackageDiscovery>
     <router-view :selectedPackage="selectedPackage" v-else></router-view>
 </template>
@@ -12,27 +13,40 @@
     import { useRoute, useRouter } from 'vue-router'
 
     import PackageDiscovery from '@/packages/index.vue'
+    import { useMagicKeys } from '@vueuse/core'
 
     export default defineComponent({
         name: 'WorkflowSetupPage',
         components: {
             PackageDiscovery,
         },
-        emits: ['preview'],
         setup(props, { emit }) {
             const selectedPackage = ref(null)
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
             const router = useRouter()
+
             const handleSetup = (item: any) => {
                 selectedPackage.value = item
-                const url = selectedPackage.value.name
+                const url = selectedPackage.value.metadata.name
 
-                router.push(`/packages/${url}`)
+                router.push({
+                    path: `/packages/${url}`,
+                    query: {},
+                })
+            }
+            const handleSandbox = (item: any) => {
+                selectedPackage.value = item
+                const url = selectedPackage.value.metadata.name
+                router.push({
+                    path: `/packages/${url}`,
+                    query: { sandbox: 'true' },
+                })
             }
 
             return {
                 handleSetup,
+                handleSandbox,
                 selectedPackage,
                 isItem,
             }

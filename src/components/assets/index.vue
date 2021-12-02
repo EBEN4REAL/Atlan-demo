@@ -27,7 +27,7 @@
                         :autofocus="true"
                         :allow-clear="true"
                         size="large"
-                        class="px-6"
+                        :class="page !== 'admin' ? 'px-6' : ''"
                         :placeholder="placeholder"
                         @change="handleSearchChange"
                     >
@@ -58,11 +58,13 @@
                             </a-popover>
                         </template>
                         <template #postFilter>
-                            <PreferenceSelector
-                                v-model="preference"
-                                @change="handleChangePreference"
-                                @display="handleDisplayChange"
-                            />
+                            <div style="max-width: 330px">
+                                <PreferenceSelector
+                                    v-model="preference"
+                                    @change="handleChangePreference"
+                                    @display="handleDisplayChange"
+                                />
+                            </div>
                         </template>
                     </SearchAdvanced>
                 </div>
@@ -109,6 +111,9 @@
                     ></EmptyView>
                 </div>
 
+                <!--                             :show-check-box="
+                                preference?.display?.includes('enableCheckbox')
+                            " -->
                 <AssetList
                     v-else
                     ref="assetlistRef"
@@ -124,6 +129,17 @@
                             :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
                             :preference="preference"
+                            :show-check-box="showCheckBox"
+                            :bulk-select-mode="
+                                bulkSelectedAssets && bulkSelectedAssets.length
+                                    ? true
+                                    : false
+                            "
+                            :is-checked="checkSelectedCriteriaFxn(item)"
+                            @listItem:check="
+                                (e, item) => updateBulkSelectedAssets(item)
+                            "
+                            :class="page !== 'admin' ? 'mx-3' : ''"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -133,7 +149,17 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed, inject } from 'vue'
+    import {
+        toRaw,
+        PropType,
+        defineComponent,
+        ref,
+        toRefs,
+        Ref,
+        computed,
+        inject,
+        watch,
+    } from 'vue'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -159,6 +185,7 @@
     import AtlanIcon from '../common/icon/atlanIcon.vue'
     import useAssetStore from '~/store/asset'
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
+    import useBulkUpdateStore from '~/store/bulkUpdate'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -184,10 +211,30 @@
                 required: false,
                 default: () => {},
             },
+            preference: {
+                type: Object as PropType<any>,
+                required: false,
+                default: () => {
+                    return {
+                        sort: 'default',
+                        display: [],
+                    }
+                },
+            },
             showAggrs: {
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            showCheckBox: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            checkedCriteria: {
+                type: String,
+                required: false,
+                default: 'guid',
             },
             staticUse: {
                 type: Boolean,
@@ -201,14 +248,15 @@
             },
         },
         setup(props, { emit }) {
+            const { preference: preferenceProp, checkedCriteria } =
+                toRefs(props)
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({})
-            const preference = ref({
-                sort: 'default',
-                display: [],
-            })
+            const selectedAssetId = ref('')
+            /* Assiging prefrence props if any from props */
+            const preference = ref(toRaw(preferenceProp.value))
             const aggregations = ref(['typeName'])
             const postFacets = ref({
                 typeName: '__all',
@@ -226,7 +274,7 @@
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-            const { initialFilters, page } = toRefs(props)
+            const { initialFilters, page, projection } = toRefs(props)
             const discoveryStore = useAssetStore()
 
             if (discoveryStore.activeFacet && page.value === 'assets') {
@@ -252,6 +300,14 @@
                     ...initialFilters.value,
                 }
             }
+            /* Watcher for parent component changes initial filters otherwise req won't be triggered */
+            watch(initialFilters, () => {
+                facets.value = {
+                    ...facets.value,
+                    ...initialFilters.value,
+                }
+                quickChange()
+            })
 
             const {
                 list,
@@ -343,7 +399,86 @@
                 return 'Search all assets'
             })
 
+            /* BULK SELECTION */
+            const store = useBulkUpdateStore()
+            const bulkSelectedAssets: Ref<any[]> = ref(
+                toRaw(store.bulkSelectedAssets)
+            )
+            watch(store, () => {
+                bulkSelectedAssets.value = store.$state.bulkSelectedAssets
+            })
+            const updateBulkSelectedAssets = (listItem) => {
+                switch (checkedCriteria.value) {
+                    case 'guid': {
+                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
+                            (item) => item?.guid === listItem?.guid
+                        )
+                        if (itemIndex >= 0)
+                            bulkSelectedAssets.value.splice(itemIndex, 1)
+                        else bulkSelectedAssets.value.push(listItem)
+                        break
+                    }
+                    case 'qualifiedName': {
+                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
+                            (qualifiedName) =>
+                                qualifiedName ===
+                                listItem?.attributes?.qualifiedName
+                        )
+                        if (itemIndex >= 0)
+                            bulkSelectedAssets.value.splice(itemIndex, 1)
+                        else
+                            bulkSelectedAssets.value.push(
+                                listItem?.attributes?.qualifiedName
+                            )
+                        break
+                    }
+                    default: {
+                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
+                            (item) => item?.guid === listItem?.guid
+                        )
+                        if (itemIndex >= 0)
+                            bulkSelectedAssets.value.splice(itemIndex, 1)
+                        else bulkSelectedAssets.value.push(listItem)
+                    }
+                }
+                store.setBulkMode(!!bulkSelectedAssets.value.length)
+                store.setBulkSelectedAssets(bulkSelectedAssets.value)
+            }
+            /* By default it will be guid, but it can be through qualifiedName */
+            const checkSelectedCriteriaFxn = (item) => {
+                switch (checkedCriteria.value) {
+                    case 'guid': {
+                        return (
+                            bulkSelectedAssets.value.findIndex(
+                                (listItem) => listItem.guid === item.guid
+                            ) > -1
+                        )
+                        break
+                    }
+                    case 'qualifiedName': {
+                        return (
+                            bulkSelectedAssets.value.findIndex(
+                                (qualifiedName) =>
+                                    qualifiedName ===
+                                    item?.attributes.qualifiedName
+                            ) > -1
+                        )
+                        break
+                    }
+                    default: {
+                        return (
+                            bulkSelectedAssets.value.findIndex(
+                                (listItem) => listItem.guid === item.guid
+                            ) > -1
+                        )
+                    }
+                }
+            }
+
             return {
+                checkSelectedCriteriaFxn,
+                selectedAssetId,
+                projection,
                 handleFilterChange,
                 isLoading,
                 queryText,
@@ -371,8 +506,9 @@
                 selectedAsset,
                 updateList,
                 updateCurrentList,
-                placeholder,
                 searchDirtyTimestamp,
+                updateBulkSelectedAssets,
+                bulkSelectedAssets,
             }
         },
     })

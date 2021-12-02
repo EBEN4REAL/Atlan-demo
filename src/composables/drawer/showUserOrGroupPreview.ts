@@ -13,11 +13,13 @@ import { useGroup } from '~/composables/group/useGroups'
  * argument will not be yield any results.
  * @param {string} previewType
  */
-export function useUserOrGroupPreview(previewType: string) {
+// type TypeUserProp = ? String;
+export function useUserOrGroupPreview(previewType: string, userNameProp = "") {
     if (previewType === 'user') {
         // Using the usePreview composable.
         const { userId, uniqueAttribute, username, finalTabs, defaultTab } =
             useUserPreview()
+        const userNameUser = userNameProp || username.value
 
         // Params for obtaining that one user.
         const params = computed(() => ({
@@ -27,17 +29,17 @@ export function useUserOrGroupPreview(previewType: string) {
             filter:
                 uniqueAttribute.value === 'username'
                     ? {
-                          $and: [
-                              { email_verified: true },
-                              { username: username.value },
-                          ],
-                      }
+                        $and: [
+                            { email_verified: true },
+                            { username: userNameUser },
+                        ],
+                    }
                     : {
-                          $and: [
-                              { email_verified: true },
-                              { id: userId.value },
-                          ],
-                      },
+                        $and: [
+                            { email_verified: true },
+                            { id: userId.value },
+                        ],
+                    },
         }))
 
         const { userList, getUserList, isLoading, error } = useUsers(
@@ -91,7 +93,7 @@ export function useUserOrGroupPreview(previewType: string) {
             tabs: finalTabs,
             handleUpdate: handleUserUpdate,
         }
-    } else if (previewType === 'group') {
+    } if (previewType === 'group') {
         // Using the useGroupPreview composable.
         const { groupId, uniqueAttribute, groupAlias, finalTabs, defaultTab } =
             useGroupPreview()

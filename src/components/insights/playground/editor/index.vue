@@ -14,7 +14,10 @@
                                 :class="showcustomToolBar ? 'bg-gray-300' : ''"
                                 @click="toggleCustomToolbar"
                             >
-                                {&nbsp;}
+                                <AtlanIcon
+                                    icon="CustomVariable"
+                                    class="w-4 h-4"
+                                />
                             </div>
                         </a-tooltip>
                         <a-tooltip color="#363636">
@@ -34,7 +37,7 @@
                                 "
                                 @click="formatDocument"
                             >
-                                <AtlanIcon icon="FormatText" class="w-5 h-5" />
+                                <AtlanIcon icon="FormatText" class="w-4 h-4" />
                             </div>
                         </a-tooltip>
 
@@ -260,7 +263,7 @@
                                 </div>
                             </AtlanBtn>
                         </a-dropdown>
-                        <ThreeDotMenu />
+                        <ThreeDotMenu v-model:showVQB="showVQB" />
                     </div>
                 </div>
             </div>
@@ -277,10 +280,12 @@
                 :parentFolder="queryFolderNamespace"
                 @onSaveQuery="saveQuery"
             />
+            <VQB v-if="showVQB" />
             <Monaco @editorInstance="setInstance" />
 
             <div
                 class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
+                style="z-index: 2"
             >
                 <div class="flex items-center">
                     <!-- <WarehouseConnector /> -->
@@ -398,9 +403,11 @@
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
 
     import { Folder } from '~/types/insights/savedQuery.interface'
+    import VQB from '~/components/insights/playground/editor/vqb/index.vue'
 
     export default defineComponent({
         components: {
+            VQB,
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
             CustomVariablesNav,
             SaveQueryModal,
@@ -439,6 +446,8 @@
                 rowsCount: 100,
             })
             const showcustomToolBar = ref(false)
+            const showVQB = ref(true)
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -519,10 +528,17 @@
                         activeInlineTab,
                         toRaw(editorInstance.value)
                     )
+                    // console.log('error deco:', status)
                     /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
                     const errorName =
                         activeInlineTab.value?.playground?.resultsPane?.result
                             ?.queryErrorObj?.errorName
+
+                    console.log(
+                        'error data: ',
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    )
                     if (LINE_ERROR_NAMES.includes(errorName)) {
                         setErrorDecorations(
                             activeInlineTab,
@@ -559,7 +575,9 @@
                         limitRows,
                         onRunCompletion,
                         onQueryIdGeneration,
-                        selectedText
+                        selectedText,
+                        editorInstance,
+                        monacoInstance
                     )
                 } else {
                     abortQuery(
@@ -590,7 +608,9 @@
                         limitRows,
                         onRunCompletion,
                         onQueryIdGeneration,
-                        selectedText
+                        selectedText,
+                        editorInstance,
+                        monacoInstance
                     )
                 }
             }
@@ -749,6 +769,7 @@
 
             /* ------------------------------------------ */
             return {
+                showVQB,
                 permissions,
                 saveOrUpdate,
                 toggleExplorerPane,

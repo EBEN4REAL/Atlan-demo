@@ -56,6 +56,9 @@ export function useBody(
     base.from(offset || 0)
     base.size(limit || 0)
 
+    // Only showing ACTIVE assets for a connection
+    base.filter('term', '__state', 'ACTIVE')
+
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
         const filterObject = facets[mkey]
@@ -314,12 +317,12 @@ export function useBody(
                                 }
                                 if (element.operator === 'lessThan') {
                                     base.filter('range', element.operand, {
-                                        gt: element.value,
+                                        lt: element.value,
                                     })
                                 }
                                 if (element.operator === 'lessThanEqual') {
                                     base.filter('range', element.operand, {
-                                        gte: element.value,
+                                        lte: element.value,
                                     })
                                 }
                                 if (element.operator === 'boolean') {

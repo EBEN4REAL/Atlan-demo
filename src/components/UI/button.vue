@@ -2,6 +2,7 @@
     <button
         :class="[size, color, padding]"
         :disabled="disabled"
+        :data-test-id="dataTestId"
         class="flex items-center justify-center flex-none gap-x-1 atlan-btn"
     >
         <slot name="prefix" />
@@ -51,6 +52,11 @@
             disabled: {
                 type: Boolean,
                 default: () => false,
+                required: false,
+            },
+            dataTestId: {
+                type: String,
+                default: () => 'atlan-btn',
                 required: false,
             },
             isLoading: {

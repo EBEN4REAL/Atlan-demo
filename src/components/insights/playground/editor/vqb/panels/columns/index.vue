@@ -1,13 +1,14 @@
 <template>
     <div>
         <div
-            :class="
+            @mouseover="handleMouseOver"
+            @mouseout="handleMouseOut"
+            :class="[
                 expand
-                    ? [' border-gray-300 rounded group border']
-                    : [
-                          ' border-white hover:border-gray-300 rounded border group',
-                      ]
-            "
+                    ? 'border-gray-300 rounded  border '
+                    : 'border-white  rounded border ',
+                containerHovered ? 'border-gray-300' : '',
+            ]"
         >
             <div
                 @click="toggleExpand"
@@ -60,7 +61,10 @@
                     </div>
 
                     <div
-                        class="flex border border-gray-300 rounded opacity-0  group-hover:opacity-100 items-strech"
+                        :class="[
+                            containerHovered ? 'opacity-100' : 'opacity-0',
+                            'flex border border-gray-300 rounded   items-strech',
+                        ]"
                     >
                         <div
                             class="
@@ -76,23 +80,10 @@
                             <a-checkbox v-model:checked="checkbox"></a-checkbox>
                         </div>
                         <div class="border-r border-gray-300">
-                            <AtlanBtn
-                                class="
-                                    flex-none
-                                    px-3.5
-                                    py-1
-                                    border-none border-r border-gray-300
-                                "
-                                size="sm"
-                                color="secondary"
-                                @click.stop="toggleActionPanel"
-                                padding="compact"
-                            >
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="-mx-1 text-gray"
-                                ></AtlanIcon>
-                            </AtlanBtn>
+                            <Actions
+                                v-model:submenuHovered="submenuHovered"
+                                v-model:containerHovered="containerHovered"
+                            />
                         </div>
                         <div class="border-r border-gray-300">
                             <AtlanBtn
@@ -123,12 +114,12 @@
                 </div>
 
                 <div
-                    class=""
-                    :class="
+                    :class="[
                         expand
-                            ? 'absolute bg-gray-300 opacity-0'
-                            : 'absolute bg-gray-300 group-hover:opacity-0'
-                    "
+                            ? 'absolute bg-gray-300 '
+                            : 'absolute bg-gray-300 ',
+                        containerHovered ? 'opacity-0' : '',
+                    ]"
                     :style="`width: 1px; left: 55px; z-index: 1; ${findTimeLineHeight(
                         Number(index)
                     )}`"
@@ -136,7 +127,6 @@
             </div>
             <!-- Show on expand -->
             <ColumnSubPanel :expand="expand" />
-            <Actions v-if="actionPanel" />
         </div>
         <div
             @click.stop="() => {}"
@@ -190,6 +180,8 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
+            const containerHovered = ref(false)
+            const submenuHovered = ref(false)
             const expand = ref(false)
             const actionPanel = ref(false)
             const activeInlineTabKey = inject(
@@ -241,8 +233,20 @@
             const toggleActionPanel = () => {
                 actionPanel.value = !actionPanel.value
             }
+            const handleMouseOut = () => {
+                if (containerHovered.value && !submenuHovered.value) {
+                    containerHovered.value = false
+                }
+            }
+            const handleMouseOver = () => {
+                if (!containerHovered.value) containerHovered.value = true
+            }
 
             return {
+                submenuHovered,
+                handleMouseOver,
+                handleMouseOut,
+                containerHovered,
                 toggleActionPanel,
                 actionPanel,
                 toggleExpand,

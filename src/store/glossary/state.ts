@@ -14,7 +14,7 @@ export interface State {
 
 export const state: State = {
     list: useStorage('glossary', []),
-    selectedGTC: useStorage('glossary_selectedGTC', {}),
+    selectedGTC: {},
     activeFacetTab: useStorage('glossary_activeFacetTab', []),
     preferences: useStorage('glossary_preferences', {}),
     activeFacet: useStorage('glossary_activeFacet', {}),

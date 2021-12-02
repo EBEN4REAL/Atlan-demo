@@ -203,7 +203,7 @@ const useLoadQueryData = ({
         body.value.dsl.query.bool.must.push(
             {
                 term: {
-                    "parentFolderQualifiedName": queryFolderNamespace.value.attributes.qualifiedName
+                    "parentFolderQualifiedName": queryFolderNamespace?.value?.attributes?.qualifiedName
                 }
             }
         )

@@ -100,7 +100,7 @@
                         ></AnnouncementModal
                     ></a-menu-item
                 >
-                <a-menu-item
+                <!-- <a-menu-item
                     key="archive"
                     class="flex items-center text-red-700"
                 >
@@ -108,7 +108,7 @@
                         <AtlanIcon icon="Trash" />
                         <span class="pl-2 text-sm">Archive</span>
                     </div>
-                </a-menu-item>
+                </a-menu-item> -->
             </a-menu>
         </template>
     </a-dropdown>
@@ -120,7 +120,6 @@
     import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
 
     // utils
-    import { copyToClipboard } from '~/utils/clipboard'
     import { assetInterface } from '~/types/assets/asset.interface'
     export default defineComponent({
         components: { AnnouncementModal },
@@ -135,22 +134,15 @@
                 required: true,
             },
         },
-        setup(props, context) {
+        setup() {
             // data
             const isVisible = ref(false)
 
-            const { asset } = toRefs(props)
             const closeMenu = () => {
                 isVisible.value = false
             }
-            function handleCopyProfileLink() {
-                const baseUrl = window.location.origin
-                const text = `${baseUrl}/assets/${asset.value?.guid}/overview`
-                copyToClipboard(text)
-            }
 
             return {
-                handleCopyProfileLink,
                 isVisible,
                 closeMenu,
             }

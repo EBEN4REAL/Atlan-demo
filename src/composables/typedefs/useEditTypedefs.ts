@@ -6,7 +6,7 @@ import { useOptions } from '~/services/api/common'
 
 import { Types } from '~/services/meta/types'
 
-export default function useCreateTypedefs(body: Ref<Record<string, any>>) {
+export default function useEditTypedefs(body: Ref<Record<string, any>>) {
     const options: useOptions = {}
     options.asyncOptions = ref({
         immediate: false,
@@ -15,19 +15,15 @@ export default function useCreateTypedefs(body: Ref<Record<string, any>>) {
         },
     })
 
-    const { data, error, isLoading, isReady, mutate } = Types.CreateTypedefs(body, options)
+    const { data, error, isLoading, mutate, isReady } = Types.EditTypedefs(body, options)
 
     const typedefStore = useTypedefStore()
 
     watch(data, () => {
         if(data.value?.classificationDefs?.length) {
-            typedefStore.appendClassificationList(data.value?.classificationDefs)
-        }
-        if(data.value?.enumDefs?.length) {
-            typedefStore.appendEnumList(data.value?.enumDefs)
-        }
-        if(data.value?.businessMetadataDefs?.length) {
-            typedefStore.appendCustomMetadata(data.value?.businessMetadataDefs)
+            data.value?.classificationDefs.forEach((classification) => {
+                typedefStore.updateSingleClassification(classification)
+            })
         }
     })
 
@@ -36,6 +32,7 @@ export default function useCreateTypedefs(body: Ref<Record<string, any>>) {
             message.error(newError.response.data.errorMessage)
         }
     })
+    
     return {
         data,
         error,

@@ -206,9 +206,17 @@
                 </div>
             </div>
             <a-button-group>
-                <a-button block class="flex items-center justify-center">
-                    <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
-                </a-button>
+                <a-tooltip title="Query">
+                    <a-button
+                        @click="goToInsights(item)"
+                        block
+                        class="flex items-center justify-center"
+                    >
+                        <AtlanIcon
+                            icon="Query"
+                            class="mr-1 mb-0.5"
+                        /> </a-button
+                ></a-tooltip>
                 <ShareMenu :asset="item" :edit-permission="true">
                     <a-button block class="flex items-center justify-center">
                         <AtlanIcon icon="Share" class="mb-0.5" />
@@ -321,15 +329,19 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                getAssetQueryPath,
             } = useAssetInfo()
 
             const item = inject('selectedAsset')
 
-            const assetURL = (asset) => `/assets/${asset.guid}`
+            const router = useRouter()
+
+            const goToInsights = (asset) => {
+                router.push({ path: getAssetQueryPath(asset) })
+            }
 
             const { Escape /* keys you want to monitor */ } = useMagicKeys()
 
-            const router = useRouter()
             watch(Escape, (v) => {
                 if (v) back()
             })
@@ -348,7 +360,6 @@
                 getConnectorImage,
                 assetType,
                 dataType,
-                assetURL,
                 rowCount,
                 columnCount,
                 sizeBytes,
@@ -368,6 +379,7 @@
                 tableName,
                 viewName,
                 back,
+                goToInsights,
             }
         },
     })

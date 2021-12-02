@@ -145,7 +145,7 @@ export function useEditor(
             // console.log('cursor')
             if(type==='auto') {
                 // 1. find cursor position done
-                const pos = editorInstance.getPosition()
+                const pos = editorInstance?.getPosition()
                 console.log('position: ', pos)
                 console.log('position editor: ', editorInstance)
                 
@@ -160,14 +160,14 @@ export function useEditor(
                 if(queryTextValues && queryTextValues.length) {
                     queryTextValues.forEach(query=> {
                         let q = `${query};`
-                        let match = toRaw(editorInstance).getModel().findMatches(`${q.replace(/^\s+|\s+$/g, '')}`);
+                        let match = toRaw(editorInstance)?.getModel()?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`);
                         queryPositions.push({ match: match, token: query.replace(/^\s+|\s+$/g, ''), rawQuery: query})
                     })
                 }
                 
                 console.log('position match: ', queryPositions) 
 
-                let semiColonMatchs = toRaw(editorInstance).getModel().findMatches(';');
+                let semiColonMatchs = toRaw(editorInstance)?.getModel()?.findMatches(';');
                 console.log('position match semi: ', semiColonMatchs)
 
                 let independentQueryMatches = semiColonMatchs.map((match, index)=> {
@@ -232,28 +232,6 @@ export function useEditor(
                             }
                         }
                         break;
-                        // if(pos.column<independentQueryMatches[i+1].range.startColumn) {
-                        //     lineIndex = independentQueryMatches[i]
-                        //     // console.log('position match line equal1: ', {
-                        //     //     pos: pos.column,
-                        //     //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
-                        //     //     lineIndex
-                        //     // })
-                            
-                        //     break;
-                        // } else {
-                        //     if(pos.lineNumber===independentQueryMatches[i].range.endLineNumber && pos.column===independentQueryMatches[i+1].range.startColumn) { 
-                        //         lineIndex = independentQueryMatches[i]
-                        //     } else {
-                        //         lineIndex = independentQueryMatches[i+1]
-                        //     }
-                        //     // console.log('position match line equal2: ', {
-                        //     //     pos: pos.column,
-                        //     //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
-                        //     //     lineIndex
-                        //     // })
-                        //     break;
-                        // }
                     } else {
                         
                     }
@@ -263,15 +241,6 @@ export function useEditor(
                 }
 
                 
-
-                // let lineIndex = independentQueryMatches.findIndex((match)=> {
-                //     if(match.range.startLineNumber<pos.lineNumber) {
-                //         return match   
-                //     }
-                //     if(match.range.endLineNumber===pos.lineNumber  && match.range.endColumn>pos.column) {
-                //         return match
-                //     }
-                // })
                 console.log('position match line: ', lineIndex)
 
 
@@ -458,7 +427,7 @@ export function useEditor(
     ) => {
         if (activeInlineTab.value) {
             activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                editor.deltaDecorations(
+                editor?.deltaDecorations(
                     activeInlineTab.value.playground.resultsPane.result
                         .errorDecorations,
                     []

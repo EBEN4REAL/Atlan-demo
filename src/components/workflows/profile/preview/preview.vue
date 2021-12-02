@@ -267,9 +267,10 @@
 
             const defaultValues = computed(() => {
                 const temp = {}
-                const valueArr =
-                    selectedWorkflow.value.spec.templates[0].dag.tasks[0]
-                        .arguments.parameters
+                const { entrypoint } = selectedWorkflow.value.spec
+                const valueArr = selectedWorkflow.value.spec.templates.find(
+                    (t) => t.name === entrypoint
+                ).dag.tasks[0].arguments.parameters
                 if (valueArr?.length)
                     valueArr.forEach((v) => {
                         const some = props.formConfig[props.selectedDag]?.find(

@@ -151,9 +151,9 @@ export default function updateAssetAttributes(selectedAsset) {
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-                certificateStatus(selectedAsset.value) ||
+            certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-                certificateStatusMessage(selectedAsset.value)
+            certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -256,7 +256,8 @@ export default function updateAssetAttributes(selectedAsset) {
             localDescription.value = description(selectedAsset?.value)
             descriptionRef.value?.handleReset(localDescription.value)
         }
-        message.error('Something went wrong. Please try again')
+        message.error(error.value?.response?.data?.errorCode + " " + error.value?.response?.data?.errorMessage.split(':')[0] ??
+            'Something went wrong')
     })
 
     whenever(isReady, () => {

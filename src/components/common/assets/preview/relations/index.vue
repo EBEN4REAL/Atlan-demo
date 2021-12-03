@@ -5,11 +5,7 @@
     >
         <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin" />
     </div>
-    <div v-else-if="filteredRelationshipAssets.length === 0" class="h-5/6">
-        <EmptyScreen emptyScreen="EmptyDiscover" desc="No relations found" />
-    </div>
-
-    <div v-else class="px-0 pt-4">
+    <div v-else-if="filteredRelationshipAssets.length > 0" class="px-0 pt-4">
         <div class="px-3 mb-1">
             <!-- searchbar -->
             <SearchAndFilter v-model:value="queryText" size="minimal">
@@ -42,7 +38,7 @@
                 <div class="">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="ml-1 text-gray-500 transition-transform duration-300 transform  hover:text-primary"
+                        class="ml-1 text-gray-500 transition-transform duration-300 transform hover:text-primary"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
@@ -78,6 +74,9 @@
             </a-collapse-panel>
         </a-collapse>
     </div>
+    <div v-else class="h-5/6">
+        <EmptyScreen empty-screen="EmptyDiscover" desc="No relations found" />
+    </div>
 </template>
 
 <script lang="ts">
@@ -108,7 +107,7 @@
         },
         setup(props) {
             const relationshipAssets = ref([])
-            const loading = ref(false)
+            const loading = ref(true)
             const assetId = ref('')
             const queryText = ref('')
             const activeKeys = ref([])
@@ -131,13 +130,20 @@
 
             const { useEntityRelationships } = useRelations
             const fetchData = () => {
+                loading.value = true
                 const { relationshipAssetTypes, isLoading } =
                     useEntityRelationships(selectedAsset.value?.guid)
                 relationshipAssets.value = relationshipAssetTypes.value
                 assetId.value = selectedAsset.value.guid
-                loading.value = isLoading.value
+                // loading.value = isLoading.value
                 watch(isLoading, (newVal) => {
-                    loading.value = newVal
+                    if(!newVal){
+                        setTimeout(() => {
+                            loading.value = newVal
+                        }, 600);
+                    }else {
+                        loading.value = newVal
+                    }
                 })
             }
             // filter required data

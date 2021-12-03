@@ -25,7 +25,7 @@
                 />
                 <div class="flex flex-col flex-1">
                     <!-- Info bar -->
-                    <div v-if="['table', 'column', 'powerbidashboard'].includes(item.typeName?.toLowerCase())" class="flex flex-wrap items-center mt-1">
+                    <div v-if="['table', 'column', 'powerbidashboard', 'powerbitile'].includes(item.typeName?.toLowerCase())" class="flex flex-wrap items-center mt-1">
                         <a-tooltip
                             v-if="connectorName(item)"
                             placement="left"
@@ -101,6 +101,51 @@
                                     <span>View - {{ viewName(item) }}</span>
                                 </template>
                             </a-tooltip>
+                        </div>
+                          <div v-if="['powerbidashboard', 'powerbitile'].includes(item.typeName?.toLowerCase())"  class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2">
+                            <div class="dot"/>
+                            <a-tooltip
+                                v-if="viewName(item)"
+                                placement="bottomLeft"
+                            >
+                                <div
+                                    v-if="viewName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="ViewGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ viewName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>View - {{ viewName(item) }}</span>
+                                </template>
+                            </a-tooltip>
+                        </div>
+                    </div>
+                    <div v-if="true" class="flex flex-wrap items-center mt-1">
+                        <a-tooltip
+                            v-if="connectorName(item)"
+                            placement="left"
+                        >
+                            <template #title>
+                                <span>{{ connectorName(item) }} </span>
+                                <span v-if="connectionName(item)">{{
+                                    `/${connectionName(item)}`
+                                }}</span>
+                            </template>
+                            <img
+                                :src="getConnectorImage(item)"
+                                class="h-3 mr-1 mb-0.5"
+                            />
+                        </a-tooltip>
+                        <div
+                            class="text-sm tracking-wider text-gray-500 uppercase"
+                        >
+                            {{ assetTypeLabel(item) || item.typeName }}
                         </div>
                     </div>
                     <div v-else class="flex flex-wrap items-center mt-1">

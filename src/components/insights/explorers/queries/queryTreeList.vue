@@ -27,14 +27,7 @@
                         />
                         <div
                             v-else-if="item.title === 'Load more'"
-                            class="
-                                flex flex-row
-                                w-full
-                                text-sm
-                                font-bold
-                                leading-5
-                                text-primary
-                            "
+                            class="flex flex-row w-full text-sm font-bold leading-5 text-primary"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">

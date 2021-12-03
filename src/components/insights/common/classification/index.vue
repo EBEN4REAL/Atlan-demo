@@ -81,9 +81,9 @@
                 )
             )
 
-            watch(modelValue, () => {
-                localValue.value = modelValue.value
-            })
+            // watch(modelValue, () => {
+            //     localValue.value = modelValue.value
+            // })
 
             // let selected = ref(filteredList.value[0])
 

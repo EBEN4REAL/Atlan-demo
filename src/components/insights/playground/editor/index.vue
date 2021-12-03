@@ -247,7 +247,7 @@
                         saveModalRef = el
                     }
                 "
-                :savedQueryType="'personal'"
+                :savedQueryType="defaultClassification"
                 :parentFolder="queryFolderNamespace"
                 @onSaveQuery="saveQuery"
             />
@@ -372,6 +372,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
@@ -466,6 +467,8 @@
             const openSaveQueryModal = () => {
                 showSaveQueryModal.value = true
             }
+            const { classificationList } = useTypedefData()
+            let defaultClassification = classificationList.value[0] ?? undefined
 
             // callback fxn
             const getData = (dataList, columnList, executionTime) => {
@@ -774,6 +777,7 @@
                 setInstance,
                 toggleRun,
                 queryFolderNamespace,
+                defaultClassification,
             }
         },
     })

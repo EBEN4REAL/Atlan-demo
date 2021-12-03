@@ -1,23 +1,19 @@
 <template>
     <div
-        :class="`w-full group`"
+        class="`w-9/11 group`"
         :style="`opacity: ${selectedNewFolder?.guid === item?.guid ? 0.5 : 1};`"
+        :class="`${
+            selectedNewFolder?.guid === item?.guid
+                ? 'bg-primary-focus w-9/11'
+                : 'bg-white'
+        }`"
     >
+        <!-- {{ selectedNewFolder }} -->
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
                     v-if="item.typeName === 'QueryFolder'"
-                    class="
-                        relative
-                        flex
-                        content-center
-                        w-full
-                        my-auto
-                        overflow-hidden
-                        text-sm
-                        leading-5
-                        text-gray-700
-                    "
+                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="py-1 parent-ellipsis-container">
                         <div class="flex w-full">
@@ -30,11 +26,7 @@
                                 class="w-5 h-5 my-auto mr-1"
                             ></AtlanIcon>
                             <span
-                                class="
-                                    mb-0
-                                    text-sm text-gray-700
-                                    parent-ellipsis-container-base
-                                "
+                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                 >{{ title(item) }}</span
                             >
                         </div>

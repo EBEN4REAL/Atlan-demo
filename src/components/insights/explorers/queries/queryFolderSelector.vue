@@ -21,7 +21,7 @@
             <div class="popover-container">
                 <div class="m-4 w-9/11">
                     <ClassificationDropdown
-                        :modelValue="classificationValue"
+                        :modelValue="savedQueryType2"
                         @change="onClassificationChange"
                     />
                 </div>
@@ -64,6 +64,7 @@
                                 :selected-keys="selectedKeys"
                                 :expanded-keys="expandedKeys"
                                 v-if="treeData.length"
+                                :selectedNewFolder="selectedFolderContext"
                             />
                             <div
                                 v-else
@@ -148,6 +149,7 @@
             const selectedFolder = ref('Folder')
             const selectedKey = ref<string[]>([])
             let dropdownVisible = ref(false)
+            let selectedFolderContext = ref({})
 
             // console.log('already selected: ', props.selectedFolderQF)
             // console.log('already selected: ', parentFolder)
@@ -179,6 +181,10 @@
                         }
                         selectedKey.value = [rootData.guid]
                         dropdownVisible.value = false
+                        selectedFolderContext.value = {
+                            ...rootData,
+                            selectedFolderClassification: savedQueryType2.value,
+                        }
 
                         emit('folderChange', data)
                     } else {
@@ -186,6 +192,12 @@
                             selectedKey.value = [item.guid]
                             selectedFolder.value = item.title
                             dropdownVisible.value = false
+
+                            selectedFolderContext.value = {
+                                ...parentFolder.value,
+                                selectedFolderClassification:
+                                    savedQueryType2.value,
+                            }
 
                             emit('folderChange', {
                                 dataRef: parentFolder.value,
@@ -197,6 +209,7 @@
                 },
                 { immediate: true }
             )
+
             const onSelect = (selected: any, event: any) => {
                 if (event === 'root') {
                     let rootData = {
@@ -220,6 +233,11 @@
                     }
                     selectedKey.value = [rootData.guid]
                     dropdownVisible.value = false
+                    // selectedFolderContext.value = data
+                    selectedFolderContext.value = {
+                        ...rootData,
+                        selectedFolderClassification: savedQueryType2.value,
+                    }
 
                     emit('folderChange', data)
                 } else {
@@ -229,6 +247,16 @@
                         selectedKey.value = [item.guid]
                         selectedFolder.value = event?.node?.dataRef.title
                         dropdownVisible.value = false
+                    }
+
+                    // selectedFolderContext.value = {
+                    //     dataRef: event.node,
+                    //     selectedFolderClassification:
+                    //         savedQueryType2.value.name,
+                    // }
+                    selectedFolderContext.value = {
+                        ...event.node,
+                        selectedFolderClassification: savedQueryType2.value,
                     }
                     emit('folderChange', {
                         dataRef: event.node,
@@ -292,6 +320,7 @@
                 refetchNode: refetchNode,
                 immediateParentGuid: immediateParentGuid,
                 nodeToParentKeyMap: nodeToParentKeyMap,
+                currentSelectedNode: currentSelectedNode,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
@@ -334,6 +363,8 @@
                 onClassificationChange,
                 folderOpened,
                 toggleFolder,
+                currentSelectedNode,
+                selectedFolderContext,
             }
         },
     })

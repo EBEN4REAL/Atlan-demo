@@ -18,6 +18,7 @@ import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import useLinkAssets from '~/components/composables/common/useLinkAssets'
 import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
+import { useTenantStore } from '~/store/tenant'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -26,6 +27,7 @@ export function useSavedQuery(
     treeSelectedKeys?: Ref<string[]>
 ) {
     const { username } = whoami()
+    const tenantStore = useTenantStore()
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
     const {
         getConnectorName,
@@ -392,7 +394,7 @@ export function useSavedQuery(
             activeInlineTab?.playground.editor.variables,
             rawQuery as string
         )
-        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
@@ -526,7 +528,7 @@ export function useSavedQuery(
         )
         // const rawQuery = activeInlineTabCopy.playground.editor.text
         // const compiledQuery = activeInlineTabCopy.playground.editor.text
-        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
@@ -647,7 +649,7 @@ export function useSavedQuery(
 
         const name = folderName
 
-        const qualifiedName = `${connectionQualifiedName}/folder/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
 
@@ -754,7 +756,7 @@ export function useSavedQuery(
             activeInlineTab?.playground.editor.variables,
             rawQuery as string
         )
-        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(

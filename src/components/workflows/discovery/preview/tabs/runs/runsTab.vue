@@ -100,10 +100,10 @@
             const searchText = ref('')
 
             const { list, error, isLoading, isLoadMore, loadMore, execute } =
-                useRunList(item.value.name)
+                useRunList(item.value.metadata.name)
 
             watch(
-                () => item.value.name,
+                () => item.value.metadata.name,
                 (v) => {
                     execute(v)
                 }

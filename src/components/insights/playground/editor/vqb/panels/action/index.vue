@@ -1,6 +1,6 @@
 <template>
     <div>
-        <a-dropdown :trigger="['hover']">
+        <a-dropdown :trigger="['hover']" :class="$style.dropdownn">
             <AtlanBtn
                 class="
                     flex-none
@@ -16,13 +16,20 @@
                 <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
             </AtlanBtn>
             <template #overlay>
-                <a-menu @mouseover="handleMouseOver" @mouseout="handleMouseOut">
+                <a-menu
+                    @mouseover="handleMouseOver"
+                    @mouseout="handleMouseOut"
+                    style="width: 140px"
+                >
                     <template
                         v-for="(item, index) in items"
                         :key="item.label + index"
                     >
-                        <a-menu-item>
-                            <div class="py-0.5 px-2 flex items-center">
+                        <a-menu-item
+                            class="p-0"
+                            @click.stop="() => handleAdd(item.id)"
+                        >
+                            <div class="flex items-center px-3.5 py-1.5">
                                 <AtlanIcon
                                     :icon="item.icon"
                                     :class="item.class"
@@ -38,13 +45,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, ComputedRef, inject } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'Columns',
         components: { AtlanBtn },
+        emits: ['add'],
         props: {
             submenuHovered: {
                 type: Boolean,
@@ -59,36 +68,42 @@
         },
         setup(props, { emit }) {
             const { submenuHovered, containerHovered } = useVModels(props)
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+            const handleAdd = (type) => {
+                emit('add', type)
+            }
             const items = [
                 {
-                    icon: 'Columns',
-                    label: 'Column',
-                    class: '',
-                },
-                {
+                    id: 'aggregate',
                     icon: 'Trigger',
                     label: 'Aggregate',
-                    class: 'mt-0.5',
+                    class: 'mt-0.5 mr-2',
                 },
                 {
+                    id: 'filter',
                     icon: 'Filter',
                     label: 'Filter',
-                    class: '',
+                    class: 'mr-2',
                 },
                 {
+                    id: 'sort',
                     icon: 'Sort',
                     label: 'Sort',
-                    class: '',
+                    class: 'mr-2',
                 },
                 {
+                    id: 'join',
                     icon: 'Union',
                     label: 'Join data',
-                    class: '',
+                    class: 'mr-2',
                 },
                 {
+                    id: 'group',
                     icon: 'BuilderGroup',
                     label: 'Group',
-                    class: '',
+                    class: 'mr-2',
                 },
             ]
 
@@ -101,6 +116,8 @@
                 if (submenuHovered.value) submenuHovered.value = false
             }
             return {
+                activeInlineTab,
+                handleAdd,
                 handleMouseOut,
                 handleMouseOver,
                 items,
@@ -108,4 +125,10 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" module>
+    .dropdownn {
+        :global(.ant-dropdown-menu-item) {
+            @apply p-0 !important;
+        }
+    }
+</style>

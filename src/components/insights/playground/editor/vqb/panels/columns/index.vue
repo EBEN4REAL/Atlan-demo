@@ -70,20 +70,31 @@
                             class="
                                 px-3
                                 py-1.5
-                                border-r border-gray-300
+                                border-gray-300
                                 flex
                                 items-center
                                 justify-center
+                                border-r
                             "
                             @click.stop="() => {}"
                         >
                             <a-checkbox v-model:checked="checkbox"></a-checkbox>
                         </div>
-                        <div class="border-r border-gray-300">
+                        <div
+                            class="border-r border-gray-300"
+                            v-if="
+                                activeInlineTab.playground.vqb.panels.length -
+                                    1 !==
+                                Number(index)
+                            "
+                        >
+                            <!-- Show dropdown except the last panel -->
                             <Actions
+                                @add="(type) => handleAdd(index, type)"
                                 v-model:submenuHovered="submenuHovered"
                                 v-model:containerHovered="containerHovered"
                             />
+                            <!-- ------------------------------ -->
                         </div>
                         <div class="border-r border-gray-300">
                             <AtlanBtn
@@ -116,7 +127,7 @@
                 <div
                     :class="[
                         expand
-                            ? 'absolute bg-gray-300 '
+                            ? 'absolute bg-gray-300 opacity-0'
                             : 'absolute bg-gray-300 ',
                         containerHovered ? 'opacity-0' : '',
                     ]"
@@ -127,6 +138,14 @@
             </div>
             <!-- Show on expand -->
             <ColumnSubPanel :expand="expand" />
+            <FooterActions
+                @add="(type) => handleAdd(index, type)"
+                v-if="
+                    expand &&
+                    activeInlineTab.playground.vqb.panels.length - 1 ===
+                        Number(index)
+                "
+            />
         </div>
         <div
             @click.stop="() => {}"
@@ -159,11 +178,13 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { VQBPanelType } from '~/types/insights/VQB.interface'
     import Actions from '../action/index.vue'
+    import FooterActions from '../action/footer.vue'
     import ColumnSubPanel from './subpanel/index.vue'
 
     export default defineComponent({
         name: 'Columns',
         components: {
+            FooterActions,
             Actions,
             AtlanBtn,
             ColumnSubPanel,
@@ -212,8 +233,9 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAdd = (index) => {
+            const handleAdd = (index, type) => {
                 const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
+                panelCopy.id = type
                 panelCopy.order =
                     Number(activeInlineTab.value.playground.vqb.panels.length) +
                     1

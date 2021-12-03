@@ -454,7 +454,11 @@
                     <a-menu-item @click="openCommandPallete" class="px-4 py-2"
                         >Open command pallete</a-menu-item
                     >
-                    <a-menu-item @click="toggleVQB" class="px-4 py-2">
+                    <a-menu-item
+                        @click="toggleVQB"
+                        v-if="vqbQueryRoute"
+                        class="px-4 py-2"
+                    >
                         <span v-if="showVQB">Close </span>
                         <span v-else>Open </span>
                         VQB</a-menu-item
@@ -542,6 +546,7 @@
 
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const editorInstance = inject('editorInstance') as Ref<any>
+            const vqbQueryRoute = inject('vqbQueryRoute') as Ref<any>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -649,6 +654,7 @@
                 showVQB.value = !showVQB.value
             }
             return {
+                vqbQueryRoute,
                 showVQB,
                 toggleVQB,
                 getThemeLabelFromName,

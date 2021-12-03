@@ -1,16 +1,17 @@
 <template>
     <div class="w-full">
         <a-tabs
-            v-model:activeKey="localValue"
+            v-if="dataList.length > 0"
+            v-model:activeKey="selectedTab"
             class="w-full"
             :class="$style.assetbar"
             :tabBarGutter="2"
-            @change="handleChange"
+            @change="onTabChange"
         >
-            <a-tab-pane v-for="item in localList" :key="item.id">
+            <a-tab-pane v-for="item in dataList" :key="item.id">
                 <template #tab>
                     <div
-                        :class="{ active: item.id === localValue }"
+                        :class="{ active: item.id === selectedTab }"
                         class="flex items-center"
                     >
                         <AtlanIcon
@@ -86,18 +87,18 @@
         setup(props, { emit }) {
             const { list, icon } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            const selectedTab = ref(modelValue.value)
+            const dataList = ref(list.value)
 
-            const localList = ref(list.value)
-
-            // const localValue =
-
-            const handleChange = () => {
-                modelValue.value = localValue.value
+            const onTabChange = () => {
+                modelValue.value = selectedTab.value
                 emit('change')
             }
 
+            const activeKey = ref('Column');
+
             watch(list, (cur, prev) => {
+
                 const initialValue = 0
                 const sum = list.value.reduce(
                     (accumulator, currentValue) =>
@@ -105,7 +106,7 @@
                     initialValue
                 )
 
-                const currentType = localList.value.find(
+                const currentType = dataList.value.find(
                     (i) => i.id.toLowerCase() === modelValue.value.toLowerCase()
                 )
 
@@ -113,24 +114,23 @@
                     (i) => i.id.toLowerCase() === modelValue.value.toLowerCase()
                 )
 
-                localList.value = list.value
-
+                dataList.value = list.value
                 if (!found && modelValue.value !== '__all') {
                     if (currentType) {
                         currentType.count = 0
-                        localList.value.push(currentType)
+                        dataList.value.push(currentType)
                     }
                     if (sum !== 0) {
-                        if (localList.value.length !== 1) {
-                            localList.value.unshift({
+                        if (dataList.value.length !== 1) {
+                            dataList.value.unshift({
                                 id: '__all',
                                 label: 'All',
                                 count: sum,
                             })
                         }
                     }
-                } else if (localList.value.length !== 1) {
-                    localList.value.unshift({
+                } else if (dataList.value.length !== 1) {
+                    dataList.value.unshift({
                         id: '__all',
                         label: 'All',
                         count: sum,
@@ -139,10 +139,10 @@
             })
 
             return {
-                localList,
-                localValue,
+                dataList,
+                selectedTab,
                 getCountString,
-                handleChange,
+                onTabChange,
                 icon,
             }
         },

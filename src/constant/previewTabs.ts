@@ -6,13 +6,13 @@ export const previewTabs = [
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
     },
-    {
+    /* {
         name: 'Columns',
         component: 'columns',
         includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
-    },
+    }, */
     // {
     //     name: 'Custom Metadata',
     //     component: 'businessMetadataTab',
@@ -42,7 +42,11 @@ export const previewTabs = [
             'Database',
             'Schema',
             'AtlasGlossaryCategory',
-            'AtlasGlossaryTerm'
+            'AtlasGlossaryTerm',
+            'Table',
+            'View',
+            'MaterialisedViews',
+            'PartitionTable',
         ],
         icon: 'Relation',
         tooltip: 'Relationships',

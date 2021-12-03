@@ -7,13 +7,14 @@
             pl-1
             pr-2
             text-sm text-gray-700
-            
+            bg-white
             border border-gray-200
             rounded-full
             cursor-pointer
-            hover:bg-${color.toLowerCase()}-400
+            ${color ? `hover:bg-${color.toLowerCase()}-400` : ''}
             group
-            hover:border-${color.toLowerCase()}-400
+            ${color ? `hover:border-${color.toLowerCase()}-400` : ''}
+            
         `"
         :data-test-id="displayName"
     >

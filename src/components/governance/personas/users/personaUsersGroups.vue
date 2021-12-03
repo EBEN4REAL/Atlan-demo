@@ -43,7 +43,6 @@
                             selectGroupKey="id"
                             selectUserKey="id"
                             v-model:modelValue="userGroupData"
-                            @change="handleUsersChange"
                         />
                         <div class="w-full mt-2">
                             <div class="flex justify-end text-xs">
@@ -77,7 +76,7 @@
                             <div class="flex justify-between mt-2">
                                 <AtlanBtn
                                     size="sm"
-                                    @click="() => setPopoverState(false)"
+                                    @click="handleCancel"
                                     color="secondary"
                                     padding="compact"
                                     class="w-26"
@@ -101,7 +100,7 @@
                                         data-test-id="add-owners"
                                         class="w-4 h-4 animate-spin"
                                     ></AtlanIcon>
-                                    <span>Add</span></AtlanBtn
+                                    <span>Update</span></AtlanBtn
                                 >
                             </div>
                         </div>
@@ -211,9 +210,7 @@
                                     data-test-id="remove-user"
                                     class="ml-3.5 w-8 h-8 rounded"
                                 >
-                                    <AtlanIcon
-                                        icon="RemoveUser"
-                                    ></AtlanIcon>
+                                    <AtlanIcon icon="RemoveUser"></AtlanIcon>
                                 </a-button>
                             </a-popconfirm>
                         </a-tooltip>
@@ -500,6 +497,10 @@
                                 userGroupData.value.ownerUsers ?? []
                             selectedPersonaDirty.value.groups =
                                 userGroupData.value.ownerGroups ?? []
+                            persona.value.users =
+                                userGroupData.value.ownerUsers ?? []
+                            persona.value.groups =
+                                userGroupData.value.ownerGroups ?? []
                             getUserList()
                             getGroupList()
                         })
@@ -587,14 +588,6 @@
                     })
             }
 
-            const handleUsersChange = (data: {
-                ownerUsers: string[]
-                ownerGroups: string[]
-            }) => {
-                persona.value.users = data?.ownerUsers ?? []
-                persona.value.groups = data?.ownerGroups ?? []
-                return
-            }
             /* Users related functions */
             const handleUsersTableChange = (
                 pagination: any,
@@ -630,6 +623,11 @@
                 setGroupUniqueAttribute(group.id)
                 showGroupPreview()
             }
+            const handleCancel = () => {
+                userGroupData.value.ownerUsers = persona.value.users ?? []
+                userGroupData.value.ownerGroups = persona.value.groups ?? []
+                setPopoverState(false)
+            }
 
             watch(persona, () => {
                 userGroupData.value.ownerUsers = persona.value.users ?? []
@@ -637,6 +635,7 @@
             })
 
             return {
+                handleCancel,
                 userState,
                 USER_STATES,
                 showGroupPreviewDrawer,
@@ -647,7 +646,6 @@
                 confirmPopover,
                 groupState,
                 GROUP_STATES,
-                handleUsersChange,
                 addUsersLoading,
                 handleUpdate,
                 setPopoverState,

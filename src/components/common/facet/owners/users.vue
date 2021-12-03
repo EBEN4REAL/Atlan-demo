@@ -110,6 +110,10 @@
             }
 
             const handleChange = () => {
+                // const uniqueArr = Array.from(
+                //     new Set([...modelValue.value, ...localValue.value])
+                // )
+                console.log(localValue.value, 'localChange')
                 modelValue.value = localValue.value
                 emit('change')
             }

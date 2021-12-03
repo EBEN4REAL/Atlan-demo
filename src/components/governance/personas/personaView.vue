@@ -1,5 +1,9 @@
 <template>
-    <ExplorerLayout title="Personas" sub-title="">
+    <ExplorerLayout
+        title="Personas"
+        sub-title=""
+        :sidebarVisibility="Boolean(selectedPersonaId)"
+    >
         <template #action>
             <AtlanBtn
                 :disabled="isEditing"

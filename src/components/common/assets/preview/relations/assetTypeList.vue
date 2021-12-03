@@ -8,6 +8,9 @@
             class="w-auto h-10 animate-spin"
         />
     </div>
+    <div v-else-if="list.length === 0" class="h-48">
+        <EmptyScreen empty-screen="EmptyDiscover" desc="No data found" />
+    </div>
     <VirtualList v-else :data="list" data-key="guid" variable-height>
         <template #default="{ item }">
             <div
@@ -39,6 +42,7 @@
     // import { assetInterface } from '~/types/assets/asset.interface'
     import { useRelations } from '~/composables/discovery/useRelations'
     import Popover from '@/common/popover/assets/index.vue'
+    import EmptyScreen from '@/common/empty/index.vue'
 
     export default defineComponent({
         name: 'AssetList',
@@ -46,6 +50,7 @@
             MiniAssetItem,
             VirtualList,
             Popover,
+            EmptyScreen
         },
         props: {
             preference: {

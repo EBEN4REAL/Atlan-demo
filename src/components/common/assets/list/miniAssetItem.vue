@@ -80,13 +80,13 @@
                             </a-tooltip>
                         </div>
                         <div v-if="item.typeName?.toLowerCase() === 'column'"  class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2">
-                            <div class="dot"/>
+                            <div v-if="tableName(item)" class="dot"/>
                             <a-tooltip
-                                v-if="viewName(item)"
+                                v-if="tableName(item)"
                                 placement="bottomLeft"
                             >
                                 <div
-                                    v-if="viewName(item)"
+                                    v-if="tableName(item)"
                                     class="flex items-center text-gray-500"
                                 >
                                     <AtlanIcon
@@ -94,11 +94,11 @@
                                         class="mr-1 mb-0.5"
                                     />
                                     <div class="tracking-tight text-gray-500">
-                                        {{ viewName(item) }}
+                                        {{ tableName(item) }}
                                     </div>
                                 </div>
                                 <template #title>
-                                    <span>View - {{ viewName(item) }}</span>
+                                    <span>View - {{ tableName(item) }}</span>
                                 </template>
                             </a-tooltip>
                         </div>
@@ -680,6 +680,7 @@
                 )
                 return matchingIdsResult
             })
+            console.log(item.value, 'sdjhsjhdgjs')
             return {
                 isChecked,
                 showCheckBox,

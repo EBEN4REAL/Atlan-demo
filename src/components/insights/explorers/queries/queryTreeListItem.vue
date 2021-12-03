@@ -1,7 +1,9 @@
 <template>
     <div
         class="`w-9/11 group`"
-        :style="`opacity: ${selectedNewFolder?.guid === item?.guid ? 0.5 : 1};`"
+        :style="`opacity: ${
+            selectedFolderHide?.guid === item?.guid ? 0.5 : 1
+        };`"
         :class="`${
             selectedNewFolder?.guid === item?.guid
                 ? 'bg-primary-focus w-9/11'
@@ -56,6 +58,10 @@
                 default: () => [],
             },
             selectedNewFolder: {
+                type: Object,
+                required: false,
+            },
+            selectedFolderHide: {
                 type: Object,
                 required: false,
             },

@@ -255,7 +255,7 @@
                     //         savedQueryType2.value.name,
                     // }
                     selectedFolderContext.value = {
-                        ...event.node,
+                        ...item,
                         selectedFolderClassification: savedQueryType2.value,
                     }
                     emit('folderChange', {
@@ -334,7 +334,7 @@
                 },
             })
 
-            const folderOpened = ref(false)
+            const folderOpened = ref(true)
             const toggleFolder = () => {
                 folderOpened.value = !folderOpened.value
             }

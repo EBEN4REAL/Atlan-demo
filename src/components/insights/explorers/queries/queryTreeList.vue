@@ -24,6 +24,7 @@
                             v-if="item.typeName === 'QueryFolder'"
                             :expandedKeys="expandedKeys"
                             :selectedNewFolder="selectedNewFolder"
+                            :selectedFolderHide="selectedFolderHide"
                         />
                         <div
                             v-else-if="item.title === 'Load more'"
@@ -108,6 +109,10 @@
                 default: () => [],
             },
             selectedNewFolder: {
+                type: Object,
+                required: false,
+            },
+            selectedFolderHide: {
                 type: Object,
                 required: false,
             },

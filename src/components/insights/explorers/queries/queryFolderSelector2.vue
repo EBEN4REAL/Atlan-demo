@@ -40,7 +40,8 @@
                         :loaded-keys="loadedKeys"
                         :selected-keys="selectedKeys"
                         :expanded-keys="expandedKeys"
-                        :selectedNewFolder="selectedNewFolder"
+                        :selectedNewFolder="selectedFolderContext"
+                        :selectedFolderHide="selectedNewFolder"
                         v-if="treeData.length"
                     />
                     <div
@@ -130,6 +131,7 @@
             const selectedFolder = ref('Folder')
             const selectedKey = ref<string[]>([])
             let dropdownVisible = ref(false)
+            let selectedFolderContext = ref({})
 
             // console.log('already selected: ', props.selectedFolderQF)
 
@@ -150,7 +152,7 @@
                         dataRef: {
                             ...rootData,
                         },
-                        selectedFolderClassification: savedQueryType.value,
+                        selectedFolderClassification: savedQueryType2.value,
                     }
 
                     if (
@@ -163,6 +165,11 @@
                         selectedKey.value = [rootData.guid]
                         selectedFolder.value = 'Root'
                         dropdownVisible.value = false
+
+                        selectedFolderContext.value = {
+                            ...rootData,
+                            selectedFolderClassification: savedQueryType2.value,
+                        }
 
                         emit('folderChange', data)
                     }
@@ -183,10 +190,16 @@
                             selectedFolder.value = event?.node?.dataRef.title
                             dropdownVisible.value = false
 
+                            selectedFolderContext.value = {
+                                ...item,
+                                selectedFolderClassification:
+                                    savedQueryType2.value,
+                            }
+
                             emit('folderChange', {
                                 dataRef: event.node,
                                 selectedFolderClassification:
-                                    savedQueryType.value,
+                                    savedQueryType2.value,
                             })
                         }
                     }
@@ -303,6 +316,7 @@
                 selectedNewFolder,
                 classificationValue,
                 onClassificationChange,
+                selectedFolderContext,
             }
         },
     })

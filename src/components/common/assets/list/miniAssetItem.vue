@@ -10,9 +10,7 @@
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
-                    : noBg
-                    ? 'border-transparent'
-                    : 'bg-white border-transparent',
+                    : 'border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-light' : '',
             ]"
         >
@@ -34,7 +32,7 @@
                                 'column',
                                 'powerbidashboard',
                                 'powerbitile',
-                            ].includes(item.typeName?.toLowerCase()) || 
+                            ].includes(item.typeName?.toLowerCase()) ||
                             item.typeName?.toLowerCase().includes('glossary') ||
                             item.typeName?.toLowerCase().includes('query')
                         "
@@ -59,7 +57,7 @@
                         </div>
                         <div
                             v-if="item.typeName?.toLowerCase() === 'table'"
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div class="dot" />
                             <a-tooltip placement="bottomLeft">
@@ -96,8 +94,12 @@
                             </a-tooltip>
                         </div>
                         <div
-                            v-if="item.typeName?.toLowerCase().includes('glossary')"
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            v-if="
+                                item.typeName
+                                    ?.toLowerCase()
+                                    .includes('glossary')
+                            "
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div v-if="item.attributes.name" class="dot" />
                             <a-tooltip
@@ -122,8 +124,10 @@
                             </a-tooltip>
                         </div>
                         <div
-                            v-if="item.typeName?.toLowerCase().includes('query')"
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            v-if="
+                                item.typeName?.toLowerCase().includes('query')
+                            "
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div v-if="item.attributes.name" class="dot" />
                             <a-tooltip
@@ -146,19 +150,22 @@
                                     <span>{{ item.attributes.name }}</span>
                                 </template>
                             </a-tooltip>
-                            <div v-if="item.attributes.__modificationTimestamp" class="dot" />
+                            <div
+                                v-if="item.attributes.__modificationTimestamp"
+                                class="dot"
+                            />
                             <div
                                 v-if="item.attributes.__modificationTimestamp"
                                 class="flex items-center text-gray-500"
-                                >
+                            >
                                 <div class="tracking-tight text-gray-500">
-                                    {{ last}}
+                                    Last run {{ last }}
                                 </div>
                             </div>
                         </div>
                         <div
                             v-if="item.typeName?.toLowerCase() === 'column'"
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div v-if="tableName(item)" class="dot" />
                             <a-tooltip
@@ -188,7 +195,7 @@
                                     item.typeName?.toLowerCase()
                                 )
                             "
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div class="dot" />
                             <a-tooltip
@@ -282,7 +289,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -321,7 +328,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -567,7 +574,7 @@
                     <div class="flex items-center overflow-hidden">
                         <router-link
                             :to="assetURL(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -621,7 +628,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, computed } from 'vue'
-     import { useTimeAgo } from '@vueuse/core'
+    import { useTimeAgo } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -765,7 +772,9 @@
                 )
                 return matchingIdsResult
             })
-            const last = useTimeAgo(item.value.attributes.__modificationTimestamp) 
+            const last = useTimeAgo(
+                item.value.attributes.__modificationTimestamp
+            )
             return {
                 isChecked,
                 showCheckBox,
@@ -806,7 +815,7 @@
                 isPropagated,
                 list,
                 classifications,
-                last
+                last,
             }
         },
     })

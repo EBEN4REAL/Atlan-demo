@@ -284,6 +284,8 @@ import Close from '~/assets/images/icons/close.svg'
 import ShieldCheck from '~/assets/images/icons/shield-check.svg'
 import CustomVariable from '~/assets/images/icons/customVariable.svg'
 
+import FolderSearch from '~/assets/images/icons/folder-search.svg'
+
 export default {
     BuilderGroup,
     Trigger,
@@ -560,5 +562,6 @@ export default {
     ViewDeprecated,
     ViewDraft,
     ViewVerified,
-    CustomVariable
+    CustomVariable,
+    FolderSearch
 }

@@ -35,7 +35,8 @@
                                 'powerbidashboard',
                                 'powerbitile',
                             ].includes(item.typeName?.toLowerCase()) || 
-                            item.typeName?.toLowerCase().includes('glossary')
+                            item.typeName?.toLowerCase().includes('glossary') ||
+                            item.typeName?.toLowerCase().includes('query')
                         "
                         class="flex flex-wrap items-center mt-1"
                     >
@@ -116,9 +117,44 @@
                                     </div>
                                 </div>
                                 <template #title>
-                                    <span>View - {{ item.attributes.name }}</span>
+                                    <span>{{ item.attributes.name }}</span>
                                 </template>
                             </a-tooltip>
+                        </div>
+                        <div
+                            v-if="item.typeName?.toLowerCase().includes('query')"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                        >
+                            <div v-if="item.attributes.name" class="dot" />
+                            <a-tooltip
+                                v-if="item.attributes.name"
+                                placement="bottomLeft"
+                            >
+                                <div
+                                    v-if="item.attributes.name"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="FolderSearch"
+                                        class="mr-1"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ item.attributes.name }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>{{ item.attributes.name }}</span>
+                                </template>
+                            </a-tooltip>
+                            <div v-if="item.attributes.__modificationTimestamp" class="dot" />
+                            <div
+                                v-if="item.attributes.__modificationTimestamp"
+                                class="flex items-center text-gray-500"
+                                >
+                                <div class="tracking-tight text-gray-500">
+                                    {{ last}}
+                                </div>
+                            </div>
                         </div>
                         <div
                             v-if="item.typeName?.toLowerCase() === 'column'"
@@ -584,7 +620,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
+     import { useTimeAgo } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -728,7 +765,7 @@
                 )
                 return matchingIdsResult
             })
-            console.log(item.value, 'sdjhsjhdgjs')
+            const last = useTimeAgo(item.value.attributes.__modificationTimestamp) 
             return {
                 isChecked,
                 showCheckBox,
@@ -769,6 +806,7 @@
                 isPropagated,
                 list,
                 classifications,
+                last
             }
         },
     })

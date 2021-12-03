@@ -1,13 +1,13 @@
 <template>
     <div class="border shadow-sm drop-shadow wrapper">
         <section class="flex items-center p-6 border-b gap-x-3">
-            <AtlanIcon icon="Slack" class="h-10" />
-            <h2 class="flex-grow text-lg font-bold">{{ meta.name }}</h2>
+            <AtlanIcon icon="Slack" class="h-8" />
+            <h2 class="flex-grow text-lg font-bold">Slack</h2>
             <div
                 style="color: #00a680"
                 class="flex items-center h-8 px-3 bg-gray-100 rounded gap-x-2"
             >
-                <AtlanIcon icon="Check" /> {{ tenantName }} Workspace connected
+                <AtlanIcon icon="Check" /> {{ teamName }} workspace connected
             </div>
         </section>
         <section class="flex flex-col p-6 border-b gap-y-3">
@@ -127,6 +127,10 @@ export default defineComponent({
             channels: channels.value,
         }))
 
+        const teamName = computed(() => {
+            return integration?.source_metadata?.teamName
+        })
+
         const {
             data,
             isLoading,
@@ -206,6 +210,7 @@ export default defineComponent({
             channels,
             isEdit,
             access,
+            teamName,
         }
     },
 })

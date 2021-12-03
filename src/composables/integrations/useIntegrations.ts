@@ -45,7 +45,7 @@ export const archiveIntegration = (pV, asyncOptions) => {
 }
 
 const getIntegrationsList = () => {
-    const params = ref({ limit: 10, offset: 0, count: true })
+    const params = ref({ limit: 100, offset: 0, count: true })
     const { data, isLoading, error, isReady } = Integrations.List(params)
 
     const records = ref([])

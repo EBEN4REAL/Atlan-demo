@@ -20,7 +20,6 @@
 <script lang="ts">
 import { defineComponent, watch } from 'vue'
 import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
-import { getIntegrationLink } from '~/composables/integrations/useSlack'
 import AddIntegrationCard from './addIntegrationCard.vue'
 import IntegrationCardWrapper from './integrationCardWrapper.vue'
 import { integrationData } from '~/constant/integrations'

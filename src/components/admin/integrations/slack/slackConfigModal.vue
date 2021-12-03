@@ -136,6 +136,7 @@ import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
 import { getSlackInstallUrlState } from '~/composables/integrations/useSlack'
 import { useAuthStore } from '~/store/auth'
+import useIntegration from '~/composables/integrations/useIntegrations'
 
 export default defineComponent({
     name: 'SlackConfigModal',
@@ -160,7 +161,7 @@ export default defineComponent({
             () =>
                 `${
                     slackResponse?.value?.oauth_authorize_url
-                }&state=${getSlackInstallUrlState(true, authStore.id)}`
+                }&state=${getSlackInstallUrlState(true)}`
         )
 
         const buttonCopy = computed(() => {
@@ -194,6 +195,8 @@ export default defineComponent({
                     slackResponse.value = data.slackAppResponse
                     loading.value = false
                     console.log('slack create app data', data)
+                    // refresh integrations
+                    useIntegration()
                     // error.value = err
                 } catch (err) {
                     loading.value = false

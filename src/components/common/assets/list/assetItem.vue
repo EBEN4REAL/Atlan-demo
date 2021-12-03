@@ -59,7 +59,7 @@
 
                         <router-link
                             :to="getProfilePath(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -119,7 +119,7 @@
                             ></AtlanIcon>
 
                             <div
-                                class="text-sm tracking-wider text-gray-500 uppercase"
+                                class="text-sm tracking-wider text-gray-500 uppercase "
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
                             </div>
@@ -128,7 +128,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -167,7 +167,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -215,7 +215,7 @@
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
-                                        class="font-semibold tracking-tight text-gray-500"
+                                        class="font-semibold tracking-tight text-gray-500 "
                                         >{{ rowCount(item, false) }}
                                     </span>
                                     Rows</span
@@ -232,7 +232,7 @@
                             </a-tooltip>
                             <span class="text-gray-500">
                                 <span
-                                    class="font-semibold tracking-tight text-gray-500"
+                                    class="font-semibold tracking-tight text-gray-500 "
                                     >{{ columnCount(item, false) }}</span
                                 >
                                 Cols</span
@@ -444,16 +444,28 @@
         </div>
         <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
     </div>
+    <a-drawer
+        v-if="showAssetSidebarDrawer"
+        v-model:visible="showAssetSidebarDrawer"
+        placement="right"
+        :keyboard="false"
+        :destroy-on-close="true"
+        :closable="false"
+        :wrap-style="{ width: '420px' }"
+    >
+        <AssetPreview :selected-asset="selectedAssetDrawerData"></AssetPreview>
+    </a-drawer>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification.vue'
+    import AssetPreview from '@/common/assets/preview/index.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -461,6 +473,7 @@
             CertificateBadge,
             ClassificationPill,
             PopoverClassification,
+            AssetPreview,
         },
         props: {
             item: {
@@ -512,6 +525,11 @@
                 required: false,
                 default: false,
             },
+            enableSidebarDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview'],
         setup(props, { emit }) {
@@ -522,7 +540,12 @@
                 isChecked,
                 showCheckBox,
                 bulkSelectMode,
+                enableSidebarDrawer,
             } = toRefs(props)
+
+            const showAssetSidebarDrawer = ref(false)
+            const selectedAssetDrawerData = ref({})
+
             const {
                 title,
                 getConnectorImage,
@@ -558,6 +581,17 @@
 
             const handlePreview = (item: any) => {
                 emit('preview', item)
+                if (enableSidebarDrawer.value === true) {
+                    showAssetSidebarDrawer.value = true
+                    selectedAssetDrawerData.value = item
+                } else {
+                    emit('preview', item)
+                }
+            }
+
+            const handleCloseDrawer = () => {
+                showAssetSidebarDrawer.value = false
+                selectedAssetDrawerData.value = {}
             }
 
             const isSelected = computed(() => {
@@ -629,6 +663,8 @@
                 list,
                 classifications,
                 getProfilePath,
+                showAssetSidebarDrawer,
+                selectedAssetDrawerData,
             }
         },
     })

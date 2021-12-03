@@ -10,22 +10,35 @@
     >
         <template #title>
             <div class="flex items-center text-gray-500 flex-nowrap">
-                <span class="overflow-hidden text-sm overflow-ellipsis">{{
+                <!-- <span class="overflow-hidden text-sm overflow-ellipsis">{{
                     title(asset)
                 }}</span>
-                <AtlanIcon icon="ChevronRight" class="flex-none" />
-                <span class="flex-none text-sm font-bold text-gray"
-                    >New Resource</span
+                <AtlanIcon icon="ChevronRight" class="flex-none" /> -->
+                <span class="flex-none text-sm text-lg text-gray"
+                    >Add New Resource</span
                 >
             </div></template
         >
         <template #footer>
             <div class="flex items-center justify-end w-full space-x-3">
-                <a-button @click="handleCancel">Cancel</a-button>
-                <a-button type="primary" @click="handleAdd">Add</a-button>
+                <AtlanButton
+                    color="minimal"
+                    :size="'sm'"
+                    class="px-1"
+                    @click="handleCancel"
+                    >Cancel</AtlanButton
+                >
+                <AtlanButton
+                    color="primary"
+                    :size="'sm'"
+                    @click="handleAdd"
+                    :disabled="buttonDisabled"
+                    >Add</AtlanButton
+                >
             </div>
         </template>
         <div class="px-4 pt-0 pb-4">
+            <span class="font-bold">Link</span>
             <a-input
                 ref="titleBar"
                 v-model:value="link"
@@ -33,114 +46,131 @@
                 class="text-lg font-bold text-gray-700"
                 allow-clear
             />
-            <div v-if="link" class="flex items-center gap-x-2">
-                <img :src="faviconLink" alt="" class="w-5 h-5 mt-2" />
-                <a-input
-                    v-model:value="linkTitle"
-                    placeholder="Resource title"
-                    class="mt-3 text-lg font-bold text-gray-700"
-                    allow-clear
-                />
+            <div v-if="link" class="mt-3">
+                <span class="font-bold">Title</span>
+                <div class="flex items-center gap-x-2">
+                    <a-input
+                        v-model:value="linkTitle"
+                        placeholder="Resource title"
+                        class="text-lg font-bold text-gray-700"
+                        allow-clear
+                    >
+                        <template #prefix>
+                            <img
+                                :src="faviconLink"
+                                alt=""
+                                class="w-5 h-5 mr-2"
+                            />
+                        </template>
+                    </a-input>
+                </div>
             </div>
         </div>
     </a-modal>
 </template>
 
 <script lang="ts">
-    // Vue
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        toRefs,
-        nextTick,
-        watch,
-        Ref,
-    } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+// Vue
+import {
+    defineComponent,
+    PropType,
+    ref,
+    toRefs,
+    nextTick,
+    watch,
+    Ref,
+    computed,
+} from 'vue'
+import { useDebounceFn } from '@vueuse/core'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
+import { assetInterface } from '~/types/assets/asset.interface'
+import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+import AtlanButton from '@/UI/button.vue'
 
-    export default defineComponent({
-        components: {},
-        props: {
-            asset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
+export default defineComponent({
+    components: { AtlanButton },
+    props: {
+        asset: {
+            type: Object as PropType<assetInterface>,
+            required: true,
         },
-        setup(props) {
-            const visible = ref<boolean>(false)
+    },
+    setup(props) {
+        const visible = ref<boolean>(false)
 
-            const titleBar: Ref<null | HTMLInputElement> = ref(null)
+        const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
-            const { asset } = toRefs(props)
+        const { asset } = toRefs(props)
 
-            const { title } = useAssetInfo()
+        const { title } = useAssetInfo()
 
-            const { handleAddResource, localResource } =
-                updateAssetAttributes(asset)
+        const { handleAddResource, localResource } =
+            updateAssetAttributes(asset)
 
-            const link = ref('')
-            const faviconLink = ref('')
+        const link = ref('')
+        const faviconLink = ref('')
 
-            // FIXME: Add a link meta parser for title
-            const linkTitle = ref('')
+        // FIXME: Add a link meta parser for title
+        const linkTitle = ref('')
 
-            const showModal = async () => {
-                visible.value = true
-                await nextTick()
-                titleBar.value?.focus()
-            }
+        const showModal = async () => {
+            visible.value = true
+            await nextTick()
+            titleBar.value?.focus()
+        }
 
-            function handleCancel() {
-                visible.value = false
-                link.value = ''
-                linkTitle.value = ''
-            }
+        function handleCancel() {
+            visible.value = false
+            link.value = ''
+            linkTitle.value = ''
+        }
 
-            function handleAdd() {
-                localResource.value.link = link.value
-                localResource.value.title = linkTitle.value
-                handleAddResource()
-                visible.value = false
-                link.value = ''
-                linkTitle.value = ''
-            }
+        const buttonDisabled = computed(() => {
+            return !link.value
+        })
 
-            watch(
-                link,
-                useDebounceFn(() => {
-                    faviconLink.value = `https://www.google.com/s2/favicons?domain=${link.value}`
-                }, 500)
-            )
+        function handleAdd() {
+            localResource.value.link = link.value
+            localResource.value.title = linkTitle.value
+            handleAddResource()
+            visible.value = false
+            link.value = ''
+            linkTitle.value = ''
+        }
 
-            return {
-                linkTitle,
-                link,
-                faviconLink,
-                title,
-                visible,
-                handleCancel,
-                handleAdd,
-                showModal,
-            }
-        },
-    })
+        watch(
+            link,
+            useDebounceFn(() => {
+                faviconLink.value = `https://www.google.com/s2/favicons?domain=${link.value}&sz=64`
+            }, 500)
+        )
+
+        return {
+            linkTitle,
+            link,
+            faviconLink,
+            title,
+            visible,
+            handleCancel,
+            handleAdd,
+            showModal,
+            buttonDisabled,
+        }
+    },
+})
 </script>
 
 <style lang="less" module>
-    .input {
-        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
-        }
-        :global(.ant-input):focus,
-        :global(.ant-input):hover {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
-        }
-        :global(.ant-input) {
-            @apply shadow-none outline-none px-0 border-0 !important;
-        }
+.input {
+    :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+        @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
     }
+    :global(.ant-input):focus,
+    :global(.ant-input):hover {
+        @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+    }
+    :global(.ant-input) {
+        @apply shadow-none outline-none px-0 border-0 !important;
+    }
+}
 </style>

@@ -43,13 +43,13 @@
                 >
                     <a-form-item>
                         <template #label>
-                            <div class="">Access token</div>
+                            <span class="font-bold">Access token</span>
                         </template>
                         <a-input v-model:value="accessToken" />
                     </a-form-item>
                     <a-form-item>
                         <template #label>
-                            <div class="">Refresh token</div>
+                            <span class="font-bold">Refresh token</span>
                         </template>
                         <a-input v-model:value="refreshToken" />
                     </a-form-item>

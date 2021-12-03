@@ -102,7 +102,7 @@
                                 </template>
                             </a-tooltip>
                         </div>
-                          <div v-if="['powerbidashboard', 'powerbitile'].includes(item.typeName?.toLowerCase())"  class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2">
+                        <div v-if="['powerbidashboard', 'powerbitile'].includes(item.typeName?.toLowerCase())"  class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2">
                             <div class="dot"/>
                             <a-tooltip
                                 v-if="viewName(item)"
@@ -126,7 +126,7 @@
                             </a-tooltip>
                         </div>
                     </div>
-                    <div v-if="true" class="flex flex-wrap items-center mt-1">
+                    <div v-else-if="true" class="flex flex-wrap items-center mt-1">
                         <a-tooltip
                             v-if="connectorName(item)"
                             placement="left"

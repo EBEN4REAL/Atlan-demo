@@ -12,6 +12,7 @@ import AssetIcon from '~/assets/images/home/asset.svg'
 import InsightsIcon from '~/assets/images/home/Insights.svg'
 import MorningIcon from '~/assets/images/home/Morning.svg'
 import EveningIcon from '~/assets/images/home/Evening.svg'
+import AfternoonIcon from '~/assets/images/home/Afternoon.svg'
 import WorkflowsIcon from '~/assets/images/home/Workflows.svg'
 import AdminCenterIcon from '~/assets/images/home/AdminCenter.svg'
 import AtlanIcon from '~/assets/images/home/help/atlan.svg'
@@ -333,6 +334,7 @@ export default {
     Metadata,
     Relation,
     MorningIcon,
+    AfternoonIcon,
     Resources,
     FAQS,
     TableSummary,

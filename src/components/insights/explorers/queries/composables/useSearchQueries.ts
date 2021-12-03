@@ -20,7 +20,7 @@ import bodybuilder from 'bodybuilder'
 
 const searchQueries = (
     query: Ref<string>,
-    savedQueryType: Ref<'all' | 'personal'>,
+    classification: Ref<string>,
     facets: Ref<object>,
     offset?: Ref<number>,
     limit?: Ref<number>
@@ -70,34 +70,18 @@ const searchQueries = (
             '__state',
             'ACTIVE'
         )
-        if (savedQueryType?.value === 'all') {
+        if (classification?.value && classification?.value.length) {
             base.orFilter(
                 'term',
                 '__traitNames',
-                ATLAN_PUBLIC_QUERY_CLASSIFICATION
+                classification.value
             )
             base.orFilter(
                 'term',
                 '__propagatedTraitNames',
-                ATLAN_PUBLIC_QUERY_CLASSIFICATION
+                classification.value
             )
-        } else if (savedQueryType?.value === 'personal') {
-            base.notFilter(
-                'term',
-                '__traitNames',
-                ATLAN_PUBLIC_QUERY_CLASSIFICATION
-            )
-            base.notFilter(
-                'term',
-                '__propagatedTraitNames',
-                ATLAN_PUBLIC_QUERY_CLASSIFICATION
-            )
-            base.filter(
-                'term',
-                'ownerUsers',
-                username.value
-            )
-        }
+        } 
 
         if(facets.value && Object.keys(facets.value).length>0) {
             Object.keys(facets.value ?? {}).forEach((mkey) => {
@@ -264,7 +248,7 @@ const searchQueries = (
         if (query.length || (facets && Object.keys(facets).length>0)) fetchQueries()
     })
 
-    watch([query, savedQueryType, facets], ([newQuery]) => {
+    watch([query, classification, facets], ([newQuery]) => {
         isLoading1.value = true
         console.log('queryFacets: ', facets.value)
 

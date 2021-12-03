@@ -1,98 +1,61 @@
 <template>
     <div class="popover-container">
         <div class="w-full h-full pb-4 overflow-y-scroll">
+            <div class="m-4 w-9/11">
+                <ClassificationDropdown
+                    :modelValue="classificationValue"
+                    @change="onClassificationChange"
+                />
+            </div>
             <!--explorer pane start -->
-            <div
-                v-if="savedQueryType2 === 'personal'"
-                class="w-full h-full bg-white py-1.5 pr-4"
-            >
+            <div class="w-full h-full bg-white py-1.5 pr-4">
                 <div class="flex w-full">
                     <AtlanIcon
-                        :icon="
-                            folderOpened['personal']
-                                ? 'CaretDown'
-                                : 'CaretRight'
-                        "
+                        :icon="folderOpened ? 'CaretDown' : 'CaretRight'"
                         class="my-auto mr-0.5 cursor-pointer"
-                        @click="toggleFolder('personal')"
+                        @click="toggleFolder"
                     ></AtlanIcon>
                     <div
                         @click="onSelect('root', 'root')"
                         class="flex cursor-pointer"
                     >
                         <AtlanIcon
-                            :icon="
-                                folderOpened['personal']
-                                    ? 'FolderOpen'
-                                    : 'FolderClosed'
-                            "
+                            :icon="folderOpened ? 'FolderOpen' : 'FolderClosed'"
                             class="w-2 h-5 my-auto mr-1"
                         ></AtlanIcon>
                         <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >Your Personal Folder</span
+                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                            >{{ savedQueryType2?.displayName }} Folder</span
                         >
                     </div>
                 </div>
-                <div v-if="folderOpened['personal']" class="mt-1 ml-3">
+                <div v-if="folderOpened" class="mt-1 ml-3">
                     <query-tree-list
-                        :savedQueryType="savedQueryType"
-                        :tree-data="per_treeData"
-                        :on-load-data="per_onLoadData"
+                        :savedQueryType="savedQueryType2"
+                        :tree-data="treeData"
+                        :on-load-data="onLoadData"
                         :select-node="onSelect"
-                        :expand-node="per_expandNode"
-                        :is-loading="per_isInitingTree"
-                        :loaded-keys="per_loadedKeys"
-                        :selected-keys="per_selectedKeys"
-                        :expanded-keys="per_expandedKeys"
+                        :expand-node="expandNode"
+                        :is-loading="isInitingTree"
+                        :loaded-keys="loadedKeys"
+                        :selected-keys="selectedKeys"
+                        :expanded-keys="expandedKeys"
                         :selectedNewFolder="selectedNewFolder"
+                        v-if="treeData.length"
                     />
-                </div>
-            </div>
-            <div
-                v-if="savedQueryType2 === 'all'"
-                class="w-full h-full bg-white py-1.5 pl-3 pr-4"
-            >
-                <div class="flex w-full">
-                    <AtlanIcon
-                        :icon="folderOpened['all'] ? 'CaretDown' : 'CaretRight'"
-                        class="my-auto mr-0.5 cursor-pointer"
-                        @click="toggleFolder('all')"
-                    ></AtlanIcon>
                     <div
-                        @click="onSelect('root', 'root')"
-                        class="flex cursor-pointer"
+                        v-else
+                        class="flex flex-col items-center justify-center mt-4"
                     >
-                        <AtlanIcon
-                            :icon="
-                                folderOpened['all']
-                                    ? 'FolderOpen'
-                                    : 'FolderClosed'
-                            "
-                            class="w-2 h-5 my-auto mr-1"
-                        ></AtlanIcon>
-                        <span
-                            class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
-                            >Atlan's Public Folder</span
+                        <p
+                            class="my-2 mb-0 mb-6 text-xs text-center text-gray-700 max-width-text"
                         >
+                            Sorry, no data found <br />in selected
+                            classification
+                        </p>
                     </div>
                 </div>
-                <div v-if="folderOpened['all']" class="mt-1 ml-3">
-                    <query-tree-list
-                        :savedQueryType="savedQueryType"
-                        :tree-data="all_treeData"
-                        :on-load-data="all_onLoadData"
-                        :select-node="onSelect"
-                        :expand-node="all_expandNode"
-                        :is-loading="all_isInitingTree"
-                        :loaded-keys="all_loadedKeys"
-                        :selected-keys="all_selectedKeys"
-                        :expanded-keys="all_expandedKeys"
-                        :selectedNewFolder="selectedNewFolder"
-                    />
-                </div>
             </div>
-            <!--explorer pane end -->
         </div>
     </div>
 </template>
@@ -115,17 +78,19 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     import QueryTreeList from './queryTreeList.vue'
-    import useQueryTree from './composables/useQueryTree'
+    import useQueryTree from './composables/useQueryTree2'
     import { useRouter } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
+    import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
 
     export default defineComponent({
         components: {
             QueryTreeList,
             AtlanBtn,
+            ClassificationDropdown,
             // AssetDropdown,
         },
         props: {
@@ -140,9 +105,8 @@
                 default: '',
             },
             savedQueryType: {
-                type: String as PropType<'personal' | 'all'>,
+                type: Object as PropType<object>,
                 required: true,
-                default: 'personal',
             },
             selectedNewFolder: {
                 type: Object,
@@ -157,9 +121,7 @@
             const { connector, savedQueryType, selectedNewFolder } =
                 toRefs(props)
 
-            const savedQueryType2: Ref<'personal' | 'all'> = ref(
-                savedQueryType.value
-            )
+            const savedQueryType2: Ref<object> = ref(savedQueryType.value)
             const queryFolderNamespace = inject<Ref<Folder>>(
                 'queryFolderNamespace',
                 ref({}) as Ref<Folder>
@@ -188,7 +150,7 @@
                         dataRef: {
                             ...rootData,
                         },
-                        selectedFolderType: savedQueryType.value,
+                        selectedFolderClassification: savedQueryType.value,
                     }
 
                     if (
@@ -223,7 +185,8 @@
 
                             emit('folderChange', {
                                 dataRef: event.node,
-                                selectedFolderType: savedQueryType.value,
+                                selectedFolderClassification:
+                                    savedQueryType.value,
                             })
                         }
                     }
@@ -241,12 +204,22 @@
                 dropdownVisible.value = true
             }
 
-            const isSelectedType = (type: 'personal' | 'all') => {
-                return savedQueryType2.value === type
+            const classificationValue = ref('')
+            let selectedClassification = ref('')
+
+            const onClassificationChange = (value) => {
+                // emit('change', checkedValues)
+                console.log('change: ', value)
+                selectedClassification.value = value.name
+                savedQueryType2.value = value
             }
-            const onSelectQueryType = (type: 'personal' | 'all') => {
-                savedQueryType2.value = type
-            }
+
+            // const isSelectedType = (type: 'personal' | 'all') => {
+            //     return savedQueryType2.value === type
+            // }
+            // const onSelectQueryType = (type: 'personal' | 'all') => {
+            //     savedQueryType2.value = type
+            // }
 
             const pushGuidToURL = (guid: string) => {
                 router.push(`/insights?id=${guid}`)
@@ -270,50 +243,24 @@
             )
 
             const {
-                treeData: per_treeData,
-                loadedKeys: per_loadedKeys,
-                isInitingTree: per_isInitingTree,
-                selectedKeys: per_selectedKeys,
-                expandedKeys: per_expandedKeys,
-                onLoadFolderData: per_onLoadData,
-                expandNode: per_expandNode,
-                selectNode: per_selectNode,
-                refetchNode: per_refetchNode,
-                immediateParentFolderQF: per_immediateParentFolderQF,
-                immediateParentGuid: per_immediateParentGuid,
-                nodeToParentKeyMap: per_nodeToParentKeyMap,
+                treeData: treeData,
+                loadedKeys: loadedKeys,
+                isInitingTree: isInitingTree,
+                selectedKeys: selectedKeys,
+                expandedKeys: expandedKeys,
+                onLoadFolderData: onLoadData,
+                expandNode: expandNode,
+                selectNode: selectNode,
+                refetchNode: refetchNode,
+                immediateParentFolderQF: immediateParentFolderQF,
+                immediateParentGuid: immediateParentGuid,
+                nodeToParentKeyMap: nodeToParentKeyMap,
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
                 pushGuidToURL,
                 connector,
-                savedQueryType: ref('personal'),
-                queryFolderNamespace,
-                /* PERMISSIONS */
-                permissions: {
-                    readQueries: permissions.value.private.readQueries,
-                    readFolders: permissions.value.private.readFolders,
-                },
-            })
-            const {
-                treeData: all_treeData,
-                loadedKeys: all_loadedKeys,
-                isInitingTree: all_isInitingTree,
-                selectedKeys: all_selectedKeys,
-                expandedKeys: all_expandedKeys,
-                immediateParentFolderQF: all_immediateParentFolderQF,
-                onLoadFolderData: all_onLoadData,
-                expandNode: all_expandNode,
-                selectNode: all_selectNode,
-                refetchNode: all_refetchNode,
-                immediateParentGuid: all_immediateParentGuid,
-                nodeToParentKeyMap: all_nodeToParentKeyMap,
-            } = useQueryTree({
-                emit,
-                openSavedQueryInNewTab,
-                pushGuidToURL,
-                connector,
-                savedQueryType: ref('all'),
+                savedQueryType: selectedClassification,
                 queryFolderNamespace,
                 /* PERMISSIONS */
                 permissions: {
@@ -322,18 +269,10 @@
                 },
             })
 
-            const folderOpened = ref({
-                all: true,
-                personal: true,
-            })
+            const folderOpened = ref(true)
 
-            const toggleFolder = (type) => {
-                if (type === 'all') {
-                    folderOpened.value['all'] = !folderOpened.value['all']
-                } else {
-                    folderOpened.value['personal'] =
-                        !folderOpened.value['personal']
-                }
+            const toggleFolder = () => {
+                folderOpened.value = !folderOpened.value
             }
 
             return {
@@ -345,37 +284,25 @@
                 // treeData,
 
                 savedQueryType2,
-                isSelectedType,
-                onSelectQueryType,
-                all_treeData,
-                per_treeData,
-                all_loadedKeys,
-                per_loadedKeys,
-                all_isInitingTree,
-                per_isInitingTree,
-                all_selectedKeys: selectedKey,
-                per_selectedKeys: selectedKey,
-                all_expandedKeys,
-                per_expandedKeys,
-                all_onLoadData,
-                per_onLoadData,
-                all_expandNode,
-                per_expandNode,
-                all_selectNode,
-                per_selectNode,
-                all_refetchNode,
-                per_refetchNode,
-                all_immediateParentFolderQF,
-                per_immediateParentFolderQF,
-                all_immediateParentGuid,
-                per_immediateParentGuid,
-                all_nodeToParentKeyMap,
-                per_nodeToParentKeyMap,
+                treeData,
+                loadedKeys,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                onLoadData,
+                expandNode,
+                selectNode,
+                refetchNode,
+                immediateParentFolderQF,
+                immediateParentGuid,
+                nodeToParentKeyMap,
                 toggleDropdown,
                 dropdownVisible,
                 closeDropdown,
                 showDropdown,
                 selectedNewFolder,
+                classificationValue,
+                onClassificationChange,
             }
         },
     })

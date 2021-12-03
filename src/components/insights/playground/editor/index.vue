@@ -539,6 +539,8 @@
                             toRaw(editorInstance.value).getSelection()
                         )
 
+                    console.log('query selected: ', selectedText)
+
                     useAddEvent('insights', 'query', 'run', undefined)
                     queryRun(
                         activeInlineTab,

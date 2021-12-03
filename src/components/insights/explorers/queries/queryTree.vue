@@ -53,20 +53,20 @@ TR
                 class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
             >
                 <div class="flex flex-col items-center justify-center">
-                    <AtlanIcon
+                    <!-- <AtlanIcon
                         v-if="savedQueryType === 'personal'"
                         icon="NoSavedQueriesPersonal"
                         class="h-32 no-svaved-query-icon text-primary"
-                    />
+                    /> -->
                     <AtlanIcon
-                        v-else
                         icon="NoSavedQueriesAll"
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
                         class="my-2 mb-0 mb-6 text-base text-gray-700 max-width-text"
                     >
-                        Your {{ savedQueryType }} queries will appear here
+                        Your {{ savedQueryType?.displayName }} queries will
+                        appear here
                     </p>
                 </div>
                 <div>
@@ -142,7 +142,7 @@ TR
                 default: () => {},
             },
             savedQueryType: {
-                type: Object as PropType<string>,
+                type: Object as PropType<object>,
                 required: true,
             },
             onLoadData: {

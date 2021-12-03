@@ -36,22 +36,21 @@
         <div class="w-full h-full mt-2 h-9">
             <div class="w-full px-4">
                 <div
-                    class="flex items-end justify-between mb-2 text-gray-500 h-9"
+                    class="flex items-center justify-between mb-2 text-gray-500 h-9"
                 >
-                    <RaisedTab
-                        v-model:active="savedQueryType"
-                        :data="raisedTabConfig"
-                    />
+                    <div class="w-9/12">
+                        <ClassificationDropdown
+                            :modelValue="classificationValue"
+                            @change="onClassificationChange"
+                        />
+                    </div>
+
                     <div v-if="!searchQuery?.length" class="flex items-center">
                         <div class>
-                            <!-- CREATE QUERY PERMISSIONS -->
                             <a-tooltip
                                 placement="top"
                                 color="#363636"
-                                v-if="
-                                    savedQueryType === 'personal' &&
-                                    permissions.private.createQuery
-                                "
+                                v-if="permissions.public.createQuery"
                             >
                                 <template #title>
                                     <span>New query</span>
@@ -60,30 +59,7 @@
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
-                                                per_currentSelectedNode
-                                            )
-                                    "
-                                    icon="NewQuery"
-                                    color="#5277D7"
-                                    class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
-                                />
-                            </a-tooltip>
-                            <a-tooltip
-                                placement="top"
-                                color="#363636"
-                                v-if="
-                                    savedQueryType === 'all' &&
-                                    permissions.public.createQuery
-                                "
-                            >
-                                <template #title>
-                                    <span>New query</span>
-                                </template>
-                                <AtlanIcon
-                                    @click="
-                                        () =>
-                                            toggleCreateQueryModal(
-                                                all_currentSelectedNode
+                                                currentSelectedNode
                                             )
                                     "
                                     icon="NewQuery"
@@ -94,32 +70,10 @@
                             <!-- ----------- -->
                         </div>
                         <div class>
-                            <!-- CREATE FOLDER PERMISSIONS -->
                             <a-tooltip
                                 placement="top"
                                 color="#363636"
-                                v-if="
-                                    savedQueryType === 'personal' &&
-                                    permissions.private.createFolder
-                                "
-                            >
-                                <template #title>
-                                    <span>New folder</span>
-                                </template>
-                                <AtlanIcon
-                                    @click="createFolderInput"
-                                    color="#5277D7"
-                                    icon="NewFolder"
-                                    class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
-                                />
-                            </a-tooltip>
-                            <a-tooltip
-                                placement="top"
-                                color="#363636"
-                                v-if="
-                                    savedQueryType === 'all' &&
-                                    resolvePublicFolderCreationPermission()
-                                "
+                                v-if="resolvePublicFolderCreationPermission()"
                             >
                                 <template #title>
                                     <span>New folder</span>
@@ -134,6 +88,7 @@
                             <!-- CREATE FOLDER PERMISSIONS -->
                         </div>
                     </div>
+                    <!-- {{ savedQueryType }} -->
                 </div>
             </div>
             <div
@@ -145,43 +100,19 @@
                         : 'height: calc( 100vh - 120px )'
                 "
             >
-                <!--explorer pane start -->
-                <div
-                    v-if="savedQueryType === 'personal'"
-                    class="w-full h-full bg-white"
-                >
+                <div class="w-full h-full bg-white">
                     <query-tree
                         @toggleCreateQueryModal="toggleCreateQueryModal"
                         @createFolderInput="createFolderInput"
                         :savedQueryType="savedQueryType"
-                        :tree-data="per_treeData"
-                        :on-load-data="per_onLoadData"
-                        :select-node="per_selectNode"
-                        :expand-node="per_expandNode"
-                        :is-loading="per_isInitingTree"
-                        :loaded-keys="per_loadedKeys"
-                        :selected-keys="per_selectedKeys"
-                        :expanded-keys="per_expandedKeys"
-                        :showEmptyState="showEmptyState"
-                        :refreshQueryTree="refreshQueryTree"
-                    />
-                </div>
-                <div
-                    v-if="savedQueryType === 'all'"
-                    class="w-full h-full bg-white"
-                >
-                    <query-tree
-                        @toggleCreateQueryModal="toggleCreateQueryModal"
-                        @createFolderInput="createFolderInput"
-                        :savedQueryType="savedQueryType"
-                        :tree-data="all_treeData"
-                        :on-load-data="all_onLoadData"
-                        :select-node="all_selectNode"
-                        :expand-node="all_expandNode"
-                        :is-loading="all_isInitingTree"
-                        :loaded-keys="all_loadedKeys"
-                        :selected-keys="all_selectedKeys"
-                        :expanded-keys="all_expandedKeys"
+                        :tree-data="treeData"
+                        :on-load-data="onLoadData"
+                        :select-node="selectNode"
+                        :expand-node="expandNode"
+                        :is-loading="isInitingTree"
+                        :loaded-keys="loadedKeys"
+                        :selected-keys="selectedKeys"
+                        :expanded-keys="expandedKeys"
                         :showEmptyState="showEmptyState"
                         :refreshQueryTree="refreshQueryTree"
                     />
@@ -201,41 +132,19 @@
                     <LoadingView />
                 </div>
                 <div v-else-if="searchResults?.entities?.length">
-                    <div
-                        v-if="savedQueryType === 'personal'"
-                        class="w-full h-full bg-white"
-                    >
+                    <div class="w-full h-full bg-white">
                         <query-tree
                             @toggleCreateQueryModal="toggleCreateQueryModal"
                             @createFolderInput="createFolderInput"
                             :savedQueryType="savedQueryType"
                             :tree-data="searchTreeData"
-                            :on-load-data="per_onLoadData"
-                            :select-node="per_selectNode"
-                            :expand-node="per_expandNode"
-                            :is-loading="per_isInitingTree"
-                            :loaded-keys="per_loadedKeys"
-                            :selected-keys="per_selectedKeys"
-                            :expanded-keys="per_expandedKeys"
-                            :refreshQueryTree="refreshQueryTree"
-                        />
-                    </div>
-                    <div
-                        v-if="savedQueryType === 'all'"
-                        class="w-full h-full bg-white"
-                    >
-                        <query-tree
-                            @toggleCreateQueryModal="toggleCreateQueryModal"
-                            @createFolderInput="createFolderInput"
-                            :savedQueryType="savedQueryType"
-                            :tree-data="searchTreeData"
-                            :on-load-data="all_onLoadData"
-                            :select-node="all_selectNode"
-                            :expand-node="all_expandNode"
-                            :is-loading="all_isInitingTree"
-                            :loaded-keys="all_loadedKeys"
-                            :selected-keys="all_selectedKeys"
-                            :expanded-keys="all_expandedKeys"
+                            :on-load-data="onLoadData"
+                            :select-node="selectNode"
+                            :expand-node="expandNode"
+                            :is-loading="isInitingTree"
+                            :loaded-keys="loadedKeys"
+                            :selected-keys="selectedKeys"
+                            :expanded-keys="expandedKeys"
                             :refreshQueryTree="refreshQueryTree"
                         />
                     </div>
@@ -302,7 +211,8 @@
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import RaisedTab from '~/components/insights/common/raisedTabs/index.vue'
     import QueryTree from './queryTree.vue'
-    import useQueryTree from './composables/useQueryTree'
+    // import useQueryTree from './composables/useQueryTree'
+    import useQueryTree from './composables/useQueryTree2'
     import useSearchQueries from './composables/useSearchQueries'
 
     import Connector from '~/components/insights/common/connector/connectorOnly.vue'
@@ -317,11 +227,15 @@
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import QueryFilter from './queryFilter.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+
+    import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
     export default defineComponent({
         components: {
             RaisedTab,
             QueryTree,
             Connector,
+            ClassificationDropdown,
             // SaveQueryModal,
             QueryFilter,
             LoadingView,
@@ -379,7 +293,10 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const savedQueryType: Ref<'personal' | 'all'> = ref('personal')
+            const { classificationList } = useTypedefData()
+
+            const savedQueryType: Ref<object> = ref(classificationList.value[0])
+            // console.log('hello world: ', classificationList.value)
             const editorInstance = inject('editorInstance') as Ref<any>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -400,11 +317,12 @@
             const { focusEditor } = useEditor()
             const BItypes = getBISourceTypes()
 
-            const isSelectedType = (type: 'personal' | 'all') => {
-                return savedQueryType.value === type
-            }
-            const onSelectQueryType = (type: 'personal' | 'all') => {
-                savedQueryType.value = type
+            let selectedClassification = ref(classificationList.value[0].name)
+            const onClassificationChange = (value) => {
+                // emit('change', checkedValues)
+                console.log('change: ', value)
+                selectedClassification.value = value.name
+                savedQueryType.value = value
             }
 
             const {
@@ -432,6 +350,7 @@
             let selectedFolder = ref({})
 
             const toggleCreateQueryModal = (item) => {
+                console.log('create query modal: ', item)
                 // console.log('selected Parent: ', item)
 
                 if (item?.typeName === 'QueryFolderNamespace') {
@@ -454,6 +373,9 @@
                     //     getRelevantTreeData().parentQualifiedName.value =
                     //         item.qualifiedName
                     // }
+                } else {
+                    selectedFolder.value = queryFolderNamespace
+                    showSaveQueryModal.value = !showSaveQueryModal.value
                 }
             }
 
@@ -462,7 +384,9 @@
             let showEmptyState = ref(true)
 
             const createFolderInput = () => {
-                const inputClassName = `${per_immediateParentGuid.value}_folder_input`
+                // const inputClassName = `${per_immediateParentGuid.value}_folder_input`
+                const inputClassName = `${immediateParentGuid.value}_folder_input`
+                console.log('append input')
 
                 const existingInputs =
                     document.getElementsByClassName(inputClassName)
@@ -554,7 +478,7 @@
                             const { data } = createFolder(
                                 newFolderName.value,
                                 saveQueryLoading,
-                                savedQueryType.value,
+                                savedQueryType.value?.name,
                                 getRelevantTreeData().parentQualifiedName,
                                 getRelevantTreeData().parentGuid
                             )
@@ -568,34 +492,12 @@
                                     )
                                     newFolderName.value = ''
                                     setTimeout(async () => {
-                                        if (
-                                            savedQueryType.value === 'personal'
-                                        ) {
-                                            await per_refetchNode(
-                                                getRelevantTreeData().parentGuid
-                                                    .value,
-                                                'queryFolder'
-                                            )
-                                            ul.removeChild(div)
-                                            await all_refetchNode(
-                                                getRelevantTreeData().parentGuid
-                                                    .value,
-                                                'queryFolder'
-                                            )
-                                        }
-                                        if (savedQueryType.value === 'all') {
-                                            await all_refetchNode(
-                                                getRelevantTreeData().parentGuid
-                                                    .value,
-                                                'queryFolder'
-                                            )
-                                            ul.removeChild(div)
-                                            await per_refetchNode(
-                                                getRelevantTreeData().parentGuid
-                                                    .value,
-                                                'queryFolder'
-                                            )
-                                        }
+                                        await refetchNode(
+                                            getRelevantTreeData().parentGuid
+                                                .value,
+                                            'queryFolder'
+                                        )
+                                        ul.removeChild(div)
                                     }, 1000)
                                 }
                             })
@@ -693,63 +595,27 @@
                 router.push(`/insights?id=${guid}`)
             }
             const facets = ref({})
-            // const sortOrderTable = ref('')
-            // const sortOrderColumn = ref('')
             const onFilterChange = (type, value) => {
-                // if (type === 'sortOrderTable') {
-                //     sortOrderTable.value = value
-                // }
-                // if (type === 'sortOrderColumn') {
-                //     sortOrderColumn.value = value
-                // }
                 if (type === 'facets') {
                     facets.value = { ...value }
                 }
             }
 
             const {
-                treeData: per_treeData,
-                loadedKeys: per_loadedKeys,
-                isInitingTree: per_isInitingTree,
-                selectedKeys: per_selectedKeys,
-                expandedKeys: per_expandedKeys,
-                onLoadData: per_onLoadData,
-                expandNode: per_expandNode,
-                selectNode: per_selectNode,
-                refetchNode: per_refetchNode,
-                immediateParentFolderQF: per_immediateParentFolderQF,
-                immediateParentGuid: per_immediateParentGuid,
-                nodeToParentKeyMap: per_nodeToParentKeyMap,
-                updateNode: per_updateNode,
-                currentSelectedNode: per_currentSelectedNode,
-            } = useQueryTree({
-                emit,
-                openSavedQueryInNewTab,
-                pushGuidToURL,
-                connector,
-                queryFolderNamespace,
-                savedQueryType: ref('personal'),
-                /* PERMISSIONS */
-                permissions: {
-                    readQueries: permissions.value.private.readQueries,
-                    readFolders: permissions.value.private.readFolders,
-                },
-            })
-            const {
-                treeData: all_treeData,
-                loadedKeys: all_loadedKeys,
-                isInitingTree: all_isInitingTree,
-                selectedKeys: all_selectedKeys,
-                expandedKeys: all_expandedKeys,
-                immediateParentFolderQF: all_immediateParentFolderQF,
-                onLoadData: all_onLoadData,
-                expandNode: all_expandNode,
-                selectNode: all_selectNode,
-                refetchNode: all_refetchNode,
-                immediateParentGuid: all_immediateParentGuid,
-                nodeToParentKeyMap: all_nodeToParentKeyMap,
-                updateNode: all_updateNode,
-                currentSelectedNode: all_currentSelectedNode,
+                treeData: treeData,
+                loadedKeys: loadedKeys,
+                isInitingTree: isInitingTree,
+                selectedKeys: selectedKeys,
+                expandedKeys: expandedKeys,
+                immediateParentFolderQF: immediateParentFolderQF,
+                onLoadData: onLoadData,
+                expandNode: expandNode,
+                selectNode: selectNode,
+                refetchNode: refetchNode1,
+                immediateParentGuid: immediateParentGuid,
+                nodeToParentKeyMap: nodeToParentKeyMap,
+                updateNode: updateNode,
+                currentSelectedNode: currentSelectedNode,
                 // addInputBox,
                 // removeInputBox,
             } = useQueryTree({
@@ -758,7 +624,7 @@
                 pushGuidToURL,
                 connector,
                 queryFolderNamespace,
-                savedQueryType: ref('all'),
+                savedQueryType: selectedClassification,
                 /* PERMISSIONS */
                 permissions: {
                     readQueries: permissions.value.public.readQueries,
@@ -767,30 +633,23 @@
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =
-                useSearchQueries(searchQuery, savedQueryType, facets)
+                useSearchQueries(
+                    searchQuery,
+                    ref(savedQueryType.value.name),
+                    facets
+                )
 
-            const getRelevantTreeData = (type?: 'personal' | 'all') => {
-                const currentType = type ?? savedQueryType.value
-
-                if (currentType === 'personal')
-                    return {
-                        parentQualifiedName: per_immediateParentFolderQF,
-                        parentGuid: per_immediateParentGuid,
-                        loadedKeys: per_loadedKeys,
-                        expandedKeys: per_expandedKeys,
-                    }
-                else
-                    return {
-                        parentQualifiedName: all_immediateParentFolderQF,
-                        parentGuid: all_immediateParentGuid,
-                        loadedKeys: all_loadedKeys,
-                        expandedKeys: all_expandedKeys,
-                    }
+            const getRelevantTreeData = () => {
+                return {
+                    parentQualifiedName: immediateParentFolderQF,
+                    parentGuid: immediateParentGuid,
+                    loadedKeys: loadedKeys,
+                    expandedKeys: expandedKeys,
+                }
             }
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {
-                per_selectedKeys.value = [newActiveInlineTab]
-                all_selectedKeys.value = [newActiveInlineTab]
+                selectedKeys.value = [newActiveInlineTab]
             })
 
             watch(activeInlineTab, (newActiveInlineTab) => {
@@ -813,7 +672,7 @@
                     showSaveQueryModal,
                     saveModalRef,
                     router,
-                    savedQueryType.value,
+                    savedQueryType.value.name,
                     saveQueryData.parentQF ??
                         getRelevantTreeData().parentQualifiedName.value,
                     saveQueryData.parentGuid ??
@@ -825,13 +684,7 @@
                     // console.log('query data: ', data)
                     // console.log('query saveQueryData: ', saveQueryData)
                     if (data) {
-                        // if(savedQueryType.value==='all')
-                        per_refetchNode(
-                            saveQueryData.parentGuid ??
-                                getRelevantTreeData().parentGuid.value,
-                            'query'
-                        )
-                        all_refetchNode(
+                        refetchNode(
                             saveQueryData.parentGuid ??
                                 getRelevantTreeData().parentGuid.value,
                             'query'
@@ -856,16 +709,10 @@
                 type: 'query' | 'queryFolder',
                 tree?: 'personal' | 'all'
             ) => {
-                const per_guid =
-                    per_nodeToParentKeyMap[guid] ??
-                    queryFolderNamespace.value.guid
                 const all_guid =
-                    all_nodeToParentKeyMap[guid] ??
-                    queryFolderNamespace.value.guid
+                    nodeToParentKeyMap[guid] ?? queryFolderNamespace.value.guid
 
-                if (!tree || tree === 'personal')
-                    per_refetchNode(per_guid, type)
-                if (!tree || tree === 'all') all_refetchNode(all_guid, type)
+                refetchNode1(all_guid, type)
             }
 
             const refetchNode = (
@@ -873,19 +720,17 @@
                 type: 'query' | 'queryFolder',
                 tree?: 'personal' | 'all'
             ) => {
-                if (!tree || tree === 'personal') per_refetchNode(guid, type)
-                if (!tree || tree === 'all') all_refetchNode(guid, type)
+                refetchNode1(guid, type)
             }
 
             onMounted(() => {
-                per_selectedKeys.value = [activeInlineTabKey.value]
-                all_selectedKeys.value = [activeInlineTabKey.value]
+                selectedKeys.value = [activeInlineTabKey.value]
             })
 
             // Providers
             provide('toggleCreateQueryModal', toggleCreateQueryModal)
             provide('savedQueryType', savedQueryType)
-            provide('savedQueryType', savedQueryType)
+            // provide('savedQueryType', savedQueryType)
             provide('refetchParentNode', refetchParentNode)
             provide('refetchNode', refetchNode)
 
@@ -898,24 +743,13 @@
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
                 if (selectedAsset.value?.guid) {
-                    if (
-                        selectedAsset.value?.classificationNames?.length == 1 &&
-                        inlineTab
-                    ) {
-                        per_updateNode({
-                            qualifiedName: qualifiedName(
-                                selectedAsset as unknown as assetInterface
-                            ),
-                            entity: selectedAsset.value as any,
-                        })
-                    } else {
-                        all_updateNode({
-                            qualifiedName: qualifiedName(
-                                selectedAsset as unknown as assetInterface
-                            ),
-                            entity: selectedAsset.value as any,
-                        })
-                    }
+                    updateNode({
+                        qualifiedName: qualifiedName(
+                            selectedAsset as unknown as assetInterface
+                        ),
+                        entity: selectedAsset.value as any,
+                    })
+                    // }
                     activeInlineTabCopy.status = selectedAsset.value.attributes
                         .certificateStatus as string
                     activeInlineTabCopy.attributes =
@@ -969,10 +803,6 @@
                 if (reset.value) {
                     // console.log('queryTree inside if')
                     setTimeout(async () => {
-                        // console.log(
-                        //     'queryTree: ',
-                        //     getRelevantTreeData().parentGuid.value
-                        // )
                         console.log('reset type: ', resetType.value)
                         console.log('reset id: ', resetParentGuid.value)
 
@@ -985,35 +815,22 @@
                                 async (guid, index) => {
                                     // console.log('reset: ', index)
 
-                                    await all_refetchNode(guid, resetType.value)
-                                    await per_refetchNode(guid, resetType.value)
+                                    await refetchNode1(guid, resetType.value)
                                 }
                             )
                         } else {
-                            await all_refetchNode(
-                                resetParentGuid.value,
-                                resetType.value
-                            )
-                            await per_refetchNode(
+                            await refetchNode1(
                                 resetParentGuid.value,
                                 resetType.value
                             )
                         }
 
-                        // console.log('reset type: ', resetType.value)
-                        // console.log('reset id: ', resetParentGuid.value)
-
-                        // console.log('not wait 1')
-                        // await per_refetchNode(
-                        //     resetParentGuid.value,
-                        //     resetType.value
-                        // )
-                        // console.log('not wait 2')
-
                         props.resetQueryTree()
                     }, 750)
                 }
             })
+
+            const classificationValue = ref(savedQueryType.value)
 
             return {
                 searchTreeData,
@@ -1028,43 +845,32 @@
                 saveQuery,
                 toggleCreateQueryModal,
                 createFolderInput,
-                onSelectQueryType,
-                isSelectedType,
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
                 connector,
                 updateConnector,
                 savedQueryType,
-                per_treeData,
-                per_loadedKeys,
-                per_isInitingTree,
-                per_selectedKeys,
-                per_expandedKeys,
-                per_onLoadData,
-                per_expandNode,
-                per_selectNode,
-                all_treeData,
-                all_loadedKeys,
-                all_isInitingTree,
-                all_selectedKeys,
-                all_expandedKeys,
-                all_onLoadData,
-                all_expandNode,
-                all_selectNode,
+                treeData,
+                loadedKeys,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                onLoadData,
+                expandNode,
+                selectNode,
                 searchQuery,
                 facets,
                 searchResults,
                 searchLoading,
-                all_immediateParentGuid,
-                per_immediateParentGuid,
+                immediateParentGuid,
                 getRelevantTreeData,
                 showEmptyState,
                 selectedFolder,
                 queryFolderNamespace,
                 BItypes,
-                all_currentSelectedNode,
-                per_currentSelectedNode,
-                // refetchTreeData,
+                currentSelectedNode,
+                classificationValue,
+                onClassificationChange,
             }
         },
     })

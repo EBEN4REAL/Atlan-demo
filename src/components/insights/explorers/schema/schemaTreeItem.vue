@@ -34,7 +34,14 @@
                                 <component
                                     :is="dataTypeImage(item)"
                                     class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
+                                    v-if="dataTypeImage(item)"
                                 ></component>
+                                <span
+                                    v-else
+                                    class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
+                                >
+                                    -
+                                </span>
                                 <span
                                     class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                     >{{ title(item) }}
@@ -145,7 +152,7 @@
                                         >
                                     </div>
                                 </div>
-                                <span>{{ dataType(item) }}</span>
+                                <span>{{ dataType(item) ?? '-' }}</span>
                             </div>
                         </div>
                         <!--For Others: Table Item -->
@@ -1042,18 +1049,26 @@
 
             let childCount = (item) => {
                 if (assetType(item) === 'Database') {
-                    return item.attributes.schemaCount
+                    return item?.attributes?.schemaCount !== undefined
+                        ? item.attributes.schemaCount
+                        : '-'
                 } else if (assetType(item) === 'Schema') {
                     return (
-                        item.attributes.tableCount ??
-                        0 + item.attributes.viewCount ??
-                        0
+                        // item?.attributes?.tableCount ??
+                        // 0 + item?.attributes?.viewCount ??
+                        // 0
+
+                        item?.attributes?.tableCount
+                            ? item?.attributes?.tableCount
+                            : '-'
                     )
                 } else if (
                     assetType(item) === 'Table' ||
                     assetType(item) === 'View'
                 ) {
-                    return item.attributes.columnCount
+                    return item?.attributes?.columnCount
+                        ? item.attributes.columnCount
+                        : '-'
                 }
             }
 

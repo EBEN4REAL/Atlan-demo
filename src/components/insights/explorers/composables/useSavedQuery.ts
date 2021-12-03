@@ -33,7 +33,9 @@ export function useSavedQuery(
         getConnectorName,
         getConnectionQualifiedName,
         getSchemaQualifiedName,
+        getDatabaseQualifiedName,
         getConnectorsDataFromQualifiedNames,
+        getConnectorsDataFromQualifiedNamesAll
     } = useConnector()
     const { getParsedQuery } = useEditor()
 
@@ -58,12 +60,19 @@ export function useSavedQuery(
 
         /* --------NOTE- TEMPERORY FIX-------*/
         const defaultSchemaQualifiedName =
-            savedQuery.attributes.defaultSchemaQualifiedName
+            savedQuery?.attributes?.defaultSchemaQualifiedName
         const connectionQualifiedName =
             savedQuery.attributes.connectionQualifiedName
-        const connectors = getConnectorsDataFromQualifiedNames(
+
+            console.log('saved query: ', savedQuery?.attributes)
+
+        const defaultDatabaseQualifiedName =
+            savedQuery?.attributes?.defaultDatabaseQualifiedName
+
+        const connectors = getConnectorsDataFromQualifiedNamesAll(
             connectionQualifiedName,
-            defaultSchemaQualifiedName
+            defaultSchemaQualifiedName,
+            defaultDatabaseQualifiedName
         )
         console.log(connectors, 'connectors')
         console.log('saved query: ', savedQuery)
@@ -110,8 +119,10 @@ export function useSavedQuery(
                 rowsCount: -1,
             },
             context: {
-                attributeName: 'defaultSchemaQualifiedName',
-                attributeValue: defaultSchemaQualifiedName,
+                // attributeName: 'defaultSchemaQualifiedName',
+                // attributeValue: defaultSchemaQualifiedName,
+                ...connectors
+
             },
         }
         newTab.playground.resultsPane= {
@@ -288,7 +299,10 @@ export function useSavedQuery(
             activeInlineTab?.playground?.editor?.text
         )
         const defaultSchemaQualifiedName =
-            getSchemaQualifiedName(attributeValue) ?? ''
+            getSchemaQualifiedName(attributeValue) ?? undefined
+
+        const defaultDatabaseQualifiedName = getDatabaseQualifiedName(attributeValue) ?? undefined
+
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
@@ -301,6 +315,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
+                    defaultDatabaseQualifiedName,
                     certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionId: connectionQualifiedName,
@@ -322,6 +337,8 @@ export function useSavedQuery(
                 
             },
         })
+
+        console.log('update query body: ', body.value)
 
         
         isUpdating.value = true
@@ -360,7 +377,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
-        type: 'personal' | 'all',
+        type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
         activeInlineTab: activeInlineTabInterface,
@@ -433,13 +450,13 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type === 'all') {
+        if (type && type.length) {
             body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    typeName: type,
                     validityPeriods: [],
                 },
             ]
@@ -492,7 +509,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
-        type: 'personal' | 'all',
+        type: string,
         parentFolderQF: string,
         parentFolderGuid: string
     ) => {
@@ -567,13 +584,13 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type === 'all') {
+        if (type && type.length) {
             body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    typeName: type,
                     validityPeriods: [],
                 },
             ]
@@ -630,7 +647,7 @@ export function useSavedQuery(
     const createFolder = (
         folderName: string,
         saveFolderLoading: Ref<boolean>,
-        type: 'personal' | 'all',
+        type: string,
         parentFolderQF: Ref<string>,
         parentFolderGuid: Ref<string>
     ) => {
@@ -680,13 +697,13 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid.value,
         }
-        if (type === 'all') {
+        if (type && type.length) {
             body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    typeName: type,
                     validityPeriods: [],
                 },
             ]
@@ -722,7 +739,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
-        type: 'personal' | 'all',
+        type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
         activeInlineTab: activeInlineTabInterface,
@@ -758,7 +775,9 @@ export function useSavedQuery(
         )
         const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
-            getSchemaQualifiedName(attributeValue) ?? ''
+            getSchemaQualifiedName(attributeValue) ?? undefined
+        const defaultDatabaseQualifiedName = getDatabaseQualifiedName(attributeValue) ?? undefined
+            getSchemaQualifiedName(attributeValue) ?? undefined
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
@@ -776,6 +795,7 @@ export function useSavedQuery(
                     certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName: connectionQualifiedName ?? '',
+                    defaultDatabaseQualifiedName,
                     description,
                     ownerUsers: [username.value],
                     tenantId: 'default',
@@ -783,7 +803,7 @@ export function useSavedQuery(
                     compiledQuery,
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
-                    isPrivate: true,
+                    isPrivate: false,
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -795,13 +815,13 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type === 'all') {
+        if (type && type.length) {
             body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    typeName: type,
                     validityPeriods: [],
                 },
             ]

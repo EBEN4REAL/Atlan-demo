@@ -42,7 +42,7 @@
                         </template>
                         <AtlanIcon
                             v-if="a.options.description"
-                            class="h-4 mb-1 ml-2 text-gray-400  hover:text-gray-500"
+                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                             icon="Info"
                         />
                     </a-tooltip>
@@ -144,10 +144,11 @@
                                 applicableList.value[attrIndex]?.options
 
                             if (attrIndex > -1) {
+                                // !FIXME
                                 if (
-                                    (options?.customType === 'users' ||
-                                        options?.customType === 'groups' ||
-                                        options?.isEnum === 'true') &&
+                                    // (options?.customType === 'users' ||
+                                    //     options?.customType === 'groups' ||
+                                    //     options?.isEnum === 'true') &&
                                     options?.multiValueSelect === 'true'
                                 ) {
                                     value = value
@@ -155,6 +156,11 @@
                                         .split(',')
                                         .map((v: string) => v.trim())
                                 }
+                                // else if (
+                                //     options?.multiValueSelect === 'true'
+                                // ) {
+                                //     value = JSON.parse(value)
+                                // }
                                 applicableList.value[attrIndex].value = value
                             }
                         }
@@ -248,7 +254,7 @@
             }
             const handleChange = (index, value) => {
                 applicableList.value[index].value = value
-                console.log('hellooooo', value)
+                console.log('hellooooo', index, value)
             }
 
             const updateList = inject('updateList')

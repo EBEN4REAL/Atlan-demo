@@ -12,12 +12,11 @@
             rounded-full
             cursor-pointer
             hover:bg-${color.toLowerCase()}-400
-            group
+            
             hover:border-${color.toLowerCase()}-400
         `"
         :data-test-id="displayName"
     >
-
         <ClassificationIcon
             icon="ShieldFilled"
             class="group-hover:text-white"
@@ -46,7 +45,7 @@
 
 <script lang="ts">
     import { toRefs } from 'vue'
-    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     export default {
         props: {

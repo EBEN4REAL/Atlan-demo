@@ -34,7 +34,6 @@
             const route = useRoute()
             const { getQueryFolderNamespace } = useQueryFolderNamespace()
             const savedQueryGuidFromURL = ref(route.query?.id)
-            const vqbQueryRoute = ref(route.query?.vqb)
 
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<any> = ref()
@@ -86,7 +85,6 @@
             provide('schemaNameFromURL', schemaNameFromURL)
             provide('tableNameFromURL', tableNameFromURL)
             provide('columnNameFromURL', columnNameFromURL)
-            provide('vqbQueryRoute', vqbQueryRoute)
 
             provide('savedQueryGuidFromURL', savedQueryGuidFromURL)
             provide('savedQueryInfo', savedQueryInfo)

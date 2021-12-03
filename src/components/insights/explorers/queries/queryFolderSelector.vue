@@ -23,7 +23,7 @@
                     <div class="tab-container">
                         <div class="tab-options">
                             <span
-                                class="text-gray-700 cursor-pointer tab hover:text-primary-400"
+                                class="text-gray-700 cursor-pointer  tab hover:text-primary-400"
                                 :class="
                                     isSelectedType('personal')
                                         ? 'selected-underline'
@@ -33,7 +33,7 @@
                                 >Private</span
                             >
                             <span
-                                class="text-gray-700 cursor-pointer tab tab-2 hover:text-primary-400"
+                                class="text-gray-700 cursor-pointer  tab tab-2 hover:text-primary-400"
                                 :class="
                                     isSelectedType('all')
                                         ? 'selected-underline'
@@ -74,7 +74,7 @@
                                     class="w-2 h-5 my-auto mr-1"
                                 ></AtlanIcon>
                                 <span
-                                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                    class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
                                     >Your Personal Folder</span
                                 >
                             </div>
@@ -120,7 +120,7 @@
                                     class="w-2 h-5 my-auto mr-1"
                                 ></AtlanIcon>
                                 <span
-                                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                    class="mb-0 text-sm text-gray-700  parent-ellipsis-container-base"
                                     >Atlan's Public Folder</span
                                 >
                             </div>
@@ -165,7 +165,7 @@
 
     import QueryTreeList from './queryTreeList.vue'
     import useQueryTree from './composables/useQueryTree'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
@@ -196,6 +196,7 @@
         },
         emits: ['folderChange'],
         setup(props, { emit }) {
+            const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
             const router = useRouter()
             const { connector, savedQueryType, parentFolder } = toRefs(props)
@@ -330,7 +331,9 @@
             }
 
             const pushGuidToURL = (guid: string) => {
-                router.push(`/insights?id=${guid}`)
+                const queryParams = { id: guid }
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
             }
 
             const inlineTabs = inject('inlineTabs') as Ref<

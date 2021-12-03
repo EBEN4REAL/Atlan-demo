@@ -475,6 +475,7 @@
         ref,
         toRefs,
         ComputedRef,
+        computed,
         inject,
         Ref,
         toRaw,
@@ -484,7 +485,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import { themes } from '~/components/insights/playground/editor/monaco/themeLoader'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { useVModels } from '@vueuse/core'
@@ -546,7 +547,11 @@
 
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const editorInstance = inject('editorInstance') as Ref<any>
-            const vqbQueryRoute = inject('vqbQueryRoute') as Ref<any>
+            const route = useRoute()
+            const vqbQueryRoute = ref(route.query?.vqb)
+            const t = computed(() => {
+                console.log(vqbQueryRoute.value)
+            })
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -640,7 +645,9 @@
                 /* ----------------------------- */
                 // syncying inline tabarray in localstorage
                 syncInlineTabsInLocalStorage(tabsArray.value)
-                router.push(`/insights`)
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
             }
             const openCommandPallete = () => {
                 toRaw(editorInstance.value)?.focus()

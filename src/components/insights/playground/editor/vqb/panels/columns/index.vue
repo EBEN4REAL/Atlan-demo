@@ -51,9 +51,7 @@
                             <AtlanIcon icon="Columns" class="w-4 h-4" />
                         </div>
                         <div class="">
-                            <p class="text-sm font-bold text-gray">
-                                Columns {{ panel.order }}
-                            </p>
+                            <p class="text-sm font-bold text-gray">Columns</p>
                             <p class="text-xs text-gray-500" v-if="!expand">
                                 from Instacart_beverages_master
                             </p>
@@ -99,10 +97,7 @@
                         <div class="border-r border-gray-300">
                             <AtlanBtn
                                 @click.stop="() => handleDelete(index)"
-                                :disabled="
-                                    activeInlineTab.playground.vqb.panels
-                                        .length == 1
-                                "
+                                :disabled="Number(index) === 0"
                                 class="
                                     flex-none
                                     border-none

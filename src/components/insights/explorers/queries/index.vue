@@ -36,7 +36,14 @@
         <div class="w-full h-full mt-2 h-9">
             <div class="w-full px-4">
                 <div
-                    class="flex items-end justify-between mb-2 text-gray-500 h-9"
+                    class="
+                        flex
+                        items-end
+                        justify-between
+                        mb-2
+                        text-gray-500
+                        h-9
+                    "
                 >
                     <RaisedTab
                         v-model:active="savedQueryType"
@@ -65,7 +72,14 @@
                                     "
                                     icon="NewQuery"
                                     color="#5277D7"
-                                    class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
+                                    class="
+                                        h-4
+                                        m-0
+                                        mr-4
+                                        -mt-0.5
+                                        hover:text-primary
+                                        outline-none
+                                    "
                                 />
                             </a-tooltip>
                             <a-tooltip
@@ -88,7 +102,14 @@
                                     "
                                     icon="NewQuery"
                                     color="#5277D7"
-                                    class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
+                                    class="
+                                        h-4
+                                        m-0
+                                        mr-4
+                                        -mt-0.5
+                                        hover:text-primary
+                                        outline-none
+                                    "
                                 />
                             </a-tooltip>
                             <!-- ----------- -->
@@ -110,7 +131,13 @@
                                     @click="createFolderInput"
                                     color="#5277D7"
                                     icon="NewFolder"
-                                    class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
+                                    class="
+                                        h-4
+                                        m-0
+                                        -mt-0.5
+                                        hover:text-primary
+                                        outline-none
+                                    "
                                 />
                             </a-tooltip>
                             <a-tooltip
@@ -128,7 +155,13 @@
                                     @click="createFolderInput"
                                     color="#5277D7"
                                     icon="NewFolder"
-                                    class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
+                                    class="
+                                        h-4
+                                        m-0
+                                        -mt-0.5
+                                        hover:text-primary
+                                        outline-none
+                                    "
                                 />
                             </a-tooltip>
                             <!-- CREATE FOLDER PERMISSIONS -->
@@ -249,7 +282,12 @@
                         class="h-32 no-svaved-query-icon text-primary"
                     />
                     <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
+                        class="
+                            my-2
+                            mb-0 mb-6
+                            text-base text-center text-gray-700
+                            max-width-text
+                        "
                     >
                         Sorry, we couldn’t find
                         <br />the query you were looking for
@@ -291,7 +329,7 @@
         toRefs,
         defineAsyncComponent,
     } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import {
         Folder,
         SavedQueryInterface,
@@ -356,7 +394,7 @@
         },
         setup(props, { emit }) {
             let { reset, resetParentGuid, resetType } = toRefs(props)
-
+            const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
             const { qualifiedName } = useAssetInfo()
             const { modifyActiveInlineTab } = useInlineTab()
@@ -690,7 +728,9 @@
             }
 
             const pushGuidToURL = (guid: string) => {
-                router.push(`/insights?id=${guid}`)
+                const queryParams = { id: guid }
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
             }
             const facets = ref({})
             // const sortOrderTable = ref('')
@@ -813,6 +853,7 @@
                     showSaveQueryModal,
                     saveModalRef,
                     router,
+                    route,
                     savedQueryType.value,
                     saveQueryData.parentQF ??
                         getRelevantTreeData().parentQualifiedName.value,

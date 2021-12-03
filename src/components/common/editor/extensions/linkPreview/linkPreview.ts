@@ -12,39 +12,6 @@ interface commandsProps {
     props: any;
 }
 
-const nodePasteRule = (regexp: RegExp, type, getAttrs) => {
-    console.log("linkPreview: nodePasteRule called")
-    const handler = fragment => {
-        const nodes = [];
-
-        fragment.forEach(c => {
-            const textNodes = c.content;
-            nodes.push(c)
-
-            textNodes.forEach((child) => {
-                if (!child.isText) {
-                    nodes.push(child.copy(handler(child.content)));
-                }
-                if (child.text.match(pasteRegex)) {
-                    const attrs = getAttrs;
-                    nodes.push(type.create(attrs));
-                }
-            })
-
-
-        });
-
-        return Fragment.fromArray(nodes);
-    };
-
-    return new Plugin({
-        props: {
-            transformPasted: slice => new Slice(handler(slice.content), slice.openStart, slice.openEnd),
-        },
-    });
-}
-
-
 export interface CommandItem {
     title: string;
     textIcon?: string;
@@ -84,12 +51,12 @@ export default Node.create({
 
     parseHTML() {
         return [
-            { tag: 'a' },
+            { tag: 'p' },
         ]
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['a', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
+        return ['p', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
     },
 
     addNodeView() {

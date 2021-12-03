@@ -12,6 +12,9 @@ const actions: Actions = {
         this.allIntegrations = list
     },
     getIntegration(alias: string, tenantLevel: boolean) {
+        if (!alias) {
+            return undefined
+        }
         const integrationLevel = tenantLevel ? "tenant" : "personal"
         return this.allIntegrations?.find(integration => integration.name.toLowerCase() === alias.toLowerCase() && integration.integration_level === integrationLevel)
     },

@@ -78,14 +78,16 @@ const store = intStore()
 
 const slack = store.getIntegration('slack', true)
 
+console.log('slack', slack.id)
+
 const channels = ref([])
 
 const getChannels = () => {
     if (!slack) return []
     channels.value =
-        slack?.source_metadata?.default_channels.map((c) => ({
-            value: c,
-            label: `# ${c}`,
+        slack?.config?.channels.map((channel) => ({
+            value: channel.id,
+            label: `# ${channel.name}`,
         })) ?? []
     return null
 }
@@ -113,13 +115,12 @@ const shareToSlack = () => {
         duration: 10,
     })
 
-    const { data, isLoading, error, isReady } = shareOnSlack(
-        slack.id,
-        slack.integration_type ?? '',
-        channel.value,
-        message.value,
-        props.link
-    )
+    const { data, isLoading, error, isReady } = shareOnSlack({
+        integrationId: slack.id,
+        channelAlias: channel.value,
+        message: message.value,
+        link: props.link,
+    })
 
     watch([isLoading, error], () => {
         if (!isLoading.value && !error.value) {

@@ -1,5 +1,8 @@
 import { ref } from 'vue'
 import { Integrations } from '~/services/service/integrations'
+import { useAuthStore } from '~/store/auth'
+
+const authStore = useAuthStore()
 
 
 let { origin } = window.location
@@ -8,8 +11,9 @@ if (origin.includes('localhost')) {
     origin = `http://localhost:5008`
 }
 
-export const getSlackInstallUrlState = (isTenant: boolean, userId: string) => {
+export const getSlackInstallUrlState = (isTenant: boolean) => {
     const api = `${origin}/api/service/slack/auth`
+    const userId = authStore.id
     const state = {
         api,
         origin,
@@ -23,20 +27,6 @@ export const getSlackInstallUrlState = (isTenant: boolean, userId: string) => {
     return base64State
 }
 
-function installSlackUrl(isTenant: boolean, userId: string) {
-    const scopes = [
-        'chat:write',
-        'chat:write.public',
-        'channels:read',
-    ]
-
-    const base64State = getSlackInstallUrlState(isTenant, userId)
-    // tood: slack client id should come from env
-    return `slack.com/oauth/v2/authorize?client_id=521029643301.2774249192164&scope=${scopes.join(
-        ','
-    )}&user_scope=&state=${base64State}`
-}
-
 // id that we get in slack message link
 function getTimestampFromSlackMessageId(id) {
     const removePchar = id.substring(1)
@@ -46,22 +36,15 @@ function getTimestampFromSlackMessageId(id) {
     return ts
 }
 
-export const getIntegrationLink = (alias, isTenant: boolean, userId: string) => {
-    switch (alias.toLowerCase()) {
-        case 'slack':
-            return installSlackUrl(isTenant, userId)
-        default: return ''
-    }
-}
-
-export const shareOnSlack = (integrationID, integrationType, channelAlias, message, link) => {
+export const shareOnSlack = ({ integrationId, channelAlias, message, link }) => {
     const body = ref({
-        integrationType,
-        "actionData": {
-            channelAlias, message, link, domain: origin
-        }
+        integration: integrationId,
+        message,
+        link,
+        domain: window.origin,
+        channelAlias
     })
-    const { data, isLoading, error, isReady } = Integrations.ShareSlack(integrationID, body, {})
+    const { data, isLoading, error, isReady } = Integrations.ShareSlack(body, {})
     return { data, isLoading, error, isReady }
 }
 

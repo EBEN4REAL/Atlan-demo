@@ -24,28 +24,37 @@
         </div>
         <div class="">
             <AtlanButton
-                v-if="!isIntegrationConfigured(integration.name)"
+                v-if="!isTenantIntegrationPresent(integration.name)"
                 v-auth="access.CREATE_INTEGRATION"
                 @click="openSlackConfigModal"
             >
                 Configure <AtlanIcon icon="ArrowRight" />
             </AtlanButton>
-            <router-link v-else :to="`//${'google.com'}`" target="_blank">
+            <a
+                v-else-if="
+                    !intStore.hasConfiguredTenantLevelIntegration(
+                        integration.name
+                    )
+                "
+                :href="oauthUrl"
+                target="_blank"
+            >
                 <AtlanButton v-auth="access.CREATE_INTEGRATION">
                     Add to Slack <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
-            </router-link>
+            </a>
         </div>
     </section>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed, toRefs } from 'vue'
 import AtlanButton from '@/UI/button.vue'
 import useTenantData from '~/composables/tenant/useTenantData'
 import access from '~/constant/accessControl/map'
 import SlackConfigModal from './slack/slackConfigModal.vue'
 import integrationStore from '~/store/integrations/index'
+import { getSlackInstallUrlState } from '~/composables/integrations/useSlack'
 
 export default defineComponent({
     name: 'AddIntegrationCard',
@@ -53,13 +62,14 @@ export default defineComponent({
     props: {
         integration: { type: Object, required: true },
     },
-    setup() {
+    setup(props) {
         // store
         const intStore = integrationStore()
 
         // variables
         const showSlackConfigModal = ref(false)
         const { name: tenantName } = useTenantData()
+        const { integration } = toRefs(props)
 
         // methods
         const closeSlackConfigModal = () => {
@@ -73,11 +83,16 @@ export default defineComponent({
             return !!integration
         }
 
-        const isIntegrationConfigured = (alias): boolean => {
-            const isTenantLevelIntegrationConfigured =
-                intStore.hasConfiguredTenantLevelIntegration(alias)
-            return isTenantLevelIntegrationConfigured
-        }
+        const oauthUrl = computed(() => {
+            const slackIntegration = intStore.getIntegration(
+                integration.value.name,
+                true
+            )
+            const oauthBaseUrl = slackIntegration?.source_metadata?.oauthUrl
+            const state = getSlackInstallUrlState(true)
+            const slackOauth = `${oauthBaseUrl}&state=${state}`
+            return slackOauth
+        })
 
         return {
             tenantName,
@@ -86,7 +101,8 @@ export default defineComponent({
             closeSlackConfigModal,
             openSlackConfigModal,
             isTenantIntegrationPresent,
-            isIntegrationConfigured,
+            intStore,
+            oauthUrl,
         }
     },
 })

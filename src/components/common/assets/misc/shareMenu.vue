@@ -17,7 +17,9 @@
                 </a-menu-item>
 
                 <a-menu-item
-                    v-if="!!store.getIntegration('slack', true)"
+                    v-if="
+                        !!intStore.hasConfiguredTenantLevelIntegration('slack')
+                    "
                     key="slack"
                     v-auth="access.USE_INTEGRATION_ACTION"
                     class="flex items-center"
@@ -63,7 +65,7 @@ export default defineComponent({
         // data
         const isVisible = ref(false)
 
-        const store = integrationStore()
+        const intStore = integrationStore()
 
         const { asset } = toRefs(props)
         const closeMenu = () => {
@@ -81,7 +83,7 @@ export default defineComponent({
         }
 
         return {
-            store,
+            intStore,
             access,
             link,
             handleCopyProfileLink,

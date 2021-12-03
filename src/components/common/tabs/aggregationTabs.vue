@@ -9,10 +9,7 @@
         >
             <a-tab-pane v-for="item in localList" :key="item.id">
                 <template #tab>
-                    <div
-                        :class="{ active: item.id === localValue }"
-                        class="flex items-center"
-                    >
+                    <div class="flex items-center">
                         <AtlanIcon
                             :icon="icon"
                             class="self-center mr-1"

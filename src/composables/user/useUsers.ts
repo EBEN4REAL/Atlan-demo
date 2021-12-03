@@ -18,30 +18,25 @@ export const getUserName = (user: any) => {
     return user.email
 }
 const getUserRole = (user: any) => {
-    const { roles } = user
-    if (roles && roles.length > 0) {
-        if (roles.length > 0) {
-            const atlanRoles = roles.filter((role: string) =>
-                role.startsWith('$')
-            )
-            let atlanRole = ''
-            // owner
-            if (atlanRoles.indexOf('$owner') >= 0) atlanRole = '$owner'
-            // member
-            else if (atlanRoles.indexOf('$member') >= 0) atlanRole = '$member'
-            // guest
-            else if (atlanRoles.indexOf('$guest') >= 0) atlanRole = '$guest'
-            return {
-                name: roleMap[atlanRole] ? roleMap[atlanRole] : '',
-                code: roleMap[atlanRole] ? atlanRole : '',
-            }
-        }
-    }
-    return {
-        name: '',
-        code: '',
-    }
+    const { roles, default_roles } = user
+    let atlanRoles: string[] = []
+    const atlanRole = { name: '', code: '' }
+
+    const filterHelper = (a) => a.filter((role: string) => role.startsWith('$'))
+
+    if (roles?.length)
+        atlanRoles = filterHelper(roles)
+
+    if (default_roles?.length)
+        atlanRoles = [...new Set([...atlanRoles, ...filterHelper(default_roles)])]
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const code in roleMap)
+        if (atlanRoles.indexOf(code) >= 0) { atlanRole.name = roleMap[code]; atlanRole.code = code; break; }
+
+    return atlanRole
 }
+
 const getUserStatus = (user: any) => {
     if (!user.enabled) {
         return {

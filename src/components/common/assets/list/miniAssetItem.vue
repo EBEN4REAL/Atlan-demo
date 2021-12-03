@@ -51,13 +51,13 @@
                             />
                         </a-tooltip>
                         <div
-                            class="text-sm tracking-wider text-gray-500 uppercase truncate max-w-100"
+                            class="text-sm tracking-wider text-gray-500 uppercase truncate  max-w-180"
                         >
                             {{ assetTypeLabel(item) || item.typeName }}
                         </div>
                         <div
                             v-if="item.typeName?.toLowerCase() === 'table'"
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div class="dot" />
                             <a-tooltip placement="bottomLeft">
@@ -66,7 +66,7 @@
                                     class="flex items-center text-gray-500"
                                 >
                                     <div
-                                        class="text-xs tracking-tight text-gray-500 truncate max-w-100"
+                                        class="text-xs tracking-tight text-gray-500 truncate  max-w-180"
                                     >
                                         {{ databaseName(item) }}
                                     </div>
@@ -99,7 +99,7 @@
                                     ?.toLowerCase()
                                     .includes('glossary')
                             "
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div v-if="item.attributes.name" class="dot" />
                             <a-tooltip
@@ -127,7 +127,7 @@
                             v-if="
                                 item.typeName?.toLowerCase().includes('query')
                             "
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div v-if="item.attributes.name" class="dot" />
                             <a-tooltip
@@ -165,7 +165,7 @@
                         </div>
                         <div
                             v-if="item.typeName?.toLowerCase() === 'column'"
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div v-if="tableName(item)" class="dot" />
                             <a-tooltip
@@ -181,7 +181,7 @@
                                         class="mr-1 mb-0.5 icon-blue-color"
                                     />
                                     <div
-                                        class="tracking-tight text-gray-500 truncate max-130"
+                                        class="tracking-tight text-gray-500 truncate  max-130"
                                     >
                                         {{ tableName(item) }}
                                     </div>
@@ -197,7 +197,7 @@
                                     item.typeName?.toLowerCase()
                                 )
                             "
-                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap items-center ml-2 text-sm text-gray-500  gap-x-2"
                         >
                             <div class="dot" />
                             <a-tooltip
@@ -291,7 +291,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -330,7 +330,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
                             >
                                 in
                                 <div
@@ -576,7 +576,7 @@
                     <div class="flex items-center overflow-hidden">
                         <router-link
                             :to="assetURL(item)"
-                            class="flex-shrink max-w-xs mb-0 mr-1 font-bold truncate cursor-pointer text-md text-primary hover:underline"
+                            class="flex-shrink max-w-xs mb-0 mr-1 font-bold truncate cursor-pointer  text-md text-primary hover:underline"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -844,7 +844,7 @@
     .max-130 {
         max-width: 130px;
     }
-    .max-w-100{
-        max-width: 100px;
+    .max-w-180 {
+        max-width: 180px;
     }
 </style>

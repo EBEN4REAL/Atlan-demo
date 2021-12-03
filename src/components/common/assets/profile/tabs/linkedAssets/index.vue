@@ -6,6 +6,7 @@
                 :initial-filters="termsFilter"
                 :static-use="true"
                 page="glossary"
+                :enableSidebarDrawer="true"
             />
         </div>
     </div>

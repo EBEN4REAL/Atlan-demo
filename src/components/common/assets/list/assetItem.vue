@@ -445,13 +445,13 @@
         <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
     </div>
     <a-drawer
-        v-if="showAssetSidebarDrawer"
         v-model:visible="showAssetSidebarDrawer"
         placement="right"
-        :keyboard="false"
         :destroy-on-close="true"
+        width="420px"
         :closable="false"
-        :wrap-style="{ width: '420px' }"
+        :key="selectedAssetDrawerData.guid"
+        @close="handleCloseDrawer"
     >
         <AssetPreview :selected-asset="selectedAssetDrawerData"></AssetPreview>
     </a-drawer>
@@ -590,7 +590,6 @@
             }
 
             const handleCloseDrawer = () => {
-                showAssetSidebarDrawer.value = false
                 selectedAssetDrawerData.value = {}
             }
 
@@ -665,6 +664,7 @@
                 getProfilePath,
                 showAssetSidebarDrawer,
                 selectedAssetDrawerData,
+                handleCloseDrawer,
             }
         },
     })

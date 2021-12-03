@@ -21,7 +21,16 @@
                             <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
-                                    class="inline-flex items-center justify-center p-0.5 rounded-sm btn-add cross-hover mt-1"
+                                    class="
+                                        inline-flex
+                                        items-center
+                                        justify-center
+                                        p-0.5
+                                        rounded-sm
+                                        btn-add
+                                        cross-hover
+                                        mt-1
+                                    "
                                     @click="handleAdd"
                                 >
                                     <!-- <fa icon="fal plus" class="text-gray-700" /> -->
@@ -71,7 +80,14 @@
                                                 tab.playground.editor.text
                                                     .length > 0 || tab?.queryId
                                             "
-                                            class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3"
+                                            class="
+                                                w-1.5
+                                                h-1.5
+                                                rounded-full
+                                                bg-primary
+                                                absolute
+                                                right-3
+                                            "
                                         ></div>
                                     </div>
                                 </div>
@@ -160,11 +176,10 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
-    import { useRouter } from 'vue-router'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
     import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
-
+    import { useRouter, useRoute } from 'vue-router'
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
@@ -186,6 +201,7 @@
             },
         },
         setup(props, { emit }) {
+            const route = useRoute()
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
@@ -439,11 +455,19 @@
                 //     }
                 // }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                router.push(`/insights`)
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
             }
             const pushGuidToURL = (guid: string | undefined) => {
-                if (guid) router.push(`/insights?id=${guid}`)
-                else router.push(`/insights`)
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                if (guid) {
+                    queryParams.id = guid
+                    router.push({ path: `insights`, query: queryParams })
+                } else {
+                    router.push({ path: `insights`, query: queryParams })
+                }
             }
             const onTabClick = (activeKey) => {
                 setActiveTabKey(activeKey, activeInlineTabKey)
@@ -537,6 +561,7 @@
                         showSaveQueryModal,
                         saveModalRef,
                         router,
+                        route,
                         'personal',
                         saveQueryData.value.parentQF,
                         saveQueryData.value.parentGuid,

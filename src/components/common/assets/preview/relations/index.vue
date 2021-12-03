@@ -1,5 +1,17 @@
 <template>
-    <div class="px-0 pt-4">
+    <div
+        v-if="loading"
+        class="flex items-center justify-center flex-grow h-5/6"
+    >
+        <AtlanIcon
+            icon="Loader"
+            class="w-auto h-10 animate-spin"
+        />
+    </div>
+    <div v-else-if="filteredRelationshipAssets.length === 0" class="h-5/6">
+        <EmptyView empty-screen="EmptyDiscover" desc="No relations found"/>
+    </div>
+    <div v-else class="px-0 pt-4">
         <div class="px-3 mb-1">
             <!-- searchbar -->
             <SearchAndFilter v-model:value="queryText" size="minimal">
@@ -32,12 +44,11 @@
                 <div class="">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="ml-1 text-gray-500 transition-transform duration-300 transform  hover:text-primary"
+                        class="ml-1 text-gray-500 transition-transform duration-300 transform hover:text-primary"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
             </template>
-
             <!-- each panel is a asset type -->
             <a-collapse-panel
                 v-for="(item, index) in filteredRelationshipAssets"
@@ -81,13 +92,14 @@
         computed,
         toRefs,
     } from 'vue'
+    import EmptyView from '@common/empty/index.vue'
     import AssetTypeList from './assetTypeList.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useRelations } from '~/composables/discovery/useRelations'
 
     export default defineComponent({
-        components: { AssetTypeList, SearchAndFilter },
+        components: { AssetTypeList, SearchAndFilter, EmptyView },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -125,6 +137,9 @@
                 relationshipAssets.value = relationshipAssetTypes.value
                 assetId.value = selectedAsset.value.guid
                 loading.value = isLoading.value
+                watch(isLoading, (newVal) => {
+                    loading.value = newVal
+                })
             }
             // filter required data
             const filteredRelationshipAssets = computed(() =>

@@ -1,5 +1,14 @@
 <template>
-    <VirtualList :data="list" data-key="guid" variable-height>
+    <div
+        v-if="isLoading"
+        class="flex items-center justify-center flex-grow h-24"
+    >
+        <AtlanIcon
+            icon="Loader"
+            class="w-auto h-10 animate-spin"
+        />
+    </div>
+    <VirtualList v-else :data="list" data-key="guid" variable-height>
         <template #default="{ item }">
             <div
                 class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"

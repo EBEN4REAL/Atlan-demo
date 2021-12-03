@@ -11,9 +11,17 @@
             border border-gray-200
             rounded-full
             cursor-pointer
-            ${color ? `hover:bg-${color.toLowerCase()}-400` : ''}
+            ${
+                color
+                    ? `hover:bg-${color.toLowerCase()}-400`
+                    : 'hover:bg-pink-400'
+            }
             group
-            ${color ? `hover:border-${color.toLowerCase()}-400` : ''}
+            ${
+                color
+                    ? `hover:border-${color.toLowerCase()}-400`
+                    : 'hover:border-pink-400'
+            }
             
         `"
         :data-test-id="displayName"

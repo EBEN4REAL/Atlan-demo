@@ -22,7 +22,7 @@
                 class="text-white bg-success border-success"
                 >Test Authentication</a-button
             >
-            <div class="flex ml-2" v-if="testMessage">
+            <div class="flex items-center ml-2" v-if="testMessage">
                 <AtlanIcon :icon="testIcon" class="mr-1"></AtlanIcon>
                 <span :class="testClass">{{ testMessage }}</span>
             </div>

@@ -56,7 +56,7 @@
 
                 <div
                     class="flex gap-x-2"
-                    v-if="currentStep == steps.length - 1"
+                    v-if="currentStep !== steps.length - 1"
                 >
                     <a-button type="primary" class="px-6" @click="handleSubmit"
                         >Run</a-button
@@ -200,23 +200,33 @@
             const handleSubmit = () => {
                 const parameters = []
 
-                console.log(workflowTemplate.value)
+                const credentialBody = getCredentialBody(
+                    configMap.value,
+                    modelValue.value
+                )
+                const connectionBody = getConnectionBody(
+                    configMap.value,
+                    modelValue.value
+                )
 
-                // const credentialBody = getCredentialBody(
-                //     configMap.value,
-                //     modelValue.value
-                // )
-                // const connectionBody = getConnectionBody(
-                //     configMap.value,
-                //     modelValue.value
-                // )
+                connectionBody.forEach((i) => {
+                    modelValue.value[i.parameter] = i.body
+                })
 
-                // console.log(connectionBody)
-                // console.log(modelValue)
+                if (workflowTemplate.value.spec.templates.length > 0) {
+                    workflowTemplate.value.spec.templates[0].inputs.parameters.forEach(
+                        (p) => {
+                            parameters.push({
+                                name: p.name,
+                                value: modelValue.value[p.name],
+                            })
+                        }
+                    )
+                } else {
+                    message.error('Something went wrong. Package is not valid.')
+                }
 
-                // connectionBody.forEach((i) => {
-                //     modelValue.value[i.parameter] = i.body
-                // })
+                console.log(parameters)
 
                 // const seconds = Math.round(new Date().getTime() / 1000)
                 // const connectionName = modelValue.value['connection.name']

@@ -9,21 +9,21 @@
             </div>
         </div>
         <div class="flex flex-col w-full">
-            <a-checkbox-group
-                class="w-full px-4"
-                v-model:value="localValue"
-                @change="handleChange"
-            >
+            <div class="w-full px-4">
                 <template v-for="item in list" :key="item[selectGroupKey]">
                     <a-checkbox
-                        :value="item[selectGroupKey]"
+                        :checked="map[item[selectGroupKey]]"
+                        @change="
+                            (checked) =>
+                                handleChange(checked, item[selectGroupKey])
+                        "
                         :class="$style.atlanReverse"
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
+                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
                     >
                         <div class="flex items-center">
                             <div class="flex flex-col">
                                 <div
-                                    class="mb-1 text-sm leading-none capitalize  text-gray"
+                                    class="mb-1 text-sm leading-none capitalize text-gray"
                                 >
                                     {{ item.alias || item.name }}
                                 </div>
@@ -31,7 +31,7 @@
                         </div>
                     </a-checkbox>
                 </template>
-            </a-checkbox-group>
+            </div>
         </div>
         <p class="px-4 mt-1 text-xs text-gray-500">
             showing {{ list.length }} of {{ total }} groups
@@ -41,6 +41,7 @@
 
 <script lang="ts">
     import {
+        Ref,
         defineComponent,
         PropType,
         ref,
@@ -82,7 +83,16 @@
             const { modelValue } = useVModels(props, emit)
             const { selectGroupKey } = toRefs(props)
             const localValue = ref(modelValue.value)
+            const map = ref({})
 
+            const updateMap = (localValue: Ref<any>) => {
+                map.value = {}
+                localValue.value.map((id) => {
+                    map.value[id] = true
+                })
+                console.log(map)
+            }
+            updateMap(localValue)
             const { list, handleSearch, total, filterTotal } = useFacetGroups()
 
             watch(
@@ -91,15 +101,18 @@
                     handleSearch(props.queryText)
                 }
             )
-            const handleChange = () => {
-                modelValue.value = localValue.value
+            const handleChange = (checked, id) => {
+                if (checked.target.checked) {
+                    map.value[id] = true
+                } else {
+                    delete map.value[id]
+                }
+                modelValue.value = [...Object.keys(map.value)]
                 emit('change')
             }
-            /* Adding this when parent data change, sync it with local */
-            watch(modelValue, () => {
-                localValue.value = modelValue.value
-            })
+
             return {
+                map,
                 list,
                 handleChange,
                 localValue,

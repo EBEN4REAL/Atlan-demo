@@ -9,15 +9,15 @@
             </div>
         </div>
         <div class="flex flex-col w-full">
-            <a-checkbox-group
-                v-model:value="localValue"
-                class="w-full px-3"
-                @change="handleChange"
-            >
+            <div class="w-full px-3">
                 <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
-                        :value="item[selectUserKey]"
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
+                        :checked="map[item[selectUserKey]]"
+                        @change="
+                            (checked) =>
+                                handleChange(checked, item[selectUserKey])
+                        "
+                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
                         :class="$style.atlanReverse"
                     >
                         <div class="text-sm leading-none capitalize text-gray">
@@ -31,7 +31,7 @@
                         </div>
                     </a-checkbox>
                 </template>
-            </a-checkbox-group>
+            </div>
             <p class="px-4 mt-1 text-xs text-gray-500">
                 showing {{ userList.length }} of {{ total }} users
             </p>
@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, computed, ref, toRefs } from 'vue'
+    import { defineComponent, watch, computed, ref, toRefs, Ref } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useUserData from '~/composables/user/useUserData'
@@ -74,6 +74,16 @@
             const { modelValue } = useVModels(props, emit)
             const { selectUserKey } = toRefs(props)
             const localValue = ref(modelValue.value)
+            const map = ref({})
+
+            const updateMap = (localValue: Ref<any>) => {
+                map.value = {}
+                localValue.value.map((id) => {
+                    map.value[id] = true
+                })
+                console.log(map)
+            }
+            updateMap(localValue)
             const { list, handleSearch, total, filterTotal } = useFacetUsers()
             const { username, firstName, lastName, id } = useUserData()
 
@@ -109,20 +119,18 @@
                 return `${item.username}`
             }
 
-            const handleChange = () => {
-                // const uniqueArr = Array.from(
-                //     new Set([...modelValue.value, ...localValue.value])
-                // )
-                console.log(localValue.value, 'localChange')
-                modelValue.value = localValue.value
+            const handleChange = (checked, id) => {
+                if (checked.target.checked) {
+                    map.value[id] = true
+                } else {
+                    delete map.value[id]
+                }
+                modelValue.value = [...Object.keys(map.value)]
                 emit('change')
             }
-            /* Adding this when parent data change, sync it with local */
-            watch(modelValue, () => {
-                localValue.value = modelValue.value
-            })
 
             return {
+                map,
                 selectUserKey,
                 userList,
                 fullName,

@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
 
     interface TabConfig {
         key: string

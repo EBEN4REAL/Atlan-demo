@@ -69,6 +69,7 @@
     import Groups from './widget/groups.vue'
     import GroupMultiple from './widget/groupMultiple.vue'
     import Schedule from './widget/schedule.vue'
+    import Alias from './widget/alias.vue'
 
     export default defineComponent({
         name: 'DynamicForm',
@@ -89,6 +90,7 @@
             UserMultiple,
             GroupMultiple,
             Schedule,
+            Alias,
         },
         props: {
             configMap: {

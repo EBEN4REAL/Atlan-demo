@@ -22,7 +22,7 @@
             "
         >
             <template #title="node">
-                <div class="flex items-center truncate">
+                <div class="flex items-center truncate" @click="toggleVisibilityOfChildren(node.title)">
                     <AtlanIcon
                         :icon="iconName(node)"
                         class="h-4 -ml-0.5 mr-1"
@@ -182,9 +182,7 @@
                 return tree
             }
 
-            const treeData = computed(() =>
-                transformConnectorToTree(filteredList.value)
-            )
+            const treeData = computed(() => transformConnectorToTree(filteredList.value))
 
             watch([connector, connection], () => emitChangedFilters())
 
@@ -260,6 +258,28 @@
                 emit('blur')
             }
 
+            /**
+             * A helper function for toggling the visibility of the children
+             * of a parent node, when the user clicks on the label. It relies
+             * on the `expandedKeys` array, and inserts the parent node in this
+             * array if not present, otherwise it deletes the parent node from
+             * the array, thus collapsing it.
+             * @param name The name of the parent node
+             */
+            const toggleVisibilityOfChildren = (name: string) => {
+                // Find index of the parent node in the array.
+                const indexOfElement = expandedKeys.value.indexOf(name)
+
+                // If the element is found, remove it from the array.
+                if (indexOfElement > -1) {
+                    expandedKeys.value.splice(indexOfElement, 1)
+                }
+                else {
+                    // If it is not found, add it.
+                    expandedKeys.value.push(name)
+                }
+            }
+
             const iconName = (node) => {
                 if (
                     node.title === 'athena' ||
@@ -317,6 +337,7 @@
                 connector,
                 connection,
                 onBlur,
+                toggleVisibilityOfChildren
             }
         },
     })

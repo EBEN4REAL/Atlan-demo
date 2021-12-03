@@ -145,7 +145,7 @@ export function useEditor(
             // console.log('cursor')
             if(type==='auto') {
                 // 1. find cursor position done
-                const pos = editorInstance.getPosition()
+                const pos = editorInstance?.getPosition()
                 console.log('position: ', pos)
                 console.log('position editor: ', editorInstance)
                 
@@ -160,20 +160,31 @@ export function useEditor(
                 if(queryTextValues && queryTextValues.length) {
                     queryTextValues.forEach(query=> {
                         let q = `${query};`
-                        let match = toRaw(editorInstance).getModel().findMatches(`${q.replace(/^\s+|\s+$/g, '')}`);
-                        queryPositions.push({ match: match, token: query.replace(/^\s+|\s+$/g, '')})
+                        let match = toRaw(editorInstance)?.getModel()?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`);
+                        queryPositions.push({ match: match, token: query.replace(/^\s+|\s+$/g, ''), rawQuery: query})
                     })
                 }
                 
                 console.log('position match: ', queryPositions) 
 
-                let semiColonMatchs = toRaw(editorInstance).getModel().findMatches(';');
+                let semiColonMatchs = toRaw(editorInstance)?.getModel()?.findMatches(';');
                 console.log('position match semi: ', semiColonMatchs)
 
                 let independentQueryMatches = semiColonMatchs.map((match, index)=> {
-                    return queryPositions[index].match.find(m=> 
-                        (m.range.endLineNumber ===match.range.endLineNumber && (m.range.endColumn) ===match.range.endColumn)
-                    )
+                    let data = queryPositions[index].match.map(m=> {
+                        if(m.range.endLineNumber ===match.range.endLineNumber && (m.range.endColumn) ===match.range.endColumn){
+                            return {
+                                range:m.range,
+                                rawQuery: queryPositions[index].rawQuery
+                            }
+                        }
+                        
+                    })
+                    for(var i=0;i<data.length;i++) {
+                        if(data[i]!==undefined) {
+                            return data[i];
+                        }
+                    }
                 })
 
                 console.log('position match final: ', independentQueryMatches)
@@ -197,28 +208,30 @@ export function useEditor(
                         break;
                     } else if(pos.lineNumber===independentQueryMatches[i+1].range.startLineNumber) {
                         // same line, check start column of second
-                        if(pos.column<independentQueryMatches[i+1].range.startColumn) {
-                            lineIndex = independentQueryMatches[i]
-                            // console.log('position match line equal1: ', {
-                            //     pos: pos.column,
-                            //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
-                            //     lineIndex
-                            // })
-                            
-                            break;
-                        } else {
-                            if(pos.lineNumber===independentQueryMatches[i].range.endLineNumber && pos.column===independentQueryMatches[i+1].range.startColumn) { 
-                                lineIndex = independentQueryMatches[i]
+
+                        // find all lines with starting point on this line
+                        var start = i+1;
+                        var end=i+1
+
+                        while(end<independentQueryMatches.length) {
+                            if(pos.lineNumber===independentQueryMatches[end].range.startLineNumber) {
+                                end++;
                             } else {
-                                lineIndex = independentQueryMatches[i+1]
+                                end=end-1
+                                break;
                             }
-                            // console.log('position match line equal2: ', {
-                            //     pos: pos.column,
-                            //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
-                            //     lineIndex
-                            // })
-                            break;
                         }
+                        if(end===independentQueryMatches.length) {
+                            end=end-1
+                        }
+                        console.log('position match here: ', {start, end})
+                        lineIndex = independentQueryMatches[start]
+                        for(var j=start;j+1<=end;j++) {
+                            if(pos.column>independentQueryMatches[j+1].range.startColumn) {
+                                lineIndex = independentQueryMatches[j+1]
+                            }
+                        }
+                        break;
                     } else {
                         
                     }
@@ -228,15 +241,6 @@ export function useEditor(
                 }
 
                 
-
-                // let lineIndex = independentQueryMatches.findIndex((match)=> {
-                //     if(match.range.startLineNumber<pos.lineNumber) {
-                //         return match   
-                //     }
-                //     if(match.range.endLineNumber===pos.lineNumber  && match.range.endColumn>pos.column) {
-                //         return match
-                //     }
-                // })
                 console.log('position match line: ', lineIndex)
 
 
@@ -283,7 +287,7 @@ export function useEditor(
                             }
                         ]
                     );
-                    
+                    return lineIndex
                 }
 
 
@@ -298,7 +302,7 @@ export function useEditor(
             // })
             // return moustacheInterpolator(queryText, parseVariables)
         
-
+            return null
         // return semicolonSeparateQuery(query)
     }
     // const clearLineDecoration = (editorInstance: any) => {
@@ -423,7 +427,7 @@ export function useEditor(
     ) => {
         if (activeInlineTab.value) {
             activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                editor.deltaDecorations(
+                editor?.deltaDecorations(
                     activeInlineTab.value.playground.resultsPane.result
                         .errorDecorations,
                     []
@@ -441,6 +445,7 @@ export function useEditor(
             activeInlineTab.value.playground.resultsPane.result.errorDecorations
                 ?.length > 0
         ) {
+            console.log('error deco: ', activeInlineTab.value.playground.resultsPane.result.errorDecorations)
             const lineRegex = /(?:line )([0-9]+)/gim
             /* [["Line 3", "3"], ["line 3", "3"]] */
             const linesInfo = [

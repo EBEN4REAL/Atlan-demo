@@ -577,5 +577,11 @@
         color: rgba(51, 51, 51, 0.2) !important;
         width: 8.53px !important;
     }
+    :global(.inputarea.monaco-mouse-cursor-text) {
+        background-color: transparent !important;
+        &::selection {
+            background: transparent !important;
+        }
+    }
     // }
 </style>

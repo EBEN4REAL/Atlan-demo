@@ -43,10 +43,12 @@ export function useWorkflowHelper() {
         list.forEach((i) => {
             const model = {
                 attributes: {},
+                typeName: 'Connection',
             }
             Object.keys(formState).forEach((key) => {
-                if (key.startsWith(`${i}.`)) {
-                    model.attributes[key.replace(`${i}.`, '')] = formState[key]
+                if (key.startsWith(`${i.key}.`)) {
+                    model.attributes[key.replace(`${i.key}.`, '')] =
+                        formState[key]
                 }
             })
 

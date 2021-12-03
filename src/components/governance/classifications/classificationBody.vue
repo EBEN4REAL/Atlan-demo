@@ -1,17 +1,19 @@
 <template>
     <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
     <KeepAlive>
-        <div class="wrapper-height">
-            <AssetsWrapper
+        <div class="overflow-y-scroll wrapper-height">
+            <ClassificationOverview
                 v-if="activeTabKey === '1'"
+                :classification="selectedClassification"
+                @openAssetsTab="activeTabKey = '2'"
+            />
+            <AssetsWrapper
+                v-if="activeTabKey === '2'"
                 :initialFilters="filterConfig"
                 :showFilters="false"
+                :staticUse="true"
                 page="classifications"
             />
-            <!-- <LinkedTerms
-                v-else-if="activeTabKey === '2'"
-                :selected-classification="selectedClassification?.name"
-            /> -->
         </div>
     </KeepAlive>
 </template>
@@ -19,16 +21,17 @@
 <script lang="ts">
     import { defineComponent, computed, ref, PropType, toRefs } from 'vue'
     import AssetsWrapper from '@/assets/index.vue'
-    // import LinkedTerms from './LinkedTerms.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
+    import ClassificationOverview from '@/governance/classifications/overview.vue'
+
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: 'ClassificationBody',
         components: {
             AssetsWrapper,
-            // LinkedTerms,
             MinimalTab,
+            ClassificationOverview,
         },
         props: {
             classification: {
@@ -41,8 +44,8 @@
 
             const activeTabKey = ref('1')
             const tabConfig = [
-                { key: '1', label: 'Linked Assets' },
-                // { key: '2', label: 'Linked Terms' },
+                { key: '1', label: 'Overview' },
+                { key: '2', label: 'Assets' },
             ]
 
             const filterConfig = computed(() => ({

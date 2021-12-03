@@ -10,7 +10,7 @@
             :class="[
                 !bulkSelectMode && isSelected
                     ? 'border-primary bg-primary-light'
-                    : noBg ? 'border-transparent' :'bg-white border-transparent',
+                    : 'border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-light' : '',
             ]"
         >
@@ -58,7 +58,7 @@
                         ></AtlanIcon>
 
                         <router-link
-                            :to="assetURL(item)"
+                            :to="getProfilePath(item)"
                             class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
@@ -375,23 +375,6 @@
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
-                                    v-if="schemaName(item)"
-                                    class="flex items-center text-gray-500"
-                                >
-                                    <AtlanIcon
-                                        icon="SchemaGray"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
-                                        {{ schemaName(item) }}
-                                    </div>
-                                </div>
-                                <template #title>
-                                    <span>Schema - {{ schemaName(item) }}</span>
-                                </template>
-                            </a-tooltip>
-                            <a-tooltip placement="bottomLeft">
-                                <div
                                     v-if="databaseName(item)"
                                     class="flex items-center text-gray-500"
                                 >
@@ -408,6 +391,23 @@
                                         >Database -
                                         {{ databaseName(item) }}</span
                                     >
+                                </template>
+                            </a-tooltip>
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="schemaName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="SchemaGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ schemaName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>Schema - {{ schemaName(item) }}</span>
                                 </template>
                             </a-tooltip>
                         </div>
@@ -434,6 +434,7 @@
                                         isPropagated(classification)
                                     "
                                     :allow-delete="false"
+                                    :color="classification.options?.color"
                                 ></ClassificationPill>
                             </PopoverClassification>
                         </template>
@@ -552,11 +553,8 @@
                 categories,
                 parentCategory,
                 classifications,
+                getProfilePath,
             } = useAssetInfo()
-
-            const assetURL = (asset) => ({
-                path: `/assets/${asset.guid}`,
-            })
 
             const handlePreview = (item: any) => {
                 emit('preview', item)
@@ -601,7 +599,6 @@
                 getConnectorImage,
                 assetType,
                 dataType,
-                assetURL,
                 rowCount,
                 columnCount,
                 sizeBytes,
@@ -631,6 +628,7 @@
                 isPropagated,
                 list,
                 classifications,
+                getProfilePath,
             }
         },
     })

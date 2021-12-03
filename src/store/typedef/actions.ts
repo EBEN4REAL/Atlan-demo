@@ -1,5 +1,7 @@
-import { State } from './state'
+import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
+import { State } from './state'
+ 
 export interface Actions extends State {
   appendClassificationList(value: any): void
   setClassificationList(value: any): void
@@ -10,7 +12,9 @@ export interface Actions extends State {
   updateCustomMetadata(value: object): void;
   setIsLoading(value: boolean): void
   setError(value: object | null): void
-  tickForceRevalidate(): void
+  updateSingleClassification(value: ClassificationInterface): void
+  removeClassificationByName(name: string): void
+  tickForceRevalidate(): void,
 }
 
 export const actions: Actions = {
@@ -20,6 +24,17 @@ export const actions: Actions = {
   },
   setClassificationList(value) {
     this.classificationList = value
+  },
+  updateSingleClassification(value: ClassificationInterface) {
+    this.classificationList = this.classificationList.map((classification) => {
+      if(classification.name === value.name) {
+        return value
+      }
+      return classification
+    })
+  },
+  removeClassificationByName(name: string) {
+    this.classificationList = this.classificationList.filter((classification) => classification.name !== name)
   },
   // enum list
   appendEnumList(value) {

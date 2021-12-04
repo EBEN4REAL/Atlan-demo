@@ -33,66 +33,72 @@
             </div>
         </div>
         <!-- <div class="w-full my-4 border-b"></div> -->
-        <div class="w-full h-full mt-2 h-9">
-            <div class="w-full px-4">
+        <div class="w-full h-full mt-2">
+            <div
+                class="w-full px-4 h-9"
+                v-if="!searchQuery?.length && !totalFilteredCount"
+            >
                 <div
-                    class="flex items-center justify-between mb-2 text-gray-500 h-9"
+                    class="flex items-center justify-between w-full mb-2 text-gray-500 h-9"
                 >
-                    <div class="w-9/12">
-                        <ClassificationDropdown
-                            :modelValue="classificationValue"
-                            @change="onClassificationChange"
-                        />
-                    </div>
-
-                    <div v-if="!searchQuery?.length" class="flex items-center">
-                        <div class>
-                            <a-tooltip
-                                placement="top"
-                                color="#363636"
-                                v-if="permissions.public.createQuery"
-                            >
-                                <template #title>
-                                    <span>New query</span>
-                                </template>
-                                <AtlanIcon
-                                    @click="
-                                        () =>
-                                            toggleCreateQueryModal(
-                                                currentSelectedNode
-                                            )
-                                    "
-                                    icon="NewQuery"
-                                    color="#5277D7"
-                                    class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
-                                />
-                            </a-tooltip>
-                            <!-- ----------- -->
+                    <div class="flex items-center justify-between w-full">
+                        <div class="w-9/12">
+                            <ClassificationDropdown
+                                :modelValue="classificationValue"
+                                @change="onClassificationChange"
+                            />
                         </div>
-                        <div class>
-                            <a-tooltip
-                                placement="top"
-                                color="#363636"
-                                v-if="resolvePublicFolderCreationPermission()"
-                            >
-                                <template #title>
-                                    <span>New folder</span>
-                                </template>
-                                <AtlanIcon
-                                    @click="createFolderInput"
-                                    color="#5277D7"
-                                    icon="NewFolder"
-                                    class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
-                                />
-                            </a-tooltip>
-                            <!-- CREATE FOLDER PERMISSIONS -->
+                        <div class="flex items-center">
+                            <div class>
+                                <a-tooltip
+                                    placement="top"
+                                    color="#363636"
+                                    v-if="permissions.public.createQuery"
+                                >
+                                    <template #title>
+                                        <span>New query</span>
+                                    </template>
+                                    <AtlanIcon
+                                        @click="
+                                            () =>
+                                                toggleCreateQueryModal(
+                                                    currentSelectedNode
+                                                )
+                                        "
+                                        icon="NewQuery"
+                                        color="#5277D7"
+                                        class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
+                                    />
+                                </a-tooltip>
+                                <!-- ----------- -->
+                            </div>
+                            <div class>
+                                <a-tooltip
+                                    placement="top"
+                                    color="#363636"
+                                    v-if="
+                                        resolvePublicFolderCreationPermission()
+                                    "
+                                >
+                                    <template #title>
+                                        <span>New folder</span>
+                                    </template>
+                                    <AtlanIcon
+                                        @click="createFolderInput"
+                                        color="#5277D7"
+                                        icon="NewFolder"
+                                        class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
+                                    />
+                                </a-tooltip>
+                                <!-- CREATE FOLDER PERMISSIONS -->
+                            </div>
                         </div>
                     </div>
                     <!-- {{ savedQueryType }} -->
                 </div>
             </div>
             <div
-                v-if="!searchQuery?.length && !Object.keys(facets).length"
+                v-if="!searchQuery?.length && !totalFilteredCount"
                 class="relative w-full px-4 pt-0 overflow-y-auto"
                 :style="
                     fullSreenState
@@ -596,10 +602,29 @@
             }
             const facets = ref({})
             const onFilterChange = (type, value) => {
+                console.log('facet: ', value)
                 if (type === 'facets') {
                     facets.value = { ...value }
                 }
             }
+            const totalFilteredCount = computed(() => {
+                let count = 0
+                Object.keys(facets.value).forEach((key) => {
+                    if (Array.isArray(facets.value[key])) {
+                        if (facets.value[key].length > 0) {
+                            count += 1
+                        }
+                    } else if (
+                        typeof facets.value[key] === 'object' &&
+                        facets.value[key] !== null
+                    ) {
+                        if (Object.keys(facets.value[key]).length > 0) {
+                            count += 1
+                        }
+                    }
+                })
+                return count
+            })
 
             const {
                 treeData: treeData,
@@ -871,6 +896,7 @@
                 currentSelectedNode,
                 classificationValue,
                 onClassificationChange,
+                totalFilteredCount,
             }
         },
     })

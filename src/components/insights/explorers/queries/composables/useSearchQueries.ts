@@ -46,6 +46,7 @@ const searchQueries = (
         'connectionQualifiedName',
         'parentFolderQualifiedName',
         'defaultSchemaQualifiedName',
+        'defaultDatabaseQualifiedName',
         'parentFolder',
         'columns', //TODO: queries
         'folder',
@@ -70,18 +71,18 @@ const searchQueries = (
             '__state',
             'ACTIVE'
         )
-        if (classification?.value && classification?.value.length) {
-            base.orFilter(
-                'term',
-                '__traitNames',
-                classification.value
-            )
-            base.orFilter(
-                'term',
-                '__propagatedTraitNames',
-                classification.value
-            )
-        } 
+        // if (classification?.value && classification?.value.length) {
+        //     base.orFilter(
+        //         'term',
+        //         '__traitNames',
+        //         classification.value
+        //     )
+        //     base.orFilter(
+        //         'term',
+        //         '__propagatedTraitNames',
+        //         classification.value
+        //     )
+        // } 
 
         if(facets.value && Object.keys(facets.value).length>0) {
             Object.keys(facets.value ?? {}).forEach((mkey) => {

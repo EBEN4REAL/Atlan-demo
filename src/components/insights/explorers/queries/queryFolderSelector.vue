@@ -25,7 +25,7 @@
                         @change="onClassificationChange"
                     />
                 </div>
-                <div class="w-full h-full pt-0 pb-4 mx-4 overflow-y-scroll">
+                <div class="h-full pt-0 pb-4 mx-4 overflow-y-hidden w-9/11">
                     <div class="flex w-full">
                         <AtlanIcon
                             :icon="folderOpened ? 'CaretDown' : 'CaretRight'"
@@ -34,7 +34,13 @@
                         ></AtlanIcon>
                         <div
                             @click="onSelect('root', 'root')"
-                            class="flex cursor-pointer"
+                            class="flex w-full px-1 py-1 rounded cursor-pointer"
+                            :class="`${
+                                selectedFolderContext?.guid ===
+                                queryFolderNamespace?.guid
+                                    ? 'bg-primary-focus w-9/11'
+                                    : 'bg-white'
+                            }`"
                         >
                             <AtlanIcon
                                 :icon="
@@ -49,7 +55,7 @@
                         </div>
                     </div>
                     <div
-                        class="w-full h-full bg-white py-1.5 pl-3 pr-4"
+                        class="w-full h-full py-0 pl-3 pr-4 bg-white"
                         v-if="folderOpened"
                     >
                         <div class="mt-1 ml-3">
@@ -365,6 +371,7 @@
                 toggleFolder,
                 currentSelectedNode,
                 selectedFolderContext,
+                queryFolderNamespace,
             }
         },
     })

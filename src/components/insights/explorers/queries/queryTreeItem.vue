@@ -51,13 +51,13 @@
                                                 @click="newQuery"
                                                 >New query</a-menu-item
                                             >
-                                            <a-menu-item
+                                            <!-- <a-menu-item
                                                 key="public"
                                                 @click="
                                                     showPublishPopover = true
                                                 "
                                                 >Make folder public</a-menu-item
-                                            >
+                                            > -->
 
                                             <a-menu-item
                                                 key="ChangeFolder"
@@ -199,13 +199,13 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
-                                            <a-menu-item
+                                            <!-- <a-menu-item
                                                 key="public"
                                                 @click="
                                                     showPublishPopover = true
                                                 "
                                                 >Make query public</a-menu-item
-                                            >
+                                            > -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -234,7 +234,7 @@
             />
         </template>
     </a-popover>
-    <a-popover :visible="showPublishPopover" placement="right">
+    <!-- <a-popover :visible="showPublishPopover" placement="right">
         <template #content>
             <div class="p-4">
                 <QueryFolderSelector
@@ -262,7 +262,7 @@
                 </div>
             </div>
         </template>
-    </a-popover>
+    </a-popover> -->
 
     <a-popover :visible="showFolderPopover" placement="right">
         <template #content>

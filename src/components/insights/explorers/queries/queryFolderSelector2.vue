@@ -1,15 +1,15 @@
 <template>
     <div class="popover-container">
         <div class="w-full h-full pb-4 overflow-y-scroll">
-            <div class="m-4 w-9/11">
+            <div class="my-1 mb-2 w-9/11">
                 <ClassificationDropdown
-                    :modelValue="classificationValue"
+                    :modelValue="savedQueryType"
                     @change="onClassificationChange"
                 />
             </div>
             <!--explorer pane start -->
-            <div class="w-full h-full bg-white py-1.5 pr-4">
-                <div class="flex w-full">
+            <div class="w-full h-full pr-4 bg-white">
+                <div class="flex w-full rounded">
                     <AtlanIcon
                         :icon="folderOpened ? 'CaretDown' : 'CaretRight'"
                         class="my-auto mr-0.5 cursor-pointer"
@@ -17,7 +17,13 @@
                     ></AtlanIcon>
                     <div
                         @click="onSelect('root', 'root')"
-                        class="flex cursor-pointer"
+                        class="flex w-full py-1 rounded cursor-pointer"
+                        :class="`${
+                            selectedFolderContext?.guid ===
+                            queryFolderNamespace?.guid
+                                ? 'bg-primary-focus w-9/11'
+                                : 'bg-white'
+                        }`"
                     >
                         <AtlanIcon
                             :icon="folderOpened ? 'FolderOpen' : 'FolderClosed'"
@@ -317,6 +323,7 @@
                 classificationValue,
                 onClassificationChange,
                 selectedFolderContext,
+                queryFolderNamespace,
             }
         },
     })

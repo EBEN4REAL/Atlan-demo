@@ -40,7 +40,7 @@
             </div>
         </template>
         <template #role="{ text: user }">
-            {{ user || 'Default roles' }}
+            {{ user || '-' }}
         </template>
         <template #status="{ text: user }">
             <div

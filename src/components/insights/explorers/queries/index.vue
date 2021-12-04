@@ -206,7 +206,7 @@
         toRefs,
         defineAsyncComponent,
     } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import {
         Folder,
         SavedQueryInterface,
@@ -276,7 +276,7 @@
         },
         setup(props, { emit }) {
             let { reset, resetParentGuid, resetType } = toRefs(props)
-
+            const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
             const { qualifiedName } = useAssetInfo()
             const { modifyActiveInlineTab } = useInlineTab()
@@ -598,7 +598,9 @@
             }
 
             const pushGuidToURL = (guid: string) => {
-                router.push(`/insights?id=${guid}`)
+                const queryParams = { id: guid }
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
             }
             const facets = ref({})
             const onFilterChange = (type, value) => {
@@ -697,6 +699,7 @@
                     showSaveQueryModal,
                     saveModalRef,
                     router,
+                    route,
                     savedQueryType.value.name,
                     saveQueryData.parentQF ??
                         getRelevantTreeData().parentQualifiedName.value,

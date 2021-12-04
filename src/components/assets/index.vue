@@ -280,6 +280,9 @@
             if (discoveryStore.activeFacet && page.value === 'assets') {
                 facets.value = discoveryStore.activeFacet
             }
+            if (discoveryStore.activePostFacet && page.value === 'assets') {
+                postFacets.value = discoveryStore.activePostFacet
+            }
             if (discoveryStore.preferences) {
                 console.log(discoveryStore.preferences)
 
@@ -357,6 +360,7 @@
             const handleAssetTypeChange = () => {
                 offset.value = 0
                 quickChange()
+                discoveryStore.setActivePostFacet(postFacets.value)
             }
 
             const handleLoadMore = () => {

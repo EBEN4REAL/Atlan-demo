@@ -198,10 +198,10 @@ export function useConnector() {
             attributeValue: undefined,
         }
 
-        if (defaultSchemaQualifiedName && defaultSchemaQualifiedName!=='') {
+        if (defaultSchemaQualifiedName && defaultSchemaQualifiedName.length!==0) {
             connectors.attributeName = 'defaultSchemaQualifiedName'
             connectors.attributeValue = defaultSchemaQualifiedName
-        } else if (defaultDatabaseQualifiedName && defaultDatabaseQualifiedName!=='') {
+        } else if (defaultDatabaseQualifiedName && defaultDatabaseQualifiedName.length!==0) {
             connectors.attributeName = 'defaultDatabaseQualifiedName'
             connectors.attributeValue = defaultDatabaseQualifiedName
         } else if (connectionQualifiedName !== '') {

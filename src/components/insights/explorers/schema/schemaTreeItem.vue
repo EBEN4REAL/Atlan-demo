@@ -596,7 +596,7 @@
     import { useRouter } from 'vue-router'
     import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
     import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
-
+    import { generateUUID } from '~/utils/helper/generator'
     import {
         useMapping,
         nextKeywords,
@@ -1098,101 +1098,27 @@
             // const router = useRouter()
             // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs')
+            let demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
 
             const handleAddNewTab = async (query, context, previewItem) => {
-                const key = String(new Date().getTime())
+                const key = generateUUID()
 
-                const inlineTabData: activeInlineTabInterface =
-                    inlineTabsDemoData[0]
-                ;(inlineTabData.label = `${previewItem.title} preview`),
-                    (inlineTabData.key = key),
-                    (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
-                    (inlineTabData.isSaved = false),
-                    (inlineTabData.queryId = undefined),
-                    (inlineTabData.status = 'DRAFT'),
-                    (inlineTabData.connectionId = ''),
-                    (inlineTabData.description = ''),
-                    (inlineTabData.qualifiedName = ''),
-                    (inlineTabData.parentGuid = ''),
-                    (inlineTabData.parentQualifiedName = ''),
-                    (inlineTabData.isSQLSnippet = false),
-                    (inlineTabData.savedQueryParentFolderTitle = undefined),
-                    (inlineTabData.explorer = {
-                        schema: {
-                            connectors: {
-                                ...context,
-                            },
-                        },
-                        queries: {
-                            connectors: {
-                                connector:
-                                    previewItem.connectionQualifiedName.split(
-                                        '/'
-                                    )[1],
-                            },
-                        },
-                    }),
-                    (inlineTabData.playground.editor = {
-                        context: {
-                            ...context,
-                        },
-                        text: query,
-                        dataList: [],
-                        columnList: [],
-                        variables: [],
-                        savedVariables: [],
-                        limitRows: {
-                            checked: false,
-                            rowsCount: -1,
-                        },
-                    })
-                ;(inlineTabData.playground.resultsPane = {
-                    activeTab:
-                        activeInlineTab.value?.playground?.resultsPane
-                            ?.activeTab ?? 0,
-                    result: {
-                        title: `${key} Result`,
-                        runQueryId: undefined,
-                        isQueryRunning: '',
-                        queryErrorObj: {},
-                        totalRowsCount: -1,
-                        executionTime: -1,
-                        errorDecorations: [],
-                        eventSourceInstance: undefined,
-                        buttonDisable: false,
-                        isQueryAborted: false,
-                    },
-                    metadata: {},
-                    queries: {},
-                    joins: {},
-                    filters: {},
-                    impersonation: {},
-                    downstream: {},
-                    sqlHelp: {},
-                }),
-                    (inlineTabData.assetSidebar = {
-                        // for taking the previous state from active tab
-                        openingPos: undefined,
-                        isVisible: false,
-                        assetInfo: {},
-                        title: activeInlineTab.value?.assetSidebar.title ?? '',
-                        id: activeInlineTab.value?.assetSidebar.id ?? '',
-                    })
-                // const inlineTabData: activeInlineTabInterface = {
-                //     label: `${previewItem.title} preview`,
-                //     key,
-                //     favico: 'https://atlan.com/favicon.ico',
-                //     isSaved: false,
-                //     queryId: undefined,
-                //     status: 'DRAFT',
-                //     connectionId: '',
-                //     description: '',
-                //     qualifiedName: '',
-                //     parentGuid: '',
-                //     parentQualifiedName: '',
-                //     isSQLSnippet: false,
-                //     savedQueryParentFolderTitle: undefined,
-                //     explorer: {
+                // const inlineTabData = { ...demoTab }
+
+                // ;(inlineTabData.label = `${previewItem.title} preview`),
+                //     (inlineTabData.key = key),
+                //     (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
+                //     (inlineTabData.isSaved = false),
+                //     (inlineTabData.queryId = undefined),
+                //     (inlineTabData.status = 'DRAFT'),
+                //     (inlineTabData.connectionId = ''),
+                //     (inlineTabData.description = ''),
+                //     (inlineTabData.qualifiedName = ''),
+                //     (inlineTabData.parentGuid = ''),
+                //     (inlineTabData.parentQualifiedName = ''),
+                //     (inlineTabData.isSQLSnippet = false),
+                //     (inlineTabData.savedQueryParentFolderTitle = undefined),
+                //     (inlineTabData.explorer = {
                 //         schema: {
                 //             connectors: {
                 //                 ...context,
@@ -1206,56 +1132,141 @@
                 //                     )[1],
                 //             },
                 //         },
-                //     },
-                //     playground: {
-                //         editor: {
-                //             context: {
-                //                 ...context,
-                //             },
-                //             text: query,
-                //             dataList: [],
-                //             columnList: [],
-                //             variables: [],
-                //             savedVariables: [],
-                //             limitRows: {
-                //                 checked: false,
-                //                 rowsCount: -1,
-                //             },
+                //     }),
+                //     (inlineTabData.playground.editor = {
+                //         context: {
+                //             ...context,
                 //         },
-                //         resultsPane: {
-                //             activeTab:
-                //                 activeInlineTab.value?.playground?.resultsPane
-                //                     ?.activeTab ?? 0,
-                //             result: {
-                //                 title: `${key} Result`,
-                //                 runQueryId: undefined,
-                //                 isQueryRunning: '',
-                //                 queryErrorObj: {},
-                //                 totalRowsCount: -1,
-                //                 executionTime: -1,
-                //                 errorDecorations: [],
-                //                 eventSourceInstance: undefined,
-                //                 buttonDisable: false,
-                //                 isQueryAborted: false,
-                //             },
-                //             metadata: {},
-                //             queries: {},
-                //             joins: {},
-                //             filters: {},
-                //             impersonation: {},
-                //             downstream: {},
-                //             sqlHelp: {},
+                //         text: query,
+                //         dataList: [],
+                //         columnList: [],
+                //         variables: [],
+                //         savedVariables: [],
+                //         limitRows: {
+                //             checked: false,
+                //             rowsCount: -1,
                 //         },
+                //     })
+                // ;(inlineTabData.playground.resultsPane = {
+                //     activeTab:
+                //         activeInlineTab.value?.playground?.resultsPane
+                //             ?.activeTab ?? 0,
+                //     result: {
+                //         title: `${key} Result`,
+                //         runQueryId: undefined,
+                //         isQueryRunning: '',
+                //         queryErrorObj: {},
+                //         totalRowsCount: -1,
+                //         executionTime: -1,
+                //         errorDecorations: [],
+                //         eventSourceInstance: undefined,
+                //         buttonDisable: false,
+                //         isQueryAborted: false,
                 //     },
-                //     assetSidebar: {
+                //     metadata: {},
+                //     queries: {},
+                //     joins: {},
+                //     filters: {},
+                //     impersonation: {},
+                //     downstream: {},
+                //     sqlHelp: {},
+                // }),
+                //     (inlineTabData.assetSidebar = {
                 //         // for taking the previous state from active tab
                 //         openingPos: undefined,
                 //         isVisible: false,
                 //         assetInfo: {},
                 //         title: activeInlineTab.value?.assetSidebar.title ?? '',
                 //         id: activeInlineTab.value?.assetSidebar.id ?? '',
-                //     },
-                // }
+                //     })
+                const inlineTabData: activeInlineTabInterface = {
+                    label: `${previewItem.title} preview`,
+                    key,
+                    favico: 'https://atlan.com/favicon.ico',
+                    isSaved: false,
+                    queryId: undefined,
+                    status: 'DRAFT',
+                    connectionId: '',
+                    description: '',
+                    qualifiedName: '',
+                    parentGuid: '',
+                    parentQualifiedName: '',
+                    isSQLSnippet: false,
+                    savedQueryParentFolderTitle: undefined,
+                    explorer: {
+                        schema: {
+                            connectors: {
+                                ...context,
+                            },
+                        },
+                        queries: {
+                            connectors: {
+                                connector:
+                                    previewItem.connectionQualifiedName.split(
+                                        '/'
+                                    )[1],
+                            },
+                        },
+                    },
+                    playground: {
+                        vqb: {
+                            panels: [
+                                {
+                                    order: 1,
+                                    id: 'columns',
+                                    hide: false,
+                                    columns: [],
+                                },
+                            ],
+                        },
+                        editor: {
+                            context: {
+                                ...context,
+                            },
+                            text: query,
+                            dataList: [],
+                            columnList: [],
+                            variables: [],
+                            savedVariables: [],
+                            limitRows: {
+                                checked: false,
+                                rowsCount: -1,
+                            },
+                        },
+                        resultsPane: {
+                            activeTab:
+                                activeInlineTab.value?.playground?.resultsPane
+                                    ?.activeTab ?? 0,
+                            result: {
+                                title: `${key} Result`,
+                                runQueryId: undefined,
+                                isQueryRunning: '',
+                                queryErrorObj: {},
+                                totalRowsCount: -1,
+                                executionTime: -1,
+                                errorDecorations: [],
+                                eventSourceInstance: undefined,
+                                buttonDisable: false,
+                                isQueryAborted: false,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
+                        },
+                    },
+                    assetSidebar: {
+                        // for taking the previous state from active tab
+                        openingPos: undefined,
+                        isVisible: false,
+                        assetInfo: {},
+                        title: activeInlineTab.value?.assetSidebar.title ?? '',
+                        id: activeInlineTab.value?.assetSidebar.id ?? '',
+                    },
+                }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 queryRun(
                     activeInlineTab,
@@ -1263,7 +1274,7 @@
                     limitRows,
                     null,
                     null,
-                    '',
+                    query,
                     editorInstance,
                     monacoInstance
                 )

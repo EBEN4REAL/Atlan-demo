@@ -110,7 +110,7 @@
 
     import QueryTreeList from './queryTreeList.vue'
     import useQueryTree from './composables/useQueryTree2'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
@@ -142,6 +142,7 @@
         },
         emits: ['folderChange'],
         setup(props, { emit }) {
+            const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
             const router = useRouter()
             const { connector, savedQueryType, parentFolder } = toRefs(props)
@@ -293,7 +294,9 @@
             }
 
             const pushGuidToURL = (guid: string) => {
-                router.push(`/insights?id=${guid}`)
+                const queryParams = { id: guid }
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
             }
 
             const inlineTabs = inject('inlineTabs') as Ref<

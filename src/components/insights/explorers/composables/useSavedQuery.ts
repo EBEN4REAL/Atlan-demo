@@ -48,7 +48,6 @@ export function useSavedQuery(
     } = useInlineTab(treeSelectedKeys)
 
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
-
         console.log('query entity2: ', savedQuery)
 
         let decodedVariables = decodeBase64Data(
@@ -77,175 +76,166 @@ export function useSavedQuery(
         console.log(connectors, 'connectors')
         console.log('saved query: ', savedQuery)
 
-        const newTab: activeInlineTabInterface = inlineTabsDemoData[0]
-        newTab.attributes = savedQuery.attributes
-        newTab.label= savedQuery.attributes.name ?? '',
-        newTab.key= savedQuery?.guid,
-        newTab.favico= 'https://atlan.com/favicon.ico',
-        newTab.isSaved= true,
-        newTab.queryId= savedQuery.guid,
-        newTab.updateTime=
-                savedQuery?.updateTime ??
-                savedQuery.attributes.__modificationTimestamp,
-        newTab.updatedBy=
-                savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
-        newTab.connectionId= savedQuery.attributes.connectionId,
-        newTab.description= savedQuery.attributes.description as string,
-        newTab.qualifiedName= savedQuery.attributes.qualifiedName,
-        newTab.parentGuid= savedQuery.attributes?.parent?.guid,
-        newTab.parentQualifiedName=
-            savedQuery.attributes.parentFolderQualifiedName,
-        newTab.isSQLSnippet= savedQuery.attributes.isSnippet as boolean,
-        newTab.status= savedQuery.attributes.certificateStatus as string,
-        newTab.savedQueryParentFolderTitle= savedQuery?.parentTitle,
-        newTab.explorer= {
-            schema: {
-                connectors: connectors,
-            },
-            queries: {
-                connectors: {
-                    connector: savedQuery.attributes.connectorName,
-                },
-            },
-        },
-        newTab.playground.editor= {
-            text: savedQuery.attributes.rawQuery,
-            dataList: [],
-            columnList: [],
-            variables: decodedVariables,
-            savedVariables: [],
-            limitRows: {
-                checked: false,
-                rowsCount: -1,
-            },
-            context: {
-                // attributeName: 'defaultSchemaQualifiedName',
-                // attributeValue: defaultSchemaQualifiedName,
-                ...connectors
-
-            },
-        }
-        newTab.playground.resultsPane= {
-            activeTab:
-                activeInlineTab.value?.playground.resultsPane
-                    .activeTab ?? 0,
-            result: {
-                title: savedQuery.attributes.name,
-                isQueryRunning: '',
-                queryErrorObj: {},
-                errorDecorations: [],
-                totalRowsCount: -1,
-                executionTime: -1,
-                runQueryId: undefined,
-                buttonDisable: false,
-                eventSourceInstance: undefined,
-            },
-            metadata: {},
-            queries: {},
-            joins: {},
-            filters: {},
-            impersonation: {},
-            downstream: {},
-            sqlHelp: {},
-        }
-        
-        newTab.assetSidebar= {
-            // for taking the previous state from active tab
-            isVisible: false,
-            assetInfo: savedQuery,
-            title: activeInlineTab.value?.assetSidebar.title ?? '',
-            id: activeInlineTab.value?.assetSidebar.id ?? '',
-        }
-
-
-        // const newTab: activeInlineTabInterface = {
-        //     attributes: savedQuery.attributes,
-        //     label: savedQuery.attributes.name ?? '',
-        //     key: savedQuery?.guid,
-        //     favico: 'https://atlan.com/favicon.ico',
-        //     isSaved: true,
-        //     queryId: savedQuery.guid,
-        //     updateTime:
+        // const newTab: activeInlineTabInterface = inlineTabsDemoData[0]
+        // newTab.attributes = savedQuery.attributes
+        // ;(newTab.label = savedQuery.attributes.name ?? ''),
+        //     (newTab.key = savedQuery?.guid),
+        //     (newTab.favico = 'https://atlan.com/favicon.ico'),
+        //     (newTab.isSaved = true),
+        //     (newTab.queryId = savedQuery.guid),
+        //     (newTab.updateTime =
         //         savedQuery?.updateTime ??
-        //         savedQuery.attributes.__modificationTimestamp,
-        //     updatedBy:
-        //         savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
-        //     connectionId: savedQuery.attributes.connectionId,
-        //     description: savedQuery.attributes.description as string,
-        //     qualifiedName: savedQuery.attributes.qualifiedName,
-        //     parentGuid: savedQuery.attributes?.parent?.guid,
-        //     parentQualifiedName:
-        //         savedQuery.attributes.parentFolderQualifiedName,
-        //     isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
-        //     status: savedQuery.attributes.certificateStatus as string,
-        //     savedQueryParentFolderTitle: savedQuery?.parentTitle,
-        //     explorer: {
+        //         savedQuery.attributes.__modificationTimestamp),
+        //     (newTab.updatedBy =
+        //         savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy),
+        //     (newTab.connectionId = savedQuery.attributes.connectionId),
+        //     (newTab.description = savedQuery.attributes.description as string),
+        //     (newTab.qualifiedName = savedQuery.attributes.qualifiedName),
+        //     (newTab.parentGuid = savedQuery.attributes?.parent?.guid),
+        //     (newTab.parentQualifiedName =
+        //         savedQuery.attributes.parentFolderQualifiedName),
+        //     (newTab.isSQLSnippet = savedQuery.attributes.isSnippet as boolean),
+        //     (newTab.status = savedQuery.attributes.certificateStatus as string),
+        //     (newTab.savedQueryParentFolderTitle = savedQuery?.parentTitle),
+        //     (newTab.explorer = {
         //         schema: {
         //             connectors: connectors,
         //         },
-        //         queries: {
-        //             connectors: {
-        //                 connector: savedQuery.attributes.connectorName,
-        //             },
-        //         },
+        //     }, 
+      
+        // newTab.playground.editor= {
+        //     text: savedQuery.attributes.rawQuery,
+        //     dataList: [],
+        //     columnList: [],
+        //     variables: decodedVariables,
+        //     savedVariables: [],
+        //     limitRows: {
+        //         checked: false,
+        //         rowsCount: -1,
         //     },
-        //     playground: {
-        //         vqb: {
-        //             panels: [{ order: 1, id: 'columns', hide: false, columns: [] }],
-        //         },
-        //         editor: {
-        //             text: savedQuery.attributes.rawQuery,
-        //             dataList: [],
-        //             columnList: [],
-        //             variables: decodedVariables,
-        //             savedVariables: [],
-        //             limitRows: {
-        //                 checked: false,
-        //                 rowsCount: -1,
-        //             },
-        //             context: {
-        //                 attributeName: 'defaultSchemaQualifiedName',
-        //                 attributeValue: defaultSchemaQualifiedName,
-        //             },
-        //         },
-        //         resultsPane: {
-        //             activeTab:
-        //                 activeInlineTab.value?.playground.resultsPane
-        //                     .activeTab ?? 0,
-        //             result: {
-        //                 title: savedQuery.attributes.name,
-        //                 isQueryRunning: '',
-        //                 queryErrorObj: {},
-        //                 errorDecorations: [],
-        //                 totalRowsCount: -1,
-        //                 executionTime: -1,
-        //                 runQueryId: undefined,
-        //                 buttonDisable: false,
-        //                 eventSourceInstance: undefined,
-        //             },
-        //             metadata: {},
-        //             queries: {},
-        //             joins: {},
-        //             filters: {},
-        //             impersonation: {},
-        //             downstream: {},
-        //             sqlHelp: {},
-        //         },
-        //     },
-        //     assetSidebar: {
-        //         // for taking the previous state from active tab
-        //         isVisible: false,
-        //         assetInfo: savedQuery,
-        //         title: activeInlineTab.value?.assetSidebar.title ?? '',
-        //         id: activeInlineTab.value?.assetSidebar.id ?? '',
+        //     context: {
+        //         // attributeName: 'defaultSchemaQualifiedName',
+        //         // attributeValue: defaultSchemaQualifiedName,
+        //         ...connectors
+
         //     },
         // }
+        // newTab.playground.resultsPane= {
+        //     activeTab:
+        //         activeInlineTab.value?.playground.resultsPane.activeTab ?? 0,
+        //     result: {
+        //         title: savedQuery.attributes.name,
+        //         isQueryRunning: '',
+        //         queryErrorObj: {},
+        //         errorDecorations: [],
+        //         totalRowsCount: -1,
+        //         executionTime: -1,
+        //         runQueryId: undefined,
+        //         buttonDisable: false,
+        //         eventSourceInstance: undefined,
+        //     },
+        //     metadata: {},
+        //     queries: {},
+        //     joins: {},
+        //     filters: {},
+        //     impersonation: {},
+        //     downstream: {},
+        //     sqlHelp: {},
+        // }
 
-      
-        
+        // newTab.assetSidebar = {
+        //     // for taking the previous state from active tab
+        //     isVisible: false,
+        //     assetInfo: savedQuery,
+        //     title: activeInlineTab.value?.assetSidebar.title ?? '',
+        //     id: activeInlineTab.value?.assetSidebar.id ?? '',
+        // }
+
+        const newTab: activeInlineTabInterface = {
+            attributes: savedQuery.attributes,
+            label: savedQuery.attributes.name ?? '',
+            key: savedQuery?.guid,
+            favico: 'https://atlan.com/favicon.ico',
+            isSaved: true,
+            queryId: savedQuery.guid,
+            updateTime:
+                savedQuery?.updateTime ??
+                savedQuery.attributes.__modificationTimestamp,
+            updatedBy:
+                savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
+            connectionId: savedQuery.attributes.connectionId,
+            description: savedQuery.attributes.description as string,
+            qualifiedName: savedQuery.attributes.qualifiedName,
+            parentGuid: savedQuery.attributes?.parent?.guid,
+            parentQualifiedName:
+                savedQuery.attributes.parentFolderQualifiedName,
+            isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
+            status: savedQuery.attributes.certificateStatus as string,
+            savedQueryParentFolderTitle: savedQuery?.parentTitle,
+            explorer: {
+                schema: {
+                    connectors: connectors,
+                },
+                queries: {
+                    connectors: {
+                        connector: savedQuery.attributes.connectorName,
+                    },
+                },
+            },
+            playground: {
+                vqb: {
+                    panels: [{ order: 1, id: 'columns', hide: false, columns: [] }],
+                },
+                editor: {
+                    text: savedQuery.attributes.rawQuery,
+                    dataList: [],
+                    columnList: [],
+                    variables: decodedVariables,
+                    savedVariables: [],
+                    limitRows: {
+                        checked: false,
+                        rowsCount: -1,
+                    },
+                    context: {
+                        ...connectors
+                    },
+                },
+                resultsPane: {
+                    activeTab:
+                        activeInlineTab.value?.playground.resultsPane
+                            .activeTab ?? 0,
+                    result: {
+                        title: savedQuery.attributes.name,
+                        isQueryRunning: '',
+                        queryErrorObj: {},
+                        errorDecorations: [],
+                        totalRowsCount: -1,
+                        executionTime: -1,
+                        runQueryId: undefined,
+                        buttonDisable: false,
+                        eventSourceInstance: undefined,
+                    },
+                    metadata: {},
+                    queries: {},
+                    joins: {},
+                    filters: {},
+                    impersonation: {},
+                    downstream: {},
+                    sqlHelp: {},
+                },
+            },
+            assetSidebar: {
+                // for taking the previous state from active tab
+                isVisible: false,
+                assetInfo: savedQuery,
+                title: activeInlineTab.value?.assetSidebar.title ?? '',
+                id: activeInlineTab.value?.assetSidebar.id ?? '',
+            },
+        }
+
         const check = isInlineTabAlreadyOpened(newTab, tabsArray)
         if (!check) {
-            console.log('saved query tab not opened')
+            // console.log('saved query tab not opened')
             /* CAREFUL:-------Order is important here------ */
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             activeInlineTabKey.value = newTab.queryId
@@ -334,7 +324,6 @@ export function useSavedQuery(
                         activeInlineTab?.parentQualifiedName,
                 },
                 guid: activeInlineTab?.queryId,
-                
             },
         })
 
@@ -342,7 +331,10 @@ export function useSavedQuery(
 
         
         isUpdating.value = true
-        const { data, error, isLoading } = Insights.UpdateSavedQuery(body.value, {})
+        const { data, error, isLoading } = Insights.UpdateSavedQuery(
+            body.value,
+            {}
+        )
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -377,6 +369,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
+        route: any,
         type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
@@ -487,7 +480,14 @@ export function useSavedQuery(
                     activeInlineTabCopy.queryId = guid
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                     if (routeToGuid) {
-                        if (guid) router.push(`/insights?id=${guid}`)
+                        if (guid) {
+                            const queryParams = { id: guid }
+                            if (route?.query?.vqb) queryParams.vqb = true
+                            router.push({
+                                path: `insights`,
+                                query: queryParams,
+                            })
+                        }
                     }
                     if (Callback) Callback()
                 } else {
@@ -509,6 +509,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
+        route,
         type: string,
         parentFolderQF: string,
         parentFolderGuid: string
@@ -597,7 +598,10 @@ export function useSavedQuery(
         }
         // chaing loading to true
         saveQueryLoading.value = true
-        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value, {})
+        const { data, error, isLoading } = Insights.CreateSavedQuery(
+            body.value,
+            {}
+        )
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -629,7 +633,11 @@ export function useSavedQuery(
                     saveModalRef.value?.clearData()
                     const guid = savedQuery.guid
                     console.log(data.value, 'saved')
-                    if (guid) router.push(`/insights?id=${guid}`)
+                    if (guid) {
+                        const queryParams = { id: guid }
+                        if (route?.query?.vqb) queryParams.vqb = true
+                        router.push({ path: `insights`, query: queryParams })
+                    }
                     activeInlineTabCopy.queryId = guid
                     openSavedQueryInNewTab(savedQuery)
                 } else {
@@ -710,7 +718,10 @@ export function useSavedQuery(
         }
         // chaing loading to true
         saveFolderLoading.value = true
-        const { data, error, isLoading } = Insights.CreateQueryFolder(body.value, {})
+        const { data, error, isLoading } = Insights.CreateQueryFolder(
+            body.value,
+            {}
+        )
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -731,7 +742,6 @@ export function useSavedQuery(
         return { data, error, isLoading }
     }
 
-
     const saveQueryToDatabaseWithTerms = async (
         assetTerms: any,
         saveQueryData: any,
@@ -739,6 +749,7 @@ export function useSavedQuery(
         showSaveQueryModal: Ref<boolean>,
         saveModalRef: Ref<any>,
         router: any,
+        route,
         type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
@@ -828,7 +839,10 @@ export function useSavedQuery(
         }
         // chaing loading to true
         saveQueryLoading.value = true
-        const { data, error, isLoading } = Insights.CreateSavedQuery(body.value, {})
+        const { data, error, isLoading } = Insights.CreateSavedQuery(
+            body.value,
+            {}
+        )
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -862,7 +876,6 @@ export function useSavedQuery(
                                     'terms_updated',
                                     undefined
                                 )
-                                
                             })
                         })
                     }
@@ -897,29 +910,35 @@ export function useSavedQuery(
                     activeInlineTabCopy.parentQualifiedName =
                         parentQualifiedName
 
-                    
-                    const { data: data2, error: error2, isLoading: isLoading2 } = Insights.GetSavedQuery(
-                        guid,
-                        {}
-                    )
+                    const {
+                        data: data2,
+                        error: error2,
+                        isLoading: isLoading2,
+                    } = Insights.GetSavedQuery(guid, {})
 
                     watch([data2, error2, isLoading2], () => {
                         if (isLoading2.value == false) {
                             if (error2.value === undefined) {
                                 // console.log('saved query entity: ', data2.value?.entity)
-                                activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entity
+                                activeInlineTabCopy.assetSidebar.assetInfo =
+                                    data2.value?.entity
                                 // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
                             } else {
-
                             }
                         }
                     })
 
                     modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                     if (routeToGuid) {
-                        if (guid) router.push(`/insights?id=${guid}`)
+                        if (guid) {
+                            const queryParams = { id: guid }
+                            if (route?.query?.vqb) queryParams.vqb = true
+                            router.push({
+                                path: `insights`,
+                                query: queryParams,
+                            })
+                        }
                     }
-  
                 } else {
                     console.log(error.value.toString())
                     message.error({

@@ -134,6 +134,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
+    import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({
         components: {
@@ -327,22 +328,23 @@
                 rowsCount: 100,
             })
 
-            const detectQuery = () => {
-                let queryTab: activeInlineTabInterface = inlineTabsDemoData[0]
+            let demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
 
-                ;(queryTab.key = String(new Date().getTime())),
-                    (queryTab.label = `${tableNameFromURL} preview`),
-                    (queryTab.isSaved = false),
-                    (queryTab.queryId = undefined),
-                    (queryTab.status = 'DRAFT'),
-                    (queryTab.connectionId = ''),
-                    (queryTab.description = ''),
-                    (queryTab.qualifiedName = ''),
-                    (queryTab.parentGuid = ''),
-                    (queryTab.parentQualifiedName = ''),
-                    (queryTab.isSQLSnippet = false),
-                    (queryTab.savedQueryParentFolderTitle = undefined),
-                    (queryTab.explorer = {
+            const detectQuery = () => {
+                let queryTab: activeInlineTabInterface = {
+                    key: generateUUID(),
+                    label: `${tableNameFromURL} preview`,
+                    isSaved: false,
+                    queryId: undefined,
+                    status: 'DRAFT',
+                    connectionId: '',
+                    description: '',
+                    qualifiedName: '',
+                    parentGuid: '',
+                    parentQualifiedName: '',
+                    isSQLSnippet: false,
+                    savedQueryParentFolderTitle: undefined,
+                    explorer: {
                         schema: {
                             connectors: {
                                 attributeName: undefined,
@@ -354,51 +356,136 @@
                                 connector: undefined,
                             },
                         },
-                    }),
-                    (queryTab.playground.editor = {
-                        text: '',
-                        context: {
-                            attributeName: undefined,
-                            attributeValue: undefined,
+                    },
+                    playground: {
+                        vqb: {
+                            panels: [
+                                {
+                                    order: 1,
+                                    id: 'columns',
+                                    hide: false,
+                                    columns: [],
+                                },
+                            ],
                         },
-                        dataList: [],
-                        columnList: [],
-                        variables: [],
-                        savedVariables: [],
-                        limitRows: {
-                            checked: false,
-                            rowsCount: -1,
+                        editor: {
+                            text: '',
+                            context: {
+                                attributeName: undefined,
+                                attributeValue: undefined,
+                            },
+                            dataList: [],
+                            columnList: [],
+                            variables: [],
+                            savedVariables: [],
+                            limitRows: {
+                                checked: false,
+                                rowsCount: -1,
+                            },
                         },
-                    }),
-                    (queryTab.playground.resultsPane = {
-                        activeTab: 0,
-                        result: {
-                            title: `Result`,
-                            runQueryId: undefined,
-                            isQueryRunning: '',
-                            queryErrorObj: {},
-                            totalRowsCount: -1,
-                            executionTime: -1,
-                            errorDecorations: [],
-                            eventSourceInstance: undefined,
-                            buttonDisable: false,
-                            isQueryAborted: false,
+                        resultsPane: {
+                            activeTab: 0,
+                            result: {
+                                title: `Result`,
+                                runQueryId: undefined,
+                                isQueryRunning: '',
+                                queryErrorObj: {},
+                                totalRowsCount: -1,
+                                executionTime: -1,
+                                errorDecorations: [],
+                                eventSourceInstance: undefined,
+                                buttonDisable: false,
+                                isQueryAborted: false,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
                         },
-                        metadata: {},
-                        queries: {},
-                        joins: {},
-                        filters: {},
-                        impersonation: {},
-                        downstream: {},
-                        sqlHelp: {},
-                    }),
-                    (queryTab.favico = 'https://atlan.com/favicon.ico'),
-                    (queryTab.assetSidebar = {
+                    },
+                    favico: 'https://atlan.com/favicon.ico',
+                    assetSidebar: {
                         isVisible: false,
                         assetInfo: {},
                         title: '',
                         id: '',
-                    })
+                    },
+                }
+
+                // let queryTab: activeInlineTabInterface = { ...demoTab }
+
+                // ;(queryTab.key = generateUUID(),
+                //     (queryTab.label = `${tableNameFromURL} preview`),
+                //     (queryTab.isSaved = false),
+                //     (queryTab.queryId = undefined),
+                //     (queryTab.status = 'DRAFT'),
+                //     (queryTab.connectionId = ''),
+                //     (queryTab.description = ''),
+                //     (queryTab.qualifiedName = ''),
+                //     (queryTab.parentGuid = ''),
+                //     (queryTab.parentQualifiedName = ''),
+                //     (queryTab.isSQLSnippet = false),
+                //     (queryTab.savedQueryParentFolderTitle = undefined),
+                //     (queryTab.explorer = {
+                //         schema: {
+                //             connectors: {
+                //                 attributeName: undefined,
+                //                 attributeValue: undefined,
+                //             },
+                //         },
+                //         queries: {
+                //             connectors: {
+                //                 connector: undefined,
+                //             },
+                //         },
+                //     }),
+                //     (queryTab.playground.editor = {
+                //         text: '',
+                //         context: {
+                //             attributeName: undefined,
+                //             attributeValue: undefined,
+                //         },
+                //         dataList: [],
+                //         columnList: [],
+                //         variables: [],
+                //         savedVariables: [],
+                //         limitRows: {
+                //             checked: false,
+                //             rowsCount: -1,
+                //         },
+                //     }),
+                //     (queryTab.playground.resultsPane = {
+                //         activeTab: 0,
+                //         result: {
+                //             title: `Result`,
+                //             runQueryId: undefined,
+                //             isQueryRunning: '',
+                //             queryErrorObj: {},
+                //             totalRowsCount: -1,
+                //             executionTime: -1,
+                //             errorDecorations: [],
+                //             eventSourceInstance: undefined,
+                //             buttonDisable: false,
+                //             isQueryAborted: false,
+                //         },
+                //         metadata: {},
+                //         queries: {},
+                //         joins: {},
+                //         filters: {},
+                //         impersonation: {},
+                //         downstream: {},
+                //         sqlHelp: {},
+                //     }),
+                //     (queryTab.favico = 'https://atlan.com/favicon.ico'),
+                //     (queryTab.assetSidebar = {
+                //         isVisible: false,
+                //         assetInfo: {},
+                //         title: '',
+                //         id: '',
+                //     })
                 // let queryTab: activeInlineTabInterface = {
                 //     key: String(new Date().getTime()),
                 //     label: `${tableNameFromURL} preview`,

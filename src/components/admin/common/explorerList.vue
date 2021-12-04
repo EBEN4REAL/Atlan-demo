@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="flex flex-col px-4 pt-2 pb-4 overflow-y-auto gap-y-1" v-else>
-        <span class="text-center text-gray-500">Not found!</span>
+        <span class="text-center text-gray-500">No {{ type }} found!</span>
     </div>
 </template>
 
@@ -42,6 +42,11 @@
                 type: Array as PropType<any[]>,
                 required: true,
                 default: () => [],
+            },
+            type: {
+                type: String,
+                default: '',
+                required: true,
             },
             selected: String,
             disabled: { type: Boolean, default: () => false },

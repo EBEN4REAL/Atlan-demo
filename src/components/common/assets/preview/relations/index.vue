@@ -1,5 +1,11 @@
 <template>
-    <div class="px-0 pt-4">
+    <div
+        v-if="loading"
+        class="flex items-center justify-center flex-grow h-5/6"
+    >
+        <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin" />
+    </div>
+    <div v-else-if="filteredRelationshipAssets.length > 0" class="px-0 pt-4">
         <div class="px-3 mb-1">
             <!-- searchbar -->
             <SearchAndFilter v-model:value="queryText" size="minimal">
@@ -32,12 +38,11 @@
                 <div class="">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="ml-1 text-gray-500 transition-transform duration-300 transform  hover:text-primary"
+                        class="ml-1 text-gray-500 transition-transform duration-300 transform hover:text-primary"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
             </template>
-
             <!-- each panel is a asset type -->
             <a-collapse-panel
                 v-for="(item, index) in filteredRelationshipAssets"
@@ -69,6 +74,9 @@
             </a-collapse-panel>
         </a-collapse>
     </div>
+    <div v-else class="h-5/6">
+        <EmptyScreen empty-screen="EmptyDiscover" desc="No relations found" />
+    </div>
 </template>
 
 <script lang="ts">
@@ -81,13 +89,16 @@
         computed,
         toRefs,
     } from 'vue'
+    import EmptyScreen from '@/common/empty/index.vue'
+    import emptyScreen from '~/assets/images/empty_search.png'
+
     import AssetTypeList from './assetTypeList.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useRelations } from '~/composables/discovery/useRelations'
 
     export default defineComponent({
-        components: { AssetTypeList, SearchAndFilter },
+        components: { AssetTypeList, SearchAndFilter, EmptyScreen },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -96,7 +107,7 @@
         },
         setup(props) {
             const relationshipAssets = ref([])
-            const loading = ref(false)
+            const loading = ref(true)
             const assetId = ref('')
             const queryText = ref('')
             const activeKeys = ref([])
@@ -118,13 +129,22 @@
             ]
 
             const { useEntityRelationships } = useRelations
-
             const fetchData = () => {
+                loading.value = true
                 const { relationshipAssetTypes, isLoading } =
                     useEntityRelationships(selectedAsset.value?.guid)
                 relationshipAssets.value = relationshipAssetTypes.value
                 assetId.value = selectedAsset.value.guid
-                loading.value = isLoading.value
+                // loading.value = isLoading.value
+                watch(isLoading, (newVal) => {
+                    if(!newVal){
+                        setTimeout(() => {
+                            loading.value = newVal
+                        }, 600);
+                    }else {
+                        loading.value = newVal
+                    }
+                })
             }
             // filter required data
             const filteredRelationshipAssets = computed(() =>
@@ -146,6 +166,7 @@
                 plainOptions,
                 activeKeys,
                 checkedList,
+                emptyScreen,
             }
         },
     })

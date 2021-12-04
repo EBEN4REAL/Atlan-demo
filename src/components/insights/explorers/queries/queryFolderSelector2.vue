@@ -122,6 +122,7 @@
         },
         emits: ['folderChange'],
         setup(props, { emit }) {
+            const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
 
             const router = useRouter()
@@ -241,7 +242,9 @@
             // }
 
             const pushGuidToURL = (guid: string) => {
-                router.push(`/insights?id=${guid}`)
+                const queryParams = { id: guid }
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
             }
 
             const inlineTabs = inject('inlineTabs') as Ref<

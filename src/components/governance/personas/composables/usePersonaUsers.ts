@@ -5,8 +5,6 @@ import { useUsers } from '~/composables/user/useUsers'
 
 function usePersonaUserList(persona: Ref<IPersona>) {
     const userListAPIParams: any = {
-        limit: 15,
-        offset: 0,
         sort: 'first_name',
         filter: { $and: [] },
     }
@@ -37,7 +35,7 @@ function usePersonaUserList(persona: Ref<IPersona>) {
                     }
                 })
             })
-            console.log(data, 'personaUser', persona)
+            console.log(data, 'personaUser', persona, list)
 
             userList.value = data
         },

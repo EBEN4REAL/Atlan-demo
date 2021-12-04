@@ -72,8 +72,8 @@
                                 color="primary"
                                 padding="compact"
                                 :disabled="
-                                    activeInlineTab.playground.resultsPane
-                                        .result.buttonDisable
+                                    activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
                                 "
                                 @click="toggleRun"
                             >
@@ -360,7 +360,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import {
         useProvide,
         provideDataInterface,
@@ -396,6 +396,7 @@
         },
         setup(props) {
             const router = useRouter()
+            const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
@@ -452,11 +453,8 @@
                 ref({}) as Ref<Folder>
             )
 
-            const {
-                updateSavedQuery,
-                saveQueryToDatabase,
-                saveQueryToDatabaseWithTerms,
-            } = useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
+            const { updateSavedQuery, saveQueryToDatabaseWithTerms } =
+                useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isQueryRunning = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result
@@ -630,6 +628,7 @@
                     showSaveQueryModal,
                     saveModalRef,
                     router,
+                    route,
                     selectedParentType,
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,

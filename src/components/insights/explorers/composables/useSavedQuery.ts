@@ -18,6 +18,7 @@ import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import useLinkAssets from '~/components/composables/common/useLinkAssets'
 import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
+import { useTenantStore } from '~/store/tenant'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -26,12 +27,15 @@ export function useSavedQuery(
     treeSelectedKeys?: Ref<string[]>
 ) {
     const { username } = whoami()
+    const tenantStore = useTenantStore()
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
     const {
         getConnectorName,
         getConnectionQualifiedName,
         getSchemaQualifiedName,
+        getDatabaseQualifiedName,
         getConnectorsDataFromQualifiedNames,
+        getConnectorsDataFromQualifiedNamesAll
     } = useConnector()
     const { getParsedQuery } = useEditor()
 
@@ -55,38 +59,120 @@ export function useSavedQuery(
 
         /* --------NOTE- TEMPERORY FIX-------*/
         const defaultSchemaQualifiedName =
-            savedQuery.attributes.defaultSchemaQualifiedName
+            savedQuery?.attributes?.defaultSchemaQualifiedName
         const connectionQualifiedName =
             savedQuery.attributes.connectionQualifiedName
-        const connectors = getConnectorsDataFromQualifiedNames(
+
+            console.log('saved query: ', savedQuery?.attributes)
+
+        const defaultDatabaseQualifiedName =
+            savedQuery?.attributes?.defaultDatabaseQualifiedName
+
+        const connectors = getConnectorsDataFromQualifiedNamesAll(
             connectionQualifiedName,
-            defaultSchemaQualifiedName
+            defaultSchemaQualifiedName,
+            defaultDatabaseQualifiedName
         )
         console.log(connectors, 'connectors')
         console.log('saved query: ', savedQuery)
 
-        const newTab: activeInlineTabInterface = inlineTabsDemoData[0]
-        newTab.attributes = savedQuery.attributes
-        ;(newTab.label = savedQuery.attributes.name ?? ''),
-            (newTab.key = savedQuery?.guid),
-            (newTab.favico = 'https://atlan.com/favicon.ico'),
-            (newTab.isSaved = true),
-            (newTab.queryId = savedQuery.guid),
-            (newTab.updateTime =
+        // const newTab: activeInlineTabInterface = inlineTabsDemoData[0]
+        // newTab.attributes = savedQuery.attributes
+        // ;(newTab.label = savedQuery.attributes.name ?? ''),
+        //     (newTab.key = savedQuery?.guid),
+        //     (newTab.favico = 'https://atlan.com/favicon.ico'),
+        //     (newTab.isSaved = true),
+        //     (newTab.queryId = savedQuery.guid),
+        //     (newTab.updateTime =
+        //         savedQuery?.updateTime ??
+        //         savedQuery.attributes.__modificationTimestamp),
+        //     (newTab.updatedBy =
+        //         savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy),
+        //     (newTab.connectionId = savedQuery.attributes.connectionId),
+        //     (newTab.description = savedQuery.attributes.description as string),
+        //     (newTab.qualifiedName = savedQuery.attributes.qualifiedName),
+        //     (newTab.parentGuid = savedQuery.attributes?.parent?.guid),
+        //     (newTab.parentQualifiedName =
+        //         savedQuery.attributes.parentFolderQualifiedName),
+        //     (newTab.isSQLSnippet = savedQuery.attributes.isSnippet as boolean),
+        //     (newTab.status = savedQuery.attributes.certificateStatus as string),
+        //     (newTab.savedQueryParentFolderTitle = savedQuery?.parentTitle),
+        //     (newTab.explorer = {
+        //         schema: {
+        //             connectors: connectors,
+        //         },
+        //     }, 
+      
+        // newTab.playground.editor= {
+        //     text: savedQuery.attributes.rawQuery,
+        //     dataList: [],
+        //     columnList: [],
+        //     variables: decodedVariables,
+        //     savedVariables: [],
+        //     limitRows: {
+        //         checked: false,
+        //         rowsCount: -1,
+        //     },
+        //     context: {
+        //         // attributeName: 'defaultSchemaQualifiedName',
+        //         // attributeValue: defaultSchemaQualifiedName,
+        //         ...connectors
+
+        //     },
+        // }
+        // newTab.playground.resultsPane= {
+        //     activeTab:
+        //         activeInlineTab.value?.playground.resultsPane.activeTab ?? 0,
+        //     result: {
+        //         title: savedQuery.attributes.name,
+        //         isQueryRunning: '',
+        //         queryErrorObj: {},
+        //         errorDecorations: [],
+        //         totalRowsCount: -1,
+        //         executionTime: -1,
+        //         runQueryId: undefined,
+        //         buttonDisable: false,
+        //         eventSourceInstance: undefined,
+        //     },
+        //     metadata: {},
+        //     queries: {},
+        //     joins: {},
+        //     filters: {},
+        //     impersonation: {},
+        //     downstream: {},
+        //     sqlHelp: {},
+        // }
+
+        // newTab.assetSidebar = {
+        //     // for taking the previous state from active tab
+        //     isVisible: false,
+        //     assetInfo: savedQuery,
+        //     title: activeInlineTab.value?.assetSidebar.title ?? '',
+        //     id: activeInlineTab.value?.assetSidebar.id ?? '',
+        // }
+
+        const newTab: activeInlineTabInterface = {
+            attributes: savedQuery.attributes,
+            label: savedQuery.attributes.name ?? '',
+            key: savedQuery?.guid,
+            favico: 'https://atlan.com/favicon.ico',
+            isSaved: true,
+            queryId: savedQuery.guid,
+            updateTime:
                 savedQuery?.updateTime ??
-                savedQuery.attributes.__modificationTimestamp),
-            (newTab.updatedBy =
-                savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy),
-            (newTab.connectionId = savedQuery.attributes.connectionId),
-            (newTab.description = savedQuery.attributes.description as string),
-            (newTab.qualifiedName = savedQuery.attributes.qualifiedName),
-            (newTab.parentGuid = savedQuery.attributes?.parent?.guid),
-            (newTab.parentQualifiedName =
-                savedQuery.attributes.parentFolderQualifiedName),
-            (newTab.isSQLSnippet = savedQuery.attributes.isSnippet as boolean),
-            (newTab.status = savedQuery.attributes.certificateStatus as string),
-            (newTab.savedQueryParentFolderTitle = savedQuery?.parentTitle),
-            (newTab.explorer = {
+                savedQuery.attributes.__modificationTimestamp,
+            updatedBy:
+                savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
+            connectionId: savedQuery.attributes.connectionId,
+            description: savedQuery.attributes.description as string,
+            qualifiedName: savedQuery.attributes.qualifiedName,
+            parentGuid: savedQuery.attributes?.parent?.guid,
+            parentQualifiedName:
+                savedQuery.attributes.parentFolderQualifiedName,
+            isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
+            status: savedQuery.attributes.certificateStatus as string,
+            savedQueryParentFolderTitle: savedQuery?.parentTitle,
+            explorer: {
                 schema: {
                     connectors: connectors,
                 },
@@ -95,139 +181,61 @@ export function useSavedQuery(
                         connector: savedQuery.attributes.connectorName,
                     },
                 },
-            }),
-            (newTab.playground.editor = {
-                text: savedQuery.attributes.rawQuery,
-                dataList: [],
-                columnList: [],
-                variables: decodedVariables,
-                savedVariables: [],
-                limitRows: {
-                    checked: false,
-                    rowsCount: -1,
-                },
-                context: {
-                    attributeName: 'defaultSchemaQualifiedName',
-                    attributeValue: defaultSchemaQualifiedName,
-                },
-            })
-        newTab.playground.resultsPane = {
-            activeTab:
-                activeInlineTab.value?.playground.resultsPane.activeTab ?? 0,
-            result: {
-                title: savedQuery.attributes.name,
-                isQueryRunning: '',
-                queryErrorObj: {},
-                errorDecorations: [],
-                totalRowsCount: -1,
-                executionTime: -1,
-                runQueryId: undefined,
-                buttonDisable: false,
-                eventSourceInstance: undefined,
             },
-            metadata: {},
-            queries: {},
-            joins: {},
-            filters: {},
-            impersonation: {},
-            downstream: {},
-            sqlHelp: {},
+            playground: {
+                vqb: {
+                    panels: [{ order: 1, id: 'columns', hide: false, columns: [] }],
+                },
+                editor: {
+                    text: savedQuery.attributes.rawQuery,
+                    dataList: [],
+                    columnList: [],
+                    variables: decodedVariables,
+                    savedVariables: [],
+                    limitRows: {
+                        checked: false,
+                        rowsCount: -1,
+                    },
+                    context: {
+                        ...connectors
+                    },
+                },
+                resultsPane: {
+                    activeTab:
+                        activeInlineTab.value?.playground.resultsPane
+                            .activeTab ?? 0,
+                    result: {
+                        title: savedQuery.attributes.name,
+                        isQueryRunning: '',
+                        queryErrorObj: {},
+                        errorDecorations: [],
+                        totalRowsCount: -1,
+                        executionTime: -1,
+                        runQueryId: undefined,
+                        buttonDisable: false,
+                        eventSourceInstance: undefined,
+                    },
+                    metadata: {},
+                    queries: {},
+                    joins: {},
+                    filters: {},
+                    impersonation: {},
+                    downstream: {},
+                    sqlHelp: {},
+                },
+            },
+            assetSidebar: {
+                // for taking the previous state from active tab
+                isVisible: false,
+                assetInfo: savedQuery,
+                title: activeInlineTab.value?.assetSidebar.title ?? '',
+                id: activeInlineTab.value?.assetSidebar.id ?? '',
+            },
         }
-
-        newTab.assetSidebar = {
-            // for taking the previous state from active tab
-            isVisible: false,
-            assetInfo: savedQuery,
-            title: activeInlineTab.value?.assetSidebar.title ?? '',
-            id: activeInlineTab.value?.assetSidebar.id ?? '',
-        }
-
-        // const newTab: activeInlineTabInterface = {
-        //     attributes: savedQuery.attributes,
-        //     label: savedQuery.attributes.name ?? '',
-        //     key: savedQuery?.guid,
-        //     favico: 'https://atlan.com/favicon.ico',
-        //     isSaved: true,
-        //     queryId: savedQuery.guid,
-        //     updateTime:
-        //         savedQuery?.updateTime ??
-        //         savedQuery.attributes.__modificationTimestamp,
-        //     updatedBy:
-        //         savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
-        //     connectionId: savedQuery.attributes.connectionId,
-        //     description: savedQuery.attributes.description as string,
-        //     qualifiedName: savedQuery.attributes.qualifiedName,
-        //     parentGuid: savedQuery.attributes?.parent?.guid,
-        //     parentQualifiedName:
-        //         savedQuery.attributes.parentFolderQualifiedName,
-        //     isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
-        //     status: savedQuery.attributes.certificateStatus as string,
-        //     savedQueryParentFolderTitle: savedQuery?.parentTitle,
-        //     explorer: {
-        //         schema: {
-        //             connectors: connectors,
-        //         },
-        //         queries: {
-        //             connectors: {
-        //                 connector: savedQuery.attributes.connectorName,
-        //             },
-        //         },
-        //     },
-        //     playground: {
-        //         vqb: {
-        //             panels: [{ order: 1, id: 'columns', hide: false, columns: [] }],
-        //         },
-        //         editor: {
-        //             text: savedQuery.attributes.rawQuery,
-        //             dataList: [],
-        //             columnList: [],
-        //             variables: decodedVariables,
-        //             savedVariables: [],
-        //             limitRows: {
-        //                 checked: false,
-        //                 rowsCount: -1,
-        //             },
-        //             context: {
-        //                 attributeName: 'defaultSchemaQualifiedName',
-        //                 attributeValue: defaultSchemaQualifiedName,
-        //             },
-        //         },
-        //         resultsPane: {
-        //             activeTab:
-        //                 activeInlineTab.value?.playground.resultsPane
-        //                     .activeTab ?? 0,
-        //             result: {
-        //                 title: savedQuery.attributes.name,
-        //                 isQueryRunning: '',
-        //                 queryErrorObj: {},
-        //                 errorDecorations: [],
-        //                 totalRowsCount: -1,
-        //                 executionTime: -1,
-        //                 runQueryId: undefined,
-        //                 buttonDisable: false,
-        //                 eventSourceInstance: undefined,
-        //             },
-        //             metadata: {},
-        //             queries: {},
-        //             joins: {},
-        //             filters: {},
-        //             impersonation: {},
-        //             downstream: {},
-        //             sqlHelp: {},
-        //         },
-        //     },
-        //     assetSidebar: {
-        //         // for taking the previous state from active tab
-        //         isVisible: false,
-        //         assetInfo: savedQuery,
-        //         title: activeInlineTab.value?.assetSidebar.title ?? '',
-        //         id: activeInlineTab.value?.assetSidebar.id ?? '',
-        //     },
-        // }
 
         const check = isInlineTabAlreadyOpened(newTab, tabsArray)
         if (!check) {
-            console.log('saved query tab not opened')
+            // console.log('saved query tab not opened')
             /* CAREFUL:-------Order is important here------ */
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             activeInlineTabKey.value = newTab.queryId
@@ -281,7 +289,10 @@ export function useSavedQuery(
             activeInlineTab?.playground?.editor?.text
         )
         const defaultSchemaQualifiedName =
-            getSchemaQualifiedName(attributeValue) ?? ''
+            getSchemaQualifiedName(attributeValue) ?? undefined
+
+        const defaultDatabaseQualifiedName = getDatabaseQualifiedName(attributeValue) ?? undefined
+
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
@@ -294,6 +305,7 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
+                    defaultDatabaseQualifiedName,
                     certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionId: connectionQualifiedName,
@@ -315,6 +327,9 @@ export function useSavedQuery(
             },
         })
 
+        console.log('update query body: ', body.value)
+
+        
         isUpdating.value = true
         const { data, error, isLoading } = Insights.UpdateSavedQuery(
             body.value,
@@ -355,7 +370,7 @@ export function useSavedQuery(
         saveModalRef: Ref<any>,
         router: any,
         route: any,
-        type: 'personal' | 'all',
+        type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
         activeInlineTab: activeInlineTabInterface,
@@ -389,7 +404,7 @@ export function useSavedQuery(
             activeInlineTab?.playground.editor.variables,
             rawQuery as string
         )
-        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
@@ -428,13 +443,13 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type === 'all') {
+        if (type && type.length) {
             body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    typeName: type,
                     validityPeriods: [],
                 },
             ]
@@ -495,7 +510,7 @@ export function useSavedQuery(
         saveModalRef: Ref<any>,
         router: any,
         route,
-        type: 'personal' | 'all',
+        type: string,
         parentFolderQF: string,
         parentFolderGuid: string
     ) => {
@@ -531,7 +546,7 @@ export function useSavedQuery(
         )
         // const rawQuery = activeInlineTabCopy.playground.editor.text
         // const compiledQuery = activeInlineTabCopy.playground.editor.text
-        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
@@ -570,13 +585,13 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type === 'all') {
+        if (type && type.length) {
             body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    typeName: type,
                     validityPeriods: [],
                 },
             ]
@@ -640,7 +655,7 @@ export function useSavedQuery(
     const createFolder = (
         folderName: string,
         saveFolderLoading: Ref<boolean>,
-        type: 'personal' | 'all',
+        type: string,
         parentFolderQF: Ref<string>,
         parentFolderGuid: Ref<string>
     ) => {
@@ -659,7 +674,7 @@ export function useSavedQuery(
 
         const name = folderName
 
-        const qualifiedName = `${connectionQualifiedName}/folder/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
 
@@ -690,13 +705,13 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid.value,
         }
-        if (type === 'all') {
+        if (type && type.length) {
             body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    typeName: type,
                     validityPeriods: [],
                 },
             ]
@@ -735,7 +750,7 @@ export function useSavedQuery(
         saveModalRef: Ref<any>,
         router: any,
         route,
-        type: 'personal' | 'all',
+        type: string,
         parentFolderQF: string,
         parentFolderGuid: string,
         activeInlineTab: activeInlineTabInterface,
@@ -769,9 +784,11 @@ export function useSavedQuery(
             activeInlineTab?.playground.editor.variables,
             rawQuery as string
         )
-        const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
-            getSchemaQualifiedName(attributeValue) ?? ''
+            getSchemaQualifiedName(attributeValue) ?? undefined
+        const defaultDatabaseQualifiedName = getDatabaseQualifiedName(attributeValue) ?? undefined
+            getSchemaQualifiedName(attributeValue) ?? undefined
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
@@ -789,6 +806,7 @@ export function useSavedQuery(
                     certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName: connectionQualifiedName ?? '',
+                    defaultDatabaseQualifiedName,
                     description,
                     ownerUsers: [username.value],
                     tenantId: 'default',
@@ -796,7 +814,7 @@ export function useSavedQuery(
                     compiledQuery,
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
-                    isPrivate: true,
+                    isPrivate: false,
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -808,13 +826,13 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type === 'all') {
+        if (type && type.length) {
             body.value.entity.classifications = [
                 {
                     attributes: {},
                     propagate: true,
                     removePropagationsOnEntityDelete: true,
-                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
+                    typeName: type,
                     validityPeriods: [],
                 },
             ]

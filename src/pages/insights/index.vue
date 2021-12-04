@@ -209,6 +209,7 @@
                         'ownerUsers',
                         'ownerGroups',
                         'databaseQualifiedName',
+                        'defaultDatabaseQualifiedName',
                         'isPrimary',
                         'isPartition',
                         'readme',

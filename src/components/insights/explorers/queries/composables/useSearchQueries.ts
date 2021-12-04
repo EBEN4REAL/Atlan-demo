@@ -20,7 +20,7 @@ import bodybuilder from 'bodybuilder'
 
 const searchQueries = (
     query: Ref<string>,
-    savedQueryType: Ref<'all' | 'personal'>,
+    classification: Ref<string>,
     facets: Ref<object>,
     offset?: Ref<number>,
     limit?: Ref<number>
@@ -46,6 +46,7 @@ const searchQueries = (
         'connectionQualifiedName',
         'parentFolderQualifiedName',
         'defaultSchemaQualifiedName',
+        'defaultDatabaseQualifiedName',
         'parentFolder',
         'columns', //TODO: queries
         'folder',
@@ -70,34 +71,18 @@ const searchQueries = (
             '__state',
             'ACTIVE'
         )
-        if (savedQueryType?.value === 'all') {
-            base.orFilter(
-                'term',
-                '__traitNames',
-                ATLAN_PUBLIC_QUERY_CLASSIFICATION
-            )
-            base.orFilter(
-                'term',
-                '__propagatedTraitNames',
-                ATLAN_PUBLIC_QUERY_CLASSIFICATION
-            )
-        } else if (savedQueryType?.value === 'personal') {
-            base.notFilter(
-                'term',
-                '__traitNames',
-                ATLAN_PUBLIC_QUERY_CLASSIFICATION
-            )
-            base.notFilter(
-                'term',
-                '__propagatedTraitNames',
-                ATLAN_PUBLIC_QUERY_CLASSIFICATION
-            )
-            base.filter(
-                'term',
-                'ownerUsers',
-                username.value
-            )
-        }
+        // if (classification?.value && classification?.value.length) {
+        //     base.orFilter(
+        //         'term',
+        //         '__traitNames',
+        //         classification.value
+        //     )
+        //     base.orFilter(
+        //         'term',
+        //         '__propagatedTraitNames',
+        //         classification.value
+        //     )
+        // } 
 
         if(facets.value && Object.keys(facets.value).length>0) {
             Object.keys(facets.value ?? {}).forEach((mkey) => {
@@ -264,7 +249,7 @@ const searchQueries = (
         if (query.length || (facets && Object.keys(facets).length>0)) fetchQueries()
     })
 
-    watch([query, savedQueryType, facets], ([newQuery]) => {
+    watch([query, classification, facets], ([newQuery]) => {
         isLoading1.value = true
         console.log('queryFacets: ', facets.value)
 

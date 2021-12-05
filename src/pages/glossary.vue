@@ -13,16 +13,14 @@
         <div
             class="bg-white asset-preview-container xs:hidden sm:hidden md:block lg:block"
         >
-            <GlossaryPreview
-                :selected-asset="selectedGlossary"
-            ></GlossaryPreview>
+            <GlossaryPreview :selected-asset="localSelected"></GlossaryPreview>
             <!-- <AssetPreview :selected-asset="selectedAsset"></AssetPreview> -->
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, provide, watch } from 'vue'
+    import { computed, defineComponent, provide, watch, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -42,8 +40,17 @@
                 title: 'Glossary',
             })
             const route = useRoute()
+            const id = computed(() => route?.params?.id || null)
             const isItem = computed(() => !!route.params.id)
             const { selectedGlossary } = useAssetInfo()
+            const localSelected = ref()
+            if (selectedGlossary.value?.guid === id.value) {
+                localSelected.value = selectedGlossary.value
+            }
+            const handlePreview = (asset) => {
+                localSelected.value = asset
+            }
+
             const updateList = (asset) => {
                 console.log('updateList')
                 // console.log(asset)
@@ -51,12 +58,17 @@
                 //     assetdiscovery.value.updateCurrentList(asset)
                 // }
             }
+            watch(selectedGlossary, () => {
+                localSelected.value = selectedGlossary.value
+            })
 
             provide('updateList', updateList)
+            provide('preview', handlePreview)
 
             return {
                 isItem,
                 selectedGlossary,
+                localSelected,
             }
         },
     })

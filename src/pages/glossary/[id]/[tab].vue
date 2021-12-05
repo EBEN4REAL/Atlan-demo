@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch, inject } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -43,6 +43,7 @@
             const localSelected = ref()
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
+            const handlePreview = inject('preview')
             const limit = ref(1)
             const offset = ref(0)
             const facets = ref({
@@ -50,6 +51,7 @@
             })
             if (selectedAsset.value?.guid === id.value) {
                 localSelected.value = selectedAsset.value
+                handlePreview(localSelected.value)
             }
 
             const fetchKey = computed(() => {
@@ -80,6 +82,7 @@
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
                     handleSelectedAsset(list.value[0])
+                    handlePreview(list.value[0])
                 }
             })
             watch(selectedAsset, () => {

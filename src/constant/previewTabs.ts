@@ -23,7 +23,16 @@ export const previewTabs = [
     {
         name: 'Lineage',
         component: 'lineage',
-        excludes: ['Query', 'QueryFolder'],
+        excludes: [
+            'Query',
+            'QueryFolder',
+            'AtlasGlossary',
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            'Database',
+            'Schema',
+            'Connection',
+        ],
         icon: 'Lineage',
         tooltip: 'Lineage',
     },

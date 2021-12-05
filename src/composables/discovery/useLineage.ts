@@ -1,4 +1,4 @@
-import { Ref, ref, computed } from 'vue'
+import { Ref, ref, computed, watch } from 'vue'
 
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
@@ -48,6 +48,27 @@ export default function useLineage(
         }
     }
 
+    const upstreamGuids = ref([])
+    const downstreamGuids = ref([])
+
+    const guidList = ref([])
+    watch(data, () => {
+        if (data.value?.guidEntityMap) {
+            guidList.value = Object.keys(data.value.guidEntityMap)
+
+            upstreamGuids.value = []
+            downstreamGuids.value = []
+            data.value.relations.forEach((relation) => {
+                if (relation.fromEntityId === data.value.baseEntityGuid) {
+                    downstreamGuids.value.push(relation.toEntityId)
+                }
+                if (relation.toEntityId === data.value.baseEntityGuid) {
+                    upstreamGuids.value.push(relation.fromEntityId)
+                }
+            })
+        }
+    })
+
     const refresh = () => {
         cancelRequest()
         mutate()
@@ -64,5 +85,8 @@ export default function useLineage(
         isLoading,
         isValidating,
         cancelRequest,
+        guidList,
+        downstreamGuids,
+        upstreamGuids,
     }
 }

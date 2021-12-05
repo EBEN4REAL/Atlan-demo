@@ -256,6 +256,12 @@ export function useBody(
                 }
                 break
             }
+            case 'guidList': {
+                if (filterObject) {
+                    base.filter('terms', '__guid', filterObject)
+                }
+                break
+            }
             case 'column':
             case 'table':
             case 'properties': {

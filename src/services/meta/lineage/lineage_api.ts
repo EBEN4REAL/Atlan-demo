@@ -16,7 +16,7 @@ const getLineageUpdated = (
     options: useOptions
 ) =>
     useAPI(
-        map.GET_LINEAGE,
+        map.GET_LINEAGE_UPDATED,
         'GET',
         {
             pathVariables: { guid },

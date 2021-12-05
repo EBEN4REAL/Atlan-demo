@@ -216,6 +216,10 @@ export default function useAssetInfo() {
         return `/assets/${asset?.guid}`
     }
 
+    const getLineagePath = (asset) => {
+        return `/assets/${asset.guid}/lineage`
+    }
+
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
         const databaseQualifiedName = `${
@@ -925,5 +929,6 @@ export default function useAssetInfo() {
         isGTCByType,
         getAnchorQualifiedName,
         isNonBiAsset,
+        getLineagePath,
     }
 }

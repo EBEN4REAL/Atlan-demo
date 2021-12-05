@@ -179,7 +179,12 @@ export function useDiscoverList({
     const quickChange = () => {
         generateBody()
         cancelRequest()
-        localKey.value = `dirty_${Date.now().toString()}`
+
+        if (localKey.value) {
+            localKey.value = `dirty_${Date.now().toString()}`
+        } else {
+            refresh()
+        }
     }
 
     const fetch = () => {

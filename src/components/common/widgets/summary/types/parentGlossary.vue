@@ -27,7 +27,6 @@
         },
         setup() {
             const { getAnchorProfile, getAnchorName } = useAssetInfo()
-            console.log(getAnchorProfile(props.asset))
             return {
                 getAnchorProfile,
                 getAnchorName,

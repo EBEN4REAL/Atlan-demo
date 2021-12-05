@@ -2,7 +2,7 @@
     <Loader v-if="isLoading"></Loader>
     <GlossaryProfile
         v-else
-        :asset="selectedAsset"
+        :asset="localSelected"
         page="glossary"
     ></GlossaryProfile>
 </template>
@@ -40,6 +40,7 @@
             })
 
             const { selectedAsset } = toRefs(props)
+            const localSelected = ref()
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
             const limit = ref(1)
@@ -47,6 +48,10 @@
             const facets = ref({
                 guid: id.value,
             })
+            if (selectedAsset.value?.guid === id.value) {
+                localSelected.value = selectedAsset.value
+            }
+
             const fetchKey = computed(() => {
                 if (selectedAsset.value.guid) {
                     return null
@@ -73,13 +78,18 @@
 
             watch(list, () => {
                 if (list.value.length > 0) {
+                    localSelected.value = list.value[0]
                     handleSelectedAsset(list.value[0])
                 }
+            })
+            watch(selectedAsset, () => {
+                localSelected.value = selectedAsset.value
             })
 
             return {
                 fetchKey,
                 isLoading,
+                localSelected,
             }
         },
     })

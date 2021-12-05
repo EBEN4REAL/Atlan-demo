@@ -6,13 +6,13 @@ export const previewTabs = [
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
     },
-    /* {
+    {
         name: 'Columns',
         component: 'columns',
         includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
-    }, */
+    },
     // {
     //     name: 'Custom Metadata',
     //     component: 'businessMetadataTab',
@@ -37,7 +37,7 @@ export const previewTabs = [
     {
         name: 'Relations',
         component: 'relations',
-        exclude: [
+        excludes: [
             'Connection',
             'Database',
             'Schema',

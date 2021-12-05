@@ -103,6 +103,7 @@ export default function useAssetInfo() {
     const links = (asset: assetInterface) => attributes(asset)?.links
 
     const getTabs = (list, typeName: string) => {
+        console.log(list, typeName)
         return list.filter((i) => {
             let flag = true
             if (i.includes) {
@@ -217,10 +218,9 @@ export default function useAssetInfo() {
 
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
-        const databaseQualifiedName =
-            `${attributes(asset).connectionQualifiedName 
-            }/${ 
-            attributes(asset).databaseName}`
+        const databaseQualifiedName = `${
+            attributes(asset).connectionQualifiedName
+        }/${attributes(asset).databaseName}`
         const schema = attributes(asset).schemaName
 
         if (assetType(asset) === 'Column') {

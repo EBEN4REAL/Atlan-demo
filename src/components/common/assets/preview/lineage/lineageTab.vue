@@ -28,13 +28,7 @@
             class="bg-transparent"
         >
             <template #expandIcon="{ isActive }">
-                <div class="">
-                    <fa
-                        icon="fas chevron-down"
-                        class="ml-1 transition-transform duration-300 transform"
-                        :class="isActive ? '-rotate-180' : 'rotate-0'"
-                    />
-                </div>
+                <div class=""></div>
             </template>
             <a-collapse-panel
                 v-for="stream in streams"
@@ -43,7 +37,7 @@
             >
                 <template #header>
                     <div
-                        class="flex items-center text-sm font-bold select-none  header"
+                        class="flex items-center text-sm font-bold select-none header"
                     >
                         {{ stream.name }}
 
@@ -103,6 +97,7 @@
 
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
+    import useLineage from '~/composables/discovery/useLineage'
 
     export default defineComponent({
         name: 'LineagePreviewTab',
@@ -119,8 +114,6 @@
             const activeKeys = ref([])
 
             const assetTypesLengthMap = ref({})
-
-            const { useFetchLineage } = useLineageService()
 
             const depth = ref(1)
             const query = ref('')
@@ -141,40 +134,38 @@
             /** COMPUTED */
             const guid = computed(() => selectedAsset.value.guid)
 
-            const UpStreamLineage = useFetchLineage(
-                computed(() => ({
-                    depth: depth.value,
-                    guid: guid.value,
-                    direction: 'INPUT',
-                }))
-            )
-            const DownStreamLineage = useFetchLineage(
-                computed(() => ({
-                    depth: depth.value,
-                    guid: guid.value,
-                    direction: 'OUTPUT',
-                }))
-            )
+            const { data: upstreamData } = useLineage(guid.value)
+            // computed(() => ({
+            //     depth: depth.value,
+            //     guid: guid.value,
+            //     direction: 'INPUT',
+            // }))
+            const { data: downStreamData } = useLineage(guid.value)
+            // computed(() => ({
+            //     depth: depth.value,
+            //     guid: guid.value,
+            //     direction: 'OUTPUT',
+            // }))
 
             // useComputeGraph
             const allEntities = computed(() => ({
-                upstream: Object.values(UpStreamLineage.guidEntityMap.value),
-                downstream: Object.values(
-                    DownStreamLineage.guidEntityMap.value
-                ),
+                // upstream: Object.values(data.value.guidEntityMap.value),
+                // downstream: Object.values(
+                //     DownStreamLineage.guidEntityMap.value
+                // ),
             }))
 
             const filteredLineageList = computed(() => {
                 const lineageMap = {}
-                Object.entries(allEntities.value).forEach(
-                    ([key, assetList]) => {
-                        lineageMap[key] = assetList.filter((et) =>
-                            et.displayText
-                                .toLowerCase()
-                                .includes(query.value.toLowerCase())
-                        )
-                    }
-                )
+                // Object.entries(allEntities.value).forEach(
+                //     ([key, assetList]) => {
+                //         lineageMap[key] = assetList.filter((et) =>
+                //             et.displayText
+                //                 .toLowerCase()
+                //                 .includes(query.value.toLowerCase())
+                //         )
+                //     }
+                // )
                 return lineageMap
             })
 
@@ -186,20 +177,20 @@
             )
 
             const placeholderText = computed(() => {
-                if (
-                    UpStreamLineage.isLoading.value ||
-                    DownStreamLineage.isLoading.value
-                )
-                    return 'Loading lineage'
+                // if (
+                //     UpStreamLineage.isLoading.value ||
+                //     DownStreamLineage.isLoading.value
+                // )
+                return 'Loading lineage'
 
-                return totalCount.value
-                    ? `Search ${totalCount.value} assets`
-                    : 'No assets found'
+                // return totalCount.value
+                //     ? `Search ${totalCount.value} assets`
+                //     : 'No assets found'
             })
 
             const isLoading = computed(() => ({
-                upstream: UpStreamLineage.isLoading.value,
-                downstream: DownStreamLineage.isLoading.value,
+                // upstream: UpStreamLineage.isLoading.value,
+                // downstream: DownStreamLineage.isLoading.value,
             }))
 
             /** METHODS */
@@ -216,10 +207,11 @@
             provide('assetTypesLengthMap', assetTypesLengthMap)
 
             /** WATCHERS */
-            watch([depth, guid], () => {
-                UpStreamLineage.mutate()
-                DownStreamLineage.mutate()
-            })
+            // watch([depth, guid], () => {
+            //     console.log('lineage mutate')
+            //     UpStreamLineage.mutate()
+            //     DownStreamLineage.mutate()
+            // })
 
             /** LIFECYCLE */
             return {

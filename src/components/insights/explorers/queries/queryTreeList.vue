@@ -12,7 +12,7 @@
                     :block-node="true"
                     :auto-expand-parent="false"
                     @select="selectNode"
-                    @expand="expandNode"
+                    @expand="onExpand"
                 >
                     <template #switcherIcon>
                         <AtlanIcon icon="CaretRight" />
@@ -119,7 +119,19 @@
         },
         setup(props, { emit }) {
             // data
-            return {}
+            const onExpand = (expanded: string[], event: any) => {
+                console.log('expansion: ', {
+                    expanded,
+                    event,
+                })
+                if (props.selectedFolderHide?.guid === event?.node?.guid) {
+                } else {
+                    props.expandNode(expanded, event)
+                }
+            }
+            return {
+                onExpand,
+            }
         },
     })
 </script>

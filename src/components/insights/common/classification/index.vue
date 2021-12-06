@@ -67,7 +67,8 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            // console.log('model value: ', modelValue.value)
+            const localValue = ref(modelValue?.value)
 
             const { classificationList } = useTypedefData()
 
@@ -89,11 +90,13 @@
 
             const handleChange = (value) => {
                 // modelValue.value = localValue.value
+                // console.log('class value: ', value)
                 localValue.value = value
                 // emit('change')
                 let selection = filteredList.value.find(
                     (item) => item.name === value
                 )
+                localValue.value = selection
                 // selected.value = value
 
                 // console.log('classification: ', { filteredList, selection })

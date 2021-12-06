@@ -121,15 +121,20 @@ export default function useProject() {
             }
 
             let selection = toRaw(editorInstance.value)?.getSelection()
+            console.log('selected query text3: ', selection)
 
-            queryText = queryText.replace(/^\s+|\s+$/g, '')
+            // if(selection==null) {
 
-            for(var i=0;i<count+selection.startLineNumber-1;i++) {
+            // } else {
+
+            // }
+
+            for(var i=0;i<count+selection?.startLineNumber-1;i++) {
                 queryText = '\n'+queryText
             }
-        
+            // console.log('selected query text2: ', {queryText})
             // console.log('selected query text2: ', {text, count})
-            console.log('query selected text1: ', queryText)
+            // console.log('query selected text1: ', queryText)
 
             // console.log('selected query text: ', toRaw(editorInstance.value).getSelection())
         } else if(activeInlineTab.value.playground.editor.text!=='') {

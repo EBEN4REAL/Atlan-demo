@@ -443,7 +443,7 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type && type.length) {
+        if (type && type.length && parentFolderQF=='root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},
@@ -585,7 +585,7 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type && type.length) {
+        if (type && type.length && parentFolderQF=='root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},
@@ -705,7 +705,7 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid.value,
         }
-        if (type && type.length) {
+        if (type && type.length && parentFolderQF.value==='root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},
@@ -826,7 +826,7 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type && type.length) {
+        if (type && type.length && parentFolderQF=='root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},

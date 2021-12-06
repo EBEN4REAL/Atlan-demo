@@ -6,7 +6,7 @@
         };`"
         :class="`${
             selectedNewFolder?.guid === item?.guid
-                ? 'bg-primary-focus w-9/11'
+                ? 'bg-primary-selected-focus w-9/11'
                 : 'bg-white'
         }`"
     >

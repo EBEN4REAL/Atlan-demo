@@ -115,14 +115,14 @@ export const discoveryFilters = [
             },
             {
                 name: '__hasLineage',
-                displayName: 'Lineage',
+                displayName: 'Has Lineage',
                 typeName: 'boolean',
                 description: 'All assets which have lineage relationship',
                 isMandatory: true,
             },
             {
                 name: '__state',
-                displayName: 'Archived',
+                displayName: 'Is Archived',
                 typeName: 'boolean',
                 description: 'All assets which have been archived',
                 isMandatory: true,

@@ -171,13 +171,15 @@
 
         <div class="flex flex-col">
             <Shortcut shortcutKey="d" action="set description" placement="left">
-                <div class="flex items-center px-5 mb-1 text-sm text-gray-500">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span>Description</span>
                     <AtlanIcon
                         icon="User"
-                        class="mr-1"
+                        class="h-3 mr-1"
                         v-if="isUserDescription(selectedAsset)"
                     ></AtlanIcon>
-                    <span>Description</span>
                 </div>
             </Shortcut>
 

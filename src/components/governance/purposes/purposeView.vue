@@ -1,6 +1,6 @@
 <template>
     <ExplorerLayout
-        title="Purposes"
+        title="Purpose"
         sub-title=""
         :sidebarVisibility="Boolean(selectedPersonaId)"
     >
@@ -9,12 +9,13 @@
                 :disabled="isEditing"
                 class="flex-none"
                 size="sm"
-                color="secondary"
+                color="primary"
                 padding="compact"
                 data-test-id="add-purpose"
                 @click="() => (modalVisible = true)"
             >
-                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+                <AtlanIcon icon="Add" class="mr-1 -mx-1 text-white"></AtlanIcon>
+                New
             </AtlanBtn>
         </template>
         <template #sidebar>
@@ -24,13 +25,10 @@
                     :placeholder="`Search from ${
                         filteredPersonas?.length ?? 0
                     } personas`"
-                    class="mt-4 mb-2 bg-white"
+                    class="my-3 bg-white"
                     :autofocus="true"
                     size="minimal"
                 >
-                    <template #filter>
-                        <div></div>
-                    </template>
                 </SearchAndFilter>
             </div>
 

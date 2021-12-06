@@ -2,7 +2,10 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
-            <div v-if="Object.keys(creator).length > 0" class="flex items-center text-sm" >
+            <div
+                v-if="Object.keys(creator).length > 0"
+                class="flex items-center text-sm"
+            >
                 <PopOverUser :item="creator.username">
                     <UserPill
                         :username="creator.username"
@@ -11,12 +14,16 @@
                     ></UserPill>
                 </PopOverUser>
             </div>
-            <span v-else class="text-sm font-semibold text-gray-500">Unknown</span>
+            <span v-else class="text-sm font-semibold text-gray-500"
+                >Unknown</span
+            >
 
             <span class="text-sm text-gray-500">on</span>
-            <span class="text-sm text-gray">{{
-                persona.createdAt?.slice(0, -11)
-            }}</span>
+            <a-tooltip
+                :title="timeStamp(persona.createdAt, true)"
+                placement="right"
+                >{{ timeStamp(persona.createdAt) }}</a-tooltip
+            >
 
             <a-switch
                 class="ml-auto"
@@ -29,7 +36,7 @@
         </div>
         <div class="flex items-center py-4 pt-2">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group hover:shadow"
+                class="relative flex items-center flex-1 p-4 mr-3 bg-white border border-gray-300 rounded cursor-pointer group hover:shadow"
                 data-test-id="tab-policies"
                 @click="setActiveTab('policies')"
             >
@@ -58,7 +65,7 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                            class="absolute right-0 opacity-0 vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -69,7 +76,7 @@
                 </div>
             </div>
             <div
-                class="relative flex items-center flex-1 p-4 border border-gray-300 rounded cursor-pointer  group hover:shadow"
+                class="relative flex items-center flex-1 p-4 bg-white border border-gray-300 rounded cursor-pointer group hover:shadow"
                 data-test-id="tab-users"
                 @click="setActiveTab('users')"
             >
@@ -98,7 +105,7 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                            class="absolute right-0 opacity-0 vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"
@@ -113,13 +120,22 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, reactive, ref, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        reactive,
+        ref,
+        toRefs,
+    } from 'vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
     import { useUsers } from '~/composables/user/useUsers'
+    import { formatDateTime } from '~/utils/date'
+    import { useTimeAgo } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PersonaMeta',
@@ -137,24 +153,31 @@
             const params = computed(() => ({
                 limit: 1,
                 offset: 0,
-                filter:
-                    {
-                        $and: [
-                            { email_verified: true },
-                            { id: persona.value.createdBy },
-                        ],
-                    }
+                filter: {
+                    $and: [
+                        { email_verified: true },
+                        { id: persona.value.createdBy },
+                    ],
+                },
             }))
 
             // Fetch the details of the user, and use the unique identifier as
             // the cache key.
-            const { userList } = useUsers(
-                params,
-                persona.value.createdBy
-            )
+            const { userList } = useUsers(params, persona.value.createdBy)
 
             // Get the details of the creator.
-            const creator = computed(() => userList.value.length > 0 ? userList.value[0] : {})
+            const creator = computed(() =>
+                userList.value.length > 0 ? userList.value[0] : {}
+            )
+
+            const timeStamp = (time, raw: boolean = false) => {
+                if (time) {
+                    return raw
+                        ? formatDateTime(time) || 'N/A'
+                        : useTimeAgo(time).value
+                }
+                return ''
+            }
 
             const enablePersonaCheck = ref(true)
             const formatDate = (val) => {}
@@ -163,7 +186,8 @@
                 enablePersonaCheck,
                 enablePersona,
                 setActiveTab,
-                creator
+                creator,
+                timeStamp,
             }
         },
     })

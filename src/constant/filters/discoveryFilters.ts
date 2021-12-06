@@ -62,6 +62,21 @@ export const discoveryFilters = [
                 isMandatory: true,
             },
             {
+                name: 'description',
+                displayName: 'Description',
+                typeName: 'string',
+                description:
+                    'Description of the asset crawled from the source.',
+                isMandatory: false,
+            },
+            {
+                name: 'userDescription',
+                displayName: 'User Description',
+                typeName: 'string',
+                description: 'Description of the asset updated on Atlan.',
+                isMandatory: false,
+            },
+            {
                 name: '__modifiedBy',
                 displayName: 'Last updated by',
                 typeName: 'string',

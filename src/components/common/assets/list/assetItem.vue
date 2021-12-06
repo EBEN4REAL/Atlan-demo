@@ -554,6 +554,7 @@
                 parentCategory,
                 classifications,
                 getProfilePath,
+                isUserDescription,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -629,6 +630,7 @@
                 list,
                 classifications,
                 getProfilePath,
+                isUserDescription,
             }
         },
     })

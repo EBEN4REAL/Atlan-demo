@@ -95,6 +95,9 @@ export default function useAssetInfo() {
         attributes(asset)?.description ||
         ''
 
+    const isUserDescription = (asset: assetInterface) =>
+        !!attributes(asset)?.userDescription
+
     const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
     const isPartition = (asset: assetInterface) =>
         attributes(asset)?.isPartition
@@ -930,5 +933,6 @@ export default function useAssetInfo() {
         getAnchorQualifiedName,
         isNonBiAsset,
         getLineagePath,
+        isUserDescription,
     }
 }

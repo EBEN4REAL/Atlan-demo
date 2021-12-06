@@ -272,7 +272,12 @@ export function useBody(
                 if (filterObject) {
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
-                            if (element.value) {
+                            if (element.operator === 'isNull') {
+                                base.notFilter('exists', element.operand)
+                            }
+                            if (element.operator === 'isNotNull') {
+                                base.filter('exists', element.operand)
+                            } else if (element.value) {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',
@@ -308,12 +313,7 @@ export function useBody(
                                         element.value
                                     )
                                 }
-                                if (element.operator === 'isNull') {
-                                    base.notFilter('exists', element.operand)
-                                }
-                                if (element.operator === 'isNotNull') {
-                                    base.filter('exists', element.operand)
-                                }
+
                                 if (element.operator === 'greaterThan') {
                                     base.filter('range', element.operand, {
                                         gt: element.value,

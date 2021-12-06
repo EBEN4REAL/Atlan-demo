@@ -25,13 +25,26 @@
                     <a-input
                         v-model:value="newTenantName"
                         :placeholder="`Add Workspace Name`"
-                        class="text-lg font-bold border-0 shadow-none outline-none "
+                        class="
+                            text-lg
+                            font-bold
+                            border-0
+                            shadow-none
+                            outline-none
+                        "
                     />
                     <div class="flex items-center justify-end">
                         <AtlanBtn
                             padding="compact"
                             size="sm"
-                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none "
+                            class="
+                                px-5
+                                mr-3
+                                font-bold
+                                text-gray-500
+                                bg-transparent
+                                border-none
+                            "
                             @click="showEditTenantNameModal = false"
                             >Cancel</AtlanBtn
                         >
@@ -62,7 +75,14 @@
                         class="mt-2"
                     />
                     <div
-                        class="absolute bottom-0 p-1 bg-white rounded-full  left-20"
+                        class="
+                            absolute
+                            bottom-0
+                            p-1
+                            bg-white
+                            rounded-full
+                            left-20
+                        "
                     >
                         <div
                             class="
@@ -86,7 +106,13 @@
                     <AtlanBtn
                         padding="compact"
                         size="sm"
-                        class="px-5 mr-3 text-gray-700 bg-transparent border border-gray-300 "
+                        class="
+                            px-5
+                            mr-3
+                            text-gray-700
+                            bg-transparent
+                            border border-gray-300
+                        "
                         @click="showEditTenantNameModal = true"
                         >Edit</AtlanBtn
                     >
@@ -114,41 +140,73 @@
             />
             <div class="flex flex-wrap mt-7">
                 <router-link
-                    v-for="(card, index) in overviewCards"
-                    :key="card.id"
-                    :to="card.link"
-                    class="flex justify-between p-3 my-2 border rounded-md cursor-pointer  overview-card hover:shadow-md group"
+                    v-for="(key, index) in Object.keys(overviewCards)"
+                    :key="overviewCards[key].id"
+                    :to="overviewCards[key].link"
+                    class="
+                        flex
+                        justify-between
+                        p-3
+                        my-2
+                        border
+                        rounded-md
+                        cursor-pointer
+                        overview-card
+                        hover:shadow-md
+                        group
+                    "
                     :class="!((index + 1) % 3) ? '' : 'mr-2'"
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center p-3 mr-3  bg-primary-light text-primary"
+                            class="
+                                flex
+                                items-center
+                                justify-center
+                                p-3
+                                mr-3
+                                bg-primary-light
+                                text-primary
+                            "
                         >
                             <AtlanIcon
-                                :icon="card.icon"
+                                :icon="overviewCards[key].icon"
                                 class="h-6"
                             ></AtlanIcon>
                         </div>
                         <div class="mt-1">
                             <div class="font-bold">
-                                {{ card.displayName }}
+                                {{ overviewCards[key].displayName }}
                             </div>
+
                             <div class="mt-1">
-                                <span v-if="card.value">
+                                <span v-if="overviewCards[key].value">
                                     <span
-                                        v-if="!card.excludeValueInCopy"
+                                        v-if="
+                                            !overviewCards[key]
+                                                .excludeValueInCopy
+                                        "
                                         class="mr-1 font-bold"
-                                        >{{ card.value }}</span
+                                        >{{ overviewCards[key].value }}</span
                                     >
-                                    <span>{{ card.valueText }}</span>
+                                    <span>{{
+                                        overviewCards[key].valueText
+                                    }}</span>
                                 </span>
-                                <span v-else>{{ card.emptyText }}</span>
+                                <span v-else>{{
+                                    overviewCards[key].emptyText
+                                }}</span>
                             </div>
                         </div>
                     </div>
                     <AtlanIcon
                         icon="ArrowRight"
-                        class="mt-1 opacity-0  text-primary group-hover:opacity-100"
+                        class="
+                            mt-1
+                            opacity-0
+                            text-primary
+                            group-hover:opacity-100
+                        "
                     ></AtlanIcon>
                 </router-link>
             </div>

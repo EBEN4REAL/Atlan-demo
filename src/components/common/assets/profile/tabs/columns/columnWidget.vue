@@ -5,18 +5,36 @@
             <SearchAndFilter
                 v-model:value="queryText"
                 :autofocus="true"
-                :placeholder="`Search ${colCount} columns`"
+                :placeholder="`Search ${totalCount} columns`"
                 @change="handleSearchChange"
             />
         </div>
         <!-- Table -->
         <div class="relative">
+            <div
+                v-if="isLoading"
+                class="flex items-center justify-center flex-grow"
+            >
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-10 animate-spin"
+                ></AtlanIcon>
+            </div>
+            <div
+                v-else-if="columnsList.length === 0 && !isLoading"
+                class="flex-grow"
+            >
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    desc="No assets found"
+                ></EmptyView>
+            </div>
             <a-table
+                v-else
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :scroll="{ y: 300 }"
                 :pagination="false"
-                :loading="isLoading"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
                 size="small"
@@ -43,6 +61,7 @@
                                 :is="images[record.data_type]"
                                 class="w-4 h-4 mr-3"
                             ></component>
+
                             <!-- <Tooltip :tooltip-text="text" /> -->
                             <a-tooltip placement="left">
                                 {{ text }}
@@ -64,14 +83,7 @@
                     </a-tooltip>
                 </template>
             </a-table>
-            <div
-                v-if="columnsList.length <= 0 && !isLoading"
-                class="flex items-center justify-center mt-3"
-            >
-                <a-button @click="clearFiltersAndSearch"
-                    >Clear all filters</a-button
-                >
-            </div>
+
             <div
                 v-if="isLoadMore"
                 class="flex items-center justify-center mt-3"
@@ -79,7 +91,7 @@
                 <button
                     v-if="!isLoading"
                     class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
-                    @click="loadMore"
+                    @click="handleLoadMore"
                 >
                     <p
                         class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
@@ -199,12 +211,11 @@
             const {
                 list,
                 isLoading,
-                assetTypeAggregationList,
                 isLoadMore,
-                fetch,
+
                 quickChange,
                 totalCount,
-                getAggregationList,
+
                 error,
                 isValidating,
                 updateList,
@@ -222,26 +233,10 @@
                 relationAttributes,
             })
 
-            const handleListUpdate = (asset: any) => {
-                updateList(asset)
-                selectedRowData.value = asset
-                filterColumnsList()
-            }
-
-            const columnDataTypeAggregationList = computed(() =>
-                getAggregationList(
-                    `group_by_${aggregationAttributeName}`,
-                    [],
-                    true
-                )
-            )
-
             /** UTILS */
             const route = useRoute()
 
             const column = computed(() => route?.query?.column || '')
-
-            const colCount = computed(() => columnCount(selectedAsset.value))
 
             const scrollToElement = () => {
                 const tableRow = document.querySelector(
@@ -274,13 +269,7 @@
 
             // filterColumnsList
             const filterColumnsList = () => {
-                columnsList.value = [
-                    // ...pinnedList.value,
-                    ...list.value,
-                    ...columnFromUrl.value,
-                ]
-
-                console.log(columnFromUrl.value)
+                columnsList.value = [...list.value, ...columnFromUrl.value]
 
                 const filteredListData = columnsList.value.map((i) => ({
                     key: i.attributes.order,
@@ -296,19 +285,31 @@
                 columnsData.value = {
                     filteredList: filteredListData,
                 }
-
-                if (column.value !== '') {
-                    columnsList.value?.forEach((singleRow) => {
-                        if (singleRow.guid === column.value) {
-                            openColumnSidebar(singleRow.attributes.order)
-                        }
-                    })
-
-                    nextTick(() => {
-                        scrollToElement()
-                    })
-                }
             }
+
+            const handleListUpdate = (asset: any) => {
+                updateList(asset)
+                selectedRowData.value = asset
+
+                // In case column from url was updated instead of the other list (20 items)
+                if (asset.guid === columnFromUrl.value[0].guid) {
+                    columnFromUrl.value[0] = asset
+                }
+
+                filterColumnsList()
+            }
+
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    offset.value += limit.value
+                }
+                quickChange()
+            }
+
+            const handleSearchChange = useDebounceFn(() => {
+                offset.value = 0
+                quickChange()
+            }, 150)
 
             // customRow Antd
             const customRow = (record: { key: null }) => ({
@@ -361,38 +362,41 @@
                     watch([urlColumnList], () => {
                         columnFromUrl.value = urlColumnList.value
                         filterColumnsList()
+
+                        columnsList.value?.forEach((singleRow) => {
+                            if (singleRow.guid === column.value) {
+                                openColumnSidebar(singleRow.attributes.order)
+                            }
+                        })
+
+                        nextTick(() => {
+                            scrollToElement()
+                        })
                     })
                 } else {
                     filterColumnsList()
                 }
             })
 
-            onMounted(() => {})
-
             return {
                 rowClassName,
                 customRow,
-                // handleSearchChange,
-                // handleChangeSort,
-                // handleCertificationFilter,
-                // clearFiltersAndSearch,
-                // isLoadMore,
-                // // dataTypeMap,
-                // isLoading,
-                // loadMore,
-                // handleFilterChange,
+                handleSearchChange,
                 isLoadMore,
                 handleListUpdate,
                 handleCloseColumnSidebar,
                 isLoading,
                 columnsList,
+                totalCount,
+                error,
+                isValidating,
                 selectedRow,
                 columnsData,
                 queryText,
-                colCount,
                 showColumnSidebar,
                 selectedRowData,
                 images,
+                handleLoadMore,
                 columns: [
                     {
                         width: 40,

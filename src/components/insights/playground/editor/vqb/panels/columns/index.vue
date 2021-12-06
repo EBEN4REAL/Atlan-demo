@@ -1,17 +1,14 @@
 <template>
     <div>
         <div
-            :class="
+            @mouseover="handleMouseOver"
+            @mouseout="handleMouseOut"
+            :class="[
                 expand
-                    ? [' border-gray-300', ' rounded', 'group', 'border']
-                    : [
-                          ' border-white',
-                          'hover:border-gray-300',
-                          'rounded',
-                          'border',
-                          'group',
-                      ]
-            "
+                    ? 'border-gray-300 rounded  border '
+                    : 'border-white  rounded border ',
+                containerHovered ? 'border-gray-300' : '',
+            ]"
         >
             <div
                 @click="toggleExpand"
@@ -43,28 +40,10 @@
                             :class="
                                 !expand
                                     ? [
-                                          'flex',
-                                          'items-center',
-                                          'justify-center',
-                                          'mr-2',
-                                          'bg-gray-100',
-                                          'border',
-                                          'border-gray-300',
-                                          'rounded-full',
-                                          'p-1.5',
-                                          'text-gray-500',
+                                          'flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5 text-gray-500',
                                       ]
                                     : [
-                                          'flex',
-                                          'items-center',
-                                          'justify-center',
-                                          'mr-2',
-                                          'bg-primary-light',
-                                          'border',
-                                          'border-primary',
-                                          'rounded-full',
-                                          'p-1.5',
-                                          'text-primary',
+                                          'flex items-center justify-center mr-2 bg-primary-light  border-primary-focus rounded-full p-1.5 text-primary',
                                       ]
                             "
                             style="z-index: 2"
@@ -72,57 +51,53 @@
                             <AtlanIcon icon="Columns" class="w-4 h-4" />
                         </div>
                         <div class="">
-                            <p class="text-sm font-bold text-gray">
-                                Columns {{ panel.order }}
-                            </p>
-                            <p class="text-xs text-gray-500">
+                            <p class="text-sm font-bold text-gray">Columns</p>
+                            <p class="text-xs text-gray-500" v-if="!expand">
                                 from Instacart_beverages_master
                             </p>
                         </div>
                     </div>
 
                     <div
-                        class="flex border border-gray-300 rounded opacity-0  group-hover:opacity-100 items-strech"
+                        :class="[
+                            containerHovered ? 'opacity-100' : 'opacity-0',
+                            'flex border border-gray-300 rounded   items-strech',
+                        ]"
                     >
                         <div
                             class="
                                 px-3
                                 py-1.5
-                                border-r border-gray-300
+                                border-gray-300
                                 flex
                                 items-center
                                 justify-center
+                                border-r
                             "
                             @click.stop="() => {}"
                         >
                             <a-checkbox v-model:checked="checkbox"></a-checkbox>
                         </div>
-                        <div class="border-r border-gray-300">
-                            <AtlanBtn
-                                class="
-                                    flex-none
-                                    px-3.5
-                                    py-1
-                                    border-none border-r border-gray-300
-                                "
-                                size="sm"
-                                color="secondary"
-                                @click.stop="() => handleAdd(index)"
-                                padding="compact"
-                            >
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="-mx-1 text-gray"
-                                ></AtlanIcon>
-                            </AtlanBtn>
+                        <div
+                            class="border-r border-gray-300"
+                            v-if="
+                                activeInlineTab.playground.vqb.panels.length -
+                                    1 !==
+                                Number(index)
+                            "
+                        >
+                            <!-- Show dropdown except the last panel -->
+                            <Actions
+                                @add="(type) => handleAdd(index, type)"
+                                v-model:submenuHovered="submenuHovered"
+                                v-model:containerHovered="containerHovered"
+                            />
+                            <!-- ------------------------------ -->
                         </div>
                         <div class="border-r border-gray-300">
                             <AtlanBtn
                                 @click.stop="() => handleDelete(index)"
-                                :disabled="
-                                    activeInlineTab.playground.vqb.panels
-                                        .length == 1
-                                "
+                                :disabled="Number(index) === 0"
                                 class="
                                     flex-none
                                     border-none
@@ -145,24 +120,27 @@
                 </div>
 
                 <div
-                    class=""
-                    :class="
+                    :class="[
                         expand
                             ? 'absolute bg-gray-300 opacity-0'
-                            : 'absolute bg-gray-300 group-hover:opacity-0'
-                    "
+                            : 'absolute bg-gray-300 ',
+                        containerHovered ? 'opacity-0' : '',
+                    ]"
                     :style="`width: 1px; left: 55px; z-index: 1; ${findTimeLineHeight(
                         Number(index)
                     )}`"
                 ></div>
             </div>
             <!-- Show on expand -->
-            <div
-                class="h-24 p-3 mx-3 mt-1 mb-4 bg-gray-100 rounded"
-                v-if="expand"
-                @click.stop="() => {}"
-            ></div>
-            <Actions v-if="expand" />
+            <ColumnSubPanel :expand="expand" />
+            <FooterActions
+                @add="(type) => handleAdd(index, type)"
+                v-if="
+                    expand &&
+                    activeInlineTab.playground.vqb.panels.length - 1 ===
+                        Number(index)
+                "
+            />
         </div>
         <div
             @click.stop="() => {}"
@@ -195,12 +173,16 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { VQBPanelType } from '~/types/insights/VQB.interface'
     import Actions from '../action/index.vue'
+    import FooterActions from '../action/footer.vue'
+    import ColumnSubPanel from './subpanel/index.vue'
 
     export default defineComponent({
         name: 'Columns',
         components: {
+            FooterActions,
             Actions,
             AtlanBtn,
+            ColumnSubPanel,
         },
         props: {
             index: {
@@ -214,7 +196,10 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
+            const containerHovered = ref(false)
+            const submenuHovered = ref(false)
             const expand = ref(false)
+            const actionPanel = ref(false)
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as ComputedRef<string>
@@ -243,8 +228,9 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAdd = (index) => {
+            const handleAdd = (index, type) => {
                 const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
+                panelCopy.id = type
                 panelCopy.order =
                     Number(activeInlineTab.value.playground.vqb.panels.length) +
                     1
@@ -261,8 +247,25 @@
             const toggleExpand = () => {
                 expand.value = !expand.value
             }
+            const toggleActionPanel = () => {
+                actionPanel.value = !actionPanel.value
+            }
+            const handleMouseOut = () => {
+                if (containerHovered.value && !submenuHovered.value) {
+                    containerHovered.value = false
+                }
+            }
+            const handleMouseOver = () => {
+                if (!containerHovered.value) containerHovered.value = true
+            }
 
             return {
+                submenuHovered,
+                handleMouseOver,
+                handleMouseOut,
+                containerHovered,
+                toggleActionPanel,
+                actionPanel,
                 toggleExpand,
                 expand,
                 activeInlineTab,

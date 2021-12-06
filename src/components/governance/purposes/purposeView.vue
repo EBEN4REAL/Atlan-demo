@@ -1,5 +1,9 @@
 <template>
-    <ExplorerLayout title="Purposes" sub-title="">
+    <ExplorerLayout
+        title="Purposes"
+        sub-title=""
+        :sidebarVisibility="Boolean(selectedPersonaId)"
+    >
         <template #action>
             <AtlanBtn
                 :disabled="isEditing"
@@ -31,6 +35,7 @@
             </div>
 
             <ExplorerList
+                type="purposes"
                 v-model:selected="selectedPersonaId"
                 :disabled="isEditing"
                 :list="filteredPersonas"
@@ -71,11 +76,11 @@
         </template>
         <div
             v-else-if="
-                filteredPersonas?.length == 0 && isPersonaError !== undefined
+                filteredPersonas?.length == 0 && isPersonaError === undefined
             "
             class="flex flex-col items-center justify-center h-full"
         >
-            <component class="w-4 h-4" :is="AddPersonaIllustration"></component>
+            <component :is="AddPersonaIllustration"></component>
             <span class="mx-auto text-base text-gray"
                 >You don't have any purposes</span
             >

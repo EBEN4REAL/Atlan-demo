@@ -58,15 +58,23 @@
                 type: Object,
                 required: false,
             },
+            exclude: {
+                required: false,
+            },
+            include: {
+                required: false,
+            },
         },
         setup(props, { emit }) {
             // const { modelValue } = useVModels(props, emit)
             // const localValue = ref(modelValue.value)
-            const { credential, query } = toRefs(props)
+            const { credential, query, exclude, include } = toRefs(props)
 
             const body = computed(() => ({
                 ...credential?.value,
                 query: query?.value,
+                schemaExcludePattern: exclude?.value,
+                schemaIncludePattern: include.value,
             }))
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
@@ -158,6 +166,8 @@
                 isLoading,
                 credential,
                 query,
+                exclude,
+                include,
             }
         },
     })

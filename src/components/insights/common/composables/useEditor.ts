@@ -146,7 +146,8 @@ export function useEditor(
             if(type==='auto') {
                 // 1. find cursor position done
                 const pos = editorInstance?.getPosition()
-                console.log('position: ', pos)
+
+                console.log('position cursor: ', pos)
                 console.log('position editor: ', editorInstance)
                 
                 // let parsedQuery = getParsedQueryData(variables, query)
@@ -302,7 +303,7 @@ export function useEditor(
             // })
             // return moustacheInterpolator(queryText, parseVariables)
         
-            return null
+            return ''
         // return semicolonSeparateQuery(query)
     }
     // const clearLineDecoration = (editorInstance: any) => {

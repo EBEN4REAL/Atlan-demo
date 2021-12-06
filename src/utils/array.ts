@@ -22,3 +22,9 @@ export const mergeArray = (
         unmatchingIdsResult,
     }
 }
+/* Handles null,undefiend */
+export const safeArray = (arr: any) => {
+    if (arr === null) return []
+    if (arr === undefined) return []
+    return arr
+}

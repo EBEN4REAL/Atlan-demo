@@ -20,7 +20,7 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer  text-mdoverflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>
@@ -50,7 +50,7 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-wider text-gray-500 uppercase "
+                            class="text-sm tracking-wider text-gray-500 uppercase"
                         >
                             {{ item.typeName }}
                         </div>
@@ -170,23 +170,6 @@
                         </a-tooltip>
                         <a-tooltip placement="bottomLeft">
                             <div
-                                v-if="schemaName(item)"
-                                class="flex items-center text-gray-500"
-                            >
-                                <AtlanIcon
-                                    icon="SchemaGray"
-                                    class="mr-1 mb-0.5"
-                                />
-                                <div class="tracking-tight text-gray-500">
-                                    {{ schemaName(item) }}
-                                </div>
-                            </div>
-                            <template #title>
-                                <span>Schema - {{ schemaName(item) }}</span>
-                            </template>
-                        </a-tooltip>
-                        <a-tooltip placement="bottomLeft">
-                            <div
                                 v-if="databaseName(item)"
                                 class="flex items-center text-gray-500"
                             >
@@ -200,6 +183,23 @@
                             </div>
                             <template #title>
                                 <span>Database - {{ databaseName(item) }}</span>
+                            </template>
+                        </a-tooltip>
+                        <a-tooltip placement="bottomLeft">
+                            <div
+                                v-if="schemaName(item)"
+                                class="flex items-center text-gray-500"
+                            >
+                                <AtlanIcon
+                                    icon="SchemaGray"
+                                    class="mr-1 mb-0.5"
+                                />
+                                <div class="tracking-tight text-gray-500">
+                                    {{ schemaName(item) }}
+                                </div>
+                            </div>
+                            <template #title>
+                                <span>Schema - {{ schemaName(item) }}</span>
                             </template>
                         </a-tooltip>
                     </div>

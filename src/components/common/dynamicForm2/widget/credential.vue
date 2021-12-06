@@ -22,7 +22,7 @@
                 class="text-white bg-success border-success"
                 >Test Authentication</a-button
             >
-            <div class="flex ml-2" v-if="testMessage">
+            <div class="flex items-center ml-2" v-if="testMessage">
                 <AtlanIcon :icon="testIcon" class="mr-1"></AtlanIcon>
                 <span :class="testClass">{{ testMessage }}</span>
             </div>
@@ -46,7 +46,7 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { useTestCredential } from '~/composables/credential/useTestCredential'
-    import { useConfigMapList } from '~/composables/package/useConfigMapList'
+    import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
     import ErrorView from '@common/error/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
@@ -92,17 +92,10 @@
 
             const configMap = ref()
 
-            const { isLoading, error, data, list } = useConfigMapList({
-                dependentKey: ref(true),
-                limit: ref(1),
-                filter: ref({
-                    $or: [
-                        {
-                            name: `${property.value.ui?.credentialType}`,
-                        },
-                    ],
-                }),
-            })
+            const { data, isLoading, error } = useConfigMapByName(
+                `${property.value.ui?.credentialType}`,
+                true
+            )
 
             const resetError = () => {
                 testMessage.value = ''
@@ -111,9 +104,9 @@
             }
 
             watch(data, () => {
-                if (list.value.length > 0) {
+                if (data.value.data.config) {
                     try {
-                        configMap.value = JSON.parse(list.value[0].data.config)
+                        configMap.value = JSON.parse(data.value.data.config)
                     } catch (e) {
                         console.error(e)
                     }
@@ -320,7 +313,7 @@
                 errorTest,
                 testData,
                 errorMessage,
-                list,
+
                 credentialBody,
             }
         },

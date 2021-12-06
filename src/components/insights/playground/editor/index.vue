@@ -72,8 +72,8 @@
                                 color="primary"
                                 padding="compact"
                                 :disabled="
-                                    activeInlineTab.playground.resultsPane
-                                        .result.buttonDisable
+                                    activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
                                 "
                                 @click="toggleRun"
                             >
@@ -247,7 +247,7 @@
                         saveModalRef = el
                     }
                 "
-                :savedQueryType="'personal'"
+                :savedQueryType="defaultClassification"
                 :parentFolder="queryFolderNamespace"
                 @onSaveQuery="saveQuery"
             />
@@ -360,7 +360,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import {
         useProvide,
         provideDataInterface,
@@ -372,6 +372,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
@@ -395,6 +396,7 @@
         },
         setup(props) {
             const router = useRouter()
+            const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
@@ -451,11 +453,8 @@
                 ref({}) as Ref<Folder>
             )
 
-            const {
-                updateSavedQuery,
-                saveQueryToDatabase,
-                saveQueryToDatabaseWithTerms,
-            } = useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
+            const { updateSavedQuery, saveQueryToDatabaseWithTerms } =
+                useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isQueryRunning = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result
@@ -466,6 +465,8 @@
             const openSaveQueryModal = () => {
                 showSaveQueryModal.value = true
             }
+            const { classificationList } = useTypedefData()
+            let defaultClassification = classificationList.value[0] ?? undefined
 
             // callback fxn
             const getData = (dataList, columnList, executionTime) => {
@@ -538,6 +539,8 @@
                         .getValueInRange(
                             toRaw(editorInstance.value).getSelection()
                         )
+
+                    console.log('query selected: ', selectedText)
 
                     useAddEvent('insights', 'query', 'run', undefined)
                     queryRun(
@@ -625,6 +628,7 @@
                     showSaveQueryModal,
                     saveModalRef,
                     router,
+                    route,
                     selectedParentType,
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,
@@ -772,6 +776,7 @@
                 setInstance,
                 toggleRun,
                 queryFolderNamespace,
+                defaultClassification,
             }
         },
     })

@@ -103,6 +103,7 @@ export default function useAssetInfo() {
     const links = (asset: assetInterface) => attributes(asset)?.links
 
     const getTabs = (list, typeName: string) => {
+        console.log(list, typeName)
         return list.filter((i) => {
             let flag = true
             if (i.includes) {
@@ -215,28 +216,31 @@ export default function useAssetInfo() {
         return `/assets/${asset?.guid}`
     }
 
+    const getLineagePath = (asset) => {
+        return `/assets/${asset.guid}/lineage`
+    }
+
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
-        let databaseQualifiedName =
-            attributes(asset).connectionQualifiedName +
-            '/' +
-            attributes(asset).databaseName
-        let schema = attributes(asset).schemaName
+        const databaseQualifiedName = `${
+            attributes(asset).connectionQualifiedName
+        }/${attributes(asset).databaseName}`
+        const schema = attributes(asset).schemaName
 
         if (assetType(asset) === 'Column') {
             // let tableName =
             //     attributes(asset).tableName
 
-            let name =
+            const name =
                 tableName(asset).length > 0 ? tableName(asset) : viewName(asset)
-            let columnName = attributes(asset).name
+            const columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
         } else if (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View'
         ) {
-            let tableName = attributes(asset).name
+            const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
             // console.log('assetType: ', asset.guid)
@@ -310,7 +314,7 @@ export default function useAssetInfo() {
     // }
 
     const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
-        let connectorsName: undefined | string = undefined
+        let connectorsName: undefined | string
         const values = qualifiedName?.split('/')
         if (values?.length > 1) {
             connectorsName = values[1]
@@ -925,5 +929,6 @@ export default function useAssetInfo() {
         isGTCByType,
         getAnchorQualifiedName,
         isNonBiAsset,
+        getLineagePath,
     }
 }

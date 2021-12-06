@@ -23,7 +23,16 @@ export const previewTabs = [
     {
         name: 'Lineage',
         component: 'lineage',
-        excludes: ['Query', 'QueryFolder'],
+        excludes: [
+            'Query',
+            'QueryFolder',
+            'AtlasGlossary',
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            'Database',
+            'Schema',
+            'Connection',
+        ],
         icon: 'Lineage',
         tooltip: 'Lineage',
     },
@@ -37,12 +46,16 @@ export const previewTabs = [
     {
         name: 'Relations',
         component: 'relations',
-        exclude: [
+        excludes: [
             'Connection',
             'Database',
             'Schema',
             'AtlasGlossaryCategory',
-            'AtlasGlossaryTerm'
+            'AtlasGlossaryTerm',
+            'Table',
+            'View',
+            'MaterialisedViews',
+            'PartitionTable',
         ],
         icon: 'Relation',
         tooltip: 'Relationships',

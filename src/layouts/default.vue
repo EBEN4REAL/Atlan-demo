@@ -53,8 +53,10 @@
                         :is-cmnd-k-visible="isCmndKVisible"
                         @closeModal="isCmndKVisible = false"
                     />
+
                     <router-view />
                 </div>
+                <div id="overAssetSidebar" class="bg-white"></div>
             </a-layout-content>
         </a-layout>
     </a-layout>
@@ -143,5 +145,13 @@
         :global(.ant-drawer-content-wrapper) {
             width: 264px;
         }
+    }
+</style>
+
+<style lang="less" scoped>
+    .asset-sidebar-container {
+        width: 420px !important;
+        min-width: 420px !important;
+        max-width: 420px !important;
     }
 </style>

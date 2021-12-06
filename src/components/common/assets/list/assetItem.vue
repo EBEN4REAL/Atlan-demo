@@ -443,18 +443,12 @@
             </div>
         </div>
         <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
+        <AssetDrawer
+            :data="selectedAssetDrawerData"
+            :showDrawer="showAssetSidebarDrawer"
+            @closeDrawer="handleCloseDrawer"
+        />
     </div>
-    <a-drawer
-        v-model:visible="showAssetSidebarDrawer"
-        placement="right"
-        :destroy-on-close="true"
-        width="420px"
-        :closable="false"
-        :key="selectedAssetDrawerData.guid"
-        @close="handleCloseDrawer"
-    >
-        <AssetPreview :selected-asset="selectedAssetDrawerData"></AssetPreview>
-    </a-drawer>
 </template>
 
 <script lang="ts">
@@ -465,7 +459,7 @@
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification.vue'
-    import AssetPreview from '@/common/assets/preview/index.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -473,7 +467,7 @@
             CertificateBadge,
             ClassificationPill,
             PopoverClassification,
-            AssetPreview,
+            AssetDrawer,
         },
         props: {
             item: {
@@ -591,6 +585,7 @@
 
             const handleCloseDrawer = () => {
                 selectedAssetDrawerData.value = {}
+                showAssetSidebarDrawer.value = false
             }
 
             const isSelected = computed(() => {

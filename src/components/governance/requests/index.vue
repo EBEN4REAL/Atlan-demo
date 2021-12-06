@@ -10,9 +10,7 @@
             :class="`close-icon ${!drawerFilter && 'closed'}`"
             @click="handleClickFilter"
         >
-            <AtlanIcon
-                icon="ChevronLeft"
-            />
+            <AtlanIcon icon="ChevronLeft" />
         </div>
         <div>
             <AssetFilters
@@ -25,7 +23,7 @@
             />
         </div>
     </a-drawer>
-    <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
+    <DefaultLayout title="Manage Requests">
         <template #header>
             <SearchAndFilter
                 v-model:value="searchTerm"
@@ -39,7 +37,7 @@
                     >
                         <AtlanIcon icon="FilterFunnel" />
                         <div
-                            class="absolute border-r border-solid divide-gray-800 devider-filter"
+                            class="absolute border-r border-solid divide-gray-800  devider-filter"
                         />
                     </div>
                 </template>
@@ -283,7 +281,7 @@
         position: fixed;
         height: 29px;
         width: 15px;
-        top: 133px;
+        top: 120px;
         margin-left: 286px;
         display: flex;
         align-items: center;

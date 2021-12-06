@@ -181,9 +181,20 @@
                     }
                 })
 
+                const checkIfDelete = (v, multiValue) => {
+                    if (multiValue) return !v?.length
+                    return v == null || v === ''
+                }
                 // ? handle new payload
                 applicableList.value.forEach((at) => {
-                    mappedPayload[data.value.id][at.name] = at.value
+                    if (
+                        checkIfDelete(
+                            at.value,
+                            at.options.multiValueSelect === 'true'
+                        )
+                    )
+                        delete mappedPayload[data.value.id][at.name]
+                    else mappedPayload[data.value.id][at.name] = at.value
                 })
 
                 return mappedPayload

@@ -27,7 +27,7 @@
         >
             <Shortcut shortcutKey="n" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Name</span>
                 </div>
@@ -172,9 +172,14 @@
         <div class="flex flex-col">
             <Shortcut shortcutKey="d" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
-                    <span> Description</span>
+                    <span>Description</span>
+                    <AtlanIcon
+                        icon="User"
+                        class="h-3 mr-1"
+                        v-if="isUserDescription(selectedAsset)"
+                    ></AtlanIcon>
                 </div>
             </Shortcut>
 
@@ -194,7 +199,7 @@
         >
             <Shortcut shortcutKey="o" action="set owners" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Owners</span>
                 </div>
@@ -225,7 +230,7 @@
                 placement="left"
             >
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Classification</span>
                 </div>
@@ -252,7 +257,7 @@
             class="flex flex-col"
         >
             <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
                 Terms
             </p>
@@ -270,7 +275,7 @@
         >
             <Shortcut shortcutKey="c" action="set certificate" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Certificate</span>
                 </div>
@@ -311,6 +316,7 @@
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -335,6 +341,7 @@
                         '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
                     )
             ),
+            AtlanIcon,
         },
         setup(props) {
             const actions = inject('actions')
@@ -363,6 +370,7 @@
                 webURL,
                 assetTypeLabel,
                 isGTC,
+                isUserDescription,
             } = useAssetInfo()
 
             const {
@@ -440,6 +448,7 @@
                 descriptionRef,
                 sampleDataVisible,
                 showSampleDataModal,
+                isUserDescription,
             }
         },
     })

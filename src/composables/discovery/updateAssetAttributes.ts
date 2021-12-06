@@ -125,14 +125,19 @@ export default function updateAssetAttributes(selectedAsset) {
     // Owners Change
     const handleOwnersChange = () => {
         let isChanged = false
+
         if (
+            !entity.value.attributes.ownerUsers &&
+            Object.keys(localOwners.value?.ownerUsers).length === 0
+        ) {
+            isChanged = false
+        } else if (
             entity.value.attributes.ownerUsers?.sort().toString() !==
             localOwners.value?.ownerUsers?.sort().toString()
         ) {
             entity.value.attributes.ownerUsers = localOwners.value?.ownerUsers
             isChanged = true
-        }
-        if (
+        } else if (
             entity.value.attributes.ownerGroups?.sort().toString() !==
             localOwners.value?.ownerGroups?.sort().toString()
         ) {
@@ -151,9 +156,9 @@ export default function updateAssetAttributes(selectedAsset) {
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-            certificateStatus(selectedAsset.value) ||
+                certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-            certificateStatusMessage(selectedAsset.value)
+                certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -256,8 +261,12 @@ export default function updateAssetAttributes(selectedAsset) {
             localDescription.value = description(selectedAsset?.value)
             descriptionRef.value?.handleReset(localDescription.value)
         }
-        message.error(error.value?.response?.data?.errorCode + " " + error.value?.response?.data?.errorMessage.split(':')[0] ??
-            'Something went wrong')
+        message.error(
+            error.value?.response?.data?.errorCode +
+                ' ' +
+                error.value?.response?.data?.errorMessage.split(':')[0] ??
+                'Something went wrong'
+        )
     })
 
     whenever(isReady, () => {
@@ -269,13 +278,7 @@ export default function updateAssetAttributes(selectedAsset) {
 
     const updateList = inject('updateList')
     whenever(isUpdateReady, () => {
-        if (
-            asset.value.typeName !== 'AtlasGlossary' &&
-            asset.value.typeName !== 'AtlasGlossaryCategory' &&
-            asset.value.typeName !== 'AtlasGlossaryTerm'
-        ) {
-            updateList(asset.value)
-        }
+        updateList(asset.value)
     })
 
     const classificationBody = ref({
@@ -300,8 +303,6 @@ export default function updateAssetAttributes(selectedAsset) {
         a.every((val, index) => b.map((i) => i.typeName).includes(val.typeName))
 
     const handleClassificationChange = () => {
-        console.log(classifications(selectedAsset.value))
-        console.log(localClassifications.value)
         if (
             !arrayEquals(
                 classifications(selectedAsset.value),

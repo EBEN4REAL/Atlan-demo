@@ -5,6 +5,7 @@
         :asset="localSelected"
         @preview="emit('preview', $event)"
     ></AssetProfile>
+    {{ localSelected.attributes?.certificateStatus }}
 </template>
 
 <script lang="ts">
@@ -23,6 +24,7 @@
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         components: {
@@ -61,10 +63,13 @@
                 return id.value
             })
             const dependentKey = ref(fetchKey.value)
+
+            const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...DefaultRelationAttributes])
             const { updateList, list, isLoading } = useDiscoverList({

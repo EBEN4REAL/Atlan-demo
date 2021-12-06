@@ -7,36 +7,41 @@
         :closable="false"
         @cancel="visible = false"
     >
-        <template #closeIcon>
-            <i class="far fa-times"> </i>
-        </template>
-        <div class="mb-5 font-size-h5">
-            Are you sure archive
-            <span class="font-weight-bold">{{
-                businessMetadata.displayName
-            }}</span>
-            business metadata?
-        </div>
-        <div class="d-flex align-items-center justify-content-between">
-            <div
-                v-if="!deleteLoading && deleteError"
-                class="pr-3 text-danger font-size-14"
-                style="text-align: left"
-            >
-                {{ getErrorMessage(deleteError) }}
+        <div class="p-4">
+            <div class="mb-5 font-size-h5">
+                Are you sure archive
+                <span class="font-weight-bold">{{
+                    businessMetadata.displayName
+                }}</span>
+                business metadata?
             </div>
-            <div class="d-flex align-items-center justify-content-end w-100">
-                <a-button type="secondary" class="mr-2" @click="$emit('close')">
-                    Cancel
-                </a-button>
-                <a-button
-                    key="submit"
-                    type="danger"
-                    :loading="deleteLoading"
-                    @click="handleArchive"
+            <div class="d-flex align-items-center justify-content-between">
+                <div
+                    v-if="!deleteLoading && deleteError"
+                    class="pr-3 text-danger font-size-14"
+                    style="text-align: left"
                 >
-                    Archive
-                </a-button>
+                    {{ getErrorMessage(deleteError) }}
+                </div>
+                <div
+                    class="d-flex align-items-center justify-content-end w-100"
+                >
+                    <a-button
+                        type="secondary"
+                        class="mr-2"
+                        @click="$emit('close')"
+                    >
+                        Cancel
+                    </a-button>
+                    <a-button
+                        key="submit"
+                        type="danger"
+                        :loading="deleteLoading"
+                        @click="handleArchive"
+                    >
+                        Archive
+                    </a-button>
+                </div>
             </div>
         </div>
     </a-modal>

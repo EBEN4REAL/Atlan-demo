@@ -64,7 +64,7 @@
                 ref="titleBar"
                 v-model:value="entity.attributes.name"
                 :placeholder="`Untitled ${typeNameTitle}`"
-                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+                class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
                 :class="$style.titleInput"
             />
             <a-textarea
@@ -76,7 +76,12 @@
             />
         </div>
 
-        <div class="flex justify-end p-3 border-t border-gray-200">
+        <div class="flex justify-between p-3 border-t border-gray-200">
+            <div class="flex items-center space-x-2">
+                <a-switch size="small" v-model:checked="isCreateMore" />
+                <p class="p-0 m-0">Create more</p>
+            </div>
+
             <a-button type="primary" @click="handleSave" :loading="isLoading"
                 >Save</a-button
             >
@@ -189,17 +194,8 @@
             })
 
             const { getGlossaryByQF } = useGlossaryData()
-            console.log(categoryGuid.value)
-            console.log(glossaryQualifiedName)
-            console.log(getGlossaryByQF(glossaryQualifiedName.value))
-            // const localQualifiedName = ref(
-            //     glossaryQualifiedName.value || getFirstGlossaryQF()
-            // )
-            // watch(glossaryQualifiedName, () => {
-            //     localQualifiedName.value = glossaryQualifiedName.value
-            // })
-
             const visible = ref(false)
+            const isCreateMore = ref<boolean>(false)
 
             const entity = reactive({
                 attributes: {
@@ -208,28 +204,6 @@
                     qualifiedName: '',
                 },
             })
-
-            // if (
-            //     ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
-            //         entityType.value
-            //     )
-            // ) {
-            //     entity.relationshipAttributes = {
-            //         anchor: {
-            //             typeName: 'AtlasGlossary',
-            //             guid: getGlossaryByQF(glossaryQualifiedName.value)
-            //                 ?.guid,
-            //         },
-            //     }
-
-            //     if (categoryGuid.value) {
-            //         entity.relationshipAttributes.parentCategory = {
-            //             typeName: 'AtlasGlossaryCategory',
-            //             guid: categoryGuid.value,
-            //         }
-            //     }
-            // }
-
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
             const showModal = async () => {
@@ -339,7 +313,7 @@
                 if (error.value) {
                     console.error(error.value)
                 } else {
-                    visible.value = false
+                    if (!isCreateMore.value) visible.value = false
                     message.success(`${typeNameTitle.value} created`)
 
                     if (guidCreatedMaps.value?.length > 0) {
@@ -392,7 +366,7 @@
                 isReady,
                 error,
                 getGlossaryByQF,
-
+                isCreateMore,
                 guidCreatedMaps,
                 categoryGuid,
                 glossaryName,

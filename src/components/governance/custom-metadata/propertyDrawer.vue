@@ -133,7 +133,7 @@
                                 <a-tag
                                     v-for="(e, x) in selectedEnumOptions"
                                     :key="x"
-                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full "
+                                    class="mb-1 lowercase bg-gray-100 border-0 rounded-full"
                                     >{{ e.title }}</a-tag
                                 >
                             </p>
@@ -167,7 +167,7 @@
                                 :name="['description']"
                                 class=""
                             >
-                                <a-input
+                                <a-textarea
                                     v-model:value="form.options.description"
                                     type="text"
                                     class=""
@@ -247,7 +247,7 @@
                     <!-- Applicable Asset type ========================================= -->
 
                     <div
-                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded "
+                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded"
                     >
                         <div class="w-full">
                             <a-form-item
@@ -412,8 +412,7 @@
                 enumSearchValue.value = ''
                 // when open we send the property value and if is undefined, means we creating new prioperty
                 if (theProperty !== undefined) {
-                    const customApplicableEntityTypes =
-                        theProperty.options.customApplicableEntityTypes
+                    const { customApplicableEntityTypes } = theProperty.options
                     if (customApplicableEntityTypes) {
                         if (typeof customApplicableEntityTypes === 'string') {
                             theProperty.options.customApplicableEntityTypes =

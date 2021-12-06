@@ -50,7 +50,7 @@
     } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import SchemaTree from './Tree.vue'
-    import useSchemaExplorerTree from '~/components/insights/explorers/schema/composables/useSchemaExplorerTree'
+    import useSchemaExplorerTree from './useTree'
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
@@ -63,6 +63,7 @@
 
     export default defineComponent({
         components: { Connector, SchemaTree, SearchAndFilter },
+        emits: ['selectedColumn'],
         setup(props, { emit }) {
             const queryText = ref('')
             const { getFirstQueryConnection } = useUtils()
@@ -172,6 +173,9 @@
                 //     sortOrderColumn: sortOrderColumn.value,
                 // })
             }
+            const onSelectNode = (node: any) => {
+                emit('selectedColumn', node)
+            }
 
             let searchResultType = ref('table')
             const {
@@ -195,6 +199,7 @@
                 connectionQualifiedName,
                 databaseQualifiedName,
                 schemaQualifiedName,
+                onSelectNode,
             })
 
             /* Watchers for updating the connectors when activeinlab change */

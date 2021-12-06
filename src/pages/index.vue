@@ -43,7 +43,7 @@
                 <h2 class="mb-3 text-xl font-bold">Helpful links</h2>
                 <router-link to="//notion.so" target="_blank" replace>
                     <div
-                        class="flex items-center cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
+                        class="flex items-center p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
                     >
                         <AtlanIcon class="h-12" icon="AtlanIcon" />
                         <span class="flex flex-col text-gray-700">
@@ -53,7 +53,7 @@
                 </router-link>
                 <router-link to="//notion.so" target="_blank" replace>
                     <div
-                        class="flex items-center cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
+                        class="flex items-center p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
                     >
                         <AtlanIcon class="h-12" icon="CallIcon" />
                         <span class="flex flex-col text-gray-700">
@@ -63,7 +63,7 @@
                 </router-link>
                 <router-link to="//notion.so" target="_blank" replace>
                     <div
-                        class="flex items-center cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
+                        class="flex items-center p-2 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
                     >
                         <AtlanIcon class="h-12" icon="FeedbackIcon" />
                         <span class="flex flex-col text-gray-700">

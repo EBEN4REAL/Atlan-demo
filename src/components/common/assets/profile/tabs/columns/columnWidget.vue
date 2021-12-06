@@ -46,30 +46,45 @@
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
+                class="self-start"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">
                         <div
-                            :class="{
-                                'border-primary': record.key === selectedRow,
-                            }"
-                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-l-4 border-transparent "
+                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-r  border-gray-light"
                         >
-                            <span class="-ml-2">{{ text }}</span>
+                            {{ text }}
                         </div>
                     </template>
                     <template v-else-if="column.key === 'column_name'">
-                        <div :class="record.is_primary && 'flex items-center'">
-                            <div
-                                class="flex items-center"
-                                :class="record.is_primary && 'flex-grow'"
-                            >
+                        <div
+                            :class="{
+                                'border-primary': record.key === selectedRow,
+                            }"
+                            class="flex items-center justify-between"
+                        >
+                            <div class="flex items-center">
                                 <component
-                                    :is="images[record.data_type]"
-                                    class="w-4 h-4 mr-3"
+                                    :is="dataTypeCategoryImage(record.item)"
+                                    class="h-4 mr-2 text-gray-500 mb-0.5"
                                 ></component>
 
-                                <Tooltip :tooltip-text="text" />
+                                <Tooltip
+                                    :tooltip-text="text"
+                                    classes="hover:text-primary mr-1"
+                                />
+
+                                <CertificateBadge
+                                    v-if="certificateStatus(record.item)"
+                                    :status="certificateStatus(record.item)"
+                                    :username="
+                                        certificateUpdatedBy(record.item)
+                                    "
+                                    :timestamp="
+                                        certificateUpdatedAt(record.item)
+                                    "
+                                    class="mb-0.5"
+                                ></CertificateBadge>
 
                                 <!--  <div v-if="record.is_primary" class="mb-1 ml-2">
                                     <AtlanIcon icon="Pin" />
@@ -129,9 +144,9 @@
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
 
     // Composables
-    import { images, dataTypeCategoryList } from '~/constant/dataType'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import {
         AssetAttributes,
@@ -152,6 +167,7 @@
             EmptyView,
             ErrorView,
             Tooltip,
+            CertificateBadge,
         },
         setup() {
             /** DATA */
@@ -163,7 +179,14 @@
             const columnsList: Ref<assetInterface[]> = ref([])
             const columnFromUrl: Ref<assetInterface[]> = ref([])
 
-            const { selectedAsset } = useAssetInfo()
+            const {
+                selectedAsset,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
+                dataTypeCategoryImage,
+            } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
             const limit = ref(20)
@@ -273,6 +296,7 @@
                         i.attributes.userDescription ||
                         i.attributes.description ||
                         '---',
+                    item: i,
                 }))
                 columnsData.value = {
                     filteredList: filteredListData,
@@ -382,12 +406,16 @@
                 totalCount,
                 error,
                 isValidating,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
+                dataTypeCategoryImage,
                 selectedRow,
                 columnsData,
                 queryText,
                 showColumnSidebar,
                 selectedRowData,
-                images,
                 handleLoadMore,
                 columns: [
                     {
@@ -437,7 +465,7 @@
         height: 40px !important;
     }
     :global(.ant-table-thead tr th) {
-        @apply text-gray-700 text-sm font-normal py-0 px-2 !important;
+        @apply text-gray-700 text-sm font-normal py-0  !important;
     }
     :global(.ant-table td) {
         @apply cursor-pointer !important;

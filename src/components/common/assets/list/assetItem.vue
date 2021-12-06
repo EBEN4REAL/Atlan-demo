@@ -1,12 +1,28 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"
+        class="my-1 transition-all duration-300 hover:bg-primary-light"
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
         @click="handlePreview(item)"
     >
-        <div class="flex flex-col">
+        <div
+            class="flex flex-col"
+            :class="[
+                !bulkSelectMode && isSelected
+                    ? 'border-primary bg-primary-light'
+                    : 'border-transparent',
+                bulkSelectMode && isChecked ? 'bg-primary-light' : '',
+            ]"
+        >
             <div class="flex items-start flex-1 px-3 py-3">
+                <a-checkbox
+                    v-if="showCheckBox"
+                    :checked="isChecked"
+                    class="ml-2 mr-3 opacity-60 hover:opacity-100"
+                    :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+                    @click.stop
+                    @change="(e) => $emit('listItem:check', e, item)"
+                />
                 <div class="flex flex-col flex-1 lg:pr-16">
                     <div class="flex items-center overflow-hidden">
                         <div
@@ -42,8 +58,8 @@
                         ></AtlanIcon>
 
                         <router-link
-                            :to="assetURL(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            :to="getProfilePath(item)"
+                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -103,7 +119,7 @@
                             ></AtlanIcon>
 
                             <div
-                                class="text-sm tracking-wider text-gray-500 uppercase "
+                                class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
                             </div>
@@ -112,7 +128,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -151,7 +167,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -199,7 +215,7 @@
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
-                                        class="font-semibold tracking-tight text-gray-500 "
+                                        class="font-semibold tracking-tight text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
                                     Rows</span
@@ -216,10 +232,10 @@
                             </a-tooltip>
                             <span class="text-gray-500">
                                 <span
-                                    class="font-semibold tracking-tight text-gray-500 "
+                                    class="font-semibold tracking-tight text-gray-500"
                                     >{{ columnCount(item, false) }}</span
                                 >
-                                Colsb</span
+                                Cols</span
                             >
                         </div>
 
@@ -355,25 +371,8 @@
                                     'schema',
                                 ].includes(item.typeName?.toLowerCase())
                             "
-                            class="flex text-sm text-gray-500 gap-x-2"
+                            class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
-                            <a-tooltip placement="bottomLeft">
-                                <div
-                                    v-if="schemaName(item)"
-                                    class="flex items-center text-gray-500"
-                                >
-                                    <AtlanIcon
-                                        icon="SchemaGray"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
-                                        {{ schemaName(item) }}
-                                    </div>
-                                </div>
-                                <template #title>
-                                    <span>Schema - {{ schemaName(item) }}</span>
-                                </template>
-                            </a-tooltip>
                             <a-tooltip placement="bottomLeft">
                                 <div
                                     v-if="databaseName(item)"
@@ -394,6 +393,23 @@
                                     >
                                 </template>
                             </a-tooltip>
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="schemaName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="SchemaGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ schemaName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>Schema - {{ schemaName(item) }}</span>
+                                </template>
+                            </a-tooltip>
                         </div>
                     </div>
 
@@ -408,17 +424,25 @@
                             v-for="classification in list"
                             :key="classification.guid"
                         >
-                            <ClassificationPill
-                                :name="classification.name"
-                                :display-name="classification?.displayName"
-                                :is-propagated="isPropagated(classification)"
-                                :allow-delete="false"
-                            ></ClassificationPill>
+                            <PopoverClassification
+                                :classification="classification"
+                            >
+                                <ClassificationPill
+                                    :name="classification.name"
+                                    :display-name="classification?.displayName"
+                                    :is-propagated="
+                                        isPropagated(classification)
+                                    "
+                                    :allow-delete="false"
+                                    :color="classification.options?.color"
+                                ></ClassificationPill>
+                            </PopoverClassification>
                         </template>
                     </div>
                 </div>
             </div>
         </div>
+        <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
     </div>
 </template>
 
@@ -429,12 +453,14 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import PopoverClassification from '@/common/popover/classification.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
             ClassificationPill,
+            PopoverClassification,
         },
         props: {
             item: {
@@ -451,6 +477,24 @@
                     return ''
                 },
             },
+
+            isChecked: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            // If the list items are selectable or not
+            showCheckBox: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
+            bulkSelectMode: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             preference: {
                 type: Object,
                 required: false,
@@ -463,10 +507,22 @@
                 required: false,
                 default: false,
             },
+            noBg: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview'],
         setup(props, { emit }) {
-            const { preference, selectedGuid, item } = toRefs(props)
+            const {
+                preference,
+                selectedGuid,
+                item,
+                isChecked,
+                showCheckBox,
+                bulkSelectMode,
+            } = toRefs(props)
             const {
                 title,
                 getConnectorImage,
@@ -497,11 +553,9 @@
                 categories,
                 parentCategory,
                 classifications,
+                getProfilePath,
+                isUserDescription,
             } = useAssetInfo()
-
-            const assetURL = (asset) => ({
-                path: `/assets/${asset.guid}`,
-            })
 
             const handlePreview = (item: any) => {
                 emit('preview', item)
@@ -537,13 +591,15 @@
             })
 
             return {
+                isChecked,
+                showCheckBox,
+                bulkSelectMode,
                 item,
                 isSelected,
                 title,
                 getConnectorImage,
                 assetType,
                 dataType,
-                assetURL,
                 rowCount,
                 columnCount,
                 sizeBytes,
@@ -573,6 +629,8 @@
                 isPropagated,
                 list,
                 classifications,
+                getProfilePath,
+                isUserDescription,
             }
         },
     })

@@ -18,13 +18,14 @@
                 ? ' hover:bg-primary group hover:border-primary hover:text-white'
                 : ''
         "
+        :data-test-id="name"
     >
         <AtlanIcon icon="Group" class="mr-1" />
         <div>
             {{ name }}
         </div>
 
-        <div class="flex" @click.prevent="handleDelete" v-if="allowDelete">
+        <div class="flex" @click.prevent.stop="handleDelete" v-if="allowDelete">
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500"

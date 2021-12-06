@@ -29,22 +29,22 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = "") {
             filter:
                 uniqueAttribute.value === 'username'
                     ? {
-                          $and: [
-                              { email_verified: true },
-                              { username: userNameUser },
-                          ],
-                      }
+                        $and: [
+                            { email_verified: true },
+                            { username: userNameUser },
+                        ],
+                    }
                     : {
-                          $and: [
-                              { email_verified: true },
-                              { id: userId.value },
-                          ],
-                      },
+                        $and: [
+                            { email_verified: true },
+                            { id: userId.value },
+                        ],
+                    },
         }))
 
         const { userList, getUserList, isLoading, error } = useUsers(
             params,
-            // 'USE_USERS_PREVIEW'
+            'USE_USERS_PREVIEW'
         )
 
         const selectedUser = computed(() =>

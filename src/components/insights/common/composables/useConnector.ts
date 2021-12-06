@@ -179,10 +179,32 @@ export function useConnector() {
             attributeValue: undefined,
         }
 
-        if (defaultSchemaQualifiedName) {
+        if (defaultSchemaQualifiedName && defaultSchemaQualifiedName!=='') {
             connectors.attributeName = 'defaultSchemaQualifiedName'
             connectors.attributeValue = defaultSchemaQualifiedName
-        } else if (connectionQualifiedName) {
+        } else if (connectionQualifiedName !== '') {
+            connectors.attributeName = 'connectionQualifiedName'
+            connectors.attributeValue = connectionQualifiedName
+        }
+        return connectors
+    }
+    const getConnectorsDataFromQualifiedNamesAll = (
+        connectionQualifiedName: string,
+        defaultSchemaQualifiedName: string,
+        defaultDatabaseQualifiedName: string
+    ) => {
+        const connectors: connectorsWidgetInterface = {
+            attributeName: undefined,
+            attributeValue: undefined,
+        }
+
+        if (defaultSchemaQualifiedName && defaultSchemaQualifiedName.length!==0) {
+            connectors.attributeName = 'defaultSchemaQualifiedName'
+            connectors.attributeValue = defaultSchemaQualifiedName
+        } else if (defaultDatabaseQualifiedName && defaultDatabaseQualifiedName.length!==0) {
+            connectors.attributeName = 'defaultDatabaseQualifiedName'
+            connectors.attributeValue = defaultDatabaseQualifiedName
+        } else if (connectionQualifiedName !== '') {
             connectors.attributeName = 'connectionQualifiedName'
             connectors.attributeValue = connectionQualifiedName
         }
@@ -201,5 +223,6 @@ export function useConnector() {
         setContextDataInInlineTab,
         setConnectorsDataInInlineTab,
         getConnectorsDataFromQualifiedNames,
+        getConnectorsDataFromQualifiedNamesAll
     }
 }

@@ -1,8 +1,8 @@
 <template>
     <CustomRadioButton
-        v-bind="componentProps"
         :list="list"
         v-model="localValue"
+        @change="handleChange"
     ></CustomRadioButton>
 </template>
 
@@ -30,22 +30,30 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const list = ref([
-                {
+            const list = computed(() => {
+                const temp = []
+                temp.push({
                     id: 'true',
                     label: 'Yes',
-                },
-                {
+                })
+                temp.push({
                     id: 'false',
                     label: 'No',
-                },
-            ])
+                })
+                return temp
+            })
+
             const { property } = toRefs(props)
             const componentProps = computed(() => property.value.ui)
 
             const localValue = ref(modelValue.value)
 
-            return { property, componentProps, list, localValue }
+            const handleChange = () => {
+                console.log('change')
+                modelValue.value = localValue.value
+                emit('change', localValue.value)
+            }
+            return { property, componentProps, list, localValue, handleChange }
         },
     })
 </script>

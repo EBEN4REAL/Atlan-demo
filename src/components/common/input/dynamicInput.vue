@@ -92,7 +92,9 @@
         :closable="false"
         :body-style="{ overflowY: 'scroll', height: '65vh' }"
     >
-        <FormGenerator :config="newConfig" />
+        <div class="p-4">
+            <FormGenerator :config="newConfig" />
+        </div>
         <template #footer>
             <a-button @click="handleClose">Close</a-button>
         </template>

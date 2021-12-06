@@ -16,10 +16,12 @@ import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 import { InternalAttributes, SavedQueryAttributes, BasicSearchAttributes } from '~/constant/projection'
 import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 import whoami from '~/composables/user/whoami'
+import bodybuilder from 'bodybuilder'
 
 const searchQueries = (
     query: Ref<string>,
-    savedQueryType: Ref<'all' | 'personal'>,
+    classification: Ref<string>,
+    facets: Ref<object>,
     offset?: Ref<number>,
     limit?: Ref<number>
 ) => {
@@ -44,6 +46,7 @@ const searchQueries = (
         'connectionQualifiedName',
         'parentFolderQualifiedName',
         'defaultSchemaQualifiedName',
+        'defaultDatabaseQualifiedName',
         'parentFolder',
         'columns', //TODO: queries
         'folder',
@@ -53,86 +56,153 @@ const searchQueries = (
         ...BasicSearchAttributes,
         ...SavedQueryAttributes,
     ]
+    let base = bodybuilder()
 
     const refreshBody = () => {
-        // body.value = {
-        //     typeName: 'Query',
-        //     excludeDeletedEntities: true,
-        //     includeClassificationAttributes: true,
-        //     includeSubClassifications: true,
-        //     includeSubTypes: true,
-        //     attributes: [...InternalAttributes, ...SavedQueryAttributes],
-        //     query: query.value,
-        //     offset: offset?.value ?? 0,
-        //     limit: limit?.value ?? 50,
-        // }
-        body.value = {
-            dsl: {
-                size: 100,
-                sort : [
-                    { "name.keyword" : {"order" : "asc"}}
-                ],
-                query: {
-                    bool: {
-                        must: [
-                            {
-                                "regexp": {
-                                    "name.keyword": `${query.value}.*`
-                                }
-                            },
-                        ]
-                    }
-                }
-            },
-            attributes
-        }
+        base = bodybuilder()
+        base.sort('name.keyword', { order: "asc" })
+        base.filter(
+            'regexp',
+            'name.keyword',
+            `${query.value}.*`
+        )
+        base.filter(
+            'term',
+            '__state',
+            'ACTIVE'
+        )
+        // if (classification?.value && classification?.value.length) {
+        //     base.orFilter(
+        //         'term',
+        //         '__traitNames',
+        //         classification.value
+        //     )
+        //     base.orFilter(
+        //         'term',
+        //         '__propagatedTraitNames',
+        //         classification.value
+        //     )
+        // } 
 
-        if (savedQueryType?.value === 'all') {
-            body.value.dsl.query.bool.must.push(
-                {
-                    bool: {
-                        should: [
-                            {
-                                term: {
-                                    "__traitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
-                                }
-                            },
-                            {
-                                "term": {
-                                    "__propagatedTraitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+        if(facets.value && Object.keys(facets.value).length>0) {
+            Object.keys(facets.value ?? {}).forEach((mkey) => {
+                const filterObject = facets?.value[mkey]
+                const existsValue = 'NONE'
+                switch (mkey) {
+                    
+                    case 'certificateStatus': {
+                        if (filterObject) {
+                            if (filterObject.length > 0) {
+                                const index = filterObject.indexOf(existsValue)
+                                if (index > -1) {
+                                    const temp = []
+                                    filterObject.forEach((element) => {
+                                        if (element !== existsValue) {
+                                            temp.push(element)
+                                        }
+                                    })
+                                    base.filter('bool', (q) => {
+                                        if (temp.length > 0) {
+                                            q.orFilter(
+                                                'terms',
+                                                'certificateStatus',
+                                                temp
+                                            )
+                                        }
+        
+                                        q.orFilter('bool', (query) => {
+                                            return query.notFilter(
+                                                'exists',
+                                                'certificateStatus'
+                                            )
+                                        })
+                                        return q
+                                    })
+                                } else {
+                                    base.filter(
+                                        'terms',
+                                        'certificateStatus',
+                                        filterObject
+                                    )
                                 }
                             }
-                        ]
+                        }
+                        break
+                    }
+                    case 'owners': {
+                        if (filterObject) {
+                            base.filter('bool', (q) => {
+                                if (filterObject.ownerUsers?.length > 0)
+                                    q.orFilter(
+                                        'terms',
+                                        'ownerUsers',
+                                        filterObject.ownerUsers
+                                    )
+        
+                                if (filterObject.ownerGroups?.length > 0)
+                                    q.orFilter(
+                                        'terms',
+                                        'ownerGroups',
+                                        filterObject.ownerGroups
+                                    )
+                                if (filterObject.empty === true) {
+                                    q.orFilter('bool', (query) => {
+                                        return query.filter('bool', (query2) => {
+                                            query2.notFilter('exists', 'ownerUsers')
+                                            query2.notFilter('exists', 'ownerGroups')
+                                            return query2
+                                        })
+                                    })
+                                }
+                                return q
+                            })
+                        }
+        
+                        break
+                    }
+                    
+                    case '__traitNames': {
+                        if (filterObject) {
+                            base.filter('bool', (q) => {
+                                if (filterObject.classifications?.length > 0)
+                                    q.orFilter(
+                                        'terms',
+                                        '__traitNames',
+                                        filterObject.classifications
+                                    )
+        
+                                if (filterObject.empty === true) {
+                                    q.orFilter('bool', (query) => {
+                                        return query.filter('bool', (query2) => {
+                                            query2.notFilter('exists', '__traitNames')
+                                            return query2
+                                        })
+                                    })
+                                }
+                                return q
+                            })
+                        }
+        
+                        break
+                    }
+                   
+                    case 'glossary': {
+                        if (filterObject) {
+                            base.filter('term', '__glossary', filterObject)
+                        }
+                        break
+                    }
+                   
+                    case 'terms': {
+                        if (filterObject) {
+                            base.filter('term', '__meanings', filterObject)
+                        }
+                        break
                     }
                 }
-            )
-        } else if (savedQueryType?.value === 'personal') {
-            body.value.dsl.query.bool.must.push(
-                {
-                    "bool": {
-                        "must_not": [
-                            {
-                                "term": {
-                                    "__traitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
-                                }
-                            },
-                            {
-                                "term": {
-                                    "__propagatedTraitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
-                                }
-                            }
-                        ]
-                    }
-                }
-            )
-            body.value.dsl.query.bool.must.push(
-                {
-                    "term": {
-                        "ownerUsers": username.value
-                    }
-                },
-            )
+            })
         }
+        
     }
     refreshBody()
 
@@ -142,18 +212,22 @@ const searchQueries = (
 
     const fetchQueries = async () => {
         refreshBody()
-        body.value.dsl.query.bool.must.push(
-            {
-                term: {
-                    "__typeName.keyword": "Query"
-                }
-            }
+        base.filter(
+            'term',
+            '__typeName.keyword',
+            "Query"
         )
+        let body = base.build()
+        // console.log('query filter facet')
         const {isLoading, data, error} =  await useAPI(
             map.INDEX_SEARCH,
             'POST',
             {
-                body,
+                body: {
+                    dsl: body,
+                    attributes: attributes
+                }
+
             },
             {}
         )
@@ -170,14 +244,16 @@ const searchQueries = (
     }
 
 
-    const onQueryChange = useDebounceFn((query: string) => {
-        if (query.length) fetchQueries()
+    const onQueryChange = useDebounceFn((query: string, facets) => {
+        console.log('query: ', facets && Object.keys(facets).length>0)
+        if (query.length || (facets && Object.keys(facets).length>0)) fetchQueries()
     })
 
-    watch([query, savedQueryType], ([newQuery]) => {
+    watch([query, classification, facets], ([newQuery]) => {
         isLoading1.value = true
+        console.log('queryFacets: ', facets.value)
 
-        onQueryChange(newQuery)
+        onQueryChange(newQuery, facets.value)
     })
     return { data1, error1, isLoading1 }
 }

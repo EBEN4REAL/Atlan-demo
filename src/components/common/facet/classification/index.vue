@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full">
+    <div class="w-full" data-test-id="classifications-facet">
         <div class="flex items-center justify-between px-4">
             <SearchAdvanced
                 ref="classificationSearchRef"
@@ -29,14 +29,12 @@
                         <div class="status">
                             <a-checkbox
                                 :value="item.name"
+                                :data-test-id="item.displayName"
                                 :class="$style.atlanReverse"
                                 class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                             >
                                 <div class="flex items-center">
-                                    <AtlanIcon
-                                        icon="Shield"
-                                        class="text-pink-400"
-                                    ></AtlanIcon>
+                                    <ClassificationIcon :color="item.options?.color" />
                                     <span class="mb-0 ml-1 text-gray">
                                         {{ item.displayName }}
                                     </span>
@@ -77,11 +75,13 @@
     import { useTimeoutFn, useVModels } from '@vueuse/core'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
     export default defineComponent({
         components: {
             SearchAdvanced,
+            ClassificationIcon,
         },
         props: {
             modelValue: {

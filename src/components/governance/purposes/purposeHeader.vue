@@ -1,5 +1,5 @@
 <template>
-    <div v-if="persona" class="flex flex-col px-5">
+    <div v-if="persona" class="flex flex-col px-5 bg-white">
         <CreationModal
             v-model:visible="isEditing"
             ok-text="Save"
@@ -12,6 +12,7 @@
                     v-model="selectedPersonaDirty!.displayName"
                     placeholder="Untitled persona"
                     type="text"
+                    data-test-id="modal-input"
                     class="text-lg font-bold text-gray-700 clean-input"
                     @keyup.esc="$event?.target?.blur()"
                 />
@@ -21,18 +22,23 @@
                     class="text-sm text-gray-500 clean-input"
                     maxlength="140"
                     rows="2"
+                    data-test-id="modal-description"
                     placeholder="Add description..."
                     @keyup.esc="$event?.target?.blur()"
                 />
             </div>
         </CreationModal>
-        <div class="flex mb-2 gap-x-2">
+        <div class="flex bg-white gap-x-2 pt-7">
             <div style="width: 90%">
-                <div class="mb-1 text-xl font-bold truncate text-gray">
-                    {{ persona.displayName }}
+                <div class="mb-1 text-xl text-gray-700 truncate">
+                    <span class="truncate" data-test-id="header-name">
+                        {{ persona.displayName }}</span
+                    >
                 </div>
                 <div class="flex mb-0 text-sm text-gray-500">
-                    <span class="truncate">{{ persona.description }}</span>
+                    <span class="truncate" data-test-id="header-description">
+                        {{ persona.description }}</span
+                    >
                 </div>
             </div>
             <Dropdown class="ml-auto" :options="personaActions"></Dropdown>
@@ -57,6 +63,8 @@
 
     import Dropdown from '@/UI/dropdown.vue'
     import { reFetchList } from './composables/usePurposeList'
+    import { formatDateTime } from '~/utils/date'
+    import { useTimeAgo } from '@vueuse/core'
 
     export default defineComponent({
         name: 'Purpose Header',
@@ -138,12 +146,21 @@
                 }
             }
 
+            const timeStamp = (time, raw: boolean = false) => {
+                if (time) {
+                    return raw
+                        ? formatDateTime(time) || 'N/A'
+                        : useTimeAgo(time).value
+                }
+                return ''
+            }
             return {
                 personaActions,
                 isEditing,
                 saveEditedPersona,
                 discardPersona,
                 selectedPersonaDirty,
+                timeStamp,
             }
         },
     })

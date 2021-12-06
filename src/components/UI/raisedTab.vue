@@ -6,6 +6,7 @@
             class="tab-btn"
             :class="{ active: item.key === active }"
             :disabled="disabled"
+            :data-test-id="item?.key ?? 'atlan-btn'"
             @click="$emit('update:active', item.key)"
         >
             {{ item.label }}
@@ -14,7 +15,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
 
     interface TabConfig {
         key: string

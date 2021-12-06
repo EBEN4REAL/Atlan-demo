@@ -1,6 +1,5 @@
 <template>
     <div
-        @click.stop="() => {}"
         class="
             flex
             items-center
@@ -13,20 +12,22 @@
             rounded-full
             cursor-pointer
         "
+        :data-test-id="username"
         :class="
             enableHover
                 ? ' hover:bg-primary group hover:border-primary hover:text-white'
                 : ''
         "
+        @click.stop="() => {}"
     >
         <UserAvatar
             :username="username"
             style-class="mr-1 border-none bg-primary-light "
         ></UserAvatar>
-        <div>
+        <div class="capitalize">
             {{ username }}
         </div>
-        <div class="flex" @click.prevent="handleDelete" v-if="allowDelete">
+        <div v-if="allowDelete" class="flex" @click.prevent.stop="handleDelete">
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500"
@@ -44,6 +45,10 @@
 
     export default {
         name: 'Avatar',
+        components: {
+            UserAvatar,
+            AtlanIcon,
+        },
         props: {
             username: {
                 type: String,
@@ -60,10 +65,6 @@
                 required: false,
                 default: true,
             },
-        },
-        components: {
-            UserAvatar,
-            AtlanIcon,
         },
         emits: ['delete'],
         setup(props, { emit }) {

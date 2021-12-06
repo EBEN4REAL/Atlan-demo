@@ -1,15 +1,21 @@
 <template>
-    <ExplorerLayout title="Personas" sub-title="">
+    <ExplorerLayout
+        title="Persona"
+        sub-title=""
+        :sidebarVisibility="Boolean(selectedPersonaId)"
+    >
         <template #action>
             <AtlanBtn
                 :disabled="isEditing"
                 class="flex-none"
                 size="sm"
-                color="secondary"
+                color="primary"
                 padding="compact"
+                data-test-id="add-persona"
                 @click="() => (modalVisible = true)"
             >
-                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+                <AtlanIcon icon="Add" class="mr-1 -mx-1 text-white"></AtlanIcon>
+                New
             </AtlanBtn>
         </template>
         <template #sidebar>
@@ -19,24 +25,25 @@
                     :placeholder="`Search from ${
                         filteredPersonas?.length ?? 0
                     } personas`"
-                    class="mt-4 mb-2 bg-white"
+                    class="my-3 bg-white"
                     :autofocus="true"
                     size="minimal"
                 >
-                    <template #filter>
-                        <div></div>
-                    </template>
                 </SearchAndFilter>
             </div>
 
             <ExplorerList
+                type="personas"
                 v-model:selected="selectedPersonaId"
                 :disabled="isEditing"
                 :list="filteredPersonas"
                 data-key="id"
             >
                 <template #default="{ item, isSelected }">
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center justify-between"
+                        :data-test-id="item.displayName"
+                    >
                         <span
                             style="width: 95%"
                             class="text-sm truncate"
@@ -57,22 +64,25 @@
         <AddPersona v-model:visible="modalVisible" />
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
-            <PersonaHeader :persona="selectedPersona" />
+            <div class="bg-white">
+                <PersonaHeader :persona="selectedPersona" />
+            </div>
             <PersonaBody v-model:persona="selectedPersona" />
         </template>
         <div
             v-else-if="
-                filteredPersonas?.length == 0 && isPersonaError !== undefined
+                filteredPersonas?.length == 0 && isPersonaError === undefined
             "
             class="flex flex-col items-center justify-center h-full"
         >
-            <component class="w-4 h-4" :is="AddPersonaIllustration"></component>
+            <component :is="AddPersonaIllustration"></component>
             <span class="mx-auto text-base text-gray"
                 >You don't have any personas</span
             >
             <AtlanBtn
                 class="flex-none mx-auto mt-6"
                 color="primary"
+                data-test-id="add-new-persona"
                 padding="compact"
                 size="sm"
                 @click.prevent="() => (modalVisible = true)"
@@ -86,18 +96,19 @@
 
         <ErrorView v-else :error="isPersonaError">
             <div class="mt-3">
-                <AtlanButton
-                    size="sm"
-                    color="minimal"
+                <a-button
+                    data-test-id="try-again"
+                    size="large"
+                    type="primary"
+                    ghost
                     @click="
                         () => {
                             reFetchList()
                         }
                     "
                 >
-                    <AtlanIcon icon="Reload" />
-                    Try again
-                </AtlanButton>
+                    <fa icon="fal sync" class="mr-2"></fa>Try again
+                </a-button>
             </div>
         </ErrorView>
     </ExplorerLayout>

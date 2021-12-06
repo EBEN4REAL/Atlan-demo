@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="isLoading"
-        class="flex items-center justify-center h-full text-sm leading-none"
+        class="flex items-center justify-center text-sm leading-none"
     >
         <AtlanIcon icon="Loader" class="h-5 mr-2 animate-spin" />
         <span>Getting Runs</span>
@@ -27,13 +27,13 @@
                 >
                     <button
                         :disabled="isLoading"
-                        class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                        class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                         :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                         @click="loadMore"
                     >
                         <template v-if="!isLoading">
                             <p
-                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                             >
                                 Load more
                             </p>
@@ -100,10 +100,10 @@
             const searchText = ref('')
 
             const { list, error, isLoading, isLoadMore, loadMore, execute } =
-                useRunList(item.value.name)
+                useRunList(item.value.metadata.name)
 
             watch(
-                () => item.value.name,
+                () => item.value.metadata.name,
                 (v) => {
                     execute(v)
                 }

@@ -1,5 +1,5 @@
 import { Ref } from 'vue'
-import { Logs } from '../../../../services/service/es-logs'
+import { Logs } from '~/services/service/es-logs'
 
 export default function useLogsService() {
     function listAccessLogs(body: Ref<any>) {

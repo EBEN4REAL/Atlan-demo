@@ -14,13 +14,13 @@
                 </div>
                 <div style="width: 130px"></div>
             </div>
-            <div id="drag-container" class="relative">
+            <div id="drag-container" class="bg-white">
                 <div
                     v-for="(property, index) in properties"
                     :id="`prop-${property.name}`"
                     :key="property.name"
                     :data-property="property"
-                    class="relative flex items-center justify-between  last:rounded-b"
+                    class="relative flex items-center justify-between last:rounded-b"
                     style="height: 44px"
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
@@ -49,7 +49,7 @@
                                 </template>
                                 <AtlanIcon
                                     v-if="property.options.description"
-                                    class="inline h-4 ml-2 text-gray-400  hover:text-gray-500"
+                                    class="inline h-4 ml-2 text-gray-400 hover:text-gray-500"
                                     :icon="'Info'"
                                 />
                             </a-tooltip>
@@ -122,7 +122,7 @@
                 </div>
                 <div
                     v-if="isSorting"
-                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white  bg-opacity-40"
+                    class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
                 >
                     <a-spin size="large" />
                 </div>

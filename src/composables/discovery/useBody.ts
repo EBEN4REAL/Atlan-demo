@@ -1,5 +1,7 @@
 /* eslint-disable default-case */
+import { isFor } from '@babel/types'
 import bodybuilder from 'bodybuilder'
+import { ref } from 'vue'
 
 const agg_prefix = 'group_by'
 
@@ -55,6 +57,10 @@ export function useBody(
 
     base.from(offset || 0)
     base.size(limit || 0)
+
+    // Only showing ACTIVE assets for a connection
+
+    const state = ref('ACTIVE')
 
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
@@ -253,14 +259,25 @@ export function useBody(
                 }
                 break
             }
+            case 'guidList': {
+                if (filterObject) {
+                    base.filter('terms', '__guid', filterObject)
+                }
+                break
+            }
             case 'column':
             case 'table':
+            case 'sql':
             case 'properties': {
                 if (filterObject) {
-                    console.log(filterObject)
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
-                            if (element.value) {
+                            if (element.operator === 'isNull') {
+                                base.notFilter('exists', element.operand)
+                            }
+                            if (element.operator === 'isNotNull') {
+                                base.filter('exists', element.operand)
+                            } else if (element.value) {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',
@@ -296,12 +313,7 @@ export function useBody(
                                         element.value
                                     )
                                 }
-                                if (element.operator === 'isNull') {
-                                    base.notFilter('exists', element.operand)
-                                }
-                                if (element.operator === 'isNotNull') {
-                                    base.filter('exists', element.operand)
-                                }
+
                                 if (element.operator === 'greaterThan') {
                                     base.filter('range', element.operand, {
                                         gt: element.value,
@@ -314,20 +326,27 @@ export function useBody(
                                 }
                                 if (element.operator === 'lessThan') {
                                     base.filter('range', element.operand, {
-                                        gt: element.value,
+                                        lt: element.value,
                                     })
                                 }
                                 if (element.operator === 'lessThanEqual') {
                                     base.filter('range', element.operand, {
-                                        gte: element.value,
+                                        lte: element.value,
                                     })
                                 }
                                 if (element.operator === 'boolean') {
-                                    base.filter(
-                                        'term',
-                                        element.operand,
+                                    if (
+                                        element.operand === '__state' &&
                                         element.value
-                                    )
+                                    ) {
+                                        state.value = 'DELETED'
+                                    } else {
+                                        base.filter(
+                                            'term',
+                                            element.operand,
+                                            element.value
+                                        )
+                                    }
                                 }
                             }
                         })
@@ -337,6 +356,8 @@ export function useBody(
             }
         }
     })
+
+    base.filter('term', '__state', state.value)
 
     //post filters
     const postFilter = bodybuilder()

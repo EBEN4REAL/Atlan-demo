@@ -1,6 +1,6 @@
 <template>
     <div
-        class="
+        :class="`
             flex
             items-center
             py-0.5
@@ -11,21 +11,33 @@
             border border-gray-200
             rounded-full
             cursor-pointer
-            hover:bg-pink-400
+            ${
+                color
+                    ? `hover:bg-${color.toLowerCase()}-400`
+                    : 'hover:bg-pink-400'
+            }
             group
-            hover:border-pink-400
-        "
+            ${
+                color
+                    ? `hover:border-${color.toLowerCase()}-400`
+                    : 'hover:border-pink-400'
+            }
+            
+        `"
+        :data-test-id="displayName"
     >
-        <AtlanIcon
+        <ClassificationIcon
             icon="ShieldFilled"
-            class="text-pink-400 group-hover:text-white"
+            class="group-hover:text-white"
+            :color="color"
             v-if="isPropagated"
-        ></AtlanIcon>
-        <AtlanIcon
+        ></ClassificationIcon>
+        <ClassificationIcon
             icon="Shield"
-            class="text-pink-400 group-hover:text-white"
+            class="group-hover:text-white"
+            :color="color"
             v-else
-        ></AtlanIcon>
+        ></ClassificationIcon>
 
         <div class="ml-1 group-hover:text-white">
             {{ displayName || name }}
@@ -42,6 +54,7 @@
 
 <script lang="ts">
     import { toRefs } from 'vue'
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     export default {
         props: {
@@ -63,6 +76,11 @@
                     return false
                 },
             },
+            color: {
+                type: String,
+                required: false,
+                default: 'Blue',
+            },
             allowDelete: {
                 type: Boolean,
                 default() {
@@ -70,16 +88,22 @@
                 },
             },
         },
-        components: {},
+        components: { ClassificationIcon },
         emits: ['delete'],
         setup(props, { emit }) {
-            const { name, isPropagated, displayName } = toRefs(props)
+            const { name, isPropagated, displayName, color } = toRefs(props)
 
             const handleRemove = () => {
                 emit('delete', name.value)
             }
 
-            return { name, isPropagated, displayName, handleRemove }
+            return {
+                name,
+                isPropagated,
+                displayName,
+                handleRemove,
+                color,
+            }
         },
     }
 </script>

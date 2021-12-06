@@ -1,55 +1,49 @@
 <template>
     <template v-if="selectedPersonaDirty">
-        <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
-            <template #label="t">
-                <div class="flex items-center">
-                    <div
-                        class="relative text-sm"
-                        :class="
-                            activeTabKey === t?.data?.key
-                                ? 'text-gray-700'
-                                : 'text-gray-500'
-                        "
-                    >
-                        {{ t?.data?.label }}
-                    </div>
-                    <div
-                        class="
-                            px-1
-                            py-0.5
-                            ml-2
-                            text-xs
-                            font-bold
-                            rounded
-                            flex
-                            items-center
-                        "
-                        v-if="t?.data?.key === 'policies'"
-                        :class="
-                            activeTabKey === t?.data?.key
-                                ? 'text-primary bg-primary-light'
-                                : 'text-gray-500 bg-gray-100'
-                        "
-                    >
-                        <div class="mt-0.5">
-                            {{
-                                selectedPersonaDirty?.metadataPolicies?.length +
-                                selectedPersonaDirty?.dataPolicies?.length
-                            }}
+        <div class="bg-white">
+            <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
+                <template #label="t">
+                    <div class="flex items-center">
+                        <div
+                            class="relative text-sm"
+                            :class="
+                                activeTabKey === t?.data?.key
+                                    ? 'text-primary fake-bold'
+                                    : 'text-gray-500'
+                            "
+                        >
+                            {{ t?.data?.label }}
+                        </div>
+                        <div
+                            class="px-1 py-0.5 ml-2 text-xs font-bold rounded flex items-center"
+                            v-if="t?.data?.key === 'policies'"
+                            :class="
+                                activeTabKey === t?.data?.key
+                                    ? 'text-primary bg-primary-light'
+                                    : 'text-gray-500 bg-gray-100'
+                            "
+                        >
+                            <div class="mt-0.5">
+                                {{
+                                    selectedPersonaDirty?.metadataPolicies
+                                        ?.length +
+                                    selectedPersonaDirty?.dataPolicies?.length
+                                }}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </template>
-        </MinimalTab>
+                </template>
+            </MinimalTab>
+        </div>
 
-        <div class="px-4 overflow-y-auto">
+        <div class="overflow-y-auto">
             <PurposeMeta
                 v-if="activeTabKey === 'details'"
-                class="pb-2"
+                class="px-4 pb-2"
                 :persona="persona"
                 :username="username"
             />
-            <div v-else-if="activeTabKey === 'policies'" class="mt-2">
+            <div v-else-if="activeTabKey === 'policies'" class="px-4 mt-2">
                 <template
                     v-for="(
                         policy, idx
@@ -59,7 +53,7 @@
                     <!-- Render it if the policy is being edited -->
                     <MetadataPolicy
                         v-if="policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
-                        class="px-5"
+                        class="px-5 bg-white"
                         :policy="policy"
                         @save="savePolicyUI('meta', policy.id!)"
                         @delete="deletePolicyUI('meta', policy.id!)"
@@ -68,7 +62,7 @@
 
                     <PolicyCard
                         v-else-if="!policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
-                        class="px-5"
+                        class="px-5 bg-white"
                         :policy="policy"
                         type="meta"
                         @edit="setEditFlag('meta', policy.id!)"
@@ -83,7 +77,7 @@
                     <!-- Render it if the policy is being edited -->
                     <DataPolicy
                         v-if="policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
-                        class="px-5"
+                        class="px-5 bg-white"
                         :policy="policy"
                         @delete="deletePolicyUI('data', policy.id!)"
                         @save="savePolicyUI('data', policy.id!)"
@@ -92,7 +86,7 @@
                     <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
                     <PolicyCard
                         v-else-if="!policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
-                        class="px-5"
+                        class="px-5 bg-white"
                         :policy="policy"
                         type="data"
                         @edit="setEditFlag('data', policy.id!)"
@@ -110,7 +104,7 @@
                     <!-- Render it if the new policy is being edited -->
                     <MetadataPolicy
                         v-if="policyEditMap.metadataPolicies[policy.id!] && policy?.id?.includes(newIdTag)"
-                        class="px-5"
+                        class="px-5 bg-white"
                         :policy="policy"
                         @save="savePolicyUI('meta', policy.id!)"
                         @delete="deletePolicyUI('meta', policy.id!)"
@@ -125,7 +119,7 @@
                     <!-- Render it if the new data policy is being edited -->
                     <DataPolicy
                         v-if="policyEditMap.dataPolicies[policy.id!] &&  policy?.id?.includes(newIdTag)"
-                        class="px-5"
+                        class="px-5 bg-white"
                         :policy="policy"
                         @delete="deletePolicyUI('data', policy.id!)"
                         @save="savePolicyUI('data', policy.id!)"
@@ -187,6 +181,19 @@
                     </template>
                 </a-dropdown>
             </div>
+            <div v-else-if="activeTabKey === 'linked_assets'" class="bg-white">
+                <div class="wrapper-height">
+                    <AssetsWrapper
+                        :initialFilters="filterConfig"
+                        :showFilters="false"
+                        page="purposes"
+                    />
+                    <!-- <LinkedTerms
+                v-else-if="activeTabKey === '2'"
+                :selected-classification="selectedClassification?.name"
+            /> -->
+                </div>
+            </div>
         </div>
     </template>
 </template>
@@ -228,6 +235,7 @@
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
     import { selectedPersona } from './composables/usePurposeList'
     import { getUsername } from './composables/getUsername'
+    import AssetsWrapper from '@/assets/index.vue'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -238,6 +246,7 @@
             DataPolicy,
             AtlanBtn,
             PurposeMeta,
+            AssetsWrapper,
         },
         props: {
             persona: {
@@ -319,8 +328,14 @@
                     })
                 }
             }
+            const filterConfig = computed(() => ({
+                __traitNames: {
+                    classifications: persona.value.tags,
+                },
+            }))
 
             return {
+                filterConfig,
                 newIdTag,
                 userId,
                 username,

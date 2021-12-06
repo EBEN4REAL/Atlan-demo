@@ -22,7 +22,8 @@ import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/
 
 interface useLoadQueryDataProps {
     connector: Ref<string | undefined>
-    savedQueryType?: Ref<'personal' | 'all'>
+    // savedQueryType?: Ref<'personal' | 'all'>
+    savedQueryType?: Ref<string>
     queryFolderNamespace: Ref<Folder>
 }
 
@@ -52,6 +53,7 @@ const useLoadQueryData = ({
         'connectionQualifiedName',
         'parentFolderQualifiedName',
         'defaultSchemaQualifiedName',
+        'defaultDatabaseQualifiedName',
         'parentFolder',
         'columns', //TODO: queries
         'folder',
@@ -62,6 +64,87 @@ const useLoadQueryData = ({
         ...SavedQueryAttributes,
     ]
     const body = ref()
+
+    // const refreshBody = () => {
+    //     body.value = {
+    //         dsl: {
+    //             size: 100,
+    //             sort : [
+    //                 { "name.keyword" : {"order" : "asc"}}
+    //             ],
+    //             query: {
+    //                 bool: {
+    //                     must: [
+                            
+    //                     ]
+    //                 }
+    //             }
+    //         },
+    //         attributes
+    //     }
+    //     if (connector.value) {
+
+    //         body.value.dsl.query.bool.must.push(
+    //             {
+    //                 term: {
+    //                     "connectionName": `${connector.value}`
+    //                 }
+    //             },
+                    
+    //             {
+    //                 term: {
+    //                     "__state": "ACTIVE"
+    //                 }
+    //             }
+    //         )
+    //     }
+    //     if (savedQueryType?.value === 'all') {
+    //         body.value.dsl.query.bool.must.push(
+    //             {
+    //                 bool: {
+    //                     should: [
+    //                         {
+    //                             term: {
+    //                                 "__traitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+    //                             }
+    //                         },
+    //                         {
+    //                             "term": {
+    //                                 "__propagatedTraitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+    //                             }
+    //                         }
+    //                     ]
+    //                 }
+    //             }
+    //         )
+    //     } else if (savedQueryType?.value === 'personal') {
+    //         body.value.dsl.query.bool.must.push(
+    //             {
+    //                 "bool": {
+    //                     "must_not": [
+    //                         {
+    //                             "term": {
+    //                                 "__traitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+    //                             }
+    //                         },
+    //                         {
+    //                             "term": {
+    //                                 "__propagatedTraitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+    //                             }
+    //                         }
+    //                     ]
+    //                 }
+    //             }
+    //         )
+    //         body.value.dsl.query.bool.must.push(
+    //             {
+    //                 "term": {
+    //                     "ownerUsers": username.value
+    //                 }
+    //             },
+    //         )
+    //     }
+    // }
 
     const refreshBody = () => {
         body.value = {
@@ -96,52 +179,53 @@ const useLoadQueryData = ({
                 }
             )
         }
-        if (savedQueryType?.value === 'all') {
+        if (savedQueryType?.value) {
             body.value.dsl.query.bool.must.push(
                 {
                     bool: {
                         should: [
                             {
                                 term: {
-                                    "__traitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+                                    "__traitNames": savedQueryType?.value
                                 }
                             },
                             {
                                 "term": {
-                                    "__propagatedTraitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+                                    "__propagatedTraitNames": savedQueryType?.value
                                 }
                             }
                         ]
                     }
                 }
             )
-        } else if (savedQueryType?.value === 'personal') {
-            body.value.dsl.query.bool.must.push(
-                {
-                    "bool": {
-                        "must_not": [
-                            {
-                                "term": {
-                                    "__traitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
-                                }
-                            },
-                            {
-                                "term": {
-                                    "__propagatedTraitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
-                                }
-                            }
-                        ]
-                    }
-                }
-            )
-            body.value.dsl.query.bool.must.push(
-                {
-                    "term": {
-                        "ownerUsers": username.value
-                    }
-                },
-            )
-        }
+        } 
+        // else if (savedQueryType?.value) {
+        //     body.value.dsl.query.bool.must.push(
+        //         {
+        //             "bool": {
+        //                 "must_not": [
+        //                     {
+        //                         "term": {
+        //                             "__traitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+        //                         }
+        //                     },
+        //                     {
+        //                         "term": {
+        //                             "__propagatedTraitNames": ATLAN_PUBLIC_QUERY_CLASSIFICATION
+        //                         }
+        //                     }
+        //                 ]
+        //             }
+        //         }
+        //     )
+        //     body.value.dsl.query.bool.must.push(
+        //         {
+        //             "term": {
+        //                 "ownerUsers": username.value
+        //             }
+        //         },
+        //     )
+        // }
     }
 
     refreshBody()
@@ -203,7 +287,7 @@ const useLoadQueryData = ({
         body.value.dsl.query.bool.must.push(
             {
                 term: {
-                    "parentFolderQualifiedName": queryFolderNamespace.value.attributes.qualifiedName
+                    "parentFolderQualifiedName": queryFolderNamespace?.value?.attributes?.qualifiedName
                 }
             }
         )

@@ -3,7 +3,6 @@
         <a-table
             class="overflow-hidden border rounded-lg"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
-            :style="{ cursor: 'pointer' }"
             :table-layout="'fixed'"
             :pagination="false"
             :class="$style.table_custom"
@@ -396,20 +395,10 @@
                                 </div>
                             </div>
                             <div>
-                                <router-link
-                                    :to="
-                                        assetURL(
-                                            assetMetaMap[log._source.resourceQF]
-                                        )
-                                    "
-                                    class="flex-shrink mb-0 mr-1 truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
-                                >
-                                    {{
-                                        title(
-                                            assetMetaMap[log._source.resourceQF]
-                                        )
-                                    }}
-                                </router-link>
+                                {{
+                                    title(assetMetaMap[log._source.resourceQF])
+                                }}
+
                                 <CertificateBadge
                                     v-if="
                                         certificateStatus(
@@ -474,11 +463,16 @@
                             ></AtlanIcon>
                             <div>API Key</div>
                         </div>
-                        <span v-else
-                            ><AtlanIcon icon="Admin" class="mr-1"
-                                >Atlan BOT</AtlanIcon
-                            ></span
+                        <div
+                            v-else
+                            class="flex items-center justify-center"
                         >
+                            <AtlanIcon
+                                icon="AtlanBot"
+                                class="h-5 px-1 mr-1"
+                            ></AtlanIcon>
+                            <div>BOT</div>
+                        </div>
                     </span>
                     <div v-else class="flex items-center h-full">
                         <Avatar
@@ -514,7 +508,7 @@
                         <div class="items-center">
                             <div class="parent-ellipsis-container">
                                 <div v-if="log._source.result">
-                                    <div class="px-2 py-0.5 border rounded-2xl">
+                                    <div class="px-2 py-0.5 border flex items-center rounded-2xl">
                                         <AtlanIcon
                                             icon="CheckCurrentColor"
                                             class="
@@ -525,11 +519,11 @@
                                                 border-success
                                             "
                                         ></AtlanIcon>
-                                        Allowed
+                                        <span class="ml-1">Allowed</span>
                                     </div>
                                 </div>
                                 <div v-else>
-                                    <div class="px-2 py-0.5 border rounded-2xl">
+                                    <div class="px-2 py-0.5 border flex items-center rounded-2xl">
                                         <AtlanIcon
                                             icon="Cross"
                                             class="
@@ -540,7 +534,7 @@
                                                 border-error
                                             "
                                         ></AtlanIcon>
-                                        Denied
+                                        <span class="ml-1">Denied</span>
                                     </div>
                                 </div>
                             </div>

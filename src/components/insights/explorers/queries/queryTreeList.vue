@@ -24,17 +24,11 @@
                             v-if="item.typeName === 'QueryFolder'"
                             :expandedKeys="expandedKeys"
                             :selectedNewFolder="selectedNewFolder"
+                            :selectedFolderHide="selectedFolderHide"
                         />
                         <div
                             v-else-if="item.title === 'Load more'"
-                            class="
-                                flex flex-row
-                                w-full
-                                text-sm
-                                font-bold
-                                leading-5
-                                text-primary
-                            "
+                            class="flex flex-row w-full text-sm font-bold leading-5 text-primary"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -115,6 +109,10 @@
                 default: () => [],
             },
             selectedNewFolder: {
+                type: Object,
+                required: false,
+            },
+            selectedFolderHide: {
                 type: Object,
                 required: false,
             },

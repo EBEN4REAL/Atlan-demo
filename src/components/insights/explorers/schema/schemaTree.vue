@@ -4,12 +4,14 @@
             <div v-if="treeData.length">
                 <a-tree
                     v-bind="$attrs"
-                    :expandedKeys="expandedKeys"
+                    v-model:expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
+                    :checkedKeys="checkedKeys"
                     :loadedKeys="loadedKeys"
                     :tree-data="treeData"
                     :load-data="onLoadData"
                     :draggable="false"
+                    data-test-id="tree"
                     :block-node="true"
                     :auto-expand-parent="false"
                     @select="selectNode"
@@ -28,7 +30,7 @@
                         <div
                             :data-test-id="'loadMore'"
                             v-else
-                            class="flex flex-row w-full text-sm font-bold leading-5  text-primary h-7"
+                            class="flex flex-row w-full text-sm font-bold leading-5 text-primary h-7"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -55,7 +57,7 @@
                         activeInlineTab?.explorer?.schema?.connectors
                             ?.attributeName === 'connectionQualifiedName'
                     "
-                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
                 >
                     <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                     <p class="mt-6 mb-0 text-base text-gray-700">
@@ -63,7 +65,7 @@
                     </p>
                 </div>
                 <div
-                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
                     v-else-if="
                         activeInlineTab?.explorer?.schema?.connectors
                             ?.attributeName === 'databaseQualifiedName'
@@ -91,6 +93,7 @@
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         components: {
@@ -137,6 +140,11 @@
                 required: true,
                 default: () => [],
             },
+            checkedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
             expandedKeys: {
                 type: Array as PropType<string[]>,
                 required: true,
@@ -150,6 +158,7 @@
         inheritAttrs: false,
         setup(props, { emit }) {
             const { hoverActions } = toRefs(props)
+            const { expandedKeys } = useVModels(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -159,7 +168,7 @@
                 StatusList,
                 activeInlineTab,
                 // selectedKeys,
-                // expandedKeys,
+                expandedKeys,
                 // expandNode,
                 // selectNode,
             }
@@ -175,6 +184,8 @@
     }
 </style>
 <style lang="less" module>
+    // @bg-selected: rgba(219, 234, 254, 1);
+
     .schemaTreeStyles {
         :global(.ant-tree-switcher_open) {
             transform: rotate(90deg);
@@ -185,6 +196,16 @@
         :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
                 > .ant-tree-switcher_open) {
             background-color: #fff !important;
+        }
+        :global(.ant-tree-treenode-selected) {
+            background-color: rgba(219, 234, 254, 1) !important;
+        }
+        // :global(.ant-tree-treenode) {
+        //     @apply hover:bg-primary-light;
+        // }
+        :global(.ant-tree-treenode) {
+            padding-bottom: 0px !important;
+            @apply hover:bg-primary-light rounded !important;
         }
 
         :global(.ant-tree-title) {
@@ -208,9 +229,9 @@
         :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
             @apply bg-gray-light;
         }
-        :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-            @apply bg-gray-light;
-        }
+        // :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
+        //     @apply bg-gray-light;
+        // }
         :global(.ant-tree .ant-tree-treenode) {
             @apply p-0 !important;
         }
@@ -221,6 +242,9 @@
             justify-content: center;
             display: inline-flex !important;
             align-items: center;
+            background-color: rgba(219, 234, 254, 1) !important;
+
+            // @apply hover:bg-selected !important;
         }
         :global(.ant-tree li .ant-tree-node-content-wrapper) {
             border-radius: 0px !important;
@@ -233,6 +257,17 @@
         :global(.ant-tree
                 .ant-tree-node-content-wrapper.ant-tree-node-selected) {
             background-color: rgba(219, 234, 254, 1) !important;
+        }
+        :global(.ant-tree-treenode-selected) {
+            background-color: rgba(219, 234, 254, 1) !important;
+            @apply hover:bg-primary-selected-focus !important;
+            // ::hover {
+            //     background-color: rgba(219, 234, 254, 1) !important;
+            // }
+        }
+        :global(.ant-tree-node-content-wrapper) {
+            @apply hover:bg-primary-light !important;
+            transition: none !important;
         }
         :global(.ant-tree span.ant-tree-indent-unit) {
             width: 16px !important;

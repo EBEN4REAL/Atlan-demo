@@ -124,7 +124,9 @@
             const notUsingInput = computed(
                 () =>
                     activeElement.value?.tagName !== 'INPUT' &&
-                    activeElement.value?.tagName !== 'TEXTAREA'
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
             )
             const { c, Escape, v } = useMagicKeys()
             whenever(and(c, notUsingInput), () => {

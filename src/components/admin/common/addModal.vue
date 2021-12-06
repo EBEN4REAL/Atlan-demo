@@ -10,7 +10,10 @@
             <!-- <template #title />
         <p class="mb-4 text-base font-bold text-gray">{{ title }}</p> -->
             <slot />
-            <div class="flex items-center justify-between gap-x-4">
+            <div
+                class="flex items-center gap-x-4"
+                :class="extraFooterContent ? 'justify-between' : 'justify-end '"
+            >
                 <slot name="extraFooterContent" />
                 <div class="flex items-center gap-x-4">
                     <AtlanBtn
@@ -33,7 +36,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, computed } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
@@ -48,5 +51,15 @@
             },
         },
         emits: ['cancel', 'ok'],
+        setup(_, { slots }) {
+            const extraFooterContent = computed(
+                () =>
+                    slots.extraFooterContent &&
+                    slots.extraFooterContent().length
+            )
+            return {
+                extraFooterContent,
+            }
+        },
     })
 </script>

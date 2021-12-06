@@ -1,5 +1,8 @@
 <template>
-    <div class="flex flex-wrap items-center gap-1 text-sm">
+    <div
+        class="flex flex-wrap items-center gap-1 text-sm"
+        data-test-id="classification-popover"
+    >
         <a-popover
             v-model:visible="isEdit"
             placement="leftBottom"
@@ -22,7 +25,11 @@
                 shape="circle"
                 :disabled="disabled"
                 size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+                class="
+                    text-center
+                    shadow
+                    hover:bg-primary-light hover:border-primary
+                "
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
@@ -35,6 +42,7 @@
                     :display-name="classification?.displayName"
                     :is-propagated="isPropagated(classification)"
                     :allow-delete="true"
+                    :color="classification.options?.color"
                     @delete="handleDeleteClassification"
                 />
             </Popover>
@@ -181,7 +189,9 @@
             const notUsingInput = computed(
                 () =>
                     activeElement.value?.tagName !== 'INPUT' &&
-                    activeElement.value?.tagName !== 'TEXTAREA'
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
             )
             const { t, Escape } = useMagicKeys()
             whenever(and(t, notUsingInput), () => {

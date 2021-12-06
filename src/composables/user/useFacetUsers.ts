@@ -4,7 +4,7 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { userInterface } from '~/types/users/user.interface'
 import { Users } from '~/services/service/users'
 
-export default function useFacetUsers() {
+export default function useFacetUsers(immediate = true) {
     const params = ref(new URLSearchParams())
     params.value.append('limit', '20')
     params.value.append('sort', 'first_name')
@@ -16,7 +16,7 @@ export default function useFacetUsers() {
 
     const { data, mutate, isLoading, error } = Users.List(params, {
         asyncOptions: {
-            immediate: true,
+            immediate,
             resetOnExecute: false,
         },
     })

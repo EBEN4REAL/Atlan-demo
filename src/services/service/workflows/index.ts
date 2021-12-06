@@ -1,6 +1,9 @@
 import { useAPI } from '~/services/api/useAPI'
 import { map } from './key'
-import { ArchivedRunsResponse, LiveRunsResponse } from '~/types/workflow/runs.interface'
+import {
+    ArchivedRunsResponse,
+    LiveRunsResponse,
+} from '~/types/workflow/runs.interface'
 
 export const URL = {
     WorkflowList: '/workflows/default',
@@ -47,6 +50,17 @@ const getWorkflowPackagesByName = ({ pathVariables, options }) => {
     )
 }
 
+const createWorkflowPackage = ({ params, body, options }) =>
+    useAPI(
+        map.CREATE_WORKFLOW,
+        'POST',
+        {
+            params,
+            body,
+        },
+        options || {}
+    )
+
 const getWorkflowPackagesConfigMap = ({ params, options }) =>
     useAPI(
         map.WORKFLOW_CONFIG_MAP,
@@ -56,6 +70,18 @@ const getWorkflowPackagesConfigMap = ({ params, options }) =>
         },
         options || {}
     )
+
+const getWorkflowPackagesConfigMapByName = ({ pathVariables, options }) => {
+    console.log('getWorkflowPackagesConfigMapByName', pathVariables)
+    return useAPI(
+        map.WORKFLOW_CONFIG_MAP_NAME,
+        'GET',
+        {
+            pathVariables,
+        },
+        options || {}
+    )
+}
 
 const getWorkflowTemplates = ({ pathVariables, immediate, options, params }) =>
     useAPI(
@@ -132,9 +158,13 @@ const getRunList = (reqOptions) =>
 const getArtifacts = (reqOptions) =>
     useAPI(map.GET_ARTIFACTS, 'GET', reqOptions, {})
 
-
 const getArchivedRunList = (reqOptions) =>
-    useAPI<ArchivedRunsResponse>(map.ARCHIVED_WORKFLOW_RUN, 'GET', reqOptions, {})
+    useAPI<ArchivedRunsResponse>(
+        map.ARCHIVED_WORKFLOW_RUN,
+        'GET',
+        reqOptions,
+        {}
+    )
 
 const deleteWorkflowByName = ({ pathVariables, immediate, options }) =>
     useAPI(
@@ -235,4 +265,6 @@ export const Workflows = {
     getSchedules,
     getArchivedRunLogs,
     getArtifacts,
+    createWorkflowPackage,
+    getWorkflowPackagesConfigMapByName,
 }

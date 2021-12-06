@@ -22,8 +22,10 @@
                         v-if="loginWithEmail"
                         type="primary"
                         class="rounded-md"
+                        size="sm"
                         @click="handleInviteUsers"
-                        >Invite Users
+                    >
+                        Invite Users
                     </AtlanButton>
                 </div>
             </div>
@@ -99,13 +101,13 @@
             :destroy-on-close="true"
             :footer="null"
             :closable="false"
-            :width="550"
-            wrapClassName="inviteModal"
+            :width="470"
+            wrap-class-name="inviteModal"
             @cancel="closeInviteUserModal"
         >
             <InviteUsers
+                :tenant-name="tenantName"
                 @close="closeInviteUserModal"
-                :tenantName="tenantName"
                 @handleInviteSent="handleInviteSent"
             />
         </a-modal>
@@ -220,7 +222,8 @@
                 const filterValues = [theSearchFilter, theStatusFilter] // both must match array positions, can merge later with value and key as object
                 userListAPIParams.filter.$and = filterTypes.reduce(
                     (filtered, option, index) => {
-                        if (option) filtered.push(filterValues[index])
+                        if (option?.length > 0)
+                            filtered.push(filterValues[index])
                         return filtered
                     },
                     []
@@ -254,11 +257,17 @@
                 showPreview,
                 showUserPreview: openPreview,
                 setUserUniqueAttribute,
+                closePreview,
+                userId,
             } = useUserPreview()
             const showUserPreviewDrawer = (user: any) => {
-                setUserUniqueAttribute(user.id)
-                openPreview()
-                selectedUserId.value = user.id
+                if (userId.value === user.id && showPreview.value) {
+                    closePreview()
+                } else {
+                    setUserUniqueAttribute(user.id)
+                    openPreview()
+                    selectedUserId.value = user.id
+                }
             }
 
             // END: USER PREVIEW

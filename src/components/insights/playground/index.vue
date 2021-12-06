@@ -21,16 +21,7 @@
                             <a-tooltip placement="top">
                                 <template #title>New query</template>
                                 <span
-                                    class="
-                                        inline-flex
-                                        items-center
-                                        justify-center
-                                        p-0.5
-                                        rounded-sm
-                                        btn-add
-                                        cross-hover
-                                        mt-1
-                                    "
+                                    class="inline-flex items-center justify-center p-0.5 rounded-sm btn-add cross-hover mt-1"
                                     @click="handleAdd"
                                 >
                                     <!-- <fa icon="fal plus" class="text-gray-700" /> -->
@@ -80,14 +71,7 @@
                                                 tab.playground.editor.text
                                                     .length > 0 || tab?.queryId
                                             "
-                                            class="
-                                                w-1.5
-                                                h-1.5
-                                                rounded-full
-                                                bg-primary
-                                                absolute
-                                                right-3
-                                            "
+                                            class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3"
                                         ></div>
                                     </div>
                                 </div>
@@ -176,10 +160,11 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
-    import { useRouter } from 'vue-router'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
-
+    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
+    import { useRouter, useRoute } from 'vue-router'
+    import { generateUUID } from '~/utils/helper/generator'
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
@@ -201,6 +186,7 @@
             },
         },
         setup(props, { emit }) {
+            const route = useRoute()
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
@@ -251,8 +237,10 @@
                 })
                 return max_number
             }
+
             const handleAdd = () => {
-                const key = String(new Date().getTime())
+                // const key = String(new Date().getTime())
+                const key = generateUUID()
                 const inlineTabData: activeInlineTabInterface = {
                     label: `Untitled ${getLastUntitledNumber()}`,
                     key,
@@ -286,7 +274,18 @@
                             },
                         },
                     },
+
                     playground: {
+                        vqb: {
+                            panels: [
+                                {
+                                    order: 1,
+                                    id: 'columns',
+                                    hide: false,
+                                    columns: [],
+                                },
+                            ],
+                        },
                         editor: {
                             context: {
                                 attributeName:
@@ -342,6 +341,197 @@
                         id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
                 }
+
+                // const inlineTabData: activeInlineTabInterface =
+                //     inlineTabsDemoData[0]
+                // ;(inlineTabData.label = `Untitled ${getLastUntitledNumber()}`),
+                //     (inlineTabData.key = key),
+                //     (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
+                //     (inlineTabData.isSaved = false),
+                //     (inlineTabData.queryId = undefined),
+                //     (inlineTabData.status = 'DRAFT'),
+                //     (inlineTabData.connectionId = ''),
+                //     (inlineTabData.description = ''),
+                //     (inlineTabData.qualifiedName = ''),
+                //     (inlineTabData.parentGuid = ''),
+                //     (inlineTabData.parentQualifiedName = ''),
+                //     (inlineTabData.isSQLSnippet = false),
+                //     (inlineTabData.savedQueryParentFolderTitle = undefined),
+                //     (inlineTabData.explorer = {
+                //         schema: {
+                //             connectors: {
+                //                 attributeName:
+                //                     activeInlineTab.value?.explorer?.schema
+                //                         ?.connectors?.attributeName,
+                //                 attributeValue:
+                //                     activeInlineTab.value?.explorer?.schema
+                //                         ?.connectors?.attributeValue,
+                //             },
+                //         },
+                //         queries: {
+                //             connectors: {
+                //                 connector:
+                //                     activeInlineTab.value?.explorer?.queries
+                //                         ?.connectors?.connector,
+                //             },
+                //         },
+                //     })
+
+                // inlineTabData.playground.editor = {
+                //     context: {
+                //         attributeName:
+                //             activeInlineTab.value?.playground?.editor?.context
+                //                 ?.attributeName,
+                //         attributeValue:
+                //             activeInlineTab.value?.playground?.editor?.context
+                //                 ?.attributeValue,
+                //     },
+                //     text: '',
+                //     dataList: [],
+                //     columnList: [],
+                //     variables: [],
+                //     savedVariables: [],
+                //     limitRows: {
+                //         checked: false,
+                //         rowsCount: -1,
+                //     },
+                // }
+                // inlineTabData.playground.resultsPane = {
+                //     activeTab:
+                //         activeInlineTab.value?.playground?.resultsPane
+                //             ?.activeTab ?? 0,
+                //     result: {
+                //         title: `${key} Result`,
+                //         runQueryId: undefined,
+                //         isQueryRunning: '',
+                //         queryErrorObj: {},
+                //         totalRowsCount: -1,
+                //         executionTime: -1,
+                //         errorDecorations: [],
+                //         eventSourceInstance: undefined,
+                //         buttonDisable: false,
+                //         isQueryAborted: false,
+                //     },
+                //     metadata: {},
+                //     queries: {},
+                //     joins: {},
+                //     filters: {},
+                //     impersonation: {},
+                //     downstream: {},
+                //     sqlHelp: {},
+                // }
+
+                // inlineTabData.assetSidebar = {
+                //     // for taking the previous state from active tab
+                //     openingPos: undefined,
+                //     isVisible:
+                //         activeInlineTab.value?.assetSidebar?.isVisible ?? false,
+                //     assetInfo: {},
+                //     title: activeInlineTab.value?.assetSidebar.title ?? '',
+                //     id: activeInlineTab.value?.assetSidebar.id ?? '',
+                // }
+
+                // const inlineTabData: activeInlineTabInterface = {
+                //     label: `Untitled ${getLastUntitledNumber()}`,
+                //     key,
+                //     favico: 'https://atlan.com/favicon.ico',
+                //     isSaved: false,
+                //     queryId: undefined,
+                //     status: 'DRAFT',
+                //     connectionId: '',
+                //     description: '',
+                //     qualifiedName: '',
+                //     parentGuid: '',
+                //     parentQualifiedName: '',
+                //     isSQLSnippet: false,
+                //     savedQueryParentFolderTitle: undefined,
+                //     explorer: {
+                //         schema: {
+                //             connectors: {
+                //                 attributeName:
+                //                     activeInlineTab.value?.explorer?.schema
+                //                         ?.connectors?.attributeName,
+                //                 attributeValue:
+                //                     activeInlineTab.value?.explorer?.schema
+                //                         ?.connectors?.attributeValue,
+                //             },
+                //         },
+                //         queries: {
+                //             connectors: {
+                //                 connector:
+                //                     activeInlineTab.value?.explorer?.queries
+                //                         .connectors.connector,
+                //             },
+                //         },
+                //     },
+
+                //     playground: {
+                //         vqb: {
+                //             panels: [
+                //                 {
+                //                     order: 1,
+                //                     id: 'columns',
+                //                     hide: false,
+                //                     columns: [],
+                //                 },
+                //             ],
+                //         },
+                //         editor: {
+                //             context: {
+                //                 attributeName:
+                //                     activeInlineTab.value?.playground?.editor
+                //                         ?.context?.attributeName,
+                //                 attributeValue:
+                //                     activeInlineTab.value?.playground?.editor
+                //                         ?.context?.attributeValue,
+                //             },
+                //             text: '',
+                //             dataList: [],
+                //             columnList: [],
+                //             variables: [],
+                //             savedVariables: [],
+                //             limitRows: {
+                //                 checked: false,
+                //                 rowsCount: -1,
+                //             },
+                //         },
+                //         resultsPane: {
+                //             activeTab:
+                //                 activeInlineTab.value?.playground?.resultsPane
+                //                     ?.activeTab ?? 0,
+                //             result: {
+                //                 title: `${key} Result`,
+                //                 runQueryId: undefined,
+                //                 isQueryRunning: '',
+                //                 queryErrorObj: {},
+                //                 totalRowsCount: -1,
+                //                 executionTime: -1,
+                //                 errorDecorations: [],
+                //                 eventSourceInstance: undefined,
+                //                 buttonDisable: false,
+                //                 isQueryAborted: false,
+                //             },
+                //             metadata: {},
+                //             queries: {},
+                //             joins: {},
+                //             filters: {},
+                //             impersonation: {},
+                //             downstream: {},
+                //             sqlHelp: {},
+                //         },
+                //     },
+                //     assetSidebar: {
+                //         // for taking the previous state from active tab
+                //         openingPos: undefined,
+                //         isVisible:
+                //             activeInlineTab.value?.assetSidebar?.isVisible ??
+                //             false,
+                //         assetInfo: {},
+                //         title: activeInlineTab.value?.assetSidebar.title ?? '',
+                //         id: activeInlineTab.value?.assetSidebar.id ?? '',
+                //     },
+                // }
+
                 // if (checkIfItsAFirstTab()) {
                 //     const firstConnection = getFirstQueryConnection()
                 //     /* For intiial selection of connections */
@@ -353,11 +543,19 @@
                 //     }
                 // }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                router.push(`/insights`)
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
             }
             const pushGuidToURL = (guid: string | undefined) => {
-                if (guid) router.push(`/insights?id=${guid}`)
-                else router.push(`/insights`)
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                if (guid) {
+                    queryParams.id = guid
+                    router.push({ path: `insights`, query: queryParams })
+                } else {
+                    router.push({ path: `insights`, query: queryParams })
+                }
             }
             const onTabClick = (activeKey) => {
                 setActiveTabKey(activeKey, activeInlineTabKey)
@@ -451,6 +649,7 @@
                         showSaveQueryModal,
                         saveModalRef,
                         router,
+                        route,
                         'personal',
                         saveQueryData.value.parentQF,
                         saveQueryData.value.parentGuid,

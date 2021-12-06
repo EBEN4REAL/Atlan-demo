@@ -11,6 +11,7 @@
                 v-model="title"
                 placeholder="Untitled purpose"
                 type="text"
+                data-test-id="input-text"
                 class="text-lg font-bold text-gray-700 clean-input"
                 @keyup.esc="$event?.target?.blur()"
             />
@@ -22,6 +23,7 @@
                 rows="2"
                 placeholder="Add description..."
                 @keyup.esc="$event?.target?.blur()"
+                data-test-id="input-description"
             />
         </div>
         <template #extraFooterContent>
@@ -33,6 +35,7 @@
                 <span
                     class="ml-2 text-red-500"
                     v-if="rules.classification.show"
+                    data-test-id="validation-classification"
                 >
                     {{ rules.classification.text }}
                 </span>

@@ -42,7 +42,7 @@
                         </template>
                         <AtlanIcon
                             v-if="a.options.description"
-                            class="h-4 mb-1 ml-2 text-gray-400  hover:text-gray-500"
+                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                             icon="Info"
                         />
                     </a-tooltip>
@@ -70,6 +70,7 @@
         PropType,
         inject,
         defineAsyncComponent,
+        Ref,
     } from 'vue'
     import { whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
@@ -80,8 +81,6 @@
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
-    import { languageTokens } from '~/components/insights/playground/editor/monaco/sqlTokens'
-
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
@@ -122,43 +121,47 @@
             )
             const payload = ref({})
 
+            const initializeAttributesList = () => {
+                applicableList.value = []
+                applicableList.value = getApplicableAttributes(
+                    data.value,
+                    selectedAsset.value.typeName
+                )
+            }
+
             /**
              * @desc parses all the attached bm from the asset payload and
              *  forms the initial attribute list
              */
             const setAttributesList = () => {
+                initializeAttributesList()
                 if (selectedAsset.value?.attributes) {
                     const bmAttributes = Object.keys(
                         selectedAsset.value.attributes
                     ).filter((attr) => attr.split('.').length > 1)
 
-                    bmAttributes.forEach((ab) => {
-                        if (data.value.id === ab.split('.')[0]) {
-                            const attribute = ab.split('.')[1]
+                    if (bmAttributes.length)
+                        bmAttributes.forEach((ab) => {
+                            if (data.value.id === ab.split('.')[0]) {
+                                const attribute = ab.split('.')[1]
 
-                            let value = selectedAsset.value.attributes[ab]
-                            const attrIndex = applicableList.value.findIndex(
-                                (a) => a.name === attribute
-                            )
-                            const options =
-                                applicableList.value[attrIndex]?.options
+                                let value = selectedAsset.value.attributes[ab]
+                                const attrIndex =
+                                    applicableList.value.findIndex(
+                                        (a) => a.name === attribute
+                                    )
+                                const options =
+                                    applicableList.value[attrIndex]?.options
 
-                            if (attrIndex > -1) {
-                                if (
-                                    (options?.customType === 'users' ||
-                                        options?.customType === 'groups' ||
-                                        options?.isEnum === 'true') &&
-                                    options?.multiValueSelect === 'true'
-                                ) {
-                                    value = value
-                                        ?.replace(/\[|\]/g, '')
-                                        .split(',')
-                                        .map((v: string) => v.trim())
+                                if (attrIndex > -1) {
+                                    if (options?.multiValueSelect === 'true')
+                                        value = JSON.parse(value)
+
+                                    applicableList.value[attrIndex].value =
+                                        value
                                 }
-                                applicableList.value[attrIndex].value = value
                             }
-                        }
-                    })
+                        })
                 }
             }
 
@@ -178,9 +181,20 @@
                     }
                 })
 
+                const checkIfDelete = (v, multiValue) => {
+                    if (multiValue) return !v?.length
+                    return v == null || v === ''
+                }
                 // ? handle new payload
                 applicableList.value.forEach((at) => {
-                    mappedPayload[data.value.id][at.name] = at.value
+                    if (
+                        checkIfDelete(
+                            at.value,
+                            at.options.multiValueSelect === 'true'
+                        )
+                    )
+                        delete mappedPayload[data.value.id][at.name]
+                    else mappedPayload[data.value.id][at.name] = at.value
                 })
 
                 return mappedPayload
@@ -222,6 +236,7 @@
                         message.error(
                             'Some error occured...Please try again later.'
                         )
+                        setAttributesList()
                     } else if (isReady.value) {
                         loading.value = false
                         message.success(
@@ -248,10 +263,9 @@
             }
             const handleChange = (index, value) => {
                 applicableList.value[index].value = value
-                console.log('hellooooo', value)
             }
 
-            const updateList = inject('updateList')
+            const updateList = inject('updateList') as Function
             whenever(isUpdateReady, () => {
                 if (
                     asset.value.typeName !== 'AtlasGlossary' &&
@@ -259,17 +273,13 @@
                     asset.value.typeName !== 'AtlasGlossaryTerm'
                 ) {
                     updateList(asset.value)
-                    setAttributesList()
                 }
             })
 
             watch(
                 () => selectedAsset.value.guid,
                 () => {
-                    applicableList.value = getApplicableAttributes(
-                        data.value,
-                        selectedAsset.value.typeName
-                    )
+                    initializeAttributesList()
                 },
                 {
                     immediate: true,

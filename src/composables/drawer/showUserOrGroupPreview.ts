@@ -11,7 +11,8 @@ import useGroups from '~/composables/group/useGroups'
  * it utilises the useUserPreview and useGroupPreview composables. Takes as
  * argument the preview type, which can either be 'user' or 'group'. Any other
  * argument will not be yield any results.
- * @param {string} previewType
+ * @param previewType The type of preview 'group' or 'user'
+ * @param userNameProp The user name
  */
 // type TypeUserProp = ? String;
 export function useUserOrGroupPreview(previewType: string, userNameProp = '') {

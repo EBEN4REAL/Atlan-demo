@@ -235,6 +235,7 @@
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
+                default: () => {},
             },
             tab: {
                 type: String,

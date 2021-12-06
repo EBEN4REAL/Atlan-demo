@@ -123,9 +123,10 @@
             :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
-            @search="userSearch"
+            @focus="userSearch"
             @change="handleChange"
-            ><a-select-option
+        >
+            <a-select-option
                 v-for="(item, index) in userList"
                 :key="index"
                 :value="item.username"
@@ -142,7 +143,7 @@
             :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
-            @search="groupSearch"
+            @focus="groupSearch"
             @change="handleChange"
             ><a-select-option
                 v-for="(item, index) in groupList"
@@ -184,9 +185,9 @@
                 required: true,
             },
             modelValue: {
-                type: Object,
+                type: String,
                 required: false,
-                default: () => {},
+                default: () => undefined,
             },
         },
 
@@ -195,7 +196,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const localValue = ref(modelValue.value)
+            const localValue: any = ref(modelValue.value)
 
             const {
                 getDatatypeOfAttribute,
@@ -205,14 +206,14 @@
             } = useCustomMetadataHelpers()
 
             const { list: userList, handleSearch: handleUserSearch } =
-                useFacetUsers()
+                useFacetUsers(false)
 
             const userSearch = (val) => {
                 handleUserSearch(val)
             }
 
             const { list: groupList, handleSearch: handleGroupSearch } =
-                useFacetGroups()
+                useFacetGroups(false)
             const groupSearch = (val) => {
                 handleGroupSearch(val)
             }
@@ -220,6 +221,10 @@
             const isMultivalued = ref(
                 props.attribute.options.multiValueSelect === 'true'
             )
+
+            // set proper default value
+            if (isMultivalued.value && !localValue.value) localValue.value = []
+            else if (!localValue.value) localValue.value = ''
 
             const handleNumber = (v) => {
                 localValue.value = v.map((s) => parseInt(s, 10))
@@ -239,6 +244,7 @@
                     getDatatypeOfAttribute(props.attribute) === 'float'
                 )
                     handleDecimal(v)
+
                 modelValue.value = localValue.value
                 emit('change')
             }

@@ -140,9 +140,9 @@
             />
             <div class="flex flex-wrap mt-7">
                 <router-link
-                    v-for="(key, index) in Object.keys(overviewCards)"
-                    :key="overviewCards[key].id"
-                    :to="overviewCards[key].link"
+                    v-for="(card, key, index) in overviewCards"
+                    :key="card.id"
+                    :to="card.link"
                     class="
                         flex
                         justify-between
@@ -170,32 +170,25 @@
                             "
                         >
                             <AtlanIcon
-                                :icon="overviewCards[key].icon"
+                                :icon="card.icon"
                                 class="h-6"
                             ></AtlanIcon>
                         </div>
                         <div class="mt-1">
                             <div class="font-bold">
-                                {{ overviewCards[key].displayName }}
+                                {{ card.displayName }}
                             </div>
 
                             <div class="mt-1">
-                                <span v-if="overviewCards[key].value">
+                                <span v-if="card.value">
                                     <span
-                                        v-if="
-                                            !overviewCards[key]
-                                                .excludeValueInCopy
-                                        "
+                                        v-if="!card.excludeValueInCopy"
                                         class="mr-1 font-bold"
-                                        >{{ overviewCards[key].value }}</span
+                                        >{{ card.value }}</span
                                     >
-                                    <span>{{
-                                        overviewCards[key].valueText
-                                    }}</span>
+                                    <span>{{ card.valueText }}</span>
                                 </span>
-                                <span v-else>{{
-                                    overviewCards[key].emptyText
-                                }}</span>
+                                <span v-else>{{ card.emptyText }}</span>
                             </div>
                         </div>
                     </div>
@@ -210,35 +203,11 @@
                     ></AtlanIcon>
                 </router-link>
             </div>
-            <!-- <div class="mt-5">
-                <div class="text-lg font-bold">General</div>
-                <div class="mt-2">Workspace name</div>
-                <div class="flex text-gray-500">
-                    <a-input
-                        v-model:value="newTenantName"
-                        type="text"
-                        class="w-1/3 mt-2"
-                        @change="onEdit"
-                    />
-                    <div
-                        :class="getIconClass(updateStatus)"
-                        class="self-center ml-4"
-                    >
-                        <AtlanIcon
-                            :icon="getStatusIcon(updateStatus)"
-                            :class="
-                                updateStatus === 'loading' ? 'animate-spin' : ''
-                            "
-                        ></AtlanIcon>
-                    </div>
-                </div>
-            </div> -->
         </div>
     </DefaultLayout>
 </template>
 <script lang="ts">
 import { defineComponent, computed, Ref, ref, watch } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
 import DefaultLayout from '~/components/admin/layout.vue'
 import OrgLogo from '~/components/common/logo/orgLogo.vue'
 import useTenantData from '~/composables/tenant/useTenantData'

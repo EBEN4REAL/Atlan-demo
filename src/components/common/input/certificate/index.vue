@@ -91,6 +91,11 @@
                     return {}
                 },
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -104,8 +109,6 @@
                 certificateUpdatedBy,
                 certificateUpdatedAt,
             } = useAssetInfo()
-
-            const selectedAsset = inject('selectedAsset')
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -161,7 +164,6 @@
                 certificateStatusMessage,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
-                selectedAsset,
             }
         },
     })

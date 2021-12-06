@@ -188,6 +188,7 @@
                 v-model="localDescription"
                 class="mx-4"
                 @change="handleChangeDescription"
+                :selected-asset="selectedAsset"
             />
         </div>
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
@@ -210,6 +211,7 @@
                 :used-for-assets="true"
                 @change="handleOwnersChange"
                 class="px-5"
+                :selected-asset="selectedAsset"
             />
         </div>
 
@@ -284,6 +286,7 @@
                 class="px-5"
                 v-model="localCertificate"
                 @change="handleChangeCertificate"
+                :selected-asset="selectedAsset"
             />
         </div>
         <a-modal

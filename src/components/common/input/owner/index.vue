@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, inject } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs, PropType } from 'vue'
 
     // Utils
     import {
@@ -110,6 +110,9 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
+    // Types
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'OwnersWidget',
@@ -147,6 +150,11 @@
                 required: false,
                 default: false,
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -157,7 +165,6 @@
             const localValue = ref(modelValue.value)
 
             const { ownerGroups, ownerUsers } = useAssetInfo()
-            const selectedAsset = inject('selectedAsset')
 
             const isEdit = ref(false)
 
@@ -263,7 +270,6 @@
                 handleVisibleChange,
                 isEdit,
                 ownerFacetRef,
-                selectedAsset,
             }
         },
     })

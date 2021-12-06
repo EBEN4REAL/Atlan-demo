@@ -57,6 +57,7 @@
                     ref="descriptionRef"
                     v-model="localDescription"
                     @change="handleChangeDescription"
+                    :selected-asset="item"
                 />
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">
                     <template

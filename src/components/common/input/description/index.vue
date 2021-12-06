@@ -47,6 +47,7 @@
         whenever,
     } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'DescriptionWidget',
@@ -60,6 +61,11 @@
                 required: false,
                 default: true,
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
@@ -69,7 +75,6 @@
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
 
             const { description } = useAssetInfo()
-            const selectedAsset = inject('selectedAsset')
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -112,7 +117,6 @@
                 isEdit,
                 start,
                 handleBlur,
-                selectedAsset,
                 description,
             }
         },

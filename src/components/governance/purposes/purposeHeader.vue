@@ -1,5 +1,5 @@
 <template>
-    <div v-if="persona" class="flex flex-col px-5">
+    <div v-if="persona" class="flex flex-col px-5 bg-white">
         <CreationModal
             v-model:visible="isEditing"
             ok-text="Save"
@@ -28,7 +28,7 @@
                 />
             </div>
         </CreationModal>
-        <div class="flex gap-x-2">
+        <div class="flex bg-white gap-x-2 pt-7">
             <div style="width: 90%">
                 <div class="mb-1 text-xl text-gray-700 truncate">
                     <span class="truncate" data-test-id="header-name">
@@ -63,6 +63,8 @@
 
     import Dropdown from '@/UI/dropdown.vue'
     import { reFetchList } from './composables/usePurposeList'
+    import { formatDateTime } from '~/utils/date'
+    import { useTimeAgo } from '@vueuse/core'
 
     export default defineComponent({
         name: 'Purpose Header',
@@ -144,12 +146,21 @@
                 }
             }
 
+            const timeStamp = (time, raw: boolean = false) => {
+                if (time) {
+                    return raw
+                        ? formatDateTime(time) || 'N/A'
+                        : useTimeAgo(time).value
+                }
+                return ''
+            }
             return {
                 personaActions,
                 isEditing,
                 saveEditedPersona,
                 discardPersona,
                 selectedPersonaDirty,
+                timeStamp,
             }
         },
     })

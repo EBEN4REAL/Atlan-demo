@@ -6,13 +6,13 @@ export const previewTabs = [
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
     },
-    /* {
+    {
         name: 'Columns',
         component: 'columns',
         includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
-    }, */
+    },
     // {
     //     name: 'Custom Metadata',
     //     component: 'businessMetadataTab',
@@ -23,7 +23,16 @@ export const previewTabs = [
     {
         name: 'Lineage',
         component: 'lineage',
-        excludes: ['Query', 'QueryFolder'],
+        excludes: [
+            'Query',
+            'QueryFolder',
+            'AtlasGlossary',
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            'Database',
+            'Schema',
+            'Connection',
+        ],
         icon: 'Lineage',
         tooltip: 'Lineage',
     },
@@ -37,7 +46,7 @@ export const previewTabs = [
     {
         name: 'Relations',
         component: 'relations',
-        exclude: [
+        excludes: [
             'Connection',
             'Database',
             'Schema',
@@ -47,6 +56,7 @@ export const previewTabs = [
             'View',
             'MaterialisedViews',
             'PartitionTable',
+            'Column',
         ],
         icon: 'Relation',
         tooltip: 'Relationships',

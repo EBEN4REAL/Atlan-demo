@@ -222,7 +222,8 @@
                 const filterValues = [theSearchFilter, theStatusFilter] // both must match array positions, can merge later with value and key as object
                 userListAPIParams.filter.$and = filterTypes.reduce(
                     (filtered, option, index) => {
-                        if (option) filtered.push(filterValues[index])
+                        if (option?.length > 0)
+                            filtered.push(filterValues[index])
                         return filtered
                     },
                     []

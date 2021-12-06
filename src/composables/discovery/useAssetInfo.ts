@@ -103,6 +103,7 @@ export default function useAssetInfo() {
     const links = (asset: assetInterface) => attributes(asset)?.links
 
     const getTabs = (list, typeName: string) => {
+        console.log(list, typeName)
         return list.filter((i) => {
             let flag = true
             if (i.includes) {
@@ -215,12 +216,15 @@ export default function useAssetInfo() {
         return `/assets/${asset?.guid}`
     }
 
+    const getLineagePath = (asset) => {
+        return `/assets/${asset.guid}/lineage`
+    }
+
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
-        const databaseQualifiedName =
-            `${attributes(asset).connectionQualifiedName 
-            }/${ 
-            attributes(asset).databaseName}`
+        const databaseQualifiedName = `${
+            attributes(asset).connectionQualifiedName
+        }/${attributes(asset).databaseName}`
         const schema = attributes(asset).schemaName
 
         if (assetType(asset) === 'Column') {
@@ -925,5 +929,6 @@ export default function useAssetInfo() {
         isGTCByType,
         getAnchorQualifiedName,
         isNonBiAsset,
+        getLineagePath,
     }
 }

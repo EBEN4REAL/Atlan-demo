@@ -38,7 +38,7 @@
                 ></AtlanIcon>
                 <router-link
                     :to="getProfilePath(selectedAsset)"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -137,11 +137,13 @@
                     : 'height: calc(100% - 84px)'
             "
             tab-position="left"
+            :destroyInactiveTabPane="true"
         >
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset)"
                 :key="index"
                 class="overflow-y-auto"
+                :destroyInactiveTabPane="true"
             >
                 <template #tab>
                     <PreviewTabsIcon
@@ -155,6 +157,7 @@
                 </template>
 
                 <component
+                    v-if="tab.component"
                     :is="tab.component"
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
@@ -231,7 +234,7 @@
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
-                required: true,
+                required: false,
             },
             tab: {
                 type: String,

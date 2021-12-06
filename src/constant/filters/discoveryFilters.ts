@@ -112,6 +112,45 @@ export const discoveryFilters = [
         exclude: false,
     },
     {
+        id: 'sql',
+        label: 'SQL Assets',
+        component: 'properties',
+        includes: [
+            'Table',
+            'View',
+            'MaterialisedViews',
+            'PartitionTable',
+            'Column',
+        ],
+        attributes: [
+            {
+                name: 'databaseName.keyword',
+                displayName: 'Database Name',
+                typeName: 'string',
+            },
+            {
+                name: 'schemaName.keyword',
+                displayName: 'Schema Name',
+                typeName: 'string',
+            },
+            {
+                name: 'tableName.keyword',
+                displayName: 'Table Name',
+                typeName: 'string',
+            },
+            {
+                name: 'viewName.keyword',
+                displayName: 'View Name',
+                typeName: 'string',
+            },
+        ],
+        overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+
+    {
         id: 'table',
         label: 'Table/View',
         component: 'properties',
@@ -132,16 +171,6 @@ export const discoveryFilters = [
                 displayName: 'Size(Bytes)',
                 typeName: 'long',
             },
-            {
-                name: 'schemaName',
-                displayName: 'Schema Name',
-                typeName: 'string',
-            },
-            {
-                name: 'databaseName',
-                displayName: 'Database Name',
-                typeName: 'string',
-            },
         ],
         overallCondition: 'OR',
         isDeleted: false,
@@ -157,26 +186,6 @@ export const discoveryFilters = [
             {
                 name: 'dataType',
                 displayName: 'Data Type',
-                typeName: 'string',
-            },
-            {
-                name: 'tableName',
-                displayName: 'Table Name',
-                typeName: 'string',
-            },
-            {
-                name: 'viewName',
-                displayName: 'View Name',
-                typeName: 'string',
-            },
-            {
-                name: 'schemaName',
-                displayName: 'Schema Name',
-                typeName: 'string',
-            },
-            {
-                name: 'databaseName',
-                displayName: 'Database Name',
                 typeName: 'string',
             },
             {

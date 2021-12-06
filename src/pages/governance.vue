@@ -3,7 +3,7 @@
         <div
             class="flex flex-col w-1/5 h-full overflow-hidden bg-white border-r"
         >
-            <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
+            <div class="flex flex-grow w-full px-6 mt-4 mb-2 overflow-y-auto">
                 <a-menu
                     v-model:selectedKeys="current"
                     mode="inline"
@@ -64,64 +64,64 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+    import { computed, defineComponent, ref } from 'vue'
+    import { useRouter, useRoute } from 'vue-router'
 
-import map from '~/constant/accessControl/map'
+    import map from '~/constant/accessControl/map'
 
-export default defineComponent({
-    setup() {
-        const router = useRouter()
-        const route = useRoute()
+    export default defineComponent({
+        setup() {
+            const router = useRouter()
+            const route = useRoute()
 
-        const handleClick = ({ key }) => {
-            router.push(`/governance/${key}`)
-        }
+            const handleClick = ({ key }) => {
+                router.push(`/governance/${key}`)
+            }
 
-        const initialRoute = route.path.split('/').slice(-1)
-        const current = ref(
-            initialRoute[0] === 'governance' ? ['persona'] : initialRoute
-        )
+            const initialRoute = route.path.split('/').slice(-1)
+            const current = ref(
+                initialRoute[0] === 'governance' ? ['persona'] : initialRoute
+            )
 
-        return {
-            handleClick,
-            current,
-            map,
-        }
-    },
-})
+            return {
+                handleClick,
+                current,
+                map,
+            }
+        },
+    })
 </script>
 
 <style lang="less" module>
-.sidebar {
-    &:global(.ant-menu-inline) {
-        @apply border-none !important;
-    }
+    .sidebar {
+        &:global(.ant-menu-inline) {
+            @apply border-none !important;
+        }
 
-    :global(.ant-menu-item-group) {
-        @apply mb-6;
-    }
-    :global(.ant-menu-item-group-title) {
-        @apply pl-2;
-        @apply text-xs uppercase tracking-wider font-bold leading-none;
-    }
-    :global(.ant-menu-title-content) {
-        @apply pl-2;
-    }
-    :global(.ant-menu-item) {
-        @apply text-sm;
-        @apply py-2;
-        margin: 0px !important;
-    }
+        :global(.ant-menu-item-group) {
+            @apply mb-6;
+        }
+        :global(.ant-menu-item-group-title) {
+            @apply pl-2;
+            @apply text-xs uppercase tracking-wider font-bold leading-none;
+        }
+        :global(.ant-menu-title-content) {
+            @apply pl-2;
+        }
+        :global(.ant-menu-item) {
+            @apply text-sm;
+            @apply py-2;
+            margin: 0px !important;
+        }
 
-    :global(.ant-menu-item::after) {
-        @apply border-none !important;
-    }
+        :global(.ant-menu-item::after) {
+            @apply border-none !important;
+        }
 
-    :global(.ant-menu-item-selected) {
-        @apply rounded !important;
+        :global(.ant-menu-item-selected) {
+            @apply rounded !important;
+        }
     }
-}
 </style>
 
 <route lang="yaml">

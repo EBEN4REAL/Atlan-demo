@@ -14,7 +14,9 @@
             <slot name="sidebar"></slot>
         </aside>
 
-        <div class="flex flex-col flex-1 h-full pt-6 pb-4 overflow-y-hidden">
+        <div
+            class="flex flex-col flex-1 h-full overflow-y-hidden bg-primary-light"
+        >
             <slot></slot>
         </div>
     </div>

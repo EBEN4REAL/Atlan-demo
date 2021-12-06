@@ -18,16 +18,18 @@ export default function useAsyncSelector(
         rootPathParts.forEach((p: string) => {
             if (p) root = root[p]
         })
-        const data = root ? root.map((o: any) => {
-            // labelPath - {{.name}} - a - {{.attribute.displayName}}
-            const label = getStringFromPath(o, labelPath)
-            const value = getStringFromPath(o, valuePath)
-            return {
-                value,
-                label,
-                data: o,
-            }
-        }) : []
+        const data = root
+            ? root.map((o: any) => {
+                  // labelPath - {{.name}} - a - {{.attribute.displayName}}
+                  const label = getStringFromPath(o, labelPath)
+                  const value = getStringFromPath(o, valuePath)
+                  return {
+                      value,
+                      label,
+                      data: o,
+                  }
+              })
+            : []
 
         asyncData.value = data
     }
@@ -88,18 +90,14 @@ export default function useAsyncSelector(
         if (document.location.hostname === 'localhost')
             parsedUrl = parsedUrl.replace('https', 'http')
         try {
-            const response = await genericAPI(
-                parsedUrl,
-                method,
-                {
-                    params: genParams(valueObject.value, params),
-                    body,
-                },
-            )
+            const response = await genericAPI(parsedUrl, method, {
+                params: genParams(valueObject.value, params),
+                body,
+            })
 
-            setConfigData(response)
             createNewVisibility.value = true
         } catch (e) {
+            console.log(genParams(valueObject.value, params))
             newConfigError.value = true
         }
         newConfigLoading.value = false
@@ -129,17 +127,19 @@ export default function useAsyncSelector(
                 {
                     params: genParams(valueObject.value, params),
                     body: getParsedBody(addFormValues),
-                },
+                }
             )
             setData(response)
         } catch (e) {
             const { errorMessage, errorLabelPath } = resConfig.value
             shouldRefetch.value = true
-            const errMsg = e.response?.data?.errorMessage || ""
-            const generalError = "Don't worry, something broke on our end, you can send this info to us."
+            const errMsg = e.response?.data?.errorMessage || ''
+            const generalError =
+                "Don't worry, something broke on our end, you can send this info to us."
             errorM.value =
                 errorMessage ||
-                errMsg || (errorLabelPath && getStringFromPath(e, errorLabelPath)) ||
+                errMsg ||
+                (errorLabelPath && getStringFromPath(e, errorLabelPath)) ||
                 e.response?.data?.message ||
                 generalError
             loadDataError.value = true

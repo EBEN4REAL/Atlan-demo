@@ -12,7 +12,11 @@
             >
                 <PopoverAsset :item="item" placement="right">
                     <template #button>
-                        <a-button class="mt-3" @click="openSidebar" block>
+                        <a-button
+                            class="mt-3"
+                            @click="actionClick('info', item)"
+                            block
+                        >
                             <div class="flex justify-center w-full">
                                 <div class="flex items-center cursor-pointer">
                                     Open preview sidebar
@@ -773,11 +777,14 @@
                         const activeInlineTabCopy: activeInlineTabInterface =
                             Object.assign({}, activeInlineTab.value)
 
+                        console.log(
+                            'activeInlineTab: ',
+                            Object.keys(activeInlineTabCopy)
+                        )
+
                         // new logic for preview ctc
                         // previous text
-                        const prevText =
-                            activeInlineTabCopy.playground.editor.text
-                        // new text
+
                         let newQuery = `\/* ${title(
                             item.value
                         )} preview *\/\nSELECT * FROM \"${title(
@@ -799,6 +806,31 @@
                             '/' +
                             item.value.schemaName
 
+                        let updatedEditorSchemaQualifiedName =
+                            item.value?.databaseQualifiedName +
+                            '/' +
+                            item.value?.schemaName
+
+                        if (!Object.keys(activeInlineTabCopy).length) {
+                            handleAddNewTab(
+                                newQuery,
+                                {
+                                    attributeName: 'schemaQualifiedName',
+                                    attributeValue:
+                                        updatedEditorSchemaQualifiedName,
+                                },
+                                item.value
+                            )
+                            let activeInlineTabCopy: activeInlineTabInterface =
+                                Object.assign({}, activeInlineTab.value)
+                            playQuery(newQuery, newQuery, activeInlineTabCopy)
+                            return
+                        }
+
+                        // if we have a editor context
+                        const prevText =
+                            activeInlineTabCopy.playground.editor.text
+                        // new text
                         let editorContext =
                             activeInlineTabCopy.playground.editor.context
                         let editorContextType = editorContext?.attributeName
@@ -810,10 +842,6 @@
                         // 2nd context mismatch in editor and query
 
                         // console.log('run query')
-                        let updatedEditorSchemaQualifiedName =
-                            item.value?.databaseQualifiedName +
-                            '/' +
-                            item.value?.schemaName
 
                         switch (editorContextType) {
                             case 'connectionQualifiedName': {
@@ -835,6 +863,14 @@
                                         },
                                         item.value
                                     )
+                                    let activeInlineTabCopy: activeInlineTabInterface =
+                                        Object.assign({}, activeInlineTab.value)
+                                    playQuery(
+                                        newQuery,
+                                        newText,
+                                        activeInlineTabCopy
+                                    )
+
                                     return
                                 } else {
                                     const newText = `${newQuery}${prevText}`
@@ -881,6 +917,16 @@
                                                     updatedEditorSchemaQualifiedName,
                                             },
                                             item.value
+                                        )
+                                        let activeInlineTabCopy: activeInlineTabInterface =
+                                            Object.assign(
+                                                {},
+                                                activeInlineTab.value
+                                            )
+                                        playQuery(
+                                            newQuery,
+                                            newText,
+                                            activeInlineTabCopy
                                         )
                                         return
                                     } else {
@@ -949,6 +995,16 @@
                                             },
                                             item.value
                                         )
+                                        let activeInlineTabCopy: activeInlineTabInterface =
+                                            Object.assign(
+                                                {},
+                                                activeInlineTab.value
+                                            )
+                                        playQuery(
+                                            newQuery,
+                                            newText,
+                                            activeInlineTabCopy
+                                        )
                                         return
                                     } else {
                                         if (
@@ -998,12 +1054,54 @@
                     }
                     case 'info': {
                         // i button clicked on the same node -> close the sidebar
-                        if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
-                            /* Close it if it is already opened */
-                            closeAssetSidebar(activeInlineTab.value)
+                        console.log('info: ', activeInlineTab)
+                        if (
+                            activeInlineTab?.value &&
+                            Object.keys(activeInlineTab?.value).length
+                        ) {
+                            if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                                /* Close it if it is already opened */
+                                closeAssetSidebar(activeInlineTab.value)
+                            } else {
+                                let activeInlineTabCopy: activeInlineTabInterface =
+                                    Object.assign({}, activeInlineTab.value)
+                                activeInlineTabCopy.assetSidebar.assetInfo =
+                                    t.entity
+                                activeInlineTabCopy.assetSidebar.isVisible =
+                                    true
+                                openAssetSidebar(
+                                    activeInlineTabCopy,
+                                    'not_editor'
+                                )
+                            }
                         } else {
-                            const activeInlineTabCopy: activeInlineTabInterface =
+                            let activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
+
+                            if (!Object.keys(activeInlineTabCopy).length) {
+                                let tableName = title(item.value)
+                                let newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
+                                let updatedEditorSchemaQualifiedName =
+                                    item.value?.databaseQualifiedName +
+                                    '/' +
+                                    item.value?.schemaName
+
+                                handleAddNewTab(
+                                    newQuery,
+                                    {
+                                        attributeName: 'schemaQualifiedName',
+                                        attributeValue:
+                                            updatedEditorSchemaQualifiedName,
+                                    },
+                                    item.value
+                                )
+
+                                activeInlineTabCopy = Object.assign(
+                                    {},
+                                    activeInlineTab.value
+                                )
+                                // playQuery(newQuery, newQuery, activeInlineTabCopy)
+                            }
                             activeInlineTabCopy.assetSidebar.assetInfo =
                                 t.entity
                             activeInlineTabCopy.assetSidebar.isVisible = true
@@ -1102,83 +1200,6 @@
 
             const handleAddNewTab = async (query, context, previewItem) => {
                 const key = generateUUID()
-
-                // const inlineTabData = { ...demoTab }
-
-                // ;(inlineTabData.label = `${previewItem.title} preview`),
-                //     (inlineTabData.key = key),
-                //     (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
-                //     (inlineTabData.isSaved = false),
-                //     (inlineTabData.queryId = undefined),
-                //     (inlineTabData.status = 'DRAFT'),
-                //     (inlineTabData.connectionId = ''),
-                //     (inlineTabData.description = ''),
-                //     (inlineTabData.qualifiedName = ''),
-                //     (inlineTabData.parentGuid = ''),
-                //     (inlineTabData.parentQualifiedName = ''),
-                //     (inlineTabData.isSQLSnippet = false),
-                //     (inlineTabData.savedQueryParentFolderTitle = undefined),
-                //     (inlineTabData.explorer = {
-                //         schema: {
-                //             connectors: {
-                //                 ...context,
-                //             },
-                //         },
-                //         queries: {
-                //             connectors: {
-                //                 connector:
-                //                     previewItem.connectionQualifiedName.split(
-                //                         '/'
-                //                     )[1],
-                //             },
-                //         },
-                //     }),
-                //     (inlineTabData.playground.editor = {
-                //         context: {
-                //             ...context,
-                //         },
-                //         text: query,
-                //         dataList: [],
-                //         columnList: [],
-                //         variables: [],
-                //         savedVariables: [],
-                //         limitRows: {
-                //             checked: false,
-                //             rowsCount: -1,
-                //         },
-                //     })
-                // ;(inlineTabData.playground.resultsPane = {
-                //     activeTab:
-                //         activeInlineTab.value?.playground?.resultsPane
-                //             ?.activeTab ?? 0,
-                //     result: {
-                //         title: `${key} Result`,
-                //         runQueryId: undefined,
-                //         isQueryRunning: '',
-                //         queryErrorObj: {},
-                //         totalRowsCount: -1,
-                //         executionTime: -1,
-                //         errorDecorations: [],
-                //         eventSourceInstance: undefined,
-                //         buttonDisable: false,
-                //         isQueryAborted: false,
-                //     },
-                //     metadata: {},
-                //     queries: {},
-                //     joins: {},
-                //     filters: {},
-                //     impersonation: {},
-                //     downstream: {},
-                //     sqlHelp: {},
-                // }),
-                //     (inlineTabData.assetSidebar = {
-                //         // for taking the previous state from active tab
-                //         openingPos: undefined,
-                //         isVisible: false,
-                //         assetInfo: {},
-                //         title: activeInlineTab.value?.assetSidebar.title ?? '',
-                //         id: activeInlineTab.value?.assetSidebar.id ?? '',
-                //     })
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
                     key,
@@ -1268,21 +1289,25 @@
                     },
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                queryRun(
-                    activeInlineTab,
-                    getData,
-                    limitRows,
-                    null,
-                    null,
-                    query,
-                    editorInstance,
-                    monacoInstance
-                )
-
-                selectionObject.value.startLineNumber = 2
-                selectionObject.value.startColumnNumber = 1
-                selectionObject.value.endLineNumber = 2
-                selectionObject.value.endColumnNumber = query.length + 1 // +1 for semicolon
+                // selectionObject.value.startLineNumber = 2
+                // selectionObject.value.startColumnNumber = 1
+                // selectionObject.value.endLineNumber = 2
+                // selectionObject.value.endColumnNumber = query.length + 1 // +1 for semicolon
+                // setSelection(
+                //     toRaw(editorInstanceRef.value),
+                //     toRaw(monacoInstanceRef.value),
+                //     selectionObject.value
+                // )
+                // queryRun(
+                //     activeInlineTab,
+                //     getData,
+                //     limitRows,
+                //     null,
+                //     null,
+                //     query,
+                //     editorInstance,
+                //     monacoInstance
+                // )
             }
 
             return {

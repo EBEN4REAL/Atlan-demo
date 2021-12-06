@@ -264,6 +264,7 @@ export function useBody(
             }
             case 'column':
             case 'table':
+            case 'sql':
             case 'properties': {
                 if (filterObject) {
                     console.log(filterObject)

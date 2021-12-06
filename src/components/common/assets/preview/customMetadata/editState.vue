@@ -186,7 +186,7 @@
             modelValue: {
                 type: String,
                 required: false,
-                default: () => '',
+                default: () => undefined,
             },
         },
 
@@ -195,7 +195,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const localValue = ref(modelValue.value)
+            const localValue: any = ref(modelValue.value)
 
             const {
                 getDatatypeOfAttribute,
@@ -220,6 +220,10 @@
             const isMultivalued = ref(
                 props.attribute.options.multiValueSelect === 'true'
             )
+
+            // set proper default value
+            if (isMultivalued.value && !localValue.value) localValue.value = []
+            else if (!localValue.value) localValue.value = ''
 
             const handleNumber = (v) => {
                 localValue.value = v.map((s) => parseInt(s, 10))

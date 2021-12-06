@@ -154,23 +154,9 @@
                                     applicableList.value[attrIndex]?.options
 
                                 if (attrIndex > -1) {
-                                    // !FIXME
-                                    if (
-                                        // (options?.customType === 'users' ||
-                                        //     options?.customType === 'groups' ||
-                                        //     options?.isEnum === 'true') &&
-                                        options?.multiValueSelect === 'true'
-                                    ) {
-                                        value = value
-                                            ?.replace(/\[|\]/g, '')
-                                            .split(',')
-                                            .map((v: string) => v.trim())
-                                    }
-                                    // else if (
-                                    //     options?.multiValueSelect === 'true'
-                                    // ) {
-                                    //     value = JSON.parse(value)
-                                    // }
+                                    if (options?.multiValueSelect === 'true')
+                                        value = JSON.parse(value)
+
                                     applicableList.value[attrIndex].value =
                                         value
                                 }

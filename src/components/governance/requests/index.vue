@@ -6,6 +6,14 @@
             :width="286"
             :closable="false"
     >
+    <AssetFilters
+        v-model="facets"
+        :filter-list="[]"
+        :allow-custom-filters="false"
+        class="bg-gray-100"
+        @change="handleFilterChange"
+        @reset="handleResetEvent"
+    />
     </a-drawer>
     <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
         <template #header>
@@ -125,6 +133,7 @@
             const selectedIndex = ref(0)
             const isDetailsVisible = ref(false)
             const drawerFilter = ref(false)
+            const facets = ref({})
             const searchTerm = ref('')
             const filters = ref({
                 status: 'active' as RequestStatus,
@@ -220,6 +229,12 @@
                 },
                 { deep: true }
             )
+            const handleFilterChange = () => {
+
+            }
+            const handleResetEvent = () => {
+                
+            }
             return {
                 requestList,
                 isSelected,
@@ -235,7 +250,10 @@
                 traverseUp,
                 traverseDown,
                 drawerFilter,
-                handleClickFilter
+                handleClickFilter,
+                facets,
+                handleFilterChange,
+                handleResetEvent
                 // listPermission
             }
         },

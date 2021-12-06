@@ -7,17 +7,7 @@
                 :autofocus="true"
                 :placeholder="`Search ${colCount} columns`"
                 @change="handleSearchChange"
-            >
-                <!-- <template #filter>
-                    <DataTypes
-                        :data-type-map="dataTypeMap"
-                        :clear-all-filters="clearAllFilters"
-                        @dataTypeFilter="handleFilterChange"
-                        @sort="handleChangeSort"
-                        @certification="handleCertificationFilter"
-                    />
-                </template> -->
-            </SearchAndFilter>
+            />
         </div>
         <!-- Table -->
         <div class="relative">
@@ -165,7 +155,8 @@
             const showColumnSidebar = ref<boolean>(false)
             const queryText = ref('')
             const columnsList: Ref<assetInterface[]> = ref([])
-            const clearAllFilters = ref<boolean>(false)
+            const columnFromUrl: Ref<assetInterface[]> = ref([])
+
             const { columnCount, selectedAsset } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -286,19 +277,12 @@
                 columnsList.value = [
                     // ...pinnedList.value,
                     ...list.value,
-                    // ...columnFromUrl.value,
+                    ...columnFromUrl.value,
                 ]
-                console.log(columnsList.value)
 
-                // In case column is selected from discovery and after clicking load more duplication of the same column happens
-                const uniqueColumns = {}
-                const filteredColumnsList = columnsList.value.filter(
-                    (col) =>
-                        !uniqueColumns[col.guid] &&
-                        (uniqueColumns[col.guid] = true)
-                )
+                console.log(columnFromUrl.value)
 
-                const filteredListData = filteredColumnsList.map((i) => ({
+                const filteredListData = columnsList.value.map((i) => ({
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
                     column_name: i.attributes.name,
@@ -345,11 +329,7 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch(list, () => {
-                filterColumnsList()
-            })
-
-            onMounted(() => {
+            watch([list], () => {
                 // If redirected from asset column discovery
                 if (column.value !== '') {
                     const limit = ref(1)
@@ -358,24 +338,17 @@
                         guid: column.value,
                     })
                     const fetchKey = computed(() => {
-                        list.value.map((item) => {
-                            if (item.guid === column.value) {
-                                return null
-                            } else {
-                                return column.value
-                            }
-                        })
+                        if (
+                            list.value.some(
+                                (item) => item.guid === column.value
+                            )
+                        ) {
+                            return null
+                        }
+                        return column.value
                     })
                     const dependentKey = ref(fetchKey.value)
 
-                    const { customMetadataProjections } = useTypedefData()
-                    const defaultAttributes = ref([
-                        ...InternalAttributes,
-                        ...AssetAttributes,
-                        ...SQLAttributes,
-                        ...customMetadataProjections,
-                    ])
-                    const relationAttributes = ref([...AssetRelationAttributes])
                     const { list: urlColumnList } = useDiscoverList({
                         isCache: false,
                         dependentKey,
@@ -387,9 +360,14 @@
                     })
                     watch([urlColumnList], () => {
                         columnFromUrl.value = urlColumnList.value
+                        filterColumnsList()
                     })
+                } else {
+                    filterColumnsList()
                 }
             })
+
+            onMounted(() => {})
 
             return {
                 rowClassName,
@@ -406,7 +384,6 @@
                 isLoadMore,
                 handleListUpdate,
                 handleCloseColumnSidebar,
-                clearAllFilters,
                 isLoading,
                 columnsList,
                 selectedRow,

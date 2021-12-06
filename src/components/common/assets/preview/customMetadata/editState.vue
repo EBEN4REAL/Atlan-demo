@@ -123,9 +123,10 @@
             :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
-            @search="userSearch"
+            @focus="userSearch"
             @change="handleChange"
-            ><a-select-option
+        >
+            <a-select-option
                 v-for="(item, index) in userList"
                 :key="index"
                 :value="item.username"
@@ -142,7 +143,7 @@
             :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
-            @search="groupSearch"
+            @focus="groupSearch"
             @change="handleChange"
             ><a-select-option
                 v-for="(item, index) in groupList"
@@ -205,14 +206,14 @@
             } = useCustomMetadataHelpers()
 
             const { list: userList, handleSearch: handleUserSearch } =
-                useFacetUsers()
+                useFacetUsers(false)
 
             const userSearch = (val) => {
                 handleUserSearch(val)
             }
 
             const { list: groupList, handleSearch: handleGroupSearch } =
-                useFacetGroups()
+                useFacetGroups(false)
             const groupSearch = (val) => {
                 handleGroupSearch(val)
             }

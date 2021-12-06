@@ -1,7 +1,7 @@
 <template>
     <div
         ref="container"
-        @focusin="setFoucs"
+        @click="setFoucs"
         @focusout="handleContainerBlur"
         tabindex="0"
         class=""
@@ -18,7 +18,12 @@
     >
         <!-- <p class="text-sm text-gray-500 py-1.5">Add columns to fetch results</p> -->
         <template v-for="(item, index) in cols" :key="item.label + index">
-            <Pill :label="item.label" :hasAction="true" class="mr-2"
+            <Pill
+                :label="item.label"
+                @action="() => handleDeleteColumn(index)"
+                :hasAction="true"
+                class="mr-2"
+                @click.stop="() => {}"
                 ><template #prefix>
                     <component
                         :is="getDataTypeImage(item.type)"
@@ -76,12 +81,12 @@
             const container = ref()
             const dropdown = ref()
             const dropdownState = ref(false)
-            const cols = [
+            const cols = ref([
                 { type: 'string', label: 'customer_name' },
                 { type: 'string', label: 'bevrage_name' },
                 { type: 'number', label: 'order_number' },
                 { type: 'number', label: 'customer_contact' },
-            ]
+            ])
             const setFoucs = () => {
                 isAreaFocused.value = true
                 dropdownState.value = true
@@ -101,8 +106,12 @@
                 isAreaFocused.value = false
                 dropdownState.value = false
             }
+            const handleDeleteColumn = (index: any) => {
+                cols.value.splice(index, 1)
+            }
 
             return {
+                handleDeleteColumn,
                 handleClose,
                 dropdownState,
                 dropdown,

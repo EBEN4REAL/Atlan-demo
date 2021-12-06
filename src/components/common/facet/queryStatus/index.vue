@@ -9,9 +9,8 @@
                     <template v-for="item in statusList" :key="item.value">
                         <div class="status">
                             <a-checkbox
-                                :class="$style.atlanReverse"
                                 :value="item.value"
-                                class="flex flex-row-reverse items-center justify-between w-full px-1 rounded  hover:bg-primary-light"
+                                class="flex flex-row-reverse items-center justify-between w-full px-1 rounded atlanReverse hover:bg-primary-light"
                             >
                                 <div class="flex items-center px-0">
                                     <div
@@ -88,15 +87,3 @@ export default defineComponent({
     },
 })
 </script>
-
-<style lang="less" module>
-.atlanReverse {
-    > span:nth-child(2) {
-        @apply w-full pl-0;
-    }
-
-    :global(.ant-checkbox) {
-        top: 0px !important;
-    }
-}
-</style>

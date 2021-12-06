@@ -12,7 +12,7 @@
         >
             <AtlanIcon icon="ChevronLeft" />
         </div>
-        <div class="h-full px-2 py-8 bg-gray-50">
+        <div class="h-full px-2 py-8 bg-gray-50 filter-container">
             <AssetFilters
                 v-model="facets"
                 :filter-list="requestFilter"
@@ -21,10 +21,10 @@
                 @change="handleFilterChange"
                 @reset="handleResetEvent"
             >
-                <div class="mb-2">
+                <div class="mt-4 mb-4 wrapper-filter">
                     <Connector
                         v-model:data="connectorsData"
-                        class="bg-white"
+                        class=""
                         :filter-source-ids="BItypes"
                         :is-leaf-node-selectable="false"
                         :item="{
@@ -66,7 +66,7 @@
                     >
                         <AtlanIcon icon="FilterFunnel" />
                         <div
-                            class="absolute border-r border-solid divide-gray-800  devider-filter"
+                            class="absolute border-r border-solid divide-gray-800 devider-filter"
                         />
                     </div>
                 </template>
@@ -318,6 +318,18 @@
     })
 </script>
 
+<style lang="less">
+    .wrapper-filter{
+        .ant-select-selector{
+            background: white!important;
+        }   
+    }
+    .filter-container{
+        .filter-head{
+            display: none;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .close-icon {
         &.closed {

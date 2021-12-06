@@ -56,6 +56,7 @@ export const previewTabs = [
             'View',
             'MaterialisedViews',
             'PartitionTable',
+            'Column',
         ],
         icon: 'Relation',
         tooltip: 'Relationships',

@@ -99,7 +99,7 @@
     import PopoverClassification from '@/common/popover/classification.vue'
 
     export default defineComponent({
-        name: 'AssetListItem',
+        name: 'ColumnListItem',
         components: {
             CertificateBadge,
             AssetDrawer,

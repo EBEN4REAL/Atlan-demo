@@ -37,17 +37,7 @@
                         :class="{
                             'border-primary': record.key === selectedRow,
                         }"
-                        class="
-                            absolute
-                            top-0
-                            left-0
-                            flex
-                            items-center
-                            justify-center
-                            w-full
-                            h-full
-                            border-l-4 border-transparent
-                        "
+                        class="absolute top-0 left-0 flex items-center justify-center w-full h-full border-l-4 border-transparent "
                     >
                         <span class="mr-1">{{ text }}</span>
                     </div>
@@ -83,10 +73,6 @@
                         {{ text }}
                     </a-tooltip>
                 </template>
-                <!-- popularity col -->
-                <template #popularity="{ text }">
-                    <a-progress :percent="text" :show-info="false" />
-                </template>
             </a-table>
             <div
                 v-if="columnsList.length <= 0 && !isLoading"
@@ -102,30 +88,11 @@
             >
                 <button
                     v-if="!isLoading"
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        py-2
-                        transition-all
-                        duration-300
-                        bg-white
-                        rounded-full
-                        text-primary
-                    "
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                     @click="loadMore"
                 >
                     <p
-                        class="
-                            m-0
-                            mr-1
-                            overflow-hidden
-                            text-sm
-                            transition-all
-                            duration-300
-                            overflow-ellipsis
-                            whitespace-nowrap
-                        "
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -133,29 +100,12 @@
                 </button>
             </div>
         </div>
-        <!-- TODO: Uncomment when bringing sidebar in profile -->
-        <!-- <teleport to="#overAssetPreviewSidebar">
-            <a-drawer
-                v-if="showColumnPreview"
-                v-model:visible="showColumnPreview"
-                placement="right"
-                :mask="false"
-                :get-container="false"
-                :wrap-style="{ position: 'absolute', width: '100%' }"
-                :keyboard="false"
-                :destroy-on-close="true"
-                :closable="false"
-                width="100%"
-            >
-                <AssetPreview
-                    :selected-asset="selectedRowData"
-                    page="nonBiOverview"
-                    :show-cross-icon="true"
-                    @closeSidebar="handleCloseColumnSidebar"
-                    @asset-mutation="propagateToColumnList"
-                />
-            </a-drawer>
-        </teleport> -->
+        <AssetDrawer
+            :data="selectedRowData"
+            :showDrawer="showColumnSidebar"
+            @closeDrawer="handleCloseColumnSidebar"
+            @update="handleListUpdate"
+        />
     </div>
 </template>
 
@@ -178,6 +128,7 @@
     // Components
     // import DataTypes from '@common/facets/dataType.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     // import Tooltip from '@/common/ellipsis/index.vue'
     // import AssetPreview from '@/discovery/preview/assetPreview.vue'
@@ -199,29 +150,22 @@
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
-    // store
-    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         components: {
             SearchAndFilter,
-            // Tooltip,
-            // AssetPreview,
-            // DataTypes,
+            AssetDrawer,
         },
         setup() {
             /** DATA */
             const columnsData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
-            const showColumnPreview = ref<boolean>(false)
+            const showColumnSidebar = ref<boolean>(false)
             const queryText = ref('')
             const columnsList: Ref<assetInterface[]> = ref([])
-            const sortOrder = ref('order|ascending')
             const clearAllFilters = ref<boolean>(false)
-            const { columnCount } = useAssetInfo()
-            const discoveryStore = useAssetStore()
-            const { selectedAsset } = storeToRefs(discoveryStore)
+            const { columnCount, selectedAsset } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
             const limit = ref(20)
@@ -242,19 +186,22 @@
             })
             const relationAttributes = ref([...AssetRelationAttributes])
 
+            const assetQualifiedName = computed(
+                () => selectedAsset.value?.attributes?.qualifiedName
+            )
+
             const updateFacet = () => {
                 facets.value = {}
                 if (selectedAsset?.value.typeName?.toLowerCase() === 'table') {
-                    facets.value.tableQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
+                    facets.value.tableQualifiedName = assetQualifiedName.value
                 }
                 if (selectedAsset?.value.typeName?.toLowerCase() === 'view') {
-                    facets.value.viewQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
+                    facets.value.viewQualifiedName = assetQualifiedName.value
                 }
             }
 
             updateFacet()
+
             const {
                 list,
                 isLoading,
@@ -264,6 +211,9 @@
                 quickChange,
                 totalCount,
                 getAggregationList,
+                error,
+                isValidating,
+                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -278,6 +228,10 @@
                 relationAttributes,
             })
 
+            const handleListUpdate = (asset: any) => {
+                updateList(asset)
+            }
+
             const columnDataTypeAggregationList = computed(() =>
                 getAggregationList(
                     `group_by_${aggregationAttributeName}`,
@@ -285,71 +239,13 @@
                     true
                 )
             )
-            console.log(list)
-            /** INJECTIONS */
-            // const assetDataInjection = inject('assetData')
 
             /** UTILS */
             const route = useRoute()
 
-            /** COMPUTED */
-            // const assetData = computed(() => assetDataInjection?.asset)
             const column = computed(() => route?.query?.column || '')
-            const assetQualifiedName = computed(
-                () => selectedAsset.value.attributes?.qualifiedName
-            )
+
             const colCount = computed(() => columnCount(selectedAsset.value))
-
-            // const { list, isLoading, isLoadMore, reFetch, loadMore } =
-            //     useColumnsList(assetQualifiedName, {
-            //         query: queryText,
-            //         dataTypes: filters,
-            //         pinned: false,
-            //         sort: sortOrder,
-            //         certification: certificationFilters,
-            //     })
-            // const { list: pinnedList, reFetch: reFetchPin } = useColumnsList(
-            //     assetQualifiedName,
-            //     {
-            //         pinned: true,
-            //         query: queryText,
-            //         dataTypes: filters,
-            //         sort: sortOrder,
-            //         certification: certificationFilters,
-            //     }
-            // )
-
-            // const { dataTypeMap } = useColumnAggregation(assetQualifiedName)
-
-            // const handleSearchChange = useDebounceFn(() => {
-            //     reFetch()
-            //     reFetchPin()
-            // }, 150)
-
-            // const clearFiltersAndSearch = () => {
-            //     queryText.value = ''
-            //     clearAllFilters.value = true
-            //     reFetch()
-            //     reFetchPin()
-            //     nextTick(() => {
-            //         clearAllFilters.value = false
-            //     })
-            // }
-            // const handleChangeSort = (payload: any) => {
-            //     sortOrder.value = payload
-            //     reFetch()
-            //     reFetchPin()
-            // }
-            // const handleCertificationFilter = (payload: any) => {
-            //     certificationFilters.value = payload
-            //     reFetch()
-            //     reFetchPin()
-            // }
-            // const handleFilterChange = (payload: any) => {
-            //     filters.value = payload
-            //     reFetch()
-            //     reFetchPin()
-            // }
 
             const scrollToElement = () => {
                 const tableRow = document.querySelector(
@@ -365,7 +261,7 @@
             }
 
             const handleCloseColumnSidebar = () => {
-                showColumnPreview.value = false
+                showColumnSidebar.value = false
                 selectedRow.value = null
                 selectedRowData.value = {}
             }
@@ -377,7 +273,7 @@
                     }
                 })
 
-                showColumnPreview.value = true
+                showColumnSidebar.value = true
             }
 
             const getDataType = (type: string) => {
@@ -404,7 +300,7 @@
                         !uniqueColumns[col.guid] &&
                         (uniqueColumns[col.guid] = true)
                 )
-                console.log(filteredColumnsList)
+
                 const filteredListData = filteredColumnsList.map((i) => ({
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
@@ -415,13 +311,11 @@
                         i.attributes.userDescription ||
                         i.attributes.description ||
                         '---',
-                    popularity: i.attributes.popularityScore || 8,
                 }))
                 columnsData.value = {
                     filteredList: filteredListData,
                 }
 
-                console.log(filteredListData)
                 if (column.value !== '') {
                     columnsList.value?.forEach((singleRow) => {
                         if (singleRow.guid === column.value) {
@@ -438,7 +332,7 @@
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
-                    // Column preview trigger
+                    // Column drawer trigger
                     if (selectedRow.value === record.key)
                         handleCloseColumnSidebar()
                     else {
@@ -446,11 +340,6 @@
                     }
                 },
             })
-
-            const propagateToColumnList = (updatedAsset: assetInterface) => {
-                selectedRowData.value = updatedAsset
-                filterColumnsList()
-            }
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
@@ -475,6 +364,7 @@
             //         })
             //     }
             // })
+
             return {
                 rowClassName,
                 customRow,
@@ -488,9 +378,8 @@
                 // loadMore,
                 // handleFilterChange,
                 isLoadMore,
-                dataTypeCategoryList,
+                handleListUpdate,
                 handleCloseColumnSidebar,
-                propagateToColumnList,
                 clearAllFilters,
                 isLoading,
                 columnsList,
@@ -498,7 +387,7 @@
                 columnsData,
                 queryText,
                 colCount,
-                showColumnPreview,
+                showColumnSidebar,
                 selectedRowData,
                 images,
                 columns: [
@@ -528,13 +417,6 @@
                         dataIndex: 'description',
                         key: 'description',
                         slots: { customRender: 'description' },
-                    },
-                    {
-                        width: 150,
-                        title: 'Popularity',
-                        dataIndex: 'popularity',
-                        slots: { customRender: 'popularity' },
-                        key: 'popularity',
                     },
                 ],
             }

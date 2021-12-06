@@ -39,18 +39,13 @@
             </Pill>
         </template>
         <div
-            v-if="dropdownState"
-            class="absolute pb-2 overflow-auto rounded shadow"
+            v-if="isAreaFocused"
+            @click.stop="() => {}"
+            class="absolute pb-2 overflow-auto rounded custom-shadow"
             :style="`left:${clickPos.left}px;top:${clickPos.top}px`"
             ref="dropdown"
             style="width: 330px; height: 250px"
         >
-            <div
-                class="absolute px-1 py-0.5 text-gray-300 border rounded right-4 top-3.5 cursor-pointer"
-                @click.stop="handleClose"
-            >
-                <AtlanIcon icon="Close" class="w-4 h-4" />
-            </div>
             <TablesTree @selectedColumn="onSelectedColumn" />
         </div>
     </div>
@@ -107,12 +102,10 @@
                 // currentTarget is the parent element, relatedTarget is the clicked element
                 if (!container.value.contains(event.relatedTarget)) {
                     isAreaFocused.value = false
-                    // dropdownState.value = false
                 }
             }
             const handleClose = () => {
                 console.log('clied')
-                isAreaFocused.value = false
                 dropdownState.value = false
             }
             const handleDeleteColumn = (index: any) => {
@@ -157,8 +150,6 @@
         padding: 12px;
     }
     .custom-shadow {
-        box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
-            0px 6px 16px rgba(0, 0, 0, 0.08),
-            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
     }
 </style>

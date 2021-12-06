@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white">
         <div class="w-full p-4 pt-2 pb-0">
-            <div class="flex flex-row space-x-2" style="width: 85%">
+            <div class="flex flex-row space-x-2">
                 <SearchAndFilter
                     v-model:value="queryText"
                     :placeholder="`Search`"

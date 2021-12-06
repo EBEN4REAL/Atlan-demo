@@ -129,16 +129,16 @@ export const requestFilter = [
         class: 'bg-transparent',
         data: statusRequest
     },
-    {
-        id: 'terms',
-        label: 'Terms',
-        component: 'governance',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-    },
+    // {
+    //     id: 'terms',
+    //     label: 'Terms',
+    //     component: 'governance',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    // },
     {
         id: '__traitNames',
         label: 'Classifications',

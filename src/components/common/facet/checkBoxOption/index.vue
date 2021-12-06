@@ -8,7 +8,7 @@
             <template v-for="el in item.data" :key="el.id">
                 <a-checkbox
                     :value="el.id"
-                    class="inline-flex items-center w-full mb-1 atlan-reverse"
+                    class="inline-flex flex-row-reverse items-center w-full mb-1 atlan-reverse"
                 >
                     <span class="mb-0 ml-3 text-gray">
                         {{ el.label }}

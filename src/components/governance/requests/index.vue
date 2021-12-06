@@ -12,7 +12,7 @@
         >
             <AtlanIcon icon="ChevronLeft" />
         </div>
-        <div>
+        <div class="h-full px-2 py-8 bg-gray-50">
             <AssetFilters
                 v-model="facets"
                 :filter-list="requestFilter"
@@ -20,7 +20,36 @@
                 class="bg-gray-100"
                 @change="handleFilterChange"
                 @reset="handleResetEvent"
-            />
+            >
+                <div class="mb-2">
+                    <Connector
+                        v-model:data="connectorsData"
+                        class="bg-white"
+                        :filter-source-ids="BItypes"
+                        :is-leaf-node-selectable="false"
+                        :item="{
+                            id: 'connector',
+                            label: 'Connector',
+                            component: 'connector',
+                            overallCondition: 'OR',
+                            filters: [
+                                {
+                                    attributeName: 'connector',
+                                    condition: 'OR',
+                                    isMultiple: false,
+                                    operator: 'eq',
+                                },
+                            ],
+                            isDeleted: false,
+                            isDisabled: false,
+                            exclude: false,
+                        }"
+                        @change="handleChangeConnector"
+                        @update:data="setConnector"
+                    />
+                </div>
+            </AssetFilters>
+        
         </div>
     </a-drawer>
     <DefaultLayout title="Manage Requests">
@@ -106,6 +135,7 @@
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
+     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     import DefaultLayout from '@/admin/layout.vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
@@ -119,11 +149,12 @@
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
     import { requestFilter } from '~/constant/filters/logsFilter'
+    import Connector from '~/components/insights/common/connector/connector.vue'
     // import { useAccessStore } from '~/services/access/accessStore'
-    import {
-        approveRequest,
-        declineRequest,
-    } from '~/composables/requests/useRequests'
+    // import {
+    //     approveRequest,
+    //     declineRequest,
+    // } from '~/composables/requests/useRequests'
 
     export default defineComponent({
         name: 'RequestList',
@@ -136,12 +167,20 @@
             RequestTypeTabs,
             DefaultLayout,
             AssetFilters,
+            Connector
             // NoAcces
         },
         setup(props, { emit }) {
             // const accessStore = useAccessStore();
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
+
+            const connectorsData = ref(
+                {
+                    attributeName: undefined,
+                    attributeValue: undefined,
+                }
+            )
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
@@ -246,6 +285,9 @@
             )
             const handleFilterChange = () => {}
             const handleResetEvent = () => {}
+            const BItypes = getBISourceTypes()
+            const handleChangeConnector = () => {}
+            const setConnector = () => {}
             return {
                 requestList,
                 isSelected,
@@ -266,6 +308,10 @@
                 handleFilterChange,
                 handleResetEvent,
                 requestFilter,
+                BItypes,
+                handleChangeConnector,
+                setConnector,
+                connectorsData
                 // listPermission
             }
         },

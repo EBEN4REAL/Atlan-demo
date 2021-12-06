@@ -3,9 +3,19 @@
         :visible="drawerFilter"
         :mask="false"
         :placement="'left'"
-        :width="286"
+        :width="287"
         :closable="false"
     >
+        <div
+            :class="`close-icon ${!drawerFilter && 'closed'}`"
+            @click="handleClickFilter"
+        >
+            <AtlanIcon
+                class="mt-2 ml-2"
+                icon="ChevronLeft"
+                style="width: 24px; height: 24px"
+            />
+        </div>
         <div>
             <AssetFilters
                 v-model="facets"
@@ -267,6 +277,26 @@
 </script>
 
 <style lang="less" scoped>
+    .close-icon {
+        &.closed {
+            display: none;
+        }
+        background-color: white;
+        position: fixed;
+        height: 29px;
+        width: 15px;
+        top: 133px;
+        margin-left: 286px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: -5px 1px 6px 0px #0000000d;
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+        cursor: pointer;
+        transform: rotate(180deg);
+    }
+
     .devider-filter {
         top: -8px;
         height: 35px;

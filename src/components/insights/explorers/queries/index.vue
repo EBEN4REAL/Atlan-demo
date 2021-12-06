@@ -323,7 +323,11 @@
             const { focusEditor } = useEditor()
             const BItypes = getBISourceTypes()
 
-            let selectedClassification = ref(classificationList.value[0].name)
+            let selectedClassification = ref(
+                classificationList.value.length
+                    ? classificationList.value[0].name
+                    : ''
+            )
             const onClassificationChange = (value) => {
                 // emit('change', checkedValues)
                 console.log('change: ', value)
@@ -662,7 +666,7 @@
             const { data1: searchResults, isLoading1: searchLoading } =
                 useSearchQueries(
                     searchQuery,
-                    ref(savedQueryType.value.name),
+                    ref(savedQueryType?.value?.name),
                     facets
                 )
 

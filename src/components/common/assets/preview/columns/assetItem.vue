@@ -20,21 +20,6 @@
                                 icon="PrimaryKey"
                                 class="mr-1 mb-0.5 text-yellow-400"
                             ></AtlanIcon>
-
-                            <!-- <span
-                                class="ml-1 text-sm text-gray-700"
-                                v-if="isPrimary(item)"
-                            ></span>
-                            <span
-                                class="ml-1 text-sm text-gray-700"
-                                v-if="isDist(item)"
-                                >Dist Key</span
-                            >
-                            <span
-                                class="ml-1 text-sm text-gray-700"
-                                v-if="isPartition(item)"
-                                >Partition Key</span
-                            > -->
                         </div>
                         <component
                             v-else
@@ -42,12 +27,12 @@
                             class="h-4 text-gray-500 mb-0.5"
                         />
                     </div>
-                    <router-link
-                        to="/"
+                    <span
+                        @click="showColumnDrawer = true"
                         class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
-                    </router-link>
+                    </span>
                 </div>
 
                 <!-- Info bar -->
@@ -75,18 +60,25 @@
                 @unlinkAsset="$emit('unlinkAsset', item)"
             /> -->
         </div>
+        <AssetDrawer
+            :data="item"
+            :showDrawer="showColumnDrawer"
+            @closeDrawer="handleCloseDrawer"
+        />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, ref } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
+            AssetDrawer,
         },
         props: {
             item: {
@@ -171,6 +163,12 @@
                 certificateStatusMessage,
             } = useAssetInfo()
 
+            const showColumnDrawer = ref(false)
+
+            const handleCloseDrawer = () => {
+                showColumnDrawer.value = false
+            }
+
             return {
                 title,
                 getConnectorImage,
@@ -187,6 +185,8 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                showColumnDrawer,
+                handleCloseDrawer,
             }
         },
     })

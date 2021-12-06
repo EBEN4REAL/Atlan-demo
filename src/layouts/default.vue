@@ -147,11 +147,3 @@
         }
     }
 </style>
-
-<style lang="less" scoped>
-    .asset-sidebar-container {
-        width: 420px !important;
-        min-width: 420px !important;
-        max-width: 420px !important;
-    }
-</style>

@@ -112,6 +112,7 @@
                     condition.value.operator = 'boolean'
                     condition.value.value =
                         localCondition.value.value === 'true'
+                    condition.value.operand = attribute.value.name
                 } else {
                     condition.value.operand = attribute.value.name
                     condition.value.value = localCondition.value.value

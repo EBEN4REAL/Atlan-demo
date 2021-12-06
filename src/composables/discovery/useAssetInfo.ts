@@ -102,6 +102,7 @@ export default function useAssetInfo() {
     const isPartition = (asset: assetInterface) =>
         attributes(asset)?.isPartition
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
+    const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
     const links = (asset: assetInterface) => attributes(asset)?.links
 
@@ -925,6 +926,7 @@ export default function useAssetInfo() {
         webURL,
         isBiAsset,
         selectedGlossary,
+        isForeign,
         categories,
         parentCategory,
         isGTC,

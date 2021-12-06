@@ -5,7 +5,6 @@
         :asset="localSelected"
         @preview="emit('preview', $event)"
     ></AssetProfile>
-    {{ localSelected.attributes?.certificateStatus }}
 </template>
 
 <script lang="ts">

@@ -8,7 +8,7 @@ import useSetClassifications from '~/composables/discovery/useSetClassifications
 import confetti from '~/utils/confetti'
 import { generateUUID } from '~/utils/helper/generator'
 
-export default function updateAssetAttributes(selectedAsset) {
+export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const {
         title,
         description,
@@ -278,7 +278,9 @@ export default function updateAssetAttributes(selectedAsset) {
 
     const updateList = inject('updateList')
     whenever(isUpdateReady, () => {
-        updateList(asset.value)
+        if (!isDrawer) {
+            updateList(asset.value)
+        }
     })
 
     const classificationBody = ref({

@@ -184,9 +184,9 @@
                 required: true,
             },
             modelValue: {
-                type: Object,
+                type: String,
                 required: false,
-                default: () => {},
+                default: () => '',
             },
         },
 
@@ -239,6 +239,7 @@
                     getDatatypeOfAttribute(props.attribute) === 'float'
                 )
                     handleDecimal(v)
+
                 modelValue.value = localValue.value
                 emit('change')
             }

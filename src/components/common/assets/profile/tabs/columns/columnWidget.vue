@@ -147,6 +147,7 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -176,10 +177,12 @@
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
+            const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                ...customMetadataProjections,
             ])
             const preference = ref({
                 sort: 'order-asc',
@@ -230,6 +233,8 @@
 
             const handleListUpdate = (asset: any) => {
                 updateList(asset)
+                selectedRowData.value = asset
+                filterColumnsList()
             }
 
             const columnDataTypeAggregationList = computed(() =>
@@ -276,14 +281,6 @@
                 showColumnSidebar.value = true
             }
 
-            const getDataType = (type: string) => {
-                let label = ''
-                dataTypeCategoryList.forEach((i) => {
-                    if (i.type.includes(type?.toUpperCase())) label = i.label
-                })
-                return label
-            }
-
             // filterColumnsList
             const filterColumnsList = () => {
                 columnsList.value = [
@@ -305,7 +302,7 @@
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
                     column_name: i.attributes.name,
-                    data_type: getDataType(i.attributes.dataType),
+                    data_type: i.attributes.dataType,
                     is_primary: i.attributes.isPrimary,
                     description:
                         i.attributes.userDescription ||
@@ -348,22 +345,51 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch([list], () => {
+            watch(list, () => {
                 filterColumnsList()
             })
 
-            // onMounted(() => {
-            //     // If redirected from asset column discovery
-            //     if (column.value !== '') {
-            //         const { list: urlColumnList } = useColumnsList(
-            //             assetQualifiedName,
-            //             { columnGuid: column }
-            //         )
-            //         watch([urlColumnList], () => {
-            //             columnFromUrl.value = urlColumnList.value
-            //         })
-            //     }
-            // })
+            onMounted(() => {
+                // If redirected from asset column discovery
+                if (column.value !== '') {
+                    const limit = ref(1)
+                    const offset = ref(0)
+                    const facets = ref({
+                        guid: column.value,
+                    })
+                    const fetchKey = computed(() => {
+                        list.value.map((item) => {
+                            if (item.guid === column.value) {
+                                return null
+                            } else {
+                                return column.value
+                            }
+                        })
+                    })
+                    const dependentKey = ref(fetchKey.value)
+
+                    const { customMetadataProjections } = useTypedefData()
+                    const defaultAttributes = ref([
+                        ...InternalAttributes,
+                        ...AssetAttributes,
+                        ...SQLAttributes,
+                        ...customMetadataProjections,
+                    ])
+                    const relationAttributes = ref([...AssetRelationAttributes])
+                    const { list: urlColumnList } = useDiscoverList({
+                        isCache: false,
+                        dependentKey,
+                        facets,
+                        limit,
+                        offset,
+                        attributes: defaultAttributes,
+                        relationAttributes,
+                    })
+                    watch([urlColumnList], () => {
+                        columnFromUrl.value = urlColumnList.value
+                    })
+                }
+            })
 
             return {
                 rowClassName,

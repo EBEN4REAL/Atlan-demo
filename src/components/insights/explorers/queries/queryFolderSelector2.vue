@@ -1,6 +1,6 @@
 <template>
     <div class="popover-container">
-        <div class="w-full h-full pb-4 overflow-y-scroll">
+        <div class="w-full h-full pb-4">
             <div class="my-1 mb-2 w-9/11">
                 <ClassificationDropdown
                     :modelValue="savedQueryType"
@@ -8,7 +8,7 @@
                 />
             </div>
             <!--explorer pane start -->
-            <div class="w-full h-full pr-4 bg-white">
+            <div class="w-full h-full pr-4 overflow-y-scroll bg-white">
                 <div class="flex w-full rounded">
                     <AtlanIcon
                         :icon="folderOpened ? 'CaretDown' : 'CaretRight'"
@@ -21,7 +21,7 @@
                         :class="`${
                             selectedFolderContext?.guid ===
                             queryFolderNamespace?.guid
-                                ? 'bg-primary-focus w-9/11'
+                                ? 'bg-primary-selected-focus w-9/11'
                                 : 'bg-white'
                         }`"
                     >
@@ -85,7 +85,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     import QueryTreeList from './queryTreeList.vue'
-    import useQueryTree from './composables/useQueryTree2'
+    import useQueryTree from './composables/useQueryTree'
     import { useRouter, useRoute } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
@@ -145,7 +145,7 @@
             const onSelect = (selected: any, event: any) => {
                 // console.log('folder select: ', event)
 
-                console.log('qfn: ', queryFolderNamespace.value)
+                console.log('savedQueryType2: ', savedQueryType2.value)
                 if (event === 'root') {
                     let rootData = {
                         ...queryFolderNamespace.value,
@@ -224,8 +224,8 @@
                 dropdownVisible.value = true
             }
 
-            const classificationValue = ref('')
-            let selectedClassification = ref('')
+            const classificationValue = ref()
+            let selectedClassification = ref(savedQueryType2?.value?.name)
 
             const onClassificationChange = (value) => {
                 // emit('change', checkedValues)

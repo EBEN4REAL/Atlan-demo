@@ -11,9 +11,7 @@
             @click="handleClickFilter"
         >
             <AtlanIcon
-                class="mt-2 ml-2"
                 icon="ChevronLeft"
-                style="width: 24px; height: 24px"
             />
         </div>
         <div>
@@ -41,7 +39,7 @@
                     >
                         <AtlanIcon icon="FilterFunnel" />
                         <div
-                            class="absolute border-r border-solid divide-gray-800  devider-filter"
+                            class="absolute border-r border-solid divide-gray-800 devider-filter"
                         />
                     </div>
                 </template>

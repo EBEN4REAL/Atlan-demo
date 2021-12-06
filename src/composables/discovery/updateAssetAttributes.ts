@@ -278,13 +278,7 @@ export default function updateAssetAttributes(selectedAsset) {
 
     const updateList = inject('updateList')
     whenever(isUpdateReady, () => {
-        if (
-            asset.value.typeName !== 'AtlasGlossary' &&
-            asset.value.typeName !== 'AtlasGlossaryCategory' &&
-            asset.value.typeName !== 'AtlasGlossaryTerm'
-        ) {
-            updateList(asset.value)
-        }
+        updateList(asset.value)
     })
 
     const classificationBody = ref({
@@ -309,8 +303,6 @@ export default function updateAssetAttributes(selectedAsset) {
         a.every((val, index) => b.map((i) => i.typeName).includes(val.typeName))
 
     const handleClassificationChange = () => {
-        console.log(classifications(selectedAsset.value))
-        console.log(localClassifications.value)
         if (
             !arrayEquals(
                 classifications(selectedAsset.value),

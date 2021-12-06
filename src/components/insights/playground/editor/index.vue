@@ -10,7 +10,7 @@
                         <a-tooltip color="#363636">
                             <template #title>Custom variables</template>
                             <div
-                                class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
+                                class="items-center justify-center px-1 rounded cursor-pointer hover:bg-gray-300"
                                 :class="showcustomToolBar ? 'bg-gray-300' : ''"
                                 @click="toggleCustomToolbar"
                             >
@@ -23,18 +23,7 @@
                         <a-tooltip color="#363636">
                             <template #title>Format text</template>
                             <div
-                                class="
-                                    items-center
-                                    justify-center
-                                    px-1
-                                    ml-2
-                                    py-0.5
-                                    -mt-0.5
-                                    rounded
-                                    cursor-pointer
-                                    hover:bg-gray-300
-                                    group
-                                "
+                                class="items-center justify-center px-1 ml-2 py-0.5 -mt-0.5 rounded cursor-pointer hover:bg-gray-300 group"
                                 @click="formatDocument"
                             >
                                 <AtlanIcon icon="FormatText" class="w-4 h-4" />
@@ -43,28 +32,10 @@
 
                         <div
                             :class="fullSreenState ? 'bg-gray-300' : ''"
-                            class="
-                                items-center
-                                justify-center
-                                px-1
-                                ml-1
-                                py-0.5
-                                -mt-0.5
-                                rounded
-                                cursor-pointer
-                                hover:bg-gray-300
-                                group
-                            "
+                            class="items-center justify-center px-1 ml-1 py-0.5 -mt-0.5 rounded cursor-pointer hover:bg-gray-300 group"
                         >
                             <div
-                                class="
-                                    items-center
-                                    justify-center
-                                    rounded
-                                    cursor-pointer
-                                    hover:bg-gray-300
-                                    py-0.5
-                                "
+                                class="items-center justify-center rounded cursor-pointer hover:bg-gray-300 py-0.5"
                                 @click="tFullScreen"
                             >
                                 <a-tooltip
@@ -101,8 +72,8 @@
                                 color="primary"
                                 padding="compact"
                                 :disabled="
-                                    activeInlineTab.playground.resultsPane
-                                        .result.buttonDisable
+                                    activeInlineTab?.playground?.resultsPane
+                                        ?.result?.buttonDisable
                                 "
                                 @click="toggleRun"
                             >
@@ -167,7 +138,7 @@
                                 activeInlineTab.queryId &&
                                 !activeInlineTab.isSaved
                             "
-                            class="flex items-center justify-between h-6 ml-2 border-none  button-shadow group"
+                            class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
                             :class="isUpdating ? 'px-4.5' : 'px-2'"
                             :disabled="
                                 activeInlineTab.isSaved &&
@@ -176,7 +147,7 @@
                             @click="saveOrUpdate"
                         >
                             <div
-                                class="flex items-center transition duration-150 rounded  group-hover:text-primary"
+                                class="flex items-center transition duration-150 rounded group-hover:text-primary"
                             >
                                 <AtlanIcon
                                     v-if="!isUpdating"
@@ -204,7 +175,7 @@
                         >
                             <a-tooltip
                                 color="#363636"
-                                class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer  opacity-70 button-shadow"
+                                class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
                             >
                                 <template #title>
                                     {{
@@ -221,11 +192,11 @@
                             color="secondary"
                             padding="compact"
                             v-else
-                            class="flex items-center h-6 px-3 ml-2 border-none  button-shadow"
+                            class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
                             @click="saveOrUpdate"
                         >
                             <div
-                                class="flex items-center transition duration-150  group-hover:text-primary"
+                                class="flex items-center transition duration-150 group-hover:text-primary"
                             >
                                 <AtlanIcon
                                     style="margin-right: 2.5px"
@@ -248,15 +219,15 @@
                                 size="sm"
                                 color="secondary"
                                 padding="compact"
-                                class="flex items-center h-6 px-3 ml-2 border-none  button-shadow group"
+                                class="flex items-center h-6 px-3 ml-2 border-none button-shadow group"
                             >
                                 <div
-                                    class="flex items-center transition duration-150  group-hover:text-primary"
+                                    class="flex items-center transition duration-150 group-hover:text-primary"
                                 >
                                     <AtlanIcon
                                         style="margin-right: 2.5px"
                                         icon="Share"
-                                        class="transition duration-150  group-hover:text-primary"
+                                        class="transition duration-150 group-hover:text-primary"
                                     ></AtlanIcon>
 
                                     <span>Share</span>
@@ -276,7 +247,7 @@
                         saveModalRef = el
                     }
                 "
-                :savedQueryType="'personal'"
+                :savedQueryType="defaultClassification"
                 :parentFolder="queryFolderNamespace"
                 @onSaveQuery="saveQuery"
             />
@@ -284,7 +255,7 @@
             <Monaco @editorInstance="setInstance" />
 
             <div
-                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
+                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white"
                 style="z-index: 2"
             >
                 <div class="flex items-center">
@@ -389,7 +360,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import {
         useProvide,
         provideDataInterface,
@@ -401,6 +372,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
@@ -424,6 +396,7 @@
         },
         setup(props) {
             const router = useRouter()
+            const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
@@ -446,7 +419,7 @@
                 rowsCount: 100,
             })
             const showcustomToolBar = ref(false)
-            const showVQB = ref(true)
+            const showVQB = ref(false)
 
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -480,11 +453,8 @@
                 ref({}) as Ref<Folder>
             )
 
-            const {
-                updateSavedQuery,
-                saveQueryToDatabase,
-                saveQueryToDatabaseWithTerms,
-            } = useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
+            const { updateSavedQuery, saveQueryToDatabaseWithTerms } =
+                useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isQueryRunning = computed(
                 () =>
                     activeInlineTab.value.playground.resultsPane.result
@@ -495,6 +465,8 @@
             const openSaveQueryModal = () => {
                 showSaveQueryModal.value = true
             }
+            const { classificationList } = useTypedefData()
+            let defaultClassification = classificationList.value[0] ?? undefined
 
             // callback fxn
             const getData = (dataList, columnList, executionTime) => {
@@ -567,6 +539,8 @@
                         .getValueInRange(
                             toRaw(editorInstance.value).getSelection()
                         )
+
+                    console.log('query selected: ', selectedText)
 
                     useAddEvent('insights', 'query', 'run', undefined)
                     queryRun(
@@ -654,6 +628,7 @@
                     showSaveQueryModal,
                     saveModalRef,
                     router,
+                    route,
                     selectedParentType,
                     saveQueryData.parentQF,
                     saveQueryData.parentGuid,
@@ -801,6 +776,7 @@
                 setInstance,
                 toggleRun,
                 queryFolderNamespace,
+                defaultClassification,
             }
         },
     })

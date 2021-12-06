@@ -88,6 +88,8 @@ export const SQLAttributes = [
     'isIndexed',
     'isForeign',
     'isDist',
+    'table',
+    'view',
 ]
 
 export const GlossaryAttributes = ['categories', 'parentCategory']

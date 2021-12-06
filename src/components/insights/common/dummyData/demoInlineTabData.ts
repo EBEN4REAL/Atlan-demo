@@ -2,6 +2,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 export const inlineTabsDemoData: activeInlineTabInterface[] = [
     {
         key: '1',
+        attributes: undefined,
         label: 'Untitled',
         isSaved: false,
         queryId: undefined,

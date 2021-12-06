@@ -34,7 +34,14 @@
                                 <component
                                     :is="dataTypeImage(item)"
                                     class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
+                                    v-if="dataTypeImage(item)"
                                 ></component>
+                                <span
+                                    v-else
+                                    class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
+                                >
+                                    -
+                                </span>
                                 <span
                                     class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                     >{{ title(item) }}
@@ -145,7 +152,7 @@
                                         >
                                     </div>
                                 </div>
-                                <span>{{ dataType(item) }}</span>
+                                <span>{{ dataType(item) ?? '-' }}</span>
                             </div>
                         </div>
                         <!--For Others: Table Item -->
@@ -588,7 +595,8 @@
     import AtlanBtn from '@/UI/button.vue'
     import { useRouter } from 'vue-router'
     import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
-
+    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
+    import { generateUUID } from '~/utils/helper/generator'
     import {
         useMapping,
         nextKeywords,
@@ -986,48 +994,6 @@
                             }
                         }
 
-                        // let updatedEditorSchemaQualifiedName =
-                        //     item.value?.databaseQualifiedName +
-                        //     '/' +
-                        //     item.value?.schemaName
-
-                        // let newText = `${newQuery}${prevText}`
-
-                        // if (selectedOption.value === 'current') {
-                        //     activeInlineTabCopy.playground.editor.context = {
-                        //         attributeName: 'schemaQualifiedName',
-                        //         attributeValue:
-                        //             updatedEditorSchemaQualifiedName,
-                        //     }
-                        //     modifyActiveInlineTab(
-                        //         activeInlineTabCopy,
-                        //         inlineTabs,
-                        //         activeInlineTabCopy.isSaved
-                        //     )
-                        // } else if (selectedOption.value === 'new') {
-                        //     newText = `${newQuery}`
-                        //     handleAddNewTab(
-                        //         newText,
-                        //         {
-                        //             attributeName: 'schemaQualifiedName',
-                        //             attributeValue:
-                        //                 updatedEditorSchemaQualifiedName,
-                        //         },
-                        //         item.value
-                        //     )
-
-                        //     //     //open new query tab
-                        // }
-
-                        // console.log(' preview item: ', item.value)
-
-                        // selectionObject.value.startLineNumber = 2
-                        // selectionObject.value.startColumnNumber = 1
-                        // selectionObject.value.endLineNumber = 2
-                        // selectionObject.value.endColumnNumber =
-                        //     newQuery.length + 1 // +1 for semicolon
-                        // queryRun(activeInlineTab, getData)
-
                         break
                     }
                     case 'info': {
@@ -1083,18 +1049,26 @@
 
             let childCount = (item) => {
                 if (assetType(item) === 'Database') {
-                    return item.attributes.schemaCount
+                    return item?.attributes?.schemaCount !== undefined
+                        ? item.attributes.schemaCount
+                        : '-'
                 } else if (assetType(item) === 'Schema') {
                     return (
-                        item.attributes.tableCount ??
-                        0 + item.attributes.viewCount ??
-                        0
+                        // item?.attributes?.tableCount ??
+                        // 0 + item?.attributes?.viewCount ??
+                        // 0
+
+                        item?.attributes?.tableCount
+                            ? item?.attributes?.tableCount
+                            : '-'
                     )
                 } else if (
                     assetType(item) === 'Table' ||
                     assetType(item) === 'View'
                 ) {
-                    return item.attributes.columnCount
+                    return item?.attributes?.columnCount
+                        ? item.attributes.columnCount
+                        : '-'
                 }
             }
 
@@ -1124,9 +1098,87 @@
             // const router = useRouter()
             // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs')
+            let demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
 
             const handleAddNewTab = async (query, context, previewItem) => {
-                const key = String(new Date().getTime())
+                const key = generateUUID()
+
+                // const inlineTabData = { ...demoTab }
+
+                // ;(inlineTabData.label = `${previewItem.title} preview`),
+                //     (inlineTabData.key = key),
+                //     (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
+                //     (inlineTabData.isSaved = false),
+                //     (inlineTabData.queryId = undefined),
+                //     (inlineTabData.status = 'DRAFT'),
+                //     (inlineTabData.connectionId = ''),
+                //     (inlineTabData.description = ''),
+                //     (inlineTabData.qualifiedName = ''),
+                //     (inlineTabData.parentGuid = ''),
+                //     (inlineTabData.parentQualifiedName = ''),
+                //     (inlineTabData.isSQLSnippet = false),
+                //     (inlineTabData.savedQueryParentFolderTitle = undefined),
+                //     (inlineTabData.explorer = {
+                //         schema: {
+                //             connectors: {
+                //                 ...context,
+                //             },
+                //         },
+                //         queries: {
+                //             connectors: {
+                //                 connector:
+                //                     previewItem.connectionQualifiedName.split(
+                //                         '/'
+                //                     )[1],
+                //             },
+                //         },
+                //     }),
+                //     (inlineTabData.playground.editor = {
+                //         context: {
+                //             ...context,
+                //         },
+                //         text: query,
+                //         dataList: [],
+                //         columnList: [],
+                //         variables: [],
+                //         savedVariables: [],
+                //         limitRows: {
+                //             checked: false,
+                //             rowsCount: -1,
+                //         },
+                //     })
+                // ;(inlineTabData.playground.resultsPane = {
+                //     activeTab:
+                //         activeInlineTab.value?.playground?.resultsPane
+                //             ?.activeTab ?? 0,
+                //     result: {
+                //         title: `${key} Result`,
+                //         runQueryId: undefined,
+                //         isQueryRunning: '',
+                //         queryErrorObj: {},
+                //         totalRowsCount: -1,
+                //         executionTime: -1,
+                //         errorDecorations: [],
+                //         eventSourceInstance: undefined,
+                //         buttonDisable: false,
+                //         isQueryAborted: false,
+                //     },
+                //     metadata: {},
+                //     queries: {},
+                //     joins: {},
+                //     filters: {},
+                //     impersonation: {},
+                //     downstream: {},
+                //     sqlHelp: {},
+                // }),
+                //     (inlineTabData.assetSidebar = {
+                //         // for taking the previous state from active tab
+                //         openingPos: undefined,
+                //         isVisible: false,
+                //         assetInfo: {},
+                //         title: activeInlineTab.value?.assetSidebar.title ?? '',
+                //         id: activeInlineTab.value?.assetSidebar.id ?? '',
+                //     })
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
                     key,
@@ -1157,6 +1209,16 @@
                         },
                     },
                     playground: {
+                        vqb: {
+                            panels: [
+                                {
+                                    order: 1,
+                                    id: 'columns',
+                                    hide: false,
+                                    columns: [],
+                                },
+                            ],
+                        },
                         editor: {
                             context: {
                                 ...context,
@@ -1212,7 +1274,7 @@
                     limitRows,
                     null,
                     null,
-                    '',
+                    query,
                     editorInstance,
                     monacoInstance
                 )

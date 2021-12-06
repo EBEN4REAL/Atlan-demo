@@ -145,8 +145,9 @@ export function useEditor(
             // console.log('cursor')
             if(type==='auto') {
                 // 1. find cursor position done
-                const pos = editorInstance.getPosition()
-                console.log('position: ', pos)
+                const pos = editorInstance?.getPosition()
+
+                console.log('position cursor: ', pos)
                 console.log('position editor: ', editorInstance)
                 
                 // let parsedQuery = getParsedQueryData(variables, query)
@@ -160,14 +161,14 @@ export function useEditor(
                 if(queryTextValues && queryTextValues.length) {
                     queryTextValues.forEach(query=> {
                         let q = `${query};`
-                        let match = toRaw(editorInstance).getModel().findMatches(`${q.replace(/^\s+|\s+$/g, '')}`);
+                        let match = toRaw(editorInstance)?.getModel()?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`);
                         queryPositions.push({ match: match, token: query.replace(/^\s+|\s+$/g, ''), rawQuery: query})
                     })
                 }
                 
                 console.log('position match: ', queryPositions) 
 
-                let semiColonMatchs = toRaw(editorInstance).getModel().findMatches(';');
+                let semiColonMatchs = toRaw(editorInstance)?.getModel()?.findMatches(';');
                 console.log('position match semi: ', semiColonMatchs)
 
                 let independentQueryMatches = semiColonMatchs.map((match, index)=> {
@@ -232,28 +233,35 @@ export function useEditor(
                             }
                         }
                         break;
-                        // if(pos.column<independentQueryMatches[i+1].range.startColumn) {
-                        //     lineIndex = independentQueryMatches[i]
-                        //     // console.log('position match line equal1: ', {
-                        //     //     pos: pos.column,
-                        //     //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
-                        //     //     lineIndex
-                        //     // })
-                            
-                        //     break;
-                        // } else {
-                        //     if(pos.lineNumber===independentQueryMatches[i].range.endLineNumber && pos.column===independentQueryMatches[i+1].range.startColumn) { 
-                        //         lineIndex = independentQueryMatches[i]
-                        //     } else {
-                        //         lineIndex = independentQueryMatches[i+1]
-                        //     }
-                        //     // console.log('position match line equal2: ', {
-                        //     //     pos: pos.column,
-                        //     //     independentQueryMatches: independentQueryMatches[i+1].range.startColumn,
-                        //     //     lineIndex
-                        //     // })
-                        //     break;
-                        // }
+                    } else if(pos.lineNumber===independentQueryMatches[i+1].range.endLineNumber) {
+                        console.log('position match 2nd line')
+                        lineIndex = independentQueryMatches[i+1]
+                        // find all lines with starting point on this line
+                        console.log('position match 2nd line: ', lineIndex)
+                        var start = i+2;
+                        var end=i+2
+
+                        while(end<independentQueryMatches.length) {
+                            if(pos.lineNumber===independentQueryMatches[end].range.startLineNumber) {
+                                end++;
+                            } else {
+                                end=end-1
+                                break;
+                            }
+                        }
+                        if(end===independentQueryMatches.length) {
+                            end=end-1
+                        }
+                        console.log('position match here: ', {start, end})
+
+                        // lineIndex = independentQueryMatches[start]
+                        for(var j=start;j<=end;j++) {
+                            if(pos.column>independentQueryMatches[j].range.startColumn) {
+                                lineIndex = independentQueryMatches[j]
+                            }
+                        }
+                        console.log('position match 2nd line: ', lineIndex)
+                        break;
                     } else {
                         
                     }
@@ -263,15 +271,6 @@ export function useEditor(
                 }
 
                 
-
-                // let lineIndex = independentQueryMatches.findIndex((match)=> {
-                //     if(match.range.startLineNumber<pos.lineNumber) {
-                //         return match   
-                //     }
-                //     if(match.range.endLineNumber===pos.lineNumber  && match.range.endColumn>pos.column) {
-                //         return match
-                //     }
-                // })
                 console.log('position match line: ', lineIndex)
 
 
@@ -333,7 +332,7 @@ export function useEditor(
             // })
             // return moustacheInterpolator(queryText, parseVariables)
         
-            return null
+            return ''
         // return semicolonSeparateQuery(query)
     }
     // const clearLineDecoration = (editorInstance: any) => {
@@ -458,7 +457,7 @@ export function useEditor(
     ) => {
         if (activeInlineTab.value) {
             activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                editor.deltaDecorations(
+                editor?.deltaDecorations(
                     activeInlineTab.value.playground.resultsPane.result
                         .errorDecorations,
                     []

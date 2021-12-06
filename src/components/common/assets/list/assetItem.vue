@@ -58,8 +58,8 @@
                         ></AtlanIcon>
 
                         <router-link
-                            :to="assetURL(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            :to="getProfilePath(item)"
+                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -119,7 +119,7 @@
                             ></AtlanIcon>
 
                             <div
-                                class="text-sm tracking-wider text-gray-500 uppercase "
+                                class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
                             </div>
@@ -128,7 +128,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -167,7 +167,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -215,7 +215,7 @@
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
-                                        class="font-semibold tracking-tight text-gray-500 "
+                                        class="font-semibold tracking-tight text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
                                     Rows</span
@@ -232,7 +232,7 @@
                             </a-tooltip>
                             <span class="text-gray-500">
                                 <span
-                                    class="font-semibold tracking-tight text-gray-500 "
+                                    class="font-semibold tracking-tight text-gray-500"
                                     >{{ columnCount(item, false) }}</span
                                 >
                                 Cols</span
@@ -375,23 +375,6 @@
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
-                                    v-if="schemaName(item)"
-                                    class="flex items-center text-gray-500"
-                                >
-                                    <AtlanIcon
-                                        icon="SchemaGray"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
-                                        {{ schemaName(item) }}
-                                    </div>
-                                </div>
-                                <template #title>
-                                    <span>Schema - {{ schemaName(item) }}</span>
-                                </template>
-                            </a-tooltip>
-                            <a-tooltip placement="bottomLeft">
-                                <div
                                     v-if="databaseName(item)"
                                     class="flex items-center text-gray-500"
                                 >
@@ -408,6 +391,23 @@
                                         >Database -
                                         {{ databaseName(item) }}</span
                                     >
+                                </template>
+                            </a-tooltip>
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="schemaName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="SchemaGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ schemaName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>Schema - {{ schemaName(item) }}</span>
                                 </template>
                             </a-tooltip>
                         </div>
@@ -434,6 +434,7 @@
                                         isPropagated(classification)
                                     "
                                     :allow-delete="false"
+                                    :color="classification.options?.color"
                                 ></ClassificationPill>
                             </PopoverClassification>
                         </template>
@@ -552,11 +553,8 @@
                 categories,
                 parentCategory,
                 classifications,
+                getProfilePath,
             } = useAssetInfo()
-
-            const assetURL = (asset) => ({
-                path: `/assets/${asset.guid}`,
-            })
 
             const handlePreview = (item: any) => {
                 emit('preview', item)
@@ -601,7 +599,6 @@
                 getConnectorImage,
                 assetType,
                 dataType,
-                assetURL,
                 rowCount,
                 columnCount,
                 sizeBytes,
@@ -631,6 +628,7 @@
                 isPropagated,
                 list,
                 classifications,
+                getProfilePath,
             }
         },
     })

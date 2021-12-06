@@ -109,8 +109,7 @@ export function getRunList(name, getRunning = true) {
     const params = ref(new URLSearchParams())
 
     const labelSelector = ref(
-        `workflows.argoproj.io/workflow-template=${name}${
-            getRunning ? ',workflows.argoproj.io/phase=Running' : ''
+        `workflows.argoproj.io/workflow-template=${name}${getRunning ? ',workflows.argoproj.io/phase=Running' : ''
         }`
     )
     params.value.append('labelSelector', labelSelector.value)
@@ -138,15 +137,10 @@ export function getArchivedRunList(name) {
     const filter_record = ref(0)
     const offset = ref(0)
     const limit = ref(10)
-    const filter = ref({
-        metadata: {
-            $elemMatch: {
-                labels: {
-                    'workflows.argoproj.io/workflow-template': name,
-                },
-            },
-        },
-    })
+
+
+    const filter = ref({ "labels": { "$elemMatch": { "workflows.argoproj.io/workflow-template": name } } })
+
 
     params.value.append('filter', JSON.stringify(filter.value))
     params.value.append('offset', offset.value.toString())

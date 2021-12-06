@@ -3,7 +3,7 @@
         <div class="flex border divide-x rounded">
             <template v-for="item in list" :key="item.id">
                 <div
-                    class="flex items-center justify-center px-5 py-1 text-sm cursor-pointer  hover:text-primary"
+                    class="flex items-center justify-center px-5 py-1 text-sm cursor-pointer hover:text-primary"
                     :class="
                         isSelected(item.id)
                             ? ' text-primary bg-primary-light'
@@ -45,7 +45,6 @@
             const handleClick = (id) => {
                 localValue.value = id
                 modelValue.value = localValue.value
-                console.log('dd')
                 emit('change', id)
             }
 

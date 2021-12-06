@@ -76,26 +76,18 @@
                     </template>
                 </div>
             </div>
-            <!-- <ThreeDotMenu
-                v-if="showThreeDotMenu"
-                :entity="item"
-                :visible="false"
-                :show-gtc-crud="false"
-                :show-links="false"
-                :show-unlink-asset="true"
-                @unlinkAsset="$emit('unlinkAsset', item)"
-            /> -->
         </div>
         <AssetDrawer
             :data="item"
             :showDrawer="showColumnDrawer"
             @closeDrawer="handleCloseDrawer"
+            @update="handleListUpdate"
         />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed } from 'vue'
+    import { defineComponent, ref, toRefs, computed, watch } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
@@ -123,16 +115,9 @@
                     return {}
                 },
             },
-
-            // for unlinking asset in glossary
-            showThreeDotMenu: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
         },
-
-        setup(props) {
+        emits: ['update'],
+        setup(props, { emit }) {
             const {
                 title,
                 getConnectorImage,
@@ -159,12 +144,18 @@
                 localDescription,
                 handleChangeDescription,
                 descriptionRef,
-            } = updateAssetAttributes(item)
+                shouldDrawerUpdate,
+                asset,
+            } = updateAssetAttributes(item, true) // true - for not updating the selectedAsset in store
 
             const showColumnDrawer = ref(false)
 
             const handleCloseDrawer = () => {
                 showColumnDrawer.value = false
+            }
+
+            const handleListUpdate = (asset) => {
+                emit('update', asset)
             }
 
             const { classificationList } = useTypedefData()
@@ -189,6 +180,8 @@
                 return matchingIdsResult
             })
 
+            watch(shouldDrawerUpdate, () => emit('update', asset.value))
+
             return {
                 title,
                 getConnectorImage,
@@ -205,6 +198,7 @@
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
+                handleListUpdate,
                 certificateStatusMessage,
                 showColumnDrawer,
                 handleCloseDrawer,

@@ -156,25 +156,24 @@ const useLoadQueryData = ({
                 query: {
                     bool: {
                         must: [
-                            
+                            {
+                                term: {
+                                    "__state": "ACTIVE"
+                                }
+                            }
                         ]
                     }
                 }
             },
             attributes
         }
+
         if (connector.value) {
 
             body.value.dsl.query.bool.must.push(
                 {
                     term: {
                         "connectionName": `${connector.value}`
-                    }
-                },
-                    
-                {
-                    term: {
-                        "__state": "ACTIVE"
                     }
                 }
             )

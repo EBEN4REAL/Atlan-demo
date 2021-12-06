@@ -24,6 +24,7 @@
                             ref="descriptionRef"
                             v-model="localDescription"
                             @change="handleChangeDescription"
+                            :selected-asset="asset"
                         />
                     </div>
                 </div>
@@ -44,6 +45,7 @@
                             v-model="localOwners"
                             :used-for-assets="true"
                             @change="handleOwnersChange"
+                            :selected-asset="asset"
                         />
                     </div>
                 </div>

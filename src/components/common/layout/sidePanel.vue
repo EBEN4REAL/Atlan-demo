@@ -3,7 +3,7 @@
         <!-- purpose  -->
         <div
             v-if="page === ''"
-            class="flex items-center justify-between w-full px-3 py-3 border-b border-gray-200 "
+            class="flex items-center justify-between w-full px-3 py-3 border-b border-gray-200"
         >
             <UserPersonalAvatar> </UserPersonalAvatar>
         </div>
@@ -53,9 +53,14 @@
         </div>
         <div class="flex-grow"></div>
         <div class="px-3">
-            <template :key="nav.label" v-for="nav in workspaceCentreList">
+            <template v-for="nav in workspaceCentreList" :key="nav.label">
                 <router-link
-                    v-if="nav.isActive"
+                    v-if="
+                        (nav.isActive &&
+                            nav.path === '/platform' &&
+                            role === 'Admin') ||
+                        (nav.isActive && nav.path !== '/platform')
+                    "
                     v-auth="nav.auth"
                     :to="nav.path"
                     class="w-full mx-0 menu-item"
@@ -69,17 +74,20 @@
                 </router-link>
             </template>
         </div>
-
-        <span class="flex items-center px-3 mt-2 mb-4 text-sm text-gray-500"
-            >Built with 💙
-            <span class="ml-2">by</span>
-            <!-- FIXME: What is this URL??? -->
-            <img
-                src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-                class="w-auto h-3 ml-2 mb-0.5"
-            />
-        </span>
-        <p class="flex items-center px-3 mb-2 text-xs text-gray-500">Version {{getVersion}}</p>
+        <div class="flex items-center justify-between px-3 my-3">
+            <div class="flex items-center px-3 text-sm text-gray-500">
+                with 💙
+                <span class="ml-2">by</span>
+                <!-- FIXME: What is this URL??? -->
+                <img
+                    src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+                    class="w-auto h-3 ml-2 mb-0.5"
+                />
+            </div>
+            <p class="flex items-center text-xs text-gray-500">
+                v{{ getVersion }}
+            </p>
+        </div>
     </div>
 </template>
 
@@ -92,6 +100,7 @@
 
     import { workspaceList } from '~/constant/navigation/workspace'
     import { workspaceCentreList } from '~/constant/navigation/workspaceCentre'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'HomeSidePanel',
@@ -101,14 +110,16 @@
         },
         emits: ['change', 'closeNavbar'],
         setup(props, { emit }) {
-            const { username, name } = useUserData();
+            const { username, name } = useUserData()
+            const { role } = whoami()
+
             const getVersion = process.env.npm_package_version
 
             function closeNavDrawer() {
                 emit('closeNavbar')
             }
-
             return {
+                role,
                 closeNavDrawer,
                 workspaceList,
                 workspaceCentreList,

@@ -3,14 +3,14 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { Groups } from '~/services/service/groups'
 import { groupInterface } from '~/types/groups/group.interface'
 
-export default function useFacetGroups() {
+export default function useFacetGroups(immediate = true) {
     const params = ref(new URLSearchParams())
     params.value.append('limit', '20')
     params.value.append('sort', 'name')
 
     const { data, mutate } = Groups.List(params, {
         asyncOptions: {
-            immediate: true,
+            immediate,
             resetOnExecute: false,
         },
     })

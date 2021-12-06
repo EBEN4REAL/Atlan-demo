@@ -1,3 +1,6 @@
+import { confidenceScore } from '~/constant/confidenceScore'
+import { statusRequest } from '~/constant/statusRequest'
+
 export const queryLogsFilter = [
     {
         id: 'queryStatus',
@@ -25,5 +28,137 @@ export const queryLogsFilter = [
             enableTabs: ['users'],
         },
         class: 'bg-transparent',
+    },
+]
+export const accessLogsFilter = [
+    {
+        id: 'logAction',
+        label: 'Action',
+        component: 'logAction',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+    },
+    {
+        id: 'logStatus',
+        label: 'Status',
+        component: 'logStatus',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+    },
+    {
+        id: 'userType',
+        label: 'User Type',
+        component: 'userTypes',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+    },
+    {
+        id: 'users',
+        label: 'Users',
+        component: 'owners',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        propsToComponent: {
+            showNone: false,
+            hideDisabledTabs: true,
+            enableTabs: ['users'],
+        },
+        class: 'bg-transparent',
+    },
+    {
+        id: 'properties',
+        label: 'Properties',
+        component: 'properties',
+        attributes: [
+            {
+                name: 'resource.keyword',
+                displayName: 'Qualified Name',
+                description: 'Unique name for asset',
+                typeName: 'string',
+                isMandatory: true,
+            },
+        ],
+        overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+]
+
+export const requestFilter = [
+    {
+        id: 'users',
+        label: 'Requestor',
+        component: 'owners',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        propsToComponent: {
+            showNone: false,
+            hideDisabledTabs: true,
+            enableTabs: ['users'],
+        },
+        class: 'bg-transparent',
+    },
+    {
+        id: 'statusRequest',
+        label: 'STATUS',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: statusRequest
+    },
+    // {
+    //     id: 'terms',
+    //     label: 'Terms',
+    //     component: 'governance',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    // },
+    {
+        id: '__traitNames',
+        label: 'Classifications',
+        component: 'classifications',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
+        id: 'confidenceScore',
+        label: 'Confidence score',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: confidenceScore
     },
 ]

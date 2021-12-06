@@ -6,7 +6,9 @@
         class="overflow-x-hidden"
     >
         <template #default="{ item }">
-            <slot :item="item"></slot>
+            <Popover :item="item">
+                <slot :item="item"></slot>
+            </Popover>
         </template>
 
         <template #footer>
@@ -29,8 +31,8 @@
                         <AtlanIcon icon="ArrowDown" />
                     </template>
                     <AtlanIcon
-                        icon="Loader"
                         v-else
+                        icon="Loader"
                         class="w-auto h-10 animate-spin"
                     ></AtlanIcon>
                 </button>
@@ -54,8 +56,9 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     // import { assetInterface } from '~/types/assets/asset.interface'
     // import useBulkUpdateStore from '~/store/bulkUpdate'
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import Popover from '@/common/popover/assets/index.vue'
+    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    // import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     // import useAssetStore from '~/store/asset'
 
     export default defineComponent({
@@ -63,6 +66,7 @@
         components: {
             AssetItem,
             VirtualList,
+            Popover
         },
         props: {
             list: {

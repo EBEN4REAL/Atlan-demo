@@ -8,7 +8,7 @@
                 class="h-6"
             />
             <img v-else-if="image" :src="imageUrl(image)" class="w-auto h-6" />
-            <span v-else-if="emoji" class="self-center float-left mr-2 text-xl">
+            <span v-else-if="emoji" class="self-center float-left text-xl">
                 {{ emoji }}
             </span>
             <AtlanIcon

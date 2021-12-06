@@ -29,6 +29,7 @@ export interface assetInterface {
         isPrimary: boolean
         isPartition: boolean
         isDist: boolean
+        isForeign: boolean
         compiledQuery: string
         qualifiedName: string
         userDescription: string

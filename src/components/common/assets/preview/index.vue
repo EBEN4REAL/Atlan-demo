@@ -38,7 +38,7 @@
                 ></AtlanIcon>
                 <router-link
                     :to="getProfilePath(selectedAsset)"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -161,6 +161,7 @@
                     :is="tab.component"
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
+                    :isDrawer="isDrawer"
                     :data="tab.data"
                 ></component>
             </a-tab-pane>
@@ -235,11 +236,17 @@
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
+                default: () => {},
             },
             tab: {
                 type: String,
                 required: false,
                 default: '',
+            },
+            isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['assetMutation', 'closeSidebar'],

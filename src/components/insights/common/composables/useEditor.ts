@@ -233,6 +233,35 @@ export function useEditor(
                             }
                         }
                         break;
+                    } else if(pos.lineNumber===independentQueryMatches[i+1].range.endLineNumber) {
+                        console.log('position match 2nd line')
+                        lineIndex = independentQueryMatches[i+1]
+                        // find all lines with starting point on this line
+                        console.log('position match 2nd line: ', lineIndex)
+                        var start = i+2;
+                        var end=i+2
+
+                        while(end<independentQueryMatches.length) {
+                            if(pos.lineNumber===independentQueryMatches[end].range.startLineNumber) {
+                                end++;
+                            } else {
+                                end=end-1
+                                break;
+                            }
+                        }
+                        if(end===independentQueryMatches.length) {
+                            end=end-1
+                        }
+                        console.log('position match here: ', {start, end})
+
+                        // lineIndex = independentQueryMatches[start]
+                        for(var j=start;j<=end;j++) {
+                            if(pos.column>independentQueryMatches[j].range.startColumn) {
+                                lineIndex = independentQueryMatches[j]
+                            }
+                        }
+                        console.log('position match 2nd line: ', lineIndex)
+                        break;
                     } else {
                         
                     }

@@ -1,4 +1,12 @@
 <template>
+    <a-drawer
+            :visible="drawerFilter"
+            :mask="false"
+            :placement="'left'"
+            :width="286"
+            :closable="false"
+    >
+    </a-drawer>
     <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
         <template #header>
             <SearchAndFilter
@@ -6,6 +14,12 @@
                 class="max-w-xl mb-6"
                 size="default"
             >
+                <template #categoryFilter>
+                    <div class="relative px-2 cursor-pointer" @click="handleClickFilter">
+                        <AtlanIcon icon="FilterFunnel" />
+                        <div class="absolute border-r border-solid divide-gray-800 devider-filter"/>
+                    </div>
+                </template>
             </SearchAndFilter>
             <RequestTypeTabs v-model:tab="filters.request_type" />
         </template>
@@ -44,8 +58,8 @@
                     Oops… we didn’t find any requests that match this search
                 </span>
                 <a-button
-                    @click="searchTerm = ''"
                     class="flex items-center justify-center w-40 py-2 mt-4"
+                    @click="searchTerm = ''"
                     >Clear search</a-button
                 >
             </div>
@@ -69,9 +83,11 @@
         provide,
     } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
 
     import DefaultLayout from '@/admin/layout.vue'
+    import AssetFilters from '@/common/assets/filters/index.vue'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestTypeTabs from './requestTypeTabs.vue'
@@ -81,7 +97,6 @@
     // import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
-    import { message } from 'ant-design-vue'
     // import { useAccessStore } from '~/services/access/accessStore'
     import {
         approveRequest,
@@ -109,6 +124,7 @@
             const selectedList = ref(new Set<string>())
             const selectedIndex = ref(0)
             const isDetailsVisible = ref(false)
+            const drawerFilter = ref(false)
             const searchTerm = ref('')
             const filters = ref({
                 status: 'active' as RequestStatus,
@@ -132,10 +148,12 @@
                 return false
             }
 
-            /***********************************************************************************
+            /** *********************************************************************************
                     /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
-                    ***********************************************************************************/
-
+                    ********************************************************************************** */
+            const handleClickFilter = () => {
+                drawerFilter.value = !drawerFilter.value
+            }
             function selectRequest(guid: string, index: number) {
                 /** Check if the currently pressed key is not this array,
                  * then clear the set, else directly add the new item to the set
@@ -216,10 +234,18 @@
                 isDetailsVisible,
                 traverseUp,
                 traverseDown,
+                drawerFilter,
+                handleClickFilter
                 // listPermission
             }
         },
     })
 </script>
 
-<style></style>
+<style lang="less" scoped>
+    .devider-filter{
+        top: -8px;
+        height: 35px;
+        right: 0;   
+    }
+</style>

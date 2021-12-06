@@ -1,21 +1,21 @@
 <template>
     <a-drawer
-            :visible="drawerFilter"
-            :mask="false"
-            :placement="'left'"
-            :width="286"
-            :closable="false"
+        :visible="drawerFilter"
+        :mask="false"
+        :placement="'left'"
+        :width="286"
+        :closable="false"
     >
-    <div>
-        <AssetFilters
-            v-model="facets"
-            :filter-list="requestFilter"
-            :allow-custom-filters="false"
-            class="bg-gray-100"
-            @change="handleFilterChange"
-            @reset="handleResetEvent"
-        />
-    </div>
+        <div>
+            <AssetFilters
+                v-model="facets"
+                :filter-list="requestFilter"
+                :allow-custom-filters="false"
+                class="bg-gray-100"
+                @change="handleFilterChange"
+                @reset="handleResetEvent"
+            />
+        </div>
     </a-drawer>
     <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
         <template #header>
@@ -25,9 +25,14 @@
                 size="default"
             >
                 <template #categoryFilter>
-                    <div class="relative px-2 cursor-pointer" @click="handleClickFilter">
+                    <div
+                        class="relative px-2 cursor-pointer"
+                        @click="handleClickFilter"
+                    >
                         <AtlanIcon icon="FilterFunnel" />
-                        <div class="absolute border-r border-solid divide-gray-800 devider-filter"/>
+                        <div
+                            class="absolute border-r border-solid divide-gray-800  devider-filter"
+                        />
                     </div>
                 </template>
             </SearchAndFilter>
@@ -124,7 +129,7 @@
             RequestModal,
             RequestTypeTabs,
             DefaultLayout,
-            AssetFilters
+            AssetFilters,
             // NoAcces
         },
         setup(props, { emit }) {
@@ -233,12 +238,8 @@
                 },
                 { deep: true }
             )
-            const handleFilterChange = () => {
-
-            }
-            const handleResetEvent = () => {
-                
-            }
+            const handleFilterChange = () => {}
+            const handleResetEvent = () => {}
             return {
                 requestList,
                 isSelected,
@@ -258,7 +259,7 @@
                 facets,
                 handleFilterChange,
                 handleResetEvent,
-                requestFilter
+                requestFilter,
                 // listPermission
             }
         },
@@ -266,9 +267,9 @@
 </script>
 
 <style lang="less" scoped>
-    .devider-filter{
+    .devider-filter {
         top: -8px;
         height: 35px;
-        right: 0;   
+        right: 0;
     }
 </style>

@@ -1,3 +1,6 @@
+import { confidenceScore } from '~/constant/confidenceScore'
+import { statusRequest } from '~/constant/statusRequest'
+
 export const queryLogsFilter = [
     {
         id: 'queryStatus',
@@ -115,15 +118,16 @@ export const requestFilter = [
         class: 'bg-transparent',
     },
     {
-        id: 'queryStatus',
+        id: 'statusRequest',
         label: 'STATUS',
-        component: 'queryStatus',
+        component: 'CheckBoxOption',
         overallCondition: 'OR',
         attributes: [],
         isDeleted: false,
         isDisabled: false,
         exclude: false,
         class: 'bg-transparent',
+        data: statusRequest
     },
     {
         id: 'terms',
@@ -144,5 +148,17 @@ export const requestFilter = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+    },
+    {
+        id: 'confidenceScore',
+        label: 'Confidence score',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: confidenceScore
     },
 ]

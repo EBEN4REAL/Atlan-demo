@@ -20,11 +20,9 @@
             <template #title="node">
                 <div class="flex items-center truncate">
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
-                    {{
-                        node?.title?.length > 30
-                            ? `${node?.title?.slice(0, 30)}...`
-                            : node?.title
-                    }}
+                    <span class="parent-ellipsis-container-base"
+                        >{{ node?.title }}
+                    </span>
                 </div>
             </template>
             <template #suffixIcon>
@@ -362,6 +360,11 @@
             line-height: 24px !important;
             margin-top: -4px !important;
         }
+    }
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
 </style>
 <style lang="less" module>

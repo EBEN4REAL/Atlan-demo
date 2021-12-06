@@ -42,12 +42,10 @@
                 v-else
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 300 }"
-                :class="$style.columnTable"
+                :scroll="{ y: 342 }"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                size="small"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">
@@ -55,9 +53,9 @@
                             :class="{
                                 'border-primary': record.key === selectedRow,
                             }"
-                            class="border-l-4 border-transparent"
+                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-l-4 border-transparent "
                         >
-                            <span class="mr-1">{{ text }}</span>
+                            <span class="-ml-2">{{ text }}</span>
                         </div>
                     </template>
                     <template v-else-if="column.key === 'column_name'">
@@ -81,6 +79,9 @@
                                 <AtlanIcon icon="PrimaryKey" />
                             </div>
                         </div>
+                    </template>
+                    <template v-else-if="column.key === 'data_type'">
+                        <span class="data-type">{{ text.toUpperCase() }}</span>
                     </template>
                     <template v-else-if="column.key === 'description'">
                         <Tooltip :tooltip-text="text" />
@@ -394,6 +395,7 @@
                         title: '#',
                         dataIndex: 'hash_index',
                         key: 'hash_index',
+                        align: 'center',
                     },
                     {
                         width: 240,
@@ -418,17 +420,37 @@
     })
 </script>
 
-<style lang="less" module>
-    .columnTable {
-        .ant-table {
-            @apply !important;
-        }
-        .ant-table th {
-            @apply whitespace-nowrap font-bold !important;
-        }
-
-        .ant-table td {
-            @apply max-w-xs relative cursor-pointer !important;
-        }
+<style lang="less" scoped>
+    @font-face {
+        font-family: Hack;
+        src: url('~/assets/fonts/hack/Hack-Regular.ttf');
+    }
+    .data-type {
+        font-family: Hack !important;
+        @apply text-gray-500 text-xs !important;
+    }
+    :global(.ant-table-container) {
+        @apply text-gray-700 text-sm font-normal !important;
+    }
+    :global(.ant-table-thead) {
+        max-height: 40px !important;
+        height: 40px !important;
+    }
+    :global(.ant-table-thead tr th) {
+        @apply text-gray-700 text-sm font-normal py-0 px-2 !important;
+    }
+    :global(.ant-table td) {
+        @apply cursor-pointer !important;
+    }
+    :global(.ant-table-container
+            table
+            > thead
+            > tr:first-child
+            th:first-child) {
+        @apply border-r border-gray-light text-gray-500 !important;
+    }
+    :global(.ant-table-tbody tr:not(.ant-table-measure-row)) {
+        max-height: 32px !important;
+        height: 32px !important;
     }
 </style>

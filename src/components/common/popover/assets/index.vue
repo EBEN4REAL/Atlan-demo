@@ -4,7 +4,7 @@
             <div class="relation-ship">
                 <div class="flex justify-between">
                     <div class="flex items-center">
-                        <img :src="logoTitle" class="h-3 mr-1" />
+                        <img :src="logoTitle" class="h-3 mr-2" />
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(
@@ -103,7 +103,7 @@
                             }`"
                         />
                         <div
-                            class="text-xs tracking-tight text-gray-500 break-all "
+                            class="text-xs tracking-tight text-gray-500 break-all max-w-90"
                         >
                             {{ table }}
                         </div>
@@ -301,5 +301,8 @@
         height: 4px;
         width: 4px;
         border-radius: 50%;
+    }
+    .max-w-90{
+        max-width: 90%;
     }
 </style>

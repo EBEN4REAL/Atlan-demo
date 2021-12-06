@@ -24,6 +24,7 @@
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         components: {
@@ -32,10 +33,6 @@
         },
         emits: ['preview'],
         setup(props, { emit }) {
-            useHead({
-                title: 'Assets',
-            })
-
             const { selectedAsset } = useAssetInfo()
 
             const localSelected = ref()
@@ -47,6 +44,12 @@
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }
+
+            useHead({
+                title:
+                    localSelected.value?.attributes.displayName ||
+                    localSelected.value?.attributes.name,
+            })
 
             const limit = ref(1)
             const offset = ref(0)
@@ -60,10 +63,13 @@
                 return id.value
             })
             const dependentKey = ref(fetchKey.value)
+
+            const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...DefaultRelationAttributes])
             const { updateList, list, isLoading } = useDiscoverList({

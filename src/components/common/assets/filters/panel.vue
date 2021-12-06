@@ -87,6 +87,9 @@
     import Certificate from '@common/facet/certificate/index.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
     import QueryStatus from '@/common/facet/queryStatus/index.vue'
+    import LogAction from '@common/facet/accessLogs/actions.vue'
+    import LogStatus from '@common/facet/accessLogs/status.vue'
+    import UserTypes from '@common/facet/accessLogs/userTypes.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { capitalizeFirstLetter } from '~/utils/string'
@@ -98,6 +101,9 @@
             Certificate,
             Owners,
             QueryStatus,
+            LogAction,
+            LogStatus,
+            UserTypes,
             Connector: defineAsyncComponent(
                 () => import('@common/treeselect/connector/index.vue')
             ),

@@ -76,7 +76,7 @@
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
                 v-model:checked="localValue.empty"
-                class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
+                class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
             >
                 <component
                     :is="noStatus"
@@ -191,7 +191,7 @@
                 return 'Search users'
             })
 
-            watch(localValue.value, (prev, cur) => {
+            watch(localValue, (prev, cur) => {
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
                 } else if (localValue.value.ownerUsers?.length === 0) {
@@ -206,7 +206,6 @@
                 modelValue.value = localValue.value
                 emit('change', localValue.value)
             })
-
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)
             const { start } = useTimeoutFn(() => {
                 if (ownerSearchRef.value?.forceFocus) {

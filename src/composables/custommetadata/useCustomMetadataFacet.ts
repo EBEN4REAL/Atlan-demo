@@ -51,14 +51,7 @@ export default function useCustomMetadataFacet() {
                                 ),
                             })
                         }
-                        if (temp.length === 0) {
-                            attributeList.push({
-                                ...a,
-                                typeList: JSON.parse(
-                                    a.options?.customApplicableEntityTypes
-                                ),
-                            })
-                        }
+
                     } else {
                         attributeList.push({
                             ...a,

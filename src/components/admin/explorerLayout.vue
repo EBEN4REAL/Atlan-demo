@@ -1,6 +1,9 @@
 <template>
     <div class="flex divide-x scroll-container">
-        <aside class="flex flex-col w-1/4 h-full overflow-y-hidden pt-7">
+        <aside
+            class="flex flex-col w-1/4 h-full overflow-y-hidden pt-7"
+            v-if="sidebarVisibility"
+        >
             <div class="flex items-center justify-between px-4 mb-2">
                 <span class="text-2xl">{{ title }}</span>
                 <slot name="action"></slot>
@@ -11,14 +14,16 @@
             <slot name="sidebar"></slot>
         </aside>
 
-        <div class="flex flex-col w-3/4 h-full pt-6 pb-4 overflow-y-hidden">
+        <div
+            class="flex flex-col flex-1 h-full overflow-y-hidden bg-primary-light"
+        >
             <slot></slot>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
 
     /**
      * Explorer Layout - Has a sidebar and a main view with overflow handled.
@@ -28,7 +33,21 @@
      */
     export default defineComponent({
         name: 'ExplorerLayout',
-        props: { title: String, subTitle: String },
+        props: {
+            title: String,
+            subTitle: String,
+            sidebarVisibility: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
+        },
+        setup(props) {
+            const { sidebarVisibility } = toRefs(props)
+            return {
+                sidebarVisibility,
+            }
+        },
     })
 </script>
 

@@ -1,11 +1,14 @@
 <template>
-    <div class="flex flex-col px-5">
-        <div class="flex items-center mb-2 gap-x-2 justify-between">
-            <div>
-                <ClassificationIcon :color="selectedClassification?.options?.color" />
-                <span class="ml-2 text-sm tracking-wide text-gray-500 uppercase"
-                    >Classification</span
-                >
+    <div class="flex flex-col px-5 bg-white pt-7">
+        <div class="flex items-center justify-between mb-2 gap-x-2">
+            <div class="flex items-center">
+                <ClassificationIcon
+                    :color="selectedClassification?.options?.color"
+                    class="h-6 mr-1"
+                />
+                <span class="text-xl truncate text-gray">{{
+                    selectedClassification?.displayName
+                }}</span>
             </div>
             <a-dropdown>
                 <AtlanBtn
@@ -38,25 +41,27 @@
                                 <span class="pl-2 text-sm">Delete</span>
                             </div>
                         </a-menu-item>
-                        <a-sub-menu
-                            v-auth="map.UPDATE_CLASSIFICATION"
-                        >
+                        <a-sub-menu v-auth="map.UPDATE_CLASSIFICATION">
                             <template #title>
                                 <span class="flex items-center">
-                                    <ClassificationIcon class="self-center mr-1" :color="classificationColor" />
+                                    <ClassificationIcon
+                                        class="self-center mr-1"
+                                        :color="classificationColor"
+                                    />
                                     <span class="self-center">Color</span>
                                 </span>
                             </template>
-                            <a-menu-item class="m-0 bg-white p-0 w-28">
-                                <ClassificationColorSelector v-model:selectedColor="classificationColor" menuMode/>
+                            <a-menu-item class="p-0 m-0 bg-white w-28">
+                                <ClassificationColorSelector
+                                    v-model:selectedColor="classificationColor"
+                                    menuMode
+                                />
                             </a-menu-item>
                         </a-sub-menu>
                     </a-menu>
                 </template>
             </a-dropdown>
-
         </div>
-        <span class="mb-1 text-xl truncate text-gray">{{ selectedClassification?.displayName }}</span>
 
         <div class="flex mb-0 text-sm text-gray-500">
             <span v-if="!selectedClassification?.description"
@@ -75,7 +80,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, PropType, toRefs, watch } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        PropType,
+        toRefs,
+        watch,
+    } from 'vue'
     import { Modal } from 'ant-design-vue'
     import { whenever } from '@vueuse/core'
     import { useRouter } from 'vue-router'
@@ -84,8 +96,8 @@
     import Dropdown from '@/UI/dropdown.vue'
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
     import AtlanBtn from '~/components/UI/button.vue'
-    import ClassificationColorSelector from '@/governance/classifications/classificationColorSelector.vue';
-    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
+    import ClassificationColorSelector from '@/governance/classifications/classificationColorSelector.vue'
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
@@ -101,51 +113,59 @@
             AddClassificationModal,
             AtlanBtn,
             ClassificationColorSelector,
-            ClassificationIcon
+            ClassificationIcon,
         },
         props: {
             classification: {
                 type: Object as PropType<ClassificationInterface>,
                 required: true,
-            }
+            },
         },
         setup(props) {
             const isDeleteClassificationModalOpen = ref(false)
             const isEditClassificationModalOpen = ref(false)
             const typedefStore = useTypedefStore()
 
-            const { classification: selectedClassification} = toRefs(props)
+            const { classification: selectedClassification } = toRefs(props)
 
-            const classificationColor = ref(selectedClassification?.value?.options?.color ?? 'Blue');
+            const classificationColor = ref(
+                selectedClassification?.value?.options?.color ?? 'Blue'
+            )
 
             const router = useRouter()
-            
+
             const body = ref({})
-            const { mutate:mutateEdit }  = useEditTypedefs(body)
+            const { mutate: mutateEdit } = useEditTypedefs(body)
 
             const displayName = computed(
                 () => selectedClassification.value.displayName
             )
 
-
             const deleteClassification = () => {
                 Modal.confirm({
                     title: 'Delete Classification',
                     bodyStyle: {
-                        padding: '8px !important'
+                        padding: '8px !important',
                     },
                     content: 'Are you sure to delete this Classification?',
                     okType: 'danger',
                     okText: 'Yes',
                     cancelText: 'No',
                     async onOk() {
-                        const { error:deleteError, mutate: mutateDelete, isReady:isDeleteReady }  = useDeleteTypedefs(selectedClassification.value.name)
+                        const {
+                            error: deleteError,
+                            mutate: mutateDelete,
+                            isReady: isDeleteReady,
+                        } = useDeleteTypedefs(selectedClassification.value.name)
 
                         mutateDelete()
                         whenever(isDeleteReady, () => {
-                            if(typedefStore.classificationList.length) {
-                                const name = typedefStore.classificationList[0].name;
-                                router.push(`/governance/classifications/${name}`)
+                            if (typedefStore.classificationList.length) {
+                                const name =
+                                    typedefStore.classificationList[0].name
+                                router.push(
+                                    `/governance/classifications/${name}`
+                                )
                             } else {
                                 router.push('/governance/classifications')
                             }
@@ -170,14 +190,13 @@
                             ...selectedClassification.value,
                             options: {
                                 ...selectedClassification.value?.options,
-                                color: newClassificationColor
-                            }
-                        }
-                    ]
+                                color: newClassificationColor,
+                            },
+                        },
+                    ],
                 }
                 mutateEdit()
             })
-
 
             // user preview drawer
             // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -195,7 +214,7 @@
                 displayName,
                 editClassification,
                 classificationColor,
-                map
+                map,
             }
         },
     })

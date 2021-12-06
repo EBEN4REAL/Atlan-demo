@@ -101,7 +101,7 @@
                     localValue.value[key] = localValue.value[key].filter(
                         (i) => {
                             if (
-                                i.operator !== 'isNull' &&
+                                i.operator === 'isNull' ||
                                 i.operator === 'isNotNull'
                             ) {
                                 return true
@@ -119,6 +119,7 @@
                         delete localValue.value[key]
                     }
                 })
+
                 modelValue.value = localValue.value
                 emit('change')
             }

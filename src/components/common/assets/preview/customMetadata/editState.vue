@@ -1,12 +1,40 @@
 <template>
     <div class="flex self-start flex-grow">
+        <a-select
+            v-if="
+                getDatatypeOfAttribute(attribute) === 'number' && isMultivalued
+            "
+            :value="localValue"
+            class="flex-grow shadow-none"
+            mode="tags"
+            placeholder="Enter Number(s) separated by Enter key"
+            :allow-clear="true"
+            :dropdown-style="{ display: 'none' }"
+            @keydown.tab="(e) => e.preventDefault()"
+            @inputKeyDown="handleNumerKeyPress"
+            @change="handleChange"
+        />
         <a-input
-            v-if="getDatatypeOfAttribute(attribute) === 'number'"
+            v-else-if="getDatatypeOfAttribute(attribute) === 'number'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
             type="number"
             placeholder="Enter an integer..."
+            @change="handleChange"
+        />
+        <a-select
+            v-if="
+                getDatatypeOfAttribute(attribute) === 'float' && isMultivalued
+            "
+            :value="localValue"
+            class="flex-grow shadow-none"
+            mode="tags"
+            placeholder="Enter Number(s) separated by Enter key"
+            :allow-clear="true"
+            :dropdown-style="{ display: 'none' }"
+            @keydown.tab="(e) => e.preventDefault()"
+            @inputKeyDown="handleNumerKeyPress"
             @change="handleChange"
         />
         <a-input
@@ -19,6 +47,19 @@
             min="0"
             max="10"
             placeholder="Enter decimal value..."
+            @change="handleChange"
+        />
+        <a-select
+            v-else-if="
+                getDatatypeOfAttribute(attribute) === 'url' && isMultivalued
+            "
+            v-model:value="localValue"
+            class="flex-grow shadow-none"
+            mode="tags"
+            placeholder="Enter URLs separated by Enter key"
+            :allow-clear="true"
+            :dropdown-style="{ display: 'none' }"
+            @keydown.tab="(e) => e.preventDefault()"
             @change="handleChange"
         />
         <a-input
@@ -48,6 +89,19 @@
             value-format="x"
             @change="handleChange"
         />
+        <a-select
+            v-else-if="
+                getDatatypeOfAttribute(attribute) === 'text' && isMultivalued
+            "
+            v-model:value="localValue"
+            class="flex-grow shadow-none"
+            mode="tags"
+            placeholder="Enter text separated by Enter key"
+            :allow-clear="true"
+            :dropdown-style="{ display: 'none' }"
+            @keydown.tab="(e) => e.preventDefault()"
+            @change="handleChange"
+        />
         <a-textarea
             v-else-if="getDatatypeOfAttribute(attribute) === 'text'"
             v-model:value="localValue"
@@ -65,21 +119,14 @@
             v-model:value="localValue"
             class="flex-grow shadow-none border-1"
             :allow-clear="true"
-            :placeholder="`Select ${
-                attribute.options.multiValueSelect === 'true'
-                    ? 'users'
-                    : 'a user'
-            }`"
-            :mode="
-                attribute.options.multiValueSelect === 'true'
-                    ? 'multiple'
-                    : null
-            "
+            :placeholder="`Select ${isMultivalued ? 'users' : 'a user'}`"
+            :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
-            @search="userSearch"
+            @focus="userSearch"
             @change="handleChange"
-            ><a-select-option
+        >
+            <a-select-option
                 v-for="(item, index) in userList"
                 :key="index"
                 :value="item.username"
@@ -92,19 +139,11 @@
             v-model:value="localValue"
             class="flex-grow shadow-none border-1"
             :allow-clear="true"
-            :placeholder="`Select ${
-                attribute.options.multiValueSelect === 'true'
-                    ? 'groups'
-                    : 'a group'
-            }`"
-            :mode="
-                attribute.options.multiValueSelect === 'true'
-                    ? 'multiple'
-                    : null
-            "
+            :placeholder="`Select ${isMultivalued ? 'groups' : 'a group'}`"
+            :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
-            @search="groupSearch"
+            @focus="groupSearch"
             @change="handleChange"
             ><a-select-option
                 v-for="(item, index) in groupList"
@@ -119,16 +158,8 @@
             v-model:value="localValue"
             class="flex-grow shadow-none border-1"
             :allow-clear="true"
-            :placeholder="`Select ${
-                attribute.options.multiValueSelect === 'true'
-                    ? 'enums'
-                    : 'an enum'
-            }`"
-            :mode="
-                attribute.options.multiValueSelect === 'true'
-                    ? 'multiple'
-                    : null
-            "
+            :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
+            :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
             :options="getEnumOptions(attribute.typeName)"
@@ -154,9 +185,9 @@
                 required: true,
             },
             modelValue: {
-                type: Object,
+                type: String,
                 required: false,
-                default: () => {},
+                default: () => undefined,
             },
         },
 
@@ -165,7 +196,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const localValue = ref(modelValue.value)
+            const localValue: any = ref(modelValue.value)
 
             const {
                 getDatatypeOfAttribute,
@@ -175,24 +206,62 @@
             } = useCustomMetadataHelpers()
 
             const { list: userList, handleSearch: handleUserSearch } =
-                useFacetUsers()
+                useFacetUsers(false)
 
             const userSearch = (val) => {
                 handleUserSearch(val)
             }
 
             const { list: groupList, handleSearch: handleGroupSearch } =
-                useFacetGroups()
+                useFacetGroups(false)
             const groupSearch = (val) => {
                 handleGroupSearch(val)
             }
 
-            const handleChange = () => {
+            const isMultivalued = ref(
+                props.attribute.options.multiValueSelect === 'true'
+            )
+
+            // set proper default value
+            if (isMultivalued.value && !localValue.value) localValue.value = []
+            else if (!localValue.value) localValue.value = ''
+
+            const handleNumber = (v) => {
+                localValue.value = v.map((s) => parseInt(s, 10))
+            }
+            const handleDecimal = (v) => {
+                localValue.value = v.map((s) => parseFloat(s))
+            }
+
+            const handleChange = (v) => {
+                if (
+                    isMultivalued.value &&
+                    getDatatypeOfAttribute(props.attribute) === 'number'
+                )
+                    handleNumber(v)
+                else if (
+                    isMultivalued.value &&
+                    getDatatypeOfAttribute(props.attribute) === 'float'
+                )
+                    handleDecimal(v)
+
                 modelValue.value = localValue.value
                 emit('change')
             }
 
+            const handleNumerKeyPress = (v) => {
+                const allowDecimal =
+                    getDatatypeOfAttribute(props.attribute) === 'float'
+                const n = parseInt(v.key, 10)
+                if (Number.isNaN(n)) {
+                    if (allowDecimal && v.key === '.') return
+                    v.preventDefault()
+                }
+            }
+
             return {
+                handleNumerKeyPress,
+                isMultivalued,
                 getDatatypeOfAttribute,
                 isLink,
                 formatDisplayValue,

@@ -28,9 +28,9 @@
                 />
             </div>
         </CreationModal>
-        <div class="flex mb-2 gap-x-2">
+        <div class="flex mb-0 bg-white pt-7 gap-x-2">
             <div style="width: 90%">
-                <div class="mb-1 text-xl text-gray-700 truncate">
+                <div class="mb-0 text-xl text-gray-700 truncate">
                     <span class="truncate" data-test-id="header-name">
                         {{ persona.displayName }}</span
                     >
@@ -38,6 +38,15 @@
                 <div class="flex mb-0 text-sm text-gray-500">
                     <span class="truncate" data-test-id="header-description">
                         {{ persona.description }}</span
+                    >
+                </div>
+                <div class="flex">
+                    last updated by {{ persona.updatedBy }},
+                    <a-tooltip
+                        class="ml-1"
+                        :title="timeStamp(persona.updatedAt, true)"
+                        placement="right"
+                        >{{ timeStamp(persona.updatedAt) }}</a-tooltip
                     >
                 </div>
             </div>
@@ -61,6 +70,8 @@
 
     import Dropdown from '@/UI/dropdown.vue'
     import { reFetchList } from './composables/usePersonaList'
+    import { formatDateTime } from '~/utils/date'
+    import { useTimeAgo } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PersonaHeader',
@@ -142,12 +153,28 @@
                 }
             }
 
+            const timeStamp = (time, raw: boolean = false) => {
+                if (time) {
+                    return raw
+                        ? formatDateTime(time) || 'N/A'
+                        : useTimeAgo(time).value
+                }
+                return ''
+            }
+            // const { userList } = useUsers(params, persona.value.createdBy)
+
+            // // Get the details of the creator.
+            // const creator = computed(() =>
+            //     userList.value.length > 0 ? userList.value[0] : {}
+            // )
+
             return {
                 personaActions,
                 isEditing,
                 saveEditedPersona,
                 discardPersona,
                 selectedPersonaDirty,
+                timeStamp,
             }
         },
     })

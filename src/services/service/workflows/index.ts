@@ -71,6 +71,18 @@ const getWorkflowPackagesConfigMap = ({ params, options }) =>
         options || {}
     )
 
+const getWorkflowPackagesConfigMapByName = ({ pathVariables, options }) => {
+    console.log('getWorkflowPackagesConfigMapByName', pathVariables)
+    return useAPI(
+        map.WORKFLOW_CONFIG_MAP_NAME,
+        'GET',
+        {
+            pathVariables,
+        },
+        options || {}
+    )
+}
+
 const getWorkflowTemplates = ({ pathVariables, immediate, options, params }) =>
     useAPI(
         map.WORKFLOW_TEMPLATE,
@@ -254,4 +266,5 @@ export const Workflows = {
     getArchivedRunLogs,
     getArtifacts,
     createWorkflowPackage,
+    getWorkflowPackagesConfigMapByName,
 }

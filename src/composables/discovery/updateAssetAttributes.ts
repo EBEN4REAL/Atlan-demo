@@ -125,14 +125,19 @@ export default function updateAssetAttributes(selectedAsset) {
     // Owners Change
     const handleOwnersChange = () => {
         let isChanged = false
+
         if (
+            !entity.value.attributes.ownerUsers &&
+            Object.keys(localOwners.value?.ownerUsers).length === 0
+        ) {
+            isChanged = false
+        } else if (
             entity.value.attributes.ownerUsers?.sort().toString() !==
             localOwners.value?.ownerUsers?.sort().toString()
         ) {
             entity.value.attributes.ownerUsers = localOwners.value?.ownerUsers
             isChanged = true
-        }
-        if (
+        } else if (
             entity.value.attributes.ownerGroups?.sort().toString() !==
             localOwners.value?.ownerGroups?.sort().toString()
         ) {

@@ -79,6 +79,11 @@
                     key: messageKey,
                 })
                 try {
+                    /* FIX ME: Right now we are recivieing these property as snake_case and sending them as camel case */
+                    // display_name
+                    // metadata_policies
+                    //data_policies
+
                     const newPersona: IPersona = (await createPersona({
                         description: description.value,
                         name: title.value,

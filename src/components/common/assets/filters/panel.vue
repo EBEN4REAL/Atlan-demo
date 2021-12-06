@@ -8,7 +8,7 @@
             <div class="select-none">
                 <div class="flex flex-col flex-1">
                     <div
-                        class="flex items-center justify-between  hover:text-primary"
+                        class="flex items-center justify-between hover:text-primary"
                     >
                         <div class="flex items-center">
                             <img
@@ -24,7 +24,7 @@
                                 {{ item?.options?.emoji }}
                             </span>
                             <span
-                                class="text-xs uppercase  text-gray hover:text-primary title"
+                                class="text-xs uppercase text-gray hover:text-primary title"
                                 style="letter-spacing: 0.07em"
                             >
                                 {{ item.label }}</span
@@ -33,14 +33,14 @@
 
                         <span
                             v-if="isFiltered"
-                            class="ml-auto text-xs text-gray-500 opacity-0  hover:text-red-500 group-hover:opacity-100"
+                            class="ml-auto text-xs text-gray-500 opacity-0 hover:text-red-500 group-hover:opacity-100"
                             @click.stop.prevent="handleClear"
                         >
                             clear
                         </span>
                         <AtlanIcon
                             icon="ChevronDown"
-                            class="ml-3 text-gray-500 transition-transform duration-300 transform  h2 hover:text-primary title"
+                            class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
                         />
                     </div>
                 </div>
@@ -69,7 +69,7 @@
             :item="item"
             v-bind="item.propsToComponent"
             @change="handleChange"
-        ></component>
+        />
     </a-collapse-panel>
 </template>
 
@@ -85,11 +85,12 @@
 
     import Owners from '@common/facet/owners/index.vue'
     import Certificate from '@common/facet/certificate/index.vue'
-    import Hierarchy from '@/common/facet/hierarchy/index.vue'
-    import QueryStatus from '@/common/facet/queryStatus/index.vue'
     import LogAction from '@common/facet/accessLogs/actions.vue'
     import LogStatus from '@common/facet/accessLogs/status.vue'
     import UserTypes from '@common/facet/accessLogs/userTypes.vue'
+    import CheckBoxOption from '@common/facet/checkBoxOption/index.vue'
+    import QueryStatus from '@/common/facet/queryStatus/index.vue'
+    import Hierarchy from '@/common/facet/hierarchy/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { capitalizeFirstLetter } from '~/utils/string'
@@ -104,6 +105,7 @@
             LogAction,
             LogStatus,
             UserTypes,
+            CheckBoxOption,
             Connector: defineAsyncComponent(
                 () => import('@common/treeselect/connector/index.vue')
             ),

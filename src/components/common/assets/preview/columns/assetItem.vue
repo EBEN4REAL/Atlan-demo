@@ -56,7 +56,6 @@
                 <Description
                     ref="descriptionRef"
                     v-model="localDescription"
-                    class="mx-4"
                     @change="handleChangeDescription"
                 />
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">

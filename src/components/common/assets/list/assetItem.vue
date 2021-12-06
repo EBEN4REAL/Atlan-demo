@@ -575,7 +575,6 @@
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
-                emit('preview', item)
                 if (enableSidebarDrawer.value === true) {
                     showAssetSidebarDrawer.value = true
                     selectedAssetDrawerData.value = item

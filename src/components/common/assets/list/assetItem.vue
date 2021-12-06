@@ -571,6 +571,7 @@
                 parentCategory,
                 classifications,
                 getProfilePath,
+                isUserDescription,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -660,6 +661,7 @@
                 showAssetSidebarDrawer,
                 selectedAssetDrawerData,
                 handleCloseDrawer,
+                isUserDescription,
             }
         },
     })

@@ -13,6 +13,7 @@ const {
     mutate: reFetchList,
 } = listPersonas()
 
+// export const modifyPersona()
 const personaList = computed(() => safeArray(list.value?.records))
 export {
     reFetchList,
@@ -32,7 +33,7 @@ watch(
                 (ps) => ps.id == selectedPersonaId.value
             )
             if (!t) selectedPersona.value = undefined
-            selectedPersona.value = { ...t }
+            selectedPersona.value = t
             return
         }
         selectedPersona.value = undefined

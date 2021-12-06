@@ -49,18 +49,7 @@
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
         dropdownClassName="connectorDropdown"
         :loading="isLoading"
-        
     >
-        <!-- <template #title="node">
-            <div class="flex items-center">
-                <AtlanIcon :icon="typeName + `Gray`" class="h-4 mr-1.5" />
-                <span class="">{{ node.label }}</span>
-            </div>
-        </template>
-
-        <template #suffixIcon>
-            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-        </template> -->
         <template v-for="item in dropdownOption" :key="item.label">
             <a-select-option :value="item.value">
                 <div class="flex items-center truncate">

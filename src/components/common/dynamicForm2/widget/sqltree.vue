@@ -1,7 +1,9 @@
 <template>
     <SQLTreeSelect
         :credential="credentialBody"
-        query="show atlan schemas"
+        :query="property.ui.sql"
+        :include="property.ui.schemaIncludePattern"
+        :exclude="property.ui.schemaExcludePattern"
     ></SQLTreeSelect>
 </template>
 

@@ -3,7 +3,7 @@
         <!-- purpose  -->
         <div
             v-if="page === ''"
-            class="flex items-center justify-between w-full px-3 py-3 border-b border-gray-200 "
+            class="flex items-center justify-between w-full px-3 py-3 border-b border-gray-200"
         >
             <UserPersonalAvatar> </UserPersonalAvatar>
         </div>
@@ -69,17 +69,20 @@
                 </router-link>
             </template>
         </div>
-
-        <span class="flex items-center px-3 mt-2 mb-4 text-sm text-gray-500"
-            >Built with 💙
-            <span class="ml-2">by</span>
-            <!-- FIXME: What is this URL??? -->
-            <img
-                src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-                class="w-auto h-3 ml-2 mb-0.5"
-            />
-        </span>
-        <p class="flex items-center px-3 mb-2 text-xs text-gray-500">Version {{getVersion}}</p>
+        <div class="flex items-center justify-between px-3 my-3">
+            <div class="flex items-center px-3 text-sm text-gray-500">
+                with 💙
+                <span class="ml-2">by</span>
+                <!-- FIXME: What is this URL??? -->
+                <img
+                    src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+                    class="w-auto h-3 ml-2 mb-0.5"
+                />
+            </div>
+            <p class="flex items-center text-xs text-gray-500">
+                v{{ getVersion }}
+            </p>
+        </div>
     </div>
 </template>
 
@@ -101,7 +104,7 @@
         },
         emits: ['change', 'closeNavbar'],
         setup(props, { emit }) {
-            const { username, name } = useUserData();
+            const { username, name } = useUserData()
             const getVersion = process.env.npm_package_version
 
             function closeNavDrawer() {

@@ -1,6 +1,8 @@
 <template>
     <div class="relative">
-        <div class="flex items-start justify-between px-4 py-3 border-b">
+        <div
+            class="flex items-start justify-between px-4 pb-4 bg-white border-b pt-7"
+        >
             <div>
                 <div class="flex items-center gap-2 mb-2">
                     <AvatarUpdate :metadata="localBm" />
@@ -30,11 +32,11 @@
             </div>
             <div v-if="localBm.attributeDefs.length" class="pt-2 pb-5">
                 <div
-                    class="sticky top-0 z-10 flex items-center justify-between py-3 mb-4 bg-white"
+                    class="sticky top-0 z-10 flex items-center justify-between py-3 mb-4"
                 >
                     <div class="mr-4">
                         <div
-                            class="relative flex items-stretch w-full overflow-hidden "
+                            class="relative flex items-stretch w-full overflow-hidden"
                         >
                             <a-input
                                 v-model:value="attrsearchText"
@@ -58,8 +60,8 @@
                         </div>
                     </div>
                     <a-button
-                        variant="secondary"
                         class=""
+                        type="primary"
                         @click="addPropertyDrawer.open(undefinded, false)"
                     >
                         Add property

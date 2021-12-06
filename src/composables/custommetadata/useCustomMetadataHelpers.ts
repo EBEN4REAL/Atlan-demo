@@ -64,13 +64,13 @@ export default function useCustomMetadataHelpers() {
     }
 
     const getApplicableAttributes = (BM, typeName) =>
-        BM?.attributes.filter(
+        JSON.parse(JSON.stringify(BM?.attributes.filter(
             (a) =>
                 a.options.customApplicableEntityTypes &&
                 JSON.parse(a.options.customApplicableEntityTypes).includes(
                     typeName
                 )
-        )
+        )))
 
     const getEnumOptions = (enumName: string) => {
         if (enumList.value.length) {

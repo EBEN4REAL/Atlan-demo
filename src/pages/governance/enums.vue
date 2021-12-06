@@ -1,5 +1,5 @@
 <template>
-    <div v-auth="map.LIST_ENUM">
+    <div v-auth="map.LIST_ENUM" class="h-full">
         <div v-if="isLoading" class="flex items-center justify-center h-64">
             <a-spin size="large" />
         </div>

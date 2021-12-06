@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, onMounted } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
     export default defineComponent({

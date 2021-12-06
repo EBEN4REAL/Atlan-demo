@@ -33,7 +33,7 @@
         </div>
         <div class="flex items-center py-4 mt-0">
             <div
-                class="relative flex items-center flex-1 p-4 mr-3 border border-gray-300 rounded cursor-pointer  group hover:shadow"
+                class="relative flex items-center flex-1 p-4 mr-3 bg-white border border-gray-300 rounded cursor-pointer group hover:shadow"
                 @click="setActiveTab('policies')"
                 data-test-id="tab-policies"
             >
@@ -62,7 +62,7 @@
                             </div>
                         </div>
                         <div
-                            class="absolute right-0 opacity-0  vertical-center group-hover:opacity-100"
+                            class="absolute right-0 opacity-0 vertical-center group-hover:opacity-100"
                         >
                             <AtlanIcon
                                 icon="ArrowRight"

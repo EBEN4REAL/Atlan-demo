@@ -279,7 +279,7 @@
                     renderLineHighlight: 'none',
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    fontFamily: 'Hack',
+                    // fontFamily: 'Hack',
                     cursorStyle: 'line',
                     cursorWidth: 2,
                     letterSpacing: 0.1,
@@ -300,6 +300,7 @@
                         strings: true,
                     },
                 })
+                // monaco.editor.remeasureFonts()
                 // monaco.editor.EditorLayoutInfo
                 emit('editorInstance', editor, monaco)
 
@@ -487,6 +488,18 @@
             }
         },
     })
+    // document.fonts.ready.then(function (fontFaceSetEvent) {
+    //     alert('All fonts in use by visible text have loaded.')
+    //     console.log('Hack loaded? ' + Object.keys(fontFaceSetEvent)) // true
+    // })
+
+    // document.fonts.onloadingdone = function (fontFaceSetEvent) {
+    //     alert(
+    //         'onloadingdone we have ' +
+    //             fontFaceSetEvent.fontfaces.length +
+    //             ' font faces loaded'
+    //     )
+    // }
 </script>
 
 <style lang="less" scoped>
@@ -501,30 +514,34 @@
         font-family: 'Courier New', Courier, monospace;
     }
 
-    @font-face {
-        font-family: 'Hack';
-        src: url('~/assets/fonts/hack/Hack-BoldItalic.ttf');
-        font-weight: bold;
-        font-style: italic;
-    }
-    @font-face {
-        font-family: 'Hack';
-        src: url('~/assets/fonts/hack/Hack-Italic.ttf');
-        font-style: italic;
-        font-weight: normal;
-    }
-    @font-face {
-        font-family: 'Hack';
-        src: url('~/assets/fonts/hack/Hack-Bold.ttf');
-        font-weight: bold;
-        font-style: normal;
-    }
-    @font-face {
-        font-family: 'Hack';
-        src: url('~/assets/fonts/hack/Hack-Regular.ttf');
-        font-style: normal;
-        font-weight: normal;
-    }
+    // @font-face {
+    //     font-family: 'Hack';
+    //     src: url('~/assets/fonts/hack/Hack-BoldItalic.ttf');
+    //     font-weight: bold;
+    //     font-style: italic;
+    // }
+    // @font-face {
+    //     font-family: 'Hack';
+    //     src: url('~/assets/fonts/hack/Hack-Italic.ttf');
+    //     font-style: italic;
+    //     font-weight: normal;
+    // }
+    // @font-face {
+    //     font-family: 'Hack';
+    //     src: url('~/assets/fonts/hack/Hack-Bold.ttf');
+    //     font-weight: bold;
+    //     font-style: normal;
+    // }
+    // @font-face {
+    //     font-family: 'Hack';
+    //     src: url('~/assets/fonts/hack/Hack-Regular.ttf');
+    //     font-style: normal;
+    //     font-weight: normal;
+    // }
+    // html,
+    // body {
+    //     font-family: 'Hack', sans-serif;
+    // }
 </style>
 <style lang="less">
     .moustacheDecoration {
@@ -573,10 +590,6 @@
         padding-top: 8px !important;
     }
 
-    :global(.mtkz) {
-        color: rgba(51, 51, 51, 0.2) !important;
-        width: 8.53px !important;
-    }
     :global(.inputarea.monaco-mouse-cursor-text) {
         background-color: transparent !important;
         &::selection {

@@ -24,15 +24,20 @@ const getUserRole = (user: any) => {
 
     const filterHelper = (a) => a.filter((role: string) => role.startsWith('$'))
 
-    if (roles?.length)
-        atlanRoles = filterHelper(roles)
+    if (roles?.length) atlanRoles = filterHelper(roles)
 
     if (default_roles?.length)
-        atlanRoles = [...new Set([...atlanRoles, ...filterHelper(default_roles)])]
+        atlanRoles = [
+            ...new Set([...atlanRoles, ...filterHelper(default_roles)]),
+        ]
 
     // eslint-disable-next-line no-restricted-syntax
     for (const code in roleMap)
-        if (atlanRoles.indexOf(code) >= 0) { atlanRole.name = roleMap[code]; atlanRole.code = code; break; }
+        if (atlanRoles.indexOf(code) >= 0) {
+            atlanRole.name = roleMap[code]
+            atlanRole.code = code
+            break
+        }
 
     return atlanRole
 }

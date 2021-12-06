@@ -2,13 +2,13 @@
     <Loader v-if="isLoading"></Loader>
     <GlossaryProfile
         v-else
-        :asset="selectedAsset"
+        :asset="localSelected"
         page="glossary"
     ></GlossaryProfile>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch, inject } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
@@ -40,13 +40,22 @@
             })
 
             const { selectedAsset } = toRefs(props)
+            const localSelected = ref()
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
+            const handlePreview = inject('preview')
             const limit = ref(1)
             const offset = ref(0)
             const facets = ref({
                 guid: id.value,
             })
+            if (selectedAsset.value?.guid === id.value) {
+                console.log(selectedAsset.value.attributes)
+                console.log('tab called')
+                localSelected.value = selectedAsset.value
+                handlePreview(localSelected.value)
+            }
+
             const fetchKey = computed(() => {
                 if (selectedAsset.value.guid) {
                     return null
@@ -73,13 +82,19 @@
 
             watch(list, () => {
                 if (list.value.length > 0) {
+                    localSelected.value = list.value[0]
                     handleSelectedAsset(list.value[0])
+                    handlePreview(list.value[0])
                 }
+            })
+            watch(selectedAsset, () => {
+                localSelected.value = selectedAsset.value
             })
 
             return {
                 fetchKey,
                 isLoading,
+                localSelected,
             }
         },
     })

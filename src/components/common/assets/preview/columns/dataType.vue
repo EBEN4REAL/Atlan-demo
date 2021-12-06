@@ -11,7 +11,7 @@
                     <div
                         :class="{ active: item.id === localFacetMap.typeName }"
                     >
-                        <span>{{ item.label }}</span>
+                        <span class="capitalize">{{ item.label }}</span>
                         <span :class="$style.chip">{{
                             getCountString(item.count)
                         }}</span>
@@ -34,7 +34,7 @@
                                         :key="item.id"
                                     >
                                         <div
-                                            class="px-2 py-1 mr-1 border rounded cursor-pointer "
+                                            class="px-2 py-1 mr-1 capitalize border rounded cursor-pointer "
                                             :class="
                                                 isAssetStatusSelected(item)
                                                     ? 'bg-primary-light border-white hover:bg-primary-light text-gray'

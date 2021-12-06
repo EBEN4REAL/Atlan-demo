@@ -5,50 +5,76 @@
             class="flex items-start flex-1 px-3 py-1 transition-all duration-300 "
         >
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
+                class="box-border flex flex-col flex-1 overflow-hidden gap-y-1"
             >
-                <div class="flex items-center mb-0 overflow-hidden">
-                    <div class="flex mr-1">
+                <div
+                    class="flex items-center justify-between mb-0 overflow-hidden "
+                >
+                    <div class="flex">
+                        <component
+                            :is="dataTypeCategoryImage(item)"
+                            class="h-4 mr-1 mt-0.5 text-gray-500"
+                        />
+                        <span
+                            @click="showColumnDrawer = true"
+                            class="flex-shrink mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        >
+                            {{ title(item) }}
+                        </span>
+                        <CertificateBadge
+                            v-if="certificateStatus(item)"
+                            :status="certificateStatus(item)"
+                            :username="certificateUpdatedBy(item)"
+                            :timestamp="certificateUpdatedAt(item)"
+                            class="mb-0.5"
+                        ></CertificateBadge>
+                    </div>
+                    <div class="flex gap-x-2">
                         <div
                             v-if="
                                 isPrimary(item) ||
                                 isDist(item) ||
                                 isPartition(item)
                             "
+                            class="text-yellow-400"
                         >
                             <AtlanIcon
                                 icon="PrimaryKey"
-                                class="mr-1 mb-0.5 text-yellow-400"
+                                class="mr-1 mb-0.5"
                             ></AtlanIcon>
+                            <span class="text-xs">Pkey</span>
                         </div>
-                        <component
-                            v-else
-                            :is="dataTypeCategoryImage(item)"
-                            class="h-4 text-gray-500 mb-0.5"
-                        />
+                        <div v-if="isForeign(item)" class="text-pink-700">
+                            <AtlanIcon
+                                icon="ForeignKey"
+                                class="mr-1 mb-0.5"
+                            ></AtlanIcon>
+                            <span class="text-xs">Fkey</span>
+                        </div>
                     </div>
-                    <span
-                        @click="showColumnDrawer = true"
-                        class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
-                    >
-                        {{ title(item) }}
-                    </span>
                 </div>
-
-                <!-- Info bar -->
-                <!-- <div class="flex items-center gap-x-3">
-                    <div class="flex items-center gap-x-1">
-                        <div class="flex">
-                            <component
-                                :is="dataTypeCategoryImage(item)"
-                                class="h-4 text-gray-500"
-                            />
-                            <span class="ml-1 text-sm text-gray-500">{{
-                                dataType(item)
-                            }}</span>
-                        </div>
-                    </div>
-                </div> -->
+                <Description
+                    ref="descriptionRef"
+                    v-model="localDescription"
+                    class="mx-4"
+                    @change="handleChangeDescription"
+                />
+                <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">
+                    <template
+                        v-for="classification in list"
+                        :key="classification.guid"
+                    >
+                        <PopoverClassification :classification="classification">
+                            <ClassificationPill
+                                :name="classification.name"
+                                :display-name="classification?.displayName"
+                                :is-propagated="isPropagated(classification)"
+                                :allow-delete="false"
+                                :color="classification.options?.color"
+                            ></ClassificationPill>
+                        </PopoverClassification>
+                    </template>
+                </div>
             </div>
             <!-- <ThreeDotMenu
                 v-if="showThreeDotMenu"
@@ -69,16 +95,25 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import Description from '@/common/input/description/index.vue'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { mergeArray } from '~/utils/array'
+    import ClassificationPill from '@/common/pills/classification.vue'
+    import PopoverClassification from '@/common/popover/classification.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
             AssetDrawer,
+            Description,
+            ClassificationPill,
+            PopoverClassification,
         },
         props: {
             item: {
@@ -88,52 +123,7 @@
                     return {}
                 },
             },
-            score: {
-                type: Number,
-                required: false,
-                default() {
-                    return 0
-                },
-            },
-            projection: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
-            },
-            isSelected: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            isChecked: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            cssClasses: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            showAssetTypeIcon: {
-                type: Boolean,
-                required: false,
-                default: () => true,
-            },
-            // If the list items are selectable or not
-            showCheckBox: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
-            bulkSelectMode: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
+
             // for unlinking asset in glossary
             showThreeDotMenu: {
                 type: Boolean,
@@ -141,15 +131,15 @@
                 default: false,
             },
         },
-        emits: ['listItem:check', 'unlinkAsset'],
-        setup() {
+
+        setup(props) {
             const {
                 title,
                 getConnectorImage,
                 assetType,
-
+                isForeign,
                 dataType,
-
+                classifications,
                 connectorName,
                 connectionName,
                 dataTypeCategoryLabel,
@@ -163,11 +153,41 @@
                 certificateStatusMessage,
             } = useAssetInfo()
 
+            const { item } = toRefs(props)
+
+            const {
+                localDescription,
+                handleChangeDescription,
+                descriptionRef,
+            } = updateAssetAttributes(item)
+
             const showColumnDrawer = ref(false)
 
             const handleCloseDrawer = () => {
                 showColumnDrawer.value = false
             }
+
+            const { classificationList } = useTypedefData()
+
+            const isPropagated = (classification) => {
+                if (!item?.value?.guid?.value) {
+                    return false
+                }
+                if (item?.value?.guid === classification.entityGuid) {
+                    return false
+                }
+                return true
+            }
+
+            const list = computed(() => {
+                const { matchingIdsResult } = mergeArray(
+                    classificationList.value,
+                    classifications(item.value),
+                    'name',
+                    'typeName'
+                )
+                return matchingIdsResult
+            })
 
             return {
                 title,
@@ -181,12 +201,18 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                isForeign,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 showColumnDrawer,
                 handleCloseDrawer,
+                localDescription,
+                handleChangeDescription,
+                descriptionRef,
+                isPropagated,
+                list,
             }
         },
     })

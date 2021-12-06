@@ -53,9 +53,14 @@
         </div>
         <div class="flex-grow"></div>
         <div class="px-3">
-            <template :key="nav.label" v-for="nav in workspaceCentreList">
+            <template v-for="nav in workspaceCentreList" :key="nav.label">
                 <router-link
-                    v-if="nav.isActive"
+                    v-if="
+                        (nav.isActive &&
+                            nav.path === '/platform' &&
+                            role === 'Admin') ||
+                        (nav.isActive && nav.path !== '/platform')
+                    "
                     v-auth="nav.auth"
                     :to="nav.path"
                     class="w-full mx-0 menu-item"
@@ -95,6 +100,7 @@
 
     import { workspaceList } from '~/constant/navigation/workspace'
     import { workspaceCentreList } from '~/constant/navigation/workspaceCentre'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'HomeSidePanel',
@@ -105,13 +111,15 @@
         emits: ['change', 'closeNavbar'],
         setup(props, { emit }) {
             const { username, name } = useUserData()
+            const { role } = whoami()
+
             const getVersion = process.env.npm_package_version
 
             function closeNavDrawer() {
                 emit('closeNavbar')
             }
-
             return {
+                role,
                 closeNavDrawer,
                 workspaceList,
                 workspaceCentreList,

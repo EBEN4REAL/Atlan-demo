@@ -7,10 +7,13 @@
                 :autofocus="true"
                 :placeholder="`Search ${totalCount} columns`"
                 @change="handleSearchChange"
+                size="minimal"
             />
         </div>
         <!-- Table -->
-        <div class="relative">
+        <div
+            class="flex items-center justify-center w-full border rounded  h-96 border-gray-light"
+        >
             <div
                 v-if="isLoading"
                 class="flex items-center justify-center flex-grow"
@@ -40,73 +43,68 @@
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :scroll="{ y: 300 }"
+                :class="$style.columnTable"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
                 size="small"
             >
-                <!-- hash_index col -->
-                <template #hash_index="{ text, record }">
-                    <div
-                        :class="{
-                            'border-primary': record.key === selectedRow,
-                        }"
-                        class="absolute top-0 left-0 flex items-center justify-center w-full h-full border-l-4 border-transparent "
-                    >
-                        <span class="mr-1">{{ text }}</span>
-                    </div>
-                </template>
-                <!-- column_name col -->
-                <template #column_name="{ text, record }">
-                    <div :class="record.is_primary && 'flex items-center'">
+                <template #bodyCell="{ column, record, text }">
+                    <template v-if="column.key === 'hash_index'">
                         <div
-                            class="flex items-center"
-                            :class="record.is_primary && 'flex-grow'"
+                            :class="{
+                                'border-primary': record.key === selectedRow,
+                            }"
+                            class="border-l-4 border-transparent"
                         >
-                            <component
-                                :is="images[record.data_type]"
-                                class="w-4 h-4 mr-3"
-                            ></component>
+                            <span class="mr-1">{{ text }}</span>
+                        </div>
+                    </template>
+                    <template v-else-if="column.key === 'column_name'">
+                        <div :class="record.is_primary && 'flex items-center'">
+                            <div
+                                class="flex items-center"
+                                :class="record.is_primary && 'flex-grow'"
+                            >
+                                <component
+                                    :is="images[record.data_type]"
+                                    class="w-4 h-4 mr-3"
+                                ></component>
 
-                            <!-- <Tooltip :tooltip-text="text" /> -->
-                            <a-tooltip placement="left">
-                                {{ text }}
-                            </a-tooltip>
-                            <div v-if="record.is_primary" class="mb-1 ml-2">
-                                <AtlanIcon icon="Pin" />
+                                <Tooltip :tooltip-text="text" />
+
+                                <!--  <div v-if="record.is_primary" class="mb-1 ml-2">
+                                    <AtlanIcon icon="Pin" />
+                                </div> -->
+                            </div>
+                            <div v-if="record.is_primary">
+                                <AtlanIcon icon="PrimaryKey" />
                             </div>
                         </div>
-                        <div v-if="record.is_primary">
-                            <AtlanIcon icon="PrimaryKey" />
-                        </div>
-                    </div>
-                </template>
-                <!-- description col -->
-                <template #description="{ text }">
-                    <!-- <Tooltip :tooltip-text="text" /> -->
-                    <a-tooltip placement="left">
-                        {{ text }}
-                    </a-tooltip>
+                    </template>
+                    <template v-else-if="column.key === 'description'">
+                        <Tooltip :tooltip-text="text" />
+                    </template>
                 </template>
             </a-table>
 
-            <div
+            <!-- <div
                 v-if="isLoadMore"
                 class="flex items-center justify-center mt-3"
             >
                 <button
                     v-if="!isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                     @click="handleLoadMore"
                 >
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
                     <AtlanIcon icon="ArrowDown" />
                 </button>
-            </div>
+            </div> -->
         </div>
         <AssetDrawer
             :data="selectedRowData"
@@ -129,7 +127,7 @@
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
-    // import Tooltip from '@/common/ellipsis/index.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     // Composables
     import { images, dataTypeCategoryList } from '~/constant/dataType'
@@ -152,6 +150,7 @@
             AssetDrawer,
             EmptyView,
             ErrorView,
+            Tooltip,
         },
         setup() {
             /** DATA */
@@ -391,31 +390,27 @@
                 handleLoadMore,
                 columns: [
                     {
-                        width: 40,
+                        width: 50,
                         title: '#',
                         dataIndex: 'hash_index',
-                        slots: { customRender: 'hash_index' },
                         key: 'hash_index',
                     },
                     {
-                        width: 200,
-                        title: 'Column name',
+                        width: 240,
+                        title: 'Column Name',
                         dataIndex: 'column_name',
-                        slots: { customRender: 'column_name' },
                         key: 'column_name',
                     },
                     {
                         width: 150,
-                        title: 'Data type',
+                        title: 'Data Type',
                         dataIndex: 'data_type',
                         key: 'data_type',
                     },
                     {
-                        width: 150,
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',
-                        slots: { customRender: 'description' },
                     },
                 ],
             }
@@ -423,26 +418,17 @@
     })
 </script>
 
-<style lang="less" scoped>
-    :global(.ant-table) {
-        @apply border border-gray-light !important;
-    }
-    :global(.ant-table th) {
-        @apply whitespace-nowrap font-bold !important;
-    }
-    :global(.ant-table) {
-        -webkit-box-sizing: border-box !important;
-        -moz-box-sizing: border-box !important;
-        box-sizing: border-box !important;
-    }
+<style lang="less" module>
+    .columnTable {
+        .ant-table {
+            @apply !important;
+        }
+        .ant-table th {
+            @apply whitespace-nowrap font-bold !important;
+        }
 
-    :global(.ant-table td) {
-        @apply max-w-xs relative cursor-pointer !important;
-    }
-    :global(.ant-progress-status-success .ant-progress-bg) {
-        background-color: #1890ff !important;
-    }
-    :global(.ant-progress-inner) {
-        background-color: rgba(189, 205, 244, 0.53) !important;
+        .ant-table td {
+            @apply max-w-xs relative cursor-pointer !important;
+        }
     }
 </style>

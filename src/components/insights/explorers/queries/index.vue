@@ -39,7 +39,7 @@
                 v-if="!searchQuery?.length && !totalFilteredCount"
             >
                 <div
-                    class="flex items-center justify-between w-full mb-2 text-gray-500 h-9"
+                    class="flex items-center justify-between w-full text-gray-500 h-9"
                 >
                     <div class="flex items-center justify-between w-full">
                         <div class="w-9/12">
@@ -99,7 +99,7 @@
             </div>
             <div
                 v-if="!searchQuery?.length && !totalFilteredCount"
-                class="relative w-full px-4 pt-0 overflow-y-auto"
+                class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
                 :style="
                     fullSreenState
                         ? 'height: calc( 100vh - 140px )'
@@ -127,7 +127,7 @@
             </div>
             <div
                 v-else
-                class="relative w-full p-3 pt-0 pl-6 overflow-y-auto"
+                class="relative w-full p-3 pt-0 pl-6 mt-2 overflow-y-auto"
                 :style="
                     fullSreenState
                         ? 'height: calc( 100vh- 140px )'
@@ -218,7 +218,7 @@
     import RaisedTab from '~/components/insights/common/raisedTabs/index.vue'
     import QueryTree from './queryTree.vue'
     // import useQueryTree from './composables/useQueryTree'
-    import useQueryTree from './composables/useQueryTree2'
+    import useQueryTree from './composables/useQueryTree'
     import useSearchQueries from './composables/useSearchQueries'
 
     import Connector from '~/components/insights/common/connector/connectorOnly.vue'
@@ -749,8 +749,7 @@
 
             const refetchNode = (
                 guid: string,
-                type: 'query' | 'queryFolder',
-                tree?: 'personal' | 'all'
+                type: 'query' | 'queryFolder'
             ) => {
                 refetchNode1(guid, type)
             }

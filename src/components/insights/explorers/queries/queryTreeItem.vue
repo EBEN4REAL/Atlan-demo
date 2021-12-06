@@ -192,6 +192,7 @@
                                                 @click="renameFolder"
                                                 >Rename query</a-menu-item
                                             >
+
                                             <a-menu-item
                                                 key="ChangeFolder"
                                                 @click="
@@ -274,7 +275,7 @@
                     :selectedNewFolder="item"
                 />
 
-                <div class="flex justify-end w-full">
+                <div class="flex justify-end w-full pt-2">
                     <a-button
                         class="px-5 mr-4 text-sm border rounded"
                         style="width: 100px"
@@ -406,7 +407,7 @@
 
             const refetchNode = inject<
                 (
-                    guid: string | 'root',
+                    guid: string,
                     type: 'query' | 'queryFolder',
                     tree?: 'personal' | 'all'
                 ) => void
@@ -715,10 +716,14 @@
 
             const getSelectedFolder = (folder) => {
                 if (folder) {
-                    console.log('folder: ', folder)
+                    console.log('folder: ', folder.selectedFolderClassification)
                     console.log('folder selected', folder?.dataRef)
                     selectedFolder.value = folder?.dataRef
-                    selectedType.value = folder.selectedFolderType
+                    selectedType.value = folder.selectedFolderClassification
+                    // console.log(
+                    //     'folder.selectedFolderClassification',
+                    //     selectedType.value.name
+                    // )
                 } else {
                     console.log('no folder selected')
                     selectedFolder.value = null
@@ -747,18 +752,27 @@
                                 typeName: selectedFolder.value.typeName,
                             },
                         }
+                        newEntity.attributes = {
+                            ...newEntity.attributes,
+                            parent: {
+                                guid: selectedParentGuid,
+                                typeName: selectedFolder.value.typeName,
+                            },
+                            parentFolderQualifiedName:
+                                selectedFolder.value.attributes.qualifiedName,
+                        }
                         // console.log('select QFN')
                         // if (selectedType.value?.name) {
-                        // newEntity.classifications = [
-                        //     {
-                        //         attributes: {},
-                        //         propagate: true,
-                        //         entityGuid: item.guid,
-                        //         removePropagationsOnEntityDelete: true,
-                        //         typeName: selectedType.value?.name,
-                        //         validityPeriods: [],
-                        //     },
-                        // ]
+                        newEntity.classifications = [
+                            {
+                                attributes: {},
+                                propagate: true,
+                                entityGuid: item.guid,
+                                removePropagationsOnEntityDelete: true,
+                                typeName: selectedType.value?.name,
+                                validityPeriods: [],
+                            },
+                        ]
 
                         // } else {
                         //     newEntity.classifications = []
@@ -772,6 +786,16 @@
                                 typeName: selectedFolder.value.typeName,
                             },
                         }
+                        newEntity.attributes = {
+                            ...newEntity.attributes,
+                            parent: {
+                                guid: selectedParentGuid,
+                                typeName: selectedFolder.value.typeName,
+                            },
+                            parentFolderQualifiedName:
+                                selectedFolder.value.attributes.qualifiedName,
+                        }
+                        newEntity.classifications = []
                     }
 
                     console.log('new entity: ', newEntity)
@@ -800,13 +824,11 @@
                                     setTimeout(() => {
                                         refetchNode(
                                             previousParentGuId,
-                                            'queryFolder',
-                                            savedQueryType.value
+                                            'queryFolder'
                                         )
                                         refetchNode(
                                             selectedParentGuid,
-                                            'queryFolder',
-                                            savedQueryType.value
+                                            'queryFolder'
                                         )
                                     }, 750)
                                 } else {
@@ -853,16 +875,8 @@
                                     // )
 
                                     setTimeout(() => {
-                                        refetchNode(
-                                            previousParentGuId,
-                                            'query',
-                                            savedQueryType.value
-                                        )
-                                        refetchNode(
-                                            selectedParentGuid,
-                                            'query',
-                                            savedQueryType.value
-                                        )
+                                        refetchNode(previousParentGuId, 'query')
+                                        refetchNode(selectedParentGuid, 'query')
                                     }, 750)
                                 } else {
                                     message.success({

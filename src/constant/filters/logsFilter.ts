@@ -96,3 +96,53 @@ export const accessLogsFilter = [
         exclude: false,
     },
 ]
+
+export const requestFilter = [
+    {
+        id: 'users',
+        label: 'Requestor',
+        component: 'owners',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        propsToComponent: {
+            showNone: false,
+            hideDisabledTabs: true,
+            enableTabs: ['users'],
+        },
+        class: 'bg-transparent',
+    },
+    {
+        id: 'queryStatus',
+        label: 'STATUS',
+        component: 'queryStatus',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+    },
+    {
+        id: 'terms',
+        label: 'Terms',
+        component: 'governance',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
+        id: '__traitNames',
+        label: 'Classifications',
+        component: 'classifications',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+]

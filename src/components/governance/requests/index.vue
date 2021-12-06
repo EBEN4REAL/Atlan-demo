@@ -6,14 +6,16 @@
             :width="286"
             :closable="false"
     >
-    <AssetFilters
-        v-model="facets"
-        :filter-list="[]"
-        :allow-custom-filters="false"
-        class="bg-gray-100"
-        @change="handleFilterChange"
-        @reset="handleResetEvent"
-    />
+    <div>
+        <AssetFilters
+            v-model="facets"
+            :filter-list="requestFilter"
+            :allow-custom-filters="false"
+            class="bg-gray-100"
+            @change="handleFilterChange"
+            @reset="handleResetEvent"
+        />
+    </div>
     </a-drawer>
     <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
         <template #header>
@@ -105,6 +107,7 @@
     // import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
+    import { requestFilter } from '~/constant/filters/logsFilter'
     // import { useAccessStore } from '~/services/access/accessStore'
     import {
         approveRequest,
@@ -121,6 +124,7 @@
             RequestModal,
             RequestTypeTabs,
             DefaultLayout,
+            AssetFilters
             // NoAcces
         },
         setup(props, { emit }) {
@@ -253,7 +257,8 @@
                 handleClickFilter,
                 facets,
                 handleFilterChange,
-                handleResetEvent
+                handleResetEvent,
+                requestFilter
                 // listPermission
             }
         },

@@ -1,5 +1,7 @@
 /* eslint-disable default-case */
+import { isFor } from '@babel/types'
 import bodybuilder from 'bodybuilder'
+import { ref } from 'vue'
 
 const agg_prefix = 'group_by'
 
@@ -57,7 +59,8 @@ export function useBody(
     base.size(limit || 0)
 
     // Only showing ACTIVE assets for a connection
-    base.filter('term', '__state', 'ACTIVE')
+
+    const state = ref('ACTIVE')
 
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
@@ -267,7 +270,6 @@ export function useBody(
             case 'sql':
             case 'properties': {
                 if (filterObject) {
-                    console.log(filterObject)
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
                             if (element.value) {
@@ -333,11 +335,18 @@ export function useBody(
                                     })
                                 }
                                 if (element.operator === 'boolean') {
-                                    base.filter(
-                                        'term',
-                                        element.operand,
+                                    if (
+                                        element.operand === '__state' &&
                                         element.value
-                                    )
+                                    ) {
+                                        state.value = 'DELETED'
+                                    } else {
+                                        base.filter(
+                                            'term',
+                                            element.operand,
+                                            element.value
+                                        )
+                                    }
                                 }
                             }
                         })
@@ -347,6 +356,8 @@ export function useBody(
             }
         }
     })
+
+    base.filter('term', '__state', state.value)
 
     //post filters
     const postFilter = bodybuilder()

@@ -105,6 +105,13 @@ export const discoveryFilters = [
                 description: 'All assets which have lineage relationship',
                 isMandatory: true,
             },
+            {
+                name: '__state',
+                displayName: 'Archived',
+                typeName: 'boolean',
+                description: 'All assets which have been archived',
+                isMandatory: true,
+            },
         ],
         overallCondition: 'OR',
         isDeleted: false,

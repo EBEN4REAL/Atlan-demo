@@ -27,6 +27,8 @@
     import GlossaryDiscovery from '@/glossary/index.vue'
     import GlossaryPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useGlossaryStore from '~/store/glossary'
+    import useAssetStore from '~/store/asset'
     // import BulkUploadProgress from '~/components/common/widgets/bulkUploadProgress/progressWidget.vue'
 
     export default defineComponent({
@@ -44,22 +46,30 @@
             const isItem = computed(() => !!route.params.id)
             const { selectedGlossary } = useAssetInfo()
             const localSelected = ref()
+            const glossaryStore = useGlossaryStore()
+            const assetStore = useAssetStore()
+
             if (selectedGlossary.value?.guid === id.value) {
                 localSelected.value = selectedGlossary.value
             }
             const handlePreview = (asset) => {
                 localSelected.value = asset
+                glossaryStore.setSelectedGTC(asset)
+                assetStore.setSelectedAsset(asset)
             }
 
             const updateList = (asset) => {
                 console.log('updateList')
-                // console.log(asset)
-                // if (assetdiscovery.value) {
-                //     assetdiscovery.value.updateCurrentList(asset)
-                // }
+                console.log(asset)
+                localSelected.value = asset
+                console.log(localSelected.value)
+                glossaryStore.setSelectedGTC(asset)
+                assetStore.setSelectedAsset(asset)
+                console.log(glossaryStore.selectedGTC)
             }
             watch(selectedGlossary, () => {
                 localSelected.value = selectedGlossary.value
+                console.log(glossaryStore.selectedGTC)
             })
 
             provide('updateList', updateList)

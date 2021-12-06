@@ -50,6 +50,8 @@
                 guid: id.value,
             })
             if (selectedAsset.value?.guid === id.value) {
+                console.log(selectedAsset.value.attributes)
+                console.log('tab called')
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }

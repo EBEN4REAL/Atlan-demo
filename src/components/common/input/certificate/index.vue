@@ -52,7 +52,7 @@
         toRefs,
         computed,
         ref,
-        watch,
+        inject,
         nextTick,
         reactive,
     } from 'vue'
@@ -103,8 +103,9 @@
                 certificateStatusMessage,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
-                selectedAsset,
             } = useAssetInfo()
+
+            const selectedAsset = inject('selectedAsset')
 
             const handleChange = () => {
                 modelValue.value = localValue.value

@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs, inject } from 'vue'
 
     // Utils
     import {
@@ -153,9 +153,12 @@
             const { modelValue } = useVModels(props, emit)
             const { readOnly, enableHover, destroyTooltipOnHide } =
                 toRefs(props)
+
             const localValue = ref(modelValue.value)
 
-            const { ownerGroups, ownerUsers, selectedAsset } = useAssetInfo()
+            const { ownerGroups, ownerUsers } = useAssetInfo()
+            const selectedAsset = inject('selectedAsset')
+
             const isEdit = ref(false)
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -251,7 +254,6 @@
             return {
                 ownerGroups,
                 ownerUsers,
-                selectedAsset,
                 handleClickUser,
                 handleClickGroup,
                 localValue,
@@ -261,6 +263,7 @@
                 handleVisibleChange,
                 isEdit,
                 ownerFacetRef,
+                selectedAsset,
             }
         },
     })

@@ -27,7 +27,7 @@
         >
             <Shortcut shortcutKey="n" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span> Name</span>
                 </div>
@@ -172,7 +172,7 @@
         <div class="flex flex-col">
             <Shortcut shortcutKey="d" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span>Description</span>
                     <AtlanIcon
@@ -199,7 +199,7 @@
         >
             <Shortcut shortcutKey="o" action="set owners" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span> Owners</span>
                 </div>
@@ -207,7 +207,6 @@
 
             <Owners
                 v-model="localOwners"
-                :guid="selectedAsset.guid"
                 :used-for-assets="true"
                 @change="handleOwnersChange"
                 class="px-5"
@@ -230,7 +229,7 @@
                 placement="left"
             >
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span> Classification</span>
                 </div>
@@ -257,7 +256,7 @@
             class="flex flex-col"
         >
             <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
             >
                 Terms
             </p>
@@ -275,14 +274,13 @@
         >
             <Shortcut shortcutKey="c" action="set certificate" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span> Certificate</span>
                 </div>
             </Shortcut>
 
             <Certificate
-                :selected-asset="selectedAsset"
                 class="px-5"
                 v-model="localCertificate"
                 @change="handleChangeCertificate"

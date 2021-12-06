@@ -31,7 +31,7 @@
         computed,
         defineComponent,
         nextTick,
-        onMounted,
+        inject,
         PropType,
         Ref,
         ref,
@@ -68,7 +68,8 @@
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
 
-            const { description, selectedAsset } = useAssetInfo()
+            const { description } = useAssetInfo()
+            const selectedAsset = inject('selectedAsset')
 
             const handleChange = () => {
                 modelValue.value = localValue.value

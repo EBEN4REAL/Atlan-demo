@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { pluralizeString, capitalizeFirstLetter } from '~/utils/string'
 import { useUsers } from '~/composables/user/useUsers'
 import useGroups from '~/composables/group/useGroups'
@@ -6,7 +6,7 @@ import useAPIKeysList from '~/components/admin/apikeys/composables/useAPIKeysLis
 import { useTenantStore } from '~/store/tenant'
 
 export default function useOverviewCards() {
-    const overviewCards = []
+    const overviewCards = ref({})
     /** Users */
     const { totalUserCount, isLoading: isUserCountLoading } = useUsers({
         limit: 1,
@@ -26,7 +26,14 @@ export default function useOverviewCards() {
         link: '/admin/users',
         isUserCountLoading,
     }
-    overviewCards.push(userCard)
+    overviewCards.value.user = { ...userCard }
+    watch(totalUserCount, () => {
+        if (
+            overviewCards.value.user &&
+            totalUserCount.value !== overviewCards.value.user.value
+        )
+            overviewCards.value.user.value = totalUserCount.value
+    })
 
     /** Groups */
     const { totalGroupsCount } = useGroups({
@@ -46,7 +53,15 @@ export default function useOverviewCards() {
         link: '/admin/groups',
         emptyText: 'No groups added',
     }
-    overviewCards.push(groupCard)
+
+    overviewCards.value.group = { ...groupCard }
+    watch(totalGroupsCount, () => {
+        if (
+            overviewCards.value.group &&
+            totalGroupsCount.value !== overviewCards.value.group.value
+        )
+            overviewCards.value.group.value = totalGroupsCount.value
+    })
 
     /** SSO */
     const tenantStore = useTenantStore()
@@ -62,7 +77,7 @@ export default function useOverviewCards() {
         link: '/admin/sso',
         emptyText: 'No providers connected',
     }
-    overviewCards.push(ssoCard)
+    overviewCards.value.sso = { ...ssoCard }
 
     /** SMTP Card */
     // will always be enabled
@@ -76,7 +91,7 @@ export default function useOverviewCards() {
         link: '/admin/smtp',
         excludeValueInCopy: true,
     }
-    overviewCards.push(smtpCard)
+    overviewCards.value.smtp = { ...smtpCard }
 
     /** API Keys */
     const { totalAPIKeysCount, isLoading: isAPIKeyCountLoading } =
@@ -100,7 +115,14 @@ export default function useOverviewCards() {
         link: '/admin/apikeys',
         isAPIKeyCountLoading,
     }
-    overviewCards.push(apiKeyCard)
+    overviewCards.value.apikey = { ...apiKeyCard }
+    watch(totalAPIKeysCount, () => {
+        if (
+            overviewCards.value.apikey &&
+            totalAPIKeysCount.value !== overviewCards.value.apikey.value
+        )
+            overviewCards.value.apikey.value = totalAPIKeysCount.value
+    })
 
     return { overviewCards }
 }

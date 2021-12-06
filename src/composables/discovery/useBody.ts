@@ -1,5 +1,7 @@
 /* eslint-disable default-case */
+import { isFor } from '@babel/types'
 import bodybuilder from 'bodybuilder'
+import { ref } from 'vue'
 
 const agg_prefix = 'group_by'
 
@@ -57,7 +59,8 @@ export function useBody(
     base.size(limit || 0)
 
     // Only showing ACTIVE assets for a connection
-    base.filter('term', '__state', 'ACTIVE')
+
+    const state = ref('ACTIVE')
 
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
@@ -267,10 +270,14 @@ export function useBody(
             case 'sql':
             case 'properties': {
                 if (filterObject) {
-                    console.log(filterObject)
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
-                            if (element.value) {
+                            if (element.operator === 'isNull') {
+                                base.notFilter('exists', element.operand)
+                            }
+                            if (element.operator === 'isNotNull') {
+                                base.filter('exists', element.operand)
+                            } else if (element.value) {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',
@@ -306,12 +313,7 @@ export function useBody(
                                         element.value
                                     )
                                 }
-                                if (element.operator === 'isNull') {
-                                    base.notFilter('exists', element.operand)
-                                }
-                                if (element.operator === 'isNotNull') {
-                                    base.filter('exists', element.operand)
-                                }
+
                                 if (element.operator === 'greaterThan') {
                                     base.filter('range', element.operand, {
                                         gt: element.value,
@@ -333,11 +335,18 @@ export function useBody(
                                     })
                                 }
                                 if (element.operator === 'boolean') {
-                                    base.filter(
-                                        'term',
-                                        element.operand,
+                                    if (
+                                        element.operand === '__state' &&
                                         element.value
-                                    )
+                                    ) {
+                                        state.value = 'DELETED'
+                                    } else {
+                                        base.filter(
+                                            'term',
+                                            element.operand,
+                                            element.value
+                                        )
+                                    }
                                 }
                             }
                         })
@@ -347,6 +356,8 @@ export function useBody(
             }
         }
     })
+
+    base.filter('term', '__state', state.value)
 
     //post filters
     const postFilter = bodybuilder()
@@ -461,5 +472,68 @@ export function useBody(
 
     base.filterMinimumShouldMatch(1)
 
-    return base.build()
+    const tempQuery = base.build()
+
+    const query = {
+        ...tempQuery,
+        query: {
+            function_score: {
+                query: tempQuery.query,
+                functions: [
+                    {
+                        filter: {
+                            match: {
+                                certificateStatus: 'VERIFIED',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                certificateStatus: 'DRAFT',
+                            },
+                        },
+                        weight: 4,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'Table',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'View',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'Column',
+                            },
+                        },
+                        weight: 3,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'AtlasGlossaryTerm',
+                            },
+                        },
+                        weight: 4,
+                    },
+                ],
+                boost_mode: 'sum',
+                score_mode: 'sum',
+            },
+        },
+    }
+
+    return query
 }

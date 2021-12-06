@@ -14,24 +14,24 @@
     import { defineComponent, computed } from 'vue'
     import Card from '@/home/shared/card.vue'
     import { topNavKeys, bottomNavKeys } from '~/constant/navigation/workspace'
-
+    import useTenantData from '~/composables/tenant/useTenantData'
     export default defineComponent({
         name: 'YourWorkspace',
         components: { Card },
         setup() {
-            const orgname = 'Aliaxis'
+            const { name: orgname } = useTenantData()
 
             const worksplaceListMeta = {
                 assets: {
-                    desc: `Discover & enrich all data assets in ${orgname}`,
+                    desc: `Discover & enrich all data assets in ${orgname.value}`,
                     icon: 'AssetIcon',
                 },
                 glossary: {
-                    desc: `All of ${orgname}’s business terms in one place`,
+                    desc: `All of ${orgname.value}’s business terms in one place`,
                     icon: 'GlossaryIcon',
                 },
                 insights: {
-                    desc: `Query Datasets across ${orgname} and empower your business`,
+                    desc: `Query Datasets across ${orgname.value} and empower your business`,
                     icon: 'InsightsIcon',
                 },
                 workflows: {

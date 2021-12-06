@@ -46,12 +46,24 @@ export const useGroup = (groupListAPIParams, cacheKeyProp = "") => {
         STATES,
     }
 }
-export default function useGroups(groupListAPIParams: {
-    limit: number
-    offset: number
-    filter?: any
-    sort?: string
-}) {
+const defaultCacheOption = {
+    cacheOptions: {
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+        cache: new LocalStorageCache(),
+        dedupingInterval: 1,
+    },
+}
+export default function useGroups(
+    groupListAPIParams: {
+        limit: number
+        offset: number
+        filter?: any
+        sort?: string
+    },
+    cacheKey?: string,
+    cacheOption = defaultCacheOption
+) {
     // API to get groups based on params groupListAPIParams
     const {
         data,
@@ -60,13 +72,8 @@ export default function useGroups(groupListAPIParams: {
         isLoading,
         mutate: getGroupList,
     } = Groups.List(groupListAPIParams, {
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
-        },
-        cacheKey: LIST_GROUPS,
+        ...cacheOption,
+        cacheKey: cacheKey ?? LIST_GROUPS,
     })
 
     const { state, STATES } = swrvState(data, error, isValidating)
@@ -83,8 +90,8 @@ export default function useGroups(groupListAPIParams: {
         () => {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((group: any) =>
-                    getFormattedGroup(group)
-                )
+                      getFormattedGroup(group)
+                  )
                 : []
 
             if (data && data.value) {
@@ -112,7 +119,8 @@ export default function useGroups(groupListAPIParams: {
         getGroupList,
         state,
         STATES,
-        isLoading, error,
+        isLoading,
+        error,
         groupListConcatenated,
     }
 }

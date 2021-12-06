@@ -1,7 +1,6 @@
 <template>
     <teleport to="#overAssetSidebar">
         <a-drawer
-            v-if="visible"
             v-model:visible="visible"
             placement="right"
             :get-container="false"

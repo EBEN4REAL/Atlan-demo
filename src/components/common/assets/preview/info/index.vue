@@ -302,7 +302,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, defineAsyncComponent, inject, ref } from 'vue'
+    import {
+        defineComponent,
+        defineAsyncComponent,
+        inject,
+        ref,
+        toRefs,
+    } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
@@ -344,10 +350,19 @@
             ),
             AtlanIcon,
         },
+        props: {
+            isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+        },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+
+            const { isDrawer } = toRefs(props)
 
             const sampleDataVisible = ref<boolean>(false)
 
@@ -391,7 +406,7 @@
                 nameRef,
                 descriptionRef,
                 animationPoint,
-            } = updateAssetAttributes(selectedAsset)
+            } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (

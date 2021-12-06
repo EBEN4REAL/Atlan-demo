@@ -17,7 +17,10 @@
             :key="data.guid"
             @close="$emit('closeDrawer')"
         >
-            <AssetPreview :selected-asset="data"></AssetPreview> </a-drawer
+            <AssetPreview
+                :selected-asset="data"
+                :isDrawer="true"
+            ></AssetPreview> </a-drawer
     ></teleport>
 </template>
 

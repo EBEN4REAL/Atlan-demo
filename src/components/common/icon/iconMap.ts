@@ -569,6 +569,5 @@ export default {
     CustomVariable,
     AtlanBot,
     EmptyClassifications,
-    CustomVariable,
     FolderSearch
 }

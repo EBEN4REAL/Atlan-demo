@@ -568,10 +568,6 @@
                         </div>
                         <div v-else>-</div>
                     </div>
-                    <AtlanIcon
-                        icon="ArrowRight"
-                        class="w-4 h-4 ml-10 text-gray-500"
-                    />
                 </div>
             </template>
         </a-table>

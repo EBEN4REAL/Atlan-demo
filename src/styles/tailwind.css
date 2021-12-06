@@ -4,7 +4,7 @@
 
 @layer components {
     .fake-bold {
-        -webkit-text-stroke: 0.65px #3e4359;
-        -moz-text-stroke: 0.65px #3e4359;
+        -webkit-text-stroke: 0.65px;
+        -moz-text-stroke: 0.65px;
     }
   }

@@ -1,21 +1,14 @@
 <template>
-    <span>
-        <AtlanIcon
-            :icon="icon"
-            :style="`color: ${getClassificationColorHex(color)}`"
-        ></AtlanIcon>
-    </span>
+    <AtlanIcon
+        :icon="icon"
+        :style="`color: ${getClassificationColorHex(color)}`"
+    ></AtlanIcon>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        toRefs,
-        computed
-    } from 'vue'
+    import { defineComponent, PropType, toRefs, computed } from 'vue'
 
-    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor';
+    import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
 
     export default defineComponent({
         name: 'ClassificationIcon',
@@ -29,7 +22,7 @@
                 type: String as PropType<'ShieldFilled' | 'Shield'>,
                 required: true,
                 default: 'Shield',
-            },            
+            },
         },
         setup(props, { emit }) {
             // const { color, icon } = toRefs(props)
@@ -37,8 +30,8 @@
             const icon = computed(() => props.icon)
             return {
                 getClassificationColorHex,
-                color, 
-                icon
+                color,
+                icon,
             }
         },
     })

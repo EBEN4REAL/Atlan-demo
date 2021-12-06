@@ -86,7 +86,7 @@
 
     import QueryTreeList from './queryTreeList.vue'
     import useQueryTree from './composables/useQueryTree2'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'

@@ -1,9 +1,9 @@
 <template>
     <div class="flex flex-col h-full">
-        <div class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm">
+        <div class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm filter-head">
             <div
-                class="flex items-center justify-between"
                 v-if="totalFilteredCount > 0"
+                class="flex items-center justify-between"
             >
                 <span>
                     {{ totalFilteredCount }}
@@ -17,7 +17,7 @@
                     </span>
                 </div>
             </div>
-            <div class="flex items-center justify-between text-gray-500" v-else>
+            <div v-else class="flex items-center justify-between text-gray-500">
                 <span> Filters</span>
             </div>
         </div>
@@ -28,18 +28,18 @@
                 :accordion="isAccordion"
                 :class="$style.filter"
                 expand-icon-position="right"
-                @change="handleActiveKeyChange"
                 :bordered="false"
+                @change="handleActiveKeyChange"
             >
                 <template
                     v-for="item in dynamicList"
                     :key="`${item.id}_${componentState}`"
                 >
                     <Panel
-                        :item="item"
-                        :componentParentKey="`${item.id}_${componentState}`"
-                        :activeKey="localActiveKeyValue"
                         v-model="localValue"
+                        :item="item"
+                        :component-parent-key="`${item.id}_${componentState}`"
+                        :active-key="localActiveKeyValue"
                         @change="handleChange"
                     ></Panel>
                 </template>

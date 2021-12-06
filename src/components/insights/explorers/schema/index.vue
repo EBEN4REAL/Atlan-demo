@@ -2,10 +2,10 @@
     <div class="flex flex-col items-center w-full h-full bg-white">
         <div class="w-full p-4 pb-1">
             <Connector
-                class=""
-                :filterSourceIds="BItypes"
-                :isLeafNodeSelectable="false"
                 v-model:data="connectorsData"
+                class=""
+                :filter-source-ids="BItypes"
+                :is-leaf-node-selectable="false"
                 :item="{
                     id: 'connector',
                     label: 'Connector',
@@ -61,6 +61,7 @@
             "
         >
             <schema-tree
+                v-model:expanded-keys="expandedKeys"
                 :tree-data="treeData"
                 :on-load-data="onLoadData"
                 :select-node="selectNode"
@@ -68,7 +69,6 @@
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
                 :selected-keys="selectedKeys"
-                v-model:expanded-keys="expandedKeys"
             />
         </div>
     </div>
@@ -84,12 +84,20 @@
         computed,
         ComputedRef,
     } from 'vue'
+    import { storeToRefs } from 'pinia'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import SchemaTree from './schemaTree.vue'
 
     import useSchemaExplorerTree from './composables/useSchemaExplorerTree'
 
-    import { tableInterface } from '~/types/insights/table.interface'
+    import { tableInterface ,
+        Attributes,
+        Database,
+        Schema,
+        Table,
+        Column,
+        View,
+    } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
@@ -98,21 +106,12 @@
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import useAssetStore from '~/store/asset'
-    import { storeToRefs } from 'pinia'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import SchemaFilter from './schemaFilter.vue'
 
-    import {
-        Attributes,
-        Database,
-        Schema,
-        Table,
-        Column,
-        View,
-    } from '~/types/insights/table.interface'
-
+    
     export default defineComponent({
         components: { Connector, SchemaTree, SchemaFilter },
         props: {},
@@ -205,7 +204,7 @@
             )
             const initSelectedKeys = computed(() => {
                 /* KEY - SchemaqualifiedName/tableName */
-                let key = `${getSchemaQualifiedName(
+                const key = `${getSchemaQualifiedName(
                     activeInlineTab.value?.explorer?.schema?.connectors
                         .attributeValue
                 )}/${activeInlineTab.value?.assetSidebar?.assetInfo?.title}`
@@ -251,7 +250,7 @@
                 // })
             }
 
-            let searchResultType = ref('table')
+            const searchResultType = ref('table')
             const {
                 treeData,
                 loadedKeys,
@@ -311,9 +310,9 @@
                                 activeInlineTab?.value?.explorer?.schema?.connectors
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
+                                { ...activeInlineTab.value}
 
-                            let firstConnection = getFirstQueryConnection()
+                            const firstConnection = getFirstQueryConnection()
                             if (
                                 firstConnection &&
                                 firstConnection?.attributes?.name

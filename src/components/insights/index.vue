@@ -1,5 +1,5 @@
 <template>
-    <div class="flex h-full" id="fullScreenId">
+    <div id="fullScreenId" class="flex h-full">
         <!--Sidebar navigation pane start -->
         <div class="bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
@@ -33,8 +33,8 @@
         <!--Sidebar navigation pane end -->
         <splitpanes
             :class="$style.splitpane__styles"
-            @resize="paneResize"
             class="parent_splitpanes"
+            @resize="paneResize"
         >
             <pane
                 :max-size="24.5"
@@ -55,10 +55,10 @@
                 >
                     <Queries
                         :reset="resetTree"
-                        :resetQueryTree="resetQueryTree"
-                        :resetParentGuid="resetParentGuid"
-                        :resetType="resetType"
-                        :refreshQueryTree="refreshQueryTree"
+                        :reset-query-tree="resetQueryTree"
+                        :reset-parent-guid="resetParentGuid"
+                        :reset-type="resetType"
+                        :refresh-query-tree="refreshQueryTree"
                     />
                 </div>
                 <!--explorer pane end -->
@@ -76,8 +76,8 @@
                 :style="{ marginLeft: explorerPaneSize === 0 ? '-1px' : '0px' }"
             >
                 <Playground
-                    :activeInlineTabKey="activeInlineTabKey"
-                    :refreshQueryTree="refreshQueryTree"
+                    :active-inline-tab-key="activeInlineTabKey"
+                    :refresh-query-tree="refreshQueryTree"
                 />
             </pane>
             <pane
@@ -107,6 +107,7 @@
         onUnmounted,
         onMounted,
     } from 'vue'
+    import { useRoute } from 'vue-router'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
@@ -127,7 +128,6 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useHotKeys } from './common/composables/useHotKeys'
     import { useFullScreen } from './common/composables/useFullScreen'
-    import { useRoute } from 'vue-router'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
@@ -194,7 +194,7 @@
                 modifyActiveInlineTabEditor,
             } = useInlineTab(
                 undefined,
-                savedQueryGuidFromURL.value ? false : true
+                !savedQueryGuidFromURL.value
             )
 
             const { openSavedQueryInNewTab } = useSavedQuery(
@@ -229,26 +229,26 @@
                 console.log(editorInstanceParam, editorInstance, 'fxn')
             }
 
-            /*---------- PROVIDERS FOR CHILDRENS -----------------
+            /* ---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
             const provideData: provideDataInterface = {
-                activeInlineTab: activeInlineTab,
-                activeInlineTabKey: activeInlineTabKey,
+                activeInlineTab,
+                activeInlineTabKey,
                 inlineTabs: tabsArray,
-                editorInstance: editorInstance,
-                editorConfig: editorConfig,
-                editorHoverConfig: editorHoverConfig,
-                monacoInstance: monacoInstance,
-                explorerPaneSize: explorerPaneSize,
-                outputPaneSize: outputPaneSize,
-                fullSreenState: fullSreenState,
-                setEditorInstance: setEditorInstance,
+                editorInstance,
+                editorConfig,
+                editorHoverConfig,
+                monacoInstance,
+                explorerPaneSize,
+                outputPaneSize,
+                fullSreenState,
+                setEditorInstance,
             }
             useProvide(provideData)
             /*-------------------------------------*/
 
-            /* Watchers for syncing in localstorage*/
+            /* Watchers for syncing in localstorage */
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
@@ -279,14 +279,14 @@
                         e.preventDefault()
                         explorerPaneToggle(explorerPaneSize)
                     }
-                    //prevent the default action
+                    // prevent the default action
                 }
                 if (e.key === 'j') {
                     if (e.metaKey || e.ctrlKey) {
                         e.preventDefault()
                         resultsPaneSizeToggle(outputPaneSize)
                     }
-                    //prevent the default action
+                    // prevent the default action
                 }
                 if (e.key === 'm') {
                     if (e.metaKey || e.ctrlKey) {
@@ -296,7 +296,7 @@
                                 !activeInlineTab.value.assetSidebar.isVisible
                         }
                     }
-                    //prevent the default action
+                    // prevent the default action
                 }
             }
 
@@ -328,10 +328,10 @@
                 rowsCount: 100,
             })
 
-            let demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
+            const demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
 
             const detectQuery = () => {
-                let queryTab: activeInlineTabInterface = {
+                const queryTab: activeInlineTabInterface = {
                     key: generateUUID(),
                     label: `${tableNameFromURL} preview`,
                     isSaved: false,
@@ -567,21 +567,21 @@
                     newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
                 }
 
-                let attributeName = 'schemaQualifiedName'
-                let attributeValue =
-                    databaseQualifiedNameFromURL + '/' + schemaNameFromURL
+                const attributeName = 'schemaQualifiedName'
+                const attributeValue =
+                    `${databaseQualifiedNameFromURL  }/${  schemaNameFromURL}`
 
                 // const newText = `${newQuery}${prevText}`
                 queryTab.playground.editor.text = newQuery
 
                 queryTab.playground.editor.context = {
-                    attributeName: attributeName,
-                    attributeValue: attributeValue,
+                    attributeName,
+                    attributeValue,
                 }
 
                 queryTab.explorer.schema.connectors = {
-                    attributeName: attributeName,
-                    attributeValue: attributeValue,
+                    attributeName,
+                    attributeValue,
                 }
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
@@ -620,10 +620,9 @@
                     tableNameFromURL
                 ) {
                     console.log('url params: ', {
-                        databaseQualifiedNameFromURL:
-                            databaseQualifiedNameFromURL,
-                        schemaNameFromURL: schemaNameFromURL,
-                        tableNameFromURL: tableNameFromURL,
+                        databaseQualifiedNameFromURL,
+                        schemaNameFromURL,
+                        tableNameFromURL,
                     })
                     // if (columnNameFromURL.value) {
                     // } else {
@@ -636,9 +635,9 @@
                 window.removeEventListener('keydown', _keyListener)
             })
 
-            let resetTree = ref(false)
-            let resetParentGuid = ref(null)
-            let resetType = ref(null)
+            const resetTree = ref(false)
+            const resetParentGuid = ref(null)
+            const resetType = ref(null)
             const refreshQueryTree = (guid, type) => {
                 resetTree.value = true
                 resetParentGuid.value = guid

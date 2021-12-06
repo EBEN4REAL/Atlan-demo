@@ -21,12 +21,18 @@
                 ></AtlanIcon>
             </div>
             <div
+                v-if="!isLoading && error"
+                class="flex items-center justify-center flex-grow"
+            >
+                <ErrorView />
+            </div>
+            <div
                 v-else-if="columnsList.length === 0 && !isLoading"
                 class="flex-grow"
             >
                 <EmptyView
                     empty-screen="EmptyDiscover"
-                    desc="No assets found"
+                    desc="No columns found"
                 ></EmptyView>
             </div>
             <a-table
@@ -113,35 +119,21 @@
 
 <script lang="ts">
     // Vue
-    import {
-        defineComponent,
-        // inject,
-        watch,
-        computed,
-        ref,
-        Ref,
-        nextTick,
-        onMounted,
-    } from 'vue'
+    import { defineComponent, watch, computed, ref, Ref, nextTick } from 'vue'
+
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
-    import { storeToRefs } from 'pinia'
 
     // Components
-    // import DataTypes from '@common/facets/dataType.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
-
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
     // import Tooltip from '@/common/ellipsis/index.vue'
-    // import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     // Composables
     import { images, dataTypeCategoryList } from '~/constant/dataType'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    // import {
-    //     useColumnsList,
-    //     // useColumnAggregation,
-    // } from '~/composables/discovery/useColumns'
     import {
         AssetAttributes,
         AssetRelationAttributes,
@@ -158,6 +150,8 @@
         components: {
             SearchAndFilter,
             AssetDrawer,
+            EmptyView,
+            ErrorView,
         },
         setup() {
             /** DATA */
@@ -169,7 +163,7 @@
             const columnsList: Ref<assetInterface[]> = ref([])
             const columnFromUrl: Ref<assetInterface[]> = ref([])
 
-            const { columnCount, selectedAsset } = useAssetInfo()
+            const { selectedAsset } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
             const limit = ref(20)
@@ -212,10 +206,8 @@
                 list,
                 isLoading,
                 isLoadMore,
-
                 quickChange,
                 totalCount,
-
                 error,
                 isValidating,
                 updateList,
@@ -252,9 +244,9 @@
             }
 
             const handleCloseColumnSidebar = () => {
-                showColumnSidebar.value = false
                 selectedRow.value = null
                 selectedRowData.value = {}
+                showColumnSidebar.value = false
             }
             const openColumnSidebar = (columnOrder) => {
                 selectedRow.value = columnOrder
@@ -292,7 +284,7 @@
                 selectedRowData.value = asset
 
                 // In case column from url was updated instead of the other list (20 items)
-                if (asset.guid === columnFromUrl.value[0].guid) {
+                if (asset.guid === columnFromUrl.value[0]?.guid) {
                     columnFromUrl.value[0] = asset
                 }
 

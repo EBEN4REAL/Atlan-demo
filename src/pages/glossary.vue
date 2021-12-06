@@ -1,21 +1,35 @@
 <template>
     <div class="flex w-full h-full bg-white">
-        <div class="w-1/5 h-full border-r border-gray-200">
-            <GlossaryDiscovery class="h-full"></GlossaryDiscovery>
-        </div>
-        <div class="flex-1 border-r border-gray-300">
-            <div class="flex w-full h-full">
-                <!-- <BulkUploadProgress /> -->
-                <router-view v-if="isItem" :selected-asset="selectedGlossary" />
-            </div>
-        </div>
-
-        <div
-            class="bg-white asset-preview-container xs:hidden sm:hidden md:block lg:block"
-        >
-            <GlossaryPreview :selected-asset="localSelected"></GlossaryPreview>
-            <!-- <AssetPreview :selected-asset="selectedAsset"></AssetPreview> -->
-        </div>
+        <splitpanes class="w-full h-full bg-white">
+            <pane
+                min-size="20"
+                max-size="50"
+                :size="22"
+                style="min-width: 264px"
+            >
+                <div class="h-full border-r border-gray-200">
+                    <GlossaryDiscovery class="h-full"></GlossaryDiscovery>
+                </div>
+            </pane>
+            <pane :size="50" class="bg-white">
+                <div class="flex w-full h-full">
+                    <!-- <BulkUploadProgress /> -->
+                    <router-view
+                        v-if="isItem"
+                        :selected-asset="selectedGlossary"
+                    />
+                </div>
+            </pane>
+            <pane min-size="28" max-size="28" :size="28" class="bg-white">
+                <div
+                    class="h-full bg-white border-l xs:hidden sm:hidden md:block lg:block"
+                >
+                    <GlossaryPreview
+                        :selected-asset="localSelected"
+                    ></GlossaryPreview>
+                </div>
+            </pane>
+        </splitpanes>
     </div>
 </template>
 

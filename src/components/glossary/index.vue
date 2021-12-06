@@ -4,6 +4,7 @@
         ref="glossaryBox"
     >
         <div
+            v-if="!checkable"
             class="flex items-center justify-between w-full px-4 py-3 border-b"
         >
             <GlossarySelect
@@ -89,6 +90,8 @@
             :height="height"
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
+            :checkable="checkable"
+            @check="onCheck"
         ></GlossaryTree>
 
         <div
@@ -135,7 +138,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed, provide } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed, provide, PropType } from 'vue'
     import { useRouter } from 'vue-router'
 
     import EmptyView from '@common/empty/index.vue'
@@ -199,7 +202,18 @@
                     return {}
                 },
             },
+            checkable: {
+                type: Boolean,
+                reuired: false,
+                default: false
+            },
+            checkedKeys: {
+                type: Object as PropType<string[]>,
+                required: false,
+                default: []
+            }
         },
+        emits: ['check'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
             const selectedGlossaryQf = ref(
@@ -381,6 +395,9 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
+            const onCheck = (checkedNodes) => {
+                emit('check', checkedNodes)
+            }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             return {
                 handleFilterChange,
@@ -419,6 +436,7 @@
                 handleAddCategory,
                 defaultEntityType,
                 handleCollapse,
+                onCheck
             }
         },
     })

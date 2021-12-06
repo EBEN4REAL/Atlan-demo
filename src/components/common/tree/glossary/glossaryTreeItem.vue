@@ -66,7 +66,7 @@
             <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
                 <AtlanIcon icon="Error"></AtlanIcon>
             </div>
-            <div v-else class="hidden group-hover:flex">
+            <div v-else-if="!checkable" class="hidden group-hover:flex">
                 <Actions
                     :treeMode="true"
                     :glossaryName="getAnchorName(item) || title(item)"
@@ -80,7 +80,7 @@
 </template>
 <script lang="ts">
     // library
-    import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
+    import { computed, defineComponent, PropType, toRefs, inject, ref } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import Actions from './actions.vue'
@@ -101,6 +101,11 @@
                 required: false,
                 default: () => {},
             },
+            checkable: {
+                type: Boolean,
+                required: false,
+                default: false
+            }
         },
 
         setup(props, { emit }) {
@@ -113,6 +118,7 @@
                 getAnchorQualifiedName,
                 getAnchorName,
             } = useAssetInfo()
+
             const iconSize = computed(() => {
                 if (item.value.typeName === 'AtlasGlossary') {
                     return 'height: 18px !important'

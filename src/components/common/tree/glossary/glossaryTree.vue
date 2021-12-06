@@ -32,7 +32,7 @@
         :block-node="true"
         :load-data="onLoadData"
         :treeDataSimpleMode="true"
-        @select="selectNode"
+        @select="checkable ? null :selectNode"
         :auto-expand-parent="false"
         @expand="expandNode"
         :height="height"
@@ -40,13 +40,16 @@
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
         :class="$style.glossaryTree"
+        :checkable="checkable"
+        :checkStrictly="false"
+        @check="onCheck"
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />
         </template>
 
         <template #title="entity">
-            <GlossaryTreeItem :item="entity" :class="treeItemClass" />
+            <GlossaryTreeItem :item="entity" :class="treeItemClass"  :checkable="checkable" />
         </template>
     </a-tree>
 </template>
@@ -101,8 +104,13 @@
                 required: false,
                 default: () => '',
             },
+            checkable: {
+                type: Boolean,
+                required: false,
+                default: false
+            }
         },
-        emits: ['select'],
+        emits: ['select', 'check'],
         setup(props, { emit }) {
             const router = useRouter()
 
@@ -135,6 +143,7 @@
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
+                checkable: props.checkable
             })
 
             onMounted(() => {
@@ -169,6 +178,10 @@
             const reInitTree = () => {
                 initTreeData(defaultGlossary.value)
             }
+            const onCheck = (e, { checkedNodes }) => {
+                emit('check', checkedNodes)
+                console.log('bruh', checkedNodes)
+            }
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             provide('refetchGlossaryTree', refetchNode)
@@ -193,6 +206,7 @@
                 collapseTree,
                 addGTCNode,
                 reInitTree,
+                onCheck
             }
             // data
         },

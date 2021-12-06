@@ -6,6 +6,7 @@
                 :filterSourceIds="BItypes"
                 :isLeafNodeSelectable="false"
                 v-model:data="connectorsData"
+                :bgGrayForSelector="true"
                 :item="{
                     id: 'connector',
                     label: 'Connector',

@@ -76,10 +76,6 @@
                     return {}
                 },
             },
-            bgGrayForSelector: {
-                type: Boolean,
-                default: true,
-            },
             connector: {
                 type: String,
                 required: true,
@@ -201,7 +197,7 @@
             //         else return 1
             //     })
             // })
-            const localValue = ref(sortedList.value[0])
+            const localValue = ref(modelValue.value)
 
             const handleChange = (value) => {
                 localValue.value = value

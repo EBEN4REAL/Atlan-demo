@@ -41,9 +41,8 @@
         <div
             v-if="isAreaFocused"
             @click.stop="() => {}"
-            class="absolute pb-2 overflow-auto rounded custom-shadow"
+            class="absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow"
             :style="`left:${clickPos.left}px;top:${clickPos.top}px`"
-            ref="dropdown"
             style="width: 330px; height: 250px"
         >
             <TablesTree @selectedColumn="onSelectedColumn" />
@@ -76,8 +75,6 @@
             const { expand } = toRefs(props)
             const isAreaFocused = ref(false)
             const container = ref()
-            const dropdown = ref()
-            const dropdownState = ref(false)
             const clickPos = ref({ left: 0, top: 0 })
             const cols = ref([{ type: 'string', label: 'customer_name' }])
             const setFoucs = (e) => {
@@ -92,7 +89,6 @@
                     top: y,
                 }
                 isAreaFocused.value = true
-                dropdownState.value = true
             }
             const onBlur = () => {
                 isAreaFocused.value = false
@@ -104,10 +100,6 @@
                     isAreaFocused.value = false
                 }
             }
-            const handleClose = () => {
-                console.log('clied')
-                dropdownState.value = false
-            }
             const handleDeleteColumn = (index: any) => {
                 cols.value.splice(index, 1)
             }
@@ -118,19 +110,11 @@
                 const type = node?.dataRef?.dataType?.toLowerCase()
                 cols.value.push({ type, label })
             }
-            watch(expand, () => {
-                if (!expand.value) {
-                    dropdownState.value = false
-                }
-            })
 
             return {
                 clickPos,
                 handleDeleteColumn,
                 onSelectedColumn,
-                handleClose,
-                dropdownState,
-                dropdown,
                 container,
                 handleContainerBlur,
                 onBlur,

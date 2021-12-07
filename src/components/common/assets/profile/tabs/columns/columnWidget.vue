@@ -12,7 +12,7 @@
         </div>
         <!-- Table -->
         <div
-            class="flex items-center justify-center w-full border rounded  border-gray-light max-h-96"
+            class="flex items-center justify-center w-full border rounded  border-gray-light h-96"
         >
             <div
                 v-if="isLoading"
@@ -41,7 +41,7 @@
             </div>
 
             <a-table
-                v-else
+                v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :scroll="{ y: 342 }"

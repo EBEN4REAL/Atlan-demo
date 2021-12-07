@@ -1,7 +1,7 @@
 <template>
     <div class="h-full pb-6">
         <div v-if="isLoading" class="flex items-center justify-center h-full">
-            <AtlanButton icon="Loader" class="h-5 animate-spin" />
+             <AtlanIcon icon="Loader" class="h-10 animate-spin" />
         </div>
         <div
             v-if="error"

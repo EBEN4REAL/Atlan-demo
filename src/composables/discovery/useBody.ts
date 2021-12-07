@@ -268,7 +268,7 @@ export function useBody(
             case 'column':
             case 'table':
             case 'sql':
-            case 'properties': {
+            default: {
                 if (filterObject) {
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
@@ -472,5 +472,68 @@ export function useBody(
 
     base.filterMinimumShouldMatch(1)
 
-    return base.build()
+    const tempQuery = base.build()
+
+    const query = {
+        ...tempQuery,
+        query: {
+            function_score: {
+                query: tempQuery.query,
+                functions: [
+                    {
+                        filter: {
+                            match: {
+                                certificateStatus: 'VERIFIED',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                certificateStatus: 'DRAFT',
+                            },
+                        },
+                        weight: 4,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'Table',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'View',
+                            },
+                        },
+                        weight: 5,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'Column',
+                            },
+                        },
+                        weight: 3,
+                    },
+                    {
+                        filter: {
+                            match: {
+                                __typeName: 'AtlasGlossaryTerm',
+                            },
+                        },
+                        weight: 4,
+                    },
+                ],
+                boost_mode: 'sum',
+                score_mode: 'sum',
+            },
+        },
+    }
+
+    return query
 }

@@ -23,9 +23,13 @@
                     <ClassificationDropdown
                         :modelValue="savedQueryType2"
                         @change="onClassificationChange"
+                        :connector="connector"
                     />
                 </div>
-                <div class="h-full pt-0 pb-4 mx-4 overflow-y-hidden w-9/11">
+                <div
+                    class="h-full pt-0 pb-4 mx-4 overflow-y-hidden w-9/11"
+                    @mouseleave="closeDropdown"
+                >
                     <div class="flex w-full">
                         <AtlanIcon
                             :icon="folderOpened ? 'CaretDown' : 'CaretRight'"
@@ -38,7 +42,7 @@
                             :class="`${
                                 selectedFolderContext?.guid ===
                                 queryFolderNamespace?.guid
-                                    ? 'bg-primary-focus w-9/11'
+                                    ? 'bg-primary-selected-focus w-9/11'
                                     : 'bg-white'
                             }`"
                         >
@@ -109,7 +113,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     import QueryTreeList from './queryTreeList.vue'
-    import useQueryTree from './composables/useQueryTree2'
+    import useQueryTree from './composables/useQueryTree'
     import { useRouter, useRoute } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
@@ -284,8 +288,8 @@
                 dropdownVisible.value = true
             }
 
-            const classificationValue = ref('')
-            let selectedClassification = ref('')
+            // const classificationValue = ref(savedQueryType2?.value?.name)
+            let selectedClassification = ref(savedQueryType2?.value?.name)
             const onClassificationChange = (value) => {
                 // emit('change', checkedValues)
                 console.log('change: ', value)
@@ -368,7 +372,7 @@
                 dropdownVisible,
                 closeDropdown,
                 showDropdown,
-                classificationValue,
+                // classificationValue,
                 onClassificationChange,
                 folderOpened,
                 toggleFolder,

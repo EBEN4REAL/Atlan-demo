@@ -39,13 +39,14 @@
                 v-if="!searchQuery?.length && !totalFilteredCount"
             >
                 <div
-                    class="flex items-center justify-between w-full mb-2 text-gray-500 h-9"
+                    class="flex items-center justify-between w-full text-gray-500 h-9"
                 >
                     <div class="flex items-center justify-between w-full">
                         <div class="w-9/12">
                             <ClassificationDropdown
                                 :modelValue="classificationValue"
                                 @change="onClassificationChange"
+                                :connector="connector"
                             />
                         </div>
                         <div class="flex items-center">
@@ -99,7 +100,7 @@
             </div>
             <div
                 v-if="!searchQuery?.length && !totalFilteredCount"
-                class="relative w-full px-4 pt-0 overflow-y-auto"
+                class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
                 :style="
                     fullSreenState
                         ? 'height: calc( 100vh - 140px )'
@@ -127,7 +128,7 @@
             </div>
             <div
                 v-else
-                class="relative w-full p-3 pt-0 pl-6 overflow-y-auto"
+                class="relative w-full p-3 pt-0 pl-6 mt-2 overflow-y-auto"
                 :style="
                     fullSreenState
                         ? 'height: calc( 100vh- 140px )'
@@ -218,7 +219,7 @@
     import RaisedTab from '~/components/insights/common/raisedTabs/index.vue'
     import QueryTree from './queryTree.vue'
     // import useQueryTree from './composables/useQueryTree'
-    import useQueryTree from './composables/useQueryTree2'
+    import useQueryTree from './composables/useQueryTree'
     import useSearchQueries from './composables/useSearchQueries'
 
     import Connector from '~/components/insights/common/connector/connectorOnly.vue'
@@ -236,6 +237,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
+
     export default defineComponent({
         components: {
             RaisedTab,
@@ -301,7 +303,6 @@
             ) as ComputedRef<activeInlineTabInterface>
             const { classificationList } = useTypedefData()
 
-            const savedQueryType: Ref<object> = ref(classificationList.value[0])
             // console.log('hello world: ', classificationList.value)
             const editorInstance = inject('editorInstance') as Ref<any>
             const activeInlineTabKey = inject(
@@ -323,7 +324,13 @@
             const { focusEditor } = useEditor()
             const BItypes = getBISourceTypes()
 
-            let selectedClassification = ref(classificationList.value[0].name)
+            let selectedClassification = ref(
+                classificationList.value.length
+                    ? classificationList.value[0].name
+                    : ''
+            )
+            const savedQueryType: Ref<object> = ref(classificationList.value[0])
+
             const onClassificationChange = (value) => {
                 // emit('change', checkedValues)
                 console.log('change: ', value)
@@ -638,7 +645,7 @@
                 onLoadData: onLoadData,
                 expandNode: expandNode,
                 selectNode: selectNode,
-                refetchNode: refetchNode1,
+                refetchNode: refetchNode,
                 immediateParentGuid: immediateParentGuid,
                 nodeToParentKeyMap: nodeToParentKeyMap,
                 updateNode: updateNode,
@@ -662,7 +669,7 @@
             const { data1: searchResults, isLoading1: searchLoading } =
                 useSearchQueries(
                     searchQuery,
-                    ref(savedQueryType.value.name),
+                    ref(savedQueryType?.value?.name),
                     facets
                 )
 
@@ -740,15 +747,7 @@
                 const all_guid =
                     nodeToParentKeyMap[guid] ?? queryFolderNamespace.value.guid
 
-                refetchNode1(all_guid, type)
-            }
-
-            const refetchNode = (
-                guid: string,
-                type: 'query' | 'queryFolder',
-                tree?: 'personal' | 'all'
-            ) => {
-                refetchNode1(guid, type)
+                refetchNode(all_guid, type)
             }
 
             onMounted(() => {
@@ -843,11 +842,11 @@
                                 async (guid, index) => {
                                     // console.log('reset: ', index)
 
-                                    await refetchNode1(guid, resetType.value)
+                                    await refetchNode(guid, resetType.value)
                                 }
                             )
                         } else {
-                            await refetchNode1(
+                            await refetchNode(
                                 resetParentGuid.value,
                                 resetType.value
                             )

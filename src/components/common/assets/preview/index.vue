@@ -38,7 +38,7 @@
                 ></AtlanIcon>
                 <router-link
                     :to="getProfilePath(selectedAsset)"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -161,6 +161,7 @@
                     :is="tab.component"
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
+                    :isDrawer="isDrawer"
                     :data="tab.data"
                 ></component>
             </a-tab-pane>
@@ -242,10 +243,15 @@
                 required: false,
                 default: '',
             },
+            isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, isDrawer } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
@@ -285,14 +291,14 @@
 
             const route = useRoute()
             const isProfile = ref(false)
-            if (route.params.id) {
+            if (route.params.id && !isDrawer.value) {
                 isProfile.value = true
             }
 
             watch(
                 () => route.params.id,
                 (newId) => {
-                    if (newId) {
+                    if (newId && !isDrawer.value) {
                         isProfile.value = true
                     } else {
                         isProfile.value = false

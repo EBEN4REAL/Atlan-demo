@@ -3,7 +3,7 @@
     import { useRouter } from 'vue-router'
 
     export default defineComponent({
-        name: 'PlatformPage',
+        name: 'PlatformRedirect',
         setup() {
             const router = useRouter()
             router.replace(`/platform/services`)

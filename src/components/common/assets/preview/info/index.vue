@@ -27,7 +27,7 @@
         >
             <Shortcut shortcutKey="n" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span> Name</span>
                 </div>
@@ -171,13 +171,15 @@
 
         <div class="flex flex-col">
             <Shortcut shortcutKey="d" action="set description" placement="left">
-                <div class="flex items-center px-5 mb-1 text-sm text-gray-500">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                >
+                    <span>Description</span>
                     <AtlanIcon
                         icon="User"
-                        class="mr-1"
+                        class="h-3 mr-1"
                         v-if="isUserDescription(selectedAsset)"
                     ></AtlanIcon>
-                    <span>Description</span>
                 </div>
             </Shortcut>
 
@@ -186,6 +188,7 @@
                 v-model="localDescription"
                 class="mx-4"
                 @change="handleChangeDescription"
+                :selected-asset="selectedAsset"
             />
         </div>
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
@@ -197,7 +200,7 @@
         >
             <Shortcut shortcutKey="o" action="set owners" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span> Owners</span>
                 </div>
@@ -205,10 +208,10 @@
 
             <Owners
                 v-model="localOwners"
-                :guid="selectedAsset.guid"
                 :used-for-assets="true"
                 @change="handleOwnersChange"
                 class="px-5"
+                :selected-asset="selectedAsset"
             />
         </div>
 
@@ -228,7 +231,7 @@
                 placement="left"
             >
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span> Classification</span>
                 </div>
@@ -255,7 +258,7 @@
             class="flex flex-col"
         >
             <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
             >
                 Terms
             </p>
@@ -273,17 +276,17 @@
         >
             <Shortcut shortcutKey="c" action="set certificate" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span> Certificate</span>
                 </div>
             </Shortcut>
 
             <Certificate
-                :selected-asset="selectedAsset"
                 class="px-5"
                 v-model="localCertificate"
                 @change="handleChangeCertificate"
+                :selected-asset="selectedAsset"
             />
         </div>
         <a-modal
@@ -299,7 +302,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, defineAsyncComponent, inject, ref } from 'vue'
+    import {
+        defineComponent,
+        defineAsyncComponent,
+        inject,
+        ref,
+        toRefs,
+    } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
@@ -341,10 +350,19 @@
             ),
             AtlanIcon,
         },
+        props: {
+            isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+        },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+
+            const { isDrawer } = toRefs(props)
 
             const sampleDataVisible = ref<boolean>(false)
 
@@ -388,7 +406,7 @@
                 nameRef,
                 descriptionRef,
                 animationPoint,
-            } = updateAssetAttributes(selectedAsset)
+            } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (

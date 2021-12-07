@@ -53,8 +53,10 @@
                         :is-cmnd-k-visible="isCmndKVisible"
                         @closeModal="isCmndKVisible = false"
                     />
+
                     <router-view />
                 </div>
+                <div id="overAssetSidebar" class="bg-white"></div>
             </a-layout-content>
         </a-layout>
     </a-layout>

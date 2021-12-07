@@ -135,6 +135,7 @@
                                     ? true
                                     : false
                             "
+                            :enableSidebarDrawer="enableSidebarDrawer"
                             :is-checked="checkSelectedCriteriaFxn(item)"
                             @listItem:check="
                                 (e, item) => updateBulkSelectedAssets(item)
@@ -245,6 +246,11 @@
                 type: String,
                 required: false,
                 default: 'assets',
+            },
+            enableSidebarDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         setup(props, { emit }) {

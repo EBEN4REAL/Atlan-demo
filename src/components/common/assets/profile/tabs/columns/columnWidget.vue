@@ -387,6 +387,7 @@
                 () => {
                     // If redirected from asset column discovery
                     if (column.value !== '') {
+                        columnFromUrl.value = []
                         const limit = ref(1)
                         const offset = ref(0)
                         const facets = ref({
@@ -446,11 +447,6 @@
                 }
             )
 
-            /*   watch(
-                () => [...list.value],
-                () => filterColumnsList()
-            ) */
-
             return {
                 rowClassName,
                 customRow,
@@ -483,7 +479,7 @@
                         align: 'center',
                     },
                     {
-                        width: 240,
+                        width: 280,
                         title: 'Column Name',
                         dataIndex: 'column_name',
                         key: 'column_name',

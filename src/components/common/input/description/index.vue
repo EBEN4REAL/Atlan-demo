@@ -38,7 +38,7 @@
         Ref,
         ref,
         toRefs,
-        watch,
+        watchEffect,
     } from 'vue'
     import {
         and,
@@ -105,10 +105,24 @@
                         'true'
             )
 
-            const { d } = useMagicKeys()
+            const { d, enter, shift } = useMagicKeys()
+
+            /* function geeks(event) {
+                // 13 is the keycode for "enter"
+                if (event.keyCode == 13 && event.shiftKey) {
+                    document.getElementById("d").innerHTML = "Triggered enter+shift";
+                }
+                if (event.keyCode == 13 && !event.shiftKey) {
+                    document.getElementById("d").innerHTML = "Triggered enter";
+                }
+            } */
 
             whenever(and(d, notUsingInput), () => {
                 handleEdit()
+            })
+
+            watchEffect(() => {
+                if (enter.value && !shift.value && isEdit.value) handleBlur()
             })
 
             return {

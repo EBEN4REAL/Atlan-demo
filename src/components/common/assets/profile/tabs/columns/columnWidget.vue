@@ -29,17 +29,9 @@
             >
                 <ErrorView />
             </div>
-            <div
-                v-else-if="columnsList.length === 0 && !isLoading"
-                class="flex-grow"
-            >
-                <EmptyView
-                    empty-screen="EmptyDiscover"
-                    desc="No columns found"
-                ></EmptyView>
-            </div>
+
             <a-table
-                v-else
+                v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :scroll="{ y: 342 }"
@@ -103,6 +95,12 @@
                     </template>
                 </template>
             </a-table>
+            <div v-else class="flex-grow">
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    desc="No columns found"
+                ></EmptyView>
+            </div>
 
             <!-- <div
                 v-if="isLoadMore"
@@ -346,7 +344,7 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch([list], () => {
+            watch(list, () => {
                 // If redirected from asset column discovery
                 if (column.value !== '') {
                     const limit = ref(1)
@@ -365,6 +363,8 @@
                         return column.value
                     })
                     const dependentKey = ref(fetchKey.value)
+
+                    console.log(fetchKey.value)
 
                     const { list: urlColumnList } = useDiscoverList({
                         isCache: false,

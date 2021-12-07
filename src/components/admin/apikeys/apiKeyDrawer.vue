@@ -105,14 +105,129 @@
                         </template>
                     </a-popover>
                 </div>
-                <div class="mb-4">
-                    <div class="mb-2 mr-2 text-gray-500">Validity</div>
-                    <a-date-picker
-                        v-model:value="validityDate"
-                        format="YYYY-MM-DD"
-                        :allowClear="true"
-                        :disabled-date="disabledDate"
-                    ></a-date-picker>
+                <div class="mb-4" v-if="!apiKeyDirty.id">
+                    <div class="mb-2 mr-2 text-gray-500">Expiry</div>
+                    <a-dropdown :trigger="['click']">
+                        <a-button
+                            class="rounded focus:ring-2 focus:border-primary"
+                            style="min-width: 168px"
+                        >
+                            <div class="flex items-center">
+                                <div class="flex flex-1">
+                                    {{
+                                        validityOptions.find(
+                                            (v) => v.value === validity
+                                        )
+                                            ? validityOptions.find(
+                                                  (v) => v.value === validity
+                                              ).label
+                                            : 'Custom'
+                                    }}
+                                </div>
+                                <div class="ml-4 text-gray-700">
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="h-4 -mt-0.5 -ml-0.5"
+                                    />
+                                </div>
+                            </div>
+                        </a-button>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item key="0" class="hover:bg-white">
+                                    <a-radio-group
+                                        v-model:value="validity"
+                                        class="w-full"
+                                    >
+                                        <div
+                                            class="
+                                                flex flex-col
+                                                w-full
+                                                px-1
+                                                text-sm text-gray-700
+                                                hover:text-primary
+                                            "
+                                        >
+                                            <template
+                                                v-for="item in validityOptions"
+                                                :key="item.label"
+                                            >
+                                                <div class="w-full px-0 py-1">
+                                                    <a-radio
+                                                        :value="item.value"
+                                                        @click="
+                                                            showDatePicker = false
+                                                        "
+                                                    >
+                                                        <div>
+                                                            {{ item.label }}
+                                                        </div>
+                                                    </a-radio>
+                                                </div>
+                                            </template>
+                                            <div
+                                                @click.stop="() => {}"
+                                                class="
+                                                    flex flex-col
+                                                    items-center
+                                                    py-2
+                                                    pb-0.5
+                                                    border-t border-300
+                                                    hover:text-primary
+                                                "
+                                            >
+                                                <div
+                                                    class="
+                                                        flex
+                                                        items-center
+                                                        justify-start
+                                                        w-full
+                                                        mb-2
+                                                    "
+                                                >
+                                                    <a-radio
+                                                        @click="
+                                                            showDatePicker = true
+                                                        "
+                                                        :value="'custom'"
+                                                        >Custom</a-radio
+                                                    >
+                                                </div>
+                                                <div
+                                                    :class="
+                                                        showDatePicker
+                                                            ? ''
+                                                            : 'hidden'
+                                                    "
+                                                >
+                                                    <a-date-picker
+                                                        v-model:value="
+                                                            validityDate
+                                                        "
+                                                        format="YYYY-MM-DD"
+                                                        :allowClear="true"
+                                                        :disabled-date="
+                                                            disabledDate
+                                                        "
+                                                    ></a-date-picker>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a-radio-group>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
+                <div v-else-if="validityDateStringRelative">
+                    <div class="mb-2 mr-2 text-gray-500">Expiry</div>
+                    <a-tooltip v-if="validityDateString" placement="bottom">
+                        <template #title>{{ validityDateString }}</template>
+                        {{ validityDateStringRelative }}
+                    </a-tooltip>
+                    <div v-else>
+                        {{ validityDateStringRelative }}
+                    </div>
                 </div>
             </div>
             <div
@@ -273,10 +388,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { useVModels } from '@vueuse/core'
 import { message } from 'ant-design-vue'
+import { capitalizeFirstLetter } from '~/utils/string'
 import PillGroup from '@/UI/pill/pillGroup.vue'
 import Pill from '@/UI/pill/pill.vue'
 import PersonaList from '@/common/popover/persona/personaList.vue'
@@ -287,6 +404,8 @@ import { copyToClipboard } from '~/utils/clipboard'
 import { formatDateTime } from '~/utils/date'
 
 import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
+
+dayjs.extend(relativeTime)
 
 const DEFAULT_VALIDITY_IN_YEARS = 13 // 13 years; same as BE
 const DEFAULT_VALIDITY_IN_SECONDS =
@@ -320,10 +439,26 @@ export default defineComponent({
         const addPersonaPopoverVisible = ref(false)
         const isDeletePopoverVisible = ref(false)
         const { generatedAPIKey } = useVModels(props, emit)
-        const validityDate = ref('')
+        const validityDate = ref(dayjs()) // actual expiry date in case of existing api key and selected custom expiry date in case of new apikey
         const showDeletePopover = () => {
             isDeletePopoverVisible.value = true
         }
+        const showDatePicker = ref(false)
+        const validity = ref('') // handles dropdown options
+        const validityOptions = ref([
+            {
+                label: 'Never',
+                value: 'never',
+            },
+            {
+                label: '1 Week',
+                value: 'one-week',
+            },
+            {
+                label: '1 Month',
+                value: 'one-month',
+            },
+        ])
         watch(
             () => props.deleteAPIKeyLoading,
             (newVal, prevVal) => {
@@ -337,7 +472,18 @@ export default defineComponent({
                 nameEmptyOnSubmit.value = true
                 return
             }
-            //calculate validity seconds from validityDate
+            //calculate validity seconds from validityDate in case of custom
+            if (validity.value === 'never') {
+                const validityUnixEpoch =
+                    dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
+                // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                validityDate.value = dayjs.unix(validityUnixEpoch)
+            } else if (validity.value === 'one-week') {
+                validityDate.value = dayjs().add(1, 'week')
+            } else if (validity.value === 'one-month') {
+                validityDate.value = dayjs().add(1, 'month')
+            }
+            // if custom, make no changes to validity date
             const modifiedDate = validityDate.value.endOf('day')
             const validityInSeconds = modifiedDate.diff(dayjs(), 's')
             if (props?.apiKey?.id)
@@ -365,6 +511,7 @@ export default defineComponent({
                 )
                 apiKeyDirty.value = { ...props.apiKey, personas }
                 if (
+                    props?.apiKey?.id &&
                     props?.apiKey?.rawKey?.attributes?.createdAt &&
                     props?.apiKey?.validitySeconds
                 ) {
@@ -380,6 +527,7 @@ export default defineComponent({
                         dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
                     // getting dayjs obj from the calculated unix epoch to pass in datepicker
                     validityDate.value = dayjs.unix(validityUnixEpoch)
+                    validity.value = 'never'
                 }
             },
             { immediate: true, deep: true }
@@ -398,7 +546,6 @@ export default defineComponent({
                     },
                     'en-GB'
                 )
-                console.log(createDate)
                 const data = generatedAPIKey.value.attributes.accessToken
                 const filename = `${generatedAPIKey.value.attributes.displayName}_${createDate}_atlan api key.txt`
                 const type = 'text/plain'
@@ -425,6 +572,19 @@ export default defineComponent({
                 dayjs(current) > dayjs.unix(validityUnixEpoch).endOf('day')
             )
         }
+        /* Following computed properties are reqd. only for displaying expiry date of existing API Key*/
+        const validityDateStringRelative = computed(() => {
+            if (validityDate && validityDate.value) {
+                return capitalizeFirstLetter(validityDate.value.fromNow())
+            }
+            return ''
+        })
+        const validityDateString = computed(() => {
+            if (validityDate && validityDate.value) {
+                return formatDateTime(validityDate.value.format())
+            }
+            return ''
+        })
         return {
             apiKeyDirty,
             handleSave,
@@ -440,6 +600,11 @@ export default defineComponent({
             validityDate,
             disabledDate,
             dayjs,
+            validityOptions,
+            validity,
+            showDatePicker,
+            validityDateStringRelative,
+            validityDateString,
         }
     },
 })

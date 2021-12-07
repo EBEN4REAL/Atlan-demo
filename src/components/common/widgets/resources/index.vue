@@ -100,17 +100,19 @@ export default defineComponent({
     setup(props) {
         const timeAgo = (time: string) => dayjs().from(time, true)
         const { links } = useAssetInfo()
+        const hasUserLevelSlackIntegration = true
         console.log('links', links)
 
         function getPreviewComponent(url) {
-            // hasSlackLink && !isSlackAuthDone
+            if (isSlackLink(url) && hasUserLevelSlackIntegration) {
+                return 'slackLinkPreview'
+            }
             return 'linkPreview'
         }
 
-        const pV = { id: '80c84f2f-ba68-410b-b099-91aacf38ec6f' }
         const { asset } = toRefs(props)
 
-        const hasSlackLink = computed(() => {
+        const hasAtleastOneSlackLink = computed(() => {
             const linkArr = links(asset.value)
             const slackLink = linkArr.some((link) =>
                 isSlackLink(link?.attributes?.link)
@@ -118,12 +120,10 @@ export default defineComponent({
             return slackLink
         })
 
-        const isSlackAuthDone = true
-
         return {
             links,
-            hasSlackLink,
-            isSlackAuthDone,
+            hasAtleastOneSlackLink,
+            hasUserLevelSlackIntegration,
             isSlackLink,
             timeAgo,
             getPreviewComponent,

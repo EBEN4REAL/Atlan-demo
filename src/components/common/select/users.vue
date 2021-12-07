@@ -1,13 +1,18 @@
 <template>
     <a-select
-        placeholder="Users"
         v-model:value="localValue"
+        placeholder="Users"
         class="w-full"
+        :show-search="true"
+        :mode="multiple ? 'multiple' : null"
         @change="handleChange"
-        :showSearch="true"
         @search="handleSearch"
     >
-        <a-select-option :value="item.username" v-for="item in userList">
+        <a-select-option
+            v-for="(item, x) in userList"
+            :key="x"
+            :value="item.username"
+        >
             {{ fullName(item) }}
         </a-select-option>
     </a-select>
@@ -27,6 +32,11 @@
                 required: false,
                 default: () => '',
             },
+            multiple: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             modelValue: {
                 type: Array,
                 required: false,
@@ -37,6 +47,8 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const { multiple } = toRefs(props)
+
             const { list, handleSearch, total } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
             watch(

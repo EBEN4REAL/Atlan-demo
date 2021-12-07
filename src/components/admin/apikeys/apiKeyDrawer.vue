@@ -3,7 +3,15 @@
     <div class="flex flex-col justify-between h-full pt-5">
         <div>
             <div
-                class="relative flex items-center justify-between px-4 pb-5 border-b "
+                class="
+                    relative
+                    flex
+                    items-center
+                    justify-between
+                    px-4
+                    pb-5
+                    border-b
+                "
             >
                 <div
                     v-if="!generatedAPIKey.attributes"
@@ -60,7 +68,12 @@
                                     <template #prefix>
                                         <div
                                             v-if="!apiKeyDirty.personas.length"
-                                            class="flex items-center  text-primary group-hover:text-white"
+                                            class="
+                                                flex
+                                                items-center
+                                                text-primary
+                                                group-hover:text-white
+                                            "
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -70,7 +83,10 @@
                                         </div>
                                         <div
                                             v-else
-                                            class=" text-gray group-hover:text-white"
+                                            class="
+                                                text-gray
+                                                group-hover:text-white
+                                            "
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -89,15 +105,40 @@
                         </template>
                     </a-popover>
                 </div>
+                <div class="mb-4">
+                    <div class="mb-2 mr-2 text-gray-500">Validity</div>
+                    <a-date-picker
+                        v-model:value="validityDate"
+                        format="YYYY-MM-DD"
+                        :allowClear="true"
+                        :disabled-date="disabledDate"
+                    ></a-date-picker>
+                </div>
             </div>
             <div
                 v-else
-                class="flex flex-col items-center justify-center w-full h-full px-4 "
+                class="
+                    flex flex-col
+                    items-center
+                    justify-center
+                    w-full
+                    h-full
+                    px-4
+                "
             >
                 <component :is="SuccessIllustration" class="mb-5"></component>
                 <div class="mb-5 text-xl font-bold">API key generated</div>
                 <div
-                    class="w-full h-24 p-4 mb-5 overflow-y-scroll bg-gray-100 border rounded "
+                    class="
+                        w-full
+                        h-24
+                        p-4
+                        mb-5
+                        overflow-y-scroll
+                        bg-gray-100
+                        border
+                        rounded
+                    "
                 >
                     {{ generatedAPIKey.attributes.accessToken }}
                 </div>
@@ -173,7 +214,13 @@
                             <span>Cancel</span></AtlanBtn
                         >
                         <AtlanBtn
-                            class="mr-3 text-white bg-transparent border-none  bg-error"
+                            class="
+                                mr-3
+                                text-white
+                                bg-transparent
+                                border-none
+                                bg-error
+                            "
                             size="lg"
                             padding="compact"
                             :is-loading="deleteAPIKeyLoading"
@@ -227,6 +274,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
+import dayjs, { Dayjs } from 'dayjs'
 import { useVModels } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import PillGroup from '@/UI/pill/pillGroup.vue'
@@ -239,6 +287,10 @@ import { copyToClipboard } from '~/utils/clipboard'
 import { formatDateTime } from '~/utils/date'
 
 import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
+
+const DEFAULT_VALIDITY_IN_YEARS = 13 // 13 years; same as BE
+const DEFAULT_VALIDITY_IN_SECONDS =
+    DEFAULT_VALIDITY_IN_YEARS * 365 * 24 * 60 * 60
 
 export default defineComponent({
     name: 'APIKeyDrawer',
@@ -264,13 +316,11 @@ export default defineComponent({
     emits: ['updateAPIKey', 'createAPIKey', 'closeDrawer'],
     setup(props, { emit }) {
         const apiKeyDirty = ref({})
-        // const apiKeyDirtyPersonas = ref([])
-
         const nameEmptyOnSubmit = ref(false)
         const addPersonaPopoverVisible = ref(false)
         const isDeletePopoverVisible = ref(false)
         const { generatedAPIKey } = useVModels(props, emit)
-
+        const validityDate = ref('')
         const showDeletePopover = () => {
             isDeletePopoverVisible.value = true
         }
@@ -287,9 +337,13 @@ export default defineComponent({
                 nameEmptyOnSubmit.value = true
                 return
             }
+            //calculate validity seconds from validityDate
+            const modifiedDate = validityDate.value.endOf('day')
+            const validityInSeconds = modifiedDate.diff(dayjs(), 's')
             if (props?.apiKey?.id)
                 emit('updateAPIKey', {
                     ...apiKeyDirty.value,
+                    validitySeconds: validityInSeconds,
                     personas: (apiKeyDirty?.value?.personas ?? []).map(
                         (p) => p.id
                     ),
@@ -297,6 +351,7 @@ export default defineComponent({
             else
                 emit('createAPIKey', {
                     ...apiKeyDirty.value,
+                    validitySeconds: validityInSeconds,
                     personas: (apiKeyDirty?.value?.personas ?? []).map(
                         (p) => p.id
                     ),
@@ -309,6 +364,23 @@ export default defineComponent({
                     (persona) => ({ id: persona.id, name: persona.persona })
                 )
                 apiKeyDirty.value = { ...props.apiKey, personas }
+                if (
+                    props?.apiKey?.rawKey?.attributes?.createdAt &&
+                    props?.apiKey?.validitySeconds
+                ) {
+                    // adding validity in seconds to created timestamp unix epoch to find the date till which the api key is valid
+                    const validityUnixEpoch =
+                        dayjs(
+                            props?.apiKey?.rawKey?.attributes?.createdAt
+                        ).unix() + parseInt(props.apiKey.validitySeconds)
+                    // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                    validityDate.value = dayjs.unix(validityUnixEpoch)
+                } else {
+                    const validityUnixEpoch =
+                        dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
+                    // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                    validityDate.value = dayjs.unix(validityUnixEpoch)
+                }
             },
             { immediate: true, deep: true }
         )
@@ -344,6 +416,15 @@ export default defineComponent({
                 generatedAPIKey.value = {}
             emit('closeDrawer')
         }
+        const disabledDate = (current: Dayjs) => {
+            // Cannot select days before today and after 13 years from today
+            const validityUnixEpoch =
+                dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
+            return (
+                dayjs(current) < dayjs().startOf('day') ||
+                dayjs(current) > dayjs.unix(validityUnixEpoch).endOf('day')
+            )
+        }
         return {
             apiKeyDirty,
             handleSave,
@@ -356,6 +437,9 @@ export default defineComponent({
             SuccessIllustration,
             showDeletePopover,
             isDeletePopoverVisible,
+            validityDate,
+            disabledDate,
+            dayjs,
         }
     },
 })

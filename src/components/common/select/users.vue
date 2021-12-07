@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, computed, ref } from 'vue'
+    import { defineComponent, watch, computed, ref, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useUserData from '~/composables/user/useUserData'

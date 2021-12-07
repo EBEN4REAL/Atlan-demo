@@ -68,6 +68,7 @@
             v-model="facetMap[item.id]"
             :item="item"
             v-bind="item.propsToComponent"
+            :select-user-key="item.selectUserKey || 'username'"
             @change="handleChange"
         />
     </a-collapse-panel>

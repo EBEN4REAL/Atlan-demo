@@ -1,7 +1,8 @@
 <template>
-    <div class="relative w-full h-screen bg-white">
+    <div class="relative w-full bg-white">
         <div
-            class="absolute flex items-center justify-center w-full"
+            v-if="isLoading || error"
+            class="absolute flex items-center justify-center w-full bg-white"
             style="height: 80vh"
         >
             <div v-if="isLoading">
@@ -17,9 +18,12 @@
         </div>
 
         <div v-if="isReady" class="absolute w-full h-full">
-            <div class="relative">
+            <div
+                v-if="!Object.keys(lineage.guidEntityMap).length"
+                class="relative bg-white"
+            >
                 <div
-                    class="absolute flex items-center justify-center"
+                    class="absolute flex items-center justify-center bg-white"
                     style="top: 0; left: 0; height: 80vh; width: 100%"
                 >
                     <a-spin tip="Computing data..." />

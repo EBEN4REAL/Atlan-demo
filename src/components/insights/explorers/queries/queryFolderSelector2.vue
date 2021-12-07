@@ -5,6 +5,7 @@
                 <ClassificationDropdown
                     :modelValue="savedQueryType"
                     @change="onClassificationChange"
+                    :connector="connector"
                 />
             </div>
             <!--explorer pane start -->

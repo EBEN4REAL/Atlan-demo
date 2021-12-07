@@ -74,9 +74,9 @@
 </script>
 <style lang="less" scoped>
     .border-shift-plus {
-        padding: 13px;
+        padding: 1px;
     }
     .border-shift-minus {
-        padding: 12px;
+        padding: 0px;
     }
 </style>

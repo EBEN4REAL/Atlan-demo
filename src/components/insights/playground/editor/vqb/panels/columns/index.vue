@@ -108,7 +108,7 @@
                 ></div>
             </div>
             <!-- Show on expand -->
-            <ColumnSubPanel :expand="expand" />
+            <ColumnSubPanel :expand="expand" v-if="expand" />
             <FooterActions
                 @add="(type) => handleAdd(index, type)"
                 v-if="

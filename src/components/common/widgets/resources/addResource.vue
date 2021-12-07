@@ -88,171 +88,171 @@
 </template>
 
 <script lang="ts">
-import data from 'emoji-mart-vue-fast/data/apple.json'
-import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
-import 'emoji-mart-vue-fast/css/emoji-mart.css'
+    import data from 'emoji-mart-vue-fast/data/apple.json'
+    import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
+    import 'emoji-mart-vue-fast/css/emoji-mart.css'
 
-// Vue
-import {
-    defineComponent,
-    PropType,
-    ref,
-    toRefs,
-    nextTick,
-    watch,
-    Ref,
-    computed,
-} from 'vue'
-import { useDebounceFn } from '@vueuse/core'
-import useAssetInfo from '~/composables/discovery/useAssetInfo'
-import { assetInterface } from '~/types/assets/asset.interface'
-import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
-import AtlanButton from '@/UI/button.vue'
+    // Vue
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        toRefs,
+        nextTick,
+        watch,
+        Ref,
+        computed,
+    } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import AtlanButton from '@/UI/button.vue'
 
-const emojiIndex = new EmojiIndex(data)
+    const emojiIndex = new EmojiIndex(data)
 
-export default defineComponent({
-    components: { AtlanButton, Picker },
-    props: {
-        asset: {
-            type: Object as PropType<assetInterface>,
-            required: true,
+    export default defineComponent({
+        components: { AtlanButton, Picker },
+        props: {
+            asset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
         },
-    },
-    setup(props) {
-        const visible = ref<boolean>(false)
-        const imageNotFound = ref(false)
+        setup(props) {
+            const visible = ref<boolean>(false)
+            const imageNotFound = ref(false)
 
-        const titleBar: Ref<null | HTMLInputElement> = ref(null)
+            const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
-        const { asset } = toRefs(props)
+            const { asset } = toRefs(props)
 
-        const { title } = useAssetInfo()
+            const { title } = useAssetInfo()
 
-        const { handleAddResource, localResource } =
-            updateAssetAttributes(asset)
+            const { handleAddResource, localResource } =
+                updateAssetAttributes(asset)
 
-        const link = ref('')
-        const faviconLink = ref('')
+            const link = ref('')
+            const faviconLink = ref('')
 
-        // FIXME: Add a link meta parser for title
-        const linkTitle = ref('')
+            // FIXME: Add a link meta parser for title
+            const linkTitle = ref('')
 
-        const showModal = async () => {
-            visible.value = true
-            await nextTick()
-            titleBar.value?.focus()
-        }
-
-        function handleCancel() {
-            visible.value = false
-            link.value = ''
-            linkTitle.value = ''
-        }
-
-        const buttonDisabled = computed(
-            () => !link.value || !isValidHttpUrl(link.value)
-        )
-
-        function onImageError() {
-            console.log('image not found')
-            imageNotFound.value = true
-        }
-
-        function onImageLoad() {
-            // imageNotFound.value = false
-        }
-
-        function handleAdd() {
-            localResource.value.link = link.value
-            localResource.value.title = linkTitle.value
-            handleAddResource()
-            visible.value = false
-            link.value = ''
-            linkTitle.value = ''
-        }
-
-        const handleEmojiSelect = (emoji) => {
-            console.log('emoji data', emoji)
-            // form.value.logoType = 'emoji'
-            // form.value.emoji = native
-            // form.value.imageId = null
-            // popOverVisible.value = false
-        }
-
-        function isValidHttpUrl(string) {
-            let url
-
-            try {
-                url = new URL(string)
-            } catch (_) {
-                return false
+            const showModal = async () => {
+                visible.value = true
+                await nextTick()
+                titleBar.value?.focus()
             }
 
-            return url.protocol === 'http:' || url.protocol === 'https:'
-        }
-
-        watch(link, () => {
-            if (isValidHttpUrl(link.value)) {
-                console.log('fetching icon')
-                imageNotFound.value = false
-                faviconLink.value = `https://www.google.com/s2/favicons?domain=${link.value}&sz=64`
+            function handleCancel() {
+                visible.value = false
+                link.value = ''
+                linkTitle.value = ''
             }
-        })
 
-        return {
-            linkTitle,
-            link,
-            faviconLink,
-            title,
-            visible,
-            handleCancel,
-            handleAdd,
-            showModal,
-            buttonDisabled,
-            onImageError,
-            imageNotFound,
-            onImageLoad,
-            emojiIndex,
-            handleEmojiSelect,
-        }
-    },
-})
+            const buttonDisabled = computed(
+                () => !link.value || !isValidHttpUrl(link.value)
+            )
+
+            function onImageError() {
+                console.log('image not found')
+                imageNotFound.value = true
+            }
+
+            function onImageLoad() {
+                // imageNotFound.value = false
+            }
+
+            function handleAdd() {
+                localResource.value.link = link.value
+                localResource.value.title = linkTitle.value
+                handleAddResource()
+                visible.value = false
+                link.value = ''
+                linkTitle.value = ''
+            }
+
+            const handleEmojiSelect = (emoji) => {
+                console.log('emoji data', emoji)
+                // form.value.logoType = 'emoji'
+                // form.value.emoji = native
+                // form.value.imageId = null
+                // popOverVisible.value = false
+            }
+
+            function isValidHttpUrl(string) {
+                let url
+
+                try {
+                    url = new URL(string)
+                } catch (_) {
+                    return false
+                }
+
+                return url.protocol === 'http:' || url.protocol === 'https:'
+            }
+
+            watch(link, () => {
+                if (isValidHttpUrl(link.value)) {
+                    console.log('fetching icon')
+                    imageNotFound.value = false
+                    faviconLink.value = `https://www.google.com/s2/favicons?domain=${link.value}&sz=64`
+                }
+            })
+
+            return {
+                linkTitle,
+                link,
+                faviconLink,
+                title,
+                visible,
+                handleCancel,
+                handleAdd,
+                showModal,
+                buttonDisabled,
+                onImageError,
+                imageNotFound,
+                onImageLoad,
+                emojiIndex,
+                handleEmojiSelect,
+            }
+        },
+    })
 </script>
 
 <style lang="less">
-.emoji-mart {
-    border: unset;
+    .emoji-mart {
+        border: unset;
 
-    .emoji-mart-anchor-selected {
-        color: rgb(82, 119, 215) !important;
+        .emoji-mart-anchor-selected {
+            color: rgb(82, 119, 215) !important;
+        }
+        .emoji-mart-anchor:hover {
+            color: rgb(51, 81, 155) !important;
+        }
+        .emoji-mart-anchor-bar {
+            background-color: rgb(82, 119, 215) !important;
+        }
     }
-    .emoji-mart-anchor:hover {
-        color: rgb(51, 81, 155) !important;
+    .emoji-mart-category .emoji-mart-emoji span {
+        cursor: pointer;
     }
-    .emoji-mart-anchor-bar {
-        background-color: rgb(82, 119, 215) !important;
+    .emoji-wrapper {
+        bottom: -331%;
     }
-}
-.emoji-mart-category .emoji-mart-emoji span {
-    cursor: pointer;
-}
-.emoji-wrapper {
-    bottom: -331%;
-}
 </style>
 
 <style lang="less" module>
-.input {
-    :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
-        @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+    .input {
+        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input):focus,
+        :global(.ant-input):hover {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
     }
-    :global(.ant-input):focus,
-    :global(.ant-input):hover {
-        @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
-    }
-    :global(.ant-input) {
-        @apply shadow-none outline-none px-0 border-0 !important;
-    }
-}
 </style>

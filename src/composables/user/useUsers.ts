@@ -159,8 +159,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         if (data.value.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                      getFormattedUser(user)
-                  )
+                    getFormattedUser(user)
+                )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 

@@ -7,61 +7,56 @@
     </div>
     <main v-else-if="isReady" class="mx-4 my-9">
         <h1 class="mb-8 text-3xl">Integrations</h1>
-        <template v-for="i in allIntegrations" :key="i.id">
+        <template v-for="integration in allIntegrations" :key="integration.id">
             <IntegrationCardWrapper
-                v-if="integrationExist(i.name)"
-                :integration-data="getData(i.name)"
+                v-if="isIntegrationConfigured(integration.name)"
+                :integration-data="integration"
             />
-            <AddIntegrationCard
-                v-else
-                :integration="i"
-                :integration-data="getData(i.name)"
-            />
+            <AddIntegrationCard v-else :integration="integration" />
         </template>
     </main>
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch } from 'vue'
-    import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
-    import { getIntegrationLink } from '~/composables/integrations/useSlack'
-    import AddIntegrationCard from './addIntegrationCard.vue'
-    import IntegrationCardWrapper from './integrationCardWrapper.vue'
-    import { integrationData } from '~/constant/integrations'
-    import integrationStore from '~/store/integrations/index'
-    import ErrorView from '@/common/error/index.vue'
+import { defineComponent, watch } from 'vue'
+import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
+import AddIntegrationCard from './addIntegrationCard.vue'
+import IntegrationCardWrapper from './integrationCardWrapper.vue'
+import { integrationData } from '~/constant/integrations'
+import integrationStore from '~/store/integrations/index'
+import { useAuthStore } from '~/store/auth'
+import ErrorView from '@/common/error/index.vue'
 
-    export default defineComponent({
-        name: 'IntegrationsWrapper',
-        components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
-        setup() {
-            const store = integrationStore()
+export default defineComponent({
+    name: 'IntegrationsWrapper',
+    components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
+    setup() {
+        const store = integrationStore()
+        const authStore = useAuthStore()
 
-            const {
-                data: allIntegrations,
-                isLoading,
-                error,
-                isReady,
-            } = getIntegrationTypes()
+        const {
+            data: allIntegrations,
+            isLoading,
+            error,
+            isReady,
+        } = getIntegrationTypes()
+        console.log('authStore.id', authStore.id)
 
-            const getData = (alias) => ({
-                ...integrationData[alias],
-                link: getIntegrationLink(alias),
-            })
+        const isIntegrationConfigured = (alias): boolean => {
+            const isTenantLevelIntegrationConfigured =
+                store.hasConfiguredTenantLevelIntegration(alias)
+            return isTenantLevelIntegrationConfigured
+        }
 
-            const integrationExist = (alias): boolean =>
-                !!store.getIntegration(alias)
-
-            return {
-                integrationExist,
-                allIntegrations,
-                getData,
-                isLoading,
-                error,
-                isReady,
-            }
-        },
-    })
+        return {
+            isIntegrationConfigured,
+            allIntegrations,
+            isLoading,
+            error,
+            isReady,
+        }
+    },
+})
 </script>
 
 <style scoped></style>

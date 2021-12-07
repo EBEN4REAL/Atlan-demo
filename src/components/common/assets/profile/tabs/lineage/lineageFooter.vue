@@ -98,6 +98,12 @@
                 type: Object,
                 required: true,
             },
+            graphHeight: {
+                type: Number,
+            },
+            graphWidth: {
+                type: Number,
+            },
             lineageContainer: {
                 type: Object,
                 required: true,
@@ -114,7 +120,8 @@
         emits: ['on-zoom-change', 'on-show-minimap'],
         setup(props, { emit }) {
             /** DATA */
-            const { graph, lineageContainer } = toRefs(props)
+            const { graph, lineageContainer, graphHeight, graphWidth } =
+                toRefs(props)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
 
@@ -123,6 +130,14 @@
 
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
+                if (isFullscreen.value) {
+                    graph.value.resize(graphWidth.value, graphHeight.value)
+                } else {
+                    graph.value.resize(
+                        graphWidth.value,
+                        graphHeight.value / 1.35
+                    )
+                }
                 fullscreen(lineageContainer)
             }
 

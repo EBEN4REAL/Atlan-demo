@@ -2,7 +2,6 @@
     <div
         ref="lineageContainer"
         class="relative w-full overflow-hidden hide-scrollbar lineage"
-        style="height: calc(100vh - 145px)"
     >
         <div
             v-if="!isComputeDone"
@@ -18,7 +17,6 @@
         <div style="display: flex">
             <div ref="graphContainer" style="flex: 1"></div>
         </div>
-
         <!-- Lineage Header -->
         <LineageHeader
             v-if="isComputeDone"
@@ -33,9 +31,12 @@
 
         <!-- Lineage Footer -->
         <LineageFooter
+            v-if="isComputeDone"
             :graph="graph"
             :lineage-container="lineageContainer"
             :curr-zoom="currZoom"
+            :graph-height="graphHeight"
+            :graph-width="graphWidth"
             :base-entity-guid="lineage.baseEntityGuid"
             @on-zoom-change="currZoom = $event"
             @on-show-minimap="showMinimap = $event"

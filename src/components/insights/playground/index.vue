@@ -727,6 +727,7 @@
                 queryRun,
                 setTabHover,
                 tabHover,
+                isSaving,
             }
         },
     })

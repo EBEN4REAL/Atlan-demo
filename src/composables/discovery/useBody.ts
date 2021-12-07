@@ -226,7 +226,7 @@ export function useBody(
             }
             case 'terms': {
                 if (filterObject) {
-                    base.filter('term', '__meanings', filterObject)
+                    base.filter('terms', '__meanings', filterObject)
                 }
                 break
             }

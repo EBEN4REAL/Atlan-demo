@@ -104,6 +104,9 @@
             Classifications: defineAsyncComponent(
                 () => import('@/common/facet/classification/index.vue')
             ),
+            Terms: defineAsyncComponent(
+                () => import('@/common/facet/term/index.vue')
+            ),
             Properties: defineAsyncComponent(
                 () => import('@/common/facet/properties/index.vue')
             ),

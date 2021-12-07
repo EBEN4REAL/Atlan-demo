@@ -28,7 +28,7 @@
                     </template>
                 </AddGTCModal>
 
-                <div class="ml-2">
+                <div v-if="selectedGlossaryQf?.length" class="ml-2">
                     <GlossaryActions
                         :entity="selectedGlossary"
                     ></GlossaryActions>

@@ -77,9 +77,13 @@
                 assetStore.setSelectedAsset(asset)
             }
             watch(selectedGlossary, () => {
-                localSelected.value = selectedGlossary.value
+                if (isItem.value) localSelected.value = selectedGlossary.value
             })
-
+            watch(isItem, () => {
+                if (!id.value) {
+                    localSelected.value = null
+                }
+            })
             provide('updateList', updateList)
             provide('preview', handlePreview)
 

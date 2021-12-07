@@ -6,8 +6,8 @@ interface useBodyProps {
     gte: string
     lt: string
     connectionQF?: string | undefined
-    dbName?: string | undefined
-    schemaName?: string | undefined
+    dbQualifiedName?: string | undefined
+    schemaQualifiedName?: string | undefined
     logStatusValues?: string[] | undefined
     logActionValues?: string[] | undefined
     userTypes?: string[] | undefined
@@ -27,8 +27,8 @@ interface useBodyProps {
  * @param gte The `from` time filter.
  * @param lt The `to` time filter.
  * @param connectionQF The qualified name of the connection.
- * @param dbName The name of the database.
- * @param schemaName The name of the schema.
+ * @param dbQualifiedName The name of the database.
+ * @param schemaQualifiedName The name of the schema.
  * @param logStatusValues The filters of log statuses.
  * @param logActionValues The filters of log actions.
  * @param userTypes The types of users: `User`, `BOT`, and `API Key`.
@@ -44,8 +44,8 @@ export default function useBody({
     gte,
     lt,
     connectionQF,
-    dbName,
-    schemaName,
+    dbQualifiedName,
+    schemaQualifiedName,
     logStatusValues,
     logActionValues,
     userTypes,
@@ -68,27 +68,31 @@ export default function useBody({
     })
     // If we have the name of the connector.
     if (connectorName) {
-        base.filter('wildcard', 'resource.keyword', {
-            value: `*${connectorName}*`,
-        })
+        base.filter(
+            'regexp',
+            'resource.keyword',
+            `.+/\\[.*\\]/.*/${connectorName}/.*`
+        )
     }
     // If we have a qualified name for the connection.
     if (connectionQF) {
-        base.filter('wildcard', 'resource.keyword', {
-            value: `*${connectionQF}*`,
-        })
-    }
-    // If we have a qualified name for the database.
-    if (dbName) {
-        base.filter('wildcard', 'resource.keyword', {
-            value: `*${dbName}*`,
-        })
-    }
-    // If we have a qualified name for the schema.
-    if (schemaName) {
-        base.filter('wildcard', 'resource.keyword', {
-            value: `*${schemaName}*`,
-        })
+        base.filter(
+            'regexp',
+            'resource.keyword',
+            `.+/\\[.*\\]/${connectionQF}/.*`
+        )
+    } else if (dbQualifiedName) {
+        base.filter(
+            'regexp',
+            'resource.keyword',
+            `.+/\\[.*\\]/${dbQualifiedName}.*`
+        )
+    } else if (schemaQualifiedName) {
+        base.filter(
+            'regexp',
+            'resource.keyword',
+            `.+/\\[.*\\]/${schemaQualifiedName}.*`
+        )
     }
     // If we have the search text.
     if (searchText) {

@@ -154,7 +154,7 @@
                                             class="flex mr-2 text-xs text-sm text-gray-500 "
                                         >
                                             <div
-                                                class="flex items-center text-gray-500  text-gray"
+                                                class="flex items-center text-gray-500"
                                             >
                                                 <span class="mx-1"> • </span>
                                                 <span>{{

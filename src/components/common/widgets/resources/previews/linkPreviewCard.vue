@@ -1,5 +1,5 @@
 <template>
-    <div class="flex p-2 border rounded">
+    <div class="flex items-center p-2 border rounded">
         <div class="mr-2 min-w-link-left-col">
             <img
                 :src="`https://www.google.com/s2/favicons?domain=${link(

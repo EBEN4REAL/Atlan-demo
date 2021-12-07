@@ -1,10 +1,8 @@
 <template>
-    <div class="p-4 bg-white rounded" style="min-height: 140px">
-        <div class="flex items-center justify-between mb-5">
-            <div class="flex items-center">
-                <!-- <AtlanIcon icon="Resources" class="w-auto h-8 mr-3" /> -->
-                <span class="text-base font-bold text-gray">Resources</span>
-            </div>
+    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
+        <div class="flex items-center justify-between">
+            <span class="font-semibold text-gray-500">Resources</span>
+
             <AddResources
                 v-if="links(selectedAsset)?.length > 0"
                 :asset="selectedAsset"

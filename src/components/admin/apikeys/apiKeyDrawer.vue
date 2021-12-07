@@ -219,9 +219,15 @@
                         </template>
                     </a-dropdown>
                 </div>
-                <div v-else>
+                <div v-else-if="validityDateStringRelative">
                     <div class="mb-2 mr-2 text-gray-500">Expiry</div>
-                    <div>{{ apiKeyExpiryDate }}</div>
+                    <a-tooltip v-if="validityDateString" placement="bottom">
+                        <template #title>{{ validityDateString }}</template>
+                        {{ validityDateStringRelative }}
+                    </a-tooltip>
+                    <div v-else>
+                        {{ validityDateStringRelative }}
+                    </div>
                 </div>
             </div>
             <div
@@ -382,10 +388,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { useVModels } from '@vueuse/core'
 import { message } from 'ant-design-vue'
+import { capitalizeFirstLetter } from '~/utils/string'
 import PillGroup from '@/UI/pill/pillGroup.vue'
 import Pill from '@/UI/pill/pill.vue'
 import PersonaList from '@/common/popover/persona/personaList.vue'
@@ -396,6 +404,8 @@ import { copyToClipboard } from '~/utils/clipboard'
 import { formatDateTime } from '~/utils/date'
 
 import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
+
+dayjs.extend(relativeTime)
 
 const DEFAULT_VALIDITY_IN_YEARS = 13 // 13 years; same as BE
 const DEFAULT_VALIDITY_IN_SECONDS =
@@ -501,6 +511,7 @@ export default defineComponent({
                 )
                 apiKeyDirty.value = { ...props.apiKey, personas }
                 if (
+                    props?.apiKey?.id &&
                     props?.apiKey?.rawKey?.attributes?.createdAt &&
                     props?.apiKey?.validitySeconds
                 ) {
@@ -511,28 +522,6 @@ export default defineComponent({
                         ).unix() + parseInt(props.apiKey.validitySeconds)
                     // getting dayjs obj from the calculated unix epoch to pass in datepicker
                     validityDate.value = dayjs.unix(validityUnixEpoch)
-
-                    // if (
-                    //     validityDate.value.diff(
-                    //         dayjs(props?.apiKey?.rawKey?.attributes?.createdAt),
-                    //         'week'
-                    //     ) === 1
-                    // ) {
-                    //     validity.value = 'one-week'
-                    // } else if (
-                    //     validityDate.value.diff(
-                    //         dayjs(props?.apiKey?.rawKey?.attributes?.createdAt),
-                    //         'month'
-                    //     ) === 1
-                    // ) {
-                    //     validity.value = 'one-month'
-                    // } else if (
-                    //     parseInt(props.apiKey.validitySeconds) <
-                    //     DEFAULT_VALIDITY_IN_SECONDS
-                    // ) {
-                    //     validity.value = 'custom'
-                    //     showDatePicker.value = true
-                    // } else validity.value = 'never'
                 } else {
                     const validityUnixEpoch =
                         dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
@@ -583,6 +572,18 @@ export default defineComponent({
                 dayjs(current) > dayjs.unix(validityUnixEpoch).endOf('day')
             )
         }
+        const validityDateStringRelative = computed(() => {
+            if (validityDate && validityDate.value) {
+                return capitalizeFirstLetter(validityDate.value.fromNow())
+            }
+            return ''
+        })
+        const validityDateString = computed(() => {
+            if (validityDate && validityDate.value) {
+                return formatDateTime(validityDate.value.format())
+            }
+            return ''
+        })
         return {
             apiKeyDirty,
             handleSave,
@@ -601,6 +602,8 @@ export default defineComponent({
             validityOptions,
             validity,
             showDatePicker,
+            validityDateStringRelative,
+            validityDateString,
         }
     },
 })

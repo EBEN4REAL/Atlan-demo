@@ -1,9 +1,5 @@
 <template>
-    <a-input
-        v-bind="componentProps"
-        :value="formState[property.id]"
-        @input="formState[property.id] = handleInput($event)"
-    >
+    <a-input v-bind="componentProps" :value="formState[property.id]">
         <template
             #prefix
             v-if="componentProps.prefixText || componentProps.prefixImage"
@@ -58,6 +54,9 @@
             const formState = inject('formState')
             const componentProps = computed(() => property.value.ui)
 
+
+            if(for)
+
             const cleanInput = (str) => {
                 let temp = str.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '-')
                 temp = temp?.toLowerCase().replace(/[^a-zA-Z0-9-]/g, '')
@@ -65,16 +64,16 @@
                 return temp
             }
 
-            const handleInput = (e) => {
-                if (property.value.ui.linkedProperty) {
-                    const temp = `${cleanInput(e.target.value)}-${Math.round(
-                        new Date().getTime() / 1000
-                    )}`
+            // const handleInput = (e) => {
+            //     if (property.value.ui.linkedProperty) {
+            //         const temp = `${cleanInput(e.target.value)}-${Math.round(
+            //             new Date().getTime() / 1000
+            //         )}`
 
-                    formState[property.value.ui.linkedProperty] = temp
-                }
-                return cleanInput(e.target.value)
-            }
+            //         formState[property.value.ui.linkedProperty] = temp
+            //     }
+            //     return cleanInput(e.target.value)
+            // }
 
             // watch(formState[property.value?.ui?.linkedProperty], () => {
             //     console.log('watch', formState)

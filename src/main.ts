@@ -102,6 +102,7 @@ router.beforeEach(async (to, from, next) => {
             if (requiredRole) {
                 const allRoles = authStore.decodedToken?.realm_access?.roles
                 if (allRoles?.length && allRoles.includes(requiredRole)) return next()
+                return next(false)
             }
             return next()
         }

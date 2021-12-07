@@ -300,7 +300,13 @@
             }
             const handleResetEvent = () => {}
             const BItypes = getBISourceTypes()
-            const handleChangeConnector = () => {}
+            const handleChangeConnector = () => {
+                const filterMerge = {
+                    ...filters.value,
+                    destinationQualifiedName: connectorsData.value.attributeValue
+                }
+                filters.value = filterMerge
+            }
             const setConnector = () => {}
             return {
                 requestList,

@@ -6,7 +6,7 @@
                 v-model="queryText"
                 :placeholder="placeholder"
                 class="-mt-1.5"
-                :allowClear="true"
+                :allow-clear="true"
                 size="minimal"
             >
                 <template #tab>
@@ -64,16 +64,17 @@
                 v-if="componentType == 'users'"
                 v-model="localValue.ownerUsers"
                 :query-text="queryText"
-                :selectUserKey="selectUserKey"
+                :select-user-key="selectUserKey"
+                @change="handleChange"
             ></Users>
             <Groups
                 v-if="componentType == 'groups'"
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
-                :selectGroupKey="selectGroupKey"
+                :select-group-key="selectGroupKey"
             ></Groups>
         </div>
-        <div class="px-4 pt-1" v-if="showNone">
+        <div v-if="showNone" class="px-4 pt-1">
             <a-checkbox
                 v-model:checked="localValue.empty"
                 class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
@@ -100,11 +101,11 @@
     } from 'vue'
     // import Groups from '@common/selector/groups/index.vue'
     // import Users from '@common/selector/users/index.vue'
+    import { useVModels, toRef, useTimeoutFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Users from '@/common/facet/owners/users.vue'
     import Groups from '@/common/facet/owners/groups.vue'
     import noStatus from '~/assets/images/status/nostatus.svg'
-    import { useVModels, toRef, useTimeoutFn } from '@vueuse/core'
 
     // import { Collapse } from '~/types'
 
@@ -220,7 +221,10 @@
             const forceFocus = () => {
                 start()
             }
-
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
+            }
             return {
                 selectGroupKey,
                 selectUserKey,
@@ -235,6 +239,7 @@
                 showNone,
                 ownerSearchRef,
                 forceFocus,
+                handleChange
             }
         },
     })

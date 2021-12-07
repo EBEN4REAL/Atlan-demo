@@ -279,7 +279,6 @@
                 if (listError.value)
                     message.error('Failed to load request data.')
             })
-
             watch(
                 filters,
                 () => {
@@ -287,7 +286,18 @@
                 },
                 { deep: true }
             )
-            const handleFilterChange = () => {}
+            const handleFilterChange = () => {
+                const facetsValue = facets.value
+                const status = facetsValue.statusRequest ? Object.values(facetsValue.statusRequest) : []
+                const created_by = facetsValue?.requestor?.ownerUsers || []
+                const filterMerge = {
+                    ...filters.value,
+                    status: status.length > 0 ? status : "active",
+                    request_type: [],
+                    created_by
+                }
+                filters.value = filterMerge
+            }
             const handleResetEvent = () => {}
             const BItypes = getBISourceTypes()
             const handleChangeConnector = () => {}

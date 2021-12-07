@@ -1,14 +1,11 @@
 <template>
     <div class="flex items-center justify-between w-full py-0 m-0 group">
-        <div
-            v-if="item?.typeName === 'cta'"
-            class="flex items-center space-x-2"
-        >
+        <div v-if="item?.typeName === 'cta'" class="flex flex-col space-y-2">
             <AddGtcModal
                 entityType="AtlasGlossaryTerm"
-                :glossaryName="getAnchorName(item) || title(item)"
-                :categoryName="title(item)"
-                :categoryGuid="categoryId"
+                :glossaryName="item?.glossaryName"
+                :categoryName="item?.categoryName"
+                :categoryGuid="item?.categoryGuid"
                 :glossary-qualified-name="glossaryQualifiedName"
                 @add="handleAdd"
             >
@@ -21,9 +18,9 @@
             </AddGtcModal>
             <AddGtcModal
                 entityType="AtlasGlossaryCategory"
-                :glossaryName="getAnchorName(item) || title(item)"
-                :categoryName="title(item)"
-                :categoryGuid="categoryId"
+                :glossaryName="item?.glossaryName"
+                :categoryName="item?.categoryName"
+                :categoryGuid="item?.categoryGuid"
                 :glossary-qualified-name="glossaryQualifiedName"
                 @add="handleAdd"
             >
@@ -106,6 +103,7 @@
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
+            if (item.value.typeName === 'cta') console.log(item)
             const { getEntityStatusIcon } = useGlossaryData()
             const {
                 certificateStatus,

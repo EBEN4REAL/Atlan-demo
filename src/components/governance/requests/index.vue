@@ -6,53 +6,54 @@
         :width="287"
         :closable="false"
     >
-        <div
-            :class="`close-icon ${!drawerFilter && 'closed'} border border-solid order-gray-300`"
-            @click="handleClickFilter"
-        >
-            <AtlanIcon icon="ChevronRight" />
-        </div>
-        <div class="p-4 border-b border-solid order-gray-300 bg-gray-50">
-            No filters applied
-        </div>
-        <div class="h-full px-2 bg-gray-50 filter-container">
-            <AssetFilters
-                v-model="facets"
-                :filter-list="requestFilter"
-                :allow-custom-filters="false"
-                class="bg-gray-100"
-                @change="handleFilterChange"
-                @reset="handleResetEvent"
+        <div class="h-full pb-10 overflow-scroll bg-gray-50">
+            <div
+                :class="`close-icon ${!drawerFilter && 'closed'} border border-solid order-gray-300`"
+                @click="handleClickFilter"
             >
-                <div class="mt-4 mb-4 wrapper-filter">
-                    <Connector
-                        v-model:data="connectorsData"
-                        class=""
-                        :filter-source-ids="BItypes"
-                        :is-leaf-node-selectable="false"
-                        :item="{
-                            id: 'connector',
-                            label: 'Connector',
-                            component: 'connector',
-                            overallCondition: 'OR',
-                            filters: [
-                                {
-                                    attributeName: 'connector',
-                                    condition: 'OR',
-                                    isMultiple: false,
-                                    operator: 'eq',
-                                },
-                            ],
-                            isDeleted: false,
-                            isDisabled: false,
-                            exclude: false,
-                        }"
-                        @change="handleChangeConnector"
-                        @update:data="setConnector"
-                    />
-                </div>
-            </AssetFilters>
-        
+                <AtlanIcon icon="ChevronRight" />
+            </div>
+            <div class="p-4 border-b border-solid order-gray-300">
+                No filters applied
+            </div>
+            <div class="px-2 filter-container">
+                <AssetFilters
+                    v-model="facets"
+                    :filter-list="requestFilter"
+                    :allow-custom-filters="false"
+                    class="bg-gray-100"
+                    @change="handleFilterChange"
+                    @reset="handleResetEvent"
+                >
+                    <div class="mt-4 mb-4 wrapper-filter">
+                        <Connector
+                            v-model:data="connectorsData"
+                            class=""
+                            :filter-source-ids="BItypes"
+                            :is-leaf-node-selectable="false"
+                            :item="{
+                                id: 'connector',
+                                label: 'Connector',
+                                component: 'connector',
+                                overallCondition: 'OR',
+                                filters: [
+                                    {
+                                        attributeName: 'connector',
+                                        condition: 'OR',
+                                        isMultiple: false,
+                                        operator: 'eq',
+                                    },
+                                ],
+                                isDeleted: false,
+                                isDisabled: false,
+                                exclude: false,
+                            }"
+                            @change="handleChangeConnector"
+                            @update:data="setConnector"
+                        />
+                    </div>
+                </AssetFilters>
+            </div>
         </div>
     </a-drawer>
     <DefaultLayout title="Manage Requests">

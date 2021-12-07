@@ -70,6 +70,7 @@
                 },
             },
             item: {
+                type: Object,
                 required: false,
                 default() {
                     return {}

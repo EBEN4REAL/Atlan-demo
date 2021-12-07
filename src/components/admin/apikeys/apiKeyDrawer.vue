@@ -505,12 +505,13 @@ export default defineComponent({
                     props?.apiKey?.validitySeconds
                 ) {
                     // adding validity in seconds to created timestamp unix epoch to find the date till which the api key is valid
-                    // const validityUnixEpoch =
-                    //     dayjs(
-                    //         props?.apiKey?.rawKey?.attributes?.createdAt
-                    //     ).unix() + parseInt(props.apiKey.validitySeconds)
-                    // // getting dayjs obj from the calculated unix epoch to pass in datepicker
-                    // validityDate.value = dayjs.unix(validityUnixEpoch)
+                    const validityUnixEpoch =
+                        dayjs(
+                            props?.apiKey?.rawKey?.attributes?.createdAt
+                        ).unix() + parseInt(props.apiKey.validitySeconds)
+                    // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                    validityDate.value = dayjs.unix(validityUnixEpoch)
+
                     // if (
                     //     validityDate.value.diff(
                     //         dayjs(props?.apiKey?.rawKey?.attributes?.createdAt),

@@ -4,7 +4,7 @@
             <div>
                 <AtlanIcon
                     icon="ChevronDown"
-                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                    class="ml-3 text-gray-500 transition-transform duration-300 transform"
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
             </div>
@@ -32,9 +32,10 @@
                 :value="groupedActions[idx].scopes"
                 :name="scope.type"
                 :options="scope.scopes"
-                class="capitalize"
+                :class="['capitalize', $style.checkbox_custom]"
                 @update:value="updateSelection(scope.type, $event)"
-            />
+            >
+            </a-checkbox-group>
         </a-collapse-panel>
     </a-collapse>
 </template>
@@ -108,3 +109,10 @@
         },
     })
 </script>
+<style lang="less" module>
+    .checkbox_custom {
+        :global(.ant-checkbox-group-item) {
+            @apply my-1  !important;
+        }
+    }
+</style>

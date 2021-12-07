@@ -191,7 +191,7 @@
                 return 'Search users'
             })
 
-            watch(localValue, (prev, cur) => {
+            watch(localValue.value, (prev, cur) => {
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
                 } else if (localValue.value.ownerUsers?.length === 0) {

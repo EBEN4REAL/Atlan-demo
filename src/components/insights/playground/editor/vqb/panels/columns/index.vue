@@ -27,16 +27,7 @@
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
-                            class="
-                                flex
-                                items-center
-                                justify-center
-                                mr-2
-                                bg-gray-100
-                                border border-gray-300
-                                rounded-full
-                                p-1.5
-                            "
+                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
                             :class="
                                 !expand
                                     ? [
@@ -65,15 +56,7 @@
                         ]"
                     >
                         <div
-                            class="
-                                px-3
-                                py-1.5
-                                border-gray-300
-                                flex
-                                items-center
-                                justify-center
-                                border-r
-                            "
+                            class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
                             <a-checkbox v-model:checked="checkbox"></a-checkbox>
@@ -98,14 +81,7 @@
                             <AtlanBtn
                                 @click.stop="() => handleDelete(index)"
                                 :disabled="Number(index) === 0"
-                                class="
-                                    flex-none
-                                    border-none
-                                    px-3.5
-                                    py-1
-                                    text-gray
-                                    hover:text-red-500
-                                "
+                                class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
                                 size="sm"
                                 color="secondary"
                                 padding="compact"
@@ -198,7 +174,6 @@
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
-            const expand = ref(false)
             const actionPanel = ref(false)
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -209,6 +184,16 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const getInitialExpandValue = () => {
+                if (
+                    Number(index.value) == 0 &&
+                    activeInlineTab.value.playground.vqb?.panels?.length == 1
+                )
+                    return true
+                return false
+            }
+            const expand = ref(getInitialExpandValue())
+
             const checkbox = ref(true)
             const { addPanelsInVQB, deletePanelsInVQB } = useVQB()
 

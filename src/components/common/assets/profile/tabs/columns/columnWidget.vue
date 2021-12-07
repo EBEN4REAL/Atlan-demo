@@ -344,7 +344,7 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch(list, () => {
+            watch([list], () => {
                 // If redirected from asset column discovery
                 if (column.value !== '') {
                     const limit = ref(1)
@@ -363,8 +363,6 @@
                         return column.value
                     })
                     const dependentKey = ref(fetchKey.value)
-
-                    console.log(fetchKey.value)
 
                     const { list: urlColumnList } = useDiscoverList({
                         isCache: false,
@@ -388,6 +386,17 @@
                         nextTick(() => {
                             scrollToElement()
                         })
+                    })
+                    filterColumnsList()
+
+                    columnsList.value?.forEach((singleRow) => {
+                        if (singleRow.guid === column.value) {
+                            openColumnSidebar(singleRow.attributes.order)
+                        }
+                    })
+
+                    nextTick(() => {
+                        scrollToElement()
                     })
                 } else {
                     filterColumnsList()

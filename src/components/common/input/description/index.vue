@@ -11,7 +11,9 @@
             <span v-if="!isEdit && description(selectedAsset)">{{
                 description(selectedAsset)
             }}</span>
-            <span v-else-if="!isEdit && description(selectedAsset) === ''"
+            <span
+                v-else-if="!isEdit && description(selectedAsset) === ''"
+                class="text-gray-500"
                 >No description available</span
             >
             <a-textarea

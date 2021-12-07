@@ -175,11 +175,13 @@
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span>Description</span>
-                    <AtlanIcon
-                        icon="User"
-                        class="h-3 mr-1"
-                        v-if="isUserDescription(selectedAsset)"
-                    ></AtlanIcon>
+                    <a-tooltip title="User Description" placement="left">
+                        <AtlanIcon
+                            icon="User"
+                            class="h-3 mr-1"
+                            v-if="isUserDescription(selectedAsset)"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
             </Shortcut>
 

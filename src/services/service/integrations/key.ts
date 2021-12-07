@@ -14,12 +14,12 @@ export const UNFURL_SLACK_MESSAGE = 'UNFURL_SLACK_MESSAGE'
 export const CREATE_SLACK_APP = 'CREATE_SLACK_APP'
 
 export const map = {
-    [LIST_INTEGRATIONS_TYPES]: () => getAPIPath("http://localhost:5008", '/integrationtypes'),
-    [LIST_INTEGRATIONS]: () => getAPIPath("http://localhost:5008", '/integrations'),
-    [SHARE_SLACK]: () => getAPIPath("http://localhost:5008", `/slack/share`),
-    [GET_INTEGRATION]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/integrations/${id}`),
-    [ARCHIVE_INTEGRATION]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/integrations/${id}/archive`),
-    [UPDATE_INTEGRATION]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/slack/${id}/config`),
-    [UNFURL_SLACK_MESSAGE]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/slack/unfurl`),
-    [CREATE_SLACK_APP]: () => getAPIPath("http://localhost:5008", `/slack/createapp`),
+    [LIST_INTEGRATIONS_TYPES]: () => getAPIPath("service", '/integrationtypes'),
+    [LIST_INTEGRATIONS]: () => getAPIPath("service", '/integrations'),
+    [SHARE_SLACK]: () => getAPIPath("service", `/slack/share`),
+    [GET_INTEGRATION]: ({ id }: PathParams) => getAPIPath("service", `/integrations/${id}`),
+    [ARCHIVE_INTEGRATION]: ({ id }: PathParams) => getAPIPath("service", `/integrations/${id}/archive`),
+    [UPDATE_INTEGRATION]: ({ id }: PathParams) => getAPIPath("service", `/slack/${id}/config`),
+    [UNFURL_SLACK_MESSAGE]: ({ id }: PathParams) => getAPIPath("service", `/slack/unfurl`),
+    [CREATE_SLACK_APP]: () => getAPIPath("service", `/slack/createapp`),
 }

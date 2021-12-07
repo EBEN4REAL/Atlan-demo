@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue'
-import graphlib from '@dagrejs/graphlib'
+// import graphlib from '@dagrejs/graphlib'
 import useUpdateGraph from './useUpdateGraph'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
@@ -32,26 +32,26 @@ export default async function useComputeGraph(
     edges.value = []
     nodes.value = []
 
-    const getCyclicStatus = () => {
-        const g = new graphlib.Graph({
-            directed: true,
-        })
-        if (lineageData.value && lineageData.value.guidEntityMap) {
-            Object.values(lineageData.value.guidEntityMap).forEach((value) => {
-                g.setNode(value.guid, {
-                    ...value,
-                })
-            })
+    // const getCyclicStatus = () => {
+    //     const g = new graphlib.Graph({
+    //         directed: true,
+    //     })
+    //     if (lineageData.value && lineageData.value.guidEntityMap) {
+    //         Object.values(lineageData.value.guidEntityMap).forEach((value) => {
+    //             g.setNode(value.guid, {
+    //                 ...value,
+    //             })
+    //         })
 
-            lineageData.value.relations.forEach((item) => {
-                g.setEdge(item.fromEntityId, item.toEntityId)
-            })
-        }
+    //         lineageData.value.relations.forEach((item) => {
+    //             g.setEdge(item.fromEntityId, item.toEntityId)
+    //         })
+    //     }
 
-        return !graphlib.alg.isAcyclic(g)
-    }
-
-    const isCyclic = getCyclicStatus()
+    //     return !graphlib.alg.isAcyclic(g)
+    // }
+    // const isCyclic = getCyclicStatus()
+    const isCyclic = null
 
     /* Nodes */
     await Promise.all(

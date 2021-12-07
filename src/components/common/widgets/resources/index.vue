@@ -23,6 +23,14 @@
                         class=""
                     />
                 </div>
+                <SlackUserLoginTrigger
+                    v-if="
+                        hasAtleastOneSlackLink &&
+                        !hasUserLevelSlackIntegration &&
+                        hasTenantLevelSlackIntegration
+                    "
+                    class="mt-6"
+                />
             </div>
             <div
                 v-else
@@ -71,6 +79,7 @@ import useAssetInfo from '~/composables/discovery/useAssetInfo'
 import AtlanButton from '~/components/UI/button.vue'
 import integrationStore from '~/store/integrations/index'
 import AtlanIcon from '../../icon/atlanIcon.vue'
+import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
 import {
     isSlackLink,
     getChannelAndMessageIdFromSlackLink,
@@ -81,6 +90,7 @@ dayjs.extend(relativeTime)
 
 export default defineComponent({
     components: {
+        SlackUserLoginTrigger,
         AddResources,
         AtlanButton,
         AtlanIcon,
@@ -100,11 +110,16 @@ export default defineComponent({
     setup(props) {
         const timeAgo = (time: string) => dayjs().from(time, true)
         const { links } = useAssetInfo()
-        const hasUserLevelSlackIntegration = true
+        const hasUserLevelSlackIntegration = false
+        const hasTenantLevelSlackIntegration = true
         console.log('links', links)
 
         function getPreviewComponent(url) {
-            if (isSlackLink(url) && hasUserLevelSlackIntegration) {
+            if (
+                isSlackLink(url) &&
+                hasUserLevelSlackIntegration &&
+                hasTenantLevelSlackIntegration
+            ) {
                 return 'slackLinkPreview'
             }
             return 'linkPreview'
@@ -127,6 +142,7 @@ export default defineComponent({
             isSlackLink,
             timeAgo,
             getPreviewComponent,
+            hasTenantLevelSlackIntegration,
         }
     },
 })

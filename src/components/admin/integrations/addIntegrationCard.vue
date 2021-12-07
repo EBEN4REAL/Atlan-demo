@@ -36,7 +36,7 @@
                         integration.name
                     )
                 "
-                :href="oauthUrl"
+                :href="tenantLevelOauthUrl"
                 target="_blank"
             >
                 <AtlanButton v-auth="access.CREATE_INTEGRATION">
@@ -54,7 +54,10 @@ import useTenantData from '~/composables/tenant/useTenantData'
 import access from '~/constant/accessControl/map'
 import SlackConfigModal from './slack/slackConfigModal.vue'
 import integrationStore from '~/store/integrations/index'
-import { getSlackInstallUrlState } from '~/composables/integrations/useSlack'
+import {
+    getSlackInstallUrlState,
+    tenantLevelOauthUrl,
+} from '~/composables/integrations/useSlack'
 
 export default defineComponent({
     name: 'AddIntegrationCard',
@@ -83,17 +86,6 @@ export default defineComponent({
             return !!integration
         }
 
-        const oauthUrl = computed(() => {
-            const slackIntegration = intStore.getIntegration(
-                integration.value.name,
-                true
-            )
-            const oauthBaseUrl = slackIntegration?.source_metadata?.oauthUrl
-            const state = getSlackInstallUrlState(true)
-            const slackOauth = `${oauthBaseUrl}&state=${state}`
-            return slackOauth
-        })
-
         return {
             tenantName,
             access,
@@ -102,7 +94,7 @@ export default defineComponent({
             openSlackConfigModal,
             isTenantIntegrationPresent,
             intStore,
-            oauthUrl,
+            tenantLevelOauthUrl,
         }
     },
 })

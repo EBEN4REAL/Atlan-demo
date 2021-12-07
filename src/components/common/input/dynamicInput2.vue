@@ -1,31 +1,51 @@
 <template>
     <UserSelector
-        v-if="dataType === 'user'"
+        v-if="dataType === 'users'"
         v-model:value="localValue"
+        :multiple="multiple"
         @change="handleInputChange"
-    ></UserSelector>
+    />
     <GroupSelector
         v-else-if="dataType === 'groups'"
         v-model:value="localValue"
+        :multiple="multiple"
         @change="handleInputChange"
     ></GroupSelector>
+    <MultiInput
+        v-else-if="
+            [
+                'number',
+                'int',
+                'long',
+                'float',
+                'url',
+                'string',
+                'text',
+            ].includes(dataType.toLowerCase()) && multiple
+        "
+        v-model="localValue"
+        class="flex-grow shadow-none"
+        placeholder="Press Enter to add"
+        :data-type="dataType"
+        @change="handleInputChange"
+    />
     <a-input
         v-else-if="dataType === 'url'"
         v-model:value="localValue"
-        @change="handleInputChange"
         :maxlength="max || 50"
+        @change="handleInputChange"
     ></a-input>
     <a-input
         v-else-if="dataType === 'string'"
         v-model:value="localValue"
-        @change="handleInputChange"
         :maxlength="max || 50"
+        @change="handleInputChange"
     ></a-input>
     <a-input-number
         v-else-if="['int', 'long'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
-        @change="handleInputChange"
         :precision="0"
+        @change="handleInputChange"
     ></a-input-number>
     <a-input-number
         v-else-if="['double', 'float'].includes(dataType.toLowerCase())"
@@ -36,17 +56,17 @@
         v-else-if="['date'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
         format="YYYY-MM-DD HH:mm:ss"
-        :allowClear="true"
+        :allow-clear="true"
         :disabled-date="disabledDate"
-        @change="handleInputChange"
         :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
+        @change="handleInputChange"
     />
 
     <a-radio-group
-        button-style="solid"
-        class="flex"
         v-else-if="['boolean'].includes(dataType.toLowerCase())"
         v-model:value="localValue"
+        button-style="solid"
+        class="flex"
         @change="handleInputChange"
     >
         <a-radio-button value="true" class="flex-1 text-center">
@@ -56,7 +76,12 @@
             No
         </a-radio-button>
     </a-radio-group>
-    <EnumSelector v-else :enum="dataType"></EnumSelector>
+    <EnumSelector
+        v-else
+        v-model="localValue"
+        :enum="dataType"
+        :multiple="multiple"
+    />
 </template>
 
 <script lang="ts">
@@ -70,20 +95,21 @@
         onMounted,
         Ref,
     } from 'vue'
+    import dayjs, { Dayjs } from 'dayjs'
+    import utc from 'dayjs/plugin/utc'
     import UserSelector from '@/common/select/users.vue'
     import GroupSelector from '@/common/select/groups.vue'
     import EnumSelector from '@/common/select/enum.vue'
     import AtlanIcon from '../icon/atlanIcon.vue'
-    import dayjs, { Dayjs } from 'dayjs'
+    import MultiInput from './customizedTagInput.vue'
 
-    import utc from 'dayjs/plugin/utc'
     dayjs.extend(utc)
     // import useAsyncSelector from './useAsyncSelector'
     // import useAsyncTreeSelect from './useAsyncTreeSelect'
     // import useFileUploader from './useFileUploader'
 
     export default defineComponent({
-        components: { UserSelector, GroupSelector, EnumSelector },
+        components: { UserSelector, GroupSelector, EnumSelector, MultiInput },
         props: {
             modelValue: {},
             dataType: {
@@ -92,10 +118,11 @@
                 default: () => '',
             },
             max: { type: Number },
+            multiple: { type: Boolean, default: false },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, multiple } = useVModels(props, emit)
 
             const { dataType } = toRefs(props)
 
@@ -104,9 +131,13 @@
             if (props.dataType.toLowerCase() === 'date' && modelValue.value) {
                 val = dayjs(modelValue.value)
             }
-            const localValue = ref(val)
+            const localValue: any = ref(val)
 
-            const handleInputChange = () => {
+            // set proper default value
+            if (multiple.value && !localValue.value) localValue.value = []
+            else if (!localValue.value) localValue.value = ''
+
+            const handleInputChange = (v) => {
                 if (props.dataType.toLowerCase() === 'date') {
                     const date = localValue.value
                     modelValue.value = date?.valueOf()
@@ -116,17 +147,15 @@
                 emit('change')
             }
 
-            const disabledDate = (current: Dayjs) => {
+            const disabledDate = (current: Dayjs) =>
                 // Can not select days before today and today
-                return current > dayjs().endOf('day')
-            }
+                current > dayjs().endOf('day')
 
             return {
                 localValue,
                 handleInputChange,
                 dayjs,
                 disabledDate,
-                dataType,
             }
         },
     })

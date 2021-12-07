@@ -62,8 +62,9 @@
                         <div
                             :class="{
                                 'border-primary': record.key === selectedRow,
+                                'flex items-center justify-between':
+                                    record.is_primary,
                             }"
-                            class="flex items-center justify-between"
                         >
                             <div class="flex items-center">
                                 <component
@@ -87,10 +88,6 @@
                                     "
                                     class="mb-0.5"
                                 ></CertificateBadge>
-
-                                <!--  <div v-if="record.is_primary" class="mb-1 ml-2">
-                                    <AtlanIcon icon="Pin" />
-                                </div> -->
                             </div>
                             <div v-if="record.is_primary">
                                 <AtlanIcon icon="PrimaryKey" />

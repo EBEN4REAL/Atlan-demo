@@ -439,12 +439,12 @@ export default defineComponent({
         const addPersonaPopoverVisible = ref(false)
         const isDeletePopoverVisible = ref(false)
         const { generatedAPIKey } = useVModels(props, emit)
-        const validityDate = ref(dayjs())
+        const validityDate = ref(dayjs()) // actual expiry date in case of existing api key and selected custom expiry date in case of new apikey
         const showDeletePopover = () => {
             isDeletePopoverVisible.value = true
         }
         const showDatePicker = ref(false)
-        const validity = ref('')
+        const validity = ref('') // handles dropdown options
         const validityOptions = ref([
             {
                 label: 'Never',
@@ -572,6 +572,7 @@ export default defineComponent({
                 dayjs(current) > dayjs.unix(validityUnixEpoch).endOf('day')
             )
         }
+        /* Following computed properties are reqd. only for displaying expiry date of existing API Key*/
         const validityDateStringRelative = computed(() => {
             if (validityDate && validityDate.value) {
                 return capitalizeFirstLetter(validityDate.value.fromNow())

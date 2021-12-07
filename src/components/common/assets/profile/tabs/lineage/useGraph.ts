@@ -25,9 +25,7 @@ const getEntity = async (guid: string) => {
 }
 
 export default function useGraph() {
-    const removedNodes = ref([])
-
-    const createNodeData = async (entity, baseEntityGuid) => {
+    const createNodeData = async (entity, baseEntityGuid, dataObj = {}) => {
         const { guid, typeName } = entity
         const isProcess = ['Process', 'ColumnProcess', 'AtlanProcess'].includes(
             typeName
@@ -37,7 +35,6 @@ export default function useGraph() {
         const img = getNodeSourceImage[source]
 
         const enrichedEntity = !isProcess ? await getEntity(guid) : entity
-        // const enrichedEntity = entity
         const { attributes } = enrichedEntity
         let { displayText } = enrichedEntity
         const { schemaName, certificateStatus } = attributes
@@ -50,6 +47,14 @@ export default function useGraph() {
 
         if (!displayText) displayText = attributes.name
 
+        const computedData = {
+            id: guid,
+            isHighlightedNode: null,
+            isHighlightedNodePath: null,
+            isGrayed: false,
+            ...dataObj,
+        }
+
         const nodeData = {
             id: guid,
             typeName,
@@ -57,16 +62,10 @@ export default function useGraph() {
             isBase,
             entity: enrichedEntity,
             isProcess,
-            // width: 270,
             width: isProcess ? 60 : 270,
             height: 60,
             shape: 'html',
-            data: {
-                id: guid,
-                isHighlightedNode: null,
-                isHighlightedNodePath: null,
-                isGrayed: false,
-            },
+            data: computedData,
             html: {
                 render(node) {
                     const data = node.getData() as any
@@ -96,10 +95,16 @@ export default function useGraph() {
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
                                         <div class="node-meta__text truncate">${typeName}</div>
-                                        ${iconEllipse}
-                                        <div class="node-meta__text truncate">${
-                                            schemaName || ''
-                                        }</div>
+                                        ${
+                                            typeName === 'AtlanTable'
+                                                ? iconEllipse
+                                                : ''
+                                        }
+                                       <div class="node-meta__text text-truncate ${
+                                           typeName === 'AtlanTable'
+                                               ? ''
+                                               : 'd-none'
+                                       }">${schemaName || ''}</div>
                                     </div>
                                 </div>       
                             </div>`
@@ -124,14 +129,14 @@ export default function useGraph() {
         return { nodeData, enrichedEntity, isProcess }
     }
 
-    const addNode = async (graph, entity) => {
+    const addNode = async (graph, entity, data = {}) => {
         const graphNodes = graph.value.getNodes()
         const baseEntityGuid = graphNodes.find((x) => x.store.data.isBase).id
         const { nodeData } = await createNodeData(entity, baseEntityGuid)
         graph.value.addNode(nodeData)
     }
 
-    const removeNode = (graph, type) => {
+    const removeNode = (graph, type, removedNodes) => {
         const removedNode = ref({})
         const graphNodes = graph.value.getNodes()
         const graphEdges = graph.value.getEdges()
@@ -159,7 +164,6 @@ export default function useGraph() {
         })
 
         return {
-            removedNodes,
             removedNode,
         }
     }
@@ -220,6 +224,5 @@ export default function useGraph() {
         createEdgeData,
         addEdge,
         removeEdge,
-        removedNodes,
     }
 }

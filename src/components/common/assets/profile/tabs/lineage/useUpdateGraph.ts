@@ -1,11 +1,10 @@
 import useGraph from './useGraph'
 
-const { addNode, removeNode, addEdge, removeEdge, removedNodes } = useGraph()
+const { addNode, removeNode, addEdge, removeEdge } = useGraph()
 
 /* eslint-disable no-nested-ternary */
 export default function useUpdateGraph() {
-    const highlightNodes = async (graph, highlightedNode, nodesToHighlight) => {
-        await graph.value.model.nodes
+    const highlightNodes = (graph, highlightedNode, nodesToHighlight) => {
         const graphNodes = graph.value.getNodes()
 
         graphNodes.forEach((x) => {
@@ -19,21 +18,23 @@ export default function useUpdateGraph() {
         })
     }
 
-    const highlightEdges = async (graph, edgesToHighlight) => {
-        await graph.value.model.edges
+    const highlightEdges = (graph, nodesToHighlight) => {
         const graphEdges = graph.value.getEdges()
-        const gray = edgesToHighlight.length ? '#d9d9d9' : '#c7c7c7'
+        const gray = nodesToHighlight.length ? '#d9d9d9' : '#c7c7c7'
         graphEdges.forEach((x) => {
-            const itExists = edgesToHighlight.includes(x.id)
+            const cell = graph.value.getCellById(x.id)
+            const [source, target] = x.id.split('@')
+            const itExists =
+                nodesToHighlight.includes(source) &&
+                nodesToHighlight.includes(target)
             x.attr('line/stroke', itExists ? '#5277d7' : gray)
             x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
-            x.setZIndex(itExists ? 30 : 1)
+            if (itExists) cell.toFront()
         })
     }
 
     const updateProcessNodesPosition = async (graph, num) => {
         await graph.value.model.nodes
-
         const graphNodes = graph.value.getNodes()
         graphNodes.forEach((z) => {
             if (z.store.data?.isProcess) {
@@ -43,12 +44,13 @@ export default function useUpdateGraph() {
         })
     }
 
-    const toggleProcessNodes = async (graph, showProcess) => {
+    const toggleProcessNodes = async (graph, showProcess, removedNodes) => {
         if (showProcess.value) {
+            if (!removedNodes.value?.isProcess?.length) return
             await Promise.all(
                 removedNodes.value.isProcess.map(async (x) => {
-                    const { entity } = x.data
-                    await addNode(graph, entity)
+                    const { entity, data } = x.data
+                    await addNode(graph, entity, data)
 
                     const { edges } = x
                     edges.forEach((y) => {
@@ -66,9 +68,9 @@ export default function useUpdateGraph() {
         }
 
         if (!showProcess.value) {
-            const { removedNodes: rn } = removeNode(graph, 'isProcess')
-
-            rn.value.isProcess.forEach((x) => {
+            removeNode(graph, 'isProcess', removedNodes)
+            if (!Object.keys(removedNodes.value).length) return
+            removedNodes.value.isProcess.forEach((x) => {
                 const relationsSet = new Set()
                 const sources = new Set()
                 const targets = new Set()
@@ -78,9 +80,9 @@ export default function useUpdateGraph() {
                     if (source !== x.data.id) sources.add(source)
                     if (target !== x.data.id) targets.add(target)
 
-                    Array.from(sources).forEach((y) => {
-                        Array.from(targets).forEach((z) => {
-                            relationsSet.add(`${y}@${z}`)
+                    Array.from(sources).forEach((z) => {
+                        Array.from(targets).forEach((a) => {
+                            relationsSet.add(`${z}@${a}`)
                         })
                     })
 

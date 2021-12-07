@@ -37,7 +37,7 @@
             <div class="mr-5 cursor-pointer" @click="fit(baseEntityGuid)">
                 <a-tooltip placement="top">
                     <template #title>
-                        <span>fit graph</span>
+                        <span>recenter</span>
                     </template>
 
                     <AtlanIcon icon="Recenter" class="outline-none"></AtlanIcon>

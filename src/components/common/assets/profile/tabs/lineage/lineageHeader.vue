@@ -36,7 +36,11 @@
                                         :checked="direction === item.id"
                                         @change="onChangeDirection"
                                     >
-                                        {{ item.label }}</a-radio
+                                        {{
+                                            item.id === 'BOTH'
+                                                ? 'Both Direction'
+                                                : item.label
+                                        }}</a-radio
                                     >
                                 </a-menu-item>
 
@@ -61,7 +65,7 @@
                     </template>
                     <a-dropdown :trigger="['click']">
                         <span
-                            class="flex items-center inline-block mr-3 text-gray-500 "
+                            class="flex items-center inline-block mr-3 text-gray-500"
                         >
                             {{ currDepth }}
                             <AtlanIcon
@@ -70,8 +74,12 @@
                             ></AtlanIcon>
                         </span>
                         <template #overlay>
-                            <a-menu>
+                            <a-menu class="lineage-header-menu">
                                 <a-menu-item
+                                    :class="{
+                                        'ant-dropdown-menu-item-activee':
+                                            depth === item.id,
+                                    }"
                                     v-for="item in lineageDepths"
                                     :key="item.id"
                                     @click="onChangeDepth(item.id)"
@@ -86,16 +94,16 @@
             <a-divider type="vertical" />
             <div class="cursor-pointer" @click="onShowImpactedAssets()">
                 <a-tooltip placement="top">
-                    <template v-if="selectedNodeType" #title>
+                    <template #title>
                         <span> show impacted assets </span>
                     </template>
                     <AtlanIcon
                         icon="ImpactedAssets"
                         class="ml-3 outline-none"
                         :class="
-                            selectedNodeType
-                                ? 'text-primary'
-                                : 'text-gray-500 cursor-not-allowed'
+                            isLeafNode
+                                ? 'text-gray-500 cursor-not-allowed'
+                                : 'text-primary'
                         "
                     ></AtlanIcon>
                 </a-tooltip>
@@ -115,47 +123,56 @@
         name: 'LineageHeader',
         components: { LineageSearch },
         props: {
-            selectedNodeType: {
+            isCyclic: {
+                type: Boolean,
+                required: true,
+            },
+            baseEntityGuid: {
                 type: String,
+                required: true,
+            },
+            highlightedNode: {
+                type: String,
+                required: true,
+            },
+            graph: {
                 required: true,
             },
         },
         emits: ['show-process', 'show-impacted-assets', 'show-add-lineage'],
         setup(props, { emit }) {
             /** INJECTIONS */
-            const depth = inject('depth') // TODO:
-            const direction = inject('direction')
+            /** INJECTIONS */
             const control = inject('control')
+            const showProcess = inject('showProcess')
+            const depth = inject('depth')
+            const direction = inject('direction')
+            const lineageDepths = inject('lineageDepths')
+            const lineageDirections = inject('lineageDirections')
 
             /** DATA */
-            const { selectedNodeType } = toRefs(props)
+            const { highlightedNode, baseEntityGuid, graph } = toRefs(props)
             const showSearch = ref(false)
-            const showProcess = ref(true)
-            const lineageDepths = [
-                { id: 1, label: 'Depth 1' },
-                { id: 2, label: 'Depth 2' },
-                { id: 3, label: 'Depth 3' },
-                { id: 21, label: 'Maximum' },
-            ]
-            const lineageDirections = [
-                { id: 'BOTH', label: 'Both Direction' },
-                { id: 'INPUT', label: 'Upstream' },
-                { id: 'OUTPUT', label: 'Downstream' },
-            ]
             const currDepth = computed(
                 () => lineageDepths.find((x) => x.id === depth.value)?.label
             )
 
+            const isLeafNode = computed(() => {
+                const id = highlightedNode.value || baseEntityGuid.value
+                const cell = graph.value.getCellById(id)
+                return graph.value.isLeafNode(cell)
+            })
+
             /** METHODS */
             // onShowImpactedAssets
             const onShowImpactedAssets = () => {
-                if (!selectedNodeType.value) return
+                if (isLeafNode.value) return
                 emit('show-impacted-assets')
             }
 
             // onShowProcess
             const onShowProcess = () => {
-                emit('show-process', showProcess.value)
+                control('showProcess', showProcess.value)
             }
 
             // onChangeDirection
@@ -164,11 +181,12 @@
             }
 
             // onChangeDepth
-            const onChangeDepth = (depth) => {
-                control('depth', depth)
+            const onChangeDepth = (d) => {
+                control('depth', d)
             }
 
             return {
+                isLeafNode,
                 emit,
                 currDepth,
                 depth,
@@ -186,3 +204,21 @@
         },
     })
 </script>
+
+<style lang="less">
+    .cyclic-pill {
+        background: #ffe6eb;
+        padding: 0 8px;
+        border-radius: 15px;
+    }
+
+    .lineage-header-menu {
+        .ant-dropdown-menu-item-activee {
+            background-color: #eaf0ff !important;
+        }
+
+        .ant-dropdown-menu-item:hover {
+            background-color: #f8f8fd;
+        }
+    }
+</style>

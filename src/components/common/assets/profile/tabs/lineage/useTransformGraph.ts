@@ -6,10 +6,12 @@ export default function useTransformGraph(graph, emit) {
     }
 
     const fit = (id) => {
-        graph.value.zoomToFit({ padding: 12 })
-        graph.value.scale(0.5)
+        graph.value.scale(0.7)
         const cell = graph.value.getCellById(id)
-        graph.value.centerCell(cell, { padding: { right: 400, bottom: 400 } })
+
+        graph.value.positionCell(cell, 'center', {
+            padding: { left: 200, bottom: 800 },
+        })
     }
 
     const fullscreen = (targetEle) => {

@@ -1,34 +1,31 @@
 <template>
     <div
         ref="lineageContainer"
-        class="overflow-hidden hide-scrollbar lineage"
-        style="width: calc(100vw - 420px); height: calc(100vh - 145px)"
+        class="relative w-full overflow-hidden hide-scrollbar lineage"
+        style="height: calc(100vh - 145px)"
     >
         <div
-            v-if="!isComputationDone"
+            v-if="!isComputeDone"
             class="flex items-center justify-center bg-white w-100"
             style="height: 80vh"
         >
             <div>
-                <a-spin tip="Fetching data..." />
+                <a-spin tip="Rendering graph..." />
             </div>
         </div>
-        <!-- Highlight Loader -->
-        <!-- <div
-            v-if="highlightLoadingCords.x"
-            :style="`position: absolute; left: ${
-                highlightLoadingCords.x - 13
-            }px; top: ${highlightLoadingCords.y - 130}px; z-index: 999`"
-        >
-            <a-spin size="large" />
-        </div> -->
 
         <!-- Graph Container -->
-        <div ref="graphContainer" style="width: 1440px; height: 1000px"></div>
+        <div style="display: flex">
+            <div ref="graphContainer" style="flex: 1"></div>
+        </div>
 
         <!-- Lineage Header -->
         <LineageHeader
-            :selected-node-type="selectedNodeType"
+            v-if="isComputeDone"
+            :base-entity-guid="lineage.baseEntityGuid"
+            :highlighted-node="highlightedNode"
+            :is-cyclic="isCyclic"
+            :graph="graph"
             @show-process="onShowProcess($event)"
             @show-impacted-assets="onShowImpactedAssets($event)"
             @show-add-lineage="onShowAddLineage($event)"
@@ -65,8 +62,6 @@
         <LineageAdd
             v-if="graph"
             :visible="showAddLineage"
-            :graph="graph"
-            :guid="highlightedNode"
             style="z-index: 600"
             @cancel="showAddLineage = false"
         />
@@ -75,7 +70,25 @@
 
 <script lang="ts">
     /** PACKAGES */
-    import { defineComponent, ref, onMounted, provide, toRefs } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        onMounted,
+        onUnmounted,
+        provide,
+        toRefs,
+        inject,
+        watch,
+        onBeforeMount,
+        onBeforeUpdate,
+        onUpdated,
+        onBeforeUnmount,
+        onErrorCaptured,
+        onRenderTracked,
+        onRenderTriggered,
+        onActivated,
+        onDeactivated,
+    } from 'vue'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     import LineageFooter from './lineageFooter.vue'
@@ -102,59 +115,70 @@
         },
         emits: ['preview'],
         setup(props, { emit }) {
+            /** INJECTIONS */
+            const control = inject('control')
+            const showProcess = inject('showProcess')
+            const baseEntity = inject('baseEntity')
+            const selectedAsset = inject('selectedAsset')
+
             /** DATA */
             const { lineage } = toRefs(props)
+            const graphHeight = ref(null)
+            const graphWidth = ref(null)
+            const removedNodes = ref([])
+
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref(null)
             const graph = ref(null)
             const graphLayout = ref({})
-            const highlightLoadingCords = ref({})
-            const showProcess = ref(true)
             const showImpactedAssets = ref(false)
             const showAddLineage = ref(false)
             const showMinimap = ref(false)
             const useCyclic = ref(false)
             const searchItems = ref([])
             const selectedSearchItem = ref('')
-            const selectedNodeType = ref('')
+            const isCyclic = ref(false)
+            const assetGuidToHighlight = ref('')
             const highlightedNode = ref('')
+            const highlightLoadingCords = ref({})
             const currZoom = ref('...')
-            const isComputationDone = ref(false)
+            const isComputeDone = ref(false)
 
             /** METHODS */
-            // selectSearchItem
-            const selectSearchItem = (guid) => {
-                selectedSearchItem.value = guid
+            // onSelectAsset
+            const onSelectAsset = (item, highlight = false) => {
+                control('selectedAsset', item)
+                control('selectedAssetGuid', item.guid)
+                if (highlight) assetGuidToHighlight.value = item.guid
             }
 
             // initialize
             const initialize = async () => {
-                const { baseEntityGuid } = lineage.value
-                const defaultEntity =
-                    lineage.value.guidEntityMap[baseEntityGuid]
-
-                emit('preview', defaultEntity)
-
                 // useGraph
                 useCreateGraph(
                     graph,
                     graphLayout,
                     graphContainer,
-                    minimapContainer
+                    minimapContainer,
+                    showProcess,
+                    graphWidth,
+                    graphHeight
                 )
 
                 // useComputeGraph
-                await useComputeGraph(
+                const { isCyclic: ic } = await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
                     showProcess,
                     searchItems,
                     currZoom,
-                    isComputationDone,
+                    removedNodes,
+                    isComputeDone,
                     emit
                 )
+                isCyclic.value = ic
 
                 // events
                 graph.value.on('cell:mousedown', ({ e }) => {
@@ -170,21 +194,18 @@
                 // useHighlight
                 useHighlight(
                     graph,
-                    baseEntityGuid,
+                    baseEntity,
                     showProcess,
-                    highlightLoadingCords,
+                    assetGuidToHighlight,
                     highlightedNode,
-                    selectedSearchItem,
-                    selectedNodeType,
-                    emit
+                    highlightLoadingCords,
+                    onSelectAsset
                 )
             }
 
-            // onShowProcess
-            const onShowProcess = (val) => {
-                showProcess.value = val
-                selectedNodeType.value = ''
-            }
+            /** PROVIDERS */
+            provide('searchItems', searchItems)
+            provide('onSelectAsset', onSelectAsset)
 
             // onShowImpactedAssets
             const onShowImpactedAssets = () => {
@@ -196,31 +217,43 @@
                 showAddLineage.value = true
             }
 
-            /** PROVIDERS */
-            provide('searchItems', searchItems)
-            provide('selectSearchItem', selectSearchItem)
-
             /** LIFECYCLE */
-            onMounted(() => {
-                initialize()
+            onMounted(async () => {
+                graphHeight.value = window.outerHeight
+                graphWidth.value = window.outerWidth
+
+                if (graph.value) graph.value.dispose()
+                await initialize()
+                if (selectedAsset.value?.guid) {
+                    const highlight =
+                        selectedAsset.value.guid !== baseEntity.value.guid
+                    onSelectAsset(selectedAsset.value, highlight)
+                }
+            })
+
+            onUnmounted(() => {
+                isComputeDone.value = false
+                removedNodes.value = {}
+                if (graph.value) graph.value.dispose()
             })
 
             return {
+                selectedAsset,
+                baseEntity,
                 graph,
                 showProcess,
-                showImpactedAssets,
-                showAddLineage,
                 showMinimap,
-                useCyclic,
+                showImpactedAssets,
                 lineageContainer,
                 graphContainer,
                 minimapContainer,
-                highlightLoadingCords,
-                highlightedNode,
-                selectedNodeType,
                 currZoom,
-                isComputationDone,
-                onShowProcess,
+                isCyclic,
+                highlightedNode,
+                isComputeDone,
+                highlightLoadingCords,
+                graphHeight,
+                graphWidth,
                 onShowImpactedAssets,
                 onShowAddLineage,
             }
@@ -430,7 +463,6 @@
 
         .isGrayed {
             border: 2px solid #e6e6eb !important;
-            // background-color: #f3f3f3 !important;
 
             .node-text {
                 color: #6f7590 !important;
@@ -439,14 +471,11 @@
                     color: #6f7590 !important;
                 }
             }
-            // .node-source {
-            //     opacity: 0.5;
-            // }
         }
 
         .isHighlightedNode {
-            border: 3px solid #5277d7 !important;
-            background-color: #f4f6fd !important;
+            border: 2px solid #5277d7 !important;
+            background-color: #e5ecff !important;
         }
 
         .isHighlightedNodePath {

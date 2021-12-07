@@ -1,7 +1,6 @@
 <template>
     <teleport to="#overAssetSidebar">
         <a-drawer
-            v-if="visible"
             v-model:visible="visible"
             placement="right"
             :get-container="false"
@@ -25,7 +24,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs, provide } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
 
     export default defineComponent({
@@ -48,12 +47,18 @@
                 },
             },
         },
-        emits: ['closeDrawer'],
+        emits: ['closeDrawer', 'update'],
 
-        setup(props) {
+        setup(props, { emit }) {
             const { showDrawer } = toRefs(props)
 
             const visible = ref(false)
+
+            const updateDrawerList = (asset) => {
+                emit('update', asset)
+            }
+
+            provide('updateDrawerList', updateDrawerList)
 
             watch(showDrawer, () => (visible.value = showDrawer.value))
 

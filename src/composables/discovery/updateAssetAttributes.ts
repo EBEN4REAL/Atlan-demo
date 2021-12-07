@@ -101,6 +101,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const descriptionRef = ref(null)
     const animationPoint = ref(null)
     const isConfetti = ref(false)
+    const shouldDrawerUpdate = ref(false)
 
     // Name Change
     const handleChangeName = () => {
@@ -277,9 +278,16 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     const updateList = inject('updateList')
+    const updateDrawerList = inject('updateDrawerList')
+
     whenever(isUpdateReady, () => {
         if (!isDrawer) {
             updateList(asset.value)
+        } else {
+            shouldDrawerUpdate.value = true
+            if (typeof updateDrawerList === 'function') {
+                updateDrawerList(asset.value)
+            }
         }
     })
 
@@ -357,5 +365,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localResource,
         handleUpdateReadme,
         localReadmeContent,
+        shouldDrawerUpdate,
+        asset,
     }
 }

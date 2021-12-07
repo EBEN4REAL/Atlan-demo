@@ -19,7 +19,7 @@
         <div>
             <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-4">
                 <div v-for="(item, index) in links(asset)" :key="index">
-                    <div v-if="isSlackLink(item.attributes.link)" class="">
+                    <div v-if="isSlackLink(item?.attributes?.link)" class="">
                         <div
                             v-if="!slackUnfurls[item.guid].isLoading.value"
                             class="flex p-2 border rounded"
@@ -303,7 +303,7 @@ export default defineComponent({
         const hasSlackLink = computed(() => {
             const linkArr = links(asset.value)
             const slackLink = linkArr.some((link) =>
-                isSlackLink(link.attributes.link)
+                isSlackLink(link?.attributes?.link)
             )
             return slackLink
         })

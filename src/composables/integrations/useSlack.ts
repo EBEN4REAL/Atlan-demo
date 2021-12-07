@@ -49,7 +49,7 @@ export const shareOnSlack = ({ integrationId, channelAlias, message, link }) => 
 }
 
 // detects if its a valid slack chat url
-export const isSlackLink = (link) => link.includes('.slack.com/archives')
+export const isSlackLink = (link) => link && link.includes('.slack.com/archives')
 
 
 export const getChannelAndMessageIdFromSlackLink = (link) => {

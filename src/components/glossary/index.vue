@@ -68,6 +68,7 @@
                 </template>
             </SearchAdvanced>
             <atlan-icon
+                v-if="!queryText"
                 icon="TreeCollapseAll"
                 class="h-4 mt-2 ml-2 cursor-pointer"
                 @click="handleCollapse"

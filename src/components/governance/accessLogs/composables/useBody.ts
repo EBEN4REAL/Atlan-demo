@@ -128,25 +128,19 @@ export default function useBody({
                     'service-account-apikey'
                 )
             } else if (!includeBots && includeUsers) {
-                base.notFilter('prefix', 'reqUser.keyword', 'service-account')
+                base.notFilter('wildcard', 'reqUser.keyword', {
+                    value: '*argo*',
+                })
             } else if (includeBots && !includeUsers) {
-                base.filter(
-                    'prefix',
-                    'reqUser.keyword',
-                    'service-account'
-                ).notFilter(
-                    'prefix',
-                    'reqUser.keyword',
-                    'service-account-apikey'
-                )
+                base.filter('wildcard', 'reqUser.keyword', {
+                    value: '*argo*',
+                })
             }
         } else if (!includeBots) {
             if (includeAPIKeys && includeUsers) {
-                base.notFilter(
-                    'regexp',
-                    'reqUser.keyword',
-                    'service-account-(?!apikey)([a-z0-9]+)$'
-                )
+                base.notFilter('wildcard', 'reqUser.keyword', {
+                    value: '*argo*',
+                })
             } else if (includeAPIKeys && !includeUsers) {
                 base.filter(
                     'prefix',
@@ -156,7 +150,13 @@ export default function useBody({
             }
         } else if (!includeUsers) {
             if (includeAPIKeys && includeBots) {
-                base.filter('prefix', 'reqUser.keyword', 'service-account')
+                base.orFilter(
+                    'prefix',
+                    'reqUser.keyword',
+                    'service-account-apikey'
+                ).orFilter('wildcard', 'reqUser.keyword', {
+                    value: '*argo*',
+                })
             }
         }
     }

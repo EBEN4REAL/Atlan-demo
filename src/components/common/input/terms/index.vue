@@ -130,10 +130,12 @@
                 return localValue.value
             })
 
-            const handleChange = () => {
-                modelValue.value = localValue.value
+            const handleChange = (visible) => {
+                if(!visible) {
+                    modelValue.value = localValue.value
+                    emit('change', localValue.value)
+                }
 
-                emit('change', localValue.value)
             }
             // const { classificationList } = useTypedefData()
 
@@ -447,7 +449,7 @@
     .termPopover {
         :global(.ant-popover-inner-content) {
             @apply px-0 py-3 !important;
-            width: 250px !important;
+            width: 350px !important;
         }
     }
 </style>

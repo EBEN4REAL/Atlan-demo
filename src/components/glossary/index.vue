@@ -1,6 +1,7 @@
 <template>
     <div
         class="flex flex-col items-stretch flex-1 h-full mb-1"
+        :class="$style.checkableTree"
         ref="glossaryBox"
     >
         <div
@@ -446,5 +447,12 @@
     .filterPopover {
         max-width: 200px;
         min-width: 200px;
+    }
+    .checkableTree {
+        max-height: 364px;
+
+        :global(.ant-tree-checkbox) {
+            @apply my-auto;
+        }
     }
 </style>

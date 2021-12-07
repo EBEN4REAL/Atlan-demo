@@ -71,19 +71,13 @@
                 glossaryStore.setSelectedGTC(asset)
                 assetStore.setSelectedAsset(asset)
             }
-
             const updateList = (asset) => {
-                console.log('updateList')
-                console.log(asset)
                 localSelected.value = asset
-                console.log(localSelected.value)
                 glossaryStore.setSelectedGTC(asset)
                 assetStore.setSelectedAsset(asset)
-                console.log(glossaryStore.selectedGTC)
             }
             watch(selectedGlossary, () => {
                 localSelected.value = selectedGlossary.value
-                console.log(glossaryStore.selectedGTC)
             })
 
             provide('updateList', updateList)

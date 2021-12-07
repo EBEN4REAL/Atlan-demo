@@ -23,6 +23,7 @@
                     <ClassificationDropdown
                         :modelValue="savedQueryType2"
                         @change="onClassificationChange"
+                        :connector="connector"
                     />
                 </div>
                 <div

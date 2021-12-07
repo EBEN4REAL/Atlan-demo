@@ -6,9 +6,12 @@
         >
             <a-select
                 v-model:value="localCondition.operator"
-                class="flex-1"
+                class="flex-1 selector"
                 @change="handleOperatorChange"
             >
+                <template #suffixIcon>
+                    <AtlanIcon icon="CaretDown" />
+                </template>
                 <a-select-option
                     v-for="item in defaultOperator"
                     :key="item.id"
@@ -22,7 +25,8 @@
                     icon="Trash"
                     class="h-3 text-gray-500 hover:text-red-700"
                     @click="handleRemove"
-                ></AtlanIcon>
+                >
+                </AtlanIcon>
             </div>
         </div>
 
@@ -135,4 +139,8 @@
     })
 </script>
 
-<style lang="less" module></style>
+<style lang="less" scoped>
+    .selector:deep(.ant-select-arrow) {
+        @apply flex items-center;
+    }
+</style>

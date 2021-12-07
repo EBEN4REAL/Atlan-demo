@@ -7,7 +7,7 @@ const agg_prefix = 'group_by'
 
 const existsValue = 'NONE'
 
-export function useBody(
+export function useAuditBody(
     queryText?: string,
     offset?: any,
     limit?: any,
@@ -268,7 +268,7 @@ export function useBody(
             case 'column':
             case 'table':
             case 'sql':
-            default: {
+            case 'properties': {
                 if (filterObject) {
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
@@ -356,8 +356,6 @@ export function useBody(
             }
         }
     })
-
-    base.filter('term', '__state', state.value)
 
     //post filters
     const postFilter = bodybuilder()
@@ -454,86 +452,86 @@ export function useBody(
         }
     })
 
-    if (
-        !facets?.typeNames?.includes('AtlasGlossary') &&
-        !facets?.typeNames?.includes('AtlasGlossaryTerm') &&
-        !facets?.typeNames?.includes('AtlasGlossaryCategory') &&
-        !facets?.guid
-    ) {
-        // Global TypeName Filters
-        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
-        base.orFilter('terms', '__typeName.keyword', [
-            'Query',
-            'AtlasGlossaryCategory',
-            'AtlasGlossaryTerm',
-            'Connection',
-        ])
-    }
+    // if (
+    //     !facets?.typeNames?.includes('AtlasGlossary') &&
+    //     !facets?.typeNames?.includes('AtlasGlossaryTerm') &&
+    //     !facets?.typeNames?.includes('AtlasGlossaryCategory') &&
+    //     !facets?.guid
+    // ) {
+    //     // Global TypeName Filters
+    //     base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI'])
+    //     base.orFilter('terms', '__typeName.keyword', [
+    //         'Query',
+    //         'AtlasGlossaryCategory',
+    //         'AtlasGlossaryTerm',
+    //         'Connection',
+    //     ])
+    // }
 
     base.filterMinimumShouldMatch(1)
 
     const tempQuery = base.build()
 
-    const query = {
-        ...tempQuery,
-        query: {
-            function_score: {
-                query: tempQuery.query,
-                functions: [
-                    {
-                        filter: {
-                            match: {
-                                certificateStatus: 'VERIFIED',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                certificateStatus: 'DRAFT',
-                            },
-                        },
-                        weight: 4,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'Table',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'View',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'Column',
-                            },
-                        },
-                        weight: 3,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'AtlasGlossaryTerm',
-                            },
-                        },
-                        weight: 4,
-                    },
-                ],
-                boost_mode: 'sum',
-                score_mode: 'sum',
-            },
-        },
-    }
+    // const query = {
+    //     ...tempQuery,
+    //     query: {
+    //         function_score: {
+    //             query: tempQuery.query,
+    //             functions: [
+    //                 {
+    //                     filter: {
+    //                         match: {
+    //                             certificateStatus: 'VERIFIED',
+    //                         },
+    //                     },
+    //                     weight: 5,
+    //                 },
+    //                 {
+    //                     filter: {
+    //                         match: {
+    //                             certificateStatus: 'DRAFT',
+    //                         },
+    //                     },
+    //                     weight: 4,
+    //                 },
+    //                 {
+    //                     filter: {
+    //                         match: {
+    //                             __typeName: 'Table',
+    //                         },
+    //                     },
+    //                     weight: 5,
+    //                 },
+    //                 {
+    //                     filter: {
+    //                         match: {
+    //                             __typeName: 'View',
+    //                         },
+    //                     },
+    //                     weight: 5,
+    //                 },
+    //                 {
+    //                     filter: {
+    //                         match: {
+    //                             __typeName: 'Column',
+    //                         },
+    //                     },
+    //                     weight: 3,
+    //                 },
+    //                 {
+    //                     filter: {
+    //                         match: {
+    //                             __typeName: 'AtlasGlossaryTerm',
+    //                         },
+    //                     },
+    //                     weight: 4,
+    //                 },
+    //             ],
+    //             boost_mode: 'sum',
+    //             score_mode: 'sum',
+    //         },
+    //     },
+    // }
 
-    return query
+    return tempQuery
 }

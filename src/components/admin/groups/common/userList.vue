@@ -130,7 +130,7 @@
                 filter: {
                     $and: [
                         {
-                            email_verified: true,
+                            emailVerified: true,
                         },
                     ],
                 },
@@ -146,7 +146,7 @@
             const handleSearch = useDebounceFn(() => {
                 userListAPIParams.filter = {
                     $and: [
-                        { email_verified: true },
+                        { emailVerified: true },
                         {
                             $or: [
                                 {

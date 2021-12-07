@@ -155,7 +155,7 @@
                 offset: 0,
                 filter: {
                     $and: [
-                        { email_verified: true },
+                        { emailVerified: true },
                         { id: persona.value.createdBy },
                     ],
                 },

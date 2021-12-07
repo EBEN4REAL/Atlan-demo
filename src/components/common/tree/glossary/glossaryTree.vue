@@ -32,7 +32,7 @@
         :block-node="true"
         :load-data="onLoadData"
         :treeDataSimpleMode="true"
-        @select="checkable ? null :selectNode"
+        @select="selectNode"
         :auto-expand-parent="false"
         @expand="expandNode"
         :height="height"

@@ -307,7 +307,8 @@
 
             const router = useRouter()
             const handlePreview = (item) => {
-                router.push(`/glossary/${item.guid}`)
+                if(!props.checkable)
+                    router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
             }
 

@@ -50,8 +50,6 @@
 
             const onCheck = (checkedNodes) => {
                 localValue.value = checkedNodes.map((term) => term.attributes.qualifiedName)
-                // localValue.value = ['a']
-                console.log(localValue.value)
             }
 
 

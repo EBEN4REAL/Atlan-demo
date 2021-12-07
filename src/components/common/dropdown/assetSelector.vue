@@ -58,11 +58,9 @@
                         :icon="typeName + `Gray`"
                         class="w-auto h-4 mr-2"
                     />
-                    {{
-                        item?.label.length > 30
-                            ? `${item?.label.slice(0, 30)}...`
-                            : item.label
-                    }}
+                    <span class="parent-ellipsis-container-base"
+                        >{{ item?.label }}
+                    </span>
                 </div></a-select-option
             >
         </template>
@@ -203,4 +201,11 @@
     // input::placeholder {
     //     color: #6f7590 !important;
     // }
+</style>
+<style lang="less" scoped>
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
 </style>

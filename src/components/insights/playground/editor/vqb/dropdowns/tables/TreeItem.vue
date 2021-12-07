@@ -5,291 +5,97 @@
         :style="{ height: assetType(item) == 'Column' ? '34px' : '32px' }"
     >
         <div class="flex justify-between w-full overflow-hidden">
-            <!-- Popover Allowed -->
             <div
                 class="flex w-full m-0"
                 v-if="isPopoverAllowed(item?.typeName) && hoverActions"
             >
-                <PopoverAsset :item="item" placement="right">
-                    <template #button>
-                        <a-button
-                            class="mt-3"
-                            @click="actionClick('info', item)"
-                            block
-                        >
-                            <div class="flex justify-center w-full">
-                                <div class="flex items-center cursor-pointer">
-                                    Open preview sidebar
-                                </div>
-                            </div>
-                        </a-button>
-                    </template>
+                <div
+                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                    style="height: 34px !important"
+                >
+                    <!--For Column-->
                     <div
-                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                        v-if="assetType(item) == 'Column'"
+                        class="relative flex items-center justify-between w-full"
                         style="height: 34px !important"
                     >
-                        <!--For Column-->
+                        <div class="relative parent-ellipsis-container">
+                            <component
+                                :is="dataTypeImage(item)"
+                                class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
+                                v-if="dataTypeImage(item)"
+                            ></component>
+                            <span
+                                v-else
+                                class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
+                            >
+                                -
+                            </span>
+                            <span
+                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                >{{ title(item) }}
+                                <!-- <span> {{ childCount(item) }}</span> -->
+                            </span>
+
+                            <StatusBadge
+                                v-if="certificateStatus(item)"
+                                :key="item?.guid"
+                                :show-no-status="false"
+                                :status-id="certificateStatus(item)"
+                                class="ml-1.5 mb-1 parent-ellipsis-container-extension"
+                            ></StatusBadge>
+                        </div>
+
                         <div
-                            v-if="assetType(item) == 'Column'"
-                            class="relative flex items-center justify-between w-full"
-                            style="height: 34px !important"
+                            class="flex items-center text-xs leading-5 text-gray-500"
                         >
-                            <div class="relative parent-ellipsis-container">
-                                <component
-                                    :is="dataTypeImage(item)"
-                                    class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
-                                    v-if="dataTypeImage(item)"
-                                ></component>
-                                <span
-                                    v-else
-                                    class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
-                                >
-                                    -
-                                </span>
+                            <div
+                                class="flex items-center"
+                                v-if="isPrimary(item)"
+                            >
+                                <div class="flex items-center mr-2">
+                                    <AtlanIcon
+                                        icon="PrimaryKey"
+                                        class="w-4 h-4 my-auto mr-1 primary-key-color"
+                                    ></AtlanIcon>
+                                    <span class="primary-key-color">Pkey</span>
+                                </div>
+                            </div>
+                            <span>{{ dataType(item) ?? '-' }}</span>
+                        </div>
+                    </div>
+                    <!--For Others: Table Item -->
+                    <div v-else class="flex w-full h-8 m-0">
+                        <div
+                            class="flex items-center justify-between w-full h-8"
+                        >
+                            <div
+                                class="flex items-center parent-ellipsis-container"
+                            >
+                                <AtlanIcon
+                                    :icon="
+                                        getEntityStatusIcon(
+                                            assetType(item),
+                                            certificateStatus(item)
+                                        )
+                                    "
+                                    class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
+                                ></AtlanIcon>
+
                                 <span
                                     class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                     >{{ title(item) }}
-                                    <!-- <span> {{ childCount(item) }}</span> -->
                                 </span>
-
-                                <StatusBadge
-                                    v-if="certificateStatus(item)"
-                                    :key="item?.guid"
-                                    :show-no-status="false"
-                                    :status-id="certificateStatus(item)"
-                                    class="ml-1.5 mb-1 parent-ellipsis-container-extension"
-                                ></StatusBadge>
                             </div>
-                            <div
-                                v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
-                                style="width: "
-                                :class="
-                                    item?.selected
-                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
-                                "
-                                @click.stop="() => {}"
-                            >
-                                <div
-                                    :data-test-id="'insert-in-editor'"
-                                    class="pl-2 ml-20"
-                                    @click="() => actionClick('add', item)"
+                            <div>
+                                <span class="z-10 count-box">
+                                    {{ childCount(item) }}</span
                                 >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title
-                                            >Place name in editor</template
-                                        >
-                                        <AtlanIcon
-                                            icon="AddAssetName"
-                                            class="w-4 h-4 my-auto"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : 'bg-gray-light-color'
-                                            "
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>
-                                <!-- Add pr-2 for next icon -->
-                                <div
-                                    :data-test-id="'preview'"
-                                    class="pl-2"
-                                    :class="
-                                        item?.selected
-                                            ? 'tree-light-color'
-                                            : 'bg-gray-light-color'
-                                    "
-                                    @click="() => actionClick('info', item)"
-                                >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title
-                                            >Open preview sidebar</template
-                                        >
-
-                                        <AtlanIcon
-                                            icon="Info"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>
-                                <!-- <div
-                                    class="bg-gray-light-color"
-                                    @click.stop="
-                                        () => actionClick('bookmark', item)
-                                    "
-                                >
-                                    <a-tooltip placement="top">
-                                        <template #title>Bookmark</template>
-
-                                        <AtlanIcon
-                                            icon="BookmarkOutlined"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>-->
-                            </div>
-                            <div
-                                class="flex items-center text-xs leading-5 text-gray-500"
-                            >
-                                <div
-                                    class="flex items-center"
-                                    v-if="isPrimary(item)"
-                                >
-                                    <div class="flex items-center mr-2">
-                                        <AtlanIcon
-                                            icon="PrimaryKey"
-                                            class="w-4 h-4 my-auto mr-1 primary-key-color"
-                                        ></AtlanIcon>
-                                        <span class="primary-key-color"
-                                            >Pkey</span
-                                        >
-                                    </div>
-                                </div>
-                                <span>{{ dataType(item) ?? '-' }}</span>
                             </div>
                         </div>
-                        <!--For Others: Table Item -->
-                        <div v-else class="flex w-full h-8 m-0">
-                            <div
-                                class="flex items-center justify-between w-full h-8"
-                            >
-                                <div
-                                    class="flex items-center parent-ellipsis-container"
-                                >
-                                    <AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                assetType(item),
-                                                certificateStatus(item)
-                                            )
-                                        "
-                                        class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
-                                    ></AtlanIcon>
-
-                                    <span
-                                        class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >{{ title(item) }}
-                                    </span>
-                                </div>
-                                <div>
-                                    <span class="z-10 count-box">
-                                        {{ childCount(item) }}</span
-                                    >
-                                </div>
-                            </div>
-
-                            <div
-                                v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
-                                @click.stop="() => {}"
-                                :class="
-                                    item?.selected
-                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
-                                "
-                            >
-                                <div
-                                    :data-test-id="'insert-in-editor'"
-                                    class="pl-2 ml-24"
-                                    @click="() => actionClick('add', item)"
-                                >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title
-                                            >Place name in editor</template
-                                        >
-                                        <AtlanIcon
-                                            icon="AddAssetName"
-                                            class="w-4 h-4 my-auto"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : 'bg-gray-light-color'
-                                            "
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>
-                                <div
-                                    class="pl-2 pr-2"
-                                    :data-test-id="'preview'"
-                                    :class="
-                                        item?.selected
-                                            ? 'tree-light-color'
-                                            : 'bg-gray-light-color'
-                                    "
-                                    @click="() => actionClick('info', item)"
-                                >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title
-                                            >Open preview sidebar</template
-                                        >
-
-                                        <AtlanIcon
-                                            icon="Info"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>
-                                <!-- Add pr-2 for next icon -->
-                                <div
-                                    :data-test-id="'run-table-query'"
-                                    class
-                                    @click="() => actionClick('play', item)"
-                                >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title>Preview data</template>
-
-                                        <AtlanIcon
-                                            icon="Play"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>
-                                <!-- <div
-                                    class="bg-gray-light-color"
-                                    @click.stop="
-                                        () => actionClick('bookmark', item)
-                                    "
-                                >
-                                    <a-tooltip color="#363636"  placement="top">
-                                        <template #title>Bookmark</template>
-
-                                        <AtlanIcon
-                                            icon="BookmarkOutlined"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>-->
-                            </div>
-                        </div>
-                        <!------------------------------->
                     </div>
-                </PopoverAsset>
+                    <!------------------------------->
+                </div>
             </div>
 
             <!-- FOR DB AND SCHMA -->
@@ -328,248 +134,12 @@
                         </div>
                     </div>
 
-                    <div
-                        v-if="hoverActions"
-                        class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
-                        :class="
-                            item?.selected
-                                ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
-                        "
-                        @click.stop="() => {}"
-                    >
-                        <div
-                            class="pl-2 ml-24"
-                            @click="() => actionClick('add', item)"
-                        >
-                            <a-tooltip color="#363636" placement="top">
-                                <template #title>Place name in editor</template>
-                                <AtlanIcon
-                                    icon="AddAssetName"
-                                    class="w-4 h-4 my-auto"
-                                    :class="
-                                        item?.selected
-                                            ? 'tree-light-color'
-                                            : 'bg-gray-light-color'
-                                    "
-                                ></AtlanIcon>
-                            </a-tooltip>
-                        </div>
-                    </div>
                     <!-- </div> -->
                 </div>
             </div>
             <!--  -->
-
-            <!-- For others component which does not need hoverActions -->
-            <div v-if="item?.typeName === 'Column' && !hoverActions">
-                <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
-                >
-                    <div
-                        v-if="assetType(item) == 'Column'"
-                        class="relative flex items-center justify-between w-full"
-                    >
-                        <component
-                            :is="dataTypeImage(item)"
-                            class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
-                        ></component>
-                        <span class="mb-0 text-sm text-gray-700"
-                            >{{ title(item) }}
-                        </span>
-                        <StatusBadge
-                            v-if="certificateStatus(item)"
-                            :key="item?.guid"
-                            :show-no-status="false"
-                            :status-id="certificateStatus(item)"
-                            class="ml-1.5 mb-1"
-                        ></StatusBadge>
-                    </div>
-                    <div v-else class="parent-ellipsis-container">
-                        <AtlanIcon
-                            :icon="
-                                getEntityStatusIcon(
-                                    assetType(item),
-                                    certificateStatus(item)
-                                )
-                            "
-                            class="w-4 h-4 mr-1.5 -mt-0.5 parent-ellipsis-container-extension"
-                        ></AtlanIcon>
-
-                        <span
-                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                            >{{ title(item) }}
-                            <span class="count-box">
-                                {{ childCount(item) }}</span
-                            >
-                        </span>
-                        <div
-                            v-if="hoverActions"
-                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
-                            @click.stop="() => {}"
-                            :class="
-                                item?.selected
-                                    ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                    : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
-                            "
-                        >
-                            <div
-                                :data-test-id="'insert-in-editor'"
-                                class="pl-2 ml-24"
-                                @click="() => actionClick('add', item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title
-                                        >Place name in editor</template
-                                    >
-                                    <AtlanIcon
-                                        icon="AddAssetName"
-                                        class="w-4 h-4 my-auto"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : 'bg-gray-light-color'
-                                        "
-                                    ></AtlanIcon>
-                                </a-tooltip>
-                            </div>
-                            <div
-                                class="pl-2 pr-2"
-                                :data-test-id="'preview'"
-                                :class="
-                                    item?.selected
-                                        ? 'tree-light-color'
-                                        : 'bg-gray-light-color'
-                                "
-                                @click="() => actionClick('info', item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title
-                                        >Open preview sidebar</template
-                                    >
-
-                                    <AtlanIcon
-                                        icon="Info"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto"
-                                    ></AtlanIcon>
-                                </a-tooltip>
-                            </div>
-                            <div
-                                :data-test-id="'run-table-query'"
-                                class
-                                @click="() => actionClick('play', item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title>Preview data</template>
-
-                                    <AtlanIcon
-                                        icon="Play"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto"
-                                    ></AtlanIcon>
-                                </a-tooltip>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div
-                v-if="item?.typeName !== 'Column' && !hoverActions"
-                class="flex w-full m-0"
-            >
-                <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
-                >
-                    <div class="parent-ellipsis-container">
-                        <AtlanIcon
-                            :icon="assetType(item)"
-                            class="w-4 h-4 mr-1.5 -mt-0.5 parent-ellipsis-container-extension"
-                        ></AtlanIcon>
-
-                        <span
-                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                            >{{ title(item) }}
-                            <!-- <span class="count-box">
-                                ({{ childCount(item) }})</span
-                            > -->
-                        </span>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-
-    <!-- <template>
-        <a-modal
-            :visible="showContextModal"
-            :closable="false"
-            :class="$style.input"
-            :footer="null"
-            width="450px"
-        >
-            <div class="w-full p-4 text-gray-500 bg-white rounded">
-                <div class="w-full">
-                    <div>
-                        Current Tab connection context doesn't match your
-                        preview table connection context. Previewing in same tab
-                        will rewrite the context.
-                    </div>
-
-                    <div
-                        class="flex items-center justify-between text-gray-700cursor-pointer"
-                    >
-                        <AtlanBtn
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            class="flex items-center justify-between h-4 p-0 py-1 border-none hover:text-primary"
-                            @click="closeContextModal"
-                        >
-                            <span>Cancel</span>
-                        </AtlanBtn>
-
-                        <div class="flex items-center">
-                            <AtlanBtn
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                                class="flex items-center justify-between h-6 p-0 py-1 ml-2 border-none "
-                                @click="openInCurrentTab"
-                            >
-                                <div
-                                    class="flex items-center rounded text-primary"
-                                >
-                                    <span>Open in current tab</span>
-                                </div>
-                            </AtlanBtn>
-                            <AtlanBtn
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                                class="flex items-center justify-between h-6 p-0 py-1 ml-2 border-none "
-                                @click="openInNewTab"
-                            >
-                                <div
-                                    class="flex items-center rounded text-primary"
-                                >
-                                    <span>Open in new tab</span>
-                                </div>
-                            </AtlanBtn>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a-modal>
-    </template> -->
 </template>
 
 <script lang="ts">
@@ -597,14 +167,9 @@
     import { getLastMappedKeyword } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import AtlanBtn from '@/UI/button.vue'
-    import { useRouter } from 'vue-router'
-    import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
     import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
     import { generateUUID } from '~/utils/helper/generator'
-    import {
-        useMapping,
-        nextKeywords,
-    } from '~/components/insights/playground/editor/common/composables/useMapping'
+    import { useMapping } from '~/components/insights/playground/editor/common/composables/useMapping'
     // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
@@ -777,14 +342,11 @@
                         const activeInlineTabCopy: activeInlineTabInterface =
                             Object.assign({}, activeInlineTab.value)
 
-                        console.log(
-                            'activeInlineTab: ',
-                            Object.keys(activeInlineTabCopy)
-                        )
-
                         // new logic for preview ctc
                         // previous text
-
+                        const prevText =
+                            activeInlineTabCopy.playground.editor.text
+                        // new text
                         let newQuery = `\/* ${title(
                             item.value
                         )} preview *\/\nSELECT * FROM \"${title(
@@ -806,31 +368,6 @@
                             '/' +
                             item.value.schemaName
 
-                        let updatedEditorSchemaQualifiedName =
-                            item.value?.databaseQualifiedName +
-                            '/' +
-                            item.value?.schemaName
-
-                        if (!Object.keys(activeInlineTabCopy).length) {
-                            handleAddNewTab(
-                                newQuery,
-                                {
-                                    attributeName: 'schemaQualifiedName',
-                                    attributeValue:
-                                        updatedEditorSchemaQualifiedName,
-                                },
-                                item.value
-                            )
-                            let activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
-                            playQuery(newQuery, newQuery, activeInlineTabCopy)
-                            return
-                        }
-
-                        // if we have a editor context
-                        const prevText =
-                            activeInlineTabCopy.playground.editor.text
-                        // new text
                         let editorContext =
                             activeInlineTabCopy.playground.editor.context
                         let editorContextType = editorContext?.attributeName
@@ -842,6 +379,10 @@
                         // 2nd context mismatch in editor and query
 
                         // console.log('run query')
+                        let updatedEditorSchemaQualifiedName =
+                            item.value?.databaseQualifiedName +
+                            '/' +
+                            item.value?.schemaName
 
                         switch (editorContextType) {
                             case 'connectionQualifiedName': {
@@ -863,14 +404,6 @@
                                         },
                                         item.value
                                     )
-                                    let activeInlineTabCopy: activeInlineTabInterface =
-                                        Object.assign({}, activeInlineTab.value)
-                                    playQuery(
-                                        newQuery,
-                                        newText,
-                                        activeInlineTabCopy
-                                    )
-
                                     return
                                 } else {
                                     const newText = `${newQuery}${prevText}`
@@ -917,16 +450,6 @@
                                                     updatedEditorSchemaQualifiedName,
                                             },
                                             item.value
-                                        )
-                                        let activeInlineTabCopy: activeInlineTabInterface =
-                                            Object.assign(
-                                                {},
-                                                activeInlineTab.value
-                                            )
-                                        playQuery(
-                                            newQuery,
-                                            newText,
-                                            activeInlineTabCopy
                                         )
                                         return
                                     } else {
@@ -995,16 +518,6 @@
                                             },
                                             item.value
                                         )
-                                        let activeInlineTabCopy: activeInlineTabInterface =
-                                            Object.assign(
-                                                {},
-                                                activeInlineTab.value
-                                            )
-                                        playQuery(
-                                            newQuery,
-                                            newText,
-                                            activeInlineTabCopy
-                                        )
                                         return
                                     } else {
                                         if (
@@ -1054,54 +567,12 @@
                     }
                     case 'info': {
                         // i button clicked on the same node -> close the sidebar
-                        console.log('info: ', activeInlineTab)
-                        if (
-                            activeInlineTab?.value &&
-                            Object.keys(activeInlineTab?.value).length
-                        ) {
-                            if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
-                                /* Close it if it is already opened */
-                                closeAssetSidebar(activeInlineTab.value)
-                            } else {
-                                let activeInlineTabCopy: activeInlineTabInterface =
-                                    Object.assign({}, activeInlineTab.value)
-                                activeInlineTabCopy.assetSidebar.assetInfo =
-                                    t.entity
-                                activeInlineTabCopy.assetSidebar.isVisible =
-                                    true
-                                openAssetSidebar(
-                                    activeInlineTabCopy,
-                                    'not_editor'
-                                )
-                            }
+                        if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                            /* Close it if it is already opened */
+                            closeAssetSidebar(activeInlineTab.value)
                         } else {
-                            let activeInlineTabCopy: activeInlineTabInterface =
+                            const activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
-
-                            if (!Object.keys(activeInlineTabCopy).length) {
-                                let tableName = title(item.value)
-                                let newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                let updatedEditorSchemaQualifiedName =
-                                    item.value?.databaseQualifiedName +
-                                    '/' +
-                                    item.value?.schemaName
-
-                                handleAddNewTab(
-                                    newQuery,
-                                    {
-                                        attributeName: 'schemaQualifiedName',
-                                        attributeValue:
-                                            updatedEditorSchemaQualifiedName,
-                                    },
-                                    item.value
-                                )
-
-                                activeInlineTabCopy = Object.assign(
-                                    {},
-                                    activeInlineTab.value
-                                )
-                                // playQuery(newQuery, newQuery, activeInlineTabCopy)
-                            }
                             activeInlineTabCopy.assetSidebar.assetInfo =
                                 t.entity
                             activeInlineTabCopy.assetSidebar.isVisible = true
@@ -1200,6 +671,83 @@
 
             const handleAddNewTab = async (query, context, previewItem) => {
                 const key = generateUUID()
+
+                // const inlineTabData = { ...demoTab }
+
+                // ;(inlineTabData.label = `${previewItem.title} preview`),
+                //     (inlineTabData.key = key),
+                //     (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
+                //     (inlineTabData.isSaved = false),
+                //     (inlineTabData.queryId = undefined),
+                //     (inlineTabData.status = 'DRAFT'),
+                //     (inlineTabData.connectionId = ''),
+                //     (inlineTabData.description = ''),
+                //     (inlineTabData.qualifiedName = ''),
+                //     (inlineTabData.parentGuid = ''),
+                //     (inlineTabData.parentQualifiedName = ''),
+                //     (inlineTabData.isSQLSnippet = false),
+                //     (inlineTabData.savedQueryParentFolderTitle = undefined),
+                //     (inlineTabData.explorer = {
+                //         schema: {
+                //             connectors: {
+                //                 ...context,
+                //             },
+                //         },
+                //         queries: {
+                //             connectors: {
+                //                 connector:
+                //                     previewItem.connectionQualifiedName.split(
+                //                         '/'
+                //                     )[1],
+                //             },
+                //         },
+                //     }),
+                //     (inlineTabData.playground.editor = {
+                //         context: {
+                //             ...context,
+                //         },
+                //         text: query,
+                //         dataList: [],
+                //         columnList: [],
+                //         variables: [],
+                //         savedVariables: [],
+                //         limitRows: {
+                //             checked: false,
+                //             rowsCount: -1,
+                //         },
+                //     })
+                // ;(inlineTabData.playground.resultsPane = {
+                //     activeTab:
+                //         activeInlineTab.value?.playground?.resultsPane
+                //             ?.activeTab ?? 0,
+                //     result: {
+                //         title: `${key} Result`,
+                //         runQueryId: undefined,
+                //         isQueryRunning: '',
+                //         queryErrorObj: {},
+                //         totalRowsCount: -1,
+                //         executionTime: -1,
+                //         errorDecorations: [],
+                //         eventSourceInstance: undefined,
+                //         buttonDisable: false,
+                //         isQueryAborted: false,
+                //     },
+                //     metadata: {},
+                //     queries: {},
+                //     joins: {},
+                //     filters: {},
+                //     impersonation: {},
+                //     downstream: {},
+                //     sqlHelp: {},
+                // }),
+                //     (inlineTabData.assetSidebar = {
+                //         // for taking the previous state from active tab
+                //         openingPos: undefined,
+                //         isVisible: false,
+                //         assetInfo: {},
+                //         title: activeInlineTab.value?.assetSidebar.title ?? '',
+                //         id: activeInlineTab.value?.assetSidebar.id ?? '',
+                //     })
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
                     key,
@@ -1289,25 +837,21 @@
                     },
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                // selectionObject.value.startLineNumber = 2
-                // selectionObject.value.startColumnNumber = 1
-                // selectionObject.value.endLineNumber = 2
-                // selectionObject.value.endColumnNumber = query.length + 1 // +1 for semicolon
-                // setSelection(
-                //     toRaw(editorInstanceRef.value),
-                //     toRaw(monacoInstanceRef.value),
-                //     selectionObject.value
-                // )
-                // queryRun(
-                //     activeInlineTab,
-                //     getData,
-                //     limitRows,
-                //     null,
-                //     null,
-                //     query,
-                //     editorInstance,
-                //     monacoInstance
-                // )
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    query,
+                    editorInstance,
+                    monacoInstance
+                )
+
+                selectionObject.value.startLineNumber = 2
+                selectionObject.value.startColumnNumber = 1
+                selectionObject.value.endLineNumber = 2
+                selectionObject.value.endColumnNumber = query.length + 1 // +1 for semicolon
             }
 
             return {

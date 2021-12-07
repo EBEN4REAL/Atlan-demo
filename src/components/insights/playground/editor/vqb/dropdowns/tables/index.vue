@@ -1,54 +1,18 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white">
-        <div class="w-full p-4 pb-1">
-            <Connector
-                v-model:data="connectorsData"
-                class=""
-                :filter-source-ids="BItypes"
-                :is-leaf-node-selectable="false"
-                :item="{
-                    id: 'connector',
-                    label: 'Connector',
-                    component: 'connector',
-                    overallCondition: 'OR',
-                    filters: [
-                        {
-                            attributeName: 'connector',
-                            condition: 'OR',
-                            isMultiple: false,
-                            operator: 'eq',
-                        },
-                    ],
-                    isDeleted: false,
-                    isDisabled: false,
-                    exclude: false,
-                }"
-                @change="handleChange"
-                @update:data="setConnector"
-            ></Connector>
-
+        <div class="w-full p-4 pt-2 pb-0">
             <div class="flex flex-row space-x-2">
-                <a-input
+                <SearchAndFilter
                     v-model:value="queryText"
-                    class="h-8 mt-1 rounded"
-                    :class="$style.inputSearch"
-                    placeholder="Search"
+                    :placeholder="`Search`"
+                    class="mb-2 bg-white"
+                    :autofocus="true"
+                    size="minimal"
                 >
-                    <template #suffix>
+                    <template #prefix>
                         <AtlanIcon icon="Search" color="#6F7590" />
                     </template>
-                </a-input>
-                <a-popover trigger="click" placement="bottomLeft">
-                    <a-button
-                        class="flex items-center w-8 h-8 p-2 mt-1"
-                        :class="$style.filterButton"
-                    >
-                        <AtlanIcon icon="Filter" />
-                    </a-button>
-                    <template #content>
-                        <SchemaFilter @change="onFilterChange" />
-                    </template>
-                </a-popover>
+                </SearchAndFilter>
             </div>
         </div>
 
@@ -61,7 +25,6 @@
             "
         >
             <schema-tree
-                v-model:expanded-keys="expandedKeys"
                 :tree-data="treeData"
                 :on-load-data="onLoadData"
                 :select-node="selectNode"
@@ -69,6 +32,7 @@
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
                 :selected-keys="selectedKeys"
+                v-model:expanded-keys="expandedKeys"
             />
         </div>
     </div>
@@ -84,45 +48,26 @@
         computed,
         ComputedRef,
     } from 'vue'
-    import { storeToRefs } from 'pinia'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
-    import SchemaTree from './schemaTree.vue'
-
-    import useSchemaExplorerTree from './composables/useSchemaExplorerTree'
-
-    import { tableInterface ,
-        Attributes,
-        Database,
-        Schema,
-        Table,
-        Column,
-        View,
-    } from '~/types/insights/table.interface'
+    import SchemaTree from './Tree.vue'
+    import useSchemaExplorerTree from './useTree'
+    import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
     import Connector from '~/components/insights/common/connector/connector.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
-    import useAssetStore from '~/store/asset'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
-    import SchemaFilter from './schemaFilter.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
-    
     export default defineComponent({
-        components: { Connector, SchemaTree, SchemaFilter },
-        props: {},
+        components: { Connector, SchemaTree, SearchAndFilter },
+        emits: ['selectedColumn'],
         setup(props, { emit }) {
             const queryText = ref('')
-            const { qualifiedName } = useAssetInfo()
-            const storeDiscovery = useAssetStore()
-            const { selectedAsset } = ref()
-            const isSchemaInitialized = ref(true)
             const { getFirstQueryConnection } = useUtils()
-            const tables: tableInterface[] = tablesData
+            const tables: tableInterface[] = []
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -130,10 +75,7 @@
 
             const BItypes = getBISourceTypes()
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
-                tabs,
-                activeInlineTab
-            )
+            const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
             const {
                 setConnectorsDataInInlineTab,
                 getDatabaseQualifiedName,
@@ -204,30 +146,12 @@
             )
             const initSelectedKeys = computed(() => {
                 /* KEY - SchemaqualifiedName/tableName */
-                const key = `${getSchemaQualifiedName(
+                let key = `${getSchemaQualifiedName(
                     activeInlineTab.value?.explorer?.schema?.connectors
                         .attributeValue
                 )}/${activeInlineTab.value?.assetSidebar?.assetInfo?.title}`
                 return key
             })
-            /* WE CAN USE THIS FXN LATER */
-            // const selectNodeAndToggleAssetSidebar = (selected, event) => {
-            //     if (event.selectedNodes?.length > 0) {
-            //         const item = event.selectedNodes[0]?.props
-            //         if (item.typeName === 'LoadMore') return
-            //         if (selected.length > 0) {
-            //             const activeInlineTabCopy: activeInlineTabInterface =
-            //                 Object.assign({}, activeInlineTab.value)
-            //             activeInlineTabCopy.assetSidebar.assetInfo = item
-            //             activeInlineTabCopy.assetSidebar.isVisible = true
-            //             openAssetSidebar(activeInlineTabCopy)
-            //         }
-            //     } else {
-            //         /* Close it if it is already opened */
-            //         closeAssetSidebar(activeInlineTab.value)
-            //     }
-            //     selectNode(selected, event)
-            // }
 
             const facets = ref({})
             const sortOrderTable = ref('')
@@ -249,8 +173,11 @@
                 //     sortOrderColumn: sortOrderColumn.value,
                 // })
             }
+            const onSelectNode = (node: any) => {
+                emit('selectedColumn', node)
+            }
 
-            const searchResultType = ref('table')
+            let searchResultType = ref('table')
             const {
                 treeData,
                 loadedKeys,
@@ -268,84 +195,24 @@
                 sortOrderTable,
                 sortOrderColumn,
                 searchResultType,
-
-                // connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
-                // databaseQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA'),
-                // schemaQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA/DBT_DEV')
                 initSelectedKeys,
                 connectionQualifiedName,
                 databaseQualifiedName,
                 schemaQualifiedName,
+                onSelectNode,
             })
-
-            /* Watcher for updating the node in tree */
-            watch(selectedAsset, () =>
-                updateNode({
-                    qualifiedName: qualifiedName(
-                        selectedAsset as unknown as assetInterface
-                    ),
-                    entity: selectedAsset.value as unknown as
-                        | Database
-                        | Schema
-                        | Table
-                        | Column
-                        | View,
-                })
-            )
 
             /* Watchers for updating the connectors when activeinlab change */
             watch(
                 activeInlineTab,
                 () => {
                     if (activeInlineTab.value) {
-                        // console.log(
-                        //     'location activeTab: ',
-                        //     activeInlineTab.value
-                        // )
                         if (
-                            activeInlineTab?.value?.explorer?.schema?.connectors
+                            activeInlineTab?.value?.playground?.editor?.context
                                 ?.attributeName
                         ) {
                             connectorsData.value =
-                                activeInlineTab?.value?.explorer?.schema?.connectors
-                        } else {
-                            const activeInlineTabCopy: activeInlineTabInterface =
-                                { ...activeInlineTab.value}
-
-                            const firstConnection = getFirstQueryConnection()
-                            if (
-                                firstConnection &&
-                                firstConnection?.attributes?.name
-                            ) {
-                                activeInlineTabCopy.explorer.schema.connectors.attributeName =
-                                    'connectionQualifiedName'
-                                activeInlineTabCopy.explorer.schema.connectors.attributeValue =
-                                    firstConnection?.attributes?.qualifiedName
-                                if (connectorsData.value?.attributeName) {
-                                    activeInlineTabCopy.explorer.schema.connectors =
-                                        connectorsData.value
-                                    activeInlineTabCopy.playground.editor.context =
-                                        connectorsData.value
-                                }
-                                // console.log(
-                                //     'location activetab updated: ',
-                                //     activeInlineTabCopy
-                                // )
-                                modifyActiveInlineTab(
-                                    activeInlineTabCopy,
-                                    tabs,
-                                    activeInlineTabCopy.isSaved
-                                )
-                            } else {
-                            }
-
-                            /* Insert the already selected connector */
-
-                            // modifyActiveInlineTab(
-                            //     activeInlineTabCopy,
-                            //     tabs,
-                            //     activeInlineTabCopy.isSaved
-                            // )
+                                activeInlineTab?.value?.playground?.editor?.context
                         }
                     } else {
                         connectorsData.value = {
@@ -356,7 +223,6 @@
                 },
                 { immediate: true }
             )
-            console.log(selectedKeys.value, 'out')
 
             return {
                 queryText,

@@ -1,3 +1,6 @@
+import { confidenceScore } from '~/constant/confidenceScore'
+import { statusRequest } from '~/constant/statusRequest'
+
 export const queryLogsFilter = [
     {
         id: 'queryStatus',
@@ -94,5 +97,68 @@ export const accessLogsFilter = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+    },
+]
+
+export const requestFilter = [
+    {
+        id: 'users',
+        label: 'Requestor',
+        component: 'owners',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        propsToComponent: {
+            showNone: false,
+            hideDisabledTabs: true,
+            enableTabs: ['users'],
+        },
+        class: 'bg-transparent',
+    },
+    {
+        id: 'statusRequest',
+        label: 'STATUS',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: statusRequest
+    },
+    // {
+    //     id: 'terms',
+    //     label: 'Terms',
+    //     component: 'governance',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    // },
+    {
+        id: '__traitNames',
+        label: 'Classifications',
+        component: 'classifications',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
+        id: 'confidenceScore',
+        label: 'Confidence score',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: confidenceScore
     },
 ]

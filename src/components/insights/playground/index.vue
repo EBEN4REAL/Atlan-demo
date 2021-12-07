@@ -333,9 +333,7 @@
                     assetSidebar: {
                         // for taking the previous state from active tab
                         openingPos: undefined,
-                        isVisible:
-                            activeInlineTab.value?.assetSidebar?.isVisible ??
-                            false,
+                        isVisible: false,
                         assetInfo: {},
                         title: activeInlineTab.value?.assetSidebar.title ?? '',
                         id: activeInlineTab.value?.assetSidebar.id ?? '',

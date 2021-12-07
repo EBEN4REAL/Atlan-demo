@@ -39,7 +39,7 @@
                             clear
                         </span>
                         <AtlanIcon
-                            icon="ChevronDown"
+                            icon="CaretDown"
                             class="ml-3 text-gray-500 transition-transform duration-300 transform h2 hover:text-primary title"
                         />
                     </div>

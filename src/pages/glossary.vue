@@ -71,21 +71,19 @@
                 glossaryStore.setSelectedGTC(asset)
                 assetStore.setSelectedAsset(asset)
             }
-
             const updateList = (asset) => {
-                console.log('updateList')
-                console.log(asset)
                 localSelected.value = asset
-                console.log(localSelected.value)
                 glossaryStore.setSelectedGTC(asset)
                 assetStore.setSelectedAsset(asset)
-                console.log(glossaryStore.selectedGTC)
             }
             watch(selectedGlossary, () => {
-                localSelected.value = selectedGlossary.value
-                console.log(glossaryStore.selectedGTC)
+                if (isItem.value) localSelected.value = selectedGlossary.value
             })
-
+            watch(isItem, () => {
+                if (!id.value) {
+                    localSelected.value = null
+                }
+            })
             provide('updateList', updateList)
             provide('preview', handlePreview)
 

@@ -268,7 +268,7 @@ export function useBody(
             case 'column':
             case 'table':
             case 'sql':
-            case 'properties': {
+            default: {
                 if (filterObject) {
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {

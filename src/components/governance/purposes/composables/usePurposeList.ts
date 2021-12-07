@@ -1,6 +1,7 @@
 import { invoke, until } from '@vueuse/core'
 import { ref, computed, watch } from 'vue'
 import usePurposeService from './usePurposeService'
+import { safeArray } from '~/utils/array'
 
 // Main Persona List, fetched from API
 const { listPurposes } = usePurposeService()
@@ -12,7 +13,7 @@ const {
     mutate: reFetchList,
 } = listPurposes()
 
-const personaList = computed(() => list.value?.records)
+const personaList = computed(() => safeArray(list.value?.records))
 export {
     reFetchList,
     personaList,

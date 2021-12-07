@@ -12,7 +12,7 @@
                     :block-node="true"
                     :auto-expand-parent="false"
                     @select="selectNode"
-                    @expand="expandNode"
+                    @expand="onExpand"
                 >
                     <template #switcherIcon>
                         <AtlanIcon icon="CaretRight" />
@@ -24,17 +24,11 @@
                             v-if="item.typeName === 'QueryFolder'"
                             :expandedKeys="expandedKeys"
                             :selectedNewFolder="selectedNewFolder"
+                            :selectedFolderHide="selectedFolderHide"
                         />
                         <div
                             v-else-if="item.title === 'Load more'"
-                            class="
-                                flex flex-row
-                                w-full
-                                text-sm
-                                font-bold
-                                leading-5
-                                text-primary
-                            "
+                            class="flex flex-row w-full text-sm font-bold leading-5 text-primary"
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
@@ -118,10 +112,26 @@
                 type: Object,
                 required: false,
             },
+            selectedFolderHide: {
+                type: Object,
+                required: false,
+            },
         },
         setup(props, { emit }) {
             // data
-            return {}
+            const onExpand = (expanded: string[], event: any) => {
+                console.log('expansion: ', {
+                    expanded,
+                    event,
+                })
+                if (props.selectedFolderHide?.guid === event?.node?.guid) {
+                } else {
+                    props.expandNode(expanded, event)
+                }
+            }
+            return {
+                onExpand,
+            }
         },
     })
 </script>

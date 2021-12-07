@@ -60,7 +60,7 @@
 
             const cleanInput = (str) => {
                 let temp = str.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '-')
-                temp = temp.toLowerCase().replace(/[^a-zA-Z0-9-]/g, '')
+                temp = temp?.toLowerCase().replace(/[^a-zA-Z0-9-]/g, '')
 
                 return temp
             }

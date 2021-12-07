@@ -2,7 +2,6 @@ import { ref, watch } from 'vue'
 import { Integrations } from '~/services/service/integrations'
 import integrationStore from '~/store/integrations/index'
 
-
 interface IntType {
     name: String
 }
@@ -14,12 +13,10 @@ export const getIntegrationTypes = () => {
     const records: Ref<Array<IntType>> = ref([])
 
     watch(data, (v) => {
-        if (v)
-            records.value = data?.value?.records ?? null
+        if (v) records.value = data?.value?.records ?? null
     })
     return { data: records, isLoading, error, isReady }
 }
-
 
 export const getIntegrationById = (id) => {
     const pV = ref({ id })
@@ -28,19 +25,20 @@ export const getIntegrationById = (id) => {
     const records = ref([])
 
     watch(data, (v) => {
-        if (v)
-            records.value = data.value?.records ?? null
+        if (v) records.value = data.value?.records ?? null
     })
     return { data: records, isLoading, error }
 }
 
 export const UpdateIntegration = (pV, body, asyncOptions) => {
-    const { data, isLoading, error, isReady, mutate } = Integrations.UpdateIntegration(pV, body, { asyncOptions })
+    const { data, isLoading, error, isReady, mutate } =
+        Integrations.UpdateIntegration(pV, body, { asyncOptions })
     return { data, isLoading, error, mutate }
 }
 
 export const archiveIntegration = (pV, asyncOptions) => {
-    const { data, isLoading, error, isReady, mutate } = Integrations.archiveIntegration(pV, { asyncOptions })
+    const { data, isLoading, error, isReady, mutate } =
+        Integrations.archiveIntegration(pV, { asyncOptions })
     return { data, isLoading, error, mutate }
 }
 
@@ -51,8 +49,7 @@ const getIntegrationsList = () => {
     const records = ref([])
 
     watch(data, (v) => {
-        if (v)
-            records.value = data.value?.records ?? null
+        if (v) records.value = data.value?.records ?? null
     })
     return { data: records, isLoading, error, isReady }
 }
@@ -60,16 +57,10 @@ const getIntegrationsList = () => {
 const useIntegrations = () => {
     const store = integrationStore()
 
-    const {
-        data,
-        isLoading,
-        error,
-        isReady,
-    } = getIntegrationsList()
+    const { data, isLoading, error, isReady } = getIntegrationsList()
 
     watch(data, () => {
-        if (data?.value?.length)
-            store.setAllIntegrationsList(data.value)
+        if (data?.value?.length) store.setAllIntegrationsList(data.value)
     })
 
     return {

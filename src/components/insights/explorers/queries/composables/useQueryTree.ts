@@ -46,7 +46,8 @@ interface useSavedQueriesTreeProps {
     cacheKey?: string
     isAccordion?: boolean
     connector: Ref<string | undefined>
-    savedQueryType: Ref<'personal' | 'all'>
+    // savedQueryType: Ref<'personal' | 'all'>
+    savedQueryType: Ref<string>
     queryFolderNamespace: Ref<Folder>
     permissions: { [index: string]: string | undefined }
 }
@@ -653,6 +654,8 @@ const useTree = ({
         loadedKeys.value = []
         expandedKeys.value = []
         // currentSelectedNode.value = queryFolderNamespace
+
+        console.log('savedQuery: ', savedQueryType)
         initTreeData()
     })
     onMounted(() => {

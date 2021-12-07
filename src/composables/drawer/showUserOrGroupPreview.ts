@@ -4,17 +4,18 @@ import { useUsers } from '~/composables/user/useUsers'
 import whoami from '~/composables/user/whoami'
 
 import { useGroupPreview } from '~/composables/group/showGroupPreview'
-import { useGroup } from '~/composables/group/useGroups'
+import useGroups from '~/composables/group/useGroups'
 
 /**
  * A composable for driving the userOrGroupPreview component. Under the hood,
  * it utilises the useUserPreview and useGroupPreview composables. Takes as
  * argument the preview type, which can either be 'user' or 'group'. Any other
  * argument will not be yield any results.
- * @param {string} previewType
+ * @param previewType The type of preview 'group' or 'user'
+ * @param userNameProp The user name
  */
 // type TypeUserProp = ? String;
-export function useUserOrGroupPreview(previewType: string, userNameProp = "") {
+export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
     if (previewType === 'user') {
         // Using the usePreview composable.
         const { userId, uniqueAttribute, username, finalTabs, defaultTab } =
@@ -29,17 +30,17 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = "") {
             filter:
                 uniqueAttribute.value === 'username'
                     ? {
-                        $and: [
-                            { email_verified: true },
-                            { username: userNameUser },
-                        ],
-                    }
+                          $and: [
+                              { email_verified: true },
+                              { username: userNameUser },
+                          ],
+                      }
                     : {
-                        $and: [
-                            { email_verified: true },
-                            { id: userId.value },
-                        ],
-                    },
+                          $and: [
+                              { email_verified: true },
+                              { id: userId.value },
+                          ],
+                      },
         }))
 
         const { userList, getUserList, isLoading, error } = useUsers(
@@ -93,7 +94,8 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = "") {
             tabs: finalTabs,
             handleUpdate: handleUserUpdate,
         }
-    } if (previewType === 'group') {
+    }
+    if (previewType === 'group') {
         // Using the useGroupPreview composable.
         const { groupId, uniqueAttribute, groupAlias, finalTabs, defaultTab } =
             useGroupPreview()
@@ -110,7 +112,10 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = "") {
         }))
 
         // Obtaining that one group.
-        const { groupList, getGroup, state, STATES } = useGroup(params)
+        const { groupList, getGroupList, isLoading, error } = useGroups(
+            params,
+            'USE_GROUPS_PREVIEW'
+        )
         const selectedGroup = computed(() =>
             groupList && groupList.value && groupList.value.length
                 ? groupList.value[0]
@@ -119,13 +124,13 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = "") {
 
         // If the group alias or the group ID changes, refresh the list.
         watch([groupAlias, groupId], () => {
-            getGroup()
+            getGroupList()
         })
 
         return {
-            isLoading: [STATES.PENDING].includes(state.value),
-            error: [STATES.ERROR, STATES.STALE_IF_ERROR].includes(state.value),
-            reload: getGroup,
+            isLoading,
+            error,
+            reload: getGroupList,
             selectedGroup,
             defaultTab,
             tabs: finalTabs,

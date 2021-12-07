@@ -86,7 +86,7 @@
                                         @click.stop="() => {}"
                                         v-model:checked="rangeChecked"
                                         @change="rangeCheckedChange"
-                                        >select custom</a-radio
+                                        >Select custom</a-radio
                                     >
                                 </div>
                                 <a-range-picker

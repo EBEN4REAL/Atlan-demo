@@ -49,18 +49,7 @@
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
         dropdownClassName="connectorDropdown"
         :loading="isLoading"
-        
     >
-        <!-- <template #title="node">
-            <div class="flex items-center">
-                <AtlanIcon :icon="typeName + `Gray`" class="h-4 mr-1.5" />
-                <span class="">{{ node.label }}</span>
-            </div>
-        </template>
-
-        <template #suffixIcon>
-            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-        </template> -->
         <template v-for="item in dropdownOption" :key="item.label">
             <a-select-option :value="item.value">
                 <div class="flex items-center truncate">
@@ -69,11 +58,9 @@
                         :icon="typeName + `Gray`"
                         class="w-auto h-4 mr-2"
                     />
-                    {{
-                        item?.label.length > 30
-                            ? `${item?.label.slice(0, 30)}...`
-                            : item.label
-                    }}
+                    <span class="parent-ellipsis-container-base"
+                        >{{ item?.label }}
+                    </span>
                 </div></a-select-option
             >
         </template>
@@ -214,4 +201,11 @@
     // input::placeholder {
     //     color: #6f7590 !important;
     // }
+</style>
+<style lang="less" scoped>
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
 </style>

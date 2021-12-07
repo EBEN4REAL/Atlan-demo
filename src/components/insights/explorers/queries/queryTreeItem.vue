@@ -10,21 +10,6 @@
                     v-if="item.typeName === 'QueryFolder'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
-                    <!--FOLDER NODE -->
-                    <!-- <div
-                        class="parent-ellipsis-container py-1.5"
-                        v-if="item.class === 'addInput'"
-                    >
-                        <div class="flex w-full">
-                            <AtlanIcon
-                                icon="FolderClosed"
-                                class="w-5 h-5 my-auto mr-1"
-                                color="#5277D7"
-                            ></AtlanIcon>
-                            <input ref="input" :value="newFolderName" />
-                        </div>
-                    </div> -->
-
                     <div class="parent-ellipsis-container py-1.5">
                         <div class="flex w-full">
                             <AtlanIcon
@@ -57,43 +42,22 @@
                                         <a-menu>
                                             <!-- RENAME FOLDER PERMISSIONS -->
                                             <a-menu-item
-                                                v-if="
-                                                    evaluatePermisson(
-                                                        savedQueryType,
-                                                        'folder',
-                                                        'UPDATE'
-                                                    )
-                                                "
                                                 key="rename"
                                                 @click="renameFolder"
                                                 >Rename folder</a-menu-item
                                             >
                                             <a-menu-item
-                                                v-if="
-                                                    evaluatePermisson(
-                                                        savedQueryType,
-                                                        'folder',
-                                                        'CREATE'
-                                                    )
-                                                "
                                                 key="newQuery"
                                                 @click="newQuery"
                                                 >New query</a-menu-item
                                             >
-                                            <a-menu-item
-                                                v-if="
-                                                    evaluatePermisson(
-                                                        savedQueryType,
-                                                        'folder',
-                                                        'MOVE'
-                                                    )
-                                                "
+                                            <!-- <a-menu-item
                                                 key="public"
                                                 @click="
                                                     showPublishPopover = true
                                                 "
                                                 >Make folder public</a-menu-item
-                                            >
+                                            > -->
 
                                             <a-menu-item
                                                 key="ChangeFolder"
@@ -104,13 +68,6 @@
                                             >
                                             <!-- DELETE FOLDER PERMISSIONS -->
                                             <a-menu-item
-                                                v-if="
-                                                    evaluatePermisson(
-                                                        savedQueryType,
-                                                        'folder',
-                                                        'DELETE'
-                                                    )
-                                                "
                                                 key="deleteFolder"
                                                 class="text-red-600"
                                                 @click="
@@ -149,16 +106,7 @@
                             <div
                                 class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
                             >
-                                <AtlanIcon
-                                    v-if="savedQueryType === 'personal'"
-                                    icon="PrivateFolder"
-                                    class="h-6"
-                                />
-                                <AtlanIcon
-                                    v-else
-                                    icon="FolderClosed"
-                                    class="h-6"
-                                />
+                                <AtlanIcon icon="FolderClosed" class="h-6" />
                             </div>
 
                             <span>{{ item?.parentTitle }}</span>
@@ -240,17 +188,11 @@
                                     <template #overlay>
                                         <a-menu>
                                             <a-menu-item
-                                                v-if="
-                                                    evaluatePermisson(
-                                                        savedQueryType,
-                                                        'query',
-                                                        'UPDATE'
-                                                    )
-                                                "
                                                 key="rename"
                                                 @click="renameFolder"
                                                 >Rename query</a-menu-item
                                             >
+
                                             <a-menu-item
                                                 key="ChangeFolder"
                                                 @click="
@@ -258,30 +200,16 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
-                                            <a-menu-item
-                                                v-if="
-                                                    evaluatePermisson(
-                                                        savedQueryType,
-                                                        'query',
-                                                        'MOVE'
-                                                    )
-                                                "
+                                            <!-- <a-menu-item
                                                 key="public"
                                                 @click="
                                                     showPublishPopover = true
                                                 "
                                                 >Make query public</a-menu-item
-                                            >
+                                            > -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
-                                                v-if="
-                                                    evaluatePermisson(
-                                                        savedQueryType,
-                                                        'query',
-                                                        'DELETE'
-                                                    )
-                                                "
                                                 @click="
                                                     showDeletePopover = true
                                                 "
@@ -307,22 +235,12 @@
             />
         </template>
     </a-popover>
-    <a-popover :visible="showPublishPopover" placement="right">
-        <!-- <template #content>
-            <QueryFolderSelector
-                :connector="currentConnector"
-                :savedQueryType="'all'"
-                :selectedFolderQF="parentFolderQF"
-                @folderChange="getSelectedFolder"
-                :selectedNewFolder="item"
-            />
-        </template> -->
-
+    <!-- <a-popover :visible="showPublishPopover" placement="right">
         <template #content>
             <div class="p-4">
                 <QueryFolderSelector
                     :connector="currentConnector"
-                    :savedQueryType="'all'"
+                    :savedQueryType="savedQueryType"
                     @folderChange="getSelectedFolder"
                     :selectedNewFolder="item"
                 />
@@ -345,7 +263,7 @@
                 </div>
             </div>
         </template>
-    </a-popover>
+    </a-popover> -->
 
     <a-popover :visible="showFolderPopover" placement="right">
         <template #content>
@@ -357,7 +275,7 @@
                     :selectedNewFolder="item"
                 />
 
-                <div class="flex justify-end w-full">
+                <div class="flex justify-end w-full pt-2">
                     <a-button
                         class="px-5 mr-4 text-sm border rounded"
                         style="width: 100px"
@@ -477,9 +395,7 @@
             const toggleCreateQueryModal = inject<(guid: string) => void>(
                 'toggleCreateQueryModal'
             )
-            const savedQueryType = inject('savedQueryType') as Ref<
-                'all' | 'personal'
-            >
+            const savedQueryType = inject('savedQueryType') as Ref<object>
             const permissions = inject('permissions') as ComputedRef<any>
             const refetchParentNode = inject<
                 (
@@ -491,7 +407,7 @@
 
             const refetchNode = inject<
                 (
-                    guid: string | 'root',
+                    guid: string,
                     type: 'query' | 'queryFolder',
                     tree?: 'personal' | 'all'
                 ) => void
@@ -800,10 +716,14 @@
 
             const getSelectedFolder = (folder) => {
                 if (folder) {
-                    console.log('folder: ', folder)
+                    console.log('folder: ', folder.selectedFolderClassification)
                     console.log('folder selected', folder?.dataRef)
                     selectedFolder.value = folder?.dataRef
-                    selectedType.value = folder.selectedFolderType
+                    selectedType.value = folder.selectedFolderClassification
+                    // console.log(
+                    //     'folder.selectedFolderClassification',
+                    //     selectedType.value.name
+                    // )
                 } else {
                     console.log('no folder selected')
                     selectedFolder.value = null
@@ -816,39 +736,66 @@
                 let previousParentGuId = item.attributes.parent.guid
                 let selectedParentGuid = selectedFolder.value.guid
 
-                console.log('entity item parent: ', previousParentGuId)
-                console.log('entity selected folder: ', selectedParentGuid)
+                // console.log('entity item parent: ', previousParentGuId)
+                // console.log('entity selected folder: ', selectedParentGuid)
 
                 if (selectedFolder.value) {
-                    const newEntity = item
+                    const newEntity = { ...item, relationshipAttributes: {} }
                     delete newEntity.entity
-                    newEntity.attributes.parentFolderQualifiedName =
-                        selectedFolder.value.attributes.qualifiedName
-                    newEntity.attributes = {
-                        ...newEntity.attributes,
-                        parent: {
-                            guid: selectedFolder.value.guid,
-                        },
-                    }
 
                     if (
                         selectedFolder.value.typeName === 'QueryFolderNamespace'
                     ) {
-                        console.log('select QFN')
-                        if (selectedType.value === 'all') {
-                            newEntity.classifications = [
-                                {
-                                    attributes: {},
-                                    propagate: true,
-                                    entityGuid: item.guid,
-                                    removePropagationsOnEntityDelete: true,
-                                    typeName: ATLAN_PUBLIC_QUERY_CLASSIFICATION,
-                                    validityPeriods: [],
-                                },
-                            ]
-                        } else {
-                            newEntity.classifications = []
+                        newEntity.relationshipAttributes = {
+                            parent: {
+                                guid: selectedParentGuid,
+                                typeName: selectedFolder.value.typeName,
+                            },
                         }
+                        newEntity.attributes = {
+                            ...newEntity.attributes,
+                            parent: {
+                                guid: selectedParentGuid,
+                                typeName: selectedFolder.value.typeName,
+                            },
+                            parentFolderQualifiedName:
+                                selectedFolder.value.attributes.qualifiedName,
+                        }
+                        // console.log('select QFN')
+                        // if (selectedType.value?.name) {
+                        newEntity.classifications = [
+                            {
+                                attributes: {},
+                                propagate: true,
+                                entityGuid: item.guid,
+                                removePropagationsOnEntityDelete: true,
+                                typeName: selectedType.value?.name,
+                                validityPeriods: [],
+                            },
+                        ]
+
+                        // } else {
+                        //     newEntity.classifications = []
+                        // }
+                    } else if (
+                        selectedFolder.value.typeName === 'QueryFolder'
+                    ) {
+                        newEntity.relationshipAttributes = {
+                            parent: {
+                                guid: selectedParentGuid,
+                                typeName: selectedFolder.value.typeName,
+                            },
+                        }
+                        newEntity.attributes = {
+                            ...newEntity.attributes,
+                            parent: {
+                                guid: selectedParentGuid,
+                                typeName: selectedFolder.value.typeName,
+                            },
+                            parentFolderQualifiedName:
+                                selectedFolder.value.attributes.qualifiedName,
+                        }
+                        newEntity.classifications = []
                     }
 
                     console.log('new entity: ', newEntity)
@@ -873,32 +820,15 @@
                                     message.success({
                                         content: `Folder moved successfully`,
                                     })
-                                    // props.refreshQueryTree(
-                                    //     previousParentGuId,
-                                    //     'queryFolder'
-                                    // )
-                                    // props.refreshQueryTree(
-                                    //     selectedParentGuid,
-                                    //     'queryFolder'
-                                    // )
 
-                                    // props.refreshQueryTree(
-                                    //     [
-                                    //         previousParentGuId,
-                                    //         selectedParentGuid,
-                                    //     ],
-                                    //     'queryFolder'
-                                    // )
                                     setTimeout(() => {
                                         refetchNode(
                                             previousParentGuId,
-                                            'queryFolder',
-                                            savedQueryType.value
+                                            'queryFolder'
                                         )
                                         refetchNode(
                                             selectedParentGuid,
-                                            'queryFolder',
-                                            savedQueryType.value
+                                            'queryFolder'
                                         )
                                     }, 750)
                                 } else {
@@ -945,16 +875,8 @@
                                     // )
 
                                     setTimeout(() => {
-                                        refetchNode(
-                                            previousParentGuId,
-                                            'query',
-                                            savedQueryType.value
-                                        )
-                                        refetchNode(
-                                            selectedParentGuid,
-                                            'query',
-                                            savedQueryType.value
-                                        )
+                                        refetchNode(previousParentGuId, 'query')
+                                        refetchNode(selectedParentGuid, 'query')
                                     }, 750)
                                 } else {
                                     message.success({
@@ -976,99 +898,6 @@
                 activeInlineTabCopy.assetSidebar.isVisible = true
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
             }
-
-            // let input = ref(null)
-            // let newFolderName = ref('')
-            // watch(input, () => {
-            //     console.log('inputRef: ', input)
-            //     input.value.autofocus = true
-            //     input.value.classame = 'outline-none py-0 rounded my-1 w-auto'
-            //     input.value.placeholder = 'Name your folder'
-            //     input.value.onkeypress = (e) => {
-            //         if (e.key === 'Escape') {
-            //             newFolderName.value = ''
-            //             // ul.removeChild(div)
-            //             removeInputBox()
-            //             // showEmptyState.value = true
-            //         }
-            //         if (e.key === 'Enter') {
-            //             // create folder request
-            //             if (newFolderName.value.length) {
-            //                 makeCreateFolderRequest()
-            //                 newFolderName.value = ''
-            //                 // showEmptyState.value = false
-            //             } else {
-            //                 newFolderName.value = ''
-            //                 // ul.removeChild(div)
-            //                 // showEmptyState.value = true
-            //                 removeInputBox()
-            //             }
-            //         }
-            //     }
-            //     input.value.onblur = () => {
-            //         if (newFolderName.value.length) {
-            //             makeCreateFolderRequest()
-            //             // showEmptyState.value = false
-            //         } else {
-            //             // div.removeChild(input)
-            //             // div.setAttribute('class', 'hidden')
-            //             removeInputBox()
-            //             newFolderName.value = ''
-            //             // newFolderCreateable.value = false
-            //             // setTimeout(() => {
-            //             // newFolderCreateable.value = true
-            //             // showEmptyState.value = true
-            //             // }, 300)
-            //         }
-            //     }
-
-            //     // input.setAttribute(
-            //     //             'class',
-            //     //             `outline-none py-0 rounded my-1 w-auto ${inputClassName}`
-            //     //         )
-            //     // input.setAttribute('placeholder', 'Name your folder')
-            //     // input.addEventListener('input', (e) => {
-            //     //     newFolderName.value = e.target?.value
-            //     // })
-
-            //     // input.addEventListener('keydown', (e) => {
-            //     //     if (e.key === 'Escape') {
-            //     //         newFolderName.value = ''
-            //     //         ul.removeChild(div)
-            //     //         removeInputBox()
-            //     //         showEmptyState.value = true
-            //     //     }
-            //     //     if (e.key === 'Enter') {
-            //     //         // create folder request
-            //     //         if (newFolderName.value.length) {
-            //     //             makeCreateFolderRequest()
-            //     //             newFolderName.value = ''
-            //     //             showEmptyState.value = false
-            //     //         } else {
-            //     //             newFolderName.value = ''
-            //     //             ul.removeChild(div)
-            //     //             showEmptyState.value = true
-            //     //             removeInputBox()
-            //     //         }
-            //     //     }
-            //     // })
-            //     // input.addEventListener('blur', (e) => {
-            //     //     if (newFolderName.value.length) {
-            //     //         makeCreateFolderRequest()
-            //     //         showEmptyState.value = false
-            //     //     } else {
-            //     //         div.removeChild(input)
-            //     //         div.setAttribute('class', 'hidden')
-            //     //         removeInputBox()
-            //     //         newFolderName.value = ''
-            //     //         newFolderCreateable.value = false
-            //     //         setTimeout(() => {
-            //     //             newFolderCreateable.value = true
-            //     //             showEmptyState.value = true
-            //     //         }, 300)
-            //     //     }
-            //     // })
-            // })
 
             return {
                 evaluatePermisson,

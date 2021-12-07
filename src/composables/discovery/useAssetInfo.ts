@@ -95,14 +95,19 @@ export default function useAssetInfo() {
         attributes(asset)?.description ||
         ''
 
+    const isUserDescription = (asset: assetInterface) =>
+        !!attributes(asset)?.userDescription
+
     const isPrimary = (asset: assetInterface) => attributes(asset)?.isPrimary
     const isPartition = (asset: assetInterface) =>
         attributes(asset)?.isPartition
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
+    const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
     const links = (asset: assetInterface) => attributes(asset)?.links
 
     const getTabs = (list, typeName: string) => {
+        console.log(list, typeName)
         return list.filter((i) => {
             let flag = true
             if (i.includes) {
@@ -197,28 +202,49 @@ export default function useAssetInfo() {
         })
     }
 
+    const getProfilePath = (asset) => {
+        if (assetType(asset) === 'Column') {
+            const tableGuid = asset?.attributes?.table?.guid
+            if (tableGuid) {
+                return `/assets/${tableGuid}/overview?column=${asset?.guid}`
+            }
+            const viewGuid = asset?.attributes?.view?.guid
+            if (viewGuid) {
+                return `/assets/${viewGuid}/overview?column=${asset?.guid}`
+            }
+        } else if (isGTC(asset)) {
+            return `/glossary/${asset?.guid}`
+        } else if (assetType(asset) === 'Query') {
+            return `/insights?id=${asset.guid}`
+        }
+        return `/assets/${asset?.guid}`
+    }
+
+    const getLineagePath = (asset) => {
+        return `/assets/${asset.guid}/lineage`
+    }
+
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
-        let databaseQualifiedName =
-            attributes(asset).connectionQualifiedName +
-            '/' +
-            attributes(asset).databaseName
-        let schema = attributes(asset).schemaName
+        const databaseQualifiedName = `${
+            attributes(asset).connectionQualifiedName
+        }/${attributes(asset).databaseName}`
+        const schema = attributes(asset).schemaName
 
         if (assetType(asset) === 'Column') {
             // let tableName =
             //     attributes(asset).tableName
 
-            let name =
+            const name =
                 tableName(asset).length > 0 ? tableName(asset) : viewName(asset)
-            let columnName = attributes(asset).name
+            const columnName = attributes(asset).name
 
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
         } else if (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View'
         ) {
-            let tableName = attributes(asset).name
+            const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
             // console.log('assetType: ', asset.guid)
@@ -292,7 +318,7 @@ export default function useAssetInfo() {
     // }
 
     const getConnectorsNameFromQualifiedName = (qualifiedName: string) => {
-        let connectorsName: undefined | string = undefined
+        let connectorsName: undefined | string
         const values = qualifiedName?.split('/')
         if (values?.length > 1) {
             connectorsName = values[1]
@@ -535,6 +561,10 @@ export default function useAssetInfo() {
             assetType(asset)?.includes('Tableau') ||
             assetType(asset)?.includes('BI')
         )
+    }
+
+    const isNonBiAsset = (asset: assetInterface) => {
+        return assetType(asset) === 'Table' || assetType(asset) === 'View'
     }
 
     const discoveryStore = useAssetStore()
@@ -896,10 +926,15 @@ export default function useAssetInfo() {
         webURL,
         isBiAsset,
         selectedGlossary,
+        isForeign,
         categories,
         parentCategory,
         isGTC,
+        getProfilePath,
         isGTCByType,
         getAnchorQualifiedName,
+        isNonBiAsset,
+        getLineagePath,
+        isUserDescription,
     }
 }

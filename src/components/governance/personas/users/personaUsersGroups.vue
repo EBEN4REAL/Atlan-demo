@@ -28,7 +28,7 @@
                 >
                 <template #content>
                     <div
-                        class="flex flex-col items-center px-3 py-4 bg-white rounded "
+                        class="flex flex-col items-center px-3 py-4 bg-white rounded"
                         style="width: 270px"
                     >
                         <!-- <OwnersSelector
@@ -42,11 +42,15 @@
                             :enableTabs="enableTabs"
                             selectGroupKey="id"
                             selectUserKey="id"
+                            :hideDisabledTabs="true"
                             v-model:modelValue="userGroupData"
-                            @change="handleUsersChange"
                         />
                         <div class="w-full mt-2">
-                            <div class="flex justify-end text-xs">
+                            <!-- When both tab visible -->
+                            <div
+                                v-if="enableTabs.length == 2"
+                                class="flex justify-end text-xs"
+                            >
                                 <span
                                     v-if="userGroupData.ownerUsers?.length > 0"
                                     >{{
@@ -74,10 +78,45 @@
                                     >{{ `&nbsp;selected` }}</span
                                 >
                             </div>
+                            <!-- -------------- -->
+                            <!-- When only user tab visible -->
+                            <div
+                                v-if="enableTabs[0] === 'users'"
+                                class="flex justify-end text-xs"
+                            >
+                                <span
+                                    v-if="userGroupData.ownerUsers?.length > 0"
+                                    >{{
+                                        `${userGroupData.ownerUsers?.length} user(s)`
+                                    }}</span
+                                >
+                                <span
+                                    v-if="userGroupData.ownerUsers?.length > 0"
+                                    >{{ `&nbsp;selected` }}</span
+                                >
+                            </div>
+                            <!-- ------------------- -->
+                            <!-- When only group tab visible -->
+                            <div
+                                v-if="enableTabs[0] === 'groups'"
+                                class="flex justify-end text-xs"
+                            >
+                                <span
+                                    v-if="userGroupData.ownerGroups?.length > 0"
+                                    >{{
+                                        ` &nbsp;${userGroupData.ownerGroups?.length} group(s)`
+                                    }}</span
+                                >
+                                <span
+                                    v-if="userGroupData.ownerGroups?.length > 0"
+                                    >{{ `&nbsp;selected` }}</span
+                                >
+                            </div>
+                            <!-- -------------- -->
                             <div class="flex justify-between mt-2">
                                 <AtlanBtn
                                     size="sm"
-                                    @click="() => setPopoverState(false)"
+                                    @click="handleCancel"
                                     color="secondary"
                                     padding="compact"
                                     class="w-26"
@@ -101,7 +140,7 @@
                                         data-test-id="add-owners"
                                         class="w-4 h-4 animate-spin"
                                     ></AtlanIcon>
-                                    <span>Add</span></AtlanBtn
+                                    <span>Update</span></AtlanBtn
                                 >
                             </div>
                         </div>
@@ -177,14 +216,7 @@
                 <template #role="{ text: user }">
                     <div
                         :data-test-id="user.role_object.name"
-                        class="
-                            inline-flex
-                            items-center
-                            px-2
-                            py-0.5
-                            rounded
-                            text-gray-500
-                        "
+                        class="inline-flex items-center px-2 py-0.5 rounded text-gray-500"
                     >
                         <div>{{ user.role_object.name || '-' }}</div>
                     </div>
@@ -211,9 +243,7 @@
                                     data-test-id="remove-user"
                                     class="ml-3.5 w-8 h-8 rounded"
                                 >
-                                    <AtlanIcon
-                                        icon="RemoveUser"
-                                    ></AtlanIcon>
+                                    <AtlanIcon icon="RemoveUser"></AtlanIcon>
                                 </a-button>
                             </a-popconfirm>
                         </a-tooltip>
@@ -313,6 +343,7 @@
                             </template>
                             <a-popconfirm
                                 placement="leftTop"
+                                overlay-class-name="popoverConfirm"
                                 :title="
                                     getPopoverContent(group, 'remove', 'group')
                                 "
@@ -385,8 +416,8 @@
     import usePersonaService from '../composables/usePersonaService'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import ErrorView from '@common/error/index.vue'
-
-    import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
+    import { reFetchList } from '../composables/usePersonaList'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     import {
         isEditing,
@@ -500,6 +531,10 @@
                                 userGroupData.value.ownerUsers ?? []
                             selectedPersonaDirty.value.groups =
                                 userGroupData.value.ownerGroups ?? []
+                            persona.value.users =
+                                userGroupData.value.ownerUsers ?? []
+                            persona.value.groups =
+                                userGroupData.value.ownerGroups ?? []
                             getUserList()
                             getGroupList()
                         })
@@ -587,14 +622,6 @@
                     })
             }
 
-            const handleUsersChange = (data: {
-                ownerUsers: string[]
-                ownerGroups: string[]
-            }) => {
-                persona.value.users = data?.ownerUsers ?? []
-                persona.value.groups = data?.ownerGroups ?? []
-                return
-            }
             /* Users related functions */
             const handleUsersTableChange = (
                 pagination: any,
@@ -630,6 +657,11 @@
                 setGroupUniqueAttribute(group.id)
                 showGroupPreview()
             }
+            const handleCancel = () => {
+                userGroupData.value.ownerUsers = persona.value.users ?? []
+                userGroupData.value.ownerGroups = persona.value.groups ?? []
+                setPopoverState(false)
+            }
 
             watch(persona, () => {
                 userGroupData.value.ownerUsers = persona.value.users ?? []
@@ -637,6 +669,7 @@
             })
 
             return {
+                handleCancel,
                 userState,
                 USER_STATES,
                 showGroupPreviewDrawer,
@@ -647,7 +680,6 @@
                 confirmPopover,
                 groupState,
                 GROUP_STATES,
-                handleUsersChange,
                 addUsersLoading,
                 handleUpdate,
                 setPopoverState,

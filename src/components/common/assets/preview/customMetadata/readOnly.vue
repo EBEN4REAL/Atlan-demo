@@ -1,7 +1,30 @@
 <template>
     <div class="flex items-center self-start flex-grow break-all">
+        <div
+            v-if="getDatatypeOfAttribute(attribute) === 'url' && isMultivalued"
+            class="flex flex-wrap gap-2"
+        >
+            <span v-if="!attribute.value?.length">-</span>
+            <template v-else>
+                <template v-for="v in attribute.value" :key="v">
+                    <a target="_blank" :href="`//${v}`">
+                        <div
+                            v-if="v"
+                            class="flex items-center text-primary gap-x-1"
+                        >
+                            <img
+                                :src="`https://www.google.com/s2/favicons?domain=${v}`"
+                                :alt="v"
+                                class="w-4 h-4"
+                            />
+                            {{ v }}
+                        </div>
+                    </a>
+                </template>
+            </template>
+        </div>
         <a
-            v-if="getDatatypeOfAttribute(attribute) === 'url'"
+            v-else-if="getDatatypeOfAttribute(attribute) === 'url'"
             target="_blank"
             :href="`//${attribute.value}`"
         >
@@ -18,7 +41,24 @@
             </div>
             <span v-else>-</span></a
         >
+        <template
+            v-else-if="
+                ['text', 'int', 'float', 'number', 'decimal'].includes(
+                    getDatatypeOfAttribute(attribute)
+                ) && isMultivalued
+            "
+        >
+            <span v-if="!attribute.value?.length">-</span>
 
+            <div v-else class="flex flex-wrap gap-1">
+                <span
+                    v-for="v in attribute.value"
+                    :key="v"
+                    class="px-2 bg-gray-200 rounded-full"
+                    >{{ v }}
+                </span>
+            </div>
+        </template>
         <a-typography-paragraph
             v-else-if="getDatatypeOfAttribute(attribute) === 'text'"
             class="text-gray-700"
@@ -48,11 +88,7 @@
                     ></UserPill>
                 </PopOverUser>
             </template>
-            <template
-                v-else-if="
-                    attribute.options.multiValueSelect === 'true' &&
-                    attribute.value
-                "
+            <template v-else-if="isMultivalued && attribute.value"
                 ><div v-for="username in attribute.value" :key="username">
                     <PopOverUser :item="username">
                         <UserPill
@@ -81,12 +117,7 @@
                     ></GroupPill>
                 </PopOverGroup>
             </template>
-            <template
-                v-else-if="
-                    attribute.options.multiValueSelect === 'true' &&
-                    attribute.value
-                "
-            >
+            <template v-else-if="isMultivalued && attribute.value">
                 <div v-for="name in attribute.value" :key="name">
                     <PopOverGroup :item="name">
                         <GroupPill
@@ -110,12 +141,7 @@
             >
                 <EnumPill :label="attribute.value" />
             </template>
-            <template
-                v-else-if="
-                    attribute.options.multiValueSelect === 'true' &&
-                    attribute.value
-                "
-            >
+            <template v-else-if="isMultivalued && attribute.value">
                 <div v-for="e in attribute.value" :key="e">
                     <EnumPill :label="e" />
                 </div>
@@ -135,7 +161,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, ref } from 'vue'
 
     // Components
     import UserPill from '@/common/pills/user.vue'
@@ -164,7 +190,7 @@
                 required: true,
             },
         },
-        setup() {
+        setup(props) {
             const { getDatatypeOfAttribute, formatDisplayValue } =
                 useCustomMetadataHelpers()
 
@@ -182,7 +208,12 @@
                 showGroupPreview({ allowed: ['about', 'assets', 'members'] })
             }
 
+            const isMultivalued = ref(
+                props.attribute.options.multiValueSelect === 'true'
+            )
+
             return {
+                isMultivalued,
                 getDatatypeOfAttribute,
                 formatDisplayValue,
                 handleClickUser,

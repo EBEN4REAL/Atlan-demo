@@ -6,28 +6,30 @@
         :footer="false"
         :destroy-on-close="true"
     >
-        <a-input
-            id="name-input"
-            v-model:value="form.displayName"
-            placeholder="Name the metadata"
-            class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
-        ></a-input>
-        <a-textarea
-            v-model:value="form.description"
-            placeholder="Add description..."
-            class="p-0 font-bold text-gray-700 border-0 shadow-none outline-none resize-none "
-        ></a-textarea>
-        <div class="flex items-center justify-end space-x-3">
-            <a-button class="border-0" @click="visible = false"
-                >Cancel</a-button
-            >
-            <a-button
-                type="primary"
-                :loading="loading"
-                :disabled="!form.displayName"
-                @click="handleAddBusinessMetadata"
-                >{{ isEdit ? 'Update' : 'Create' }}</a-button
-            >
+        <div class="p-4">
+            <a-input
+                id="name-input"
+                v-model:value="form.displayName"
+                placeholder="Name the metadata"
+                class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
+            ></a-input>
+            <a-textarea
+                v-model:value="form.description"
+                placeholder="Add description..."
+                class="p-0 font-bold text-gray-700 border-0 shadow-none outline-none resize-none"
+            ></a-textarea>
+            <div class="flex items-center justify-end space-x-3">
+                <a-button class="border-0" @click="visible = false"
+                    >Cancel</a-button
+                >
+                <a-button
+                    type="primary"
+                    :loading="loading"
+                    :disabled="!form.displayName"
+                    @click="handleAddBusinessMetadata"
+                    >{{ isEdit ? 'Update' : 'Create' }}</a-button
+                >
+            </div>
         </div>
     </a-modal>
 </template>

@@ -16,6 +16,7 @@ export function useAccessLogs(
     from = ref(0),
     size = ref(20)
 ) {
+    const assetListLoading = ref(false)
     const assetMetaMap: Ref<Record<string, any>> = ref({})
     const body = ref<Record<string, any>>({})
     // const from = ref(0)
@@ -39,14 +40,21 @@ export function useAccessLogs(
             isLoading,
         } = useIndexSearch(
             {
-                dsl: { ...requestBody },
+                dsl: { from: 0, size: size.value, ...requestBody },
                 attributes: defaultAttributes.value,
             },
             ref('GET_SAVED_QUERY_META'),
             false
         )
-        watch([isLoading, error], () => {
-            if (!error.value && !isLoading.value) {
+        watch(
+            isLoading,
+            () => {
+                assetListLoading.value = isLoading.value
+            },
+            { immediate: true }
+        )
+        watch([assetListLoading, error], () => {
+            if (!error.value && !assetListLoading.value) {
                 if (
                     assets &&
                     assets.value &&
@@ -121,12 +129,16 @@ export function useAccessLogs(
         gte,
         lt,
         usernames,
-        queryStatusValues,
+        logStatusValues,
+        logActionValues,
+        userTypes,
+        properties,
         schemaName,
         dbName,
         connectionQF,
         connectorName,
         searchText,
+        timezone,
     }) {
         body.value = useBody({
             from: from.value,
@@ -134,12 +146,16 @@ export function useAccessLogs(
             gte,
             lt,
             usernames,
-            queryStatusValues,
+            logStatusValues,
+            logActionValues,
+            userTypes,
+            properties,
             schemaName,
             dbName,
             connectionQF,
             connectorName,
             searchText,
+            timezone,
         })
     }
     const paginateLogs = (page: number) => {
@@ -156,82 +172,6 @@ export function useAccessLogs(
         filteredLogsCount,
         paginateLogs,
         assetMetaMap,
+        assetListLoading,
     }
-}
-export const getQueryMetadata = (query) => {
-    const meta = {
-        connection: {
-            keyDisplayName: 'Connection',
-            value: '',
-            connector: {},
-        },
-        schema: {
-            keyDisplayName: 'Schemas',
-            value: '',
-            icon: 'SchemaGray',
-        },
-        database: {
-            keyDisplayName: 'Databases',
-            value: '',
-            icon: 'DatabaseGray',
-        },
-        table: {
-            keyDisplayName: 'Tables',
-            value: '',
-            icon: 'TableGray',
-        },
-    }
-    // Connection
-    if (query?._source?.message?.connectionQualifiedName) {
-        meta.connection.value = getConnectionName(
-            query._source.message.connectionQualifiedName
-        )
-        const connectorName = getConnectorName(
-            query._source.message.connectionQualifiedName
-        )
-        let connectorObj = {}
-        if (connectorName)
-            connectorObj = SourceList.find(
-                (source) =>
-                    source.id.toLowerCase() === connectorName.toLowerCase()
-            )
-        if (Object.keys(connectorObj).length)
-            meta.connection.connector = { ...connectorObj }
-    }
-
-    if (query?._source?.message?.queryMetadata?.length) {
-        // Database
-        const catalogNames = (query?._source?.message?.queryMetadata || []).map(
-            (queryMetaObj) => queryMetaObj.catalog
-        )
-        let deDuplicatedCatalogNames = []
-        if (catalogNames && catalogNames.length)
-            deDuplicatedCatalogNames = [...new Set(catalogNames)]
-
-        if (deDuplicatedCatalogNames && deDuplicatedCatalogNames.length)
-            meta.database.value = deDuplicatedCatalogNames.join(',')
-        // SCHEMAS
-        const schemaNames = (query?._source?.message?.queryMetadata || []).map(
-            (queryMetaObj) => queryMetaObj.schema
-        )
-        let deDuplicatedSchemaNames = []
-        if (schemaNames && schemaNames.length)
-            deDuplicatedSchemaNames = [...new Set(schemaNames)]
-
-        if (deDuplicatedSchemaNames && deDuplicatedSchemaNames.length)
-            meta.schema.value = deDuplicatedSchemaNames.join(',')
-
-        // Tables
-        const tableNames = (query?._source?.message?.queryMetadata || []).map(
-            (queryMetaObj) => queryMetaObj.table
-        )
-        let deDuplicatedTableNames = []
-        if (tableNames && tableNames.length)
-            deDuplicatedTableNames = [...new Set(tableNames)]
-
-        if (deDuplicatedTableNames && deDuplicatedTableNames.length)
-            meta.table.value = deDuplicatedTableNames.join(', ')
-    }
-
-    return meta
 }

@@ -58,7 +58,7 @@
                         ></AtlanIcon>
 
                         <router-link
-                            :to="assetURL(item)"
+                            :to="getProfilePath(item)"
                             class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
@@ -375,23 +375,6 @@
                         >
                             <a-tooltip placement="bottomLeft">
                                 <div
-                                    v-if="schemaName(item)"
-                                    class="flex items-center text-gray-500"
-                                >
-                                    <AtlanIcon
-                                        icon="SchemaGray"
-                                        class="mr-1 mb-0.5"
-                                    />
-                                    <div class="tracking-tight text-gray-500">
-                                        {{ schemaName(item) }}
-                                    </div>
-                                </div>
-                                <template #title>
-                                    <span>Schema - {{ schemaName(item) }}</span>
-                                </template>
-                            </a-tooltip>
-                            <a-tooltip placement="bottomLeft">
-                                <div
                                     v-if="databaseName(item)"
                                     class="flex items-center text-gray-500"
                                 >
@@ -408,6 +391,23 @@
                                         >Database -
                                         {{ databaseName(item) }}</span
                                     >
+                                </template>
+                            </a-tooltip>
+                            <a-tooltip placement="bottomLeft">
+                                <div
+                                    v-if="schemaName(item)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    <AtlanIcon
+                                        icon="SchemaGray"
+                                        class="mr-1 mb-0.5"
+                                    />
+                                    <div class="tracking-tight text-gray-500">
+                                        {{ schemaName(item) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span>Schema - {{ schemaName(item) }}</span>
                                 </template>
                             </a-tooltip>
                         </div>
@@ -443,17 +443,23 @@
             </div>
         </div>
         <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
+        <AssetDrawer
+            :data="selectedAssetDrawerData"
+            :showDrawer="showAssetSidebarDrawer"
+            @closeDrawer="handleCloseDrawer"
+        />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -461,6 +467,7 @@
             CertificateBadge,
             ClassificationPill,
             PopoverClassification,
+            AssetDrawer,
         },
         props: {
             item: {
@@ -512,6 +519,11 @@
                 required: false,
                 default: false,
             },
+            enableSidebarDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview'],
         setup(props, { emit }) {
@@ -522,7 +534,12 @@
                 isChecked,
                 showCheckBox,
                 bulkSelectMode,
+                enableSidebarDrawer,
             } = toRefs(props)
+
+            const showAssetSidebarDrawer = ref(false)
+            const selectedAssetDrawerData = ref({})
+
             const {
                 title,
                 getConnectorImage,
@@ -553,14 +570,22 @@
                 categories,
                 parentCategory,
                 classifications,
+                getProfilePath,
+                isUserDescription,
             } = useAssetInfo()
 
-            const assetURL = (asset) => ({
-                path: `/assets/${asset.guid}`,
-            })
-
             const handlePreview = (item: any) => {
-                emit('preview', item)
+                if (enableSidebarDrawer.value === true) {
+                    showAssetSidebarDrawer.value = true
+                    selectedAssetDrawerData.value = item
+                } else {
+                    emit('preview', item)
+                }
+            }
+
+            const handleCloseDrawer = () => {
+                selectedAssetDrawerData.value = {}
+                showAssetSidebarDrawer.value = false
             }
 
             const isSelected = computed(() => {
@@ -602,7 +627,6 @@
                 getConnectorImage,
                 assetType,
                 dataType,
-                assetURL,
                 rowCount,
                 columnCount,
                 sizeBytes,
@@ -632,6 +656,11 @@
                 isPropagated,
                 list,
                 classifications,
+                getProfilePath,
+                showAssetSidebarDrawer,
+                selectedAssetDrawerData,
+                handleCloseDrawer,
+                isUserDescription,
             }
         },
     })

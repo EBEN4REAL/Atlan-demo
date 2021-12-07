@@ -2,7 +2,7 @@
     <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"
@@ -135,6 +135,7 @@
                                     ? true
                                     : false
                             "
+                            :enableSidebarDrawer="enableSidebarDrawer"
                             :is-checked="checkSelectedCriteriaFxn(item)"
                             @listItem:check="
                                 (e, item) => updateBulkSelectedAssets(item)
@@ -246,6 +247,11 @@
                 required: false,
                 default: 'assets',
             },
+            enableSidebarDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props, { emit }) {
             const { preference: preferenceProp, checkedCriteria } =
@@ -279,6 +285,9 @@
 
             if (discoveryStore.activeFacet && page.value === 'assets') {
                 facets.value = discoveryStore.activeFacet
+            }
+            if (discoveryStore.activePostFacet && page.value === 'assets') {
+                postFacets.value = discoveryStore.activePostFacet
             }
             if (discoveryStore.preferences) {
                 console.log(discoveryStore.preferences)
@@ -357,6 +366,7 @@
             const handleAssetTypeChange = () => {
                 offset.value = 0
                 quickChange()
+                discoveryStore.setActivePostFacet(postFacets.value)
             }
 
             const handleLoadMore = () => {

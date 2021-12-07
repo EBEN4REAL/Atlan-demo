@@ -52,7 +52,7 @@
         toRefs,
         computed,
         ref,
-        watch,
+        inject,
         nextTick,
         reactive,
     } from 'vue'
@@ -91,6 +91,11 @@
                     return {}
                 },
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -103,7 +108,6 @@
                 certificateStatusMessage,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
-                selectedAsset,
             } = useAssetInfo()
 
             const handleChange = () => {
@@ -160,7 +164,6 @@
                 certificateStatusMessage,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
-                selectedAsset,
             }
         },
     })

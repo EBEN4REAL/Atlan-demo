@@ -62,6 +62,21 @@ export const discoveryFilters = [
                 isMandatory: true,
             },
             {
+                name: 'description',
+                displayName: 'Description',
+                typeName: 'string',
+                description:
+                    'Description of the asset crawled from the source.',
+                isMandatory: false,
+            },
+            {
+                name: 'userDescription',
+                displayName: 'User Description',
+                typeName: 'string',
+                description: 'Description of the asset updated on Atlan.',
+                isMandatory: false,
+            },
+            {
                 name: '__modifiedBy',
                 displayName: 'Last updated by',
                 typeName: 'string',
@@ -100,9 +115,16 @@ export const discoveryFilters = [
             },
             {
                 name: '__hasLineage',
-                displayName: 'Lineage',
+                displayName: 'Has Lineage',
                 typeName: 'boolean',
                 description: 'All assets which have lineage relationship',
+                isMandatory: true,
+            },
+            {
+                name: '__state',
+                displayName: 'Is Archived',
+                typeName: 'boolean',
+                description: 'All assets which have been archived',
                 isMandatory: true,
             },
         ],
@@ -111,6 +133,45 @@ export const discoveryFilters = [
         isDisabled: false,
         exclude: false,
     },
+    {
+        id: 'sql',
+        label: 'SQL Assets',
+        component: 'properties',
+        includes: [
+            'Table',
+            'View',
+            'MaterialisedViews',
+            'PartitionTable',
+            'Column',
+        ],
+        attributes: [
+            {
+                name: 'databaseName.keyword',
+                displayName: 'Database Name',
+                typeName: 'string',
+            },
+            {
+                name: 'schemaName.keyword',
+                displayName: 'Schema Name',
+                typeName: 'string',
+            },
+            {
+                name: 'tableName.keyword',
+                displayName: 'Table Name',
+                typeName: 'string',
+            },
+            {
+                name: 'viewName.keyword',
+                displayName: 'View Name',
+                typeName: 'string',
+            },
+        ],
+        overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+
     {
         id: 'table',
         label: 'Table/View',
@@ -132,16 +193,6 @@ export const discoveryFilters = [
                 displayName: 'Size(Bytes)',
                 typeName: 'long',
             },
-            {
-                name: 'schemaName',
-                displayName: 'Schema Name',
-                typeName: 'string',
-            },
-            {
-                name: 'databaseName',
-                displayName: 'Database Name',
-                typeName: 'string',
-            },
         ],
         overallCondition: 'OR',
         isDeleted: false,
@@ -157,26 +208,6 @@ export const discoveryFilters = [
             {
                 name: 'dataType',
                 displayName: 'Data Type',
-                typeName: 'string',
-            },
-            {
-                name: 'tableName',
-                displayName: 'Table Name',
-                typeName: 'string',
-            },
-            {
-                name: 'viewName',
-                displayName: 'View Name',
-                typeName: 'string',
-            },
-            {
-                name: 'schemaName',
-                displayName: 'Schema Name',
-                typeName: 'string',
-            },
-            {
-                name: 'databaseName',
-                displayName: 'Database Name',
                 typeName: 'string',
             },
             {

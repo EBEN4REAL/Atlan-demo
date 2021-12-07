@@ -45,7 +45,7 @@
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'
     import { useRoute } from 'vue-router'
-    import { useConfigMapList } from '~/composables/package/useConfigMapList'
+    import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
 
     export default defineComponent({
         name: 'WorkflowSetupPage',
@@ -82,38 +82,20 @@
                 error,
             } = usePackageByName(id, fetch.value)
 
-            const {
-                list,
-                data,
-                isLoading: isLoadingConfigMap,
-            } = useConfigMapList({
-                dependentKey: ref(true),
-                limit: ref(1),
-                filter: ref({
-                    $or: [
-                        {
-                            metadata: {
-                                $elemMatch: {
-                                    labels: {
-                                        'com.atlan.orchestration/workflow-template-name': `${id.value}`,
-                                    },
-                                },
-                            },
-                        },
-                    ],
-                }),
-            })
+            const { data, isLoading: isLoadingConfigMap } = useConfigMapByName(
+                `${id.value}-config`,
+                true
+            )
 
             watch(workflowPackage, () => {
                 localSelected.value = workflowPackage.value
             })
 
             watch(data, () => {
-                if (list.value.length > 0) {
+                if (data.value.data.config) {
                     try {
-                        localConfig.value = JSON.parse(
-                            list.value[0].data.config
-                        )
+                        console.log(data.value.data.config)
+                        localConfig.value = JSON.parse(data.value.data.config)
 
                         // Add Schedule
                     } catch (e) {

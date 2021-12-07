@@ -1,8 +1,11 @@
 <template>
-    <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
+    <div class="bg-white">
+        <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
+    </div>
     <KeepAlive>
         <div class="overflow-y-scroll wrapper-height">
             <ClassificationOverview
+                class="px-5"
                 v-if="activeTabKey === '1'"
                 :classification="selectedClassification"
                 @openAssetsTab="activeTabKey = '2'"
@@ -13,6 +16,7 @@
                 :showFilters="false"
                 :staticUse="true"
                 page="classifications"
+                class="bg-white"
             />
         </div>
     </KeepAlive>

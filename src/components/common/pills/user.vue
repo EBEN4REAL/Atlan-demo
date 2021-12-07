@@ -1,17 +1,6 @@
 <template>
     <div
-        class="
-            flex
-            items-center
-            py-0.5
-            pl-1
-            pr-2
-            text-sm text-gray-700
-            bg-white
-            border border-gray-200
-            rounded-full
-            cursor-pointer
-        "
+        class="flex items-center py-0.5 pl-1 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer"
         :data-test-id="username"
         :class="
             enableHover
@@ -24,7 +13,7 @@
             :username="username"
             style-class="mr-1 border-none bg-primary-light "
         ></UserAvatar>
-        <div class="capitalize">
+        <div class="">
             {{ username }}
         </div>
         <div v-if="allowDelete" class="flex" @click.prevent.stop="handleDelete">

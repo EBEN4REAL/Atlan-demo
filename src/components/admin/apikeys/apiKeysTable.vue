@@ -68,13 +68,11 @@
                         v-if="
                             apikey &&
                             apikey.attributes &&
-                            apikey.attributes.createdByUsername
+                            apikey.attributes.createdBy
                         "
-                        :image-url="
-                            imageUrl(apikey.attributes.createdByUsername)
-                        "
+                        :image-url="imageUrl(apikey.attributes.createdBy)"
                         :allow-upload="false"
-                        :avatar-name="apikey.attributes.createdByUsername"
+                        :avatar-name="apikey.attributes.createdBy"
                         :avatar-size="16"
                         :avatar-shape="'circle'"
                         class="mr-1 mt-0.5"
@@ -82,12 +80,9 @@
                     <span
                         class="cursor-pointer"
                         @click="
-                            () =>
-                                handleUserPreview(
-                                    apikey.attributes.createdByUsername
-                                )
+                            () => handleUserPreview(apikey.attributes.createdBy)
                         "
-                        >{{ apikey.attributes.createdByUsername }}</span
+                        >{{ apikey.attributes.createdBy }}</span
                     >
                     <span class="mx-1 text-gray-500">on</span>
                     {{ apikey.attributes.createdAtFormatted }}
@@ -159,106 +154,106 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, watch, toRefs } from 'vue'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import map from '~/constant/accessControl/map'
-    import Avatar from '~/components/common/avatar/index.vue'
-    import AtlanBtn from '@/UI/button.vue'
-    import PillGroup from '@/UI/pill/pillGroup.vue'
+import { defineComponent, ref, watch, toRefs } from 'vue'
+import { useUserPreview } from '~/composables/user/showUserPreview'
+import map from '~/constant/accessControl/map'
+import Avatar from '~/components/common/avatar/index.vue'
+import AtlanBtn from '@/UI/button.vue'
+import PillGroup from '@/UI/pill/pillGroup.vue'
 
-    export default defineComponent({
-        name: 'ApiKeysTable',
-        components: { Avatar, AtlanBtn, PillGroup },
-        props: {
-            apiKeysList: {
-                type: Array,
-                default: () => [],
-            },
-            isLoading: {
-                type: Boolean,
-                default: false,
-            },
-            selectedAPIKey: {
-                type: Object,
-                default: () => {},
-            },
-            deleteAPIKeyLoading: {
-                type: Boolean,
-                default: false,
-            },
-            searchText: {
-                type: String,
-                default: '',
-            },
+export default defineComponent({
+    name: 'ApiKeysTable',
+    components: { Avatar, AtlanBtn, PillGroup },
+    props: {
+        apiKeysList: {
+            type: Array,
+            default: () => [],
         },
-        emits: ['selectAPIKey', 'deleteAPIKey'],
-        setup(props, { emit }) {
-            const { deleteAPIKeyLoading } = toRefs(props)
-            const imageUrl = (username: any) =>
-                `${window.location.origin}/api/service/avatars/${username}`
+        isLoading: {
+            type: Boolean,
+            default: false,
+        },
+        selectedAPIKey: {
+            type: Object,
+            default: () => {},
+        },
+        deleteAPIKeyLoading: {
+            type: Boolean,
+            default: false,
+        },
+        searchText: {
+            type: String,
+            default: '',
+        },
+    },
+    emits: ['selectAPIKey', 'deleteAPIKey'],
+    setup(props, { emit }) {
+        const { deleteAPIKeyLoading } = toRefs(props)
+        const imageUrl = (username: any) =>
+            `${window.location.origin}/api/service/avatars/${username}`
 
-            const apiKeyId = ref('')
-            const isDeletePopoverVisible = ref({})
-            const { showUserPreview: openPreview, setUserUniqueAttribute } =
-                useUserPreview()
-            const handleUserPreview = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                openPreview()
+        const apiKeyId = ref('')
+        const isDeletePopoverVisible = ref({})
+        const { showUserPreview: openPreview, setUserUniqueAttribute } =
+            useUserPreview()
+        const handleUserPreview = (username: string) => {
+            setUserUniqueAttribute(username, 'username')
+            openPreview()
+        }
+        const handleDelete = (id) => {
+            apiKeyId.value = id
+            emit('deleteAPIKey', id)
+        }
+        const showDeletePopover = (id) => {
+            isDeletePopoverVisible.value[id] = true
+        }
+        // automatically close popover after loading action is complete
+        watch(deleteAPIKeyLoading, (newval, oldVal) => {
+            if (oldVal === true && newval === false) {
+                isDeletePopoverVisible.value[apiKeyId.value] = false
             }
-            const handleDelete = (id) => {
-                apiKeyId.value = id
-                emit('deleteAPIKey', id)
-            }
-            const showDeletePopover = (id) => {
-                isDeletePopoverVisible.value[id] = true
-            }
-            // automatically close popover after loading action is complete
-            watch(deleteAPIKeyLoading, (newval, oldVal) => {
-                if (oldVal === true && newval === false) {
-                    isDeletePopoverVisible.value[apiKeyId.value] = false
-                }
-            })
-            const columns = [
-                {
-                    title: 'Name',
-                    key: 'name',
-                    ellipsis: true,
-                    width: 300,
-                    slots: { customRender: 'name' },
-                },
-                // {
-                //     title: 'Key',
-                //     key: 'key',
-                //     slots: { customRender: 'key' },
-                // },
-                {
-                    title: 'Personas',
-                    slots: { customRender: 'personas' },
-                    key: 'personas',
-                },
-                {
-                    title: 'Created',
-                    key: 'created',
-                    ellipsis: true,
-                    slots: { customRender: 'created' },
-                },
-                {
-                    key: 'actions',
-                    width: 70,
-                    slots: { customRender: 'actions' },
-                },
-            ]
-            return {
-                columns,
-                imageUrl,
-                showDeletePopover,
-                handleUserPreview,
-                handleDelete,
-                isDeletePopoverVisible,
-                map,
-            }
-        },
-    })
+        })
+        const columns = [
+            {
+                title: 'Name',
+                key: 'name',
+                ellipsis: true,
+                width: 300,
+                slots: { customRender: 'name' },
+            },
+            // {
+            //     title: 'Key',
+            //     key: 'key',
+            //     slots: { customRender: 'key' },
+            // },
+            {
+                title: 'Personas',
+                slots: { customRender: 'personas' },
+                key: 'personas',
+            },
+            {
+                title: 'Created',
+                key: 'created',
+                ellipsis: true,
+                slots: { customRender: 'created' },
+            },
+            {
+                key: 'actions',
+                width: 70,
+                slots: { customRender: 'actions' },
+            },
+        ]
+        return {
+            columns,
+            imageUrl,
+            showDeletePopover,
+            handleUserPreview,
+            handleDelete,
+            isDeletePopoverVisible,
+            map,
+        }
+    },
+})
 </script>
 
 <style lang="less"></style>

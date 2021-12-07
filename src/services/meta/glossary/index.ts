@@ -39,31 +39,10 @@ const CreateTerm = (
         { body },
         options || {}
     )
-const deleteCategory = (guid: string) =>
+
+const deleteGTC = (guid: string) =>
     useAPI(
-        map.DELETE_GLOSSARY_CATEGORY,
-        'DELETE',
-        {
-            pathVariables: {
-                guid,
-            },
-        },
-        {}
-    )
-const deleteTerm = (guid: string) =>
-    useAPI(
-        map.DELETE_GLOSSARY_TERM,
-        'DELETE',
-        {
-            pathVariables: {
-                guid,
-            },
-        },
-        {}
-    )
-const deleteGlossary = (guid: string) =>
-    useAPI(
-        map.DELETE_GLOSSARY,
+        map.DELETE_GTC,
         'DELETE',
         {
             pathVariables: {
@@ -76,7 +55,5 @@ export const Glossary = {
     CreateGlossary,
     CreateCategory,
     CreateTerm,
-    deleteTerm,
-    deleteCategory,
-    deleteGlossary,
+    deleteGTC,
 }

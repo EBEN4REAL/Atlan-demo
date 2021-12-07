@@ -1,59 +1,5 @@
 <template>
     <a-popover>
-        <template #content>
-            <div class="groups-popover">
-                <div class="flex items-center">
-                    <!-- <img :src="logoTitle" class="h-3 mr-1" /> -->
-                    <AtlanIcon icon="Group" class="mr-1 mb-0.5" />
-                    <span class="uppercase">GROUP</span>
-                </div>
-                <div class="mt-2 mb-2">
-                    <div class="text-xl font-semibold capitalize">
-                        {{ groupData.name }}
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <AtlanIcon icon="User" class="mr-1 icon-blue-color" />
-                    <span class="text-xs text-gray-500"
-                        >{{ groupData.memberCount }} members</span
-                    >
-                    <div class="dot" />
-                    <span class="text-xs text-gray-500">{{
-                        groupData.alias
-                    }}</span>
-                </div>
-                <div class="mt-3">
-                    <div class="text-xs text-gray-500">Description</div>
-                    <div>
-                        {{
-                            groupData?.description ||
-                            `This group has no description added`
-                        }}
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <div class="text-xs text-gray-500">Ownership</div>
-                    <div class="flex gap-5 mt-1">
-                        <div>
-                            <strong>{{ assetCount }}</strong> Assets
-                        </div>
-                        <div>
-                            <strong>{{ bussinesCount }}</strong> Business Terms
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <div class="text-xs text-gray-500">Created by</div>
-                    <div class="flex gap-5 mt-1">
-                        <UserPill :username="groupData.createdBy" />
-                    </div>
-                </div>
-                <a-button class="mt-3" block @click="handleClickGroup">
-                    <strong> View group profile </strong>
-                    <AtlanIcon icon="Enter" class="mr-1 mb-0.5" />
-                </a-button>
-            </div>
-        </template>
         <slot></slot>
     </a-popover>
 </template>
@@ -90,30 +36,7 @@
             const groupData = computed(() => groupList.value[0] || {})
             const bussinesCountRef = ref(0)
             const assetCountRef = ref(0)
-            const memberListParams = {
-                groupId: groupList.value[0].id,
-                params: {
-                    limit: 10,
-                    offset: 0,
-                    sort: 'first_name',
-                    filter: {},
-                },
-            }
-            const { memberList } = useGroupMembers(memberListParams)
-            watch(memberList, () => {
-                const arrUserName = memberList.value.map((el) => el.username)
-                const { bussinesCount, assetCount } = useUserPopover(
-                    'group',
-                    arrUserName
-                )
-                watch(
-                    [assetCount, bussinesCount],
-                    ([newAssetCount, newBussinesCount]) => {
-                        assetCountRef.value = newAssetCount
-                        bussinesCountRef.value = newBussinesCount
-                    }
-                )
-            })
+
             const { showGroupPreview, setGroupUniqueAttribute } =
                 useGroupPreview()
             const handleClickGroup = () => {

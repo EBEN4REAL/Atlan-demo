@@ -363,6 +363,10 @@ const useTree = ({
         refetchEntityType?: 'query' | 'queryFolder'
     ) => {
         // if the root level of the tree needs a refetch
+        console.log('refetch: ', {
+            guid,
+            refetchEntityType
+        })
         if (guid === queryFolderNamespace.value?.guid) {
             let folderResponse: IndexSearchResponse<Folder> | null = null
             let queryResponse: IndexSearchResponse<SavedQuery> | null = null
@@ -375,6 +379,12 @@ const useTree = ({
                 queryResponse = await getQueries()
             }
 
+            console.log('parent update final api: ', {
+                guid,
+                folderResponse,
+                queryResponse
+            })
+
             const updatedFolders = checkAndAppendNewNodes(
                 folderResponse,
                 'QueryFolder',
@@ -386,6 +396,8 @@ const useTree = ({
                 true
             )
 
+            
+
             const updatedTreeData: CustomTreeDataItem[] = [
                 ...updatedFolders,
                 ...updatedQueries,
@@ -396,6 +408,7 @@ const useTree = ({
             })
 
             treeData.value = updatedTreeData
+            console.log('parent update final: ', {guid, updatedTreeData})
         } else {
             let parentStack: string[]
 
@@ -422,7 +435,8 @@ const useTree = ({
                         )
                     }
 
-                    console.log('parent update: ', {
+                    console.log('parent update final api: ', {
+                        guid,
                         folderResponse,
                         queryResponse
                     })
@@ -485,17 +499,17 @@ const useTree = ({
             // eslint-disable-next-line no-restricted-syntax
             for (const node of treeData.value) {
                 if (node.key === parent) {
-                    console.log('parent found: ', node)
+                    // console.log('parent found: ', node)
                     const updatedNode = await updateNodeNested(node)
-                    console.log('parent updated new nodes: ', updatedNode)
+                    // console.log('parent updated new nodes: ', updatedNode)
                     updatedTreeData.push(updatedNode)
                 } else {
                     updatedTreeData.push(node)
                 }
             }
-            console.log('parent update: ', updatedTreeData)
+            console.log('parent update final: ', {guid, updatedTreeData})
 
-            treeData.value = updatedTreeData
+            treeData.value = [...updatedTreeData]
         }
     }
     /**

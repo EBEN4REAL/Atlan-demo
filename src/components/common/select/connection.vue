@@ -8,7 +8,11 @@
         @change="handleChange"
         :get-popup-container="(target) => target.parentNode"
         notFoundContent="No connection found"
+        class="selector"
     >
+        <template #suffixIcon>
+            <AtlanIcon icon="CaretDown" class="mb-1" />
+        </template>
         <a-select-option
             :value="item.attributes?.qualifiedName"
             v-for="item in filteredList"
@@ -117,4 +121,8 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .selector:deep(.ant-select-arrow) {
+        @apply flex items-center;
+    }
+</style>

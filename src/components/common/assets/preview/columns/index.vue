@@ -56,7 +56,11 @@
             @loadMore="handleLoadMore"
         >
             <template v-slot:default="{ item }">
-                <ColumnItem :item="item" class="m-1" />
+                <ColumnItem
+                    :item="item"
+                    class="m-1"
+                    @update="handleListUpdate"
+                />
             </template>
         </AssetList>
     </div>
@@ -114,7 +118,7 @@
                 required: false,
             },
         },
-        setup(props, { emit }) {
+        setup(props) {
             const { selectedAsset } = toRefs(props)
 
             const aggregationAttributeName = 'dataType'
@@ -162,6 +166,7 @@
                 getAggregationList,
                 error,
                 isValidating,
+                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -175,6 +180,10 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
+
+            const handleListUpdate = (asset: any) => {
+                updateList(asset)
+            }
 
             const columnDataTypeAggregationList = computed(() =>
                 getAggregationList(
@@ -236,6 +245,7 @@
                 handleLoadMore,
                 error,
                 isValidating,
+                handleListUpdate,
             }
         },
     })

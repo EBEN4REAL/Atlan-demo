@@ -7,12 +7,15 @@
         :closable="false"
     >
         <div
-            :class="`close-icon ${!drawerFilter && 'closed'}`"
+            :class="`close-icon ${!drawerFilter && 'closed'} border border-solid order-gray-300`"
             @click="handleClickFilter"
         >
-            <AtlanIcon icon="ChevronLeft" />
+            <AtlanIcon icon="ChevronRight" />
         </div>
-        <div class="h-full px-2 py-8 bg-gray-50 filter-container">
+        <div class="p-4 border-b border-solid order-gray-300 bg-gray-50">
+            No filters applied
+        </div>
+        <div class="h-full px-2 bg-gray-50 filter-container">
             <AssetFilters
                 v-model="facets"
                 :filter-list="requestFilter"
@@ -337,10 +340,10 @@
         }
         background-color: white;
         position: fixed;
-        height: 29px;
-        width: 15px;
+        height: 32px;
+        width: 20px;
         top: 120px;
-        margin-left: 286px;
+        margin-left: 288px;
         display: flex;
         align-items: center;
         justify-content: center;

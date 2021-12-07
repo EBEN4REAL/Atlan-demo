@@ -10,12 +10,15 @@
     >
         <template #title>
             <div class="flex items-center text-gray-500 flex-nowrap">
-                <!-- <span class="overflow-hidden text-sm overflow-ellipsis">{{
+                <!--  <span class="flex-none text-lg text-gray"
+                    >Add New Resource</span
+                > -->
+                <span class="overflow-hidden text-sm overflow-ellipsis">{{
                     title(asset)
                 }}</span>
-                <AtlanIcon icon="ChevronRight" class="flex-none" /> -->
-                <span class="flex-none text-sm text-lg text-gray"
-                    >Add New Resource</span
+                <AtlanIcon icon="ChevronRight" class="flex-none" />
+                <span class="flex-none text-sm font-bold text-gray"
+                    >New Resource</span
                 >
             </div></template
         >

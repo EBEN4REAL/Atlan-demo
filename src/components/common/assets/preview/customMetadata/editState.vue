@@ -1,19 +1,25 @@
 <template>
     <div class="flex self-start flex-grow">
-        <a-select
+        <MultiInput
             v-if="
-                getDatatypeOfAttribute(attribute) === 'number' && isMultivalued
+                [
+                    'number',
+                    'int',
+                    'long',
+                    'float',
+                    'url',
+                    'string',
+                    'text',
+                ].includes(getDatatypeOfAttribute(attribute).toLowerCase()) &&
+                isMultivalued
             "
-            :value="localValue"
+            v-model="localValue"
             class="flex-grow shadow-none"
-            mode="tags"
-            placeholder="Enter Number(s) separated by Enter key"
-            :allow-clear="true"
-            :dropdown-style="{ display: 'none' }"
-            @keydown.tab="(e) => e.preventDefault()"
-            @inputKeyDown="handleNumerKeyPress"
+            placeholder="Press Enter to add"
+            :data-type="getDatatypeOfAttribute(attribute)"
             @change="handleChange"
         />
+
         <a-input
             v-else-if="getDatatypeOfAttribute(attribute) === 'number'"
             v-model:value="localValue"
@@ -21,20 +27,6 @@
             class="flex-grow border shadow-none"
             type="number"
             placeholder="Enter an integer..."
-            @change="handleChange"
-        />
-        <a-select
-            v-if="
-                getDatatypeOfAttribute(attribute) === 'float' && isMultivalued
-            "
-            :value="localValue"
-            class="flex-grow shadow-none"
-            mode="tags"
-            placeholder="Enter Number(s) separated by Enter key"
-            :allow-clear="true"
-            :dropdown-style="{ display: 'none' }"
-            @keydown.tab="(e) => e.preventDefault()"
-            @inputKeyDown="handleNumerKeyPress"
             @change="handleChange"
         />
         <a-input
@@ -47,19 +39,6 @@
             min="0"
             max="10"
             placeholder="Enter decimal value..."
-            @change="handleChange"
-        />
-        <a-select
-            v-else-if="
-                getDatatypeOfAttribute(attribute) === 'url' && isMultivalued
-            "
-            v-model:value="localValue"
-            class="flex-grow shadow-none"
-            mode="tags"
-            placeholder="Enter URLs separated by Enter key"
-            :allow-clear="true"
-            :dropdown-style="{ display: 'none' }"
-            @keydown.tab="(e) => e.preventDefault()"
             @change="handleChange"
         />
         <a-input
@@ -87,19 +66,6 @@
             :allow-clear="true"
             class="flex-grow w-100"
             value-format="x"
-            @change="handleChange"
-        />
-        <a-select
-            v-else-if="
-                getDatatypeOfAttribute(attribute) === 'text' && isMultivalued
-            "
-            v-model:value="localValue"
-            class="flex-grow shadow-none"
-            mode="tags"
-            placeholder="Enter text separated by Enter key"
-            :allow-clear="true"
-            :dropdown-style="{ display: 'none' }"
-            @keydown.tab="(e) => e.preventDefault()"
             @change="handleChange"
         />
         <a-textarea
@@ -175,10 +141,11 @@
 
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
+    import MultiInput from '@/common/input/customizedTagInput.vue'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
-
+        components: { MultiInput },
         props: {
             attribute: {
                 type: Object,
@@ -226,41 +193,12 @@
             if (isMultivalued.value && !localValue.value) localValue.value = []
             else if (!localValue.value) localValue.value = ''
 
-            const handleNumber = (v) => {
-                localValue.value = v.map((s) => parseInt(s, 10))
-            }
-            const handleDecimal = (v) => {
-                localValue.value = v.map((s) => parseFloat(s))
-            }
-
-            const handleChange = (v) => {
-                if (
-                    isMultivalued.value &&
-                    getDatatypeOfAttribute(props.attribute) === 'number'
-                )
-                    handleNumber(v)
-                else if (
-                    isMultivalued.value &&
-                    getDatatypeOfAttribute(props.attribute) === 'float'
-                )
-                    handleDecimal(v)
-
+            const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
             }
 
-            const handleNumerKeyPress = (v) => {
-                const allowDecimal =
-                    getDatatypeOfAttribute(props.attribute) === 'float'
-                const n = parseInt(v.key, 10)
-                if (Number.isNaN(n)) {
-                    if (allowDecimal && v.key === '.') return
-                    v.preventDefault()
-                }
-            }
-
             return {
-                handleNumerKeyPress,
                 isMultivalued,
                 getDatatypeOfAttribute,
                 isLink,

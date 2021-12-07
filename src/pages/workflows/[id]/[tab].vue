@@ -300,7 +300,7 @@
                             {
                                 $or: [
                                     {
-                                        email_verified: true,
+                                        emailVerified: true,
                                         id: userId,
                                     },
                                 ],

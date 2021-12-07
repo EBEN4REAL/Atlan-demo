@@ -38,8 +38,9 @@
                     attribute.subTypeName ||
                     attribute.typeName
                 "
+                :multiple="attribute?.options?.multiValueSelect === 'true'"
                 @change="handleValueChange"
-            ></DynamicInput2>
+            />
         </div>
     </div>
 </template>

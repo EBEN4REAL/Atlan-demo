@@ -287,10 +287,8 @@ export default defineComponent({
                     const { data, isLoading, error } = UnfurlSlackMessage(
                         pV,
                         {
-                            actionData: {
-                                channelId,
-                                messageId,
-                            },
+                            conversationId: channelId,
+                            messageId,
                         },
                         {
                             immediate: true,

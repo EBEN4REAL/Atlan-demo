@@ -20,6 +20,6 @@ export const map = {
     [GET_INTEGRATION]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/integrations/${id}`),
     [ARCHIVE_INTEGRATION]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/integrations/${id}/archive`),
     [UPDATE_INTEGRATION]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/slack/${id}/config`),
-    [UNFURL_SLACK_MESSAGE]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/integrations/${id}/action/UnfurlSlackMessageLink`),
+    [UNFURL_SLACK_MESSAGE]: ({ id }: PathParams) => getAPIPath("http://localhost:5008", `/slack/unfurl`),
     [CREATE_SLACK_APP]: () => getAPIPath("http://localhost:5008", `/slack/createapp`),
 }

@@ -417,6 +417,7 @@
                     position: relative;
                     width: 100%;
                     z-index: 99;
+                    display: block;
 
                     &-item {
                         background: #ffffff;

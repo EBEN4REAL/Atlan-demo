@@ -17,126 +17,11 @@
         <div>
             <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-4">
                 <div v-for="(item, index) in links(asset)" :key="index">
-                    <div v-if="isSlackLink(item?.attributes?.link)" class="">
-                        <div
-                            v-if="!slackUnfurls[item.guid].isLoading.value"
-                            class="flex p-2 border rounded"
-                        >
-                            <div class="relative h-8 mr-3 min-w-link-left-col">
-                                <!-- avatar -->
-                                <img
-                                    class="rounded-full"
-                                    :src="
-                                        slackUnfurls[item.guid].data.value.user
-                                            .image_32
-                                    "
-                                    alt=""
-                                />
-                                <AtlanIcon
-                                    :icon="'Slack'"
-                                    class="absolute slack-icon-avatar-overlay"
-                                ></AtlanIcon>
-                            </div>
-                            <div class="flex flex-col">
-                                <div class="flex items-center">
-                                    <!-- sender -->
-                                    <span class="mr-2 font-bold">{{
-                                        slackUnfurls[item.guid].data.value.user
-                                            .real_name
-                                    }}</span>
-                                    <span class="text-xs text-gray-500">
-                                        {{
-                                            timeAgo(
-                                                new Date(
-                                                    slackUnfurls[item.guid].data
-                                                        .value.message.ts * 1000
-                                                ).toISOString()
-                                            )
-                                        }}
-                                        ago</span
-                                    >
-                                </div>
-                                <!-- message -->
-                                <div>
-                                    {{
-                                        slackUnfurls[item.guid].data.value
-                                            .message.text
-                                    }}
-                                </div>
-                                <div class="flex text-sm text-gray-500">
-                                    <!-- v-if="
-                                            slackUnfurls[item.guid].data.value
-                                                ?.channel?.name
-                                        " -->
-                                    <span
-                                        class=""
-                                        v-if="
-                                            slackUnfurls[item.guid].data.value
-                                                .message.reply_count
-                                        "
-                                    >
-                                        {{
-                                            slackUnfurls[item.guid].data.value
-                                                .message.reply_count
-                                        }}
-                                        replies
-                                        <span class="ml-1 mr-1 text-gray-300"
-                                            >•</span
-                                        >
-                                    </span>
-                                    <span>
-                                        #{{
-                                            slackUnfurls[item.guid].data.value
-                                                ?.channel?.name
-                                        }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else class="flex p-2 border rounded">
-                        <div class="mr-2 min-w-link-left-col">
-                            <img
-                                :src="`https://www.google.com/s2/favicons?domain=${item?.attributes?.link}&sz=64`"
-                                :alt="item?.attributes?.name"
-                                class="h-7"
-                            />
-                        </div>
-                        <div class="flex flex-col">
-                            <a
-                                class="flex cursor-pointer  gap-x-2 hover:underline"
-                                :href="`//${item?.attributes?.link}`"
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                <span class="font-bold">{{
-                                    item?.attributes?.name
-                                }}</span>
-                            </a>
-                            <span class="text-sm text-gray-500"
-                                >Added by Rohan 10 minutes ago</span
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div
-                    v-if="hasSlackLink && !isSlackAuthDone"
-                    class="flex items-start w-2/3 p-2 mt-4 bg-gray-100 border rounded "
-                >
-                    <AtlanIcon
-                        :icon="'Slack'"
-                        class="h-5 mt-1 mr-2"
-                    ></AtlanIcon>
-                    <div class="flex flex-col">
-                        <span class="font-bold">Connect to Slack</span>
-                        <span class="text-gray-500"
-                            >Sign in to see richer content previews for slack
-                            links</span
-                        >
-                    </div>
-                    <AtlanButton :size="'sm'" class="ml-auto" color="primary"
-                        >Connect</AtlanButton
-                    >
+                    <component
+                        :is="getPreviewComponent(item?.attributes?.link)"
+                        :item="item"
+                        class=""
+                    />
                 </div>
             </div>
             <div
@@ -173,7 +58,13 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-import { defineComponent, PropType, computed, toRefs } from 'vue'
+import {
+    defineComponent,
+    PropType,
+    computed,
+    toRefs,
+    defineAsyncComponent,
+} from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 import AddResources from './addResource.vue'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -189,7 +80,17 @@ import { UnfurlSlackMessage } from '~/composables/integrations/useIntegrations'
 dayjs.extend(relativeTime)
 
 export default defineComponent({
-    components: { AddResources, AtlanButton, AtlanIcon },
+    components: {
+        AddResources,
+        AtlanButton,
+        AtlanIcon,
+        slackLinkPreview: defineAsyncComponent(
+            () => import('./previews/slackLinkPreviewCard.vue')
+        ),
+        linkPreview: defineAsyncComponent(
+            () => import('./previews/linkPreviewCard.vue')
+        ),
+    },
     props: {
         asset: {
             type: Object as PropType<assetInterface>,
@@ -201,102 +102,13 @@ export default defineComponent({
         const { links } = useAssetInfo()
         console.log('links', links)
 
-        // const links = () => [
-        //     {
-        //         typeName: 'Link',
-        //         attributes: {
-        //             qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1ee1',
-        //             name: 'Notion doc',
-        //             link: 'https://www.notion.so',
-        //         },
-        //         guid: '519bb87d-deec-488b-a896-3fc4840edc4c',
-        //         status: 'ACTIVE',
-        //         displayText: 'Notion doc',
-        //         classificationNames: [],
-        //         classifications: [],
-        //         meaningNames: [],
-        //         meanings: [],
-        //         isIncomplete: false,
-        //         labels: [],
-        //     },
-        //     {
-        //         typeName: 'Link',
-        //         attributes: {
-        //             qualifiedName: 'c82b5454-0b52-4cc3-189b-a712ef0d1eeb',
-        //             name: 'Insights discussion',
-        //             link: 'https://atlanhq.slack.com/archives/C02DDQ79H6Z/p1638282533490900',
-        //         },
-        //         guid: '519bb87d-deec-488b-a896-6fc4840edc4c',
-        //         status: 'ACTIVE',
-        //         displayText: 'Insights discussion',
-        //         classificationNames: [],
-        //         classifications: [],
-        //         meaningNames: [],
-        //         meanings: [],
-        //         isIncomplete: false,
-        //         labels: [],
-        //     },
-        //     {
-        //         typeName: 'Link',
-        //         attributes: {
-        //             qualifiedName: 'c82b5454-0b52-34c3-446b-1212ef0d1eeb',
-        //             name: 'Discovery discussion',
-        //             link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638280885031500?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
-        //         },
-        //         guid: '519bb87d-deec-488b-a896-6fc48422dc4c',
-        //         status: 'ACTIVE',
-        //         displayText: 'Discovery discussion',
-        //         classificationNames: [],
-        //         classifications: [],
-        //         meaningNames: [],
-        //         meanings: [],
-        //         isIncomplete: false,
-        //         labels: [],
-        //     },
-        //     {
-        //         typeName: 'Link',
-        //         attributes: {
-        //             qualifiedName: 'c82b5454-0b52-3453-436b-1212ef0d1111',
-        //             name: 'Discovery discussion',
-        //             link: 'https://atlanhq.slack.com/archives/C02CBB6SPDM/p1638283148036400?thread_ts=1638280466.031300&cid=C02CBB6SPDM',
-        //         },
-        //         guid: '519bb87d-deec-488b-a896-87578422dc4c',
-        //         status: 'ACTIVE',
-        //         displayText: 'Discovery discussion',
-        //         classificationNames: [],
-        //         classifications: [],
-        //         meaningNames: [],
-        //         meanings: [],
-        //         isIncomplete: false,
-        //         labels: [],
-        //     },
-        // ]
+        function getPreviewComponent(url) {
+            // hasSlackLink && !isSlackAuthDone
+            return 'linkPreview'
+        }
 
         const pV = { id: '80c84f2f-ba68-410b-b099-91aacf38ec6f' }
         const { asset } = toRefs(props)
-        const slackUnfurls = computed(() => {
-            const linkUnfurlMap = {}
-            links(asset.value).forEach((linkItem) => {
-                const { link } = linkItem.attributes
-                const isSlack = isSlackLink(link)
-                if (isSlack) {
-                    const { channelId, messageId } =
-                        getChannelAndMessageIdFromSlackLink(link)
-                    const { data, isLoading, error } = UnfurlSlackMessage(
-                        pV,
-                        {
-                            conversationId: channelId,
-                            messageId,
-                        },
-                        {
-                            immediate: true,
-                        }
-                    )
-                    linkUnfurlMap[linkItem.guid] = { data, isLoading, error }
-                }
-            })
-            return linkUnfurlMap
-        })
 
         const hasSlackLink = computed(() => {
             const linkArr = links(asset.value)
@@ -307,13 +119,14 @@ export default defineComponent({
         })
 
         const isSlackAuthDone = true
+
         return {
             links,
             hasSlackLink,
             isSlackAuthDone,
             isSlackLink,
-            slackUnfurls,
             timeAgo,
+            getPreviewComponent,
         }
     },
 })

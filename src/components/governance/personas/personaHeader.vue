@@ -40,7 +40,7 @@
                         {{ persona.description }}</span
                     >
                 </div>
-                <div class="flex">
+                <div class="flex" v-if="persona.updatedBy">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"
@@ -161,12 +161,6 @@
                 }
                 return ''
             }
-            // const { userList } = useUsers(params, persona.value.createdBy)
-
-            // // Get the details of the creator.
-            // const creator = computed(() =>
-            //     userList.value.length > 0 ? userList.value[0] : {}
-            // )
 
             return {
                 personaActions,

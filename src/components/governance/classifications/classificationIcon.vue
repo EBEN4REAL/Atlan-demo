@@ -20,7 +20,7 @@
             },
             icon: {
                 type: String as PropType<'ShieldFilled' | 'Shield'>,
-                required: true,
+                required: false,
                 default: 'Shield',
             },
         },

@@ -38,7 +38,7 @@
                 ></AtlanIcon>
                 <router-link
                     :to="getProfilePath(selectedAsset)"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -209,11 +209,11 @@ export default defineComponent({
         columns: defineAsyncComponent(() => import('./columns/index.vue')),
         actions: defineAsyncComponent(() => import('./actions/index.vue')),
         property: defineAsyncComponent(() => import('./property/index.vue')),
-        resources: defineAsyncComponent(() => import('./resources/index.vue')),
         activity: defineAsyncComponent(
             () => import('./activity/activityTab.vue')
         ),
         relations: defineAsyncComponent(() => import('./relations/index.vue')),
+        resources: defineAsyncComponent(() => import('./resources/index.vue')),
         // chat: defineAsyncComponent(
         //     () => import('./tabs/chat/assetChat.vue')
         // ),
@@ -246,7 +246,7 @@ export default defineComponent({
     },
     emits: ['assetMutation', 'closeSidebar'],
     setup(props, { emit }) {
-        const { selectedAsset } = toRefs(props)
+        const { selectedAsset, isDrawer } = toRefs(props)
         const { getAllowedActions } = useAssetEvaluate()
         const actions = computed(() => getAllowedActions(selectedAsset.value))
         provide('actions', actions)
@@ -284,14 +284,14 @@ export default defineComponent({
 
         const route = useRoute()
         const isProfile = ref(false)
-        if (route.params.id) {
+        if (route.params.id && !isDrawer.value) {
             isProfile.value = true
         }
 
         watch(
             () => route.params.id,
             (newId) => {
-                if (newId) {
+                if (newId && !isDrawer.value) {
                     isProfile.value = true
                 } else {
                     isProfile.value = false

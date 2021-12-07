@@ -11,6 +11,7 @@
             border border-gray-200
             rounded-full
             cursor-pointer
+            hover:text-white
             ${
                 color
                     ? `hover:bg-${color.toLowerCase()}-400`
@@ -28,18 +29,16 @@
     >
         <ClassificationIcon
             icon="ShieldFilled"
-            class="group-hover:text-white"
             :color="color"
             v-if="isPropagated"
         ></ClassificationIcon>
         <ClassificationIcon
             icon="Shield"
-            class="group-hover:text-white"
             :color="color"
             v-else
         ></ClassificationIcon>
 
-        <div class="ml-1 group-hover:text-white">
+        <div class="ml-1">
             {{ displayName || name }}
         </div>
 

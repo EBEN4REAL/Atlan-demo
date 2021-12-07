@@ -1,107 +1,67 @@
 <template>
-    <a-popover>
+    <a-popover @visibleChange="handleVisibleChange" placement="left">
         <template #content>
             <div class="user-popover">
-                <div class="flex justify-between">
-                    <div class="flex items-center">
-                        <AtlanIcon icon="User" class="mr-1 mb-0.5" />
-                        <span class="uppercase">user</span>
-                    </div>
-                    <div
-                        v-if="admin"
-                        class="
-                            flex
-                            items-center
-                            px-1.5
-                            text-gray-500
-                            bg-gray-100
-                            border border-gray-300 border-solid
-                            rounded
-                        "
-                    >
-                        {{ admin }}
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 mt-2">
-                    <!-- <a-avatar size="large">{{ item[0] }}</a-avatar> -->
-                    <UserAvatar
-                        :username="item"
-                        style-class="mr-1 border-none bg-primary-light "
-                        :avatarSize="40"
-                    ></UserAvatar>
-                    <div>
-                        <div class="flex text-sm font-semibold">
-                            <span>{{ selectedUser.name }}</span>
-                            <span
-                                v-if="userProfiles?.slack"
-                                class="ml-2 text-sm font-semibold"
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 mt-2">
+                        <UserAvatar
+                            :username="item"
+                            style-class="mr-1 border-none bg-primary-light "
+                            :avatarSize="40"
+                        ></UserAvatar>
+                        <div>
+                            <div
+                                class="flex items-center text-sm font-semibold capitalize "
                             >
-                                <SlackMessageCta
-                                    :slackLink="userProfiles.slack"
-                                />
-                            </span>
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            {{ selectedUser.email }}
+                                <span>{{ selectedUser.name }}</span>
+                                <span
+                                    v-if="userProfiles?.slack"
+                                    class="ml-2 text-sm font-semibold"
+                                >
+                                    <SlackMessageCta
+                                        :slackLink="userProfiles.slack"
+                                    />
+                                </span>
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                {{ selectedUser.username }}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="mt-3">
-                    <div class="text-xs text-gray-500">Ownership</div>
                     <div
-                        v-if="assetCount || bussinesCount"
-                        class="flex gap-5 mt-1"
+                        class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded "
                     >
-                        <div>
-                            <strong>{{ assetCount }}</strong> Assets
-                        </div>
-                        <div>
-                            <strong>{{ bussinesCount }}</strong> Business Terms
-                        </div>
+                        {{ selectedUser.workspaceRole }}
                     </div>
-                    <div v-else>You have no asset added</div>
                 </div>
-                <div v-if="groupList.length > 0" class="mt-3">
+
+                <!--  <div v-if="groupList.length > 0" class="mt-3">
                     <div class="text-xs text-gray-500">Groups</div>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <span
                             v-for="group in groupList"
                             :key="group.id"
-                            class="
-                                px-2
-                                py-0.5
-                                text-xs
-                                border border-gray-300 border-solid
-                                rounded-xl
-                                capitalize
-                            "
+                            class="px-2 py-0.5 text-xs border border-gray-300 border-solid rounded-xl capitalize"
                         >
                             {{ group.name }}
                         </span>
                     </div>
-                </div>
-                <div v-if="listOfPersona.length > 0" class="mt-3">
+                </div>-->
+
+                <div v-if="selectedUser.personaList?.length > 0" class="mt-3">
                     <div class="text-xs text-gray-500">Personas</div>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <span
-                            v-for="persona in listOfPersona"
-                            :key="persona.id"
-                            class="
-                                px-2
-                                py-0.5
-                                text-xs
-                                bg-gray-200
-                                border border-gray-300 border-solid
-                                rounded-xl
-                                capitalize
-                            "
-                            >{{ persona?.displayName }}</span
+                            v-for="persona in selectedUser.personaList"
+                            :key="persona"
+                            class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded "
+                            >{{ persona }}</span
                         >
                     </div>
                 </div>
                 <a-button class="mt-3" block @click="handleClickViewUser">
-                    <strong> View user profile </strong>
-                    <AtlanIcon icon="Enter" class="mr-1 mb-0.5" />
+                    View Profile
+                    <AtlanIcon icon="Enter" class="ml-1 mb-0.5" />
                 </a-button>
             </div>
         </template>
@@ -111,10 +71,8 @@
 
 <script lang="ts">
 import { toRefs, computed, watch, ref } from 'vue'
-import getUserGroups from '~/composables/user/getUserGroups'
 import { useUserPreview } from '~/composables/user/showUserPreview'
 import { useUsers } from '~/composables/user/useUsers'
-import usePersonaList from '../persona/usePersonaList'
 import AtlanIcon from '../../icon/atlanIcon.vue'
 import useUserPopover from './composables/useUserPopover'
 import SlackMessageCta from './slackMessageCta.vue'
@@ -129,74 +87,60 @@ export default {
             required: false,
             default: '',
         },
+        visible: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
     },
     emits: [],
     setup(props) {
         const { item } = toRefs(props)
+
         const { setUserUniqueAttribute, showUserPreview } = useUserPreview()
         const params = {
             limit: 1,
             offset: 0,
             filter: {
-                $and: [{ email_verified: true }, { username: item.value }],
+                $and: [{ username: item.value }],
             },
         }
-        const { userList, isLoading } = useUsers(params, item.value)
+        const { userList, isLoading, getUserList } = useUsers(params, '')
         const selectedUser = computed(() =>
             userList && userList.value && userList.value.length
                 ? userList.value[0]
-                : []
+                : {}
         )
-        const admin = computed(() =>
-            selectedUser.value?.roles?.includes('$admin' || 'admin')
-                ? 'Admin'
-                : ''
-        )
-        const groupListAPIParams = {
-            userId: selectedUser?.value.id,
-            params: {
-                limit: 10,
-                offset: 0,
-                sort: 'name',
-                filter: {},
-            },
-        }
-        // const profileObj = getProfilesObj()
-        const { groupList } = getUserGroups(
-            groupListAPIParams,
-            selectedUser?.value.id
-        )
-        const { bussinesCount, assetCount, getUserProfiles } = useUserPopover(
-            'user',
-            item.value
-        )
-        const userProfiles = getUserProfiles(selectedUser?.value)
+
         const handleClickViewUser = () => {
             setUserUniqueAttribute(item.value, 'username')
             showUserPreview({ allowed: ['about', 'assets', 'groups'] })
         }
-        const listOfPersona = ref([])
-        const flag = ref(true)
-        if (flag.value) {
-            const { personaList } = usePersonaList()
-            watch(personaList, (newValue) => {
-                if (newValue) {
-                    const user = selectedUser.value.id
-                    listOfPersona.value = newValue.filter((element) =>
-                        element.users.includes(user)
-                    )
-                }
-            })
+
+        const handleVisibleChange = (state) => {
+            if (state) {
+                getUserList()
+            }
         }
+
+        const { getUserProfiles } = useUserPopover('user', item.value)
+        const userProfiles = computed(() => {
+            console.log('selectedUser', selectedUser.value.attributes?.profiles)
+            if (selectedUser.value.attributes?.profiles) {
+                console.log(
+                    'parsed json',
+                    JSON.parse(selectedUser.value.attributes?.profiles)[0]
+                )
+            }
+            return getUserProfiles(selectedUser?.value)
+        })
+
         return {
             selectedUser,
             isLoading,
-            bussinesCount,
-            assetCount,
-            groupList,
             handleClickViewUser,
-            listOfPersona,
-            admin,
+            handleVisibleChange,
+            getUserList,
             userProfiles,
         }
     },

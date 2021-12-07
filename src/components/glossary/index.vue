@@ -28,8 +28,10 @@
                     </template>
                 </AddGTCModal>
 
-                <div class="ml-2">
-                    <GlossaryActions></GlossaryActions>
+                <div v-if="selectedGlossaryQf?.length" class="ml-2">
+                    <GlossaryActions
+                        :entity="selectedGlossary"
+                    ></GlossaryActions>
                 </div>
             </div>
         </div>
@@ -66,6 +68,7 @@
                 </template>
             </SearchAdvanced>
             <atlan-icon
+                v-if="!queryText"
                 icon="TreeCollapseAll"
                 class="h-4 mt-2 ml-2 cursor-pointer"
                 @click="handleCollapse"
@@ -168,6 +171,7 @@
 
     import { glossaryFilters } from '~/constant/filters/discoveryFilters'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -202,6 +206,8 @@
         },
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
+            const router = useRouter()
+            const { getGlossaryByQF } = useGlossaryData()
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -261,6 +267,10 @@
             })
 
             const handleSelectGlossary = (val) => {
+                if (val !== '') {
+                    router.push(`/glossary/${getGlossaryByQF(val)?.guid}`)
+                    glossaryStore.setSelectedGTC(getGlossaryByQF(val))
+                }
                 selectedGlossaryQf.value = val
                 glossaryStore.setActiveGlossaryQualifiedName(val)
             }
@@ -290,7 +300,6 @@
 
             const { getAnchorQualifiedName } = useAssetInfo()
 
-            const router = useRouter()
             const handlePreview = (item) => {
                 router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
@@ -382,6 +391,7 @@
                 path: `/glossary/${asset.guid}`,
             })
             provide('selectedGlossaryQf', selectedGlossaryQf)
+            provide('handleSelectGlossary', handleSelectGlossary)
             return {
                 handleFilterChange,
                 isLoading,

@@ -39,7 +39,8 @@ function useUserPopover(type: string, item: any) {
         if (profile && profile.length) {
             const profileJsonStr = profile[0]
             try {
-                profileObj = JSON.parse(profileJsonStr)
+                profileObj = JSON.parse(profileJsonStr)[0]
+                console.log("profileObj", profileObj)
             } catch (error) {
                 console.error('error parsing user profile json', error)
             }

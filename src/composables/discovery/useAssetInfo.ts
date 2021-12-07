@@ -565,7 +565,11 @@ export default function useAssetInfo() {
     }
 
     const isNonBiAsset = (asset: assetInterface) => {
-        return assetType(asset) === 'Table' || assetType(asset) === 'View'
+        return (
+            assetType(asset) === 'Table' ||
+            assetType(asset) === 'View' ||
+            assetType(asset) === 'Column'
+        )
     }
 
     const discoveryStore = useAssetStore()

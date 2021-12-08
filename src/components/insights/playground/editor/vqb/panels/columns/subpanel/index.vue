@@ -1,10 +1,27 @@
 <template>
     <div :class="[' mx-3 mt-1 mb-4']">
-        <div class="flex items-stretch" style="height: 32px">
-            <TableSelector typeName="Table" style="width: 30%" />
-            <div style="width: 30%">
-                <ColumnSelector />
-            </div>
+        <div class="flex items-center">
+            <TableSelector
+                typeName="Table"
+                style="width: 30%"
+                v-model:modelValue="tableQualfiedName"
+            />
+            <ColumnSelector
+                style="width: 30%"
+                class="z-10"
+                v-model:selectedItems="cols"
+                v-model:queryText="queryText"
+                @queryTextChange="queryTextChange"
+                :tableQualfiedName="tableQualfiedName"
+            >
+                <template #chip="{ item }">
+                    <div
+                        class="flex items-center px-3 py-0.5 my-1 justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
+                    >
+                        <span> {{ item }}</span>
+                    </div>
+                </template>
+            </ColumnSelector>
         </div>
     </div>
 </template>
@@ -35,10 +52,20 @@
 
         setup(props, { emit }) {
             const { getDataTypeImage } = useColumn()
+            const tableQualfiedName = ref(undefined)
+            const queryText = ref('')
             const { expand } = toRefs(props)
-            const cols = ref([{ type: 'string', label: 'customer_name' }])
+            const cols = ref([])
+            const queryTextChange = () => {
+                console.log(queryText.value, 'query Text')
+            }
 
-            return {}
+            return {
+                queryTextChange,
+                queryText,
+                tableQualfiedName,
+                cols,
+            }
         },
     })
 </script>

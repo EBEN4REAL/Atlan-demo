@@ -1,6 +1,6 @@
 <template>
     <a-select
-        :placeholder="`Select from ${dropdownOption?.length} ${typeName}s`"
+        :placeholder="`Select from ${totalCount} ${typeName}s`"
         :value="modelValue"
         :allowClear="true"
         :showSearch="true"
@@ -148,6 +148,9 @@
     .selector {
         :global(.ant-select-selector) {
             height: 100% !important;
+        }
+        :global(.ant-select-selection-item::after) {
+            display: none !important;
         }
     }
     // input::placeholder {

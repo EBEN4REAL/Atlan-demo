@@ -4,47 +4,53 @@
         @click="setFoucs"
         @focusout="handleContainerBlur"
         tabindex="0"
-        style="height: 32px"
-        class="relative flex items-center"
+        class="relative flex items-center py-1"
         :class="[
             isAreaFocused
-                ? ' border-primary-focus border-2 border-minus'
+                ? ' border-primary-focus border-2 '
                 : 'border-gray-300 border border-plus',
             ,
             'flex flex-wrap items-center   mx-3 rounded selector-height px-3',
+            !tableQualfiedName ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
     >
         <template
-            v-if="cols.length !== 0"
-            v-for="(item, index) in cols"
-            :key="item.label + index"
+            v-if="selectedItems.length !== 0"
+            v-for="(item, index) in selectedItems"
+            :key="item + index"
         >
-            <div
-                class="flex items-center px-3 py-0.5 my-1 justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
-            >
-                <span> {{ item.label }}</span>
-            </div>
+            <slot name="chip" :item="item"> </slot>
         </template>
+
         <a-input
-            v-if="cols.length > 0"
+            v-if="selectedItems.length > 0"
             ref="inputRef"
-            v-model:value="inputValue"
+            :disabled="!tableQualfiedName"
+            v-model:value="inputValue1"
             @focus="
                 () => {
                     isAreaFocused = true
                 }
             "
-            @change="inputChange"
+            @change="input1Change"
             :placeholder="placeholder"
             :style="`width:${placeholder.length + 2}ch;`"
-            class="p-0 pr-4 text-xs border-none shadow-none outline-none focus-none"
+            :class="[
+                'p-0 pr-4 text-sm border-none shadow-none outline-none my-0.5 focus-none',
+                !tableQualfiedName ? $style.custom_input : '',
+            ]"
         />
         <a-input
             v-else
-            v-model:value="inputValue"
-            placeholder="Add columns to fetch results"
-            class="w-full p-0 border-none shadow-none outline-none focus-none"
+            :disabled="!tableQualfiedName"
+            v-model:value="inputValue2"
+            @change="input2Change"
+            :placeholder="placeholder"
+            :class="[
+                'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
+                !tableQualfiedName ? $style.custom_input : '',
+            ]"
         />
         <div class="absolute right-2">
             <AtlanIcon
@@ -54,59 +60,155 @@
             />
             <AtlanIcon v-else icon="Search" class="w-4 h-4" />
         </div>
-        <!-- class="border-none shadow-none outline-none focus-none" -->
         <div
-            v-if="isAreaFocused"
+            v-if="true"
             @click.stop="() => {}"
-            class="absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position"
-            :style="`width: 100%; height: 250px;top:${topPosShift}px`"
-        ></div>
+            :style="`width: 100%;top:${topPosShift}px`"
+            :class="[
+                'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
+            ]"
+        >
+            <div class="border-b border-gray-300">
+                <a-checkbox
+                    v-model:value="selectAll"
+                    @change="inputChange"
+                    :class="$style.atlanReverse"
+                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
+                >
+                    <div class="flex items-center">
+                        <span class="mb-0 ml-1 text-sm text-gray-700">
+                            Select All
+                        </span>
+                    </div>
+                </a-checkbox>
+            </div>
+
+            <div
+                :class="['flex  justify-center overflow-auto']"
+                style="height: 250px"
+            >
+                <Loader
+                    v-if="isLoading"
+                    style="min-height: 250px !important"
+                ></Loader>
+                <a-checkbox-group
+                    v-if="dropdownOption.length !== 0 && !isLoading"
+                    v-model:value="selectedItems"
+                    class="w-full mt-2"
+                >
+                    <div class="flex flex-col w-full">
+                        <template
+                            v-for="(item, index) in dropdownOption"
+                            :key="item.label + index"
+                        >
+                            <div class="status">
+                                <a-checkbox
+                                    :value="item.value"
+                                    :data-test-id="item.label"
+                                    :class="$style.atlanReverse"
+                                    @change="inputChange"
+                                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
+                                >
+                                    <div class="flex items-center">
+                                        <component
+                                            :is="getDataTypeImage(item.type)"
+                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                        ></component>
+                                        <span
+                                            class="mb-0 ml-1 text-sm text-gray-700"
+                                        >
+                                            {{ item.label }}
+                                        </span>
+                                    </div>
+                                </a-checkbox>
+                            </div>
+                        </template>
+                    </div>
+                </a-checkbox-group>
+                <span
+                    class="w-full mt-4 text-sm text-center text-gray-400"
+                    v-if="dropdownOption.length == 0 && !isLoading"
+                >
+                    No Columns found!
+                </span>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, nextTick, onMounted } from 'vue'
+    import {
+        computed,
+        watch,
+        defineComponent,
+        ref,
+        nextTick,
+        onMounted,
+        inject,
+        PropType,
+        ComputedRef,
+        toRefs,
+    } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
+    import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useVModels } from '@vueuse/core'
+    import Loader from '@common/loaders/page.vue'
+
+    import useBody from './useBody'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
             Pill,
+            Loader,
             TablesTree,
         },
-        props: {},
+        emits: ['queryTextChange'],
+        props: {
+            selectedItems: {
+                type: Object as PropType<any[]>,
+                required: true,
+            },
+            queryText: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            tableQualfiedName: {
+                type: String,
+                required: true,
+            },
+        },
 
         setup(props, { emit }) {
+            const { tableQualfiedName } = toRefs(props)
+            const { selectedItems, queryText } = useVModels(props)
+
             const { getDataTypeImage } = useColumn()
-            const placeholder = 'Search from 6 columns'
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+
             const inputRef = ref()
+            const selectAll = ref(false)
             const topPosShift = ref(0)
-            const inputValue = ref('')
+            const inputValue1 = ref('')
+            const inputValue2 = ref('')
             const isAreaFocused = ref(false)
             const container = ref()
             const clickPos = ref({ left: 0, top: 0 })
-            const cols = ref([
-                {
-                    type: 'string',
-                    label: 'Customer',
-                },
-                {
-                    type: 'string',
-                    label: 'Customer',
-                },
-            ])
             const setFoucs = () => {
+                if (!tableQualfiedName.value) return
                 inputChange()
                 isAreaFocused.value = true
                 nextTick(() => {
-                    inputRef?.value?.focus()
+                    if (tableQualfiedName.value) inputRef?.value?.focus()
                 })
             }
-            const onBlur = () => {
-                isAreaFocused.value = false
-            }
+
             const handleContainerBlur = (event) => {
                 // if the blur was because of outside focus
                 // currentTarget is the parent element, relatedTarget is the clicked element
@@ -125,32 +227,109 @@
                 cols.value.push({ type, label })
             }
 
-            onMounted(() => {
-                topPosShift.value = container.value?.offsetHeight
-                console.log(container.value)
-            })
             const inputChange = () => {
+                console.log('called')
                 if (topPosShift.value !== container.value?.offsetHeight) {
                     topPosShift.value = container.value?.offsetHeight
                 }
             }
 
+            const getInitialBody = () => {
+                return {
+                    dsl: useBody({
+                        searchText: queryText.value,
+                        tableQualfiedName: tableQualfiedName.value,
+                    }),
+                    attributes: ['name', 'displayName', 'dataType'],
+                }
+            }
+            const { list, replaceBody, data, isLoading } = useAssetListing(
+                '',
+                false
+            )
+            watch(
+                [tableQualfiedName, queryText],
+                () => {
+                    replaceBody(getInitialBody())
+                },
+                {
+                    immediate: true,
+                }
+            )
+            const placeholder = computed(() => {
+                if (tableQualfiedName.value) {
+                    return `Search from ${totalCount.value} columns`
+                }
+                return `Select a table first`
+            })
+            const totalCount = computed(() => data.value?.approximateCount || 0)
+            const handleChange = (checkedValues: string) => {
+                console.log('checkedValue: ', checkedValues)
+                emit('update:modelValue', checkedValues)
+                emit('change', checkedValues)
+            }
+            const dropdownOption = computed(() => {
+                let data = list.value.map((ls) => ({
+                    label: ls.attributes?.displayName || ls.attributes?.name,
+                    type: ls.attributes?.dataType,
+                    value: ls.attributes?.displayName || ls.attributes?.name,
+                }))
+                data.sort((x, y) => {
+                    if (x.label < y.label) return -1
+                    if (x.label > y.label) return 1
+                    return 0
+                })
+                return data
+            })
+
+            const showAggregations = ref(false)
+            const dropdownVisibleChange = (open) => {
+                if (open) {
+                    showAggregations.value = true
+                } else {
+                    showAggregations.value = false
+                }
+            }
+
+            const input1Change = () => {
+                setFoucs()
+                queryText.value = inputValue1.value
+                emit('queryTextChange')
+            }
+            const input2Change = () => {
+                setFoucs()
+                queryText.value = inputValue2.value
+                emit('queryTextChange')
+            }
+
+            onMounted(() => {
+                topPosShift.value = container.value?.offsetHeight
+                console.log(container.value)
+            })
+
             return {
+                isLoading,
+                totalCount,
+                selectAll,
+                tableQualfiedName,
+                dropdownOption,
+                selectedItems,
                 placeholder,
                 inputChange,
                 topPosShift,
                 inputRef,
-                inputValue,
+                input1Change,
+                input2Change,
+                inputValue1,
+                inputValue2,
                 clickPos,
                 handleDeleteColumn,
                 onSelectedColumn,
                 container,
                 handleContainerBlur,
-                onBlur,
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,
-                cols,
             }
         },
     })
@@ -170,5 +349,22 @@
     }
     .position {
         @apply right-0;
+    }
+    .disable-bg {
+        background-color: #fbfbfb;
+    }
+</style>
+<style lang="less" module>
+    .atlanReverse {
+        > span:nth-child(2) {
+            @apply w-full pl-0;
+        }
+
+        :global(.ant-checkbox) {
+            top: 0px !important;
+        }
+    }
+    .custom_input {
+        background-color: #fbfbfb !important;
     }
 </style>

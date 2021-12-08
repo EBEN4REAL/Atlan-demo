@@ -92,12 +92,12 @@
                             <div class="mr-2 truncate max-w-3/4">
                                 {{ group.name }}
                             </div>
-                            <div
+                            <!-- <div
                                 v-if="group.isDefault === 'true'"
                                 class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
                             >
                                 Default
-                            </div>
+                            </div> -->
                         </div>
                         <p class="mb-0 text-gray-500 truncate">
                             {{ group.description }}
@@ -276,9 +276,9 @@
                     groupListAPIParams.offset = 0
                 }
                 // modify offset
-                const offset =
-                    (pagination.current - 1) * groupListAPIParams.limit
-                groupListAPIParams.offset = offset
+                // const offset =
+                //     (pagination.current - 1) * groupListAPIParams.limit
+                // groupListAPIParams.offset = offset
                 // fetch groups
                 getGroupList()
             }

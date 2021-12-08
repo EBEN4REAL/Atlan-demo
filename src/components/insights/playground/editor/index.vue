@@ -65,15 +65,22 @@
                             placement="bottom"
                             trigger="click"
                             :overlayStyle="{ padding: '0px !important' }"
+                            @visibleChange="
+                                (visible) => {
+                                    if (!visible) {
+                                        showQueryPreview = false
+                                    }
+                                }
+                            "
                         >
                             <template #content>
-                                <div
-                                    class="p-3 rounded"
-                                    style="width: 400px; height: 280px"
-                                ></div>
+                                <div>
+                                    <VQBSQLPreview />
+                                </div>
                             </template>
 
                             <div
+                                v-if="showVQB"
                                 class="items-center justify-center px-1 ml-1 rounded cursor-pointer hover:bg-gray-300"
                                 :class="showQueryPreview ? 'bg-gray-300' : ''"
                                 @click="toggleQueryPreviewPopover"
@@ -396,12 +403,14 @@
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
 
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
 
     export default defineComponent({
         components: {
+            VQBSQLPreview,
             VQB,
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
             CustomVariablesNav,
@@ -701,7 +710,6 @@
             /* VQB Preview */
             const toggleQueryPreviewPopover = () => {
                 showQueryPreview.value = !showQueryPreview.value
-                // generateVqbSQLPreview()
             }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------

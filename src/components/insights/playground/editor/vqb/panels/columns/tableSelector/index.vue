@@ -13,7 +13,10 @@
         @dropdownVisibleChange="dropdownVisibleChange"
         :loading="isLoading"
     >
-        <template v-for="item in dropdownOption" :key="item.label">
+        <template
+            v-for="(item, index) in dropdownOption"
+            :key="item.value + index"
+        >
             <a-select-option :value="item.value">
                 <div class="flex items-center justify-between truncate">
                     <div class="flex items-center truncate">
@@ -46,6 +49,7 @@
         defineComponent,
         watch,
         toRefs,
+        PropType,
         ref,
         computed,
         inject,
@@ -70,10 +74,15 @@
                 type: String,
                 required: true,
             },
+            filterValues: {
+                type: Object as PropType<String[]>,
+                required: false,
+                default: () => [],
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { typeName } = toRefs(props)
+            const { typeName, filterValues } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -114,6 +123,18 @@
                     columnCount: ls.attributes?.columnCount,
                     value: ls.attributes.qualifiedName,
                 }))
+
+                if (filterValues.value.length > 0) {
+                    let temp = new Set([])
+                    // console.log(filterValues.value, 'filterValues')
+                    // data.forEach((x) => {
+                    //     if (!filterValues.value.includes(x.value)) {
+                    //         temp.add(x)
+                    //     }
+                    // })
+                    // data = Array.from(temp)
+                    console.log(Array.from(temp), data)
+                }
                 data.sort((x, y) => {
                     if (x.label < y.label) return -1
                     if (x.label > y.label) return 1
@@ -131,6 +152,7 @@
                 }
             }
             return {
+                filterValues,
                 showAggregations,
                 dropdownVisibleChange,
                 typeName,

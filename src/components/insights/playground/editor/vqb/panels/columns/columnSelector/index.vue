@@ -6,7 +6,7 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center py-1 group"
+        class="relative flex items-center py-1 group z-1"
         :class="[
             isAreaFocused
                 ? ' border-primary-focus border-2 '
@@ -101,7 +101,7 @@
             @click.stop="() => {}"
             :style="`width: 100%;top:${topPosShift}px`"
             :class="[
-                'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
+                'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
             ]"
         >
             <div class="border-b border-gray-300">
@@ -204,11 +204,6 @@
                 type: Object as PropType<any[]>,
                 required: true,
             },
-            queryText: {
-                type: String,
-                required: true,
-                default: '',
-            },
             tableQualfiedName: {
                 type: String,
                 required: true,
@@ -217,8 +212,12 @@
 
         setup(props, { emit }) {
             const { tableQualfiedName } = toRefs(props)
-            const { selectedItems, queryText } = useVModels(props)
+            const queryText = ref('')
+            const { selectedItems } = useVModels(props)
             const map = ref({})
+            selectedItems.value.forEach((selectedItem) => {
+                map.value[selectedItem] = true
+            })
 
             const { getDataTypeImage } = useColumn()
             const activeInlineTab = inject(
@@ -255,9 +254,11 @@
             }
 
             const inputChange = () => {
-                if (topPosShift.value !== container.value?.offsetHeight) {
-                    topPosShift.value = container.value?.offsetHeight
-                }
+                nextTick(() => {
+                    if (topPosShift.value !== container.value?.offsetHeight) {
+                        topPosShift.value = container.value?.offsetHeight
+                    }
+                })
             }
 
             const getInitialBody = () => {
@@ -417,6 +418,7 @@
             })
 
             return {
+                queryText,
                 clearAllSelected,
                 findVisibility,
                 handleMouseOver,

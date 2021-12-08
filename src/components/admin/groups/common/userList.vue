@@ -126,11 +126,11 @@
             const userListAPIParams: any = reactive({
                 limit: 10,
                 offset: 0,
-                sort: 'first_name',
+                sort: 'firstName',
                 filter: {
                     $and: [
                         {
-                            email_verified: true,
+                            emailVerified: true,
                         },
                     ],
                 },
@@ -146,7 +146,7 @@
             const handleSearch = useDebounceFn(() => {
                 userListAPIParams.filter = {
                     $and: [
-                        { email_verified: true },
+                        { emailVerified: true },
                         {
                             $or: [
                                 {

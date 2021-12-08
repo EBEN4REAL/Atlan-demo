@@ -12,7 +12,7 @@ export default function useFacetUsers(immediate = true) {
     params.value.append('columns', 'last_name')
     params.value.append('columns', 'username')
     params.value.append('columns', 'id')
-    params.value.append('filter', '{"$and":[{"email_verified":true}]}')
+    params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
 
     const { data, mutate, isLoading, error } = Users.List(params, {
         asyncOptions: {
@@ -53,7 +53,7 @@ export default function useFacetUsers(immediate = true) {
                 'filter',
                 JSON.stringify({
                     $and: [
-                        { email_verified: true },
+                        { emailVerified: true },
                         {
                             $or: [
                                 { first_name: { $ilike: `%${value}%` } },

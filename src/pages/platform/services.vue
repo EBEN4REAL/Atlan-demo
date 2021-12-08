@@ -19,7 +19,7 @@
         setup() {
             const state = reactive({
                 iframeUrl:
-                    '/api/observe/d/TFHNXCk7k/atlan-service-overview?orgId=1&refresh=1m',
+                    '/api/observe/d/TFHNXCk7k/atlan-service-overview?orgId=1&refresh=1m&kiosk',
             })
 
             return {

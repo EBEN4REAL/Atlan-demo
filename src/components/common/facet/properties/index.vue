@@ -108,7 +108,7 @@
                             ) {
                                 return true
                             }
-                            return i.value != null
+                            return i.value != null || i.value !== ''
                         }
                     )
                 })

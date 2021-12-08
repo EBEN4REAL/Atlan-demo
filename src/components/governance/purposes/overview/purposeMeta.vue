@@ -2,18 +2,23 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
+            {{ persona.createdBy }}
             <div class="flex items-center text-sm">
-                <PopOverUser>
+                <PopOverUser :item="persona.createdBy">
                     <UserPill
-                        :username="username"
-                        :allowDelete="false"
+                        :username="persona.createdBy"
+                        :allow-delete="false"
+                        :enable-hover="true"
                     ></UserPill>
                 </PopOverUser>
             </div>
             <span class="text-sm text-gray-500">on</span>
-            <span class="text-sm text-gray">{{
-                timeStamp(persona?.createdAt)
-            }}</span>
+
+            <a-tooltip
+                :title="timeStamp(persona.createdAt, true)"
+                placement="right"
+                >{{ timeStamp(persona.createdAt) }}</a-tooltip
+            >
 
             <a-switch
                 class="ml-auto"
@@ -111,15 +116,11 @@
                 type: Object as PropType<IPurpose>,
                 required: true,
             },
-            username: {
-                type: String,
-                required: true,
-            },
         },
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
             const { classificationList } = useTypedefData()
-            const { username, persona } = toRefs(props)
+            const { persona } = toRefs(props)
 
             const enablePersonaCheck = ref(true)
 
@@ -198,7 +199,6 @@
 
             return {
                 timeStamp,
-                username,
                 selectedPersona,
                 updateClassifications,
                 selectedPersonaDirty,

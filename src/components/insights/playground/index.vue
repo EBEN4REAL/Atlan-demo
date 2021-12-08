@@ -283,6 +283,7 @@
                                     id: 'columns',
                                     hide: false,
                                     columns: [],
+                                    columnsData: [],
                                 },
                             ],
                         },

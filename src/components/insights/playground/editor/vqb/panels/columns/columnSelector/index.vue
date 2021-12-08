@@ -6,7 +6,7 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center py-1 group z-1"
+        class="relative flex items-center group"
         :class="[
             isAreaFocused
                 ? ' border-primary-focus border-2 '
@@ -204,6 +204,10 @@
                 type: Object as PropType<any[]>,
                 required: true,
             },
+            selectedColumnsData: {
+                type: Array,
+                required: true,
+            },
             tableQualfiedName: {
                 type: String,
                 required: true,
@@ -213,7 +217,7 @@
         setup(props, { emit }) {
             const { tableQualfiedName } = toRefs(props)
             const queryText = ref('')
-            const { selectedItems } = useVModels(props)
+            const { selectedItems, selectedColumnsData } = useVModels(props)
             const map = ref({})
             selectedItems.value.forEach((selectedItem) => {
                 map.value[selectedItem] = true
@@ -351,6 +355,7 @@
             })
 
             const onCheckboxChange = (checked, id) => {
+                console.log('COLUMNS: ', { checked, id })
                 inputChange()
                 selectAll.value = false
                 if (checked.target.checked) {
@@ -359,6 +364,26 @@
                     delete map.value[id]
                 }
                 selectedItems.value = [...Object.keys(map.value)]
+
+                console.log('columns: ', list.value)
+                let columns = []
+                Object.keys(map.value).forEach((col) => {
+                    let x = list.value.find((el) => {
+                        let label =
+                            el.attributes?.displayName || el.attributes?.name
+                        return label === col
+                    })
+                    columns.push({
+                        label:
+                            x?.attributes?.displayName || x?.attributes?.name,
+                        type: x?.attributes?.dataType,
+                        columnQualifiedName: x?.attributes.qualifiedName,
+                    })
+                })
+
+                selectedColumnsData.value = [...columns]
+
+                // console.log('selected columns: ', columns)
                 emit('checkboxChange', selectedItems.value)
             }
 

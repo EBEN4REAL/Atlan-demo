@@ -3,19 +3,7 @@
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
-                class="
-                    flex
-                    cursor-pointer
-                    h-6
-                    items-center
-                    justify-center
-                    py-0.5
-                    ml-2
-                    -mr-2
-                    px-1
-                    border-white
-                    text-gray-500
-                "
+                class="flex cursor-pointer h-6 items-center justify-center py-0.5 ml-2 -mr-2 px-1 border-white text-gray-500"
             >
                 <AtlanIcon class icon="KebabMenu" />
             </div>
@@ -31,10 +19,10 @@
                     <a-sub-menu key="themes">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 "
+                                class="flex items-center justify-between w-full mr-2"
                             >
                                 <div
-                                    class="flex items-center justify-between w-full text-gray-500 "
+                                    class="flex items-center justify-between w-full text-gray-500"
                                 >
                                     <span class="text-gray-700">Themes</span>
                                     <span>
@@ -77,7 +65,7 @@
                                     "
                                 >
                                     <div
-                                        class="flex items-center justify-between "
+                                        class="flex items-center justify-between"
                                     >
                                         <span>{{ themeObj.label }}</span>
                                         <AtlanIcon
@@ -99,10 +87,10 @@
                     <a-sub-menu key="Tab Spacing" style="min-width: 200px">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 "
+                                class="flex items-center justify-between w-full mr-2"
                             >
                                 <div
-                                    class="flex items-center justify-between w-full text-gray-500 "
+                                    class="flex items-center justify-between w-full text-gray-500"
                                 >
                                     <span class="text-gray-700"
                                         >Tab Spacing</span
@@ -193,10 +181,10 @@
                     <a-sub-menu key="fontsize" class="text-gray-500">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 text-gray-500 "
+                                class="flex items-center justify-between w-full mr-2 text-gray-500"
                             >
                                 <div
-                                    class="flex items-center justify-between w-full "
+                                    class="flex items-center justify-between w-full"
                                 >
                                     <span class="text-gray-700">Font size</span>
                                     <span>{{ editorConfig.fontSize }}</span>
@@ -310,10 +298,10 @@
                     <a-sub-menu key="cursorStyle" class="text-gray-500">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 text-gray-500 "
+                                class="flex items-center justify-between w-full mr-2 text-gray-500"
                             >
                                 <div
-                                    class="flex items-center justify-between w-full "
+                                    class="flex items-center justify-between w-full"
                                 >
                                     <span class="text-gray-700">Cursor</span>
                                     <span>{{

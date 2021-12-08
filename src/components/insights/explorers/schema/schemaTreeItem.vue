@@ -1241,6 +1241,7 @@
                                             id: '1',
                                             tableQualifiedName: undefined,
                                             columns: [],
+                                            columnsData: [],
                                         },
                                     ],
                                 },

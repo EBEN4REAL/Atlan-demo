@@ -209,6 +209,9 @@
             const handleAdd = (index, type) => {
                 const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
                 panelCopy.id = type
+                // if (type === 'aggregate') {
+                panelCopy.subpanels = []
+                // }
                 panelCopy.order =
                     Number(activeInlineTab.value.playground.vqb.panels.length) +
                     1

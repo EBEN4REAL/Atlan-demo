@@ -20,6 +20,7 @@
                         style="max-width: 600px"
                         v-if="subpanel.tableQualfiedName"
                         v-model:selectedItems="subpanel.columns"
+                        v-model:selectedColumnsData="subpanel.columnsData"
                         :tableQualfiedName="subpanel.tableQualfiedName"
                     >
                         <template #chip="{ item }">

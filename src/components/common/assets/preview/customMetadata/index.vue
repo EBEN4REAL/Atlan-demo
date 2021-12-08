@@ -2,11 +2,8 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanIcon icon="Loader" class="w-auto h-8 animate-spin" />
     </div>
-    <div
-        v-else
-        class="flex flex-col w-full h-full px-5 py-4 overflow-auto gap-y-6"
-    >
-        <div class="flex items-center justify-between">
+    <div v-else class="flex flex-col pl-5 mb-3">
+        <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
             <div>
                 <div
@@ -32,30 +29,34 @@
                 </div>
             </div>
         </div>
-        <div v-for="(a, x) in applicableList" :key="x">
-            <div class="">
-                <div class="mb-2 font-normal text-gray-500">
-                    <span>{{ a.displayName }}</span>
-                    <a-tooltip>
-                        <template #title>
-                            <span>{{ a.options.description }}</span>
-                        </template>
-                        <AtlanIcon
-                            v-if="a.options.description"
-                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                            icon="Info"
-                        />
-                    </a-tooltip>
+        <div
+            class="flex flex-col flex-grow pr-5 overflow-auto gap-y-5 scrollheight"
+        >
+            <div v-for="(a, x) in applicableList" :key="x">
+                <div class="">
+                    <div class="mb-2 font-normal text-gray-500">
+                        <span>{{ a.displayName }}</span>
+                        <a-tooltip>
+                            <template #title>
+                                <span>{{ a.options.description }}</span>
+                            </template>
+                            <AtlanIcon
+                                v-if="a.options.description"
+                                class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                icon="Info"
+                            />
+                        </a-tooltip>
+                    </div>
+
+                    <ReadOnly v-if="readOnly" :attribute="a" />
+
+                    <EditState
+                        v-else
+                        v-model="a.value"
+                        :attribute="a"
+                        @change="handleChange(x, a.value)"
+                    />
                 </div>
-
-                <ReadOnly v-if="readOnly" :attribute="a" />
-
-                <EditState
-                    v-else
-                    v-model="a.value"
-                    :attribute="a"
-                    @change="handleChange(x, a.value)"
-                />
             </div>
         </div>
     </div>
@@ -307,3 +308,8 @@
         },
     })
 </script>
+<style scoped>
+    .scrollheight {
+        max-height: calc(100vh - 12rem);
+    }
+</style>

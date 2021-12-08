@@ -24,6 +24,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementType,
         announcementTitle,
         readmeContent,
+        meanings
     } = useAssetInfo()
 
     const entity = ref({
@@ -87,6 +88,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
 
+    const localMeanings = ref(meanings(selectedAsset.value))
+
     const localResource = ref({
         link: '',
         title: '',
@@ -101,6 +104,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const descriptionRef = ref(null)
     const animationPoint = ref(null)
     const isConfetti = ref(false)
+    const shouldDrawerUpdate = ref(false)
 
     // Name Change
     const handleChangeName = () => {
@@ -189,7 +193,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         currentMessage.value = 'Announcement has been updated'
         mutate()
     }
+    const handleMeaningsUpdate = () => {
+        entity.value.attributes.meanings = localMeanings.value
+        body.value.entities = [entity.value]
 
+        mutate()
+    }
     // Resource Addition
     const handleAddResource = () => {
         const resourceEntity = ref<any>({
@@ -277,9 +286,16 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     const updateList = inject('updateList')
+    const updateDrawerList = inject('updateDrawerList')
+
     whenever(isUpdateReady, () => {
         if (!isDrawer) {
             updateList(asset.value)
+        } else {
+            shouldDrawerUpdate.value = true
+            if (typeof updateDrawerList === 'function') {
+                updateDrawerList(asset.value)
+            }
         }
     })
 
@@ -343,6 +359,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localOwners,
         localClassifications,
         localAnnouncement,
+        localMeanings,
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
@@ -357,5 +374,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localResource,
         handleUpdateReadme,
         localReadmeContent,
+        handleMeaningsUpdate,
+        shouldDrawerUpdate,
+        asset,
     }
 }

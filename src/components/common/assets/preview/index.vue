@@ -38,7 +38,8 @@
                 ></AtlanIcon>
                 <router-link
                     :to="getProfilePath(selectedAsset)"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap leadiing-none"
+                    @click="() => $emit('closeDrawer')"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
@@ -217,6 +218,9 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
+            resources: defineAsyncComponent(
+                () => import('@common/widgets/resources/index.vue')
+            ),
             // chat: defineAsyncComponent(
             //     () => import('./tabs/chat/assetChat.vue')
             // ),
@@ -249,9 +253,9 @@
                 default: false,
             },
         },
-        emits: ['assetMutation', 'closeSidebar'],
+        emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, isDrawer } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
@@ -291,14 +295,14 @@
 
             const route = useRoute()
             const isProfile = ref(false)
-            if (route.params.id) {
+            if (route.params.id && !isDrawer.value) {
                 isProfile.value = true
             }
 
             watch(
                 () => route.params.id,
                 (newId) => {
-                    if (newId) {
+                    if (newId && !isDrawer.value) {
                         isProfile.value = true
                     } else {
                         isProfile.value = false
@@ -337,6 +341,7 @@
             const router = useRouter()
 
             const handleAction = (key) => {
+                emit('closeDrawer')
                 switch (key) {
                     case 'open':
                         router.push(getProfilePath(selectedAsset.value))

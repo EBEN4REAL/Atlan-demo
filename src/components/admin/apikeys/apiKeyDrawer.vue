@@ -3,15 +3,21 @@
     <div class="flex flex-col justify-between h-full pt-5">
         <div>
             <div
-                class="relative flex items-center justify-between px-4 pb-5 border-b "
+                class="
+                    relative
+                    flex
+                    items-center
+                    justify-between
+                    px-4
+                    pb-5
+                    border-b
+                "
             >
                 <div
                     v-if="!generatedAPIKey.attributes"
                     class="text-lg font-bold"
                 >
-                    {{
-                        apiKeyDirty.id ? apiKeyDirty.displayName : 'Add new key'
-                    }}
+                    {{ apiKeyDirty.id ? apiKey.displayName : 'Add new key' }}
                 </div>
                 <div v-else class="text-lg font-bold">
                     {{ generatedAPIKey.attributes.displayName }}
@@ -60,7 +66,12 @@
                                     <template #prefix>
                                         <div
                                             v-if="!apiKeyDirty.personas.length"
-                                            class="flex items-center  text-primary group-hover:text-white"
+                                            class="
+                                                flex
+                                                items-center
+                                                text-primary
+                                                group-hover:text-white
+                                            "
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -70,7 +81,10 @@
                                         </div>
                                         <div
                                             v-else
-                                            class=" text-gray group-hover:text-white"
+                                            class="
+                                                text-gray
+                                                group-hover:text-white
+                                            "
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -89,15 +103,170 @@
                         </template>
                     </a-popover>
                 </div>
+                <div class="mb-4" v-if="!apiKeyDirty.id">
+                    <div class="mb-2 mr-2 text-gray-500">Expiry</div>
+                    <a-dropdown :trigger="['click']">
+                        <a-button
+                            class="rounded focus:ring-2 focus:border-primary"
+                            style="min-width: 168px"
+                        >
+                            <div class="flex items-center">
+                                <div class="flex flex-1">
+                                    {{
+                                        validityOptions.find(
+                                            (v) => v.value === validity
+                                        )
+                                            ? validityOptions.find(
+                                                  (v) => v.value === validity
+                                              ).label
+                                            : 'Custom'
+                                    }}
+                                </div>
+                                <div class="ml-4 text-gray-700">
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="h-4 -mt-0.5 -ml-0.5"
+                                    />
+                                </div>
+                            </div>
+                        </a-button>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item key="0" class="hover:bg-white">
+                                    <a-radio-group
+                                        v-model:value="validity"
+                                        class="w-full"
+                                    >
+                                        <div
+                                            class="
+                                                flex flex-col
+                                                w-full
+                                                px-1
+                                                text-sm text-gray-700
+                                                hover:text-primary
+                                            "
+                                        >
+                                            <template
+                                                v-for="item in validityOptions"
+                                                :key="item.label"
+                                            >
+                                                <div class="w-full px-0 py-1">
+                                                    <a-radio
+                                                        :value="item.value"
+                                                        @click="
+                                                            showDatePicker = false
+                                                        "
+                                                    >
+                                                        <div>
+                                                            {{ item.label }}
+                                                        </div>
+                                                    </a-radio>
+                                                </div>
+                                            </template>
+                                            <div
+                                                @click.stop="() => {}"
+                                                class="
+                                                    flex flex-col
+                                                    items-center
+                                                    py-2
+                                                    pb-0.5
+                                                    border-t border-300
+                                                    hover:text-primary
+                                                "
+                                            >
+                                                <div
+                                                    class="
+                                                        flex
+                                                        items-center
+                                                        justify-start
+                                                        w-full
+                                                        mb-2
+                                                    "
+                                                >
+                                                    <a-radio
+                                                        @click="
+                                                            showDatePicker = true
+                                                        "
+                                                        :value="'custom'"
+                                                        >Custom</a-radio
+                                                    >
+                                                </div>
+                                                <div
+                                                    :class="
+                                                        showDatePicker
+                                                            ? ''
+                                                            : 'hidden'
+                                                    "
+                                                >
+                                                    <a-date-picker
+                                                        v-model:value="
+                                                            validityDate
+                                                        "
+                                                        format="YYYY-MM-DD"
+                                                        :allowClear="true"
+                                                        :disabled-date="
+                                                            disabledDate
+                                                        "
+                                                    ></a-date-picker>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a-radio-group>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
+                <div
+                    v-else-if="
+                        apiKeyDirty.rawKey &&
+                        apiKeyDirty.rawKey.attributes &&
+                        apiKeyDirty.rawKey.attributes.validityStringRelative
+                    "
+                >
+                    <div class="mb-2 mr-2 text-gray-500">Expiry</div>
+                    <a-tooltip
+                        v-if="apiKeyDirty.rawKey.attributes.validityString"
+                        placement="bottom"
+                    >
+                        <template #title>{{
+                            apiKeyDirty.rawKey.attributes.validityString
+                        }}</template>
+                        {{
+                            apiKeyDirty.rawKey.attributes.validityStringRelative
+                        }}
+                    </a-tooltip>
+                    <div v-else>
+                        {{
+                            apiKeyDirty.rawKey.attributes.validityStringRelative
+                        }}
+                    </div>
+                </div>
             </div>
             <div
                 v-else
-                class="flex flex-col items-center justify-center w-full h-full px-4 "
+                class="
+                    flex flex-col
+                    items-center
+                    justify-center
+                    w-full
+                    h-full
+                    px-4
+                "
             >
                 <component :is="SuccessIllustration" class="mb-5"></component>
                 <div class="mb-5 text-xl font-bold">API key generated</div>
                 <div
-                    class="w-full h-24 p-4 mb-5 overflow-y-scroll bg-gray-100 border rounded "
+                    class="
+                        w-full
+                        h-24
+                        p-4
+                        mb-5
+                        overflow-y-scroll
+                        bg-gray-100
+                        border
+                        rounded
+                    "
                 >
                     {{ generatedAPIKey.attributes.accessToken }}
                 </div>
@@ -155,35 +324,45 @@
                     <span>Delete</span>
                 </AtlanBtn>
                 <template #content>
-                    <div class="mb-4 text-base font-bold">Delete API Key</div>
-                    <div class="mb-3.5">
-                        Are you sure you want to delete
-                        <span class="font-bold">
-                            {{ apiKeyDirty.displayName }}?</span
-                        >
-                    </div>
-                    <div class="flex justify-end mb-2">
-                        <AtlanBtn
-                            color="secondary"
-                            padding="compact"
-                            size="sm"
-                            class="mr-3 shadow-sm"
-                            @click="isDeletePopoverVisible = false"
-                        >
-                            <span>Cancel</span></AtlanBtn
-                        >
-                        <AtlanBtn
-                            class="mr-3 text-white bg-transparent border-none  bg-error"
-                            size="lg"
-                            padding="compact"
-                            :is-loading="deleteAPIKeyLoading"
-                            :disabled="deleteAPIKeyLoading"
-                            @click="$emit('deleteAPIKey', apiKeyDirty.id)"
-                        >
-                            <AtlanIcon icon="Delete" />
-                            <span v-if="deleteAPIKeyLoading">Deleting</span>
-                            <span v-else>Delete</span>
-                        </AtlanBtn>
+                    <div class="px-4 py-3">
+                        <div class="mb-4 text-base font-bold">
+                            Delete API Key
+                        </div>
+                        <div class="mb-3.5">
+                            Are you sure you want to delete
+                            <span class="font-bold">
+                                {{ apiKeyDirty.displayName }}?</span
+                            >
+                        </div>
+                        <div class="flex justify-end mb-2">
+                            <AtlanBtn
+                                color="secondary"
+                                padding="compact"
+                                size="sm"
+                                class="mr-3 shadow-sm"
+                                @click="isDeletePopoverVisible = false"
+                            >
+                                <span>Cancel</span></AtlanBtn
+                            >
+                            <AtlanBtn
+                                class="
+                                    mr-3
+                                    text-white
+                                    bg-transparent
+                                    border-none
+                                    bg-error
+                                "
+                                size="lg"
+                                padding="compact"
+                                :is-loading="deleteAPIKeyLoading"
+                                :disabled="deleteAPIKeyLoading"
+                                @click="$emit('deleteAPIKey', apiKeyDirty.id)"
+                            >
+                                <AtlanIcon icon="Delete" />
+                                <span v-if="deleteAPIKeyLoading">Deleting</span>
+                                <span v-else>Delete</span>
+                            </AtlanBtn>
+                        </div>
                     </div>
                 </template>
             </a-popover>
@@ -226,9 +405,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
+import dayjs, { Dayjs } from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { useVModels } from '@vueuse/core'
 import { message } from 'ant-design-vue'
+import { capitalizeFirstLetter } from '~/utils/string'
 import PillGroup from '@/UI/pill/pillGroup.vue'
 import Pill from '@/UI/pill/pill.vue'
 import PersonaList from '@/common/popover/persona/personaList.vue'
@@ -239,6 +421,12 @@ import { copyToClipboard } from '~/utils/clipboard'
 import { formatDateTime } from '~/utils/date'
 
 import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
+
+dayjs.extend(relativeTime)
+
+const DEFAULT_VALIDITY_IN_YEARS = 13 // 13 years; same as BE
+const DEFAULT_VALIDITY_IN_SECONDS =
+    DEFAULT_VALIDITY_IN_YEARS * 365 * 24 * 60 * 60
 
 export default defineComponent({
     name: 'APIKeyDrawer',
@@ -264,16 +452,30 @@ export default defineComponent({
     emits: ['updateAPIKey', 'createAPIKey', 'closeDrawer'],
     setup(props, { emit }) {
         const apiKeyDirty = ref({})
-        // const apiKeyDirtyPersonas = ref([])
-
         const nameEmptyOnSubmit = ref(false)
         const addPersonaPopoverVisible = ref(false)
         const isDeletePopoverVisible = ref(false)
         const { generatedAPIKey } = useVModels(props, emit)
-
+        const validityDate = ref(dayjs()) // actual expiry date in case of existing api key and selected custom expiry date in case of new apikey
         const showDeletePopover = () => {
             isDeletePopoverVisible.value = true
         }
+        const showDatePicker = ref(false)
+        const validity = ref('') // handles dropdown options
+        const validityOptions = ref([
+            {
+                label: 'Never',
+                value: 'never',
+            },
+            {
+                label: '1 Week',
+                value: 'one-week',
+            },
+            {
+                label: '1 Month',
+                value: 'one-month',
+            },
+        ])
         watch(
             () => props.deleteAPIKeyLoading,
             (newVal, prevVal) => {
@@ -287,9 +489,24 @@ export default defineComponent({
                 nameEmptyOnSubmit.value = true
                 return
             }
+            //calculate validity seconds from validityDate in case of custom
+            if (validity.value === 'never') {
+                const validityUnixEpoch =
+                    dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
+                // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                validityDate.value = dayjs.unix(validityUnixEpoch)
+            } else if (validity.value === 'one-week') {
+                validityDate.value = dayjs().add(1, 'week')
+            } else if (validity.value === 'one-month') {
+                validityDate.value = dayjs().add(1, 'month')
+            }
+            // if custom, make no changes to validity date
+            const modifiedDate = validityDate.value.endOf('day')
+            const validityInSeconds = modifiedDate.diff(dayjs(), 's')
             if (props?.apiKey?.id)
                 emit('updateAPIKey', {
                     ...apiKeyDirty.value,
+                    validitySeconds: validityInSeconds,
                     personas: (apiKeyDirty?.value?.personas ?? []).map(
                         (p) => p.id
                     ),
@@ -297,6 +514,7 @@ export default defineComponent({
             else
                 emit('createAPIKey', {
                     ...apiKeyDirty.value,
+                    validitySeconds: validityInSeconds,
                     personas: (apiKeyDirty?.value?.personas ?? []).map(
                         (p) => p.id
                     ),
@@ -309,6 +527,26 @@ export default defineComponent({
                     (persona) => ({ id: persona.id, name: persona.persona })
                 )
                 apiKeyDirty.value = { ...props.apiKey, personas }
+                if (
+                    props?.apiKey?.id &&
+                    props?.apiKey?.rawKey?.attributes?.createdAt &&
+                    props?.apiKey?.validitySeconds
+                ) {
+                    // adding validity in seconds to created timestamp unix epoch to find the date till which the api key is valid
+                    // const validityUnixEpoch =
+                    //     dayjs(
+                    //         props?.apiKey?.rawKey?.attributes?.createdAt
+                    //     ).unix() + parseInt(props.apiKey.validitySeconds)
+                    // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                    validityDate.value =
+                        props?.apiKey?.rawKey?.attributes?.validity
+                } else {
+                    const validityUnixEpoch =
+                        dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
+                    // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                    validityDate.value = dayjs.unix(validityUnixEpoch)
+                    validity.value = 'never'
+                }
             },
             { immediate: true, deep: true }
         )
@@ -326,7 +564,6 @@ export default defineComponent({
                     },
                     'en-GB'
                 )
-                console.log(createDate)
                 const data = generatedAPIKey.value.attributes.accessToken
                 const filename = `${generatedAPIKey.value.attributes.displayName}_${createDate}_atlan api key.txt`
                 const type = 'text/plain'
@@ -344,6 +581,28 @@ export default defineComponent({
                 generatedAPIKey.value = {}
             emit('closeDrawer')
         }
+        const disabledDate = (current: Dayjs) => {
+            // Cannot select days before today and after 13 years from today
+            const validityUnixEpoch =
+                dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
+            return (
+                dayjs(current) < dayjs().startOf('day') ||
+                dayjs(current) > dayjs.unix(validityUnixEpoch).endOf('day')
+            )
+        }
+        /* Following computed properties are reqd. only for displaying expiry date of existing API Key*/
+        const validityDateStringRelative = computed(() => {
+            if (validityDate && validityDate.value) {
+                return capitalizeFirstLetter(validityDate.value.fromNow())
+            }
+            return ''
+        })
+        const validityDateString = computed(() => {
+            if (validityDate && validityDate.value) {
+                return formatDateTime(validityDate.value.format())
+            }
+            return ''
+        })
         return {
             apiKeyDirty,
             handleSave,
@@ -356,6 +615,14 @@ export default defineComponent({
             SuccessIllustration,
             showDeletePopover,
             isDeletePopoverVisible,
+            validityDate,
+            disabledDate,
+            dayjs,
+            validityOptions,
+            validity,
+            showDatePicker,
+            validityDateStringRelative,
+            validityDateString,
         }
     },
 })

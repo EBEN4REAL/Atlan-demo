@@ -175,11 +175,13 @@
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span>Description</span>
-                    <AtlanIcon
-                        icon="User"
-                        class="h-3 mr-1"
-                        v-if="isUserDescription(selectedAsset)"
-                    ></AtlanIcon>
+                    <a-tooltip title="User Description" placement="left">
+                        <AtlanIcon
+                            icon="User"
+                            class="h-3 mr-1"
+                            v-if="isUserDescription(selectedAsset)"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
             </Shortcut>
 
@@ -262,7 +264,12 @@
             >
                 Terms
             </p>
-            <Terms :selected-asset="selectedAsset" class="px-5"></Terms>
+            <Terms 
+                :selected-asset="selectedAsset" 
+                v-model="localMeanings"
+                @change="handleMeaningsUpdate"
+                class="px-5">
+            </Terms>
         </div>
 
         <div
@@ -397,6 +404,8 @@
                 localCertificate,
                 localOwners,
                 localClassifications,
+                localMeanings,
+                handleMeaningsUpdate,
                 handleChangeName,
                 handleChangeDescription,
                 handleOwnersChange,
@@ -464,6 +473,8 @@
                 descriptionRef,
                 sampleDataVisible,
                 showSampleDataModal,
+                localMeanings,
+                handleMeaningsUpdate,
                 isUserDescription,
             }
         },

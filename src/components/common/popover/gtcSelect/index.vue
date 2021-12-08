@@ -10,7 +10,7 @@
             <template #content>
                 <div class="px-2 py-1">
                     <div
-                        class="flex items-center p-1 cursor-pointer  hover:bg-primary-light grou"
+                        class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
                         @click="handleSelect('AtlasGlossaryTerm')"
                     >
                         <AtlanIcon
@@ -24,7 +24,7 @@
                 </div>
                 <div class="px-2 py-1">
                     <div
-                        class="flex items-center p-1 cursor-pointer  hover:bg-primary-light grou"
+                        class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
                         @click="handleSelect('AtlasGlossaryCategory')"
                     >
                         <AtlanIcon
@@ -33,21 +33,6 @@
                         ></AtlanIcon>
                         <div class="overflow-ellipsis group-hover:text-primary">
                             Category
-                        </div>
-                    </div>
-                </div>
-
-                <div class="px-2 py-1">
-                    <div
-                        class="flex items-center p-1 cursor-pointer  hover:bg-primary-light grou"
-                        @click="handleSelect('AtlasGlossary')"
-                    >
-                        <AtlanIcon
-                            icon="Glossary"
-                            class="self-center pr-1"
-                        ></AtlanIcon>
-                        <div class="overflow-ellipsis group-hover:text-primary">
-                            Glossary
                         </div>
                     </div>
                 </div>

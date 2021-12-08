@@ -60,7 +60,7 @@
                     </div>
                 </div>
             </div>
-            <div v-else class="text-gray">{{ selectedUser.last_name }}</div>
+            <div v-else class="text-gray">{{ selectedUser.lastName }}</div>
         </div>
     </div>
 </template>
@@ -83,12 +83,12 @@
         },
         setup(props, context) {
             const isUpdate = ref(false)
-            const lastNameLocal = ref(props.selectedUser.last_name)
+            const lastNameLocal = ref(props.selectedUser.lastName)
             const updateErrorMessage = ref('')
             const updateSuccess = ref(false)
             const updateLoading = ref(false)
             const onUpdate = () => {
-                lastNameLocal.value = props.selectedUser.last_name
+                lastNameLocal.value = props.selectedUser.lastName
                 isUpdate.value = true
             }
             const onCancel = () => {
@@ -112,7 +112,7 @@
                         if (isReady && !error.value && !isLoading.value) {
                             updateSuccess.value = true
                             updateErrorMessage.value = ''
-                            props.selectedUser.last_name = lastNameLocal.value
+                            props.selectedUser.lastName = lastNameLocal.value
                             isUpdate.value = false
                             setTimeout(() => {
                                 updateSuccess.value = false

@@ -87,4 +87,5 @@
 meta:
     layout: default
     requiresAuth: true
+    role: $admin
 </route>

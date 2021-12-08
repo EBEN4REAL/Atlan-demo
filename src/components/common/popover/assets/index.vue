@@ -103,7 +103,7 @@
                             }`"
                         />
                         <div
-                            class="text-xs tracking-tight text-gray-500 break-all max-w-90"
+                            class="max-w-full text-xs tracking-tight text-gray-500 break-all "
                         >
                             {{ table }}
                         </div>
@@ -176,7 +176,13 @@
                 <router-link v-if="!slots?.button" :to="path">
                     <a-button class="mt-3" block>
                         <strong>
-                            View {{ title?.toLowerCase() === 'view' ? "" : title?.toLowerCase()}} profile
+                            View
+                            {{
+                                title?.toLowerCase() === 'view'
+                                    ? ''
+                                    : title?.toLowerCase()
+                            }}
+                            profile
                         </strong>
                     </a-button>
                 </router-link>
@@ -301,8 +307,5 @@
         height: 4px;
         width: 4px;
         border-radius: 50%;
-    }
-    .max-w-90{
-        max-width: 90%;
     }
 </style>

@@ -4,6 +4,10 @@ import { ref, Ref, computed } from 'vue'
 import { LIST_API_KEYS } from '~/services/service/apikeys/key'
 import { APIKey } from '~/services/service/apikeys'
 import { formatDateTime } from '~/utils/date'
+import { capitalizeFirstLetter } from '~/utils/string'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(relativeTime)
 
 export interface APIKeyParams {
     offset: number
@@ -11,13 +15,40 @@ export interface APIKeyParams {
     sort?: string
     filter?: unknown
 }
+const getAPIKeyValidity = (apikey) => {
+    if (
+        apikey?.attributes?.createdAt &&
+        apikey.attributes['accessTokenLifespan']
+    ) {
+        const validityUnixEpoch =
+            dayjs(apikey?.attributes?.createdAt).unix() +
+            parseInt(apikey.attributes['accessTokenLifespan'])
+        // getting dayjs obj from the calculated unix epoch to pass in datepicker
+        return dayjs.unix(validityUnixEpoch)
+    }
+    return undefined
+}
+const getAPIKeyValidityStringRelative = (apikey) => {
+    if (getAPIKeyValidity(apikey)) {
+        return capitalizeFirstLetter(getAPIKeyValidity(apikey).fromNow())
+    }
+    return ''
+}
+const getAPIKeyValidityString = (apikey) => {
+    // console.log(getAPIKeyValidity(apikey).format())
+    // return ''
+    if (getAPIKeyValidity(apikey)) {
+        return formatDateTime(getAPIKeyValidity(apikey).format())
+    }
+    return ''
+}
 export default function useAPIKeysList(
     payload: Ref<APIKeyParams | null> = ref(null)
 ) {
     const params: Ref<APIKeyParams> = ref({
         offset: 0,
         limit: 100,
-        sort: '-created_at',
+        sort: '-createdAt',
         filter: {},
     })
     const selectedAPIKey = ref({
@@ -60,6 +91,10 @@ export default function useAPIKeysList(
                         formatDateTime(apikey?.attributes?.createdAt || '', {
                             dateStyle: 'medium',
                         }) || '',
+                    validity: getAPIKeyValidity(apikey),
+                    validityStringRelative:
+                        getAPIKeyValidityStringRelative(apikey),
+                    validityString: getAPIKeyValidityString(apikey),
                 },
             })) ?? []
     )
@@ -70,7 +105,7 @@ export default function useAPIKeysList(
     )
     const searchAPIKeys = useDebounceFn((searchText: string) => {
         params.value.filter = searchText.length
-            ? { display_name: { $ilike: `${searchText}%` } }
+            ? { displayName: { $ilike: `${searchText}%` } }
             : {}
         reFetchList()
     }, 200)

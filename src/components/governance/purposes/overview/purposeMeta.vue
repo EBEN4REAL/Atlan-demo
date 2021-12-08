@@ -12,7 +12,7 @@
             </div>
             <span class="text-sm text-gray-500">on</span>
             <span class="text-sm text-gray">{{
-                persona.created_at?.slice(0, -17)
+                timeStamp(persona?.createdAt)
             }}</span>
 
             <a-switch
@@ -100,6 +100,8 @@
     import { selectedPersona } from '../composables/usePurposeList'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
+    import { formatDateTime } from '~/utils/date'
+    import { useTimeAgo } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PurposeMeta',
@@ -185,8 +187,17 @@
                 selectedClassifications.value =
                     mapClassificationsFromNames.value
             })
+            const timeStamp = (time, raw: boolean = false) => {
+                if (time) {
+                    return raw
+                        ? formatDateTime(time) || 'N/A'
+                        : useTimeAgo(time).value
+                }
+                return ''
+            }
 
             return {
+                timeStamp,
                 username,
                 selectedPersona,
                 updateClassifications,

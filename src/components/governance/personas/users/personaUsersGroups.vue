@@ -417,7 +417,7 @@
     import Avatar from '~/components/common/avatar/avatar.vue'
     import ErrorView from '@common/error/index.vue'
     import { reFetchList } from '../composables/usePersonaList'
-    import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     import {
         isEditing,

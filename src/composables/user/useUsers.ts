@@ -8,28 +8,67 @@ import { roleMap } from '~/constant/role'
 
 import { Users } from '~/services/service/users'
 import { LIST_USERS } from '~/services/service/users/key'
+import { useOptions } from '~/services/api/common'
+import axios from 'axios'
+import { mutate } from 'swrv'
 
 export const getUserName = (user: any) => {
-    const { first_name } = user
-    const { last_name } = user
-    if (first_name) {
-        return `${first_name} ${last_name || ''}`
+    const { firstName } = user
+    const { lastName } = user
+    if (firstName) {
+        return `${firstName} ${lastName || ''}`
     }
-    return user.email
+    return user.username
 }
+
+const getWorkspaceRole = (user: any) => {
+    const { roles, defaultRoles } = user
+
+    const filterHelper = (a) => a.filter((role: string) => role.startsWith('$'))
+    const atlanRoles = [
+        ...new Set([...filterHelper(roles), ...filterHelper(defaultRoles)]),
+    ]
+    if (atlanRoles.includes('$admin')) {
+        return 'Admin'
+    }
+    if (atlanRoles.includes('$member')) {
+        return 'Member'
+    }
+    if (atlanRoles.includes('$guest')) {
+        return 'Guest'
+    }
+}
+
+const getUserPersona = (user: any) => {
+    const { roles } = user
+
+    const roleFilter = roles.filter(
+        (role: string) =>
+            role !== 'default-roles-default' &&
+            !role.startsWith('$') &&
+            !role.startsWith('connection_admins_')
+    )
+
+    return roleFilter
+}
+
 const getUserRole = (user: any) => {
-    const { roles, default_roles } = user
+    const { roles, defaultRoles } = user
     let atlanRoles: string[] = []
     const atlanRole = { name: '', code: '' }
 
     const filterHelper = (a) => a.filter((role: string) => role.startsWith('$'))
 
-    if (roles?.length) atlanRoles = filterHelper(roles)
+    const roleFilter = roles.filter(
+        (role: string) => role !== 'default-roles-default'
+    )
 
-    if (default_roles?.length)
-        atlanRoles = [
-            ...new Set([...atlanRoles, ...filterHelper(default_roles)]),
-        ]
+    atlanRoles = [
+        ...new Set([
+            ...filterHelper(roleFilter),
+            ...filterHelper(defaultRoles),
+        ]),
+    ]
 
     // eslint-disable-next-line no-restricted-syntax
     for (const code in roleMap)
@@ -57,7 +96,7 @@ const getUserStatus = (user: any) => {
             status: 'Locked',
         }
     }
-    if (!user.email_verified) {
+    if (!user.emailVerified) {
         return {
             color: 'text-error',
             icon: 'fa lock',
@@ -74,9 +113,11 @@ export const getFormattedUser = (user: any) => {
     const localUser = {
         ...user,
         name: getUserName(user),
-        group_count_string: pluralizeString('group', user.group_count || 0),
+        group_count_string: pluralizeString('group', user.groupCount || 0),
         status_object: getUserStatus(user),
         role_object: getUserRole(user),
+        workspaceRole: getWorkspaceRole(user),
+        personaList: getUserPersona(user),
         created_at_time_ago: user.created_timestamp
             ? useTimeAgo(user.created_timestamp).value
             : '',
@@ -88,38 +129,50 @@ const defaultCacheOption = {
     cacheOptions: {
         shouldRetryOnError: false,
         revalidateOnFocus: false,
-        cache: new LocalStorageCache(),
-        dedupingInterval: 1,
+        dedupingInterval: 0,
     },
 }
-export const useUsers = (
-    userListAPIParams,
-    cacheKey?: string,
-    cacheOption = defaultCacheOption
-) => {
-    const {
-        data,
-        mutate: getUserList,
-        isLoading,
-        isValidating,
-        error,
-    } = Users.List(userListAPIParams, {
-        ...cacheOption,
-        cacheKey: cacheKey ?? LIST_USERS,
+export const useUsers = (userListAPIParams, immediate = true) => {
+    const options: useOptions = {}
+    let cancel = axios.CancelToken.source()
+    options.options = ref({
+        cancelToken: cancel.token,
     })
+
+    options.asyncOptions = ref({
+        resetOnExecute: false,
+        immediate,
+    })
+
+    const { data, mutate, isLoading, isValidating, error } = Users.List(
+        userListAPIParams,
+        options
+    )
 
     const localUsersList: Ref<any[]> = ref([])
 
-    watch(data, () => {
-        const escapedData = data?.value?.records
-            ? data?.value?.records?.map((user: any) => getFormattedUser(user))
-            : [] // to prevent maping undefined
+    const userList: Ref<any[]> = ref([])
 
-        if (data && data.value) {
-            if (userListAPIParams.offset > 0) {
-                localUsersList.value = [...localUsersList.value, ...escapedData]
-            } else {
-                localUsersList.value = escapedData
+    watch(data, () => {
+        console.log('changed')
+
+        if (data.value.records) {
+            const escapedData = data?.value?.records
+                ? data?.value?.records?.map((user: any) =>
+                    getFormattedUser(user)
+                )
+                : [] // to prevent maping undefined
+            userList.value = escapedData
+
+            if (data && data.value) {
+                if (userListAPIParams.offset > 0) {
+                    localUsersList.value = [
+                        ...localUsersList.value,
+                        ...escapedData,
+                    ]
+                } else {
+                    localUsersList.value = escapedData
+                }
             }
         }
     })
@@ -128,16 +181,31 @@ export const useUsers = (
         () => localUsersList.value || []
     )
     const { state, STATES } = swrvState(data, error, isValidating)
-    const userList = computed(() => {
-        if (data.value && data?.value?.records)
-            return data?.value.records.map((user: any) =>
-                getFormattedUser(user)
-            )
-        return []
-    })
+    // const userList = computed(() => {
+    //     if (data.value && data?.value?.records)
+    //         return data?.value.records.map((user: any) =>
+    //             getFormattedUser(user)
+    //         )
+    //     return []
+    // })
 
     const totalUserCount = computed(() => data?.value?.total_record ?? 0)
     const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
+
+    const cancelRequest = () => {
+        if (cancel) {
+            cancel.cancel('operation cancelled')
+        }
+        cancel = axios.CancelToken.source()
+        options.options.value = {
+            cancelToken: cancel.token,
+        }
+    }
+
+    const getUserList = () => {
+        cancelRequest()
+        mutate()
+    }
 
     return {
         state,
@@ -150,6 +218,8 @@ export const useUsers = (
         isLoading,
         isValidating,
         error,
+        cancelRequest,
+        mutate,
     }
 }
 interface params {

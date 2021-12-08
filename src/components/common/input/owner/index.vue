@@ -24,32 +24,13 @@
                 v-if="!readOnly"
                 shape="circle"
                 size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-if="usedForAssets">
-            <template
-                v-for="username in ownerUsers(selectedAsset)"
-                :key="username"
-            >
-                <PopOverUser :item="username">
-                    <UserPill
-                        :username="username"
-                        :allow-delete="!readOnly"
-                        :enable-hover="enableHover"
-                        @click="handleClickUser(username)"
-                        @delete="handleDeleteUser"
-                    ></UserPill>
-                </PopOverUser>
-            </template>
-        </template>
-        <template
-            v-for="username in localValue?.ownerUsers"
-            v-else
-            :key="username"
-        >
+
+        <template v-for="username in localValue?.ownerUsers" :key="username">
             <PopOverUser :item="username">
                 <UserPill
                     :username="username"
@@ -60,19 +41,8 @@
                 ></UserPill>
             </PopOverUser>
         </template>
-        <template v-if="usedForAssets">
-            <template v-for="name in ownerGroups(selectedAsset)" :key="name">
-                <PopOverGroup :item="name">
-                    <GroupPill
-                        :name="name"
-                        :allowDelete="!readOnly"
-                        @delete="handleDeleteGroup"
-                        @click="handleClickGroup(name)"
-                        :enableHover="enableHover"
-                    ></GroupPill>
-                </PopOverGroup> </template
-        ></template>
-        <template v-for="name in localValue?.ownerGroups" v-else :key="name">
+
+        <template v-for="name in localValue?.ownerGroups" :key="name">
             <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
@@ -87,7 +57,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs, PropType } from 'vue'
 
     // Utils
     import {
@@ -110,6 +80,9 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
+    // Types
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'OwnersWidget',
@@ -147,15 +120,22 @@
                 required: false,
                 default: false,
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const { readOnly, enableHover, destroyTooltipOnHide } =
                 toRefs(props)
+
             const localValue = ref(modelValue.value)
 
-            const { ownerGroups, ownerUsers, selectedAsset } = useAssetInfo()
+            const { ownerGroups, ownerUsers } = useAssetInfo()
+
             const isEdit = ref(false)
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -251,7 +231,6 @@
             return {
                 ownerGroups,
                 ownerUsers,
-                selectedAsset,
                 handleClickUser,
                 handleClickGroup,
                 localValue,

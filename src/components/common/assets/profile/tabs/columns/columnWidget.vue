@@ -5,190 +5,179 @@
             <SearchAndFilter
                 v-model:value="queryText"
                 :autofocus="true"
-                :placeholder="`Search ${colCount} columns`"
+                :placeholder="`Search ${totalCount} columns`"
                 @change="handleSearchChange"
-            >
-                <!-- <template #filter>
-                    <DataTypes
-                        :data-type-map="dataTypeMap"
-                        :clear-all-filters="clearAllFilters"
-                        @dataTypeFilter="handleFilterChange"
-                        @sort="handleChangeSort"
-                        @certification="handleCertificationFilter"
-                    />
-                </template> -->
-            </SearchAndFilter>
+                size="minimal"
+            />
         </div>
         <!-- Table -->
-        <div class="relative">
+        <div
+            class="flex items-center justify-center w-full border rounded  border-gray-light h-96"
+        >
+            <div
+                v-if="isLoading"
+                class="flex items-center justify-center flex-grow"
+            >
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-10 animate-spin"
+                ></AtlanIcon>
+            </div>
+            <div
+                v-if="!isLoading && error"
+                class="flex items-center justify-center flex-grow"
+            >
+                <ErrorView />
+            </div>
+
+            <div
+                v-else-if="columnsList.length === 0 && !isLoading"
+                class="flex-grow"
+            >
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    desc="No columns found"
+                ></EmptyView>
+            </div>
+
             <a-table
+                v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 300 }"
+                :scroll="{ y: 342 }"
                 :pagination="false"
-                :loading="isLoading"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                size="small"
+                class="self-start"
+                :class="$style.columnTable"
             >
-                <!-- hash_index col -->
-                <template #hash_index="{ text, record }">
-                    <div
-                        :class="{
-                            'border-primary': record.key === selectedRow,
-                        }"
-                        class="
-                            absolute
-                            top-0
-                            left-0
-                            flex
-                            items-center
-                            justify-center
-                            w-full
-                            h-full
-                            border-l-4 border-transparent
-                        "
-                    >
-                        <span class="mr-1">{{ text }}</span>
-                    </div>
-                </template>
-                <!-- column_name col -->
-                <template #column_name="{ text, record }">
-                    <div :class="record.is_primary && 'flex items-center'">
+                <template #bodyCell="{ column, record, text }">
+                    <template v-if="column.key === 'hash_index'">
                         <div
-                            class="flex items-center"
-                            :class="record.is_primary && 'flex-grow'"
+                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-r  border-gray-light"
                         >
-                            <component
-                                :is="images[record.data_type]"
-                                class="w-4 h-4 mr-3"
-                            ></component>
-                            <!-- <Tooltip :tooltip-text="text" /> -->
-                            <a-tooltip placement="left">
-                                {{ text }}
-                            </a-tooltip>
-                            <div v-if="record.is_primary" class="mb-1 ml-2">
-                                <AtlanIcon icon="Pin" />
+                            {{ text }}
+                        </div>
+                    </template>
+                    <template v-else-if="column.key === 'column_name'">
+                        <div
+                            :class="{
+                                'border-primary': record.key === selectedRow,
+                                'flex items-center justify-between':
+                                    record.is_primary,
+                            }"
+                        >
+                            <div class="flex items-center">
+                                <component
+                                    :is="dataTypeCategoryImage(record.item)"
+                                    class="h-4 mr-2 text-gray-500 mb-0.5"
+                                ></component>
+
+                                <Tooltip
+                                    :tooltip-text="text"
+                                    classes="hover:text-primary mr-1"
+                                />
+
+                                <CertificateBadge
+                                    v-if="certificateStatus(record.item)"
+                                    :status="certificateStatus(record.item)"
+                                    :username="
+                                        certificateUpdatedBy(record.item)
+                                    "
+                                    :timestamp="
+                                        certificateUpdatedAt(record.item)
+                                    "
+                                    class="mb-0.5"
+                                ></CertificateBadge>
+                            </div>
+                            <div v-if="record.is_primary">
+                                <AtlanIcon icon="PrimaryKey" />
                             </div>
                         </div>
-                        <div v-if="record.is_primary">
-                            <AtlanIcon icon="PrimaryKey" />
-                        </div>
-                    </div>
-                </template>
-                <!-- description col -->
-                <template #description="{ text }">
-                    <!-- <Tooltip :tooltip-text="text" /> -->
-                    <a-tooltip placement="left">
-                        {{ text }}
-                    </a-tooltip>
-                </template>
-                <!-- popularity col -->
-                <template #popularity="{ text }">
-                    <a-progress :percent="text" :show-info="false" />
+                    </template>
+                    <template v-else-if="column.key === 'data_type'">
+                        <span class="data-type">{{ text.toUpperCase() }}</span>
+                    </template>
+                    <template v-else-if="column.key === 'description'">
+                        <Tooltip :tooltip-text="text" />
+                    </template>
                 </template>
             </a-table>
-            <div
-                v-if="columnsList.length <= 0 && !isLoading"
-                class="flex items-center justify-center mt-3"
-            >
-                <a-button @click="clearFiltersAndSearch"
-                    >Clear all filters</a-button
-                >
-            </div>
-            <div
-                v-if="isLoadMore"
-                class="flex items-center justify-center mt-3"
-            >
-                <button
-                    v-if="!isLoading"
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        py-2
-                        transition-all
-                        duration-300
-                        bg-white
-                        rounded-full
-                        text-primary
-                    "
-                    @click="loadMore"
-                >
-                    <p
-                        class="
-                            m-0
-                            mr-1
-                            overflow-hidden
-                            text-sm
-                            transition-all
-                            duration-300
-                            overflow-ellipsis
-                            whitespace-nowrap
-                        "
-                    >
-                        Load more
-                    </p>
-                    <AtlanIcon icon="ArrowDown" />
-                </button>
-            </div>
         </div>
-        <!-- TODO: Uncomment when bringing sidebar in profile -->
-        <!-- <teleport to="#overAssetPreviewSidebar">
-            <a-drawer
-                v-if="showColumnPreview"
-                v-model:visible="showColumnPreview"
-                placement="right"
-                :mask="false"
-                :get-container="false"
-                :wrap-style="{ position: 'absolute', width: '100%' }"
-                :keyboard="false"
-                :destroy-on-close="true"
-                :closable="false"
-                width="100%"
+
+        <!-- Pagination -->
+        <div
+            v-if="(columnsList && columnsList.length) || isLoading"
+            class="flex flex-row items-center justify-end w-full mt-4"
+        >
+            <AtlanBtn
+                class="bg-transparent rounded-r-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                :disabled="pagination.current === 1"
+                @click="handlePagination(pagination.current - 1)"
             >
-                <AssetPreview
-                    :selected-asset="selectedRowData"
-                    page="nonBiOverview"
-                    :show-cross-icon="true"
-                    @closeSidebar="handleCloseColumnSidebar"
-                    @asset-mutation="propagateToColumnList"
-                />
-            </a-drawer>
-        </teleport> -->
+                <AtlanIcon icon="CaretLeft" />
+            </AtlanBtn>
+            <AtlanBtn
+                class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default "
+                size="sm"
+                color="secondary"
+                padding="compact"
+            >
+                {{ pagination.current }} of
+                <span v-if="Math.ceil(pagination.total)">{{
+                    Math.ceil(pagination.total)
+                }}</span>
+
+                <div
+                    v-else-if="isValidating"
+                    class="flex items-center justify-center"
+                >
+                    <AtlanIcon icon="Loader" class="animate-spin"></AtlanIcon>
+                </div>
+            </AtlanBtn>
+
+            <AtlanBtn
+                class="bg-transparent rounded-l-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                :disabled="pagination.current === Math.ceil(pagination.total)"
+                @click="handlePagination(pagination.current + 1)"
+            >
+                <AtlanIcon icon="CaretRight" />
+            </AtlanBtn>
+        </div>
+
+        <AssetDrawer
+            :data="selectedRowData"
+            :showDrawer="showColumnSidebar"
+            @closeDrawer="handleCloseColumnSidebar"
+            @update="handleListUpdate"
+        />
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import {
-        defineComponent,
-        // inject,
-        watch,
-        computed,
-        ref,
-        Ref,
-        nextTick,
-        onMounted,
-    } from 'vue'
+    import { defineComponent, watch, computed, ref, Ref, nextTick } from 'vue'
+
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
-    import { storeToRefs } from 'pinia'
 
     // Components
-    // import DataTypes from '@common/facets/dataType.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-
-    // import Tooltip from '@/common/ellipsis/index.vue'
-    // import AssetPreview from '@/discovery/preview/assetPreview.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import AtlanBtn from '@/UI/button.vue'
 
     // Composables
-    import { images, dataTypeCategoryList } from '~/constant/dataType'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    // import {
-    //     useColumnsList,
-    //     // useColumnAggregation,
-    // } from '~/composables/discovery/useColumns'
     import {
         AssetAttributes,
         AssetRelationAttributes,
@@ -196,32 +185,39 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
-    // store
-    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         components: {
             SearchAndFilter,
-            // Tooltip,
-            // AssetPreview,
-            // DataTypes,
+            AssetDrawer,
+            EmptyView,
+            ErrorView,
+            Tooltip,
+            CertificateBadge,
+            AtlanBtn,
         },
         setup() {
             /** DATA */
             const columnsData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
-            const showColumnPreview = ref<boolean>(false)
+            const showColumnSidebar = ref<boolean>(false)
             const queryText = ref('')
             const columnsList: Ref<assetInterface[]> = ref([])
-            const sortOrder = ref('order|ascending')
-            const clearAllFilters = ref<boolean>(false)
-            const { columnCount } = useAssetInfo()
-            const discoveryStore = useAssetStore()
-            const { selectedAsset } = storeToRefs(discoveryStore)
+            const columnFromUrl: Ref<assetInterface[]> = ref([])
+
+            const {
+                selectedAsset,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
+                dataTypeCategoryImage,
+            } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
             const limit = ref(20)
@@ -232,38 +228,42 @@
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
+            const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                ...customMetadataProjections,
             ])
             const preference = ref({
                 sort: 'order-asc',
             })
             const relationAttributes = ref([...AssetRelationAttributes])
 
+            const assetQualifiedName = computed(
+                () => selectedAsset.value?.attributes?.qualifiedName
+            )
+
             const updateFacet = () => {
                 facets.value = {}
                 if (selectedAsset?.value.typeName?.toLowerCase() === 'table') {
-                    facets.value.tableQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
+                    facets.value.tableQualifiedName = assetQualifiedName.value
                 }
                 if (selectedAsset?.value.typeName?.toLowerCase() === 'view') {
-                    facets.value.viewQualifiedName =
-                        selectedAsset?.value.attributes.qualifiedName
+                    facets.value.viewQualifiedName = assetQualifiedName.value
                 }
             }
 
             updateFacet()
+
             const {
-                list,
+                freshList: list,
                 isLoading,
-                assetTypeAggregationList,
-                isLoadMore,
-                fetch,
                 quickChange,
                 totalCount,
-                getAggregationList,
+                error,
+                isValidating,
+                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -278,78 +278,10 @@
                 relationAttributes,
             })
 
-            const columnDataTypeAggregationList = computed(() =>
-                getAggregationList(
-                    `group_by_${aggregationAttributeName}`,
-                    [],
-                    true
-                )
-            )
-            console.log(list)
-            /** INJECTIONS */
-            // const assetDataInjection = inject('assetData')
-
             /** UTILS */
             const route = useRoute()
 
-            /** COMPUTED */
-            // const assetData = computed(() => assetDataInjection?.asset)
             const column = computed(() => route?.query?.column || '')
-            const assetQualifiedName = computed(
-                () => selectedAsset.value.attributes?.qualifiedName
-            )
-            const colCount = computed(() => columnCount(selectedAsset.value))
-
-            // const { list, isLoading, isLoadMore, reFetch, loadMore } =
-            //     useColumnsList(assetQualifiedName, {
-            //         query: queryText,
-            //         dataTypes: filters,
-            //         pinned: false,
-            //         sort: sortOrder,
-            //         certification: certificationFilters,
-            //     })
-            // const { list: pinnedList, reFetch: reFetchPin } = useColumnsList(
-            //     assetQualifiedName,
-            //     {
-            //         pinned: true,
-            //         query: queryText,
-            //         dataTypes: filters,
-            //         sort: sortOrder,
-            //         certification: certificationFilters,
-            //     }
-            // )
-
-            // const { dataTypeMap } = useColumnAggregation(assetQualifiedName)
-
-            // const handleSearchChange = useDebounceFn(() => {
-            //     reFetch()
-            //     reFetchPin()
-            // }, 150)
-
-            // const clearFiltersAndSearch = () => {
-            //     queryText.value = ''
-            //     clearAllFilters.value = true
-            //     reFetch()
-            //     reFetchPin()
-            //     nextTick(() => {
-            //         clearAllFilters.value = false
-            //     })
-            // }
-            // const handleChangeSort = (payload: any) => {
-            //     sortOrder.value = payload
-            //     reFetch()
-            //     reFetchPin()
-            // }
-            // const handleCertificationFilter = (payload: any) => {
-            //     certificationFilters.value = payload
-            //     reFetch()
-            //     reFetchPin()
-            // }
-            // const handleFilterChange = (payload: any) => {
-            //     filters.value = payload
-            //     reFetch()
-            //     reFetchPin()
-            // }
 
             const scrollToElement = () => {
                 const tableRow = document.querySelector(
@@ -365,9 +297,9 @@
             }
 
             const handleCloseColumnSidebar = () => {
-                showColumnPreview.value = false
                 selectedRow.value = null
                 selectedRowData.value = {}
+                showColumnSidebar.value = false
             }
             const openColumnSidebar = (columnOrder) => {
                 selectedRow.value = columnOrder
@@ -377,68 +309,62 @@
                     }
                 })
 
-                showColumnPreview.value = true
-            }
-
-            const getDataType = (type: string) => {
-                let label = ''
-                dataTypeCategoryList.forEach((i) => {
-                    if (i.type.includes(type?.toUpperCase())) label = i.label
-                })
-                return label
+                showColumnSidebar.value = true
             }
 
             // filterColumnsList
             const filterColumnsList = () => {
-                columnsList.value = [
-                    // ...pinnedList.value,
-                    ...list.value,
-                    // ...columnFromUrl.value,
-                ]
-                console.log(columnsList.value)
+                columnsList.value = [...list.value, ...columnFromUrl.value]
 
-                // In case column is selected from discovery and after clicking load more duplication of the same column happens
-                const uniqueColumns = {}
-                const filteredColumnsList = columnsList.value.filter(
-                    (col) =>
-                        !uniqueColumns[col.guid] &&
-                        (uniqueColumns[col.guid] = true)
-                )
-                console.log(filteredColumnsList)
-                const filteredListData = filteredColumnsList.map((i) => ({
+                const filteredListData = columnsList.value.map((i) => ({
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
                     column_name: i.attributes.name,
-                    data_type: getDataType(i.attributes.dataType),
+                    data_type: i.attributes.dataType,
                     is_primary: i.attributes.isPrimary,
                     description:
                         i.attributes.userDescription ||
                         i.attributes.description ||
                         '---',
-                    popularity: i.attributes.popularityScore || 8,
+                    item: i,
                 }))
                 columnsData.value = {
                     filteredList: filteredListData,
                 }
-
-                console.log(filteredListData)
-                if (column.value !== '') {
-                    columnsList.value?.forEach((singleRow) => {
-                        if (singleRow.guid === column.value) {
-                            openColumnSidebar(singleRow.attributes.order)
-                        }
-                    })
-
-                    nextTick(() => {
-                        scrollToElement()
-                    })
-                }
             }
+
+            const handleListUpdate = (asset: any) => {
+                updateList(asset)
+                selectedRowData.value = asset
+
+                // In case column from url was updated instead of the other list (20 items)
+                if (asset.guid === columnFromUrl.value[0]?.guid) {
+                    columnFromUrl.value[0] = asset
+                }
+
+                filterColumnsList()
+            }
+
+            const pagination = computed(() => ({
+                total: totalCount.value / limit.value,
+
+                current: offset.value / limit.value + 1,
+            }))
+
+            const handlePagination = (page) => {
+                offset.value = (page - 1) * 20
+                quickChange()
+            }
+
+            const handleSearchChange = useDebounceFn(() => {
+                offset.value = 0
+                quickChange()
+            }, 150)
 
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
-                    // Column preview trigger
+                    // Column drawer trigger
                     if (selectedRow.value === record.key)
                         handleCloseColumnSidebar()
                     else {
@@ -447,11 +373,6 @@
                 },
             })
 
-            const propagateToColumnList = (updatedAsset: assetInterface) => {
-                selectedRowData.value = updatedAsset
-                filterColumnsList()
-            }
-
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
                 record.key === selectedRow.value
@@ -459,82 +380,118 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch([list], () => {
-                filterColumnsList()
-            })
+            watch(
+                () => [...list.value],
+                () => {
+                    // If redirected from asset column discovery
+                    if (column.value !== '') {
+                        columnFromUrl.value = []
+                        const limit = ref(1)
+                        const offset = ref(0)
+                        const facets = ref({
+                            guid: column.value,
+                        })
+                        const fetchKey = computed(() => {
+                            if (
+                                list.value.some(
+                                    (item) => item.guid === column.value
+                                )
+                            ) {
+                                return null
+                            }
+                            return column.value
+                        })
+                        const dependentKey = ref(fetchKey.value)
 
-            // onMounted(() => {
-            //     // If redirected from asset column discovery
-            //     if (column.value !== '') {
-            //         const { list: urlColumnList } = useColumnsList(
-            //             assetQualifiedName,
-            //             { columnGuid: column }
-            //         )
-            //         watch([urlColumnList], () => {
-            //             columnFromUrl.value = urlColumnList.value
-            //         })
-            //     }
-            // })
+                        const { freshList: urlColumnList } = useDiscoverList({
+                            isCache: false,
+                            dependentKey,
+                            facets,
+                            limit,
+                            offset,
+                            attributes: defaultAttributes,
+                            relationAttributes,
+                        })
+                        watch([urlColumnList], () => {
+                            columnFromUrl.value = urlColumnList.value
+                            filterColumnsList()
+
+                            columnsList.value?.forEach((singleRow) => {
+                                if (singleRow.guid === column.value) {
+                                    openColumnSidebar(
+                                        singleRow.attributes.order
+                                    )
+                                }
+                            })
+
+                            nextTick(() => {
+                                scrollToElement()
+                            })
+                        })
+                        filterColumnsList()
+
+                        columnsList.value?.forEach((singleRow) => {
+                            if (singleRow.guid === column.value) {
+                                openColumnSidebar(singleRow.attributes.order)
+                            }
+                        })
+
+                        nextTick(() => {
+                            scrollToElement()
+                        })
+                    } else {
+                        filterColumnsList()
+                    }
+                }
+            )
+
             return {
                 rowClassName,
                 customRow,
-                // handleSearchChange,
-                // handleChangeSort,
-                // handleCertificationFilter,
-                // clearFiltersAndSearch,
-                // isLoadMore,
-                // // dataTypeMap,
-                // isLoading,
-                // loadMore,
-                // handleFilterChange,
-                isLoadMore,
-                dataTypeCategoryList,
+                handleSearchChange,
+                handleListUpdate,
                 handleCloseColumnSidebar,
-                propagateToColumnList,
-                clearAllFilters,
                 isLoading,
                 columnsList,
+                totalCount,
+                error,
+                isValidating,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
+                dataTypeCategoryImage,
                 selectedRow,
                 columnsData,
                 queryText,
-                colCount,
-                showColumnPreview,
+                handlePagination,
+                showColumnSidebar,
+                pagination,
                 selectedRowData,
-                images,
                 columns: [
                     {
-                        width: 40,
+                        width: 50,
                         title: '#',
                         dataIndex: 'hash_index',
-                        slots: { customRender: 'hash_index' },
                         key: 'hash_index',
+                        align: 'center',
                     },
                     {
-                        width: 200,
-                        title: 'Column name',
+                        width: 280,
+                        title: 'Column Name',
                         dataIndex: 'column_name',
-                        slots: { customRender: 'column_name' },
                         key: 'column_name',
                     },
                     {
                         width: 150,
-                        title: 'Data type',
+                        title: 'Data Type',
                         dataIndex: 'data_type',
                         key: 'data_type',
                     },
                     {
-                        width: 150,
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',
-                        slots: { customRender: 'description' },
-                    },
-                    {
-                        width: 150,
-                        title: 'Popularity',
-                        dataIndex: 'popularity',
-                        slots: { customRender: 'popularity' },
-                        key: 'popularity',
                     },
                 ],
             }
@@ -542,26 +499,41 @@
     })
 </script>
 
+<style lang="less" module>
+    .columnTable {
+        :global(.ant-table-container) {
+            @apply text-gray-700 text-sm font-normal !important;
+        }
+        :global(.ant-table-thead) {
+            max-height: 40px !important;
+            height: 40px !important;
+        }
+        :global(.ant-table-thead tr th) {
+            @apply text-gray-700 text-sm font-normal py-0  !important;
+        }
+        :global(.ant-table td) {
+            @apply cursor-pointer !important;
+        }
+        :global(.ant-table-container
+                table
+                > thead
+                > tr:first-child
+                th:first-child) {
+            @apply border-r border-gray-light text-gray-500 !important;
+        }
+        :global(.ant-table-tbody tr:not(.ant-table-measure-row)) {
+            max-height: 32px !important;
+            height: 32px !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
-    :global(.ant-table) {
-        @apply border border-gray-light !important;
+    @font-face {
+        font-family: Hack;
+        src: url('~/assets/fonts/hack/Hack-Regular.ttf');
     }
-    :global(.ant-table th) {
-        @apply whitespace-nowrap font-bold !important;
-    }
-    :global(.ant-table) {
-        -webkit-box-sizing: border-box !important;
-        -moz-box-sizing: border-box !important;
-        box-sizing: border-box !important;
-    }
-
-    :global(.ant-table td) {
-        @apply max-w-xs relative cursor-pointer !important;
-    }
-    :global(.ant-progress-status-success .ant-progress-bg) {
-        background-color: #1890ff !important;
-    }
-    :global(.ant-progress-inner) {
-        background-color: rgba(189, 205, 244, 0.53) !important;
+    .data-type {
+        font-family: Hack !important;
+        @apply text-gray-500 text-xs !important;
     }
 </style>

@@ -19,10 +19,11 @@
         AssetAttributes,
         InternalAttributes,
         SQLAttributes,
-        DefaultRelationAttributes,
+        AssetRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
         components: {
@@ -61,13 +62,16 @@
                 return id.value
             })
             const dependentKey = ref(fetchKey.value)
+
+            const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                ...customMetadataProjections,
             ])
-            const relationAttributes = ref([...DefaultRelationAttributes])
-            const { updateList, list, isLoading } = useDiscoverList({
+            const relationAttributes = ref([...AssetRelationAttributes])
+            const { list, isLoading } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -76,11 +80,6 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
-
-            /* const updateCurrentList = (asset) => {
-                updateList(asset)
-                 handlePreview(asset)
-            } */
 
             watch(list, () => {
                 if (list.value.length > 0) {

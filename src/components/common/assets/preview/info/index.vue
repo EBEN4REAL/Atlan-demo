@@ -174,7 +174,14 @@
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
-                    <span> Description</span>
+                    <span>Description</span>
+                    <a-tooltip title="User Description" placement="left">
+                        <AtlanIcon
+                            icon="User"
+                            class="h-3 mr-1"
+                            v-if="isUserDescription(selectedAsset)"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
             </Shortcut>
 
@@ -183,6 +190,7 @@
                 v-model="localDescription"
                 class="mx-4"
                 @change="handleChangeDescription"
+                :selected-asset="selectedAsset"
             />
         </div>
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
@@ -202,10 +210,10 @@
 
             <Owners
                 v-model="localOwners"
-                :guid="selectedAsset.guid"
                 :used-for-assets="true"
                 @change="handleOwnersChange"
                 class="px-5"
+                :selected-asset="selectedAsset"
             />
         </div>
 
@@ -282,10 +290,10 @@
             </Shortcut>
 
             <Certificate
-                :selected-asset="selectedAsset"
                 class="px-5"
                 v-model="localCertificate"
                 @change="handleChangeCertificate"
+                :selected-asset="selectedAsset"
             />
         </div>
         <a-modal
@@ -301,7 +309,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, defineAsyncComponent, inject, ref } from 'vue'
+    import {
+        defineComponent,
+        defineAsyncComponent,
+        inject,
+        ref,
+        toRefs,
+    } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
@@ -316,6 +330,7 @@
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -340,11 +355,21 @@
                         '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
                     )
             ),
+            AtlanIcon,
+        },
+        props: {
+            isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
             const actions = inject('actions')
             const selectedAsset = inject('selectedAsset')
             const switchTab = inject('switchTab')
+
+            const { isDrawer } = toRefs(props)
 
             const sampleDataVisible = ref<boolean>(false)
 
@@ -368,6 +393,7 @@
                 webURL,
                 assetTypeLabel,
                 isGTC,
+                isUserDescription,
             } = useAssetInfo()
 
             const {
@@ -389,7 +415,7 @@
                 nameRef,
                 descriptionRef,
                 animationPoint,
-            } = updateAssetAttributes(selectedAsset)
+            } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
@@ -449,6 +475,7 @@
                 showSampleDataModal,
                 localMeanings,
                 handleMeaningsUpdate,
+                isUserDescription,
             }
         },
     })

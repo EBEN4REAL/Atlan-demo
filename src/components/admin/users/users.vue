@@ -32,7 +32,7 @@
         </template>
 
         <div
-            v-if="error"
+            v-if="error && userList.length === 0"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>

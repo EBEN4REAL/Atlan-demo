@@ -18,8 +18,6 @@
             </SearchAdvanced>
         </div>
 
-        <!-- {{ list }} -->
-
         <AggregationTabs
             class="px-3 mb-1"
             v-model="postFacets.dataType"
@@ -27,25 +25,61 @@
             @change="handleDataTypeChange"
         ></AggregationTabs>
 
+        <div
+            v-if="isLoading"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-10 animate-spin"
+            ></AtlanIcon>
+        </div>
+        <div
+            v-if="!isLoading && error"
+            class="flex items-center justify-center flex-grow"
+        >
+            <ErrorView></ErrorView>
+        </div>
+        <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
+            <EmptyView
+                empty-screen="EmptyDiscover"
+                desc="No assets found"
+            ></EmptyView>
+        </div>
+        <!-- {{ list }} -->
         <AssetList
+            v-else
             ref="assetlistRef"
-            class="overflow-y-auto"
             :list="list"
             :isLoadMore="isLoadMore"
-            :isLoading="isLoading"
-        />
+            :isLoading="isValidating"
+            @loadMore="handleLoadMore"
+        >
+            <template v-slot:default="{ item }">
+                <ColumnItem
+                    :item="item"
+                    class="m-1"
+                    @update="handleListUpdate"
+                />
+            </template>
+        </AssetList>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
+
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Preferences from '@/assets/preference/index.vue'
 
-    import AssetList from './assetList.vue'
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
 
+    import AssetList from '@/common/assets/list/index.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+    import ColumnItem from './assetItem.vue'
+
     import {
         AssetAttributes,
         AssetRelationAttributes,
@@ -61,6 +95,9 @@
             Preferences,
             AggregationTabs,
             AssetList,
+            ColumnItem,
+            EmptyView,
+            ErrorView,
         },
         props: {
             selectedAsset: {
@@ -81,7 +118,7 @@
                 required: false,
             },
         },
-        setup(props, { emit }) {
+        setup(props) {
             const { selectedAsset } = toRefs(props)
 
             const aggregationAttributeName = 'dataType'
@@ -127,6 +164,9 @@
                 quickChange,
                 totalCount,
                 getAggregationList,
+                error,
+                isValidating,
+                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -141,6 +181,10 @@
                 relationAttributes,
             })
 
+            const handleListUpdate = (asset: any) => {
+                updateList(asset)
+            }
+
             const columnDataTypeAggregationList = computed(() =>
                 getAggregationList(
                     `group_by_${aggregationAttributeName}`,
@@ -148,17 +192,6 @@
                     true
                 )
             )
-
-            // watch(
-            //     () => props.selectedAsset,
-            //     (first, second) => {
-            //         console.log(
-            //             'Watch props.selected function called with args:',
-            //             first,
-            //             second
-            //         )
-            //     }
-            // )
 
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
@@ -176,12 +209,16 @@
                 quickChange()
             }
 
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    offset.value += limit.value
+                }
+                quickChange()
+            }
+
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
-                // tracking.send(events.EVENT_ASSET_SEARCH, {
-                //     trigger: 'discover',
-                // })
             }, 150)
 
             const handleChangePreference = () => {
@@ -205,9 +242,11 @@
                 handleSearchChange,
                 preference,
                 handleChangePreference,
+                handleLoadMore,
+                error,
+                isValidating,
+                handleListUpdate,
             }
         },
     })
 </script>
-
-<style lang="less" module></style>

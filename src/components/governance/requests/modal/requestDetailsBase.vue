@@ -3,14 +3,15 @@
         style="top: 5rem; right: 0px; margin-left: auto; margin-right: 4rem"
         :mask="false"
         :bodyStyle="{ padding: '20px' }"
+        class="p-1"
     >
         <template #title>
             <span class="text-lg leading-5">
                 {{ requestTitle }}
             </span>
         </template>
-
-        <div class="flex flex-col h-64 overflow-y-auto gap-y-6 max-h-64">
+        <hr />
+        <div class="flex flex-col h-64 p-4 overflow-y-auto gap-y-6 max-h-64">
             <!-- TOP SECTION -->
             <AssetDetails
                 :asset="request?.destinationEntity"
@@ -55,6 +56,7 @@
                 <UserPiece :user="request?.createdByUser" :is-pill="false" />
             </p>
         </div>
+        <hr />
 
         <template #footer>
             <div class="flex items-center justify-between">

@@ -11,7 +11,9 @@
             <span v-if="!isEdit && description(selectedAsset)">{{
                 description(selectedAsset)
             }}</span>
-            <span v-else-if="!isEdit && description(selectedAsset) === ''"
+            <span
+                v-else-if="!isEdit && description(selectedAsset) === ''"
+                class="text-gray-500"
                 >No description available</span
             >
             <a-textarea
@@ -31,12 +33,12 @@
         computed,
         defineComponent,
         nextTick,
-        onMounted,
+        inject,
         PropType,
         Ref,
         ref,
         toRefs,
-        watch,
+        watchEffect,
     } from 'vue'
     import {
         and,
@@ -47,6 +49,7 @@
         whenever,
     } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'DescriptionWidget',
@@ -60,6 +63,11 @@
                 required: false,
                 default: true,
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
@@ -68,7 +76,7 @@
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
 
-            const { description, selectedAsset } = useAssetInfo()
+            const { description } = useAssetInfo()
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -97,10 +105,24 @@
                         'true'
             )
 
-            const { d } = useMagicKeys()
+            const { d, enter, shift } = useMagicKeys()
+
+            /* function geeks(event) {
+                // 13 is the keycode for "enter"
+                if (event.keyCode == 13 && event.shiftKey) {
+                    document.getElementById("d").innerHTML = "Triggered enter+shift";
+                }
+                if (event.keyCode == 13 && !event.shiftKey) {
+                    document.getElementById("d").innerHTML = "Triggered enter";
+                }
+            } */
 
             whenever(and(d, notUsingInput), () => {
                 handleEdit()
+            })
+
+            watchEffect(() => {
+                if (enter.value && !shift.value && isEdit.value) handleBlur()
             })
 
             return {
@@ -111,7 +133,6 @@
                 isEdit,
                 start,
                 handleBlur,
-                selectedAsset,
                 description,
             }
         },

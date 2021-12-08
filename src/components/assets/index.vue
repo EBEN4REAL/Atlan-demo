@@ -2,7 +2,7 @@
     <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"
@@ -135,6 +135,7 @@
                                     ? true
                                     : false
                             "
+                            :enableSidebarDrawer="enableSidebarDrawer"
                             :is-checked="checkSelectedCriteriaFxn(item)"
                             @listItem:check="
                                 (e, item) => updateBulkSelectedAssets(item)
@@ -245,6 +246,11 @@
                 type: String,
                 required: false,
                 default: 'assets',
+            },
+            enableSidebarDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         setup(props, { emit }) {

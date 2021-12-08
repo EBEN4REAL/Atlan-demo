@@ -137,7 +137,6 @@
                 isLoading,
                 error,
                 isReady,
-                refetchNode,
                 collapseAll,
             } = useGlossaryTree({
                 emit,
@@ -184,7 +183,6 @@
             }
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
-            provide('refetchGlossaryTree', refetchNode)
             return {
                 onLoadData,
                 loadedKeys,

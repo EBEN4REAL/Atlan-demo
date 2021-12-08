@@ -29,6 +29,7 @@ export interface assetInterface {
         isPrimary: boolean
         isPartition: boolean
         isDist: boolean
+        isForeign: boolean
         compiledQuery: string
         qualifiedName: string
         userDescription: string
@@ -45,7 +46,7 @@ export interface assetInterface {
         announcementType: string
         announcementUpdatedAt: number
         announcementUpdatedBy: string
-
+        link: string
         table?: {
             guid: string
             typeName: string

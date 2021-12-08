@@ -1,11 +1,79 @@
 <template>
-    <DefaultLayout title="Requests" sub-title="Manage org-wide requests">
+    <a-drawer
+        :visible="drawerFilter"
+        :mask="false"
+        :placement="'left'"
+        :width="287"
+        :closable="false"
+    >
+        <div class="h-full pb-10 overflow-scroll bg-gray-50">
+            <div
+                :class="`close-icon ${!drawerFilter && 'closed'} border border-solid order-gray-300`"
+                @click="handleClickFilter"
+            >
+                <AtlanIcon icon="ChevronRight" />
+            </div>
+            <div class="p-4 border-b border-solid order-gray-300">
+                No filters applied
+            </div>
+            <div class="px-2 filter-container">
+                <AssetFilters
+                    v-model="facets"
+                    :filter-list="requestFilter"
+                    :allow-custom-filters="false"
+                    class="bg-gray-100"
+                    @change="handleFilterChange"
+                    @reset="handleResetEvent"
+                >
+                    <div class="mt-4 mb-4 wrapper-filter">
+                        <Connector
+                            v-model:data="connectorsData"
+                            class=""
+                            :filter-source-ids="BItypes"
+                            :is-leaf-node-selectable="false"
+                            :item="{
+                                id: 'connector',
+                                label: 'Connector',
+                                component: 'connector',
+                                overallCondition: 'OR',
+                                filters: [
+                                    {
+                                        attributeName: 'connector',
+                                        condition: 'OR',
+                                        isMultiple: false,
+                                        operator: 'eq',
+                                    },
+                                ],
+                                isDeleted: false,
+                                isDisabled: false,
+                                exclude: false,
+                            }"
+                            @change="handleChangeConnector"
+                            @update:data="setConnector"
+                        />
+                    </div>
+                </AssetFilters>
+            </div>
+        </div>
+    </a-drawer>
+    <DefaultLayout title="Manage Requests">
         <template #header>
             <SearchAndFilter
                 v-model:value="searchTerm"
                 class="max-w-xl mb-6"
                 size="default"
             >
+                <template #categoryFilter>
+                    <div
+                        class="relative px-2 cursor-pointer"
+                        @click="handleClickFilter"
+                    >
+                        <AtlanIcon icon="FilterFunnel" />
+                        <div
+                            class="absolute border-r border-solid divide-gray-800 devider-filter"
+                        />
+                    </div>
+                </template>
             </SearchAndFilter>
             <RequestTypeTabs v-model:tab="filters.request_type" />
         </template>
@@ -44,8 +112,8 @@
                     Oops… we didn’t find any requests that match this search
                 </span>
                 <a-button
-                    @click="searchTerm = ''"
                     class="flex items-center justify-center w-40 py-2 mt-4"
+                    @click="searchTerm = ''"
                     >Clear search</a-button
                 >
             </div>
@@ -69,9 +137,12 @@
         provide,
     } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
+     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     import DefaultLayout from '@/admin/layout.vue'
+    import AssetFilters from '@/common/assets/filters/index.vue'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestTypeTabs from './requestTypeTabs.vue'
@@ -81,12 +152,13 @@
     // import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
-    import { message } from 'ant-design-vue'
+    import { requestFilter } from '~/constant/filters/logsFilter'
+    import Connector from '~/components/insights/common/connector/connector.vue'
     // import { useAccessStore } from '~/services/access/accessStore'
-    import {
-        approveRequest,
-        declineRequest,
-    } from '~/composables/requests/useRequests'
+    // import {
+    //     approveRequest,
+    //     declineRequest,
+    // } from '~/composables/requests/useRequests'
 
     export default defineComponent({
         name: 'RequestList',
@@ -98,17 +170,28 @@
             RequestModal,
             RequestTypeTabs,
             DefaultLayout,
+            AssetFilters,
+            Connector
             // NoAcces
         },
         setup(props, { emit }) {
             // const accessStore = useAccessStore();
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
+
+            const connectorsData = ref(
+                {
+                    attributeName: undefined,
+                    attributeValue: undefined,
+                }
+            )
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
             const selectedIndex = ref(0)
             const isDetailsVisible = ref(false)
+            const drawerFilter = ref(false)
+            const facets = ref({})
             const searchTerm = ref('')
             const filters = ref({
                 status: 'active' as RequestStatus,
@@ -132,10 +215,12 @@
                 return false
             }
 
-            /***********************************************************************************
+            /** *********************************************************************************
                     /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
-                    ***********************************************************************************/
-
+                    ********************************************************************************** */
+            const handleClickFilter = () => {
+                drawerFilter.value = !drawerFilter.value
+            }
             function selectRequest(guid: string, index: number) {
                 /** Check if the currently pressed key is not this array,
                  * then clear the set, else directly add the new item to the set
@@ -194,7 +279,6 @@
                 if (listError.value)
                     message.error('Failed to load request data.')
             })
-
             watch(
                 filters,
                 () => {
@@ -202,6 +286,28 @@
                 },
                 { deep: true }
             )
+            const handleFilterChange = () => {
+                const facetsValue = facets.value
+                const status = facetsValue.statusRequest ? Object.values(facetsValue.statusRequest) : []
+                const created_by = facetsValue?.requestor?.ownerUsers || []
+                const filterMerge = {
+                    ...filters.value,
+                    status: status.length > 0 ? status : "active",
+                    request_type: [],
+                    created_by
+                }
+                filters.value = filterMerge
+            }
+            const handleResetEvent = () => {}
+            const BItypes = getBISourceTypes()
+            const handleChangeConnector = () => {
+                const filterMerge = {
+                    ...filters.value,
+                    destinationQualifiedName: connectorsData.value.attributeValue
+                }
+                filters.value = filterMerge
+            }
+            const setConnector = () => {}
             return {
                 requestList,
                 isSelected,
@@ -216,10 +322,58 @@
                 isDetailsVisible,
                 traverseUp,
                 traverseDown,
+                drawerFilter,
+                handleClickFilter,
+                facets,
+                handleFilterChange,
+                handleResetEvent,
+                requestFilter,
+                BItypes,
+                handleChangeConnector,
+                setConnector,
+                connectorsData
                 // listPermission
             }
         },
     })
 </script>
 
-<style></style>
+<style lang="less">
+    .wrapper-filter{
+        .ant-select-selector{
+            background: white!important;
+        }   
+    }
+    .filter-container{
+        .filter-head{
+            display: none;
+        }
+    }
+</style>
+<style lang="less" scoped>
+    .close-icon {
+        &.closed {
+            display: none;
+        }
+        background-color: white;
+        position: fixed;
+        height: 32px;
+        width: 20px;
+        top: 120px;
+        margin-left: 288px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: -5px 1px 6px 0px #0000000d;
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+        cursor: pointer;
+        transform: rotate(180deg);
+    }
+
+    .devider-filter {
+        top: -8px;
+        height: 35px;
+        right: 0;
+    }
+</style>

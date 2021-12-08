@@ -37,8 +37,7 @@ export const DEFAULT_ATTRIBUTE = {
     options: {
         /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas hold this here: [JSON.stringify(applicableEntityTypes)] */
         applicableEntityTypes: JSON.stringify(['Asset']),
-        customApplicableEntityTypes: [],
-        customEntityTypes: JSON.stringify([]),
+        customApplicableEntityTypes: applicableEntityTypesOptions.reduce((acc, item) => [...acc, ...(item?.children?.map(v => v.value) ?? [])], []),
         maxStrLength: '100000000',
         isBadge: false,
         isFacet: true,

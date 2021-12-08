@@ -41,10 +41,9 @@ export interface IPurpose {
     users?: string[]
     groups?: string[]
     metadataPolicies?: MetadataPolicies[]
-    // Will be camel cased from BE
     dataPolicies?: DataPolicies[]
     updatedAt?: string
-    updated_by?: string
-    created_at?: string
-    created_by?: string
+    updatedBy?: string
+    createdAt?: string
+    createdBy?: string
 }

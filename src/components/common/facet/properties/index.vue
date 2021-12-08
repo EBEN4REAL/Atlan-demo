@@ -39,7 +39,7 @@
                     :condition="localValue[attribute.name]"
                     :activeProperty="activeProperty"
                     @click="handleClick"
-                ></Item>
+                />
             </Popover>
         </div>
     </div>
@@ -57,6 +57,7 @@
     import Item from './item.vue'
 
     export default defineComponent({
+        name: 'PropertiesFacet',
         components: {
             SearchAdvanced,
             Popover,
@@ -70,6 +71,7 @@
                 },
             },
             item: {
+                type: Object,
                 required: false,
                 default() {
                     return {}
@@ -101,7 +103,7 @@
                     localValue.value[key] = localValue.value[key].filter(
                         (i) => {
                             if (
-                                i.operator !== 'isNull' &&
+                                i.operator === 'isNull' ||
                                 i.operator === 'isNotNull'
                             ) {
                                 return true
@@ -119,6 +121,7 @@
                         delete localValue.value[key]
                     }
                 })
+
                 modelValue.value = localValue.value
                 emit('change')
             }

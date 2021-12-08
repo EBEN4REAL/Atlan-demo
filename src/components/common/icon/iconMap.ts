@@ -16,6 +16,7 @@ import AfternoonIcon from '~/assets/images/home/Afternoon.svg'
 import WorkflowsIcon from '~/assets/images/home/Workflows.svg'
 import AdminCenterIcon from '~/assets/images/home/AdminCenter.svg'
 import AtlanIcon from '~/assets/images/home/help/atlan.svg'
+import AtlanBot from '~/assets/images/icons/atlan-bot.svg'
 import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
 import GlossaryIcon from '~/assets/images/home/Glossary.svg'
@@ -205,6 +206,7 @@ import RightJoin from '~/assets/images/icons/right-join.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
+import Gdoc from "~/assets/images/integrations/gDoc.svg"
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
@@ -565,7 +567,9 @@ export default {
     ViewDeprecated,
     ViewDraft,
     ViewVerified,
-    EmptyClassifications,
+    Gdoc,
     CustomVariable,
+    AtlanBot,
+    EmptyClassifications,
     FolderSearch
 }

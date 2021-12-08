@@ -6,50 +6,54 @@
         :width="287"
         :closable="false"
     >
-        <div
-            :class="`close-icon ${!drawerFilter && 'closed'}`"
-            @click="handleClickFilter"
-        >
-            <AtlanIcon icon="ChevronLeft" />
-        </div>
-        <div class="h-full px-2 py-8 bg-gray-50 filter-container">
-            <AssetFilters
-                v-model="facets"
-                :filter-list="requestFilter"
-                :allow-custom-filters="false"
-                class="bg-gray-100"
-                @change="handleFilterChange"
-                @reset="handleResetEvent"
+        <div class="h-full pt-8 pb-10 overflow-scroll bg-gray-50">
+            <div
+                :class="`close-icon ${!drawerFilter && 'closed'} border border-solid order-gray-300`"
+                @click="handleClickFilter"
             >
-                <div class="mt-4 mb-4 wrapper-filter">
-                    <Connector
-                        v-model:data="connectorsData"
-                        class=""
-                        :filter-source-ids="BItypes"
-                        :is-leaf-node-selectable="false"
-                        :item="{
-                            id: 'connector',
-                            label: 'Connector',
-                            component: 'connector',
-                            overallCondition: 'OR',
-                            filters: [
-                                {
-                                    attributeName: 'connector',
-                                    condition: 'OR',
-                                    isMultiple: false,
-                                    operator: 'eq',
-                                },
-                            ],
-                            isDeleted: false,
-                            isDisabled: false,
-                            exclude: false,
-                        }"
-                        @change="handleChangeConnector"
-                        @update:data="setConnector"
-                    />
-                </div>
-            </AssetFilters>
-        
+                <AtlanIcon icon="ChevronRight" />
+            </div>
+            
+            <div class="px-2 filter-container">
+                <AssetFilters
+                    v-model="facets"
+                    :filter-list="requestFilter"
+                    :allow-custom-filters="false"
+                    :no-filter-title="'No filters applied'"
+                    :extra-count-filter="connectorsData.attributeValue ? 1 : 0"
+                    class="bg-gray-100"
+                    @change="handleFilterChange"
+                    @reset="handleResetEvent"
+                >
+                    <div class="mt-4 mb-4 wrapper-filter">
+                        <Connector
+                            v-model:data="connectorsData"
+                            class=""
+                            :filter-source-ids="BItypes"
+                            :is-leaf-node-selectable="false"
+                            :item="{
+                                id: 'connector',
+                                label: 'Connector',
+                                component: 'connector',
+                                overallCondition: 'OR',
+                                filters: [
+                                    {
+                                        attributeName: 'connector',
+                                        condition: 'OR',
+                                        isMultiple: false,
+                                        operator: 'eq',
+                                    },
+                                ],
+                                isDeleted: false,
+                                isDisabled: false,
+                                exclude: false,
+                            }"
+                            @change="handleChangeConnector"
+                            @update:data="setConnector"
+                        />
+                    </div>
+                </AssetFilters>
+            </div>
         </div>
     </a-drawer>
     <DefaultLayout title="Manage Requests">
@@ -202,7 +206,7 @@
             watch(response, () => {
                 requestList.value =
                     response.value?.records?.filter(
-                        (req) => req.status === filters.value.status
+                        (req) => Array.isArray(filters.value.status) ? filters.value.status.includes(req.status) : req.status === filters.value.status
                     ) || []
             })
             function isSelected(guid: string): boolean {
@@ -275,7 +279,6 @@
                 if (listError.value)
                     message.error('Failed to load request data.')
             })
-
             watch(
                 filters,
                 () => {
@@ -283,11 +286,38 @@
                 },
                 { deep: true }
             )
-            const handleFilterChange = () => {}
-            const handleResetEvent = () => {}
+            const handleFilterChange = () => {
+                const facetsValue = facets.value
+                const status = facetsValue.statusRequest ? Object.values(facetsValue.statusRequest) : []
+                const createdBy = facetsValue?.requestor?.ownerUsers || []
+                const filterMerge = {
+                    ...filters.value,
+                    status: status.length > 0 ? status : "active",
+                    createdBy
+                }
+                filters.value = filterMerge
+            }
+            const handleResetEvent = () => {
+                filters.value = {
+                    status: 'active' as RequestStatus,
+                    request_type: [],
+                }
+                connectorsData.value = {
+                    attributeName: undefined,
+                    attributeValue: undefined,
+                }
+            }
             const BItypes = getBISourceTypes()
-            const handleChangeConnector = () => {}
-            const setConnector = () => {}
+            const handleChangeConnector = () => {
+                const filterMerge = {
+                    ...filters.value,
+                    destinationQualifiedName: connectorsData.value.attributeValue
+                }
+                filters.value = filterMerge
+            }
+            const setConnector = () => {
+            }
+       
             return {
                 requestList,
                 isSelected,
@@ -311,7 +341,7 @@
                 BItypes,
                 handleChangeConnector,
                 setConnector,
-                connectorsData
+                connectorsData,
                 // listPermission
             }
         },
@@ -326,7 +356,9 @@
     }
     .filter-container{
         .filter-head{
-            display: none;
+            background-color: transparent!important;
+            background: none;
+            box-shadow: none!important;
         }
     }
 </style>
@@ -337,10 +369,10 @@
         }
         background-color: white;
         position: fixed;
-        height: 29px;
-        width: 15px;
+        height: 32px;
+        width: 20px;
         top: 120px;
-        margin-left: 286px;
+        margin-left: 288px;
         display: flex;
         align-items: center;
         justify-content: center;

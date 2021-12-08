@@ -30,35 +30,35 @@ export interface IRequestActionBody {
 export interface RequestAttributes {
     id: string
     version: string
-    is_active: boolean
-    created_at: string
-    updated_at: string
-    created_by: Record<string, any>
-    createdByUser: Record<string, any>
-    updated_by: string
-    tenant_id: string
-    source_type: 'static' | 'atlas'
-    source_guid: string
-    source_qualified_name: string
-    source_attribute: string
+    isSctive: boolean
+    createdAt: string
+    updatedAt: string
+    createdBy: Record<string, any>
+    created_by_user: Record<string, any>
+    updated_by_user: string
+    tenantId: string
+    sourceType: 'static' | 'atlas'
+    sourceGuid: string
+    sourceQualifiedName: string
+    sourceAttribute: string
     sourceEntity: assetInterface
-    destination_guid: string
-    destination_qualified_name: string
-    destination_attribute: string
-    destination_value: string
+    destinationGuid: string
+    destinationQualifiedName: string
+    destinationAttribute: string
+    destinationValue: string
     destinationEntity: assetInterface
-    entity_type: string
-    request_type: RequestType
-    confidence_score: number
-    bot_run_id: string
-    approved_by: IActionDetails[]
-    rejected_by: IActionDetails[]
+    entityType: string
+    requestType: RequestType
+    confidenceScore: number
+    botRunId: string
+    approvedBy: IActionDetails[]
+    rejectedBy: IActionDetails[]
     status: RequestStatus
     message: string
-    requests_batch: string
-    approval_type: string
-    assigned_approvers: IAssignedApprovers[]
+    requestsBatch: string
+    approvalType: string
+    assignedApprovers: IAssignedApprovers[]
     payload: any
-    access_start_date: Date
-    access_end_date: Date
+    accessStartDate: Date
+    accessEndDate: Date
 }

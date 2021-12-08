@@ -256,7 +256,7 @@
         },
         setup(props) {
             const { persona } = toRefs(props)
-            const userId = computed(() => persona.value.created_by)
+            const userId = computed(() => persona.value.createdBy)
             const { username } = getUsername(userId)
 
             const addPolicyDropdownConfig = [

@@ -46,8 +46,8 @@
                 </div>
             </a-form>
         </div>
-        <div class="flex items-center justify-between px-4 mt-1 border-t">
-            <div class="flex items-center mt-3 gap-x-1">
+        <div class="flex items-center justify-end px-4 mt-1 border-t">
+            <!-- <div class="flex items-center mt-3 gap-x-1">
                 <a-checkbox v-model:checked="isDefault" />
                 <span class="">Mark as default</span>
                 <a-tooltip
@@ -60,7 +60,7 @@
                         ></AtlanIcon>
                     </span>
                 </a-tooltip>
-            </div>
+            </div> -->
             <AtlanButton
                 class="mt-3"
                 size="sm"
@@ -155,9 +155,8 @@
                         attributes: {
                             description: [group.description],
                             alias: [group.name],
-                            created_at: [currentDate],
-                            created_by: [createdBy],
-                            isDefault: [`${isDefault.value}`],
+                           
+                           
                         },
                     },
                     users: userIds.value,

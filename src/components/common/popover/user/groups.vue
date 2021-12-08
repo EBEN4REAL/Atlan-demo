@@ -95,7 +95,7 @@
                 params: {
                     limit: 10,
                     offset: 0,
-                    sort: 'first_name',
+                    sort: 'firstName',
                     filter: {},
                 },
             }

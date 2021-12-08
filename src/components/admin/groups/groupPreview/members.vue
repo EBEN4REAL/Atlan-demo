@@ -172,7 +172,7 @@
                 params: {
                     limit: 10,
                     offset: 0,
-                    sort: 'first_name',
+                    sort: 'firstName',
                     filter: {},
                 },
             })
@@ -190,12 +190,12 @@
                     ? {
                           $or: [
                               {
-                                  first_name: {
+                                  firstName: {
                                       $ilike: `%${searchText.value}%`,
                                   },
                               },
                               {
-                                  last_name: {
+                                  lastName: {
                                       $ilike: `%${searchText.value}%`,
                                   },
                               },
@@ -286,10 +286,10 @@
                 )
             }
             const getUserName = (user: any) => {
-                const { first_name } = user
-                const { last_name } = user
-                if (first_name) {
-                    return `${first_name} ${last_name || ''}`
+                const { firstName } = user
+                const { lastName } = user
+                if (firstName) {
+                    return `${firstName} ${lastName || ''}`
                 }
                 return user.email
             }

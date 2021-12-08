@@ -122,7 +122,7 @@
                 limit: 1,
                 offset: 0,
                 filter: {
-                    $and: [{ email_verified: true }, { username: item.value }],
+                    $and: [{ emailVerified: true }, { username: item.value }],
                 },
             }
             const { userList, isLoading } = useUsers(params, item.value)

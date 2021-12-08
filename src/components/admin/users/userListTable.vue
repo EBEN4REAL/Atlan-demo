@@ -2,7 +2,8 @@
     <a-table
         v-if="userList"
         id="userList"
-        class="overflow-hidden border rounded-lg rounded-table user-table"
+        class="overflow-hidden border rounded-lg rounded-table"
+        :class="$style.userTable"
         :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
         :table-layout="'fixed'"
         :data-source="userList"
@@ -44,7 +45,14 @@
         </template>
         <template #status="{ text: user }">
             <div
-                class="inline-flex items-center px-2 py-0.5 rounded-xl text-gray-700"
+                class="
+                    inline-flex
+                    items-center
+                    px-2
+                    py-0.5
+                    rounded-xl
+                    text-gray-700
+                "
                 :class="`bg-${statusColorClass[user.status_object.status]}`"
             >
                 <div>{{ user.status_object.status }}</div>
@@ -80,7 +88,7 @@
                         </template>
                         <div
                             v-if="user.enabled"
-                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
+                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
                             @click="emit('handleChangeRole', user)"
                         >
                             <AtlanIcon icon="StarCircled"></AtlanIcon>
@@ -116,7 +124,7 @@
                                     "
                                 ></h3>
                                 <div
-                                    class="flex items-center justify-between mt-3 gap-x-3"
+                                    class="flex items-center justify-between mt-3  gap-x-3"
                                 >
                                     <div class="flex-grow"></div>
                                     <AtlanButton
@@ -149,7 +157,7 @@
                         </template>
                         <div
                             size="small"
-                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
+                            class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
                             @click="emit('toggleDisableEnablePopover', user)"
                         >
                             <AtlanIcon
@@ -170,7 +178,7 @@
                         <span>Resend Invite</span>
                     </template>
                     <div
-                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
                         @click="
                             emit('resendInvite', {
                                 email: user.email,
@@ -183,7 +191,7 @@
                 </a-tooltip>
                 <a-dropdown v-if="!user.emailVerified" :trigger="['click']">
                     <div
-                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer  customShadow"
                         @click="(e) => e.preventDefault()"
                     >
                         <AtlanIcon icon="KebabMenu"></AtlanIcon>
@@ -212,7 +220,7 @@
                                             ?
                                         </h3>
                                         <div
-                                            class="flex items-center justify-between mt-3 gap-x-3"
+                                            class="flex items-center justify-between mt-3  gap-x-3"
                                         >
                                             <div class="flex-grow"></div>
                                             <AtlanButton
@@ -385,14 +393,16 @@
     })
 </script>
 
-<style scoped lang="less">
-    .user-table {
+<style lang="less" module>
+    .userTable {
         // extra row hide hack
         :global(.ant-table-measure-row) {
             @apply hidden;
         }
-        .customShadow {
-            box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
-        }
+    }
+</style>
+<style lang="less" scoped>
+    .customShadow {
+        box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
     }
 </style>

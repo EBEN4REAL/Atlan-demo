@@ -3,8 +3,10 @@
         ref="container"
         @click="setFoucs"
         @focusout="handleContainerBlur"
+        @mouseover="handleMouseOver"
+        @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center py-1"
+        class="relative flex items-center py-1 group"
         :class="[
             isAreaFocused
                 ? ' border-primary-focus border-2 '
@@ -54,11 +56,45 @@
         />
         <div class="absolute right-2">
             <AtlanIcon
+                v-if="
+                    findVisibility(
+                        'search',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
+                icon="Search"
+                class="w-4 h-4"
+            />
+            <AtlanIcon
                 icon="ChevronDown"
                 class="w-4 h-4"
-                v-if="!isAreaFocused"
+                v-if="
+                    findVisibility(
+                        'chevronDown',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
             />
-            <AtlanIcon v-else icon="Search" class="w-4 h-4" />
+            <AtlanIcon
+                icon="Cross"
+                class="w-4 h-4 cursor-pointer"
+                @click.stop="clearAllSelected"
+                v-if="
+                    findVisibility(
+                        'cross',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
+            />
         </div>
         <div
             v-if="isAreaFocused"
@@ -91,11 +127,13 @@
                     v-if="isLoading"
                     style="min-height: 250px !important"
                 ></Loader>
-                <div class="w-full px-3">
+                <div
+                    class="w-full px-3"
+                    v-if="dropdownOption.length !== 0 && !isLoading"
+                >
                     <template
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
-                        v-if="dropdownOption.length !== 0 && !isLoading"
                     >
                         <a-checkbox
                             :checked="map[item.value]"
@@ -189,6 +227,7 @@
 
             const inputRef = ref()
             const selectAll = ref(false)
+            const mouseOver = ref(false)
             const topPosShift = ref(0)
             const inputValue1 = ref('')
             const inputValue2 = ref('')
@@ -330,12 +369,68 @@
                 emit('checkboxChange', selectedItems.value)
             }
 
+            const handleMouseOver = () => {
+                if (!mouseOver.value) mouseOver.value = true
+            }
+            const handleMouseOut = () => {
+                if (mouseOver.value) mouseOver.value = false
+            }
+
+            const findVisibility = (
+                key: string,
+                isAreaFocused,
+                mouseHover,
+                tableQualifiedName,
+                selectedItems
+            ) => {
+                console.log(key, 'fxn Called')
+                switch (key) {
+                    case 'chevronDown': {
+                        if (!isAreaFocused) {
+                            if (selectedItems.length === 0 && mouseHover)
+                                return true
+                            if (selectedItems.length === 0 && !mouseHover)
+                                return true
+                            if (selectedItems.length !== 0 && !mouseHover)
+                                return true
+                        }
+                        break
+                    }
+                    case 'cross': {
+                        if (isAreaFocused) return false
+                        if (
+                            !isAreaFocused &&
+                            selectedItems.length > 0 &&
+                            mouseHover
+                        )
+                            return true
+                        else return false
+                        break
+                    }
+                    case 'search': {
+                        if (!isAreaFocused) return false
+                        if (tableQualifiedName) return true
+                        break
+                    }
+                }
+            }
+
+            const clearAllSelected = () => {
+                selectedItems.value = []
+                map.value = {}
+                selectAll.value = false
+            }
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
                 console.log(container.value)
             })
 
             return {
+                clearAllSelected,
+                findVisibility,
+                handleMouseOver,
+                handleMouseOut,
+                mouseOver,
                 map,
                 enrichedSelectedItems,
                 onCheckboxChange,

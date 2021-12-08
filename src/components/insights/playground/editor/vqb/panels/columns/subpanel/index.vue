@@ -16,7 +16,8 @@
                         "
                     />
                     <ColumnSelector
-                        class="flex-1"
+                        class="flex-1 ml-6"
+                        style="max-width: 600px"
                         v-if="subpanel.tableQualfiedName"
                         v-model:selectedItems="subpanel.columns"
                         :tableQualfiedName="subpanel.tableQualfiedName"
@@ -50,7 +51,7 @@
                     >
                         <AtlanIcon
                             icon="Close"
-                            class="w-6 h-6 ml-2 -mt-0.5 cursor-pointer"
+                            class="w-6 h-6 ml-3 -mt-0.5 cursor-pointer"
                         />
                     </div>
                 </div>

@@ -79,7 +79,7 @@ export default function useBody({
         base.filter(
             'regexp',
             'resource.keyword',
-            `.+/\\[.*\\]/${connectionQF}/.*`
+            `.+/\\[.*\\]/${connectionQF}.*`
         )
     } else if (dbQualifiedName) {
         base.filter(

@@ -96,7 +96,7 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'data_type'">
-                        <span class="data-type">{{ text.toUpperCase() }}</span>
+                        <span class="data-type">{{ text?.toUpperCase() }}</span>
                     </template>
                     <template v-else-if="column.key === 'description'">
                         <Tooltip :tooltip-text="text" />

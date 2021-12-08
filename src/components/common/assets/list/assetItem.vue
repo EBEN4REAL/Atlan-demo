@@ -59,6 +59,7 @@
 
                         <router-link
                             :to="getProfilePath(item)"
+                            @click="(e) => e.stopPropagation()"
                             class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}

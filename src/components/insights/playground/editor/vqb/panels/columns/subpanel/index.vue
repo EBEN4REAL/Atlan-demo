@@ -16,7 +16,8 @@
                         "
                     />
                     <ColumnSelector
-                        style="width: 30%"
+                        class="flex-1"
+                        v-if="subpanel.tableQualfiedName"
                         v-model:selectedItems="subpanel.columns"
                         :tableQualfiedName="subpanel.tableQualfiedName"
                     >
@@ -43,13 +44,13 @@
                         </template>
                     </ColumnSelector>
                     <div
-                        v-if="index !== 0"
+                        v-if="subpanel.tableQualfiedName"
                         class="text-gray-500 hover:text-primary"
                         @click.stop="() => handleDelete(index)"
                     >
                         <AtlanIcon
                             icon="Close"
-                            class="w-6 h-6 ml-6 -mt-0.5 cursor-pointer"
+                            class="w-6 h-6 ml-2 -mt-0.5 cursor-pointer"
                         />
                     </div>
                 </div>
@@ -152,7 +153,16 @@
             }
 
             const handleDelete = (index) => {
-                subpanels.value.splice(index, 1)
+                if (index == 0) {
+                    const copySubPanel = JSON.parse(
+                        JSON.stringify(toRaw(subpanels.value[0]))
+                    )
+                    copySubPanel.columns = []
+                    copySubPanel.tableQualfiedName = undefined
+                    subpanels.value[index] = copySubPanel
+                } else {
+                    subpanels.value.splice(index, 1)
+                }
             }
 
             return {

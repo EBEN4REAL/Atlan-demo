@@ -32,7 +32,7 @@
         <div
             class="flex flex-col flex-grow pr-5 overflow-auto gap-y-5 scrollheight"
         >
-            <div v-for="(a, x) in applicableList" :key="x">
+            <template v-for="(a, x) in applicableList" :key="x">
                 <div class="">
                     <div class="mb-2 font-normal text-gray-500">
                         <span>{{ a.displayName }}</span>
@@ -57,7 +57,7 @@
                         @change="handleChange(x, a.value)"
                     />
                 </div>
-            </div>
+            </template>
         </div>
     </div>
 </template>

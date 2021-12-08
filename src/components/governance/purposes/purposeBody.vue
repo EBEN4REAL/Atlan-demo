@@ -41,7 +41,6 @@
                 v-if="activeTabKey === 'details'"
                 class="px-4 pb-2"
                 :persona="persona"
-                :username="username"
             />
             <div v-else-if="activeTabKey === 'policies'" class="px-4 mt-2">
                 <template
@@ -234,7 +233,6 @@
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
     import { selectedPersona } from './composables/usePurposeList'
-    import { getUsername } from './composables/getUsername'
     import AssetsWrapper from '@/assets/index.vue'
 
     export default defineComponent({
@@ -257,7 +255,6 @@
         setup(props) {
             const { persona } = toRefs(props)
             const userId = computed(() => persona.value.createdBy)
-            const { username } = getUsername(userId)
 
             const addPolicyDropdownConfig = [
                 {
@@ -338,7 +335,6 @@
                 filterConfig,
                 newIdTag,
                 userId,
-                username,
                 selectedPersona,
                 activeTabKey,
                 tabConfig,

@@ -6,24 +6,20 @@
         :width="287"
         :closable="false"
     >
-        <div class="h-full pb-10 overflow-scroll bg-gray-50">
+        <div class="h-full pt-8 pb-10 overflow-scroll bg-gray-50">
             <div
                 :class="`close-icon ${!drawerFilter && 'closed'} border border-solid order-gray-300`"
                 @click="handleClickFilter"
             >
                 <AtlanIcon icon="ChevronRight" />
             </div>
-            <div class="p-4 border-b border-solid order-gray-300">
-                {{
-                    filterCount ? `${filterCount} filters applied` : "No filters applied"
-                }}
-
-            </div>
+            
             <div class="px-2 filter-container">
                 <AssetFilters
                     v-model="facets"
                     :filter-list="requestFilter"
                     :allow-custom-filters="false"
+                    :no-filter-title="'No filters applied'"
                     class="bg-gray-100"
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
@@ -300,7 +296,12 @@
                 }
                 filters.value = filterMerge
             }
-            const handleResetEvent = () => {}
+            const handleResetEvent = () => {
+                filters.value = {
+                    status: 'active' as RequestStatus,
+                    request_type: [],
+                }
+            }
             const BItypes = getBISourceTypes()
             const handleChangeConnector = () => {
                 const filterMerge = {
@@ -309,17 +310,9 @@
                 }
                 filters.value = filterMerge
             }
-            const setConnector = () => {}
-            const filterCount = computed(() => {
-                const listFilter = Object.values(filters.value)
-                let count = 0
-                listFilter.forEach(el => {
-                    if(Array.isArray(el) && el.length > 0){
-                        count +=1
-                    }
-                });
-                return count
-            })
+            const setConnector = () => {
+            }
+       
             return {
                 requestList,
                 isSelected,
@@ -344,7 +337,6 @@
                 handleChangeConnector,
                 setConnector,
                 connectorsData,
-                filterCount
                 // listPermission
             }
         },
@@ -359,7 +351,9 @@
     }
     .filter-container{
         .filter-head{
-            display: none;
+            background-color: transparent!important;
+            background: none;
+            box-shadow: none!important;
         }
     }
 </style>

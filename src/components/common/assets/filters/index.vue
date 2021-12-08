@@ -17,8 +17,8 @@
                     </span>
                 </div>
             </div>
-            <div v-else class="flex items-center justify-between text-gray-500">
-                <span> Filters</span>
+            <div v-else class="flex items-center justify-between text-gray-500 no-filter">
+                <span> {{noFilterTitle}}</span>
             </div>
         </div>
         <slot></slot>
@@ -96,6 +96,12 @@
                 required: false,
                 default() {
                     return true
+                },
+            },
+            noFilterTitle: {
+                required: false,
+                default() {
+                    return "Filters"
                 },
             },
         },

@@ -3,7 +3,6 @@
         v-if="userList"
         id="userList"
         class="overflow-hidden border rounded-lg rounded-table"
-        :class="$style.userTable"
         :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
         :table-layout="'fixed'"
         :data-source="userList"
@@ -28,7 +27,7 @@
                     :class="!user.emailVerified ? '' : 'cursor-pointer'"
                     @click="
                         () => {
-                            if(!user.emailVerified) return
+                            if (!user.emailVerified) return
                             emit('showUserPreviewDrawer', user)
                         }
                     "
@@ -398,14 +397,6 @@
     })
 </script>
 
-<style lang="less" module>
-    .userTable {
-        // extra row hide hack
-        :global(.ant-table-measure-row) {
-            @apply hidden;
-        }
-    }
-</style>
 <style lang="less" scoped>
     .customShadow {
         box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);

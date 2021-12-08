@@ -407,10 +407,6 @@
 
 <style lang="less" module>
     .groupTable {
-        // extra row hide hack
-        :global(.ant-table-measure-row) {
-            @apply hidden;
-        }
         :global(.ant-table-column-title) {
             @apply text-left;
         }

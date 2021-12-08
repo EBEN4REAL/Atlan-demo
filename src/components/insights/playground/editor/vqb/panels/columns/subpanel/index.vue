@@ -11,14 +11,24 @@
                 class="z-10"
                 v-model:selectedItems="cols"
                 v-model:queryText="queryText"
-                @queryTextChange="queryTextChange"
                 :tableQualfiedName="tableQualfiedName"
+                @checkboxChange="checkboxChange"
             >
                 <template #chip="{ item }">
                     <div
                         class="flex items-center px-3 py-0.5 my-1 justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
                     >
-                        <span> {{ item }}</span>
+                        <component
+                            v-if="item.type !== 'Columns'"
+                            :is="getDataTypeImage(item.type)"
+                            class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
+                        ></component>
+                        <AtlanIcon
+                            v-else
+                            icon="Columns"
+                            class="w-4 h-4 mr-1 text-xs text-gray-500"
+                        />
+                        <span> {{ item.label }}</span>
                     </div>
                 </template>
             </ColumnSelector>
@@ -56,12 +66,14 @@
             const queryText = ref('')
             const { expand } = toRefs(props)
             const cols = ref([])
-            const queryTextChange = () => {
-                console.log(queryText.value, 'query Text')
+
+            const checkboxChange = (checkedArr: string[]) => {
+                console.log(checkedArr)
             }
 
             return {
-                queryTextChange,
+                getDataTypeImage,
+                checkboxChange,
                 queryText,
                 tableQualfiedName,
                 cols,

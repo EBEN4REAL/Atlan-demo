@@ -16,8 +16,8 @@
         @click.stop="() => {}"
     >
         <template
-            v-if="selectedItems.length !== 0"
-            v-for="(item, index) in selectedItems"
+            v-if="enrichedSelectedItems.length !== 0"
+            v-for="(item, index) in enrichedSelectedItems"
             :key="item + index"
         >
             <slot name="chip" :item="item"> </slot>
@@ -61,7 +61,7 @@
             <AtlanIcon v-else icon="Search" class="w-4 h-4" />
         </div>
         <div
-            v-if="true"
+            v-if="isAreaFocused"
             @click.stop="() => {}"
             :style="`width: 100%;top:${topPosShift}px`"
             :class="[
@@ -70,8 +70,8 @@
         >
             <div class="border-b border-gray-300">
                 <a-checkbox
-                    v-model:value="selectAll"
-                    @change="inputChange"
+                    v-model:checked="selectAll"
+                    @change="onSelectAll"
                     :class="$style.atlanReverse"
                     class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
                 >
@@ -94,6 +94,7 @@
                 <a-checkbox-group
                     v-if="dropdownOption.length !== 0 && !isLoading"
                     v-model:value="selectedItems"
+                    @change="onCheckboxChange"
                     class="w-full mt-2"
                 >
                     <div class="flex flex-col w-full">
@@ -106,7 +107,6 @@
                                     :value="item.value"
                                     :data-test-id="item.label"
                                     :class="$style.atlanReverse"
-                                    @change="inputChange"
                                     class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
                                 >
                                     <div class="flex items-center">
@@ -166,7 +166,7 @@
             Loader,
             TablesTree,
         },
-        emits: ['queryTextChange'],
+        emits: ['queryTextChange', 'checkboxChange'],
         props: {
             selectedItems: {
                 type: Object as PropType<any[]>,
@@ -263,11 +263,6 @@
                 return `Select a table first`
             })
             const totalCount = computed(() => data.value?.approximateCount || 0)
-            const handleChange = (checkedValues: string) => {
-                console.log('checkedValue: ', checkedValues)
-                emit('update:modelValue', checkedValues)
-                emit('change', checkedValues)
-            }
             const dropdownOption = computed(() => {
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
@@ -282,12 +277,16 @@
                 return data
             })
 
-            const showAggregations = ref(false)
-            const dropdownVisibleChange = (open) => {
-                if (open) {
-                    showAggregations.value = true
+            const onSelectAll = (e) => {
+                inputChange()
+                console.log(e.target.checked)
+                /* checked */
+                if (e?.target.checked) {
+                    selectedItems.value = ['all']
+                    emit('checkboxChange', ['all'])
                 } else {
-                    showAggregations.value = false
+                    selectedItems.value = []
+                    emit('checkboxChange', [])
                 }
             }
 
@@ -301,6 +300,32 @@
                 queryText.value = inputValue2.value
                 emit('queryTextChange')
             }
+            const onCheckboxChange = (val) => {
+                inputChange()
+                selectAll.value = false
+                emit('checkboxChange', val)
+            }
+
+            const enrichedSelectedItems = computed(() => {
+                const data: any[] = []
+                selectedItems.value.forEach((val) => {
+                    if (val === 'all') {
+                        data.push({
+                            type: 'Columns',
+                            label: 'All columns',
+                        })
+                    } else {
+                        data.push({
+                            type:
+                                dropdownOption.value.find(
+                                    (e) => e.label === val
+                                )?.type ?? 'Columns',
+                            label: val,
+                        })
+                    }
+                })
+                return data
+            })
 
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
@@ -308,6 +333,9 @@
             })
 
             return {
+                enrichedSelectedItems,
+                onCheckboxChange,
+                onSelectAll,
                 isLoading,
                 totalCount,
                 selectAll,

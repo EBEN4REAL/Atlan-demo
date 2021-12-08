@@ -8,7 +8,7 @@ export default function useFacetGroups(immediate = true) {
     params.value.append('limit', '20')
     params.value.append('sort', 'name')
 
-    const { data, mutate } = Groups.List(params, {
+    const { data, mutate, isLoading } = Groups.List(params, {
         asyncOptions: {
             immediate,
             resetOnExecute: false,
@@ -69,5 +69,6 @@ export default function useFacetGroups(immediate = true) {
         handleSearch,
         setLimit,
         filterTotal,
+        isLoading
     }
 }

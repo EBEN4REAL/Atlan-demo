@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, ref } from 'vue'
+    import { defineComponent, watch, ref, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetGroups from '~/composables/group/useFacetGroups'
 

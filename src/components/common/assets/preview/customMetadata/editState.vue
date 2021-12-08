@@ -93,7 +93,12 @@
             @change="handleChange"
         >
             <template #suffixIcon>
-                <AtlanIcon icon="CaretDown" />
+                <AtlanIcon
+                    v-if="uLoading"
+                    icon="CircleLoader"
+                    class="animate-spin"
+                />
+                <AtlanIcon v-else icon="CaretDown" />
             </template>
             <a-select-option
                 v-for="(item, index) in userList"
@@ -116,7 +121,12 @@
             @change="handleChange"
         >
             <template #suffixIcon>
-                <AtlanIcon icon="CaretDown" />
+                <AtlanIcon
+                    v-if="gLoading"
+                    icon="CircleLoader"
+                    class="animate-spin"
+                />
+                <AtlanIcon v-else icon="CaretDown" />
             </template>
             <a-select-option
                 v-for="(item, index) in groupList"
@@ -183,15 +193,21 @@
                 getEnumOptions,
             } = useCustomMetadataHelpers()
 
-            const { list: userList, handleSearch: handleUserSearch } =
-                useFacetUsers(false)
+            const {
+                list: userList,
+                handleSearch: handleUserSearch,
+                isLoading: uLoading,
+            } = useFacetUsers(false)
 
             const userSearch = (val) => {
                 handleUserSearch(val)
             }
 
-            const { list: groupList, handleSearch: handleGroupSearch } =
-                useFacetGroups(false)
+            const {
+                list: groupList,
+                handleSearch: handleGroupSearch,
+                isLoading: gLoading,
+            } = useFacetGroups(false)
             const groupSearch = (val) => {
                 handleGroupSearch(val)
             }
@@ -221,6 +237,8 @@
                 userList,
                 groupSearch,
                 groupList,
+                gLoading,
+                uLoading,
             }
         },
     })

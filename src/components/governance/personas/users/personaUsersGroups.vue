@@ -191,7 +191,7 @@
                                 user.name ||
                                 user.username ||
                                 user.email ||
-                                user.first_name + user.last_name
+                                user.firstName + user.lastName
                             "
                             :avatar-size="40"
                             class="mr-2"
@@ -629,7 +629,7 @@
                 sorter: any
             ) => {
                 if (Object.keys(sorter).length) {
-                    let sortValue = 'first_name'
+                    let sortValue = 'firstName'
                     if (sorter.order && sorter.column && sorter.column.sortKey)
                         sortValue = `${sorter.order === 'descend' ? '-' : ''}${
                             sorter.column.sortKey

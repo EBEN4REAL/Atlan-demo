@@ -31,13 +31,13 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                 uniqueAttribute.value === 'username'
                     ? {
                           $and: [
-                              { email_verified: true },
+                              { emailVerified: true },
                               { username: userNameUser },
                           ],
                       }
                     : {
                           $and: [
-                              { email_verified: true },
+                              { emailVerified: true },
                               { id: userId.value },
                           ],
                       },

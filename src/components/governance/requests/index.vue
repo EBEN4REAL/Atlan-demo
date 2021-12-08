@@ -20,6 +20,7 @@
                     :filter-list="requestFilter"
                     :allow-custom-filters="false"
                     :no-filter-title="'No filters applied'"
+                    :extra-count-filter="connectorsData.attributeValue ? 1 : 0"
                     class="bg-gray-100"
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
@@ -300,6 +301,10 @@
                 filters.value = {
                     status: 'active' as RequestStatus,
                     request_type: [],
+                }
+                connectorsData.value = {
+                    attributeName: undefined,
+                    attributeValue: undefined,
                 }
             }
             const BItypes = getBISourceTypes()

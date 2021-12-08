@@ -104,6 +104,12 @@
                     return "Filters"
                 },
             },
+            extraCountFilter: {
+                required: false,
+                default() {
+                    return 0
+                },
+            },
         },
         emits: [
             'change',
@@ -114,7 +120,7 @@
         ],
         setup(props, { emit }) {
             const { modelValue, activeKey } = useVModels(props, emit)
-            const { typeName, isAccordion, filterList, allowCustomFilters } =
+            const { typeName, isAccordion, filterList, allowCustomFilters, extraCountFilter } =
                 toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
@@ -154,7 +160,7 @@
             })
 
             const totalFilteredCount = computed(() => {
-                let count = 0
+                let count = 0 + extraCountFilter.value
                 Object.keys(localValue.value).forEach((key) => {
                     if (Array.isArray(localValue.value[key])) {
                         if (localValue.value[key].length > 0) {

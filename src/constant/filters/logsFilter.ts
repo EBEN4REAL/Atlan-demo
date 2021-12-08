@@ -101,6 +101,16 @@ export const accessLogsFilter = [
 ]
 
 export const requestFilter = [
+    //   {
+    //     id: 'hierarchy',
+    //     label: 'Connection',
+    //     component: 'hierarchy',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    // },
     {
         id: 'requestor',
         label: 'Requestor',

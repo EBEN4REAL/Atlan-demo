@@ -248,21 +248,13 @@
                 // currentTarget is the parent element, relatedTarget is the clicked element
                 if (!container.value.contains(event.relatedTarget)) {
                     isAreaFocused.value = false
+                    inputValue1.value = ''
+                    inputValue2.value = ''
+                    queryText.value = ''
                 }
-            }
-            const handleDeleteColumn = (index: any) => {
-                cols.value.splice(index, 1)
-            }
-
-            const onSelectedColumn = (node: any) => {
-                console.log(node, 'node')
-                const label = node?.dataRef?.name
-                const type = node?.dataRef?.dataType?.toLowerCase()
-                cols.value.push({ type, label })
             }
 
             const inputChange = () => {
-                console.log('called')
                 if (topPosShift.value !== container.value?.offsetHeight) {
                     topPosShift.value = container.value?.offsetHeight
                 }
@@ -450,8 +442,6 @@
                 inputValue1,
                 inputValue2,
                 clickPos,
-                handleDeleteColumn,
-                onSelectedColumn,
                 container,
                 handleContainerBlur,
                 setFoucs,

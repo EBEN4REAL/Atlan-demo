@@ -42,7 +42,9 @@
                             <AtlanIcon icon="Columns" class="w-4 h-4" />
                         </div>
                         <div class="">
-                            <p class="text-sm font-bold text-gray">Columns</p>
+                            <p class="text-sm font-bold capitalize text-gray">
+                                {{ panel.id }}
+                            </p>
                             <p class="text-xs text-gray-500" v-if="!expand">
                                 from Instacart_beverages_master
                             </p>
@@ -76,21 +78,6 @@
                                 v-model:containerHovered="containerHovered"
                             />
                             <!-- ------------------------------ -->
-                        </div>
-                        <div class="border-r border-gray-300">
-                            <AtlanBtn
-                                @click.stop="() => handleDelete(index)"
-                                :disabled="Number(index) === 0"
-                                class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                            >
-                                <AtlanIcon
-                                    icon="Delete"
-                                    class="-mx-1"
-                                ></AtlanIcon>
-                            </AtlanBtn>
                         </div>
                     </div>
                 </div>

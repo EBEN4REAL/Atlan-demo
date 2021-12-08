@@ -96,7 +96,7 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'data_type'">
-                        <span class="data-type">{{ text.toUpperCase() }}</span>
+                        <span class="data-type">{{ text?.toUpperCase() }}</span>
                     </template>
                     <template v-else-if="column.key === 'description'">
                         <Tooltip :tooltip-text="text" />
@@ -127,9 +127,9 @@
                 padding="compact"
             >
                 {{ pagination.current }} of
-                <span v-if="Math.ceil(pagination.total)">{{
-                    Math.ceil(pagination.total)
-                }}</span>
+                <span v-if="Math.ceil(pagination.total)"
+                    >{{ Math.ceil(pagination.total) }}
+                </span>
 
                 <div
                     v-else-if="isValidating"
@@ -210,6 +210,8 @@
             const columnsList: Ref<assetInterface[]> = ref([])
             const columnFromUrl: Ref<assetInterface[]> = ref([])
 
+            const openDrawerOnLoad = ref<boolean>(false)
+
             const {
                 selectedAsset,
                 certificateStatus,
@@ -258,12 +260,12 @@
 
             const {
                 freshList: list,
+                list: combinedList,
                 isLoading,
                 quickChange,
                 totalCount,
                 error,
                 isValidating,
-                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -334,8 +336,12 @@
             }
 
             const handleListUpdate = (asset: any) => {
-                updateList(asset)
                 selectedRowData.value = asset
+
+                const index = list.value.findIndex((i) => i.guid === asset.guid)
+                if (index > -1) {
+                    list.value[index] = asset
+                }
 
                 // In case column from url was updated instead of the other list (20 items)
                 if (asset.guid === columnFromUrl.value[0]?.guid) {
@@ -393,7 +399,7 @@
                         })
                         const fetchKey = computed(() => {
                             if (
-                                list.value.some(
+                                combinedList.value.some(
                                     (item) => item.guid === column.value
                                 )
                             ) {
@@ -415,32 +421,30 @@
                         watch([urlColumnList], () => {
                             columnFromUrl.value = urlColumnList.value
                             filterColumnsList()
-
-                            columnsList.value?.forEach((singleRow) => {
-                                if (singleRow.guid === column.value) {
-                                    openColumnSidebar(
-                                        singleRow.attributes.order
-                                    )
-                                }
-                            })
-
-                            nextTick(() => {
-                                scrollToElement()
-                            })
                         })
+                        if (fetchKey.value === null) {
+                            filterColumnsList()
+                        }
+                    } else {
                         filterColumnsList()
+                    }
+                }
+            )
 
+            watch(
+                () => [...columnsList.value],
+                () => {
+                    if (!openDrawerOnLoad.value) {
                         columnsList.value?.forEach((singleRow) => {
                             if (singleRow.guid === column.value) {
                                 openColumnSidebar(singleRow.attributes.order)
                             }
                         })
+                        openDrawerOnLoad.value = true
 
                         nextTick(() => {
                             scrollToElement()
                         })
-                    } else {
-                        filterColumnsList()
                     }
                 }
             )

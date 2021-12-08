@@ -3,6 +3,7 @@
     <AssetProfile
         v-else
         :asset="localSelected"
+        :key="localSelected.guid"
         @preview="emit('preview', $event)"
     ></AssetProfile>
 </template>
@@ -46,8 +47,8 @@
 
             useHead({
                 title:
-                    localSelected.value?.attributes.displayName ||
-                    localSelected.value?.attributes.name,
+                    localSelected.value?.attributes?.displayName ||
+                    localSelected.value?.attributes?.name,
             })
 
             const limit = ref(1)
@@ -56,7 +57,10 @@
                 guid: id.value,
             })
             const fetchKey = computed(() => {
-                if (selectedAsset.value.guid === id.value) {
+                if (
+                    selectedAsset.value.guid === id.value &&
+                    selectedAsset.value.typeName !== 'Column'
+                ) {
                     return null
                 }
                 return id.value

@@ -7,14 +7,14 @@ export const profileTabs = [
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
     },
-    {
+    /* {
         id: 'columns',
         label: 'Columns',
         component: 'columns',
         includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
-    },
+    }, */
     {
         id: 'lineage',
         label: 'Lineage',

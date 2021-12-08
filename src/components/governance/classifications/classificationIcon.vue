@@ -14,9 +14,7 @@
         name: 'ClassificationIcon',
         props: {
             color: {
-                type: String as PropType<
-                    'Blue' | 'Green' | 'Red' | 'Yellow' | 'White'
-                >,
+                type: String as PropType<'Blue' | 'Green' | 'Red' | 'Yellow'>,
                 required: true,
                 default: 'Blue',
             },

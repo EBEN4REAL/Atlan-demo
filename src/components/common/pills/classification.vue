@@ -17,13 +17,6 @@
                     ? `hover:bg-${color.toLowerCase()}-400`
                     : 'hover:bg-pink-400'
             }
-            group
-            ${
-                color
-                    ? `hover:border-${color.toLowerCase()}-400`
-                    : 'hover:border-pink-400'
-            }
-            
         `"
         :data-test-id="displayName"
     >
@@ -80,7 +73,7 @@
             color: {
                 type: String,
                 required: false,
-                default: 'Blue',
+                default: 'blue',
             },
             allowDelete: {
                 type: Boolean,

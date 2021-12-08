@@ -207,9 +207,10 @@
                 error: listError,
             } = useRequestList(searchTerm, filters)
             watch(response, () => {
+                console.log(response, 'skjdhsjkdhksjhdk')
                 requestList.value =
                     response.value?.records?.filter(
-                        (req) => req.status === filters.value.status
+                        (req) => Array.isArray(filters.value.status) ? filters.value.status.includes(req.status) : req.status === filters.value.status
                     ) || []
             })
             function isSelected(guid: string): boolean {

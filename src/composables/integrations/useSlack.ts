@@ -1,8 +1,10 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { Integrations } from '~/services/service/integrations'
 import { useAuthStore } from '~/store/auth'
+import integrationStore from '~/store/integrations/index'
 
 const authStore = useAuthStore()
+const intStore = integrationStore()
 
 
 let { origin } = window.location
@@ -81,3 +83,26 @@ export const getDeepLinkFromUserDmLink = (link: string) => {
     const deepLink = `slack://channel?team=${teamId}&id=${conversationId}`
     return deepLink
 }
+
+
+export const tenantLevelOauthUrl = computed(() => {
+    const slackIntegration = intStore.getIntegration(
+        'slack',
+        true
+    )
+    const oauthBaseUrl = slackIntegration?.source_metadata?.oauthUrl
+    const state = getSlackInstallUrlState(true)
+    const slackOauth = `${oauthBaseUrl}&state=${state}`
+    return slackOauth
+})
+
+export const userLevelOauthUrl = computed(() => {
+    const slackIntegration = intStore.getIntegration(
+        'slack',
+        false
+    )
+    const oauthBaseUrl = slackIntegration?.source_metadata?.oauthUrl
+    const state = getSlackInstallUrlState(true)
+    const slackOauth = `${oauthBaseUrl}&state=${state}`
+    return slackOauth
+})

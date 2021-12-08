@@ -26,6 +26,14 @@
                         class=""
                     />
                 </div>
+                <SlackUserLoginTrigger
+                    v-if="
+                        hasAtleastOneSlackLink &&
+                        !hasUserLevelSlackIntegration &&
+                        hasTenantLevelSlackIntegration
+                    "
+                    class="mt-6"
+                />
             </div>
             <div
                 v-else
@@ -57,94 +65,102 @@
 </template>
 
 <script lang="ts">
-    // Vue
-    import dayjs from 'dayjs'
-    import relativeTime from 'dayjs/plugin/relativeTime'
+// Vue
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-    import {
-        defineComponent,
-        PropType,
-        computed,
-        toRefs,
-        defineAsyncComponent,
-    } from 'vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import AddResources from './addResource.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import AtlanButton from '~/components/UI/button.vue'
-    import integrationStore from '~/store/integrations/index'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
-    import {
-        isSlackLink,
-        getChannelAndMessageIdFromSlackLink,
-    } from '~/composables/integrations/useSlack'
-    import { UnfurlSlackMessage } from '~/composables/integrations/useIntegrations'
+import {
+    defineComponent,
+    PropType,
+    computed,
+    toRefs,
+    defineAsyncComponent,
+} from 'vue'
+import { assetInterface } from '~/types/assets/asset.interface'
+import AddResources from './addResource.vue'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
+import AtlanButton from '~/components/UI/button.vue'
+import integrationStore from '~/store/integrations/index'
+import AtlanIcon from '../../icon/atlanIcon.vue'
+import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
+import {
+    isSlackLink,
+    getChannelAndMessageIdFromSlackLink,
+} from '~/composables/integrations/useSlack'
+import { UnfurlSlackMessage } from '~/composables/integrations/useIntegrations'
 
-    dayjs.extend(relativeTime)
+dayjs.extend(relativeTime)
 
-    export default defineComponent({
-        components: {
-            AddResources,
-            AtlanButton,
-            AtlanIcon,
-            slackLinkPreview: defineAsyncComponent(
-                () => import('./previews/slackLinkPreviewCard.vue')
-            ),
-            linkPreview: defineAsyncComponent(
-                () => import('./previews/linkPreviewCard.vue')
-            ),
+export default defineComponent({
+    components: {
+        SlackUserLoginTrigger,
+        AddResources,
+        AtlanButton,
+        AtlanIcon,
+        slackLinkPreview: defineAsyncComponent(
+            () => import('./previews/slackLinkPreviewCard.vue')
+        ),
+        linkPreview: defineAsyncComponent(
+            () => import('./previews/linkPreviewCard.vue')
+        ),
+    },
+    props: {
+        selectedAsset: {
+            type: Object as PropType<assetInterface>,
+            required: true,
         },
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
-        },
-        setup(props) {
-            const timeAgo = (time: string) => dayjs().from(time, true)
-            const { links } = useAssetInfo()
-            const hasUserLevelSlackIntegration = true
-            console.log('links', links)
+    },
+    setup(props) {
+        const timeAgo = (time: string) => dayjs().from(time, true)
+        const { links } = useAssetInfo()
+        const hasUserLevelSlackIntegration = true
+        const hasTenantLevelSlackIntegration = true
+        console.log('links', links)
 
-            function getPreviewComponent(url) {
-                if (isSlackLink(url) && hasUserLevelSlackIntegration) {
-                    return 'slackLinkPreview'
-                }
-                return 'linkPreview'
+        function getPreviewComponent(url) {
+            if (
+                isSlackLink(url) &&
+                hasUserLevelSlackIntegration &&
+                hasTenantLevelSlackIntegration
+            ) {
+                return 'slackLinkPreview'
             }
+            return 'linkPreview'
+        }
 
-            const { selectedAsset } = toRefs(props)
+        const { selectedAsset } = toRefs(props)
 
-            const hasAtleastOneSlackLink = computed(() => {
-                const linkArr = links(selectedAsset.value)
-                const slackLink = linkArr.some((link) =>
-                    isSlackLink(link?.attributes?.link)
-                )
-                return slackLink
-            })
+        const hasAtleastOneSlackLink = computed(() => {
+            const linkArr = links(selectedAsset.value)
+            const slackLink = linkArr.some((link) =>
+                isSlackLink(link?.attributes?.link)
+            )
+            return slackLink
+        })
 
-            return {
-                links,
-                hasAtleastOneSlackLink,
-                hasUserLevelSlackIntegration,
-                isSlackLink,
-                timeAgo,
-                getPreviewComponent,
-            }
-        },
-    })
+        return {
+            links,
+            hasAtleastOneSlackLink,
+            hasUserLevelSlackIntegration,
+            isSlackLink,
+            timeAgo,
+            getPreviewComponent,
+            hasTenantLevelSlackIntegration,
+        }
+    },
+})
 </script>
 <style lang="less" scoped>
-    .slack-icon-avatar-overlay {
-        height: 1rem;
-        bottom: -3px;
-        right: -6px;
-        border-radius: 100px;
-        /* box-shadow: -1px 1px 4px white; */
-        background: white;
-        padding: 0.9px;
-    }
-    .min-w-link-left-col {
-        min-width: 2rem;
-    }
+.slack-icon-avatar-overlay {
+    height: 1rem;
+    bottom: -3px;
+    right: -6px;
+    border-radius: 100px;
+    /* box-shadow: -1px 1px 4px white; */
+    background: white;
+    padding: 0.9px;
+}
+.min-w-link-left-col {
+    min-width: 2rem;
+}
 </style>

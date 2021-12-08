@@ -1,6 +1,10 @@
 <template>
     <div>
-        <div v-if="!isLoading" class="flex p-2 border rounded">
+        <div
+            v-if="!isLoading"
+            class="flex p-2 border rounded cursor-pointer hover:bg-gray-100"
+            @click="openLink(item?.attributes?.link)"
+        >
             <div class="relative h-8 mr-3 min-w-link-left-col">
                 <!-- avatar -->
                 <img class="rounded-full" :src="data.user.image_32" alt="" />
@@ -80,12 +84,18 @@ export default defineComponent({
                 immediate: true,
             }
         )
-
+        function openLink(url) {
+            if (!url) {
+                return
+            }
+            window.open(url)
+        }
         return {
             data,
             isLoading,
             error,
             timeAgo,
+            openLink,
         }
     },
 })

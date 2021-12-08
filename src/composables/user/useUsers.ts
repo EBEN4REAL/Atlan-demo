@@ -119,7 +119,7 @@ export const getFormattedUser = (user: any) => {
         workspaceRole: getWorkspaceRole(user),
         personaList: getUserPersona(user),
         created_at_time_ago: user.createdTimestamp
-            ? useTimeAgo(user.createdTimestamp).value : ''
+            ? useTimeAgo(user.createdTimestamp).value : '',
     }
     return localUser
 }

@@ -1,5 +1,8 @@
 <template>
-    <div class="flex items-center p-2 border rounded">
+    <div
+        class="flex p-2 border rounded cursor-pointer hover:bg-gray-100"
+        @click="openLink(link(item))"
+    >
         <div class="mr-2 min-w-link-left-col">
             <img
                 :src="`https://www.google.com/s2/favicons?domain=${link(
@@ -12,7 +15,7 @@
         <div class="flex flex-col">
             <a
                 class="flex cursor-pointer gap-x-2 hover:underline"
-                :href="`//${link(item)}`"
+                :href="`${link(item)}`"
                 target="_blank"
                 rel="noreferrer"
             >
@@ -31,33 +34,41 @@
 </template>
 
 <script lang="ts">
-    // Vue
-    import { defineComponent, PropType } from 'vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
+// Vue
+import { defineComponent, PropType } from 'vue'
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
+import { assetInterface } from '~/types/assets/asset.interface'
 
-    export default defineComponent({
-        props: {
-            item: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
+export default defineComponent({
+    props: {
+        item: {
+            type: Object as PropType<assetInterface>,
+            required: true,
         },
-        setup() {
-            const {
-                createdBy,
-                modifiedBy,
-                createdAt,
-                modifiedAt,
-                title,
-                link,
-            } = useAssetInfo()
-            return { createdBy, modifiedBy, createdAt, modifiedAt, title, link }
-        },
-    })
+    },
+    setup() {
+        function openLink(url) {
+            if (!url) {
+                return
+            }
+            window.open(url)
+        }
+        const { createdBy, modifiedBy, createdAt, modifiedAt, title, link } =
+            useAssetInfo()
+        return {
+            createdBy,
+            modifiedBy,
+            createdAt,
+            modifiedAt,
+            title,
+            link,
+            openLink,
+        }
+    },
+})
 </script>
 <style lang="less" scoped>
-    .min-w-link-left-col {
-        min-width: 2rem;
-    }
+.min-w-link-left-col {
+    min-width: 2rem;
+}
 </style>

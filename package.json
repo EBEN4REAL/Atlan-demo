@@ -67,6 +67,7 @@
         "splitpanes": "^3.0.6",
         "sql-formatter": "^4.0.2",
         "sql-highlight": "^4.0.1",
+        "squel": "^5.13.0",
         "store": "^2.0.12",
         "swrv": "^1.0.0-beta.8",
         "tailwind-safelist-generator": "^0.1.3",

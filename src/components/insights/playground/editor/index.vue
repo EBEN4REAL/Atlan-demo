@@ -61,6 +61,29 @@
                                 </a-tooltip>
                             </div>
                         </div>
+                        <a-popover
+                            placement="bottom"
+                            trigger="click"
+                            :overlayStyle="{ padding: '0px !important' }"
+                        >
+                            <template #content>
+                                <div
+                                    class="p-3 rounded"
+                                    style="width: 400px; height: 280px"
+                                ></div>
+                            </template>
+
+                            <div
+                                class="items-center justify-center px-1 ml-1 rounded cursor-pointer hover:bg-gray-300"
+                                :class="showQueryPreview ? 'bg-gray-300' : ''"
+                                @click="toggleQueryPreviewPopover"
+                            >
+                                <AtlanIcon
+                                    icon="Info"
+                                    class="w-4 h-4 text-gray-500"
+                                />
+                            </div>
+                        </a-popover>
                     </div>
                 </div>
                 <div class="flex items-center">
@@ -420,6 +443,7 @@
             })
             const showcustomToolBar = ref(false)
             const showVQB = ref(false)
+            const showQueryPreview = ref(false)
 
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -674,6 +698,12 @@
                 }
             }
 
+            /* VQB Preview */
+            const toggleQueryPreviewPopover = () => {
+                showQueryPreview.value = !showQueryPreview.value
+                // generateVqbSQLPreview()
+            }
+
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -744,6 +774,7 @@
 
             /* ------------------------------------------ */
             return {
+                showQueryPreview,
                 showVQB,
                 permissions,
                 saveOrUpdate,
@@ -769,6 +800,7 @@
                 isQueryRunning,
                 formatDocument,
                 toggleCustomToolbar,
+                toggleQueryPreviewPopover,
                 copyURL,
                 updateQuery,
                 openSaveQueryModal,

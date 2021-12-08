@@ -12,7 +12,7 @@
                 ? ' border-primary-focus border-2 '
                 : 'border-gray-300 border border-plus',
             ,
-            'flex flex-wrap items-center   mx-3 rounded box-shadow selector-height px-3',
+            'flex flex-wrap items-center    rounded box-shadow selector-height px-3',
             !tableQualfiedName ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"

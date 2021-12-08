@@ -178,7 +178,7 @@
                 limit: 15,
                 offset: 0,
                 filter: {},
-                sort: '-created_at',
+                sort: '-createdAt',
             })
             const pagination = computed(() => ({
                 total: Object.keys(groupListAPIParams.filter).length
@@ -268,7 +268,7 @@
             ) => {
                 // add sort
                 if (Object.keys(sorter).length) {
-                    let sortValue = '-created_at'
+                    let sortValue = '-createdAt'
                     if (sorter.order && sorter.column && sorter.column.sortKey)
                         sortValue = `${sorter.order === 'descend' ? '-' : ''}${
                             sorter.column.sortKey

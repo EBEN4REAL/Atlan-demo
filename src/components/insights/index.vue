@@ -192,10 +192,7 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(
-                undefined,
-                !savedQueryGuidFromURL.value
-            )
+            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -364,7 +361,13 @@
                                     order: 1,
                                     id: 'columns',
                                     hide: false,
-                                    columns: [],
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                        },
+                                    ],
                                 },
                             ],
                         },
@@ -568,8 +571,7 @@
                 }
 
                 const attributeName = 'schemaQualifiedName'
-                const attributeValue =
-                    `${databaseQualifiedNameFromURL  }/${  schemaNameFromURL}`
+                const attributeValue = `${databaseQualifiedNameFromURL}/${schemaNameFromURL}`
 
                 // const newText = `${newQuery}${prevText}`
                 queryTab.playground.editor.text = newQuery

@@ -3,8 +3,10 @@
         ref="container"
         @click="setFoucs"
         @focusout="handleContainerBlur"
+        @mouseover="handleMouseOver"
+        @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center py-1"
+        class="relative flex items-center py-1 group z-1"
         :class="[
             isAreaFocused
                 ? ' border-primary-focus border-2 '
@@ -54,18 +56,52 @@
         />
         <div class="absolute right-2">
             <AtlanIcon
+                v-if="
+                    findVisibility(
+                        'search',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
+                icon="Search"
+                class="w-4 h-4"
+            />
+            <AtlanIcon
                 icon="ChevronDown"
                 class="w-4 h-4"
-                v-if="!isAreaFocused"
+                v-if="
+                    findVisibility(
+                        'chevronDown',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
             />
-            <AtlanIcon v-else icon="Search" class="w-4 h-4" />
+            <AtlanIcon
+                icon="Cross"
+                class="w-4 h-4 cursor-pointer"
+                @click.stop="clearAllSelected"
+                v-if="
+                    findVisibility(
+                        'cross',
+                        isAreaFocused,
+                        mouseOver,
+                        tableQualfiedName,
+                        selectedItems
+                    )
+                "
+            />
         </div>
         <div
             v-if="isAreaFocused"
             @click.stop="() => {}"
             :style="`width: 100%;top:${topPosShift}px`"
             :class="[
-                'absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow position',
+                'absolute z-10  pb-2 overflow-auto bg-white rounded custom-shadow position',
             ]"
         >
             <div class="border-b border-gray-300">
@@ -91,11 +127,13 @@
                     v-if="isLoading"
                     style="min-height: 250px !important"
                 ></Loader>
-                <div class="w-full px-3">
+                <div
+                    class="w-full px-3"
+                    v-if="dropdownOption.length !== 0 && !isLoading"
+                >
                     <template
                         v-for="(item, index) in dropdownOption"
                         :key="item.value + index"
-                        v-if="dropdownOption.length !== 0 && !isLoading"
                     >
                         <a-checkbox
                             :checked="map[item.value]"
@@ -166,11 +204,6 @@
                 type: Object as PropType<any[]>,
                 required: true,
             },
-            queryText: {
-                type: String,
-                required: true,
-                default: '',
-            },
             tableQualfiedName: {
                 type: String,
                 required: true,
@@ -179,8 +212,12 @@
 
         setup(props, { emit }) {
             const { tableQualfiedName } = toRefs(props)
-            const { selectedItems, queryText } = useVModels(props)
+            const queryText = ref('')
+            const { selectedItems } = useVModels(props)
             const map = ref({})
+            selectedItems.value.forEach((selectedItem) => {
+                map.value[selectedItem] = true
+            })
 
             const { getDataTypeImage } = useColumn()
             const activeInlineTab = inject(
@@ -189,6 +226,7 @@
 
             const inputRef = ref()
             const selectAll = ref(false)
+            const mouseOver = ref(false)
             const topPosShift = ref(0)
             const inputValue1 = ref('')
             const inputValue2 = ref('')
@@ -209,24 +247,18 @@
                 // currentTarget is the parent element, relatedTarget is the clicked element
                 if (!container.value.contains(event.relatedTarget)) {
                     isAreaFocused.value = false
+                    inputValue1.value = ''
+                    inputValue2.value = ''
+                    queryText.value = ''
                 }
-            }
-            const handleDeleteColumn = (index: any) => {
-                cols.value.splice(index, 1)
-            }
-
-            const onSelectedColumn = (node: any) => {
-                console.log(node, 'node')
-                const label = node?.dataRef?.name
-                const type = node?.dataRef?.dataType?.toLowerCase()
-                cols.value.push({ type, label })
             }
 
             const inputChange = () => {
-                console.log('called')
-                if (topPosShift.value !== container.value?.offsetHeight) {
-                    topPosShift.value = container.value?.offsetHeight
-                }
+                nextTick(() => {
+                    if (topPosShift.value !== container.value?.offsetHeight) {
+                        topPosShift.value = container.value?.offsetHeight
+                    }
+                })
             }
 
             const getInitialBody = () => {
@@ -330,12 +362,68 @@
                 emit('checkboxChange', selectedItems.value)
             }
 
+            const handleMouseOver = () => {
+                if (!mouseOver.value) mouseOver.value = true
+            }
+            const handleMouseOut = () => {
+                if (mouseOver.value) mouseOver.value = false
+            }
+
+            const findVisibility = (
+                key: string,
+                isAreaFocused,
+                mouseHover,
+                tableQualifiedName,
+                selectedItems
+            ) => {
+                switch (key) {
+                    case 'chevronDown': {
+                        if (!isAreaFocused) {
+                            if (selectedItems.length === 0 && mouseHover)
+                                return true
+                            if (selectedItems.length === 0 && !mouseHover)
+                                return true
+                            if (selectedItems.length !== 0 && !mouseHover)
+                                return true
+                        }
+                        break
+                    }
+                    case 'cross': {
+                        if (isAreaFocused) return false
+                        if (
+                            !isAreaFocused &&
+                            selectedItems.length > 0 &&
+                            mouseHover
+                        )
+                            return true
+                        else return false
+                        break
+                    }
+                    case 'search': {
+                        if (!isAreaFocused) return false
+                        if (tableQualifiedName) return true
+                        break
+                    }
+                }
+            }
+
+            const clearAllSelected = () => {
+                selectedItems.value = []
+                map.value = {}
+                selectAll.value = false
+            }
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
                 console.log(container.value)
             })
 
             return {
+                queryText,
+                clearAllSelected,
+                findVisibility,
+                handleMouseOver,
+                handleMouseOut,
+                mouseOver,
                 map,
                 enrichedSelectedItems,
                 onCheckboxChange,
@@ -355,8 +443,6 @@
                 inputValue1,
                 inputValue2,
                 clickPos,
-                handleDeleteColumn,
-                onSelectedColumn,
                 container,
                 handleContainerBlur,
                 setFoucs,

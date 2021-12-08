@@ -784,7 +784,13 @@
                                     order: 1,
                                     id: 'columns',
                                     hide: false,
-                                    columns: [],
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                        },
+                                    ],
                                 },
                             ],
                         },

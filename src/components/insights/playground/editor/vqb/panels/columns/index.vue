@@ -95,7 +95,13 @@
                 ></div>
             </div>
             <!-- Show on expand -->
-            <ColumnSubPanel :expand="expand" v-if="expand" />
+            <ColumnSubPanel
+                v-model:subpanels="
+                    activeInlineTab.playground.vqb.panels[index].subpanels
+                "
+                :expand="expand"
+                v-if="expand"
+            />
             <FooterActions
                 @add="(type) => handleAdd(index, type)"
                 v-if="
@@ -230,6 +236,10 @@
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
             }
+            console.log(
+                activeInlineTab.value.playground.vqb.panels[index.value],
+                index.value
+            )
 
             return {
                 submenuHovered,

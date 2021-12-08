@@ -375,7 +375,6 @@
                 tableQualifiedName,
                 selectedItems
             ) => {
-                console.log(key, 'fxn Called')
                 switch (key) {
                     case 'chevronDown': {
                         if (!isAreaFocused) {

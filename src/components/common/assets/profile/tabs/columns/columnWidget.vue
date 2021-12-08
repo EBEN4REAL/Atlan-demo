@@ -263,7 +263,6 @@
                 totalCount,
                 error,
                 isValidating,
-                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -334,8 +333,12 @@
             }
 
             const handleListUpdate = (asset: any) => {
-                updateList(asset)
                 selectedRowData.value = asset
+
+                const index = list.value.findIndex((i) => i.guid === asset.guid)
+                if (index > -1) {
+                    list.value[index] = asset
+                }
 
                 // In case column from url was updated instead of the other list (20 items)
                 if (asset.guid === columnFromUrl.value[0]?.guid) {

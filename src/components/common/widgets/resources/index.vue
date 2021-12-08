@@ -110,7 +110,7 @@ export default defineComponent({
     setup(props) {
         const timeAgo = (time: string) => dayjs().from(time, true)
         const { links } = useAssetInfo()
-        const hasUserLevelSlackIntegration = false
+        const hasUserLevelSlackIntegration = true
         const hasTenantLevelSlackIntegration = true
         console.log('links', links)
 

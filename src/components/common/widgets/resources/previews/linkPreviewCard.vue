@@ -1,5 +1,8 @@
 <template>
-    <div class="flex p-2 border rounded">
+    <div
+        class="flex p-2 border rounded cursor-pointer hover:bg-gray-100"
+        @click="openLink(item?.attributes?.link)"
+    >
         <div class="mr-2 min-w-link-left-col">
             <img
                 :src="`https://www.google.com/s2/favicons?domain=${item?.attributes?.link}&sz=64`"
@@ -10,7 +13,7 @@
         <div class="flex flex-col">
             <a
                 class="flex cursor-pointer gap-x-2 hover:underline"
-                :href="`//${item?.attributes?.link}`"
+                :href="`${item?.attributes?.link}`"
                 target="_blank"
                 rel="noreferrer"
             >
@@ -36,7 +39,15 @@ export default defineComponent({
         },
     },
     setup() {
-        return {}
+        function openLink(url) {
+            if (!url) {
+                return
+            }
+            window.open(url)
+        }
+        return {
+            openLink,
+        }
     },
 })
 </script>

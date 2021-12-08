@@ -71,7 +71,7 @@
                 ...customMetadataProjections,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
-            const { updateList, list, isLoading } = useDiscoverList({
+            const { list, isLoading } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -80,11 +80,6 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
-
-            /* const updateCurrentList = (asset) => {
-                updateList(asset)
-                 handlePreview(asset)
-            } */
 
             watch(list, () => {
                 if (list.value.length > 0) {

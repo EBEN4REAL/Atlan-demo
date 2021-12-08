@@ -161,13 +161,10 @@ const useGlossaryTree = ({
                             isLeaf: true,
                             typeName: 'cta',
                             guid: `${treeNode.attributes?.qualifiedName}_cta`,
-                            glossaryName:
-                                treeNode?.attributes?.anchor?.attributes?.name,
                             glossaryQualifiedName:
-                                treeNode?.attributes?.anchor?.uniqueAttributes
-                                    ?.qualifiedName,
-                            categoryName: treeNode?.attributes?.name,
-                            categoryGuid: treeNode?.guid,
+                                treeNode?.attributes?.qualifiedName,
+                            glossaryName: treeNode?.attributes?.name,
+                            glossaryGuid: treeNode?.guid,
                             parentCategory: treeNode,
                             selectable: false,
                         })

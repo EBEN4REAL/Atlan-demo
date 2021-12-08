@@ -43,6 +43,7 @@
 
     const handleNumberKeyPress = (v) => {
         const allowDecimal = ['double', 'float', 'decimal'].includes(
+
             dataType.value.toLowerCase()
         )
         const n = parseInt(v.key, 10)

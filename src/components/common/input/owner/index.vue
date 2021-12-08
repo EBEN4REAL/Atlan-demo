@@ -24,32 +24,13 @@
                 v-if="!readOnly"
                 shape="circle"
                 size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-if="usedForAssets">
-            <template
-                v-for="username in ownerUsers(selectedAsset)"
-                :key="username"
-            >
-                <PopOverUser :item="username">
-                    <UserPill
-                        :username="username"
-                        :allow-delete="!readOnly"
-                        :enable-hover="enableHover"
-                        @click="handleClickUser(username)"
-                        @delete="handleDeleteUser"
-                    ></UserPill>
-                </PopOverUser>
-            </template>
-        </template>
-        <template
-            v-for="username in localValue?.ownerUsers"
-            v-else
-            :key="username"
-        >
+
+        <template v-for="username in localValue?.ownerUsers" :key="username">
             <PopOverUser :item="username">
                 <UserPill
                     :username="username"
@@ -60,19 +41,8 @@
                 ></UserPill>
             </PopOverUser>
         </template>
-        <template v-if="usedForAssets">
-            <template v-for="name in ownerGroups(selectedAsset)" :key="name">
-                <PopOverGroup :item="name">
-                    <GroupPill
-                        :name="name"
-                        :allowDelete="!readOnly"
-                        @delete="handleDeleteGroup"
-                        @click="handleClickGroup(name)"
-                        :enableHover="enableHover"
-                    ></GroupPill>
-                </PopOverGroup> </template
-        ></template>
-        <template v-for="name in localValue?.ownerGroups" v-else :key="name">
+
+        <template v-for="name in localValue?.ownerGroups" :key="name">
             <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"

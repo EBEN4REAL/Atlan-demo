@@ -25,7 +25,7 @@
                 @click="setSearchItem(item.guid)"
             >
                 <span class="w-6 h-4 bg-gray-300"></span>
-                <span>{{ item.displayText }}</span>
+                <span>{{ item.displayText || item.attributes.name }}</span>
             </div>
         </div>
     </div>
@@ -49,9 +49,8 @@
             /** COMPUTED */
             const filteredItems = computed(() => {
                 if (!query.value) return []
-                // console.log('searchItems:', searchItems.value)
                 return searchItems.value.filter((i) =>
-                    i.displayText
+                    (i.displayText || i.attributes.name)
                         .toLowerCase()
                         .includes(query.value.toLowerCase())
                 )
@@ -87,7 +86,6 @@
                 query,
                 searchItems,
                 filteredItems,
-                showSearchResults: false,
                 searchItem,
                 showResults,
                 setQuery,

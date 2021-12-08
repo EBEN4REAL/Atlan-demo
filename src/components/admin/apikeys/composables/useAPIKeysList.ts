@@ -17,7 +17,7 @@ export default function useAPIKeysList(
     const params: Ref<APIKeyParams> = ref({
         offset: 0,
         limit: 100,
-        sort: '-created_at',
+        sort: '-createdAt',
         filter: {},
     })
     const selectedAPIKey = ref({

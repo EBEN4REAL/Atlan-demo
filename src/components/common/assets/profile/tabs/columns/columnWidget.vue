@@ -12,7 +12,7 @@
         </div>
         <!-- Table -->
         <div
-            class="flex items-center justify-center w-full border rounded  h-96 border-gray-light"
+            class="flex items-center justify-center w-full border rounded  border-gray-light h-96"
         >
             <div
                 v-if="isLoading"
@@ -30,6 +30,16 @@
                 <ErrorView />
             </div>
 
+            <div
+                v-else-if="columnsList.length === 0 && !isLoading"
+                class="flex-grow"
+            >
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    desc="No columns found"
+                ></EmptyView>
+            </div>
+
             <a-table
                 v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
@@ -39,6 +49,7 @@
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
                 class="self-start"
+                :class="$style.columnTable"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">
@@ -52,8 +63,9 @@
                         <div
                             :class="{
                                 'border-primary': record.key === selectedRow,
+                                'flex items-center justify-between':
+                                    record.is_primary,
                             }"
-                            class="flex items-center justify-between"
                         >
                             <div class="flex items-center">
                                 <component
@@ -77,10 +89,6 @@
                                     "
                                     class="mb-0.5"
                                 ></CertificateBadge>
-
-                                <!--  <div v-if="record.is_primary" class="mb-1 ml-2">
-                                    <AtlanIcon icon="Pin" />
-                                </div> -->
                             </div>
                             <div v-if="record.is_primary">
                                 <AtlanIcon icon="PrimaryKey" />
@@ -95,31 +103,54 @@
                     </template>
                 </template>
             </a-table>
-            <div v-else class="flex-grow">
-                <EmptyView
-                    empty-screen="EmptyDiscover"
-                    desc="No columns found"
-                ></EmptyView>
-            </div>
-
-            <!-- <div
-                v-if="isLoadMore"
-                class="flex items-center justify-center mt-3"
-            >
-                <button
-                    v-if="!isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                    @click="handleLoadMore"
-                >
-                    <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
-                    >
-                        Load more
-                    </p>
-                    <AtlanIcon icon="ArrowDown" />
-                </button>
-            </div> -->
         </div>
+
+        <!-- Pagination -->
+        <div
+            v-if="(columnsList && columnsList.length) || isLoading"
+            class="flex flex-row items-center justify-end w-full mt-4"
+        >
+            <AtlanBtn
+                class="bg-transparent rounded-r-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                :disabled="pagination.current === 1"
+                @click="handlePagination(pagination.current - 1)"
+            >
+                <AtlanIcon icon="CaretLeft" />
+            </AtlanBtn>
+            <AtlanBtn
+                class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default "
+                size="sm"
+                color="secondary"
+                padding="compact"
+            >
+                {{ pagination.current }} of
+                <span v-if="Math.ceil(pagination.total)">{{
+                    Math.ceil(pagination.total)
+                }}</span>
+
+                <div
+                    v-else-if="isValidating"
+                    class="flex items-center justify-center"
+                >
+                    <AtlanIcon icon="Loader" class="animate-spin"></AtlanIcon>
+                </div>
+            </AtlanBtn>
+
+            <AtlanBtn
+                class="bg-transparent rounded-l-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                :disabled="pagination.current === Math.ceil(pagination.total)"
+                @click="handlePagination(pagination.current + 1)"
+            >
+                <AtlanIcon icon="CaretRight" />
+            </AtlanBtn>
+        </div>
+
         <AssetDrawer
             :data="selectedRowData"
             :showDrawer="showColumnSidebar"
@@ -143,6 +174,7 @@
     import ErrorView from '@common/error/discover.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import AtlanBtn from '@/UI/button.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -166,6 +198,7 @@
             ErrorView,
             Tooltip,
             CertificateBadge,
+            AtlanBtn,
         },
         setup() {
             /** DATA */
@@ -224,9 +257,8 @@
             updateFacet()
 
             const {
-                list,
+                freshList: list,
                 isLoading,
-                isLoadMore,
                 quickChange,
                 totalCount,
                 error,
@@ -313,10 +345,14 @@
                 filterColumnsList()
             }
 
-            const handleLoadMore = () => {
-                if (isLoadMore.value) {
-                    offset.value += limit.value
-                }
+            const pagination = computed(() => ({
+                total: totalCount.value / limit.value,
+
+                current: offset.value / limit.value + 1,
+            }))
+
+            const handlePagination = (page) => {
+                offset.value = (page - 1) * 20
                 quickChange()
             }
 
@@ -344,37 +380,54 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch([list], () => {
-                // If redirected from asset column discovery
-                if (column.value !== '') {
-                    const limit = ref(1)
-                    const offset = ref(0)
-                    const facets = ref({
-                        guid: column.value,
-                    })
-                    const fetchKey = computed(() => {
-                        if (
-                            list.value.some(
-                                (item) => item.guid === column.value
-                            )
-                        ) {
-                            return null
-                        }
-                        return column.value
-                    })
-                    const dependentKey = ref(fetchKey.value)
+            watch(
+                () => [...list.value],
+                () => {
+                    // If redirected from asset column discovery
+                    if (column.value !== '') {
+                        columnFromUrl.value = []
+                        const limit = ref(1)
+                        const offset = ref(0)
+                        const facets = ref({
+                            guid: column.value,
+                        })
+                        const fetchKey = computed(() => {
+                            if (
+                                list.value.some(
+                                    (item) => item.guid === column.value
+                                )
+                            ) {
+                                return null
+                            }
+                            return column.value
+                        })
+                        const dependentKey = ref(fetchKey.value)
 
-                    const { list: urlColumnList } = useDiscoverList({
-                        isCache: false,
-                        dependentKey,
-                        facets,
-                        limit,
-                        offset,
-                        attributes: defaultAttributes,
-                        relationAttributes,
-                    })
-                    watch([urlColumnList], () => {
-                        columnFromUrl.value = urlColumnList.value
+                        const { freshList: urlColumnList } = useDiscoverList({
+                            isCache: false,
+                            dependentKey,
+                            facets,
+                            limit,
+                            offset,
+                            attributes: defaultAttributes,
+                            relationAttributes,
+                        })
+                        watch([urlColumnList], () => {
+                            columnFromUrl.value = urlColumnList.value
+                            filterColumnsList()
+
+                            columnsList.value?.forEach((singleRow) => {
+                                if (singleRow.guid === column.value) {
+                                    openColumnSidebar(
+                                        singleRow.attributes.order
+                                    )
+                                }
+                            })
+
+                            nextTick(() => {
+                                scrollToElement()
+                            })
+                        })
                         filterColumnsList()
 
                         columnsList.value?.forEach((singleRow) => {
@@ -386,28 +439,16 @@
                         nextTick(() => {
                             scrollToElement()
                         })
-                    })
-                    filterColumnsList()
-
-                    columnsList.value?.forEach((singleRow) => {
-                        if (singleRow.guid === column.value) {
-                            openColumnSidebar(singleRow.attributes.order)
-                        }
-                    })
-
-                    nextTick(() => {
-                        scrollToElement()
-                    })
-                } else {
-                    filterColumnsList()
+                    } else {
+                        filterColumnsList()
+                    }
                 }
-            })
+            )
 
             return {
                 rowClassName,
                 customRow,
                 handleSearchChange,
-                isLoadMore,
                 handleListUpdate,
                 handleCloseColumnSidebar,
                 isLoading,
@@ -423,9 +464,10 @@
                 selectedRow,
                 columnsData,
                 queryText,
+                handlePagination,
                 showColumnSidebar,
+                pagination,
                 selectedRowData,
-                handleLoadMore,
                 columns: [
                     {
                         width: 50,
@@ -435,7 +477,7 @@
                         align: 'center',
                     },
                     {
-                        width: 240,
+                        width: 280,
                         title: 'Column Name',
                         dataIndex: 'column_name',
                         key: 'column_name',
@@ -457,6 +499,34 @@
     })
 </script>
 
+<style lang="less" module>
+    .columnTable {
+        :global(.ant-table-container) {
+            @apply text-gray-700 text-sm font-normal !important;
+        }
+        :global(.ant-table-thead) {
+            max-height: 40px !important;
+            height: 40px !important;
+        }
+        :global(.ant-table-thead tr th) {
+            @apply text-gray-700 text-sm font-normal py-0  !important;
+        }
+        :global(.ant-table td) {
+            @apply cursor-pointer !important;
+        }
+        :global(.ant-table-container
+                table
+                > thead
+                > tr:first-child
+                th:first-child) {
+            @apply border-r border-gray-light text-gray-500 !important;
+        }
+        :global(.ant-table-tbody tr:not(.ant-table-measure-row)) {
+            max-height: 32px !important;
+            height: 32px !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
     @font-face {
         font-family: Hack;
@@ -465,29 +535,5 @@
     .data-type {
         font-family: Hack !important;
         @apply text-gray-500 text-xs !important;
-    }
-    :global(.ant-table-container) {
-        @apply text-gray-700 text-sm font-normal !important;
-    }
-    :global(.ant-table-thead) {
-        max-height: 40px !important;
-        height: 40px !important;
-    }
-    :global(.ant-table-thead tr th) {
-        @apply text-gray-700 text-sm font-normal py-0  !important;
-    }
-    :global(.ant-table td) {
-        @apply cursor-pointer !important;
-    }
-    :global(.ant-table-container
-            table
-            > thead
-            > tr:first-child
-            th:first-child) {
-        @apply border-r border-gray-light text-gray-500 !important;
-    }
-    :global(.ant-table-tbody tr:not(.ant-table-measure-row)) {
-        max-height: 32px !important;
-        height: 32px !important;
     }
 </style>

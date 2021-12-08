@@ -14,13 +14,15 @@
         name: 'ClassificationIcon',
         props: {
             color: {
-                type: String as PropType<'Blue' | 'Green' | 'Red' | 'Yellow'>,
+                type: String as PropType<
+                    'Blue' | 'Green' | 'Red' | 'Yellow' | 'White'
+                >,
                 required: true,
                 default: 'Blue',
             },
             icon: {
                 type: String as PropType<'ShieldFilled' | 'Shield'>,
-                required: true,
+                required: false,
                 default: 'Shield',
             },
         },

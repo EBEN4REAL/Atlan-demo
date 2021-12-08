@@ -217,6 +217,9 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
+            resources: defineAsyncComponent(
+                () => import('@common/widgets/resources/index.vue')
+            ),
             // chat: defineAsyncComponent(
             //     () => import('./tabs/chat/assetChat.vue')
             // ),

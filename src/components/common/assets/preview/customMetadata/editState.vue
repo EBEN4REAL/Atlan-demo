@@ -83,7 +83,7 @@
         <a-select
             v-else-if="getDatatypeOfAttribute(attribute) === 'users'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'users' : 'a user'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -92,6 +92,9 @@
             @focus="userSearch"
             @change="handleChange"
         >
+            <template #suffixIcon>
+                <AtlanIcon icon="CaretDown" />
+            </template>
             <a-select-option
                 v-for="(item, index) in userList"
                 :key="index"
@@ -103,7 +106,7 @@
         <a-select
             v-else-if="getDatatypeOfAttribute(attribute) === 'groups'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'groups' : 'a group'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -111,7 +114,11 @@
             :show-arrow="true"
             @focus="groupSearch"
             @change="handleChange"
-            ><a-select-option
+        >
+            <template #suffixIcon>
+                <AtlanIcon icon="CaretDown" />
+            </template>
+            <a-select-option
                 v-for="(item, index) in groupList"
                 :key="index"
                 :value="item.alias"
@@ -122,7 +129,7 @@
         <a-select
             v-else-if="getDatatypeOfAttribute(attribute) === 'enum'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -130,7 +137,11 @@
             :show-arrow="true"
             :options="getEnumOptions(attribute.typeName)"
             @change="handleChange"
-        />
+        >
+            <template #suffixIcon>
+                <AtlanIcon icon="CaretDown" />
+            </template>
+        </a-select>
     </div>
 </template>
 
@@ -214,3 +225,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .center-arrow:deep(.ant-select-arrow) {
+        @apply flex items-center;
+    }
+</style>

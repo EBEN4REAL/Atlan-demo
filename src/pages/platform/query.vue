@@ -19,7 +19,7 @@
         setup() {
             const state = reactive({
                 iframeUrl:
-                    '/api/observe/d/E_7xL0mnz/heka-dashboard?orgId=1&refresh=10s',
+                    '/api/observe/d/E_7xL0mnz/heka-dashboard?orgId=1&refresh=10s&kiosk',
             })
 
             return {

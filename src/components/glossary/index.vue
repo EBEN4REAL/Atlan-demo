@@ -1,9 +1,11 @@
 <template>
     <div
         class="flex flex-col items-stretch flex-1 h-full mb-1"
+        :class="$style.checkableTree"
         ref="glossaryBox"
     >
         <div
+            v-if="!checkable"
             class="flex items-center justify-between w-full px-4 py-3 border-b"
         >
             <GlossarySelect
@@ -92,6 +94,8 @@
             :height="height"
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
+            :checkable="checkable"
+            @check="onCheck"
         ></GlossaryTree>
 
         <div
@@ -138,7 +142,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed, provide } from 'vue'
+    import { defineComponent, ref, toRefs, Ref, computed, provide, PropType } from 'vue'
     import { useRouter } from 'vue-router'
 
     import EmptyView from '@common/empty/index.vue'
@@ -203,7 +207,18 @@
                     return {}
                 },
             },
+            checkable: {
+                type: Boolean,
+                reuired: false,
+                default: false
+            },
+            checkedKeys: {
+                type: Object as PropType<string[]>,
+                required: false,
+                default: []
+            }
         },
+        emits: ['check'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
             const router = useRouter()
@@ -301,7 +316,8 @@
             const { getAnchorQualifiedName } = useAssetInfo()
 
             const handlePreview = (item) => {
-                router.push(`/glossary/${item.guid}`)
+                if(!props.checkable)
+                    router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
             }
 
@@ -390,6 +406,9 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
+            const onCheck = (checkedNodes) => {
+                emit('check', checkedNodes)
+            }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
             return {
@@ -429,6 +448,7 @@
                 handleAddCategory,
                 defaultEntityType,
                 handleCollapse,
+                onCheck
             }
         },
     })
@@ -438,5 +458,12 @@
     .filterPopover {
         max-width: 200px;
         min-width: 200px;
+    }
+    .checkableTree {
+        max-height: 364px;
+
+        :global(.ant-tree-checkbox) {
+            @apply my-auto;
+        }
     }
 </style>

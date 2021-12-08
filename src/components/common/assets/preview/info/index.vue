@@ -264,7 +264,12 @@
             >
                 Terms
             </p>
-            <Terms :selected-asset="selectedAsset" class="px-5"></Terms>
+            <Terms 
+                :selected-asset="selectedAsset" 
+                v-model="localMeanings"
+                @change="handleMeaningsUpdate"
+                class="px-5">
+            </Terms>
         </div>
 
         <div
@@ -399,6 +404,8 @@
                 localCertificate,
                 localOwners,
                 localClassifications,
+                localMeanings,
+                handleMeaningsUpdate,
                 handleChangeName,
                 handleChangeDescription,
                 handleOwnersChange,
@@ -466,6 +473,8 @@
                 descriptionRef,
                 sampleDataVisible,
                 showSampleDataModal,
+                localMeanings,
+                handleMeaningsUpdate,
                 isUserDescription,
             }
         },

@@ -10,7 +10,7 @@
                 ? ' border-primary-focus border-2 '
                 : 'border-gray-300 border border-plus',
             ,
-            'flex flex-wrap items-center   mx-3 rounded selector-height px-3',
+            'flex flex-wrap items-center   mx-3 rounded box-shadow selector-height px-3',
             !tableQualfiedName ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
@@ -24,7 +24,7 @@
         </template>
 
         <a-input
-            v-if="selectedItems.length > 0"
+            v-if="selectedItems.length > 0 && isAreaFocused"
             ref="inputRef"
             :disabled="!tableQualfiedName"
             v-model:value="inputValue1"
@@ -42,7 +42,7 @@
             ]"
         />
         <a-input
-            v-else
+            v-if="selectedItems.length == 0"
             :disabled="!tableQualfiedName"
             v-model:value="inputValue2"
             @change="input2Change"
@@ -91,40 +91,34 @@
                     v-if="isLoading"
                     style="min-height: 250px !important"
                 ></Loader>
-                <a-checkbox-group
-                    v-if="dropdownOption.length !== 0 && !isLoading"
-                    v-model:value="selectedItems"
-                    @change="onCheckboxChange"
-                    class="w-full mt-2"
-                >
-                    <div class="flex flex-col w-full">
-                        <template
-                            v-for="(item, index) in dropdownOption"
-                            :key="item.label + index"
+                <div class="w-full px-3">
+                    <template
+                        v-for="(item, index) in dropdownOption"
+                        :key="item.value + index"
+                        v-if="dropdownOption.length !== 0 && !isLoading"
+                    >
+                        <a-checkbox
+                            :checked="map[item.value]"
+                            @change="
+                                (checked) =>
+                                    onCheckboxChange(checked, item.value)
+                            "
+                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
+                            :class="$style.atlanReverse"
                         >
-                            <div class="status">
-                                <a-checkbox
-                                    :value="item.value"
-                                    :data-test-id="item.label"
-                                    :class="$style.atlanReverse"
-                                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
-                                >
-                                    <div class="flex items-center">
-                                        <component
-                                            :is="getDataTypeImage(item.type)"
-                                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                        ></component>
-                                        <span
-                                            class="mb-0 ml-1 text-sm text-gray-700"
-                                        >
-                                            {{ item.label }}
-                                        </span>
-                                    </div>
-                                </a-checkbox>
+                            <div class="flex items-center">
+                                <component
+                                    :is="getDataTypeImage(item.type)"
+                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                ></component>
+                                <span class="mb-0 ml-1 text-sm text-gray-700">
+                                    {{ item.label }}
+                                </span>
                             </div>
-                        </template>
-                    </div>
-                </a-checkbox-group>
+                        </a-checkbox>
+                    </template>
+                </div>
+
                 <span
                     class="w-full mt-4 text-sm text-center text-gray-400"
                     v-if="dropdownOption.length == 0 && !isLoading"
@@ -186,6 +180,7 @@
         setup(props, { emit }) {
             const { tableQualfiedName } = toRefs(props)
             const { selectedItems, queryText } = useVModels(props)
+            const map = ref({})
 
             const { getDataTypeImage } = useColumn()
             const activeInlineTab = inject(
@@ -279,10 +274,11 @@
 
             const onSelectAll = (e) => {
                 inputChange()
-                console.log(e.target.checked)
+
                 /* checked */
                 if (e?.target.checked) {
                     selectedItems.value = ['all']
+                    map.value = {}
                     emit('checkboxChange', ['all'])
                 } else {
                     selectedItems.value = []
@@ -299,11 +295,6 @@
                 setFoucs()
                 queryText.value = inputValue2.value
                 emit('queryTextChange')
-            }
-            const onCheckboxChange = (val) => {
-                inputChange()
-                selectAll.value = false
-                emit('checkboxChange', val)
             }
 
             const enrichedSelectedItems = computed(() => {
@@ -327,12 +318,25 @@
                 return data
             })
 
+            const onCheckboxChange = (checked, id) => {
+                inputChange()
+                selectAll.value = false
+                if (checked.target.checked) {
+                    map.value[id] = true
+                } else {
+                    delete map.value[id]
+                }
+                selectedItems.value = [...Object.keys(map.value)]
+                emit('checkboxChange', selectedItems.value)
+            }
+
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
                 console.log(container.value)
             })
 
             return {
+                map,
                 enrichedSelectedItems,
                 onCheckboxChange,
                 onSelectAll,
@@ -377,6 +381,9 @@
     }
     .position {
         @apply right-0;
+    }
+    .box-shadow {
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
     }
     .disable-bg {
         background-color: #fbfbfb;

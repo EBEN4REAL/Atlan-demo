@@ -1,37 +1,51 @@
 <template>
     <div :class="[' mx-3 mt-1 mb-4']">
         <div class="flex items-center">
-            <TableSelector
-                typeName="Table"
-                style="width: 30%"
-                v-model:modelValue="tableQualfiedName"
-            />
-            <ColumnSelector
-                style="width: 30%"
-                class="z-10"
-                v-model:selectedItems="cols"
-                v-model:queryText="queryText"
-                :tableQualfiedName="tableQualfiedName"
-                @checkboxChange="checkboxChange"
-            >
-                <template #chip="{ item }">
-                    <div
-                        class="flex items-center px-3 py-0.5 my-1 justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
-                    >
-                        <component
-                            v-if="item.type !== 'Columns'"
-                            :is="getDataTypeImage(item.type)"
-                            class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
-                        ></component>
-                        <AtlanIcon
-                            v-else
-                            icon="Columns"
-                            class="w-4 h-4 mr-1 text-xs text-gray-500"
-                        />
-                        <span> {{ item.label }}</span>
-                    </div>
-                </template>
-            </ColumnSelector>
+            <div class="flex items-center w-full">
+                <TableSelector
+                    typeName="Table"
+                    style="width: 30%"
+                    v-model:modelValue="tableQualfiedName"
+                />
+                <ColumnSelector
+                    style="width: 30%"
+                    class="z-10"
+                    v-model:selectedItems="cols"
+                    v-model:queryText="queryText"
+                    :tableQualfiedName="tableQualfiedName"
+                    @checkboxChange="checkboxChange"
+                >
+                    <template #chip="{ item }">
+                        <div
+                            class="flex items-center px-3 py-0.5 my-1 justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
+                        >
+                            <component
+                                v-if="item.type !== 'Columns'"
+                                :is="getDataTypeImage(item.type)"
+                                class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
+                            ></component>
+                            <AtlanIcon
+                                v-else
+                                icon="Columns"
+                                class="w-4 h-4 mr-1 text-xs text-gray-500"
+                            />
+                            <span> {{ item.label }}</span>
+                        </div>
+                    </template>
+                </ColumnSelector>
+                <!-- <div>
+                    <AtlanIcon
+                        icon="Close"
+                        class="w-6 h-6 ml-6 -mt-0.5 text-gray-500"
+                    />
+                </div> -->
+            </div>
+        </div>
+        <div>
+            <div class="flex items-center mt-3 cursor-pointer text-primary">
+                <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
+                <span>Add another</span>
+            </div>
         </div>
     </div>
 </template>
@@ -66,6 +80,11 @@
             const queryText = ref('')
             const { expand } = toRefs(props)
             const cols = ref([])
+            watch(tableQualfiedName, () => {
+                if (!tableQualfiedName.value) {
+                    cols.value = []
+                }
+            })
 
             const checkboxChange = (checkedArr: string[]) => {
                 console.log(checkedArr)

@@ -148,10 +148,12 @@
     .selector {
         :global(.ant-select-selector) {
             height: 100% !important;
+            @apply border border-gray-300 !important;
         }
         :global(.ant-select-selection-item::after) {
             display: none !important;
         }
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
     }
     // input::placeholder {
     //     color: #6f7590 !important;

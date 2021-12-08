@@ -18,21 +18,26 @@
                 <Avatar
                     :image-url="imageUrl(user.username)"
                     :allow-upload="isCurrentUser(user.username)"
-                    :avatar-name="user.name || user.uername || user.email"
+                    :avatar-name="user.name || user.username || user.email"
                     :avatar-size="26"
                     avatar-shape="circle"
                     class="mr-2"
                 />
                 <div
-                    class="truncate cursor-pointer"
+                    class="truncate"
+                    :class="!user.emailVerified ? '' : 'cursor-pointer'"
                     @click="
                         () => {
+                            if(!user.emailVerified) return
                             emit('showUserPreviewDrawer', user)
                         }
                     "
                 >
-                    <span class="text-primary">{{
+                    <span v-if="user.emailVerified" class="text-primary">{{
                         nameCase(user.name) || '-'
+                    }}</span>
+                    <span v-else class="text-primary">{{
+                        user.email || '-'
                     }}</span>
                     <p class="mb-0 text-gray-500 truncate">
                         @{{ user.username || '-' }}

@@ -108,10 +108,7 @@
                             ) {
                                 return true
                             }
-                            if (i.value) {
-                                return true
-                            }
-                            return false
+                            return i.value != null
                         }
                     )
                 })

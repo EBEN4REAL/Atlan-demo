@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative flex items-center justify-center rounded cursor-pointer "
+        class="relative flex items-center justify-center rounded cursor-pointer"
         :style="{ width: size, height: size }"
     >
         <a-spin v-if="isUpdating" />
@@ -44,41 +44,34 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+import { defineComponent, toRefs } from 'vue'
 
-    // Emoji
-    import data from 'emoji-mart-vue-fast/data/twitter.json'
-    import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
-    import 'emoji-mart-vue-fast/css/emoji-mart.css'
+import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
-    import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
-
-    const emojiIndex = new EmojiIndex(data)
-
-    export default defineComponent({
-        props: {
-            metadata: {
-                required: true,
-                type: Object,
-                default: () => {},
-            },
-            size: {
-                type: String,
-                default: '28px',
-            },
-            isUpdating: {
-                type: Boolean,
-                default: false,
-            },
+export default defineComponent({
+    props: {
+        metadata: {
+            required: true,
+            type: Object,
+            default: () => {},
         },
-        setup(props) {
-            const { metadata } = toRefs(props)
-
-            const { imageUrl } = useCustomMetadataAvatar(metadata)
-
-            return {
-                imageUrl,
-            }
+        size: {
+            type: String,
+            default: '28px',
         },
-    })
+        isUpdating: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    setup(props) {
+        const { metadata } = toRefs(props)
+
+        const { imageUrl } = useCustomMetadataAvatar(metadata)
+
+        return {
+            imageUrl,
+        }
+    },
+})
 </script>

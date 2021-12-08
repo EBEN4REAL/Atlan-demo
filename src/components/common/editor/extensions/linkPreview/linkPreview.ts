@@ -1,4 +1,4 @@
-import { Editor, Extension, Range , Node, mergeAttributes, pasteRulesPlugin, PasteRule } from '@tiptap/core'
+import { Editor, Extension, Range, Node, mergeAttributes, pasteRulesPlugin, PasteRule } from '@tiptap/core'
 import { VueRenderer } from '@tiptap/vue-3'
 
 import { Plugin } from 'prosemirror-state'
@@ -76,7 +76,7 @@ export default Node.create({
             imageDiv.append(image)
 
             const infoDiv = document.createElement('p');
-            
+
             const titleDiv = document.createElement('p');
             titleDiv.innerText = "The Atlan Data Wiki"
             titleDiv.classList.add('text-lg', 'text-gray-700', 'p-2', 'm-0')
@@ -108,7 +108,7 @@ export default Node.create({
 
 
 const nodePasteRule = (regexp: RegExp, type, getAttrs) => {
-    
+
     const handler = fragment => {
         const nodes = [];
         console.log(fragment, 'bro please')

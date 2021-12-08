@@ -62,6 +62,13 @@ export const previewTabs = [
         tooltip: 'Relationships',
     },
     {
+        name: 'Resources',
+        component: 'resources',
+        icon: 'Link',
+        activeIcon: 'Link',
+        tooltip: 'Resources',
+    },
+    {
         name: 'Property',
         component: 'property',
         icon: 'Property',

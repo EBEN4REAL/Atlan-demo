@@ -36,10 +36,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                           ],
                       }
                     : {
-                          $and: [
-                              { emailVerified: true },
-                              { id: userId.value },
-                          ],
+                          $and: [{ emailVerified: true }, { id: userId.value }],
                       },
         }))
 

@@ -116,7 +116,6 @@ export const userStatusOptions = [
     },
 ]
 
-
 export const allRoles = {
     member: {
         value: '',

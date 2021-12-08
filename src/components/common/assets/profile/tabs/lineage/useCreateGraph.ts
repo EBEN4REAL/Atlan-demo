@@ -1,17 +1,14 @@
-import { ref } from 'vue'
-import { SimpleNodeView } from './view.js'
-import useUpdateGraph from './useUpdateGraph'
-
-const { updateProcessNodesPosition } = useUpdateGraph()
+import { NV, BNV } from './view'
 
 export default function useCreateGraph(
     graph,
+    graphLayout,
     graphContainer,
     minimapContainer,
-    showProcess
+    showProcess,
+    graphWidth,
+    graphHeight
 ) {
-    const graphLayout = ref({})
-
     /* Build Graph Canvas */
     const { Graph } = window.X6
     const { DagreLayout } = window.layout
@@ -21,11 +18,13 @@ export default function useCreateGraph(
         interacting: false,
         container: graphContainer.value,
         grid: true,
-        background: { color: '#FAFAFA' },
+        background: { color: '#f8f8f8' },
+        height: graphHeight.value / 1.35,
+        width: graphWidth.value,
         scroller: {
             enabled: true,
             pageVisible: false,
-            pageBreak: false,
+            pageBreak: true,
             pannable: true,
         },
         mousewheel: {
@@ -38,13 +37,14 @@ export default function useCreateGraph(
         minimap: {
             enabled: true,
             container: minimapContainer.value,
-            width: 165,
+            width: 226,
             height: 105,
             padding: 6,
             graphOptions: {
                 async: true,
                 getCellView(cell) {
-                    if (cell.isNode()) return SimpleNodeView
+                    if (cell.store.data.isBase) return BNV
+                    if (cell.isNode()) return NV
                 },
                 createCellView(cell) {
                     if (cell.isEdge()) return null
@@ -57,14 +57,11 @@ export default function useCreateGraph(
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         rankdir: 'LR',
-        nodesep: 15,
+        nodesep: 20,
         controlPoints: true,
         ranksepFunc() {
-            if (showProcess.value) return 75
-            return 150
-        },
-        onLayoutEnd() {
-            updateProcessNodesPosition(graph)
+            if (showProcess.value) return 80
+            return 45
         },
     })
 

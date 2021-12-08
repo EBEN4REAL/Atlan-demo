@@ -42,7 +42,14 @@
     const dropdownOpen = ref(false)
 
     const handleNumberKeyPress = (v) => {
+        if (
+            !['int', 'long', 'number', 'double', 'float'].includes(
+                dataType.value.toLowerCase()
+            )
+        )
+            return
         const allowDecimal = ['double', 'float', 'decimal'].includes(
+
             dataType.value.toLowerCase()
         )
         const n = parseInt(v.key, 10)

@@ -21,6 +21,7 @@
     import { useConfigMapList } from '~/composables/package/useConfigMapList'
     import ErrorView from '@common/error/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
+    import { shortUUID } from '~/utils/helper/generator'
 
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
@@ -72,17 +73,19 @@
                 ]
             })
 
+            const seconds = Math.round(new Date().getTime() / 1000)
+
             const configMap = ref({
                 properties: {
                     name: {
                         type: 'string',
                         ui: {
-                            widget: 'alias',
                             label: 'Connection Name',
                             placeholder: 'Connection Name',
-                            linkedProperty: `${property.value.id}.qualifiedName`,
                             required: true,
                             grid: 5,
+                            prefixImage: connectorImage.value,
+                            prefixText: `${connector.value}-`,
                             rules: [
                                 {
                                     required: true,
@@ -94,14 +97,12 @@
                     qualifiedName: {
                         type: 'string',
                         required: true,
+                        default: `default/${connector.value}/${seconds}`,
                         ui: {
                             widget: 'alias',
-
                             label: 'Qualified Name',
                             placeholder: '',
                             disabled: true,
-                            prefixImage: connectorImage.value,
-                            prefixText: `${connector.value}/`,
                             grid: 4,
                             rules: [
                                 {

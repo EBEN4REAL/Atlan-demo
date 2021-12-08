@@ -106,7 +106,7 @@ export const requestFilter = [
         label: 'Requestor',
         component: 'owners',
         overallCondition: 'OR',
-        selectUserKey: "id",
+        // selectUserKey: "id",
         attributes: [],
         isDeleted: false,
         isDisabled: false,

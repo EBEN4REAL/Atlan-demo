@@ -14,7 +14,10 @@
                 <AtlanIcon icon="ChevronRight" />
             </div>
             <div class="p-4 border-b border-solid order-gray-300">
-                No filters applied
+                {{
+                    filterCount ? `${filterCount} filters applied` : "No filters applied"
+                }}
+
             </div>
             <div class="px-2 filter-container">
                 <AssetFilters
@@ -289,12 +292,11 @@
             const handleFilterChange = () => {
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest ? Object.values(facetsValue.statusRequest) : []
-                const created_by = facetsValue?.requestor?.ownerUsers || []
+                const createdBy = facetsValue?.requestor?.ownerUsers || []
                 const filterMerge = {
                     ...filters.value,
                     status: status.length > 0 ? status : "active",
-                    request_type: [],
-                    created_by
+                    createdBy
                 }
                 filters.value = filterMerge
             }
@@ -308,6 +310,16 @@
                 filters.value = filterMerge
             }
             const setConnector = () => {}
+            const filterCount = computed(() => {
+                const listFilter = Object.values(filters.value)
+                let count = 0
+                listFilter.forEach(el => {
+                    if(Array.isArray(el) && el.length > 0){
+                        count +=1
+                    }
+                });
+                return count
+            })
             return {
                 requestList,
                 isSelected,
@@ -331,7 +343,8 @@
                 BItypes,
                 handleChangeConnector,
                 setConnector,
-                connectorsData
+                connectorsData,
+                filterCount
                 // listPermission
             }
         },

@@ -10,7 +10,7 @@ export default function useTransformGraph(graph, emit) {
         const cell = graph.value.getCellById(id)
 
         graph.value.positionCell(cell, 'center', {
-            padding: { left: 200, bottom: 800 },
+            padding: { left: 200 },
         })
     }
 

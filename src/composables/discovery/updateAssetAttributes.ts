@@ -24,6 +24,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementType,
         announcementTitle,
         readmeContent,
+        meanings
     } = useAssetInfo()
 
     const entity = ref({
@@ -86,6 +87,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             announcementType(selectedAsset.value) || 'information',
         announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
+
+    const localMeanings = ref(meanings(selectedAsset.value))
 
     const localResource = ref({
         link: '',
@@ -190,7 +193,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         currentMessage.value = 'Announcement has been updated'
         mutate()
     }
+    const handleMeaningsUpdate = () => {
+        entity.value.attributes.meanings = localMeanings.value
+        body.value.entities = [entity.value]
 
+        mutate()
+    }
     // Resource Addition
     const handleAddResource = () => {
         const resourceEntity = ref<any>({
@@ -351,6 +359,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localOwners,
         localClassifications,
         localAnnouncement,
+        localMeanings,
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
@@ -365,6 +374,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localResource,
         handleUpdateReadme,
         localReadmeContent,
+        handleMeaningsUpdate,
         shouldDrawerUpdate,
         asset,
     }

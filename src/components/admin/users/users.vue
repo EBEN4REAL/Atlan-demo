@@ -164,7 +164,7 @@
             const userListAPIParams: any = reactive({
                 limit: 15,
                 offset: 0,
-                sort: 'first_name',
+                sort: 'firstName',
                 filter: { $and: [] },
             })
 
@@ -198,12 +198,12 @@
                     $or: searchText.value
                         ? [
                               {
-                                  first_name: {
+                                  firstName: {
                                       $ilike: `%${searchText.value}%`,
                                   },
                               },
                               {
-                                  last_name: {
+                                  lastName: {
                                       $ilike: `%${searchText.value}%`,
                                   },
                               },
@@ -243,7 +243,7 @@
                 sorter: any
             ) => {
                 if (Object.keys(sorter).length) {
-                    let sortValue = 'first_name'
+                    let sortValue = 'firstName'
                     if (sorter.order && sorter.column && sorter.column.sortKey)
                         sortValue = `${sorter.order === 'descend' ? '-' : ''}${
                             sorter.column.sortKey
@@ -273,7 +273,6 @@
             // END: USER PREVIEW
             const handleChangeRole = (user: any) => {
                 selectedUserId.value = user.id
-
                 showChangeRolePopover.value = true
                 showRevokeInvitePopover.value = false
                 showInviteUserModal.value = false

@@ -48,9 +48,9 @@
             <p class="mb-0 text-gray-700">
                 <Tooltip
                     :tooltip-text="
-                        creator?.email_verified
+                        creator?.emailVerified
                             ? 'true'
-                            : !!creator?.email_verified
+                            : !!creator?.emailVerified
                             ? 'false'
                             : '-'
                     "

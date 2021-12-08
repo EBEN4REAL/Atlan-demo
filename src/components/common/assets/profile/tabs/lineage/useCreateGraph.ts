@@ -6,8 +6,8 @@ export default function useCreateGraph(
     graphContainer,
     minimapContainer,
     showProcess,
-    graphHeight,
-    graphWidth
+    graphWidth,
+    graphHeight
 ) {
     /* Build Graph Canvas */
     const { Graph } = window.X6
@@ -19,12 +19,12 @@ export default function useCreateGraph(
         container: graphContainer.value,
         grid: true,
         background: { color: '#f8f8f8' },
-        height: graphHeight.value,
+        height: graphHeight.value / 1.35,
         width: graphWidth.value,
         scroller: {
             enabled: true,
             pageVisible: false,
-            pageBreak: false,
+            pageBreak: true,
             pannable: true,
         },
         mousewheel: {

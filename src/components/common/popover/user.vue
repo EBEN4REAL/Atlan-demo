@@ -5,7 +5,7 @@
                 <section
                     v-if="
                         image ||
-                        user?.first_name ||
+                        user?.firstName ||
                         user?.username ||
                         user?.email
                     "
@@ -15,7 +15,7 @@
                         :image-url="image"
                         :allow-upload="false"
                         :avatar-name="
-                            user?.first_name || user?.username || user?.email
+                            user?.firstName || user?.username || user?.email
                         "
                         :avatar-size="40"
                         class="mr-2"
@@ -25,13 +25,13 @@
                     <div class="text-gray-500">Username:</div>
                     <div class="text-gray-700">{{ user.username }}</div>
                 </section>
-                <section v-if="user?.first_name" class="">
+                <section v-if="user?.firstName" class="">
                     <div class="text-gray-500">First Name:</div>
-                    <div class="text-gray-700">{{ user.first_name }}</div>
+                    <div class="text-gray-700">{{ user.firstName }}</div>
                 </section>
-                <section v-if="user?.last_name" class="">
+                <section v-if="user?.lastName" class="">
                     <div class="text-gray-500">Last Name:</div>
-                    <div class="text-gray-700">{{ user.last_name }}</div>
+                    <div class="text-gray-700">{{ user.lastName }}</div>
                 </section>
                 <section v-if="user?.email" class="">
                     <div class="text-gray-500">Email:</div>

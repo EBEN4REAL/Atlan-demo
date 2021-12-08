@@ -35,12 +35,14 @@ interface UseTreeParams {
     cacheKey?: string
     isAccordion?: boolean
     nodesKey?: 'qualifiedName' | 'guid'
+    checkable: Boolean
 }
 
 const useGlossaryTree = ({
     emit,
     optimisticUpdate = true,
     filterMode = false,
+    checkable = false,
     cacheKey,
     isAccordion,
     parentGlossaryGuid,
@@ -125,6 +127,7 @@ const useGlossaryTree = ({
                         id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                         key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                         isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                        checkable: i.typeName === 'AtlasGlossaryTerm' ? checkable : false
                     }))
                     if (map) {
                         map?.forEach((el) => {
@@ -167,6 +170,7 @@ const useGlossaryTree = ({
                             glossaryGuid: treeNode?.guid,
                             parentCategory: treeNode,
                             selectable: false,
+                            checkable: false
                         })
                         loadedKeys.value.push(treeNode.dataRef.key)
                         nodeToParentKeyMap[
@@ -209,6 +213,7 @@ const useGlossaryTree = ({
                             id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                             key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                             isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                            checkable: i.typeName === 'AtlasGlossaryTerm' ? checkable: false
                         }))
                         if (map) {
                             map?.forEach((el) => {
@@ -259,6 +264,7 @@ const useGlossaryTree = ({
                             categoryGuid: treeNode?.guid,
                             parentCategory: treeNode,
                             selectable: false,
+                            checkable: false
                         })
                         loadedKeys.value.push(treeNode.dataRef.key)
                         nodeToParentKeyMap[
@@ -376,6 +382,7 @@ const useGlossaryTree = ({
                             id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
                             key: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
                             isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                            checkable: i.typeName === 'AtlasGlossaryTerm' ? checkable : false
                         }))
                         treeData.value.sort((a, b) => {
                             if (a.typeName === 'AtlasGlossaryTerm') return 1
@@ -395,6 +402,7 @@ const useGlossaryTree = ({
                     id: i.attributes?.qualifiedName,
                     key: i.attributes?.qualifiedName,
                     isLeaf: false,
+                    checkable: false
                 }
             })
         }

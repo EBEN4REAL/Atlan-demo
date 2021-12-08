@@ -5,7 +5,7 @@ import { useUsers } from '~/composables/user/useUsers'
 
 function usePersonaUserList(persona: Ref<IPersona>) {
     const userListAPIParams: any = {
-        sort: 'first_name',
+        sort: 'firstName',
         filter: { $and: [] },
     }
 
@@ -65,7 +65,7 @@ const userColumns = [
         sorter: true,
         width: 220,
         slots: { customRender: 'name' },
-        sortKey: 'first_name',
+        sortKey: 'firstName',
     },
     {
         title: 'Role',
@@ -80,7 +80,7 @@ const userColumns = [
         sorter: true,
         width: 150,
         slots: { customRender: 'group' },
-        sortKey: 'group_count',
+        sortKey: 'groupCount',
         dataIndex: 'group_count_string',
     },
 

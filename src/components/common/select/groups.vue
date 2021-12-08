@@ -1,13 +1,14 @@
 <template>
     <a-select
-        placeholder="Groups"
         v-model:value="localValue"
+        placeholder="Groups"
         class="w-full"
+        :show-search="true"
+        :mode="multiple ? 'multiple' : null"
         @change="handleChange"
-        :showSearch="true"
         @search="handleSearch"
     >
-        <a-select-option :value="item.name" v-for="item in list">
+        <a-select-option v-for="(item, x) in list" :key="x" :value="item.name">
             {{ item.alias || item.name }}
         </a-select-option>
     </a-select>
@@ -31,11 +32,21 @@
                 required: false,
                 default: () => [],
             },
+            multiple: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const localValue = ref(modelValue.value)
+            const { multiple } = toRefs(props)
+            const localValue: any = ref(modelValue.value)
+
+            // // set proper default value
+            // if (multiple.value && !localValue.value) localValue.value = []
+            // else if (!localValue.value) localValue.value = ''
 
             const { list, handleSearch, total } = useFacetGroups()
 

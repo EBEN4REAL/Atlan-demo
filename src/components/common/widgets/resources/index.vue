@@ -1,11 +1,11 @@
 <template>
-    <div class="p-4 bg-white rounded" style="min-height: 140px">
-        <div class="flex items-center justify-between mb-5">
-            <div class="flex items-center">
-                <!-- <AtlanIcon icon="Resources" class="w-auto h-8 mr-3" /> -->
-                <span class="text-base font-bold text-gray">Resources</span>
-            </div>
-            <AddResources v-if="links(asset)?.length > 0" :asset="asset"
+    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
+        <div class="flex items-center justify-between">
+            <span class="font-semibold text-gray-500">Resources</span>
+
+            <AddResources
+                v-if="links(selectedAsset)?.length > 0"
+                :asset="selectedAsset"
                 ><template #trigger>
                     <a-button
                         class="text-gray-500 border border-transparent rounded shadow-none  hover:border-gray-400"
@@ -15,8 +15,11 @@
             </AddResources>
         </div>
         <div>
-            <div v-if="links(asset)?.length > 0" class="flex flex-col gap-y-4">
-                <div v-for="(item, index) in links(asset)" :key="index">
+            <div
+                v-if="links(selectedAsset)?.length > 0"
+                class="flex flex-col gap-y-4"
+            >
+                <div v-for="(item, index) in links(selectedAsset)" :key="index">
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
                         :item="item"
@@ -44,7 +47,7 @@
                 <p class="text-sm text-center text-gray-700">
                     Add URLs related to this asset
                 </p>
-                <AddResources :asset="asset"
+                <AddResources :asset="selectedAsset"
                     ><template #trigger>
                         <AtlanButton
                             size="lg"
@@ -102,7 +105,7 @@ export default defineComponent({
         ),
     },
     props: {
-        asset: {
+        selectedAsset: {
             type: Object as PropType<assetInterface>,
             required: true,
         },
@@ -125,10 +128,10 @@ export default defineComponent({
             return 'linkPreview'
         }
 
-        const { asset } = toRefs(props)
+        const { selectedAsset } = toRefs(props)
 
         const hasAtleastOneSlackLink = computed(() => {
-            const linkArr = links(asset.value)
+            const linkArr = links(selectedAsset.value)
             const slackLink = linkArr.some((link) =>
                 isSlackLink(link?.attributes?.link)
             )

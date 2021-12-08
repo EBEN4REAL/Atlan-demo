@@ -36,7 +36,6 @@
             const groupData = computed(() => groupList.value[0] || {})
             const bussinesCountRef = ref(0)
             const assetCountRef = ref(0)
-
             const { showGroupPreview, setGroupUniqueAttribute } =
                 useGroupPreview()
             const handleClickGroup = () => {

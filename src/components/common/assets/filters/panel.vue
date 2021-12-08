@@ -68,6 +68,7 @@
             v-model="facetMap[item.id]"
             :item="item"
             v-bind="item.propsToComponent"
+            :select-user-key="item.selectUserKey || 'username'"
             @change="handleChange"
         />
     </a-collapse-panel>
@@ -111,6 +112,9 @@
             ),
             Classifications: defineAsyncComponent(
                 () => import('@/common/facet/classification/index.vue')
+            ),
+            Terms: defineAsyncComponent(
+                () => import('@/common/facet/term/index.vue')
             ),
             Properties: defineAsyncComponent(
                 () => import('@/common/facet/properties/index.vue')

@@ -105,6 +105,7 @@ export default function useAssetInfo() {
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
     const links = (asset: assetInterface) => attributes(asset)?.links
+    const link = (asset: assetInterface) => attributes(asset)?.link
 
     const getTabs = (list, typeName: string) => {
         console.log(list, typeName)
@@ -564,7 +565,11 @@ export default function useAssetInfo() {
     }
 
     const isNonBiAsset = (asset: assetInterface) => {
-        return assetType(asset) === 'Table' || assetType(asset) === 'View'
+        return (
+            assetType(asset) === 'Table' ||
+            assetType(asset) === 'View' ||
+            assetType(asset) === 'Column'
+        )
     }
 
     const discoveryStore = useAssetStore()
@@ -923,6 +928,7 @@ export default function useAssetInfo() {
         assetTypeLabel,
         getActions,
         getAssetQueryPath,
+        link,
         webURL,
         isBiAsset,
         selectedGlossary,

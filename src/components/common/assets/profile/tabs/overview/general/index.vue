@@ -3,27 +3,43 @@
         <AnnouncementWidget
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
-        <Readme :asset="selectedAsset" />
-        <!-- <Resources :asset="selectedAsset" /> -->
+
+        <Readme
+            v-if="readmeContent(selectedAsset) || !readOnly"
+            :asset="selectedAsset"
+            :isEdit="!readOnly"
+        />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType } from 'vue'
 
-import Resources from '@common/widgets/resources/index.vue'
-import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
-import { assetInterface } from '~/types/assets/asset.interface'
-import Readme from '@/common/widgets/readme/index.vue'
+    import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import Readme from '@/common/widgets/readme/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-export default defineComponent({
-    name: 'BiOverview',
-    components: { AnnouncementWidget, Readme, Resources },
-    props: {
-        selectedAsset: {
-            type: Object as PropType<assetInterface>,
-            required: true,
+    export default defineComponent({
+        name: 'BiOverview',
+        components: { AnnouncementWidget, Readme },
+        props: {
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-    },
-})
+        setup() {
+            const { readmeContent } = useAssetInfo()
+
+            return {
+                readmeContent,
+            }
+        },
+    })
 </script>

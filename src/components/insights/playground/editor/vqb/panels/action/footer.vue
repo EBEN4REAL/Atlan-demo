@@ -80,6 +80,12 @@
                         columns: [],
                         columnsData: [],
                     }
+                } else if (type === 'sort') {
+                    panel = {
+                        id: uuid,
+                        column: {},
+                        order: 'asc',
+                    }
                 }
                 emit('add', type, panel)
             }

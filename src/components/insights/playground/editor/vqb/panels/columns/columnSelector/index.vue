@@ -170,6 +170,7 @@
 
 <script lang="ts">
     import {
+        onUpdated,
         computed,
         watch,
         defineComponent,
@@ -235,8 +236,13 @@
             const clickPos = ref({ left: 0, top: 0 })
             const setFoucs = () => {
                 if (!tableQualfiedName.value) return
-                inputChange()
                 isAreaFocused.value = true
+                nextTick(() => {
+                    if (tableQualfiedName.value) inputRef?.value?.focus()
+                })
+            }
+            const setFocusedCusror = () => {
+                if (!tableQualfiedName.value) return
                 nextTick(() => {
                     if (tableQualfiedName.value) inputRef?.value?.focus()
                 })
@@ -305,8 +311,6 @@
             })
 
             const onSelectAll = (e) => {
-                inputChange()
-
                 /* checked */
                 if (e?.target.checked) {
                     selectedItems.value = ['all']
@@ -351,7 +355,6 @@
             })
 
             const onCheckboxChange = (checked, id) => {
-                inputChange()
                 selectAll.value = false
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -360,6 +363,7 @@
                 }
                 selectedItems.value = [...Object.keys(map.value)]
                 emit('checkboxChange', selectedItems.value)
+                setFocusedCusror()
             }
 
             const handleMouseOver = () => {
@@ -415,6 +419,13 @@
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
                 console.log(container.value)
+            })
+            onUpdated(() => {
+                nextTick(() => {
+                    if (topPosShift.value !== container.value?.offsetHeight) {
+                        topPosShift.value = container.value?.offsetHeight
+                    }
+                })
             })
 
             return {

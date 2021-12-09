@@ -204,7 +204,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             }
         }
         body.value.entities = [entity.value]
-
+        currentMessage.value = 'Terms have been updated'
         mutate()
     }
     // Resource Addition

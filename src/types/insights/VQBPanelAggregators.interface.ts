@@ -1,7 +1,12 @@
+export interface SubpanelAggregatorColumn {
+    label: string
+    type: string
+    value: string  
+    columnQualfiedName: string | undefined
+
+}
 export interface SubpanelAggregator {
     id: string
-    columnName: string | undefined
-    columnQualifiedName: string | undefined
-    columnType: string | undefined
+    column: SubpanelAggregatorColumn[]
     aggregators: any[]
 }

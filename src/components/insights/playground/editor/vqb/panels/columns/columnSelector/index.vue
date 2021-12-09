@@ -6,13 +6,13 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center py-1 group z-1"
+        class="relative flex items-center group z-1"
         :class="[
             isAreaFocused
-                ? ' border-primary-focus border-2 '
-                : 'border-gray-300 border border-plus',
+                ? ' border-primary-focus border-2 px-3 py-1'
+                : 'border-gray-300 border border-plus px-3-1 py-1-1',
             ,
-            'flex flex-wrap items-center    rounded box-shadow selector-height px-3',
+            'flex flex-wrap items-center    rounded box-shadow selector-height chip-container ',
             !tableQualfiedName ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
@@ -484,6 +484,17 @@
     }
     .disable-bg {
         background-color: #fbfbfb;
+    }
+    .px-3-1 {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+    .py-1-1 {
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+    .chip-container {
+        gap: 4px;
     }
 </style>
 <style lang="less" module>

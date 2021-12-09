@@ -24,7 +24,7 @@
                     >
                         <template #chip="{ item }">
                             <div
-                                class="flex items-center px-3 py-0.5 my-1 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
+                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
                             >
                                 <component
                                     v-if="item.type !== 'Columns'"

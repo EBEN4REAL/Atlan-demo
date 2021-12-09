@@ -19,11 +19,12 @@
         @closeModal="isCmndKVisible = false"
     /> -->
 
-    <router-link
-        to="/assets"
-        class="flex items-center justify-end gap-1 mt-2 font-bold cursor-pointer  text-primary"
-        >Discover assets <AtlanIcon icon="ArrowRight"
-    /></router-link>
+    <div class="flex items-center justify-end gap-1 mt-2">
+        <router-link to="/assets" class="font-bold cursor-pointer text-primary">
+            Discover assets
+            <AtlanIcon icon="ArrowRight" />
+        </router-link>
+    </div>
 </template>
 
 <script lang="ts">

@@ -17,7 +17,7 @@
                     />
                     <ColumnSelector
                         class="flex-1 ml-6"
-                        style="max-width: 600px"
+                        style="max-width: 600px; min-height: 34px"
                         v-if="subpanel.tableQualfiedName"
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
@@ -25,7 +25,7 @@
                     >
                         <template #chip="{ item }">
                             <div
-                                class="flex items-center px-3 py-0.5 my-1 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
+                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
                             >
                                 <component
                                     v-if="item.type !== 'Columns'"
@@ -45,7 +45,7 @@
                             </div>
                         </template>
                     </ColumnSelector>
-                    <div
+                    <!-- <div
                         v-if="subpanel.tableQualfiedName"
                         class="text-gray-500 hover:text-primary"
                         @click.stop="() => handleDelete(index)"
@@ -54,7 +54,7 @@
                             icon="Close"
                             class="w-6 h-6 ml-3 -mt-0.5 cursor-pointer"
                         />
-                    </div>
+                    </div> -->
                 </div>
             </template>
         </div>
@@ -78,6 +78,7 @@
         inject,
         Ref,
         computed,
+        onUpdated,
         PropType,
         toRaw,
     } from 'vue'

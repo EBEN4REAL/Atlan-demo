@@ -58,13 +58,7 @@
                         ]"
                     >
                         <div
-                            class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
-                            @click.stop="() => {}"
-                        >
-                            <a-checkbox v-model:checked="checkbox"></a-checkbox>
-                        </div>
-                        <div
-                            class="border-r border-gray-300"
+                            class="border-gray-300"
                             v-if="
                                 activeInlineTab.playground.vqb.panels.length -
                                     1 !==

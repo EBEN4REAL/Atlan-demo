@@ -88,6 +88,7 @@ export interface assetInterface {
     }
     categoryCount: number
     termsCount: number
+    scrubbed: boolean
     classificationNames: string[]
     classifications: classificationInterface[]
     displayText: string

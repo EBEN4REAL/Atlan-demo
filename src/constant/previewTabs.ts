@@ -5,6 +5,7 @@ export const previewTabs = [
         icon: 'Overview',
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
+        scrubbed: false,
     },
     {
         name: 'Columns',
@@ -12,6 +13,7 @@ export const previewTabs = [
         includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
+        scrubbed: false,
     },
     // {
     //     name: 'Custom Metadata',
@@ -35,6 +37,7 @@ export const previewTabs = [
         ],
         icon: 'Lineage',
         tooltip: 'Lineage',
+        scrubbed: true,
     },
     {
         name: 'Activity',
@@ -42,6 +45,7 @@ export const previewTabs = [
         excludes: ['Query', 'QueryFolder'],
         icon: 'ActivityLogs',
         tooltip: 'Activity',
+        scrubbed: true,
     },
     {
         name: 'Relations',
@@ -60,6 +64,7 @@ export const previewTabs = [
         ],
         icon: 'Relation',
         tooltip: 'Relationships',
+        scrubbed: false,
     },
     {
         name: 'Resources',
@@ -67,6 +72,7 @@ export const previewTabs = [
         icon: 'Link',
         activeIcon: 'Link',
         tooltip: 'Resources',
+        scrubbed: true,
     },
     {
         name: 'Property',
@@ -74,5 +80,6 @@ export const previewTabs = [
         icon: 'Property',
         activeIcon: 'PropertyActive',
         tooltip: 'Property',
+        scrubbed: false,
     },
 ]

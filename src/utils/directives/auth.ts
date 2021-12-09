@@ -7,27 +7,32 @@ export function authDirective(app: any) {
     app.directive('auth', {
         beforeMount(el, binding, vnode) {
             const authStore = useAuthStore()
-
-            if (!binding.value) {
-                return
+            let time = 0
+            if(authStore.permissions.length === 0){
+               time = 3000
             }
-
-            if (Array.isArray(binding.value)) {
-                if (
-                    binding.value?.every(
-                        (elem) => authStore.permissions.indexOf(elem) > -1
-                    )
-                ) {
+            setTimeout(() => {
+                if (!binding.value) {
                     return
                 }
-            }
-            if (isString(binding.value)) {
-                if (authStore.permissions.indexOf(binding.value) > -1) {
-                    return
+    
+                if (Array.isArray(binding.value)) {
+                    if (
+                        binding.value?.every(
+                            (elem) => authStore.permissions.indexOf(elem) > -1
+                        )
+                    ) {
+                        return
+                    }
                 }
-            }
-
-            el.style.setProperty('display', 'none', 'important');
+                if (isString(binding.value)) {
+                    if (authStore.permissions.indexOf(binding.value) > -1) {
+                        return
+                    }
+                }
+    
+                el.style.setProperty('display', 'none', 'important');
+            }, time);
         },
     })
 }

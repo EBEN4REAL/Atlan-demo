@@ -107,17 +107,8 @@
 
             const { d, enter, shift } = useMagicKeys()
 
-            /* function geeks(event) {
-                // 13 is the keycode for "enter"
-                if (event.keyCode == 13 && event.shiftKey) {
-                    document.getElementById("d").innerHTML = "Triggered enter+shift";
-                }
-                if (event.keyCode == 13 && !event.shiftKey) {
-                    document.getElementById("d").innerHTML = "Triggered enter";
-                }
-            } */
-
             whenever(and(d, notUsingInput), () => {
+                console.log(activeElement.value)
                 handleEdit()
             })
 

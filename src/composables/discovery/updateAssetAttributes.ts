@@ -24,7 +24,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementType,
         announcementTitle,
         readmeContent,
-        meanings
+        meanings,
     } = useAssetInfo()
 
     const entity = ref({
@@ -347,7 +347,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     whenever(isErrorClassification, () => {
-        message.error('Something went wrong. Please try again')
+        message.error(
+            error.value?.response?.data?.errorCode +
+                ' ' +
+                error.value?.response?.data?.errorMessage.split(':')[0] ??
+                'Something went wrong'
+        )
     })
 
     return {

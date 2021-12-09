@@ -7,7 +7,7 @@
             @visibleChange="handleChange"
         >
             <template #content>
-                <GlossaryTree :checkable="true" @check="onCheck" />
+                <GlossaryTree v-model:checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
             </template>
             <a-button
                 v-if="!readOnly"
@@ -30,7 +30,7 @@
                     ></AtlanIcon>
 
                     <div class="ml-1 group-hover:text-white">
-                        {{ term.displayText }}
+                        {{ term.attributes?.name ?? term.displayText }}
                     </div>
                 </div>
             </template>
@@ -53,8 +53,6 @@
         watch,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { mergeArray } from '~/utils/array'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     import GlossaryTree from '~/components/glossary/index.vue'
@@ -90,30 +88,20 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-
-            const { meanings, meaningRelationships } = useAssetInfo()
+            const checkedKeys = ref(modelValue.value.map((term) => term.termGuid))
+            const hasBeenEdited = ref(false);
 
             const list = computed(() => {
-                const { matchingIdsResult } = mergeArray(
-                    localValue.value,
-                    meaningRelationships(selectedAsset.value),
-                    'guid',
-                    'termGuid'
-                )
-
                 return localValue.value
             })
 
             const handleChange = (visible) => {
-                if (!visible) {
+                if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
                     emit('change', localValue.value)
+                    hasBeenEdited.value = false
                 }
             }
-
-            const relationshipList = computed(() =>
-                meaningRelationships(selectedAsset.value)
-            )
 
             const icon = (term) => {
                 if (
@@ -142,20 +130,22 @@
                 checkedNodes.forEach((term) => {
                     localValue.value.push(term)
                 })
+                hasBeenEdited.value = true
             }
 
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
+                checkedKeys.value = modelValue.value.map((term) => term.termGuid ?? term.guid)
             })
 
             return {
-                meanings,
                 list,
                 icon,
                 onCheck,
                 handleChange,
                 localValue,
+                checkedKeys
             }
         },
     })

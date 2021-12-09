@@ -4,17 +4,27 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { userInterface } from '~/types/users/user.interface'
 import { Users } from '~/services/service/users'
 
-export default function useFacetUsers(immediate = true) {
+export default function useFacetUsers(sort?: string, columns?: string[], immediate = true) {
     const params = ref(new URLSearchParams())
+
     params.value.append('limit', '20')
-    params.value.append('sort', 'firstName')
-    params.value.append('columns', 'firstname')
-    params.value.append('columns', 'lastname')
-    params.value.append('columns', 'username')
-    params.value.append('columns', 'id')
+    if (columns?.length) {
+        params.value.append('sort', sort ?? columns[0])
+        columns.forEach(c => {
+            params.value.append('columns', c)
+        })
+    }
+    else {
+        params.value.append('sort', sort ?? 'firstName')
+        params.value.append('columns', 'firstName')
+        params.value.append('columns', 'lastName')
+        params.value.append('columns', 'username')
+        params.value.append('columns', 'id')
+    }
+
     params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
 
-    const { data, mutate, isLoading, error } = Users.List(params, {
+    const { data, mutate, isLoading, error, isReady } = Users.List(params, {
         asyncOptions: {
             immediate,
             resetOnExecute: false,
@@ -71,12 +81,12 @@ export default function useFacetUsers(immediate = true) {
     return {
         isLoading,
         error,
-
         list,
         total,
         data,
         mutate,
         params,
+        isReady,
         handleSearch,
         setLimit,
         filterTotal,

@@ -91,7 +91,7 @@
             const bussinesCountRef = ref(0)
             const assetCountRef = ref(0)
             const memberListParams = {
-                groupId: groupList.value[0].id,
+                groupId: groupList.value[0]?.id,
                 params: {
                     limit: 10,
                     offset: 0,

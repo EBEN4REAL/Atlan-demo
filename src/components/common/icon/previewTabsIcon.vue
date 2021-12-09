@@ -1,6 +1,13 @@
 <template>
-    <a-tooltip placement="left" :title="title" :mouse-enter-delay="0.5"
-        ><div class="flex items-center justify-center w-full h-full">
+    <a-tooltip
+        placement="left"
+        :title="
+            isScrubbed
+                ? `You don't have permission to view ${title} for this asset`
+                : title
+        "
+        :mouse-enter-delay="0.5"
+        ><div class="relative flex items-center justify-center w-full h-full">
             <AtlanIcon
                 v-if="icon"
                 :icon="isActive && activeIcon ? activeIcon : icon"
@@ -16,6 +23,11 @@
                 :icon="isActive ? 'Metadata' : 'Metadata'"
                 :class="isActive && !activeIcon ? 'text-primary' : ''"
                 class="h-6"
+            />
+            <AtlanIcon
+                v-if="isScrubbed"
+                icon="Lock"
+                class="absolute bottom-0 right-0 h-3"
             />
         </div>
     </a-tooltip>
@@ -51,6 +63,10 @@
                 type: String,
                 required: false,
                 default: () => '',
+            },
+            isScrubbed: {
+                type: Boolean,
+                required: false,
             },
         },
         setup(props, { emit }) {

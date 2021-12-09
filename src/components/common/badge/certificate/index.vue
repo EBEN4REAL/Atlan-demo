@@ -14,10 +14,11 @@
                         status
                     }}</span>
                 </div>
-                <div class="flex items-center justify-between text-gray-500">
+                <div class="flex items-center justify-between text-white">
                     <div class="flex text-sm">
-                        <div class="ml-1">by {{ username }}</div>
+                        <div class="mx-1">by {{ username }}</div>
                     </div>
+
                     {{ timestamp }}
                 </div>
             </div>

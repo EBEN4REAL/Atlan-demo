@@ -6,6 +6,7 @@ export const profileTabs = [
         icon: 'Overview',
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
+        scrubbed: false,
     },
     /* {
         id: 'columns',
@@ -28,15 +29,17 @@ export const profileTabs = [
         ],
         icon: 'Lineage',
         tooltip: 'Lineage',
+        scrubbed: true,
     },
-    {
+    /*  {
         id: 'queries',
         label: 'Queries',
         component: 'queries',
         includes: ['Table', 'View', 'MaterialisedViews', 'PartitionTable'],
         icon: 'Queries',
         tooltip: 'Queries',
-    },
+        scrubbed: false,
+    }, */
     {
         id: 'linkedAssets',
         label: 'Linked Assets',
@@ -44,6 +47,7 @@ export const profileTabs = [
         includes: ['AtlasGlossaryTerm'],
         icon: 'LinkedAssets',
         tooltip: 'Linked Assets',
+        scrubbed: false,
     },
     {
         id: 'termsAndCategories',
@@ -52,5 +56,6 @@ export const profileTabs = [
         includes: ['AtlasGlossary', 'AtlasGlossaryCategory'],
         icon: 'TermsAndCategories',
         tooltip: 'Terms and Categories',
+        scrubbed: false,
     },
 ]

@@ -3,12 +3,17 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { Groups } from '~/services/service/groups'
 import { groupInterface } from '~/types/groups/group.interface'
 
-export default function useFacetGroups(immediate = true) {
+export default function useFacetGroups(sort: string, columns: string[], immediate = true) {
     const params = ref(new URLSearchParams())
-    params.value.append('limit', '20')
-    params.value.append('sort', 'name')
+    params.value.set('sort', sort ?? 'name')
+    if (columns?.length) {
+        params.value.set('sort', sort ?? columns[0])
+        columns.forEach(c => {
+            params.value.append('columns', c)
+        })
+    }
 
-    const { data, mutate, isLoading } = Groups.List(params, {
+    const { data, mutate, isLoading, isReady, error } = Groups.List(params, {
         asyncOptions: {
             immediate,
             resetOnExecute: false,
@@ -43,19 +48,20 @@ export default function useFacetGroups(immediate = true) {
         }
         clearTimeout(debounce)
         debounce = setTimeout(() => {
-            params.value.set(
-                'filter',
-                JSON.stringify({
-                    $and: [
-                        {
-                            $or: [
-                                { name: { $ilike: `%${value}%` } },
-                                { alias: { $ilike: `%${value}%` } },
-                            ],
-                        },
-                    ],
-                })
-            )
+            if (value)
+                params.value.set(
+                    'filter',
+                    JSON.stringify({
+                        $and: [
+                            {
+                                $or: [
+                                    { name: { $ilike: `%${value}%` } },
+                                    { alias: { $ilike: `%${value}%` } },
+                                ],
+                            },
+                        ],
+                    })
+                )
             mutate()
         }, 200)
     }
@@ -66,6 +72,8 @@ export default function useFacetGroups(immediate = true) {
         data,
         mutate,
         params,
+        isReady,
+        error,
         handleSearch,
         setLimit,
         filterTotal,

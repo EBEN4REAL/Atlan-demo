@@ -224,7 +224,7 @@
             Loader,
             TablesTree,
         },
-        emits: ['queryTextChange', 'checkboxChange'],
+        // emits: ['queryTextChange', 'checkboxChange'],
         props: {
             selectedItems: {
                 type: Object as PropType<any[]>,
@@ -240,7 +240,7 @@
             },
         },
 
-        setup(props, { emit }) {
+        setup(props, { emit, slots }) {
             const { tableQualfiedName } = toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
@@ -350,22 +350,22 @@
                 if (e?.target.checked) {
                     selectedItems.value = ['all']
                     map.value = {}
-                    emit('checkboxChange', ['all'])
+                    // emit('checkboxChange', ['all'])
                 } else {
                     selectedItems.value = []
-                    emit('checkboxChange', [])
+                    // emit('checkboxChange', [])
                 }
             }
 
             const input1Change = () => {
                 setFoucs()
                 queryText.value = inputValue1.value
-                emit('queryTextChange')
+                // emit('queryTextChange')
             }
             const input2Change = () => {
                 setFoucs()
                 queryText.value = inputValue2.value
-                emit('queryTextChange')
+                // emit('queryTextChange')
             }
 
             const enrichedSelectedItems = computed(() => {
@@ -417,7 +417,7 @@
                 selectedColumnsData.value = [...columns]
 
                 // console.log('selected columns: ', columns)
-                emit('checkboxChange', selectedItems.value)
+                // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
             }
 
@@ -483,6 +483,16 @@
                 })
             })
 
+            const hasChips = ref(false)
+
+            // Check if the slot exists by name and has content.
+            // It returns an empty array if it's empty.
+            if (slots?.chip && slots?.chip()?.length) {
+                hasChips.value = true
+            }
+
+            // console.log('slots: ', slots)
+
             return {
                 queryText,
                 clearAllSelected,
@@ -514,6 +524,7 @@
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,
+                hasChips,
             }
         },
     })

@@ -151,6 +151,7 @@
                     id: generateUUID(),
                     tableQualfiedName: undefined,
                     columns: [],
+                    columnsData: [],
                 })
                 subpanels.value = copySubPanels
             }

@@ -39,6 +39,7 @@
         :loadedKeys="loadedKeys"
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
+        :checked-keys="checkedKeys"
         :class="$style.glossaryTree"
         :checkable="checkable"
         :checkStrictly="false"
@@ -112,6 +113,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            checkedKeys: {
+                type: Object as PropType<string[]>,
+                required: false,
+                default: [],
             },
         },
         emits: ['select', 'check'],

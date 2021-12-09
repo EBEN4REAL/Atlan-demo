@@ -95,6 +95,7 @@
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
             :checkable="checkable"
+            :checked-keys="checkedKeys"
             @check="onCheck"
         ></GlossaryTree>
 

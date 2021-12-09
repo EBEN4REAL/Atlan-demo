@@ -7,7 +7,7 @@
             @visibleChange="handleChange"
         >
             <template #content>
-                <GlossaryTree :checkable="true" @check="onCheck" />
+                <GlossaryTree :checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
             </template>
             <a-button
                 shape="circle"
@@ -98,17 +98,10 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-
+            const checkedKeys = ref(modelValue.value.map((term) => term.termGuid))
             const { meanings, meaningRelationships } = useAssetInfo()
 
             const list = computed(() => {
-                const { matchingIdsResult } = mergeArray(
-                    localValue.value,
-                    meaningRelationships(selectedAsset.value),
-                    'guid',
-                    'termGuid'
-                )
-
                 return localValue.value
             })
 
@@ -165,6 +158,7 @@
                 onCheck,
                 handleChange,
                 localValue,
+                checkedKeys
             }
         },
     })

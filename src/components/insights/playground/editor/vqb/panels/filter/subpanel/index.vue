@@ -10,8 +10,16 @@
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
+                    <div style="width: 90px">
+                        <FilterType
+                            v-if="index !== 0"
+                            v-model:filterType="subpanel.filter.filterType"
+                        />
+                    </div>
+
                     <ColumnSelector
-                        style="width: 30%"
+                        style="width: 300px"
+                        class="ml-6"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
@@ -21,16 +29,33 @@
 
                     <FilterSelector
                         class="ml-6"
-                        style="width: 30%"
+                        style="width: 300px"
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"
                         v-model:selectedFilter="subpanel.filter"
                     />
 
+                    <Input
+                        v-if="subpanel?.filter?.type === 'input'"
+                        class="flex-1 ml-6"
+                        v-model:inputValue="subpanel.filter.value"
+                    />
+
+                    <MultiInput
+                        v-if="subpanel?.filter?.type === 'multi_input'"
+                        class="flex-1 ml-6"
+                        v-model:inputValue="subpanel.filter.value"
+                    />
+
+                    <RangeInput
+                        v-if="subpanel?.filter?.type === 'range_input'"
+                        class="flex-1 ml-6"
+                        v-model:inputValue="subpanel.filter.value"
+                    />
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
-                        class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
+                        class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer"
                         :class="`opacity-${
                             hoverItem === subpanel.id ? 100 : 0
                         }`"
@@ -62,12 +87,20 @@
     import { useVModels } from '@vueuse/core'
     // import ColumnSelector from '../columnSelector/index.vue'
     import ColumnSelector from '../../common/columnSelector/index.vue'
+    import Input from '../filterComponents/input.vue'
+    import MultiInput from '../filterComponents/multiInput.vue'
+    import FilterType from '../filterComponents/filterType.vue'
+    import RangeInput from '../filterComponents/rangeInput.vue'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
             FilterSelector,
             ColumnSelector,
+            MultiInput,
+            FilterType,
+            RangeInput,
+            Input,
         },
         props: {
             expand: {
@@ -109,13 +142,13 @@
                 console.log('col change: ', val)
 
                 const copySubPanel = JSON.parse(
-                    JSON.stringify(toRaw(subpanels.value[0]))
+                    JSON.stringify(toRaw(subpanels.value[index]))
                 )
                 copySubPanel.column = val
-                copySubPanel.filter = {}
+                // copySubPanel.filter = {}
 
                 subpanels.value[index] = copySubPanel
-                console.log(subpanels.value)
+                // console.log(subpanels.value)
             }
 
             const handleAddPanel = () => {
@@ -126,7 +159,9 @@
                 copySubPanels.push({
                     id: uuid,
                     column: {},
-                    filter: {},
+                    filter: {
+                        filterType: 'and',
+                    },
                 })
                 subpanels.value = copySubPanels
 

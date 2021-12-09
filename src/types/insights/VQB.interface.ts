@@ -1,9 +1,9 @@
 import { VQBPanelColumnsInterface } from './VQBPanelColumns.interface'
-import { VQBPanelAggregatorInterface } from './VQBPanelAggregators.interface'
+import { VQBPanelAggregatorsInterface } from './VQBPanelAggregators.interface'
 
 export type VQBPanelType =
     | VQBPanelColumnsInterface
-    | VQBPanelAggregatorInterface
+    | VQBPanelAggregatorsInterface
 export interface VQBInterface {
     panels: VQBPanelType[]
 }

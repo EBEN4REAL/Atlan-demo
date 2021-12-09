@@ -9,6 +9,7 @@ export function useUtils() {
     ) {
         let res = ''
         if (tableQualfieidNames?.length > 1) res += 'Table(s): '
+        if (tableQualfieidNames?.length === 1) res += 'Table: '
         else if (tableQualfieidNames?.length === 0) res += 'Table: '
         else res += 'No Table'
         res += tableQualfieidNames

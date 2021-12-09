@@ -51,8 +51,23 @@
                             />
                         </div>
                         <div class="">
-                            <p class="text-sm font-bold text-gray">Sort</p>
-                            <p class="text-xs text-gray-500" v-if="!expand">
+                            <p
+                                :class="[
+                                    isChecked ? 'text-gray' : 'text-gray-500',
+                                    'text-sm font-bold  ',
+                                ]"
+                            >
+                                Sort
+                            </p>
+                            <p
+                                :class="[
+                                    isChecked
+                                        ? 'text-gray-500'
+                                        : 'text-gray-400',
+                                    'text-xs',
+                                ]"
+                                v-if="!expand"
+                            >
                                 Summarised info
                             </p>
                         </div>
@@ -68,7 +83,12 @@
                             class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
-                            <a-checkbox v-model:checked="checkbox"></a-checkbox>
+                            <a-checkbox
+                                v-model:checked="
+                                    activeInlineTab.playground.vqb.panels[index]
+                                        .hide
+                                "
+                            ></a-checkbox>
                         </div>
                         <div
                             class="border-r border-gray-300"
@@ -80,7 +100,10 @@
                         >
                             <!-- Show dropdown except the last panel -->
                             <Actions
-                                @add="(type) => handleAdd(index, type)"
+                                @add="
+                                    (type, panel) =>
+                                        handleAddPanel(index, type, panel)
+                                "
                                 v-model:submenuHovered="submenuHovered"
                                 v-model:containerHovered="containerHovered"
                             />
@@ -128,7 +151,7 @@
                 v-if="expand"
             />
             <FooterActions
-                @add="(type, panel) => handleAdd(index, type, panel)"
+                @add="(type, panel) => handleAddPanel(index, type, panel)"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -211,7 +234,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const checkbox = ref(true)
-            const { addPanelsInVQB, deletePanelsInVQB } = useVQB()
+            const { handleAdd, deletePanelsInVQB } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -229,16 +252,12 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAdd = (index, type, panel) => {
-                const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
-                panelCopy.id = type
-                panelCopy.order =
-                    Number(activeInlineTab.value.playground.vqb.panels.length) +
-                    1
-                panelCopy.subpanels = [{ ...panel }]
-                addPanelsInVQB(
-                    Number(index),
-                    panelCopy,
+            const handleAddPanel = (index, type, panel) => {
+                handleAdd(
+                    index,
+                    type,
+                    panel,
+                    activeInlineTab,
                     activeInlineTabKey,
                     inlineTabs
                 )
@@ -285,7 +304,7 @@
                 checkbox,
                 panel,
                 handleDelete,
-                handleAdd,
+                handleAddPanel,
                 findTimeLineHeight,
             }
         },

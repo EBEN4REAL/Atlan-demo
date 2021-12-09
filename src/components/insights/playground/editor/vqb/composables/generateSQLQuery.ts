@@ -1,7 +1,4 @@
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
-import { VQBPanelType } from '~/types/insights/VQB.interface'
-import { Ref, ComputedRef } from 'vue'
 import squel from 'squel'
 import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
@@ -70,7 +67,14 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         })
         // console.log(select.toString(), 'select.toString()')
     }
+
+    /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
+    it is this way because of two way binidng */
     if (sortPanel?.hide) {
+        sortPanel?.subpanels.forEach((subpanel) => {
+            const order = subpanel.order === 'asc'
+            select.order(subpanel.column.label, order)
+        })
         // console.log(select.toString(), 'select.toString()')
     }
     return select.toString()

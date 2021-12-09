@@ -1,12 +1,9 @@
+import { SubpanelColumnData } from './VQBPanelAggregators.interface'
 export interface SubpanelColumn {
     id: string
     tableQualfiedName: string | undefined
     columns: string[]
-    columnsData: Array<{
-        columnsQualifiedName: string
-        label: string
-        type: Number
-    }>
+    columnsData: SubpanelColumnData[]
 }
 export interface VQBPanelColumnsInterface {
     order: number

@@ -1,13 +1,7 @@
-export interface SubpanelSortColumn {
-    label: string
-    type: string
-    value: string  
-    columnQualfiedName: string | undefined
-
-}
+import { SubpanelColumnData } from './VQBPanelAggregators.interface'
 export interface SubpanelSort {
     id: string
-    column: SubpanelSortColumn
+    column: SubpanelColumnData
     order: string | undefined
 }
 

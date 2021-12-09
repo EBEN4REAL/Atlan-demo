@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex flex-col items-stretch flex-1 h-full mb-1"
-        :class="{ checkable: $style.checkableTree }"
+        :class="{ [$style.checkableTree]: checkable  }"
         ref="glossaryBox"
     >
         <div
@@ -473,7 +473,6 @@
     }
     .checkableTree {
         max-height: 364px;
-
         :global(.ant-tree-checkbox) {
             @apply my-auto;
         }

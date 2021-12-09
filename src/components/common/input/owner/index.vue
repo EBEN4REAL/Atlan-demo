@@ -132,11 +132,6 @@
                 required: false,
                 default: true,
             },
-            usedForAssets: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,

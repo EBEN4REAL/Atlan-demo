@@ -270,6 +270,14 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             localDescription.value = description(selectedAsset?.value)
             descriptionRef.value?.handleReset(localDescription.value)
         }
+        if (ownerUsers(selectedAsset?.value) !== localOwners.value.ownerUsers) {
+            localOwners.value.ownerUsers = ownerUsers(selectedAsset?.value)
+        }
+        if (
+            ownerGroups(selectedAsset?.value) !== localOwners.value.ownerGroups
+        ) {
+            localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
+        }
         message.error(
             error.value?.response?.data?.errorCode +
                 ' ' +

@@ -65,7 +65,7 @@
                             {{ title(item) }}
                         </router-link>
                         <CertificateBadge
-                            v-if="certificateStatus(item)"
+                            v-if="certificateStatus(item) && !isScrubbed(item)"
                             :status="certificateStatus(item)"
                             :username="certificateUpdatedBy(item)"
                             :timestamp="certificateUpdatedAt(item)"
@@ -573,6 +573,7 @@
                 classifications,
                 getProfilePath,
                 isUserDescription,
+                isScrubbed,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -662,6 +663,7 @@
                 selectedAssetDrawerData,
                 handleCloseDrawer,
                 isUserDescription,
+                isScrubbed,
             }
         },
     })

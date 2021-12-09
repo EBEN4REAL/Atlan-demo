@@ -156,6 +156,7 @@
                 :key="index"
                 class="overflow-y-auto"
                 :destroyInactiveTabPane="true"
+                :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
             >
                 <template #tab>
                     <PreviewTabsIcon
@@ -165,6 +166,7 @@
                         :emoji="tab.emoji"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
+                        :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
                 </template>
 

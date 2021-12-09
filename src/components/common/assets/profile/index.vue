@@ -13,6 +13,7 @@
                 v-for="tab in getProfileTabs(asset)"
                 :key="tab.id"
                 :tab="tab.label"
+                :disabled="isScrubbed(asset) && tab.scrubbed"
             >
                 <component
                     :is="tab.component"
@@ -88,7 +89,7 @@
             provide('actions', actions)
             provide('selectedAsset', asset)
 
-            const { getProfileTabs } = useAssetInfo()
+            const { getProfileTabs, isScrubbed } = useAssetInfo()
 
             const activeKey = ref()
             const route = useRoute()
@@ -106,6 +107,7 @@
                 getProfileTabs,
                 activeKey,
                 handleChangeTab,
+                isScrubbed,
             }
         },
     })

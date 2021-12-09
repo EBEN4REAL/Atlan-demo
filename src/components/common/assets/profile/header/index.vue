@@ -32,12 +32,12 @@
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
                     ></CertificateBadge>
-                    <a-tooltip placement="bottomRight"
+                    <a-tooltip placement="right"
                         ><template #title>Limited Access</template>
                         <AtlanIcon
                             v-if="isScrubbed(item)"
                             icon="Lock"
-                            class="h-4 mb-0.5"
+                            class="h-4 mb-1"
                         ></AtlanIcon
                     ></a-tooltip>
                 </div>

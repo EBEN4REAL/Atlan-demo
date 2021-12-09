@@ -21,7 +21,7 @@
             <!-- chips -->
             <div class="flex items-center">
                 <span class="mb-0 ml-1 text-sm text-gray-700">
-                    {{ filterName }}
+                    {{ selectedFilter.title }}
                 </span>
             </div>
         </template>
@@ -162,6 +162,7 @@
             }
 
             let filtersList = ref({})
+
             watch(
                 [columnType],
                 () => {
@@ -175,6 +176,9 @@
                     immediate: true,
                 }
             )
+
+            // let filterName = ref('')
+
             const placeholder = computed(() => {
                 if (columnName.value) {
                     return `Select filter function`
@@ -203,7 +207,6 @@
                 return data
             })
 
-            let filterName = ref('')
             const onCheckChange = (checked) => {
                 // inputChange()
                 // console.log(checked)
@@ -211,9 +214,10 @@
                     ...selectedFilter.value,
                     name: checked.key,
                     type: checked.type,
-                    value: checked.value,
+                    value: undefined,
+                    title: checked.name,
                 }
-                filterName.value = checked.name
+                // filterName.value = checked.name
             }
 
             onMounted(() => {
@@ -241,7 +245,7 @@
                 clickPos,
                 container,
                 handleContainerBlur,
-                filterName,
+                // filterName,
                 setFocus,
                 isAreaFocused,
                 columnName,

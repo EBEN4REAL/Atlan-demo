@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="workflowPhase !== ''"
-        class="w-full pt-2 mb-10 rounded"
+        class="w-full pt-2 bg-white rounded"
         style="height: max-content"
         :class="{
             'border-l-4 border-success':
@@ -65,7 +65,7 @@
             v-if="percentage !== 100 && percentage !== -1"
             :percent="percentage"
             status="active"
-            class="mx-2"
+            class="p-2"
         />
         <!-- upload failed state -->
         <div
@@ -135,7 +135,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch ,onMounted,inject} from 'vue'
     import BulkModal from '~/components/glossary/modal/bulkUploadModal.vue'
     // import useWorkflowLiveRun from '@/glossary/profile/overview/useWorkflowLiveRun'
     // import useArtifacts from '@/glossary/profile/overview/useArtifacts'
@@ -172,6 +172,7 @@
             const isVisible = ref(true)
             const workflowPhase = ref('')
             const nodeName = ref()
+            const reInitTree=inject('reInitTree')
             let nIntervId
             const { progressPercent, name, phase } = useWorkFlowHelper()
 
@@ -215,6 +216,7 @@
                         if (workflowPhase.value === 'Succeeded') {
                             stopGetProgress()
                             getFinalStatus(liveList.value?.items[0].status)
+                            reInitTree()
                         }
                         if (workflowPhase.value === 'Error') {
                             stopGetProgress()
@@ -258,11 +260,28 @@
             }
             // starts the tracking process
             watch(isWorkflowRunning, () => {
-                if (isWorkflowRunning.value === true) {
+                 if (isWorkflowRunning.value === true) {
                     triggerUpload()
                 }
             })
-
+           onMounted(()=>{
+                const { liveList } = getRunList(`atlan-gtc-bulk-upload-${props?.entity?.guid.slice(-8)}` ,false)
+                 watch(liveList, () => {
+                    if (liveList.value?.items && liveList.value?.items[0]) {
+                        const WFPhase= phase(liveList.value?.items[0])
+                        console.log(WFPhase)
+                        if(WFPhase==='Running')
+                        {
+                            workflowName.value=`atlan-gtc-bulk-upload-${props?.entity?.guid.slice(-8)}`
+                            triggerUpload()
+                            percentage.value = Math.round(
+                               progressPercent(liveList.value.items[0])
+                               )
+                            isWorkflowRunning.value='Running'
+                        }
+                    }
+            })
+            })
             return {
                 percentage,
                 totalCount,
@@ -272,6 +291,7 @@
                 workflowPhase,
                 isWorkflowRunning,
                 getArtifacts,
+                reInitTree
             }
         },
     })

@@ -54,13 +54,13 @@
             >
                 <a-button
                     :disabled="isFetchingMore"
-                    class="flex items-center justify-between py-2 transition-all duration-300 border-none rounded-full  bg-primary-light text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 border-none rounded-full bg-primary-light text-primary"
                     :class="isFetchingMore ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="fetchMore"
                 >
                     <template v-if="!isFetchingMore"
                         ><p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                         >
                             Load more
                         </p>
@@ -93,6 +93,7 @@
         defineComponent,
         PropType,
         toRefs,
+        ref,
     } from 'vue'
 
     import { useTimeAgo } from '@vueuse/core'
@@ -101,6 +102,7 @@
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
     import ActivityType from './activityType.vue'
+    import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
 
     export default defineComponent({
         name: 'ActivityTab',
@@ -115,7 +117,21 @@
         setup(props) {
             const { selectedAsset: item } = toRefs(props)
             const params = reactive({ count: 10 })
+
+            const limit = ref(10)
+            const offset = ref(0)
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
+
+            const dependentKey = ref('audit')
+
+            const { data } = useAssetAuditSearch({
+                guid: item.value.guid,
+                isCache: true,
+                dependentKey,
+                queryText: '',
+                limit,
+                offset,
+            })
 
             const {
                 audits,
@@ -173,6 +189,8 @@
                 isAllLogsFetched,
                 checkAuditsCount,
                 emptyScreen,
+                limit,
+                offset,
             }
         },
     })

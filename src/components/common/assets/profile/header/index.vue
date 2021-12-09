@@ -20,18 +20,26 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer  text-mdoverflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>
 
                     <CertificateBadge
-                        v-if="certificateStatus(item)"
+                        v-if="certificateStatus(item) && !isScrubbed(item)"
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
                     ></CertificateBadge>
+                    <a-tooltip placement="right"
+                        ><template #title>Limited Access</template>
+                        <AtlanIcon
+                            v-if="isScrubbed(item)"
+                            icon="Lock"
+                            class="h-4 mb-1"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
                 <div class="flex items-center mt-1 gap-x-3">
                     <div class="flex items-center">
@@ -50,7 +58,7 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-wider text-gray-500 uppercase"
+                            class="text-sm tracking-wider text-gray-500 uppercase "
                         >
                             {{ item.typeName }}
                         </div>
@@ -206,7 +214,16 @@
                 </div>
             </div>
             <a-button-group>
-                <a-tooltip title="Query">
+                <a-tooltip
+                    v-if="
+                        ![
+                            'AtlasGlossary',
+                            'AtlasGlossaryTerm',
+                            'AtlasGlossaryCategory',
+                        ].includes(item?.typeName)
+                    "
+                    title="Query"
+                >
                     <a-button
                         @click="goToInsights(item)"
                         block
@@ -222,7 +239,7 @@
                         <AtlanIcon icon="Share" class="mb-0.5" />
                     </a-button>
                 </ShareMenu>
-                <AssetMenu :asset="item" :edit-permission="true">
+                <AssetMenu :asset="item" :readOnly="isScrubbed(item)">
                     <a-button block class="flex items-center justify-center">
                         <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
                     </a-button>
@@ -330,6 +347,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 getAssetQueryPath,
+                isScrubbed,
             } = useAssetInfo()
 
             const item = inject('selectedAsset')
@@ -337,7 +355,7 @@
             const router = useRouter()
 
             const goToInsights = (asset) => {
-                router.push({ path: getAssetQueryPath(asset) })
+                router.push(getAssetQueryPath(asset))
             }
 
             const { Escape /* keys you want to monitor */ } = useMagicKeys()
@@ -380,6 +398,7 @@
                 viewName,
                 back,
                 goToInsights,
+                isScrubbed,
             }
         },
     })

@@ -25,10 +25,10 @@
     </a>-->
         <template #overlay>
             <a-menu>
-                <!-- <a-menu-item>
-                    <a @click="() => handleClickUser(username)">View Profile</a>
-                </a-menu-item>
                 <a-menu-item>
+                    <a @click="() => handleClickUser(username)">Profile</a>
+                </a-menu-item>
+                <!-- <a-menu-item>
                     <a href="javascript:;">Admin Centre</a>
                 </a-menu-item>
                 <a-menu-divider />
@@ -53,47 +53,47 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject } from 'vue'
-    // import { useUserPreview } from '~/composables/user/showUserPreview'
-    // import whoami from '~/composables/user/whoami'
-    import useUserData from '~/composables/user/useUserData'
-    import Avatar from '~/components/common/avatar/index.vue'
+import { defineComponent, inject } from 'vue'
+import { useUserPreview } from '~/composables/user/showUserPreview'
+// import whoami from '~/composables/user/whoami'
+import useUserData from '~/composables/user/useUserData'
+import Avatar from '~/components/common/avatar/index.vue'
 
-    export default defineComponent({
-        name: 'UserPersonalAvatar',
-        components: {
-            Avatar,
-        },
-        props: {},
-        setup() {
-            const keycloak = inject('$keycloak')
-            const handleLogout = () => {
-                window.localStorage.clear()
-                keycloak.logout({
-                    redirectUri: window.location.origin,
-                })
-            }
+export default defineComponent({
+    name: 'UserPersonalAvatar',
+    components: {
+        Avatar,
+    },
+    props: {},
+    setup() {
+        const keycloak = inject('$keycloak')
+        const handleLogout = () => {
+            window.localStorage.clear()
+            keycloak.logout({
+                redirectUri: window.location.origin,
+            })
+        }
 
-            const { name, username, avatar } = useUserData()
-            // user preview drawer
-            // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            const handleClickUser = (username: string) => {
-                // setUserUniqueAttribute(username, 'username')
-                // showUserPreview()
-            }
+        const { name, username, avatar } = useUserData()
+        // user preview drawer
+        const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+        const handleClickUser = (username: string) => {
+            setUserUniqueAttribute(username, 'username')
+            showUserPreview()
+        }
 
-            return {
-                handleLogout,
-                handleClickUser,
-                username,
-                name,
-                avatar,
-            }
-        },
-        data() {
-            return {}
-        },
-    })
+        return {
+            handleLogout,
+            handleClickUser,
+            username,
+            name,
+            avatar,
+        }
+    },
+    data() {
+        return {}
+    },
+})
 </script>
 
 <style lang="less" module></style>

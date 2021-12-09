@@ -40,13 +40,20 @@
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
         :class="$style.glossaryTree"
+        :checkable="checkable"
+        :checkStrictly="false"
+        @check="onCheck"
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />
         </template>
 
         <template #title="entity">
-            <GlossaryTreeItem :item="entity" :class="treeItemClass" />
+            <GlossaryTreeItem
+                :item="entity"
+                :class="treeItemClass"
+                :checkable="checkable"
+            />
         </template>
     </a-tree>
 </template>
@@ -101,8 +108,13 @@
                 required: false,
                 default: () => '',
             },
+            checkable: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['select'],
+        emits: ['select', 'check'],
         setup(props, { emit }) {
             const router = useRouter()
 
@@ -134,14 +146,9 @@
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
+                checkable: props.checkable,
             })
 
-            onMounted(() => {
-                initTreeData(defaultGlossary.value)
-            })
-            watch(defaultGlossary, () => {
-                initTreeData(defaultGlossary.value)
-            })
             const addGlossary = (asset) => {
                 addNode(asset)
             }
@@ -168,6 +175,16 @@
             const reInitTree = () => {
                 initTreeData(defaultGlossary.value)
             }
+            const onCheck = (e, { checkedNodes }) => {
+                emit('check', checkedNodes)
+            }
+            onMounted(() => {
+                reInitTree()
+            })
+            watch(defaultGlossary, () => {
+                reInitTree()
+            })
+
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             return {
@@ -191,6 +208,7 @@
                 collapseTree,
                 addGTCNode,
                 reInitTree,
+                onCheck,
             }
             // data
         },

@@ -38,6 +38,7 @@
                 class="mx-4"
                 @change="handleChangeName"
                 ref="nameRef"
+                :readOnly="readOnly"
             />
         </div>
 
@@ -175,11 +176,13 @@
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
                 >
                     <span>Description</span>
-                    <AtlanIcon
-                        icon="User"
-                        class="h-3 mr-1"
-                        v-if="isUserDescription(selectedAsset)"
-                    ></AtlanIcon>
+                    <a-tooltip title="User Description" placement="left">
+                        <AtlanIcon
+                            icon="User"
+                            class="h-3 mr-1"
+                            v-if="isUserDescription(selectedAsset)"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
             </Shortcut>
 
@@ -189,6 +192,7 @@
                 class="mx-4"
                 @change="handleChangeDescription"
                 :selected-asset="selectedAsset"
+                :readOnly="readOnly"
             />
         </div>
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
@@ -212,6 +216,7 @@
                 @change="handleOwnersChange"
                 class="px-5"
                 :selected-asset="selectedAsset"
+                :readOnly="readOnly"
             />
         </div>
 
@@ -241,6 +246,7 @@
                 :guid="selectedAsset.guid"
                 v-model="localClassifications"
                 @change="handleClassificationChange"
+                :readOnly="readOnly"
                 class="px-5"
             >
             </Classification>
@@ -262,14 +268,21 @@
             >
                 Terms
             </p>
-            <Terms :selected-asset="selectedAsset" class="px-5"></Terms>
+            <Terms
+                :selected-asset="selectedAsset"
+                v-model="localMeanings"
+                @change="handleMeaningsUpdate"
+                class="px-5"
+                :readOnly="readOnly"
+            >
+            </Terms>
         </div>
 
         <div
             v-if="
                 !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
                     selectedAsset.typeName
-                )
+                ) && !readOnly
             "
             class="flex flex-col"
             ref="animationPoint"
@@ -356,6 +369,11 @@
                 required: false,
                 default: false,
             },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
             const actions = inject('actions')
@@ -397,6 +415,8 @@
                 localCertificate,
                 localOwners,
                 localClassifications,
+                localMeanings,
+                handleMeaningsUpdate,
                 handleChangeName,
                 handleChangeDescription,
                 handleOwnersChange,
@@ -464,6 +484,8 @@
                 descriptionRef,
                 sampleDataVisible,
                 showSampleDataModal,
+                localMeanings,
+                handleMeaningsUpdate,
                 isUserDescription,
             }
         },

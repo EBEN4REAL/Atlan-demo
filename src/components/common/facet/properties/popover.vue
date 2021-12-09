@@ -28,7 +28,7 @@
                         :condition="condition"
                         @change="handleChangeCondition"
                         @clear="handleRemove(index)"
-                    ></Condition>
+                    />
                 </div>
                 <a-divider v-if="attribute.typeName !== 'boolean'" class="my-2">
                     <a-button size="small" @click="handleAdd">

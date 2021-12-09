@@ -29,27 +29,8 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-if="usedForAssets">
-            <template
-                v-for="username in ownerUsers(selectedAsset)"
-                :key="username"
-            >
-                <PopOverUser :item="username">
-                    <UserPill
-                        :username="username"
-                        :allow-delete="!readOnly"
-                        :enable-hover="enableHover"
-                        @click="handleClickUser(username)"
-                        @delete="handleDeleteUser"
-                    ></UserPill>
-                </PopOverUser>
-            </template>
-        </template>
-        <template
-            v-for="username in localValue?.ownerUsers"
-            v-else
-            :key="username"
-        >
+
+        <template v-for="username in localValue?.ownerUsers" :key="username">
             <PopOverUser :item="username">
                 <UserPill
                     :username="username"
@@ -60,19 +41,8 @@
                 ></UserPill>
             </PopOverUser>
         </template>
-        <template v-if="usedForAssets">
-            <template v-for="name in ownerGroups(selectedAsset)" :key="name">
-                <PopOverGroup :item="name">
-                    <GroupPill
-                        :name="name"
-                        :allowDelete="!readOnly"
-                        @delete="handleDeleteGroup"
-                        @click="handleClickGroup(name)"
-                        :enableHover="enableHover"
-                    ></GroupPill>
-                </PopOverGroup> </template
-        ></template>
-        <template v-for="name in localValue?.ownerGroups" v-else :key="name">
+
+        <template v-for="name in localValue?.ownerGroups" :key="name">
             <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
@@ -83,6 +53,15 @@
                 ></GroupPill>
             </PopOverGroup>
         </template>
+        <span
+            class="-ml-1 text-gray-500"
+            v-if="
+                readOnly &&
+                localValue?.ownerGroups?.length < 1 &&
+                localValue?.ownerUsers?.length < 1
+            "
+            >No owners assigned</span
+        >
     </div>
 </template>
 

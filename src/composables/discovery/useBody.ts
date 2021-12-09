@@ -229,7 +229,7 @@ export function useBody(
             }
             case 'terms': {
                 if (filterObject) {
-                    base.filter('term', '__meanings', filterObject)
+                    base.filter('terms', '__meanings', filterObject)
                 }
                 break
             }
@@ -283,69 +283,88 @@ export function useBody(
                                     base.filter(
                                         'term',
                                         element.operand,
-                                        Array.isArray(element.value) ? JSON.stringify(element.value) : element.value
+                                        Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value
                                     )
                                 }
                                 if (element.operator === 'notEquals') {
                                     base.notFilter(
                                         'term',
                                         element.operand,
-                                        Array.isArray(element.value) ? JSON.stringify(element.value) : element.value
+                                        Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value
                                     )
                                 }
                                 if (element.operator === 'startsWith') {
                                     base.filter(
                                         'prefix',
                                         element.operand,
-                                        Array.isArray(element.value) ? JSON.stringify(element.value) : element.value
+                                        Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value
                                     )
                                 }
                                 if (element.operator === 'endsWith') {
                                     base.filter(
                                         'wildcard',
                                         element.operand,
-                                        `*${Array.isArray(element.value) ? JSON.stringify(element.value) : element.value}`
+                                        `*${
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
+                                        }`
                                     )
                                 }
                                 if (element.operator === 'pattern') {
                                     base.filter(
                                         'regexp',
                                         element.operand,
-                                        Array.isArray(element.value) ? JSON.stringify(element.value) : element.value
+                                        Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value
                                     )
                                 }
 
                                 if (element.operator === 'greaterThan') {
                                     base.filter('range', element.operand, {
-                                        gt: Array.isArray(element.value) ? JSON.stringify(element.value) : element.value,
+                                        gt: Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value,
                                     })
                                 }
                                 if (element.operator === 'greaterThanEqual') {
                                     base.filter('range', element.operand, {
-                                        gte: Array.isArray(element.value) ? JSON.stringify(element.value) : element.value,
+                                        gte: Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value,
                                     })
                                 }
                                 if (element.operator === 'lessThan') {
                                     base.filter('range', element.operand, {
-                                        lt: Array.isArray(element.value) ? JSON.stringify(element.value) : element.value,
+                                        lt: Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value,
                                     })
                                 }
                                 if (element.operator === 'lessThanEqual') {
                                     base.filter('range', element.operand, {
-                                        lte: Array.isArray(element.value) ? JSON.stringify(element.value) : element.value,
+                                        lte: Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value,
                                     })
                                 }
                                 if (element.operator === 'boolean') {
-                                    if (
-                                        element.operand === '__state' &&
-                                            Array.isArray(element.value) ? JSON.stringify(element.value) : element.value
-                                    ) {
+                                    if (element.operand === '__state') {
                                         state.value = 'DELETED'
                                     } else {
                                         base.filter(
                                             'term',
                                             element.operand,
-                                            Array.isArray(element.value) ? JSON.stringify(element.value) : element.value
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
                                         )
                                     }
                                 }

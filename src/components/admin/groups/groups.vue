@@ -68,7 +68,8 @@
         <template v-else-if="groupList?.length">
             <a-table
                 id="groupList"
-                class="overflow-hidden border rounded-lg group-table"
+                class="overflow-hidden border rounded-lg"
+                :class="$style.groupTable"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 :pagination="false"
@@ -435,6 +436,11 @@ export default defineComponent({
 })
 </script>
 <style lang="less">
+.delete-group-modal {
+    .ant-modal-confirm-body-wrapper {
+        @apply p-5;
+    }
+}
 #groupList {
     th.ant-table-row-cell-last {
         display: flex;
@@ -452,8 +458,20 @@ export default defineComponent({
     }
 }
 </style>
-
 <style lang="less" scoped>
+#groupList {
+    th.ant-table-row-cell-last {
+        display: flex;
+        justify-content: center;
+    }
+}
+.hide-checkbox {
+    .ant-checkbox {
+        display: none;
+    }
+}
+</style>
+<style lang="less" module>
 .group-table {
     // extra row hide hack
     :global(.ant-table-measure-row) {

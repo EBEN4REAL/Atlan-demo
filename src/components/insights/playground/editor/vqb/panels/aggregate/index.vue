@@ -71,7 +71,10 @@
                         >
                             <!-- Show dropdown except the last panel -->
                             <Actions
-                                @add="(type) => handleAdd(index, type)"
+                                @add="
+                                    (type, panel) =>
+                                        handleAdd(index, type, panel)
+                                "
                                 v-model:submenuHovered="submenuHovered"
                                 v-model:containerHovered="containerHovered"
                             />

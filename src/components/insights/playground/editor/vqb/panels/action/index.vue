@@ -90,6 +90,12 @@
                         column: {},
                         order: 'asc',
                     }
+                } else if (type === 'filter') {
+                    panel = {
+                        id: uuid,
+                        column: {},
+                        filter: {},
+                    }
                 }
                 emit('add', type, panel)
 

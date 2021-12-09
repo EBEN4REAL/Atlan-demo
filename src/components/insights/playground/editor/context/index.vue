@@ -192,7 +192,7 @@
                     </div>
                 </div>
             </a-popover>
-            <div class="flex items-center">
+            <div class="flex items-center ml-2">
                 <div class="flex text-sm">
                     <div class="flex" v-if="permissions.runQuery">
                         <AtlanBtn

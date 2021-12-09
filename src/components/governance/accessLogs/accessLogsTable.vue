@@ -154,7 +154,7 @@
                                             class="flex mr-2 text-xs text-sm text-gray-500 "
                                         >
                                             <div
-                                                class="flex items-center text-gray-500  text-gray"
+                                                class="flex items-center text-gray-500"
                                             >
                                                 <span class="mx-1"> • </span>
                                                 <span>{{
@@ -568,10 +568,6 @@
                         </div>
                         <div v-else>-</div>
                     </div>
-                    <AtlanIcon
-                        icon="ArrowRight"
-                        class="w-4 h-4 ml-10 text-gray-500"
-                    />
                 </div>
             </template>
         </a-table>

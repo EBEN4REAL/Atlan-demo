@@ -235,18 +235,15 @@
             const logActionValues = facets.value?.logAction?.actions
             const userTypes = facets.value?.userType?.userTypes
             const properties = facets.value?.properties
-            let schemaName = ''
-            let dbName = ''
+            let schemaQualifiedName = ''
+            let dbQualifiedName = ''
             let connectionQF = ''
             let connectorName = ''
             if (connectorFacet) {
                 if (connectorFacet === 'schemaQualifiedName') {
-                    dbName = getDatabaseName(facetValue) || ''
-                    schemaName = getSchemaName(facetValue) || ''
-                    connectionQF = getConnectionQualifiedName(facetValue) || ''
+                    schemaQualifiedName = facetValue || ''
                 } else if (connectorFacet === 'databaseQualifiedName') {
-                    dbName = getDatabaseName(facetValue) || ''
-                    connectionQF = getConnectionQualifiedName(facetValue) || ''
+                    dbQualifiedName = facetValue || ''
                 } else if (connectorFacet === 'connectionQualifiedName') {
                     connectionQF = facetValue || ''
                 } else if (connectorFacet === 'connectorName') {
@@ -263,8 +260,8 @@
                 logActionValues,
                 userTypes,
                 properties,
-                dbName,
-                schemaName,
+                dbQualifiedName,
+                schemaQualifiedName,
                 connectionQF,
                 connectorName,
                 searchText: searchText.value,

@@ -16,8 +16,8 @@
                         @change="(val) => handleColumnChange(val, index)"
                     /> -->
                     <ColumnSelector
-                        class="flex-1 ml-6"
-                        style="max-width: 600px"
+                        class="flex-1"
+                        style="max-width: 45.5%"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
@@ -27,7 +27,7 @@
 
                     <AggregateSelector
                         class="flex-1 ml-6"
-                        style="max-width: 600px"
+                        style="max-width: 45%"
                         v-model:selectedItems="subpanel.aggregators"
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"

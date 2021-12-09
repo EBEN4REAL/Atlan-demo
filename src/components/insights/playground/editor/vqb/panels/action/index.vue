@@ -94,7 +94,9 @@
                     panel = {
                         id: uuid,
                         column: {},
-                        filter: {},
+                        filter: {
+                            filterType: 'and',
+                        },
                     }
                 }
                 emit('add', type, panel)

@@ -9,10 +9,19 @@
             >
                 <!-- {{ subpanel }} -->
                 <div class="flex items-center w-full mb-3">
-                    <ColumnSelector
+                    <!-- <ColumnSelector
                         style="width: 30%"
                         v-model:columnSubpanels="columnSubpanels"
                         :selectedColumn="subpanel?.column"
+                        @change="(val) => handleColumnChange(val, index)"
+                    /> -->
+                    <ColumnSelector
+                        class="flex-1 ml-6"
+                        style="max-width: 600px"
+                        v-model:selectedItem="subpanel.column"
+                        :tableQualfiedName="
+                            columnSubpanels[0]?.tableQualfiedName
+                        "
                         @change="(val) => handleColumnChange(val, index)"
                     />
 
@@ -58,7 +67,8 @@
     import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
-    import ColumnSelector from '../columnSelector/index.vue'
+    // import ColumnSelector from '../columnSelector/index.vue'
+    import ColumnSelector from '../../common/columnSelector/index.vue'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -119,8 +129,9 @@
                 const copySubPanels: SubpanelAggregator[] = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value))
                 )
+                let uuid = generateUUID()
                 copySubPanels.push({
-                    id: generateUUID(),
+                    id: uuid,
                     column: {},
                     aggregators: [],
                 })

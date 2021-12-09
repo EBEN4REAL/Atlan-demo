@@ -445,7 +445,7 @@
                 rowsCount: 100,
             })
             const showcustomToolBar = ref(false)
-            const showVQB = ref(false)
+            const showVQB = ref(true)
             const showQueryPreview = ref(false)
 
             const activeInlineTab = inject(

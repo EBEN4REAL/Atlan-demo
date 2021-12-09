@@ -22,9 +22,8 @@ import { defineComponent, watch } from 'vue'
 import { getIntegrationTypes } from '~/composables/integrations/useIntegrations'
 import AddIntegrationCard from './addIntegrationCard.vue'
 import IntegrationCardWrapper from './integrationCardWrapper.vue'
-import { integrationData } from '~/constant/integrations'
 import integrationStore from '~/store/integrations/index'
-import { useAuthStore } from '~/store/auth'
+// import { useAuthStore } from '~/store/auth'
 import ErrorView from '@/common/error/index.vue'
 
 export default defineComponent({
@@ -32,7 +31,6 @@ export default defineComponent({
     components: { AddIntegrationCard, IntegrationCardWrapper, ErrorView },
     setup() {
         const store = integrationStore()
-        const authStore = useAuthStore()
 
         const {
             data: allIntegrations,
@@ -40,7 +38,6 @@ export default defineComponent({
             error,
             isReady,
         } = getIntegrationTypes()
-        console.log('authStore.id', authStore.id)
 
         const isIntegrationConfigured = (alias): boolean => {
             const isTenantLevelIntegrationConfigured =

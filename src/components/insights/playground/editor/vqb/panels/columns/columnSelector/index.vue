@@ -6,7 +6,7 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center group z-1"
+        class="relative flex items-center z-1"
         :class="[
             isAreaFocused
                 ? '  border border-gray-300 px-3 py-1 box-shadow-focus'

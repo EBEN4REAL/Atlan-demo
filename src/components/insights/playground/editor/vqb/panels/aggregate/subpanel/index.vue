@@ -26,7 +26,7 @@
                     <span class="px-3 text-sm text-gray-500">aggregate by</span>
 
                     <AggregateSelector
-                        class="flex-1 ml-6"
+                        class="flex-1"
                         style="max-width: 45%"
                         v-model:selectedItems="subpanel.aggregators"
                         :columnName="subpanel?.column?.label"

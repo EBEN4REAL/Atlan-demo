@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="workflowPhase !== ''"
-        class="w-full pt-2 mb-10 rounded"
+        class="w-full pt-2 bg-white rounded"
         style="height: max-content"
         :class="{
             'border-l-4 border-success':
@@ -65,7 +65,7 @@
             v-if="percentage !== 100 && percentage !== -1"
             :percent="percentage"
             status="active"
-            class="mx-2"
+            class="p-2"
         />
         <!-- upload failed state -->
         <div

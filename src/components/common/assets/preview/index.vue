@@ -39,7 +39,15 @@
                 <router-link
                     :to="getProfilePath(selectedAsset)"
                     @click="() => $emit('closeDrawer')"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md hover:underline overflow-ellipsis whitespace-nowrap"
+                    :class="
+                        isDrawer &&
+                        ['column'].includes(
+                            selectedAsset.typeName?.toLowerCase()
+                        )
+                            ? 'pointer-events-none text-gray-500  '
+                            : 'text-primary'
+                    "
                 >
                     {{ title(selectedAsset) }}
                 </router-link>

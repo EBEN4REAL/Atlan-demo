@@ -43,7 +43,6 @@
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
-
                 <CertificateBadge
                     v-if="
                         certificateStatus(selectedAsset) &&
@@ -199,7 +198,6 @@
     import { debouncedWatch } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
-
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 

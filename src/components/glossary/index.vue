@@ -95,7 +95,7 @@
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
             :checkable="checkable"
-            :checked-keys="checkedKeys"
+            v-model:checked-keys="checkedKeys"
             @check="onCheck"
         ></GlossaryTree>
 
@@ -153,6 +153,7 @@
         PropType,
     } from 'vue'
     import { useRouter } from 'vue-router'
+    import { useVModels } from '@vueuse/core'
 
     import EmptyView from '@common/empty/index.vue'
     import { useDebounceFn } from '@vueuse/core'
@@ -217,18 +218,18 @@
             },
             checkable: {
                 type: Boolean,
-                reuired: false,
+                required: false,
                 default: false,
             },
             checkedKeys: {
                 type: Object as PropType<string[]>,
                 required: false,
-                default: [],
             },
         },
-        emits: ['check'],
+        emits: ['check', 'update:checkedKeys'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
+            const { checkedKeys } = useVModels(props, emit)
             const router = useRouter()
             const { getGlossaryByQF } = useGlossaryData()
             const selectedGlossaryQf = ref(
@@ -459,6 +460,7 @@
                 handleCollapse,
                 onCheck,
                 reInitTree,
+                checkedKeys
             }
         },
     })

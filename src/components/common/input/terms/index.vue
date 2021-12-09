@@ -7,7 +7,7 @@
             @visibleChange="handleChange"
         >
             <template #content>
-                <GlossaryTree :checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
+                <GlossaryTree v-model:checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
             </template>
             <a-button
                 v-if="!readOnly"

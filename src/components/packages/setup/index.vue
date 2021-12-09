@@ -299,10 +299,11 @@
                 connectionBody.forEach((i) => {
                     modelValue.value[i.parameter] = i.body
                     connectionQualifiedName = i.body.attributes.qualifiedName
+                    let connectionName = i.body.attributes.name
                     // add qualifiedname to label
                     if (connectionQualifiedName) {
                         body.value.metadata.labels[
-                            `com.atlan.orchestration/${connectionQualifiedName}`
+                            `com.atlan.orchestration/${connectionName}`
                         ] = 'true'
                     }
                 })
@@ -314,7 +315,8 @@
                 } else {
                     workflowName = `${workflowName}-${seconds.toString()}`
                 }
-                body.value.metadata.name = workflowName
+                body.value.metadata.name = workflowName.replaceAll("/", "-")
+                body.value.metadata.namespace = "default"  // FIXME: change this to tenant name
 
                 const credentialBody = getCredentialBody(
                     configMap.value,

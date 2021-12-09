@@ -10,8 +10,8 @@
                 <!-- {{ subpanel }} -->
                 <div
                     class="flex items-center w-full mb-3"
-                    @mouseover="opacity = 100"
-                    @mouseout="opacity = 0"
+                    @mouseover="hoverItem = subpanel.id"
+                    @mouseout="hoverItem = null"
                 >
                     <ColumnSelector
                         class="flex-1"
@@ -38,7 +38,9 @@
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
                         class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
-                        :class="`opacity-${opacity}`"
+                        :class="`opacity-${
+                            hoverItem === subpanel.id ? 100 : 0
+                        }`"
                     />
                 </div>
             </template>
@@ -145,7 +147,7 @@
                 console.log('columns: ', column)
             }
 
-            let opacity = ref(0)
+            let hoverItem = ref(null)
 
             return {
                 selectedAggregates,
@@ -158,7 +160,7 @@
                 columnSubpanels,
                 selectedColumn,
                 changeColumn,
-                opacity,
+                hoverItem,
             }
         },
     })

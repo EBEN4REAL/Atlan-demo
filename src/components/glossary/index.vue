@@ -1,9 +1,11 @@
 <template>
     <div
         class="flex flex-col items-stretch flex-1 h-full mb-1"
+        :class="{ checkable: $style.checkableTree }"
         ref="glossaryBox"
     >
         <div
+            v-if="!checkable"
             class="flex items-center justify-between w-full px-4 py-3 border-b"
         >
             <GlossarySelect
@@ -28,8 +30,10 @@
                     </template>
                 </AddGTCModal>
 
-                <div class="ml-2">
-                    <GlossaryActions></GlossaryActions>
+                <div v-if="selectedGlossaryQf?.length" class="ml-2">
+                    <GlossaryActions
+                        :entity="selectedGlossary"
+                    ></GlossaryActions>
                 </div>
             </div>
         </div>
@@ -66,6 +70,7 @@
                 </template>
             </SearchAdvanced>
             <atlan-icon
+                v-if="!queryText"
                 icon="TreeCollapseAll"
                 class="h-4 mt-2 ml-2 cursor-pointer"
                 @click="handleCollapse"
@@ -89,6 +94,8 @@
             :height="height"
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
+            :checkable="checkable"
+            @check="onCheck"
         ></GlossaryTree>
 
         <div
@@ -135,7 +142,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed, provide } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        Ref,
+        computed,
+        provide,
+        PropType,
+    } from 'vue'
     import { useRouter } from 'vue-router'
 
     import EmptyView from '@common/empty/index.vue'
@@ -168,6 +183,7 @@
 
     import { glossaryFilters } from '~/constant/filters/discoveryFilters'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -183,7 +199,6 @@
             GlossarySelect,
             GlossaryItem,
             GlossaryTree,
-
             GlossaryActions,
         },
         props: {
@@ -199,9 +214,22 @@
                     return {}
                 },
             },
+            checkable: {
+                type: Boolean,
+                reuired: false,
+                default: false,
+            },
+            checkedKeys: {
+                type: Object as PropType<string[]>,
+                required: false,
+                default: [],
+            },
         },
+        emits: ['check'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
+            const router = useRouter()
+            const { getGlossaryByQF } = useGlossaryData()
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -261,6 +289,10 @@
             })
 
             const handleSelectGlossary = (val) => {
+                if (val !== '') {
+                    router.push(`/glossary/${getGlossaryByQF(val)?.guid}`)
+                    glossaryStore.setSelectedGTC(getGlossaryByQF(val))
+                }
                 selectedGlossaryQf.value = val
                 glossaryStore.setActiveGlossaryQualifiedName(val)
             }
@@ -290,9 +322,8 @@
 
             const { getAnchorQualifiedName } = useAssetInfo()
 
-            const router = useRouter()
             const handlePreview = (item) => {
-                router.push(`/glossary/${item.guid}`)
+                if (!props.checkable) router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
             }
 
@@ -362,7 +393,9 @@
                     }
                 }
             }
-
+            const reInitTree = () => {
+                glossaryTree.value?.reInitTree()
+            }
             const handleCollapse = () => {
                 glossaryTree.value.collapseTree()
             }
@@ -381,7 +414,11 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
+            const onCheck = (checkedNodes) => {
+                emit('check', checkedNodes)
+            }
             provide('selectedGlossaryQf', selectedGlossaryQf)
+            provide('handleSelectGlossary', handleSelectGlossary)
             return {
                 handleFilterChange,
                 isLoading,
@@ -419,6 +456,8 @@
                 handleAddCategory,
                 defaultEntityType,
                 handleCollapse,
+                onCheck,
+                reInitTree,
             }
         },
     })
@@ -428,5 +467,12 @@
     .filterPopover {
         max-width: 200px;
         min-width: 200px;
+    }
+    .checkableTree {
+        max-height: 364px;
+
+        :global(.ant-tree-checkbox) {
+            @apply my-auto;
+        }
     }
 </style>

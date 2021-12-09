@@ -31,7 +31,7 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
         },
     })
 
-    const list = ref([])
+    const list: any = ref([])
     watch(data, () => {
         if (data.value?.records) {
             list.value = [...data?.value?.records]

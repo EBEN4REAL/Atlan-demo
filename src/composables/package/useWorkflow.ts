@@ -16,6 +16,9 @@ export function createWorkflow(body) {
             throw e
         },
     })
+
+    const workflow = ref(null)
+
     const { data, error, isLoading, mutate, isReady } =
         Workflows.createWorkflowPackage({
             body,
@@ -28,5 +31,9 @@ export function createWorkflow(body) {
         mutate()
     }
 
-    return { data, error, isLoading, execute, isReady }
+    watch(data, () => {
+        workflow.value = data.value
+    })
+
+    return { data, error, isLoading, execute, isReady, workflow }
 }

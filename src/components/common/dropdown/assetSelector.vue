@@ -105,6 +105,10 @@
                 required: false,
                 default: () => false,
             },
+            bgGrayForSelector: {
+                type: Boolean,
+                default: true,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {

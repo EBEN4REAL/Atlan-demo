@@ -11,35 +11,29 @@
             border border-gray-200
             rounded-full
             cursor-pointer
+            hover:text-white
             ${
                 color
                     ? `hover:bg-${color.toLowerCase()}-400`
                     : 'hover:bg-pink-400'
             }
-            group
-            ${
-                color
-                    ? `hover:border-${color.toLowerCase()}-400`
-                    : 'hover:border-pink-400'
-            }
-            
         `"
         :data-test-id="displayName"
     >
         <ClassificationIcon
             icon="ShieldFilled"
-            class="group-hover:text-white"
             :color="color"
+            class="group-hover:text-white"
             v-if="isPropagated"
         ></ClassificationIcon>
         <ClassificationIcon
             icon="Shield"
-            class="group-hover:text-white"
             :color="color"
+            class="group-hover:text-white"
             v-else
         ></ClassificationIcon>
 
-        <div class="ml-1 group-hover:text-white">
+        <div class="ml-1">
             {{ displayName || name }}
         </div>
 
@@ -79,7 +73,7 @@
             color: {
                 type: String,
                 required: false,
-                default: 'Blue',
+                default: 'blue',
             },
             allowDelete: {
                 type: Boolean,

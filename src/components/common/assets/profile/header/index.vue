@@ -346,7 +346,7 @@
             const router = useRouter()
 
             const goToInsights = (asset) => {
-                router.push({ path: getAssetQueryPath(asset) })
+                router.push(getAssetQueryPath(asset))
             }
 
             const { Escape /* keys you want to monitor */ } = useMagicKeys()

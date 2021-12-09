@@ -45,7 +45,7 @@
                         ['column'].includes(
                             selectedAsset.typeName?.toLowerCase()
                         )
-                            ? 'pointer-events-none text-gray-500  '
+                            ? 'pointer-events-none text-gray-500'
                             : 'text-primary'
                     "
                 >

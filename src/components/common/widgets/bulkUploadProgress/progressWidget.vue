@@ -135,7 +135,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch ,onMounted} from 'vue'
     import BulkModal from '~/components/glossary/modal/bulkUploadModal.vue'
     // import useWorkflowLiveRun from '@/glossary/profile/overview/useWorkflowLiveRun'
     // import useArtifacts from '@/glossary/profile/overview/useArtifacts'
@@ -258,11 +258,28 @@
             }
             // starts the tracking process
             watch(isWorkflowRunning, () => {
-                if (isWorkflowRunning.value === true) {
+                 if (isWorkflowRunning.value === true) {
                     triggerUpload()
                 }
             })
+           onMounted(()=>{
+                const { liveList } = getRunList(`atlan-gtc-bulk-upload-${props?.entity?.guid.slice(-8)}` ,false)
+                 watch(liveList, () => {
+                    if (liveList.value?.items && liveList.value?.items[0]) {
+                        const WFPhase= phase(liveList.value?.items[0])
+                        console.log(WFPhase)
+                        if(WFPhase==='Running')
+                        {
+                            workflowName.value=`atlan-gtc-bulk-upload-${props?.entity?.guid.slice(-8)}`
+                            triggerUpload()
+                            percentage.value = Math.round(
+                               progressPercent(liveList.value.items[0])
+                               )
 
+                        }
+                    }
+            })
+            })
             return {
                 percentage,
                 totalCount,

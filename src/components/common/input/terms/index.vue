@@ -47,7 +47,7 @@
                     ></AtlanIcon>
 
                     <div class="ml-1 group-hover:text-white">
-                        {{ term.displayText }}
+                        {{ term.attributes?.name ?? term.displayText }}
                     </div>
                 </div>
             </template>

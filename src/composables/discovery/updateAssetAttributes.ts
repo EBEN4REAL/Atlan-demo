@@ -24,7 +24,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementType,
         announcementTitle,
         readmeContent,
-        meanings
+        meaningRelationships
     } = useAssetInfo()
 
     const entity = ref({
@@ -88,7 +88,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
 
-    const localMeanings = ref(meanings(selectedAsset.value))
+    const localMeanings = ref(meaningRelationships(selectedAsset.value))
 
     const localResource = ref({
         link: '',
@@ -194,7 +194,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate()
     }
     const handleMeaningsUpdate = () => {
-        entity.value.attributes.meanings = localMeanings.value
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                meanings: localMeanings.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid
+                }))
+            }
+        }
         body.value.entities = [entity.value]
 
         mutate()

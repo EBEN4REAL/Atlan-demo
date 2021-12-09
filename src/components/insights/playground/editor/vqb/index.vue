@@ -24,10 +24,10 @@
         ref,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import {
-        useProvide,
-        provideDataInterface,
-    } from '~/components/insights/common/composables/useProvide'
+    // import {
+    //     useProvide,
+    //     provideDataInterface,
+    // } from '~/components/insights/common/composables/useProvide'
 
     export default defineComponent({
         name: 'VQB',

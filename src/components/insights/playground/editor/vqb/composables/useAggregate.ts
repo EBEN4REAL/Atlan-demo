@@ -86,7 +86,7 @@ export function useAggregate() {
                 return el?.includes.find((el) => el === type?.toUpperCase())
             }
             if (el?.excludes) {
-                return !el?.excludes.find((el) => el === type.toUpperCase())
+                return !el?.excludes.find((el) => el === type?.toUpperCase())
             }
             return true
         })

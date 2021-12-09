@@ -16,8 +16,8 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
     }
     else {
         params.value.append('sort', sort ?? 'firstName')
-        params.value.append('columns', 'firstname')
-        params.value.append('columns', 'lastname')
+        params.value.append('columns', 'firstName')
+        params.value.append('columns', 'lastName')
         params.value.append('columns', 'username')
         params.value.append('columns', 'id')
     }

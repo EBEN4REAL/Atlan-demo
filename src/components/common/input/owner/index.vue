@@ -66,7 +66,15 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, PropType } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        Ref,
+        ref,
+        toRefs,
+        PropType,
+        watch,
+    } from 'vue'
 
     // Utils
     import {
@@ -138,8 +146,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, enableHover, destroyTooltipOnHide } =
-                toRefs(props)
+            const { selectedAsset } = toRefs(props)
 
             const localValue = ref(modelValue.value)
 
@@ -205,25 +212,6 @@
                 }
             })
 
-            // const { o, Escape, d } = useMagicKeys()
-
-            // watch(o, (v) => {
-            //     if (v) {
-            //         console.log('o')
-            //         if (!isEdit.value) {
-            //             isEdit.value = true
-            //         }
-            //     }
-            // })
-            // watch(Escape, (v) => {
-            //     if (v) {
-            //         console.log('esc')
-            //         if (isEdit.value) {
-            //             isEdit.value = false
-            //         }
-            //     }
-            // })
-
             const ownerFacetRef: Ref<null | HTMLInputElement> = ref(null)
 
             const handleVisibleChange = (visible) => {
@@ -236,6 +224,11 @@
                     handleChange()
                 }
             }
+
+            watch(selectedAsset, () => {
+                localValue.value.ownerUsers = ownerUsers(selectedAsset.value)
+                localValue.value.ownerGroups = ownerGroups(selectedAsset.value)
+            })
 
             return {
                 ownerGroups,

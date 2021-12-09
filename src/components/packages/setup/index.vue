@@ -331,7 +331,7 @@
                             if (modelValue.value[p.name]) {
                                 parameters.push({
                                     name: p.name,
-                                    value: modelValue.value[p.name],
+                                    value: JSON.stringify(modelValue.value[p.name])
                                 })
                             }
                         }

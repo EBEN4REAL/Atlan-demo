@@ -63,9 +63,9 @@ const AssetTypeList: {
       id: 'BusinessTerms',
       label: 'Business Terms',
       children: [
-        { id: "AtlasGlossary", label: "Atlas Glossary" },
-        { id: "AtlasGlossaryCategory", label: "AtlasGlossary Category" },
-        { id: "AtlasGlossaryTerm", label: "AtlasGlossary Term" }
+        { id: "AtlasGlossary", label: "Glossary" },
+        { id: "AtlasGlossaryCategory", label: "Category" },
+        { id: "AtlasGlossaryTerm", label: "Term" }
       ]
     },
   ]

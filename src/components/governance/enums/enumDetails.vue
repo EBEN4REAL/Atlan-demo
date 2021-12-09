@@ -16,10 +16,7 @@
                         class="flex items-center justify-center rounded-md ant-btn ant-btn-primary"
                         @click="() => (isEditing = true)"
                     >
-                        <AtlanIcon
-                            icon="Pencil"
-                            class="h-4 text-white fill-current"
-                        />
+                      <AtlanIcon icon="Edit" class="h-4 ml-1"></AtlanIcon>
                     </a-button>
                     <a-button
                         v-if="isEditing"

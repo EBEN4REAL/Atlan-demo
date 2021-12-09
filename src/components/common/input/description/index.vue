@@ -58,10 +58,10 @@
                 type: String,
                 required: true,
             },
-            editPermission: {
+            readOnly: {
                 type: Boolean,
                 required: false,
-                default: true,
+                default: false,
             },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -72,6 +72,7 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const { readOnly } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
@@ -92,8 +93,10 @@
                 handleChange()
             }
             const handleEdit = () => {
-                isEdit.value = true
-                start()
+                if (!readOnly?.value) {
+                    isEdit.value = true
+                    start()
+                }
             }
 
             const activeElement = useActiveElement()

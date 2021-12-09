@@ -175,6 +175,7 @@
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
                     :isDrawer="isDrawer"
+                    :readOnly="isScrubbed(selectedAsset)"
                     :data="tab.data"
                 ></component>
             </a-tab-pane>

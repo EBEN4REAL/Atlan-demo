@@ -19,6 +19,7 @@
                     :is="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
+                    :readOnly="isScrubbed(asset)"
                     @preview="$emit('preview', $event)"
                 ></component>
             </a-tab-pane>

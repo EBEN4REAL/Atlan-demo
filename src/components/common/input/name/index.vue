@@ -57,10 +57,16 @@
                 required: false,
                 default: true,
             },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const { readOnly } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const nameRef: Ref<null | HTMLInputElement> = ref(null)
@@ -83,8 +89,10 @@
                 handleChange()
             }
             const handleEdit = () => {
-                isEdit.value = true
-                start()
+                if (!readOnly?.value) {
+                    isEdit.value = true
+                    start()
+                }
             }
 
             const activeElement = useActiveElement()

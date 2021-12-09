@@ -230,7 +230,7 @@
                         <AtlanIcon icon="Share" class="mb-0.5" />
                     </a-button>
                 </ShareMenu>
-                <AssetMenu :asset="item" :edit-permission="true">
+                <AssetMenu :asset="item" :readOnly="isScrubbed(item)">
                     <a-button block class="flex items-center justify-center">
                         <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
                     </a-button>

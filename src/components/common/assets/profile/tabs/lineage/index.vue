@@ -99,6 +99,7 @@
                 depth: depth.value,
                 guid: guid.value,
                 direction: direction.value,
+                hideProcess: true,
             }))
 
             /** METHODS */

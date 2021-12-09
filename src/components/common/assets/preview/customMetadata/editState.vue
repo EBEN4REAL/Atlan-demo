@@ -197,19 +197,24 @@
                 list: userList,
                 handleSearch: handleUserSearch,
                 isLoading: uLoading,
-            } = useFacetUsers(false)
+                isReady: isUserReady,
+                error: userError,
+            } = useFacetUsers('username', ['username'], false)
 
             const userSearch = (val) => {
-                handleUserSearch(val)
+                if (!isUserReady?.value || userError.value)
+                    handleUserSearch(val)
             }
 
             const {
                 list: groupList,
                 handleSearch: handleGroupSearch,
                 isLoading: gLoading,
-            } = useFacetGroups(false)
+                isReady,
+                error,
+            } = useFacetGroups('alias', ['alias'], false)
             const groupSearch = (val) => {
-                handleGroupSearch(val)
+                if (!isReady?.value || error.value) handleGroupSearch(val)
             }
 
             const isMultivalued = ref(

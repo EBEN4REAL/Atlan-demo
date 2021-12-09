@@ -1,5 +1,9 @@
 <template>
     <div class="flex flex-col p-6 gap-y-4">
+        <BulkUploadProgress
+            v-if="selectedAsset?.typeName === 'AtlasGlossary'"
+            :entity="selectedAsset"
+        />
         <AnnouncementWidget
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
@@ -19,11 +23,12 @@
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Readme from '@/common/widgets/readme/index.vue'
+    import BulkUploadProgress from '~/components/common/widgets/bulkUploadProgress/progressWidget.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'GlossaryOverview',
-        components: { AnnouncementWidget, Readme, Summary },
+        components: { AnnouncementWidget, Readme, Summary, BulkUploadProgress },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

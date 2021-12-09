@@ -49,7 +49,19 @@
                             @change="handleSearch"
                         ></a-input-search>
                     </div>
-                    <div class="flex-grow w-0"></div>
+                     <div class="mr-3">
+                        <a-tooltip placement="bottom">
+                            <template #title> Refresh </template>
+                            <AtlanBtn
+                                class="px-2 bg-transparent border-gray-300"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="refetchList"
+                                ><AtlanIcon icon="Refresh"></AtlanIcon
+                            ></AtlanBtn>
+                        </a-tooltip>
+                    </div>
 
                     <TimeFrameSelector
                         v-model:modelValue="timeFrame"
@@ -305,6 +317,7 @@
             totalLogsCount,
             EmptyLogsIllustration,
             assetListLoading,
+            refetchList
         }
     },
 })

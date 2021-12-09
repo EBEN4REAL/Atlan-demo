@@ -214,7 +214,16 @@
                 </div>
             </div>
             <a-button-group>
-                <a-tooltip title="Query">
+                <a-tooltip
+                    v-if="
+                        ![
+                            'AtlasGlossary',
+                            'AtlasGlossaryTerm',
+                            'AtlasGlossaryCategory',
+                        ].includes(item?.typeName)
+                    "
+                    title="Query"
+                >
                     <a-button
                         @click="goToInsights(item)"
                         block

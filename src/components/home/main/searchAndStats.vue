@@ -1,6 +1,10 @@
 <template>
     <div class="flex items-center justify-between h-24">
-        <img :src="logoUrl" class="w-auto h-12" />
+        <img
+            :src="logoUrl"
+            class="w-auto h-12"
+            @error="(e: any) => e.target.src = defaultLogo"
+        />
         <aside class="flex gap-6">
             <div v-for="m in metadata" :key="m.id" class="flex flex-col">
                 <span class="text-gray-500 uppercase">{{ m.label }}</span>
@@ -19,15 +23,17 @@
         @closeModal="isCmndKVisible = false"
     /> -->
 
-    <router-link
-        to="/assets"
-        class="flex items-center justify-end gap-1 mt-2 font-bold cursor-pointer  text-primary"
-        >Discover assets <AtlanIcon icon="ArrowRight"
-    /></router-link>
+    <div class="flex items-center justify-end gap-1 mt-2">
+        <router-link to="/assets" class="font-bold cursor-pointer text-primary">
+            Discover assets
+            <AtlanIcon icon="ArrowRight" />
+        </router-link>
+    </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, computed, watch } from 'vue'
+    import defaultLogo from '~/assets/images/your_company.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     // import CmndK from '~/components/common/commandK/cmndK.vue'
     import { getAggregations } from '~/composables/home/useHomeDSL'
@@ -98,10 +104,9 @@
                         })
                     }
                 })
-                console.log(list.value)
             })
 
-            return { logoUrl, metadata, showModal, isCmndKVisible }
+            return { logoUrl, metadata, showModal, isCmndKVisible, defaultLogo }
         },
     })
 </script>

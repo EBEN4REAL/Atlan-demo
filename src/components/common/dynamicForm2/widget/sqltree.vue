@@ -4,6 +4,7 @@
         :query="property.ui.sql"
         :include="property.ui.schemaIncludePattern"
         :exclude="property.ui.schemaExcludePattern"
+        :connectorConfigName="property.ui.connectorConfigName"
     ></SQLTreeSelect>
 </template>
 
@@ -33,7 +34,6 @@
         setup(props, { emit }) {
             const { property, baseKey } = toRefs(props)
             const formState = inject('formState')
-
             const componentProps = computed(() => property.value.ui)
 
             const { buildCredentialBody } = useWorkflowHelper()
@@ -42,7 +42,7 @@
                 buildCredentialBody(
                     formState,
                     'credential-guid',
-                    'atlan-connectors-snowflake-beta'
+                    property.value.ui.connectorConfigName
                 )
             )
 

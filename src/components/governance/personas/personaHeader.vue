@@ -56,130 +56,159 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, ref } from 'vue'
-    import { message } from 'ant-design-vue'
-    import CreationModal from '@/admin/common/addModal.vue'
-    import { IPersona } from '~/types/accessPolicies/personas'
-    import {
-        isEditing,
-        savePersona,
-        discardPersona,
-        selectedPersonaDirty,
-        deletePersonaById,
-    } from './composables/useEditPersona'
+import { defineComponent, PropType, computed, toRefs, h } from 'vue'
+import { message, Modal } from 'ant-design-vue'
+import CreationModal from '@/admin/common/addModal.vue'
+import { IPersona } from '~/types/accessPolicies/personas'
+import {
+    isEditing,
+    savePersona,
+    discardPersona,
+    selectedPersonaDirty,
+    deletePersonaById,
+} from './composables/useEditPersona'
 
-    import Dropdown from '@/UI/dropdown.vue'
-    import { reFetchList } from './composables/usePersonaList'
-    import { formatDateTime } from '~/utils/date'
-    import { useTimeAgo } from '@vueuse/core'
+import Dropdown from '@/UI/dropdown.vue'
+import { reFetchList } from './composables/usePersonaList'
+import { formatDateTime } from '~/utils/date'
+import { useTimeAgo } from '@vueuse/core'
 
-    export default defineComponent({
-        name: 'PersonaHeader',
-        components: { Dropdown, CreationModal },
-        props: {
-            persona: {
-                type: Object as PropType<IPersona>,
-                required: true,
-            },
+export default defineComponent({
+    name: 'PersonaHeader',
+    components: { Dropdown, CreationModal },
+    props: {
+        persona: {
+            type: Object as PropType<IPersona>,
+            required: true,
         },
-        setup(props, { emit }) {
-            const { persona } = toRefs(props)
-            const personaActions = computed(() => [
-                {
-                    title: 'Edit',
-                    icon: 'Edit',
-                    handleClick: () => {
-                        isEditing.value = true
-                    },
+    },
+    setup(props, { emit }) {
+        const { persona } = toRefs(props)
+        const deletePersona = () => {
+            Modal.confirm({
+                title: `Delete persona`,
+                class: 'delete-persona-modal',
+                content: () => {
+                    return h('div', [
+                        'Are you sure you want to delete persona',
+                        h('span', [' ']),
+                        h(
+                            'span',
+                            {
+                                class: ['font-bold'],
+                            },
+                            [`${persona.value.displayName}`]
+                        ),
+                        h('span','?')
+                    ])
                 },
-                {
-                    title: 'Delete',
-                    icon: 'Trash',
-                    class: 'text-red-700',
-                    handleClick: async () => {
-                        const msgId = Date.now()
-                        message.loading({
-                            content: `Deleting ${persona.value.displayName}`,
-                            duration: 0,
+                okType: 'danger',
+                autoFocusButton: null,
+                okButtonProps: {
+                    type: 'primary',
+                },
+                okText: 'Delete',
+                cancelText: 'Cancel',
+                async onOk() {
+                    const msgId = Date.now()
+                    try {
+                        await deletePersonaById(persona.value.id!)
+                        message.success({
+                            content: 'Persona deleted',
+                            duration: 1.5,
                             key: msgId,
                         })
-                        try {
-                            await deletePersonaById(persona.value.id!)
-                            message.success({
-                                content: 'Persona deleted',
-                                duration: 1.5,
-                                key: msgId,
-                            })
-                        } catch (error) {
-                            message.error({
-                                content: 'Failed to delete persona',
-                                duration: 1.5,
-                                key: msgId,
-                            })
-                        }
-                    },
+                    } catch (error) {
+                        message.error({
+                            content: 'Failed to delete persona',
+                            duration: 1.5,
+                            key: msgId,
+                        })
+                    }
                 },
-            ])
+            })
+        }
+        const personaActions = computed(() => [
+            {
+                title: 'Edit',
+                icon: 'Edit',
+                handleClick: () => {
+                    isEditing.value = true
+                },
+            },
+            {
+                title: 'Delete',
+                icon: 'Trash',
+                class: 'text-red-700',
+                handleClick: deletePersona,
+            },
+        ])
 
-            async function saveEditedPersona() {
-                const messageKey = Date.now()
-                message.loading({
-                    content: 'Working on it...',
-                    duration: 0,
+        async function saveEditedPersona() {
+            const messageKey = Date.now()
+            message.loading({
+                content: 'Working on it...',
+                duration: 0,
+                key: messageKey,
+            })
+
+            try {
+                await savePersona({
+                    ...persona.value,
+                    displayName: selectedPersonaDirty.value?.displayName,
+                    description: selectedPersonaDirty.value?.description,
+                })
+
+                message.success({
+                    content: `${persona.value?.displayName} persona updated`,
+                    duration: 1.5,
                     key: messageKey,
                 })
 
-                try {
-                    await savePersona({
-                        ...persona.value,
-                        displayName: selectedPersonaDirty.value?.displayName,
-                        description: selectedPersonaDirty.value?.description,
-                    })
-
-                    message.success({
-                        content: `${persona.value?.displayName} persona updated`,
-                        duration: 1.5,
-                        key: messageKey,
-                    })
-
-                    isEditing.value = false
-                    reFetchList()
-                } catch (error) {
-                    message.error({
-                        content: 'Failed to update persona',
-                        duration: 1.5,
-                        key: messageKey,
-                    })
-                }
+                isEditing.value = false
+                reFetchList()
+            } catch (error) {
+                message.error({
+                    content: 'Failed to update persona',
+                    duration: 1.5,
+                    key: messageKey,
+                })
             }
-
-            const timeStamp = (time, raw: boolean = false) => {
-                if (time) {
-                    return raw
-                        ? formatDateTime(time) || 'N/A'
-                        : useTimeAgo(time).value
-                }
-                return ''
-            }
-
-            return {
-                personaActions,
-                isEditing,
-                saveEditedPersona,
-                discardPersona,
-                selectedPersonaDirty,
-                timeStamp,
-            }
-        },
-    })
-</script>
-
-<style lang="less" scoped>
-    .clean-input {
-        @apply block bg-transparent border-0 shadow-none outline-none;
-
-        &:focus {
-            @apply outline-none;
         }
+
+        const timeStamp = (time, raw: boolean = false) => {
+            if (time) {
+                return raw
+                    ? formatDateTime(time) || 'N/A'
+                    : useTimeAgo(time).value
+            }
+            return ''
+        }
+
+        return {
+            personaActions,
+            isEditing,
+            saveEditedPersona,
+            discardPersona,
+            selectedPersonaDirty,
+            timeStamp,
+        }
+    },
+})
+</script>
+<style lang="less">
+.delete-persona-modal {
+    .ant-modal-confirm-body-wrapper {
+        @apply p-5;
     }
+}
+</style>
+<style lang="less" scoped>
+.clean-input {
+    @apply block bg-transparent border-0 shadow-none outline-none;
+
+    &:focus {
+        @apply outline-none;
+    }
+}
 </style>

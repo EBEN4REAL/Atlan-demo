@@ -6,10 +6,10 @@ import { pluralizeString } from '~/utils/string.ts'
 import { roleMap } from '~/constant/role'
 
 const getUserName = (user: any) => {
-    const { first_name } = user
-    const { last_name } = user
-    if (first_name) {
-        return `${first_name} ${last_name || ''}`
+    const { firstName } = user
+    const { lastName } = user
+    if (firstName) {
+        return `${firstName} ${lastName || ''}`
     }
     return user.email
 }

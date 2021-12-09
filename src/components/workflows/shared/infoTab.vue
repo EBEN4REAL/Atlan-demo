@@ -14,7 +14,6 @@
                 <Tooltip :tooltip-text="creator?.email || '-'" :rows="2" />
             </p>
         </div>
-
         <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Created</p>
             <p class="mb-0 text-gray-700">

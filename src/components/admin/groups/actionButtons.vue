@@ -38,7 +38,7 @@
             </div>
             <template #overlay>
                 <a-menu>
-                    <a-menu-item
+                    <!-- <a-menu-item
                         key="1"
                         v-auth="map.UPDATE_GROUP"
                         :disabled="markAsDefaultLoading || deleteGroupLoading"
@@ -80,7 +80,7 @@
                                 />
                             </a-tooltip>
                         </div>
-                    </a-menu-item>
+                    </a-menu-item> -->
                     <a-menu-item
                         key="2"
                         :disabled="deleteGroupLoading || markAsDefaultLoading"

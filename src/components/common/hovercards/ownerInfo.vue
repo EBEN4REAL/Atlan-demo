@@ -24,9 +24,9 @@
                     class="h-4 mr-2 text-primary group-hover:text-white"
                 />
                 <span
-                    v-if="user?.first_name && user?.last_name"
+                    v-if="user?.firstName && user?.lastName"
                     class="text-sm font-bold"
-                    >{{ user?.first_name }}&nbsp;{{ user?.last_name }}</span
+                    >{{ user?.firstName }}&nbsp;{{ user?.lastName }}</span
                 >
                 <span v-else>{{ user.username }}</span>
             </div>

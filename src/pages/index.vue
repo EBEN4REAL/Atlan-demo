@@ -27,7 +27,7 @@
                 <div class="">
                     <img
                         class="mb-3 rounded-lg"
-                        src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80"
+                        src="https://images.unsplash.com/photo-1606937589177-0c6374bd88ab?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1651&q=80"
                         alt=""
                     />
                     <span class="text-sm text-gray-500"

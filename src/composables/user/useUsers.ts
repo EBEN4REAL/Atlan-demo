@@ -10,15 +10,15 @@ import { Users } from '~/services/service/users'
 import { LIST_USERS } from '~/services/service/users/key'
 
 export const getUserName = (user: any) => {
-    const { first_name } = user
-    const { last_name } = user
-    if (first_name) {
-        return `${first_name} ${last_name || ''}`
+    const { firstName } = user
+    const { lastName } = user
+    if (firstName) {
+        return `${firstName} ${lastName || ''}`
     }
     return user.email
 }
 const getUserRole = (user: any) => {
-    const { roles, default_roles } = user
+    const { roles, defaultRoles } = user
     let atlanRoles: string[] = []
     const atlanRole = { name: '', code: '' }
 
@@ -26,9 +26,9 @@ const getUserRole = (user: any) => {
 
     if (roles?.length) atlanRoles = filterHelper(roles)
 
-    if (default_roles?.length)
+    if (defaultRoles?.length)
         atlanRoles = [
-            ...new Set([...atlanRoles, ...filterHelper(default_roles)]),
+            ...new Set([...atlanRoles, ...filterHelper(defaultRoles)]),
         ]
 
     // eslint-disable-next-line no-restricted-syntax
@@ -57,7 +57,7 @@ const getUserStatus = (user: any) => {
             status: 'Locked',
         }
     }
-    if (!user.email_verified) {
+    if (!user.emailVerified) {
         return {
             color: 'text-error',
             icon: 'fa lock',
@@ -74,11 +74,11 @@ export const getFormattedUser = (user: any) => {
     const localUser = {
         ...user,
         name: getUserName(user),
-        group_count_string: pluralizeString('group', user.group_count || 0),
+        group_count_string: pluralizeString('group', user.groupCount || 0),
         status_object: getUserStatus(user),
         role_object: getUserRole(user),
-        created_at_time_ago: user.created_timestamp
-            ? useTimeAgo(user.created_timestamp).value
+        created_at_time_ago: user.createdTimestamp
+            ? useTimeAgo(user.createdTimestamp).value
             : '',
     }
     return localUser

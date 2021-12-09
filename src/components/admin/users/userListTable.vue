@@ -17,21 +17,26 @@
                 <Avatar
                     :image-url="imageUrl(user.username)"
                     :allow-upload="isCurrentUser(user.username)"
-                    :avatar-name="user.name || user.uername || user.email"
+                    :avatar-name="user.name || user.username || user.email"
                     :avatar-size="26"
                     avatar-shape="circle"
                     class="mr-2"
                 />
                 <div
-                    class="truncate cursor-pointer"
+                    class="truncate"
+                    :class="!user.emailVerified ? '' : 'cursor-pointer'"
                     @click="
                         () => {
+                            if(!user.emailVerified) return
                             emit('showUserPreviewDrawer', user)
                         }
                     "
                 >
-                    <span class="text-primary">{{
+                    <span v-if="user.emailVerified" class="text-primary">{{
                         nameCase(user.name) || '-'
+                    }}</span>
+                    <span v-else class="text-primary">{{
+                        user.email || '-'
                     }}</span>
                     <p class="mb-0 text-gray-500 truncate">
                         @{{ user.username || '-' }}
@@ -54,7 +59,7 @@
             <a-button-group v-auth="map.UPDATE_USERS">
                 <!-- change role -->
                 <a-tooltip
-                    v-if="user.enabled && user.email_verified"
+                    v-if="user.enabled && user.emailVerified"
                     placement="top"
                     class="mr-3.5"
                 >
@@ -88,7 +93,7 @@
                     </a-popover>
                 </a-tooltip>
                 <!-- enable/disable  -->
-                <a-tooltip v-if="user.email_verified" placement="top">
+                <a-tooltip v-if="user.emailVerified" placement="top">
                     <template #title>
                         <span>
                             {{
@@ -162,7 +167,7 @@
                 </a-tooltip>
                 <!-- invitation -->
                 <a-tooltip
-                    v-if="!user.email_verified"
+                    v-if="!user.emailVerified"
                     placement="top"
                     class="rounded mr-3.5"
                 >
@@ -181,7 +186,7 @@
                         <AtlanIcon icon="ResendInvite"></AtlanIcon>
                     </div>
                 </a-tooltip>
-                <a-dropdown v-if="!user.email_verified" :trigger="['click']">
+                <a-dropdown v-if="!user.emailVerified" :trigger="['click']">
                     <div
                         class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
                         @click="(e) => e.preventDefault()"

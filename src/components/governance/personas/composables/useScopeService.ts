@@ -48,8 +48,12 @@ const scopeList = [
             },
 
             {
-                value: 'link-terms',
-                label: 'link Terms',
+                value: 'add-terms',
+                label: 'Add: Terms',
+            },
+            {
+                value: 'remove-terms',
+                label: 'Remove: Terms',
             },
         ],
         type: 'Governance',

@@ -7,21 +7,21 @@ import { Users } from '~/services/service/users'
 export default function useFacetUsers(immediate = true) {
     const params = ref(new URLSearchParams())
     params.value.append('limit', '20')
-    params.value.append('sort', 'first_name')
-    params.value.append('columns', 'first_name')
-    params.value.append('columns', 'last_name')
+    params.value.append('sort', 'firstName')
+    params.value.append('columns', 'firstName')
+    params.value.append('columns', 'lastName')
     params.value.append('columns', 'username')
     params.value.append('columns', 'id')
-    params.value.append('filter', '{"$and":[{"email_verified":true}]}')
+    params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
 
-    const { data, mutate, isLoading, error } = Users.List(params, {
+    const { data, mutate, isLoading, error, isValidating } = Users.List(params, {
         asyncOptions: {
             immediate,
             resetOnExecute: false,
         },
     })
 
-    const list = ref([])
+    const list: any = ref([])
     watch(data, () => {
         if (data.value?.records) {
             list.value = [...data?.value?.records]
@@ -53,11 +53,11 @@ export default function useFacetUsers(immediate = true) {
                 'filter',
                 JSON.stringify({
                     $and: [
-                        { email_verified: true },
+                        { emailVerified: true },
                         {
                             $or: [
-                                { first_name: { $ilike: `%${value}%` } },
-                                { last_name: { $ilike: `%${value}%` } },
+                                { firstName: { $ilike: `%${value}%` } },
+                                { lastName: { $ilike: `%${value}%` } },
                                 { username: { $ilike: `%${value}%` } },
                             ],
                         },
@@ -71,7 +71,7 @@ export default function useFacetUsers(immediate = true) {
     return {
         isLoading,
         error,
-
+        isValidating,
         list,
         total,
         data,

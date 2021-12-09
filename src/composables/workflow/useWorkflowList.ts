@@ -12,7 +12,6 @@ export function useWorkflowSearchList(immediate: boolean = true) {
     params.value.append('offset', offset.value.toString())
     params.value.append('filter', JSON.stringify(filter.value))
 
-    // const sample = `{ "$or":[ { "labels": { "$elemMatch":{ "workflows.argoproj.io/creator-email": "nityananda.at.atlan.comar"} } }, { "labels":{ "$elemMatch":{ "x2": "a2"} } } ] }`
 
     const { data, error, isLoading, mutate, isReady } = Workflows.getWorkflows({
         immediate,
@@ -29,7 +28,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
         if (!data?.value?.records) return
         const filtered = data.value.records.map((el) => ({
             id: el?.metadata.labels['workflows.argoproj.io/creator'],
-            email_verified: true,
+            emailVerified: true,
         }))
         iDs.value = [...iDs.value, ...filtered]
         totalCount.value = data.value.total_record
@@ -243,7 +242,6 @@ export function useWorkflowConfigMaps(immediate: boolean = true) {
         params.value.set('offset', '0')
 
         // set filter name && set filter
-        // for reference { "$and": [{ "labels": { "$elemMatch": { "com.atlan.orchestration/verified": "true" } } }, { "$or": [{ "connector": "snowflake" }] }]}
         const temp = {
             $and: [
                 {
@@ -364,7 +362,6 @@ export function useWorkflowTemplates(immediate: boolean = true) {
 }
 
 export function useWorkflowTemplateByName(name, immediate: boolean = true) {
-    // const params = ref({ filter: { name } })
     const pathVariables = ref({ name })
     const { data, error, isLoading, mutate } =
         Workflows.getWorkflowTemplateByName({

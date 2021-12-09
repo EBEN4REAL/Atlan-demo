@@ -109,10 +109,9 @@
                 }
             )
 
-            const handleClickRunCard = (prop) => {
-                const { name } = item.value
-                const id = prop.uid
-                router.push(`/workflows/${name}/monitor?idmonitoring=${id}`)
+            const handleClickRunCard = (n) => {
+                const { name } = item.value.metadata
+                router.push(`/workflows/${name}/monitor?idmonitoring=${n}`)
             }
 
             return {

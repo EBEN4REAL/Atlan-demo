@@ -107,12 +107,12 @@ export const statusColorClass = {
 export const userStatusOptions = [
     {
         label: 'Active',
-        value: JSON.stringify({ enabled: true, email_verified: true }),
+        value: JSON.stringify({ enabled: true, emailVerified: true }),
     },
     { label: 'Disabled', value: JSON.stringify({ enabled: false }) },
     {
         label: 'Invited',
-        value: JSON.stringify({ enabled: true, email_verified: false }),
+        value: JSON.stringify({ enabled: true, emailVerified: false }),
     },
 ]
 

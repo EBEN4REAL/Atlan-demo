@@ -294,13 +294,13 @@
                 }> = {
                     limit: 1,
                     offset: 0,
-                    sort: 'first_name',
+                    sort: 'firstName',
                     filter: {
                         $and: [
                             {
                                 $or: [
                                     {
-                                        email_verified: true,
+                                        emailVerified: true,
                                         id: userId,
                                     },
                                 ],

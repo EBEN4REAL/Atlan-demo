@@ -95,7 +95,7 @@ const defaultCacheOption = {
 export const useUsers = (
     userListAPIParams,
     cacheKey?: string,
-    cacheOption = defaultCacheOption
+    cacheOption: object = defaultCacheOption
 ) => {
     const {
         data,

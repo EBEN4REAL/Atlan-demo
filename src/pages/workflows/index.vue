@@ -97,11 +97,7 @@
         </div>
 
         <div class="border-l border-gray-300 preview-container">
-            <DiscoveryPreview
-                v-if="selected"
-                :selected-workflow="selected"
-                :creator-details="creatorDetails"
-            />
+            <DiscoveryPreview v-if="selected" :selected-workflow="selected" />
         </div>
     </div>
 </template>
@@ -245,7 +241,7 @@
             const shootQuery = () => {
                 console.log(AllFilters.value)
                 const filters = transformToFilters(AllFilters.value)
-                console.log(filters)
+                console.log({ filters })
                 //! check if filter is user specific applied check to show empty state
                 const filterCopy = filters?.filter
                 if (filterCopy.$and?.length === 1) delete filterCopy.$and
@@ -297,7 +293,7 @@
                     ? {
                           limit: 1,
                           offset: 0,
-                          sort: 'first_name',
+                          sort: 'firstName',
                           filter: {
                               $and: [
                                   {
@@ -310,7 +306,7 @@
             )
 
             const handleGetUser = () => {
-                const { userList } = useUsers(params, null, {})
+                const { userList } = useUsers(params, 'GET_CREATOR', {})
                 watch(userList, (newVal) => {
                     users.value = newVal
                 })
@@ -320,10 +316,11 @@
                 handleGetUser()
             })
 
+            // !THIS NEEDS REFACTORING
             const creatorDetails = computed(() => {
                 if (users.value?.length && selected.value) {
                     return users.value.filter(
-                        (el: { id: any }) =>
+                        (el: { id: string }) =>
                             el?.id ===
                             selected.value?.metadata.labels[
                                 'workflows.argoproj.io/creator'
@@ -363,6 +360,8 @@
                 handleFilterChange,
                 handleFilterInit,
                 handleChangeSort,
+                iDs,
+                params,
                 defaultfiltersList,
             }
         },

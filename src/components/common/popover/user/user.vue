@@ -9,21 +9,17 @@
                     </div>
                     <div
                         v-if="admin"
-                        class="
-                            flex
-                            items-center
-                            px-1.5
-                            text-gray-500
-                            bg-gray-100
-                            border border-gray-300 border-solid
-                            rounded
-                        "
+                        class="flex items-center px-1.5 text-gray-500 bg-gray-100 border border-gray-300 border-solid rounded"
                     >
                         {{ admin }}
                     </div>
                 </div>
                 <div class="flex items-center gap-3 mt-2">
-                    <a-avatar class="text-primary bg-primary-light" size="large">{{ item[0].toUpperCase() }}</a-avatar>
+                    <a-avatar
+                        class="text-primary bg-primary-light"
+                        size="large"
+                        >{{ item[0].toUpperCase() }}</a-avatar
+                    >
                     <div>
                         <div class="text-sm font-semibold capitalize">
                             {{ item }}
@@ -35,7 +31,10 @@
                 </div>
                 <div class="mt-3">
                     <div class="text-xs text-gray-500">Ownership</div>
-                    <div v-if="assetCount || bussinesCount" class="flex gap-5 mt-1">
+                    <div
+                        v-if="assetCount || bussinesCount"
+                        class="flex gap-5 mt-1"
+                    >
                         <div>
                             <strong>{{ assetCount }}</strong> Assets
                         </div>
@@ -43,24 +42,15 @@
                             <strong>{{ bussinesCount }}</strong> Business Terms
                         </div>
                     </div>
-                    <div v-else>
-                        You have no asset added
-                    </div>
+                    <div v-else>You have no asset added</div>
                 </div>
-                <div v-if="groupList.length > 0"  class="mt-3">
+                <div v-if="groupList.length > 0" class="mt-3">
                     <div class="text-xs text-gray-500">Groups</div>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <span
                             v-for="group in groupList"
                             :key="group.id"
-                            class="
-                                px-2
-                                py-0.5
-                                text-xs
-                                border border-gray-300 border-solid
-                                rounded-xl
-                                capitalize
-                            "
+                            class="px-2 py-0.5 text-xs border border-gray-300 border-solid rounded-xl capitalize"
                         >
                             {{ group.name }}
                         </span>
@@ -72,15 +62,7 @@
                         <span
                             v-for="persona in listOfPersona"
                             :key="persona.id"
-                            class="
-                                px-2
-                                py-0.5
-                                text-xs
-                                bg-gray-200
-                                border border-gray-300 border-solid
-                                rounded-xl
-                                capitalize
-                            "
+                            class="px-2 py-0.5 text-xs bg-gray-200 border border-gray-300 border-solid rounded-xl capitalize"
                             >{{ persona?.displayName }}</span
                         >
                     </div>

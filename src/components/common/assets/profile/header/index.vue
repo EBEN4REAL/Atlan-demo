@@ -20,18 +20,26 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer  text-mdoverflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>
 
                     <CertificateBadge
-                        v-if="certificateStatus(item)"
+                        v-if="certificateStatus(item) && !isScrubbed(item)"
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-0.5"
                     ></CertificateBadge>
+                    <a-tooltip placement="bottomRight"
+                        ><template #title>Limited Access</template>
+                        <AtlanIcon
+                            v-if="isScrubbed(item)"
+                            icon="Lock"
+                            class="h-4 mb-0.5"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
                 <div class="flex items-center mt-1 gap-x-3">
                     <div class="flex items-center">
@@ -50,7 +58,7 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-wider text-gray-500 uppercase"
+                            class="text-sm tracking-wider text-gray-500 uppercase "
                         >
                             {{ item.typeName }}
                         </div>
@@ -330,6 +338,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 getAssetQueryPath,
+                isScrubbed,
             } = useAssetInfo()
 
             const item = inject('selectedAsset')
@@ -380,6 +389,7 @@
                 viewName,
                 back,
                 goToInsights,
+                isScrubbed,
             }
         },
     })

@@ -45,13 +45,24 @@
                 </router-link>
 
                 <CertificateBadge
-                    v-if="certificateStatus(selectedAsset)"
+                    v-if="
+                        certificateStatus(selectedAsset) &&
+                        !isScrubbed(selectedAsset)
+                    "
                     :status="certificateStatus(selectedAsset)"
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
                     class="mb-0.5"
                 ></CertificateBadge>
+                <a-tooltip placement="bottomRight"
+                    ><template #title>Limited Access</template>
+                    <AtlanIcon
+                        v-if="isScrubbed(selectedAsset)"
+                        icon="Lock"
+                        class="h-4 mb-0.5"
+                    ></AtlanIcon
+                ></a-tooltip>
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -289,6 +300,7 @@
                 certificateStatusMessage,
                 assetTypeLabel,
                 getProfilePath,
+                isScrubbed,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -385,6 +397,7 @@
                 getAssetQueryPath,
                 handleAction,
                 getProfilePath,
+                isScrubbed,
             }
         },
     })

@@ -15,7 +15,7 @@
         </template>
         <!-- Modal body -->
 
-        <div class="flex space-x-32">
+        <div class="flex px-4 space-x-32">
             <FormGen :config="formConfig" @vchange="handleFormChange" />
             <span class="ml-12 text-gray-500"
                 >Click the button on the left to upload a valid CSV file

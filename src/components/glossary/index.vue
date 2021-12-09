@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex flex-col items-stretch flex-1 h-full mb-1"
-        :class="$style.checkableTree"
+        :class="{ checkable: $style.checkableTree }"
         ref="glossaryBox"
     >
         <div
@@ -142,7 +142,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed, provide, PropType } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        Ref,
+        computed,
+        provide,
+        PropType,
+    } from 'vue'
     import { useRouter } from 'vue-router'
 
     import EmptyView from '@common/empty/index.vue'
@@ -210,13 +218,13 @@
             checkable: {
                 type: Boolean,
                 reuired: false,
-                default: false
+                default: false,
             },
             checkedKeys: {
                 type: Object as PropType<string[]>,
                 required: false,
-                default: []
-            }
+                default: [],
+            },
         },
         emits: ['check'],
         setup(props, { emit }) {
@@ -316,8 +324,7 @@
             const { getAnchorQualifiedName } = useAssetInfo()
 
             const handlePreview = (item) => {
-                if(!props.checkable)
-                    router.push(`/glossary/${item.guid}`)
+                if (!props.checkable) router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
             }
 
@@ -448,7 +455,7 @@
                 handleAddCategory,
                 defaultEntityType,
                 handleCollapse,
-                onCheck
+                onCheck,
             }
         },
     })

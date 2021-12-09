@@ -85,147 +85,18 @@
                 </div>
             </AtlanBtn>
         </div>
-        <a-popover
-            trigger="click"
-            @visibleChange="onPopoverVisibleChange"
-            placement="bottomRight"
-            :class="$style.context_popover"
-            :overlayStyle="{
-                paddingTop: '0px',
-            }"
-        >
-            <template #content>
-                <div class="p-4" style="width: 332px">
-                    <Connector
-                        class=""
-                        :filterSourceIds="['powerBI', 'tableau']"
-                        :isLeafNodeSelectable="false"
-                        v-model:data="connectorsData"
-                        :item="{
-                            id: 'connector',
-                            label: 'Connector',
-                            component: 'connector',
-                            overallCondition: 'OR',
-                            filters: [
-                                {
-                                    attributeName: 'connector',
-                                    condition: 'OR',
-                                    isMultiple: false,
-                                    operator: 'eq',
-                                },
-                            ],
-                            isDeleted: false,
-                            isDisabled: false,
-                            exclude: false,
-                        }"
-                        @change="handleChange"
-                        @update:data="setConnector"
-                    ></Connector>
-                </div>
-            </template>
-            <div
-                class="
-                    flex
-                    items-center
-                    text-gray-500
-                    border border-white
-                    rounded
-                    cursor-pointer
-                    hover:bg-gray-light
-                    p-0.5
-                "
-                :class="popoverVisible ? 'bg-gray-light' : ''"
+        <div class="flex items-center">
+            <a-popover
+                trigger="click"
+                @visibleChange="onPopoverVisibleChange"
+                placement="bottomRight"
+                :class="$style.context_popover"
+                :overlayStyle="{
+                    paddingTop: '0px',
+                }"
             >
-                <div class="flex items-center">
-                    <img
-                        v-if="connectionName"
-                        :src="connectorAsset?.image"
-                        class="w-4 h-4 mx-1 connector_icon"
-                    />
-                    <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
-                    <span v-else class="text-gray-500">Select Connector</span>
-                </div>
-                <div class="flex items-center" v-if="connectionName">
-                    <!-- <div class="mx-1">/</div> -->
-                    <!-- <AtlanIcon
-                        class="w-4 h-4 mr-1 -mt-0.5"
-                        icon="DatabaseGrayscale"
-                    /> -->
-                    <div v-if="databaseName" class="text-gray-700">
-                        {{ databaseName }}
-                    </div>
-                    <div
-                        v-if="databaseName"
-                        :class="schemaName ? `text-gray-700` : `text-gray-500`"
-                        class="text-base font-bold"
-                    >
-                        .
-                    </div>
-                    <span v-else class="text-gray-500">Select database</span>
-                    <!-- <div class="mx-1">/</div> -->
-                </div>
-                <div
-                    class="flex items-center"
-                    v-if="connectionName && databaseName"
-                >
-                    <!-- <AtlanIcon
-                        class="w-4 h-4 mr-1 -mt-0.5"
-                        icon="SchemaGrayscale"
-                    /> -->
-                    <span v-if="schemaName" class="text-gray-700">{{
-                        schemaName
-                    }}</span>
-                    <span v-else class="text-gray-500">select schema</span>
-                </div>
-                <div class="flex items-center">
-                    <AtlanIcon
-                        class="w-4 h-4 ml-1 -mt-0.5"
-                        icon="ChevronDown"
-                    />
-                </div>
-            </div>
-        </a-popover>
-        <!-- <a-dropdown :trigger="['click']">
-            <div
-                class="flex items-center text-gray-500 border border-white rounded cursor-pointer "
-            >
-                <div class="flex items-center">
-                    <img
-                        v-if="connectionName"
-                        :src="connectorAsset?.image"
-                        class="w-4 h-4 -mt-0.5 mx-1"
-                    />
-                    <span v-if="connectionName">{{ connectionName }}</span>
-                    <span v-else>Select Connection</span>
-                </div>
-                <div class="flex items-center">
-                    <div class="mx-1">/</div>
-                    <AtlanIcon
-                        class="w-4 h-4 mr-1 -mt-0.5"
-                        icon="DatabaseGrayscale"
-                    />
-                    <div v-if="databaseName">{{ databaseName }}</div>
-                    <span v-else>Select database</span>
-                    <div class="mx-1">/</div>
-                </div>
-                <div class="flex items-center">
-                    <AtlanIcon
-                        class="w-4 h-4 mr-1 -mt-0.5"
-                        icon="SchemaGrayscale"
-                    />
-                    <span v-if="schemaName">{{ schemaName }}</span>
-                    <span v-else>Select schema</span>
-                </div>
-                <div class="flex items-center">
-                    <AtlanIcon
-                        class="w-4 h-4 ml-1 -mt-0.5"
-                        icon="ChevronDown"
-                    />
-                </div>
-            </div>
-            <template #overlay>
-                <a-menu>
-                    <div class="p-4">
+                <template #content>
+                    <div class="p-4" style="width: 332px">
                         <Connector
                             class=""
                             :filterSourceIds="['powerBI', 'tableau']"
@@ -252,9 +123,144 @@
                             @update:data="setConnector"
                         ></Connector>
                     </div>
-                </a-menu>
-            </template>
-        </a-dropdown> -->
+                </template>
+                <div
+                    class="
+                        flex
+                        items-center
+                        text-gray-500
+                        border border-white
+                        rounded
+                        cursor-pointer
+                        hover:bg-gray-light
+                        p-0.5
+                    "
+                    :class="popoverVisible ? 'bg-gray-light' : ''"
+                >
+                    <div class="flex items-center">
+                        <img
+                            v-if="connectionName"
+                            :src="connectorAsset?.image"
+                            class="w-4 h-4 mx-1 connector_icon"
+                        />
+                        <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
+                        <span v-else class="text-gray-500"
+                            >Select Connector</span
+                        >
+                    </div>
+                    <div class="flex items-center" v-if="connectionName">
+                        <!-- <div class="mx-1">/</div> -->
+                        <!-- <AtlanIcon
+                            class="w-4 h-4 mr-1 -mt-0.5"
+                            icon="DatabaseGrayscale"
+                        /> -->
+                        <div v-if="databaseName" class="text-gray-700">
+                            {{ databaseName }}
+                        </div>
+                        <div
+                            v-if="databaseName"
+                            :class="
+                                schemaName ? `text-gray-700` : `text-gray-500`
+                            "
+                            class="text-base font-bold"
+                        >
+                            .
+                        </div>
+                        <span v-else class="text-gray-500"
+                            >Select database</span
+                        >
+                        <!-- <div class="mx-1">/</div> -->
+                    </div>
+                    <div
+                        class="flex items-center"
+                        v-if="connectionName && databaseName"
+                    >
+                        <!-- <AtlanIcon
+                            class="w-4 h-4 mr-1 -mt-0.5"
+                            icon="SchemaGrayscale"
+                        /> -->
+                        <span v-if="schemaName" class="text-gray-700">{{
+                            schemaName
+                        }}</span>
+                        <span v-else class="text-gray-500">select schema</span>
+                    </div>
+                    <div class="flex items-center">
+                        <AtlanIcon
+                            class="w-4 h-4 ml-1 -mt-0.5"
+                            icon="ChevronDown"
+                        />
+                    </div>
+                </div>
+            </a-popover>
+            <div class="flex items-center">
+                <div class="flex text-sm">
+                    <div class="flex" v-if="permissions.runQuery">
+                        <AtlanBtn
+                            class="flex items-center h-6 px-3 button-shadow"
+                            size="sm"
+                            color="primary"
+                            padding="compact"
+                            :disabled="
+                                activeInlineTab?.playground?.resultsPane?.result
+                                    ?.buttonDisable
+                            "
+                            @click="$emit('onClickRunQuery')"
+                        >
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    v-if="
+                                        isQueryRunning === 'loading'
+                                            ? false
+                                            : true
+                                    "
+                                    style="margin-right: 2.5px"
+                                    icon="Play"
+                                    class="text-white rounded"
+                                ></AtlanIcon>
+                                <AtlanIcon
+                                    v-else
+                                    icon="CircleLoader"
+                                    style="margin-right: 2.5px"
+                                    class="w-4 h-4 text-white animate-spin"
+                                ></AtlanIcon>
+                                <div>
+                                    <span
+                                        v-if="
+                                            !activeInlineTab?.playground
+                                                .resultsPane?.result?.runQueryId
+                                        "
+                                        class="text-white"
+                                        >Run</span
+                                    >
+                                    <span
+                                        v-else-if="
+                                            activeInlineTab?.playground
+                                                .resultsPane?.result
+                                                ?.runQueryId &&
+                                            !activeInlineTab?.playground
+                                                ?.resultsPane?.result
+                                                ?.buttonDisable
+                                        "
+                                        class="text-white"
+                                        >Abort</span
+                                    >
+                                    <span
+                                        v-else-if="
+                                            activeInlineTab?.playground
+                                                ?.resultsPane?.result
+                                                ?.buttonDisable
+                                        "
+                                        class="text-white"
+                                        >Aborting</span
+                                    >
+                                </div>
+                            </div>
+                        </AtlanBtn>
+                    </div>
+                    <ThreeDotMenu @toggleVQB="$emit('toggleVQB')" />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -264,6 +270,8 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import StatusBadge from '@common/badge/status/index.vue'
 import { SourceList } from '~/constant/source'
 import Connector from '~/components/insights/common/connector/connector.vue'
+import ThreeDotMenu from '~/components/insights/playground/editor/threeDotMenu/index.vue'
+
 import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { useUtils } from '~/components/insights/common/composables/useUtils'
@@ -274,14 +282,18 @@ import { useTimeAgo } from '@vueuse/core'
 
 export default defineComponent({
     name: 'Editor Context',
-    components: { StatusBadge, Connector, AtlanBtn },
+    components: { StatusBadge, Connector, AtlanBtn, ThreeDotMenu },
     props: {
         isUpdating: {
             type: Boolean,
             default: false,
         },
+        isQueryRunning: {
+            type: String,
+            default: '',
+        },
     },
-    emits: ['onClickSaveQuery'],
+    emits: ['onClickSaveQuery', 'onClickRun', 'toggleVQB'],
     setup(props) {
         const {
             getConnectionName,
@@ -299,6 +311,7 @@ export default defineComponent({
             'activeInlineTab'
         ) as Ref<activeInlineTabInterface>
         const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+        const permissions = inject('permissions') as ComputedRef<any>
 
         const connectorsData: Ref<connectorsWidgetInterface> = ref(
             activeInlineTab.value?.playground?.editor?.context ?? {
@@ -374,6 +387,7 @@ export default defineComponent({
             activeInlineTab,
             getEntityStatusIcon,
             useTimeAgo,
+            permissions,
         }
     },
 })

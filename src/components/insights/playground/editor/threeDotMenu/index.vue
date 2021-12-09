@@ -10,7 +10,6 @@
                     items-center
                     justify-center
                     py-0.5
-                    ml-2
                     -mr-2
                     px-1
                     border-white
@@ -529,15 +528,10 @@ import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export default defineComponent({
     components: {},
-    props: {
-        showVQB: {
-            type: Boolean,
-            required: true,
-            default: false,
-        },
-    },
-    setup(props) {
-        const { showVQB } = useVModels(props)
+    props: {},
+    emits: ['toggleVQB'],
+    setup(props, { emit }) {
+        const showVQB = ref(false)
         const router = useRouter()
         const {
             setEditorTheme,
@@ -678,6 +672,7 @@ export default defineComponent({
         }
         const toggleVQB = () => {
             showVQB.value = !showVQB.value
+            emit('toggleVQB', showVQB.value)
         }
         const copyURL = () => {
             const URL = window.location.href

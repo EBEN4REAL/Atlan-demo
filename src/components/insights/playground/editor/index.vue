@@ -3,7 +3,10 @@
         <div class="w-full h-full overflow-hidden rounded">
             <EditorContext
                 :isUpdating="isUpdating"
+                :isQueryRunning="isQueryRunning"
                 @onClickSaveQuery="saveOrUpdate"
+                @onClickRunQuery="toggleRun"
+                @toggleVQB="toggleVQB"
             />
             <div
                 class="flex items-center justify-between w-full pl-2 pr-3 my-2"
@@ -93,75 +96,6 @@
                                 </a-tooltip>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <div class="flex text-sm">
-                        <div class="flex" v-if="permissions.runQuery">
-                            <AtlanBtn
-                                class="flex items-center h-6 px-3 button-shadow"
-                                size="sm"
-                                color="primary"
-                                padding="compact"
-                                :disabled="
-                                    activeInlineTab?.playground?.resultsPane
-                                        ?.result?.buttonDisable
-                                "
-                                @click="toggleRun"
-                            >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        v-if="
-                                            isQueryRunning === 'loading'
-                                                ? false
-                                                : true
-                                        "
-                                        style="margin-right: 2.5px"
-                                        icon="Play"
-                                        class="text-white rounded"
-                                    ></AtlanIcon>
-                                    <AtlanIcon
-                                        v-else
-                                        icon="CircleLoader"
-                                        style="margin-right: 2.5px"
-                                        class="w-4 h-4 text-white animate-spin"
-                                    ></AtlanIcon>
-                                    <div>
-                                        <span
-                                            v-if="
-                                                !activeInlineTab?.playground
-                                                    .resultsPane?.result
-                                                    ?.runQueryId
-                                            "
-                                            class="text-white"
-                                            >Run</span
-                                        >
-                                        <span
-                                            v-else-if="
-                                                activeInlineTab?.playground
-                                                    .resultsPane?.result
-                                                    ?.runQueryId &&
-                                                !activeInlineTab?.playground
-                                                    ?.resultsPane?.result
-                                                    ?.buttonDisable
-                                            "
-                                            class="text-white"
-                                            >Abort</span
-                                        >
-                                        <span
-                                            v-else-if="
-                                                activeInlineTab?.playground
-                                                    ?.resultsPane?.result
-                                                    ?.buttonDisable
-                                            "
-                                            class="text-white"
-                                            >Aborting</span
-                                        >
-                                    </div>
-                                </div>
-                            </AtlanBtn>
-                        </div>
-                        <ThreeDotMenu v-model:showVQB="showVQB" />
                     </div>
                 </div>
             </div>
@@ -274,7 +208,6 @@ import {
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
-import ThreeDotMenu from '~/components/insights/playground/editor/threeDotMenu/index.vue'
 import { editor } from 'monaco-editor'
 import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
@@ -314,7 +247,6 @@ export default defineComponent({
         CustomVariablesNav,
         SaveQueryModal,
         AtlanBtn,
-        ThreeDotMenu,
         StatusBadge,
         EditorContext,
         WarehouseConnector,
@@ -601,6 +533,10 @@ export default defineComponent({
             }
         })
 
+        function toggleVQB() {
+            showVQB.value = !showVQB.value
+        }
+
         const _keyListener = (e) => {
             if (e.key === 'Enter') {
                 if (e.metaKey || e.ctrlKey) {
@@ -681,6 +617,7 @@ export default defineComponent({
             toggleRun,
             queryFolderNamespace,
             defaultClassification,
+            toggleVQB,
         }
     },
 })

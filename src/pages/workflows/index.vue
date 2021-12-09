@@ -97,11 +97,7 @@
         </div>
 
         <div class="border-l border-gray-300 preview-container">
-            <DiscoveryPreview
-                v-if="selected"
-                :selected-workflow="selected"
-                :creator-details="creatorDetails"
-            />
+            <DiscoveryPreview v-if="selected" :selected-workflow="selected" />
         </div>
     </div>
 </template>
@@ -199,7 +195,7 @@
                 isReady,
                 mutate,
                 filter_record,
-                iDs,
+                allCreatorIDs,
             } = useWorkflowSearchList(false)
 
             const isLoadMore = computed(
@@ -213,7 +209,7 @@
                     content: `${errMsg || `Network Error`}`,
                     key: 'error',
                     duration: 5,
-                })
+                } as any)
             })
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
@@ -243,14 +239,12 @@
             const isFilterAppplied = ref(false)
 
             const shootQuery = () => {
-                console.log(AllFilters.value)
-                const filters = transformToFilters(AllFilters.value)
-                console.log(filters)
+                const filters_1 = transformToFilters(AllFilters.value)
                 //! check if filter is user specific applied check to show empty state
-                const filterCopy = filters?.filter
+                const filterCopy: object = filters_1?.filter
                 if (filterCopy.$and?.length === 1) delete filterCopy.$and
                 isFilterAppplied.value = !!Object?.keys(filterCopy).length
-                filterList(filters)
+                filterList(filters_1)
             }
             if (!workflowList.value.length) shootQuery()
 
@@ -293,15 +287,16 @@
                 filter?: any
                 sort?: string
             }> = computed(() =>
-                iDs.value
+                allCreatorIDs.value
                     ? {
                           limit: 1,
                           offset: 0,
-                          sort: 'first_name',
+                          sort: 'firstName',
                           filter: {
                               $and: [
                                   {
-                                      $or: iDs.value,
+                                      // ! Filtering by ID(s) is no longer working from the API
+                                      $or: allCreatorIDs.value,
                                   },
                               ],
                           },
@@ -310,20 +305,21 @@
             )
 
             const handleGetUser = () => {
-                const { userList } = useUsers(params, null, {})
+                const { userList } = useUsers(params, 'GET_CREATOR', {})
                 watch(userList, (newVal) => {
                     users.value = newVal
                 })
             }
 
-            watch(iDs, () => {
+            watch(allCreatorIDs, () => {
                 handleGetUser()
             })
 
+            // !THIS NEEDS REFACTORING
             const creatorDetails = computed(() => {
                 if (users.value?.length && selected.value) {
                     return users.value.filter(
-                        (el: { id: any }) =>
+                        (el: { id: string }) =>
                             el?.id ===
                             selected.value?.metadata.labels[
                                 'workflows.argoproj.io/creator'
@@ -363,6 +359,8 @@
                 handleFilterChange,
                 handleFilterInit,
                 handleChangeSort,
+                allCreatorIDs,
+                params,
                 defaultfiltersList,
             }
         },

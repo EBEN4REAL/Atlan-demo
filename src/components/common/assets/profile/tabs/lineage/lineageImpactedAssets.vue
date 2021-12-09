@@ -54,7 +54,6 @@
         name: 'LineageImpactedAssets',
         props: {
             graph: {
-                type: Object,
                 required: true,
             },
             guid: {
@@ -78,27 +77,46 @@
                 return item[0]
             }
 
+            const getTable = (entity) => {
+                const item = entity.attributes.qualifiedName.split('/')
+                if (item[0] === 'default') return item[3]
+                return item[2]
+            }
+
+            const getSchema = (entity) => {
+                const item = entity.attributes.qualifiedName.split('/')
+                if (item[0] === 'default') return item[4]
+                return item[3]
+            }
+
             const getCell = (guid) => graph.value.getCellById(guid)
 
             const getImpactedAssets = async () => {
                 if (!guid.value) return
                 columnsData.value = []
-                const { getSuccessors } = useGetNodes()
-                const successors = await getSuccessors(graph, guid.value, false)
+                const { successors } = useGetNodes(graph, guid.value, false)
 
-                successors.forEach((x, index) => {
+                successors.forEach((x) => {
                     const cell = getCell(x)
                     const { entity } = cell.store.data
 
-                    if (entity.typeName !== 'Process')
+                    if (
+                        !['Process', 'AtlanProcess', 'ColumnProcess'].includes(
+                            entity.typeName
+                        )
+                    )
                         columnsData.value.push({
                             key: columnsData.value.length + 1,
                             hash_index: columnsData.value.length + 1,
-                            name: entity.displayText,
+                            name: entity.displayText || entity.attributes.name,
                             type: entity.typeName,
                             source: getSource(entity),
-                            database: '----',
-                            schema: '----',
+                            database: getTable(entity),
+                            schema: ['Table', 'View', 'Column'].includes(
+                                entity.typeName
+                            )
+                                ? getSchema(entity)
+                                : '---',
                         })
                 })
 
@@ -114,10 +132,6 @@
                         Source: x.source,
                         Database: x.database,
                         Schema: x.schema,
-                        // Table: 'fff',
-                        // Column: 'ggg',
-                        // Link: 'hhh',
-                        // Id: 'iii',
                     })
                 })
 

@@ -68,7 +68,8 @@
         <template v-else-if="groupList?.length">
             <a-table
                 id="groupList"
-                class="overflow-hidden border rounded-lg group-table"
+                class="overflow-hidden border rounded-lg"
+                :class="$style.groupTable"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 :pagination="false"
@@ -87,14 +88,14 @@
                         "
                     >
                         <div
-                            class="flex capitalize truncate cursor-pointer text-primary"
+                            class="flex capitalize truncate cursor-pointer  text-primary"
                         >
                             <div class="mr-2 truncate max-w-3/4">
                                 {{ group.name }}
                             </div>
                             <!-- <div
                                 v-if="group.isDefault === 'true'"
-                                class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
+                                class="px-2 py-1 text-xs rounded-full  bg-blue-50 text-gray"
                             >
                                 Default
                             </div> -->
@@ -390,7 +391,7 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" scoped>
     #groupList {
         th.ant-table-row-cell-last {
             display: flex;
@@ -404,12 +405,8 @@
     }
 </style>
 
-<style lang="less" scoped>
-    .group-table {
-        // extra row hide hack
-        :global(.ant-table-measure-row) {
-            @apply hidden;
-        }
+<style lang="less" module>
+    .groupTable {
         :global(.ant-table-column-title) {
             @apply text-left;
         }

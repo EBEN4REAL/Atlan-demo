@@ -192,10 +192,7 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(
-                undefined,
-                !savedQueryGuidFromURL.value
-            )
+            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -415,151 +412,6 @@
                     },
                 }
 
-                // let queryTab: activeInlineTabInterface = { ...demoTab }
-
-                // ;(queryTab.key = generateUUID(),
-                //     (queryTab.label = `${tableNameFromURL} preview`),
-                //     (queryTab.isSaved = false),
-                //     (queryTab.queryId = undefined),
-                //     (queryTab.status = 'DRAFT'),
-                //     (queryTab.connectionId = ''),
-                //     (queryTab.description = ''),
-                //     (queryTab.qualifiedName = ''),
-                //     (queryTab.parentGuid = ''),
-                //     (queryTab.parentQualifiedName = ''),
-                //     (queryTab.isSQLSnippet = false),
-                //     (queryTab.savedQueryParentFolderTitle = undefined),
-                //     (queryTab.explorer = {
-                //         schema: {
-                //             connectors: {
-                //                 attributeName: undefined,
-                //                 attributeValue: undefined,
-                //             },
-                //         },
-                //         queries: {
-                //             connectors: {
-                //                 connector: undefined,
-                //             },
-                //         },
-                //     }),
-                //     (queryTab.playground.editor = {
-                //         text: '',
-                //         context: {
-                //             attributeName: undefined,
-                //             attributeValue: undefined,
-                //         },
-                //         dataList: [],
-                //         columnList: [],
-                //         variables: [],
-                //         savedVariables: [],
-                //         limitRows: {
-                //             checked: false,
-                //             rowsCount: -1,
-                //         },
-                //     }),
-                //     (queryTab.playground.resultsPane = {
-                //         activeTab: 0,
-                //         result: {
-                //             title: `Result`,
-                //             runQueryId: undefined,
-                //             isQueryRunning: '',
-                //             queryErrorObj: {},
-                //             totalRowsCount: -1,
-                //             executionTime: -1,
-                //             errorDecorations: [],
-                //             eventSourceInstance: undefined,
-                //             buttonDisable: false,
-                //             isQueryAborted: false,
-                //         },
-                //         metadata: {},
-                //         queries: {},
-                //         joins: {},
-                //         filters: {},
-                //         impersonation: {},
-                //         downstream: {},
-                //         sqlHelp: {},
-                //     }),
-                //     (queryTab.favico = 'https://atlan.com/favicon.ico'),
-                //     (queryTab.assetSidebar = {
-                //         isVisible: false,
-                //         assetInfo: {},
-                //         title: '',
-                //         id: '',
-                //     })
-                // let queryTab: activeInlineTabInterface = {
-                //     key: String(new Date().getTime()),
-                //     label: `${tableNameFromURL} preview`,
-                //     isSaved: false,
-                //     queryId: undefined,
-                //     status: 'DRAFT',
-                //     connectionId: '',
-                //     description: '',
-                //     qualifiedName: '',
-                //     parentGuid: '',
-                //     parentQualifiedName: '',
-                //     isSQLSnippet: false,
-                //     savedQueryParentFolderTitle: undefined,
-                //     explorer: {
-                //         schema: {
-                //             connectors: {
-                //                 attributeName: undefined,
-                //                 attributeValue: undefined,
-                //             },
-                //         },
-                //         queries: {
-                //             connectors: {
-                //                 connector: undefined,
-                //             },
-                //         },
-                //     },
-                //     playground: {
-                //         editor: {
-                //             text: '',
-                //             context: {
-                //                 attributeName: undefined,
-                //                 attributeValue: undefined,
-                //             },
-                //             dataList: [],
-                //             columnList: [],
-                //             variables: [],
-                //             savedVariables: [],
-                //             limitRows: {
-                //                 checked: false,
-                //                 rowsCount: -1,
-                //             },
-                //         },
-                //         resultsPane: {
-                //             activeTab: 0,
-                //             result: {
-                //                 title: `Result`,
-                //                 runQueryId: undefined,
-                //                 isQueryRunning: '',
-                //                 queryErrorObj: {},
-                //                 totalRowsCount: -1,
-                //                 executionTime: -1,
-                //                 errorDecorations: [],
-                //                 eventSourceInstance: undefined,
-                //                 buttonDisable: false,
-                //                 isQueryAborted: false,
-                //             },
-                //             metadata: {},
-                //             queries: {},
-                //             joins: {},
-                //             filters: {},
-                //             impersonation: {},
-                //             downstream: {},
-                //             sqlHelp: {},
-                //         },
-                //     },
-                //     favico: 'https://atlan.com/favicon.ico',
-                //     assetSidebar: {
-                //         isVisible: false,
-                //         assetInfo: {},
-                //         title: '',
-                //         id: '',
-                //     },
-                // }
-
                 let newQuery
                 if (columnNameFromURL) {
                     newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
@@ -568,8 +420,7 @@
                 }
 
                 const attributeName = 'schemaQualifiedName'
-                const attributeValue =
-                    `${databaseQualifiedNameFromURL  }/${  schemaNameFromURL}`
+                const attributeValue = `${databaseQualifiedNameFromURL}/${schemaNameFromURL}`
 
                 // const newText = `${newQuery}${prevText}`
                 queryTab.playground.editor.text = newQuery

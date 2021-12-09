@@ -7,7 +7,7 @@ export interface SubpanelAggregatorColumn {
 }
 export interface SubpanelAggregator {
     id: string
-    column: SubpanelAggregatorColumn[]
+    column: SubpanelAggregatorColumn
     aggregators: any[]
 }
 

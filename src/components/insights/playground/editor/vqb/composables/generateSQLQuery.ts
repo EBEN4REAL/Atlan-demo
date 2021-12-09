@@ -15,6 +15,12 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     const aggregatePanel = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'aggregate'
     )
+    const groupPanel = activeInlineTab.playground.vqb.panels.find(
+        (panel) => panel.id.toLowerCase() === 'group'
+    )
+    const sortPanel = activeInlineTab.playground.vqb.panels.find(
+        (panel) => panel.id.toLowerCase() === 'sort'
+    )
     /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
     it is this way because of two way binidng */
 
@@ -50,6 +56,21 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                 )
             })
         })
+        // console.log(select.toString(), 'select.toString()')
+    }
+
+    /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
+    it is this way because of two way binidng */
+
+    if (groupPanel?.hide) {
+        groupPanel?.subpanels.forEach((subpanel, i) => {
+            subpanel.columnsData.forEach((columnData) => {
+                select.group(columnData.label)
+            })
+        })
+        // console.log(select.toString(), 'select.toString()')
+    }
+    if (sortPanel?.hide) {
         // console.log(select.toString(), 'select.toString()')
     }
     return select.toString()

@@ -27,19 +27,28 @@
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
-                            :class="
-                                !expand
-                                    ? [
-                                          'flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5 text-gray-500',
-                                      ]
-                                    : [
-                                          'flex items-center justify-center mr-2 bg-primary-light  border-primary-focus rounded-full p-1.5 text-primary',
-                                      ]
-                            "
+                            class="flex items-center justify-center mr-2 bg-gray-100 border rounded-full p-1.5"
+                            :class="[
+                                isChecked
+                                    ? 'text-gray-500 bg-gray-100 border border-gray-300'
+                                    : 'text-gray-400 bg-gray-100 border border-gray-300',
+                                isChecked && expand
+                                    ? 'border-primary-focus bg-primary-light text-primary '
+                                    : '',
+                                'flex items-center justify-center mr-2  rounded-full p-1.5 ',
+                            ]"
                             style="z-index: 2"
                         >
-                            <AtlanIcon icon="Columns" class="w-4 h-4" />
+                            <AtlanIcon
+                                icon="BuilderGroup"
+                                :class="[
+                                    isChecked
+                                        ? 'text-gray-500'
+                                        : 'text-gray-400',
+                                    expand ? 'text-primary' : '',
+                                    ' w-4 h-4 ',
+                                ]"
+                            />
                         </div>
                         <div class="">
                             <p class="text-sm font-bold text-gray">Group</p>
@@ -144,6 +153,7 @@
 
 <script lang="ts">
     import {
+        computed,
         defineComponent,
         toRefs,
         watch,
@@ -184,6 +194,11 @@
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
+            const isChecked = computed(
+                () =>
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .hide
+            )
             const expand = ref(false)
             const actionPanel = ref(false)
             const activeInlineTabKey = inject(
@@ -238,6 +253,7 @@
                 actionPanel.value = !actionPanel.value
             }
             const handleMouseOut = () => {
+                console.log(containerHovered.value && !submenuHovered.value)
                 if (containerHovered.value && !submenuHovered.value) {
                     containerHovered.value = false
                 }
@@ -255,6 +271,7 @@
             )
 
             return {
+                isChecked,
                 submenuHovered,
                 handleMouseOver,
                 handleMouseOut,

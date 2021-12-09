@@ -46,14 +46,12 @@
             </template>
         </div>
 
-        <span>
-            <div
-                class="items-center mt-3 cursor-pointer text-primary"
-                @click.stop="handleAddPanel"
-            >
-                <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-                <span>Add another</span>
-            </div>
+        <span
+            class="items-center mt-3 cursor-pointer text-primary"
+            @click.stop="handleAddPanel"
+        >
+            <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
+            <span>Add another</span>
         </span>
     </div>
 </template>

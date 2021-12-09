@@ -39,7 +39,13 @@
                             "
                             style="z-index: 2"
                         >
-                            <AtlanIcon icon="Columns" class="w-4 h-4" />
+                            <AtlanIcon
+                                icon="Columns"
+                                class="w-4 h-4"
+                                :class="[
+                                    expand ? 'text-primary' : 'text-gray-500',
+                                ]"
+                            />
                         </div>
                         <div class="">
                             <p class="text-sm font-bold capitalize text-gray">
@@ -214,7 +220,7 @@
             const handleAdd = (index, type, panel) => {
                 const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
                 panelCopy.id = type
-                // if (type === 'aggregate') {
+                panelCopy.hide = true
                 panelCopy.subpanels = [
                     {
                         ...panel,

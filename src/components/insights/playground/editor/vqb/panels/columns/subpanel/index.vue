@@ -17,7 +17,7 @@
                     />
                     <ColumnSelector
                         class="flex-1 ml-6"
-                        style="max-width: 600px"
+                        style="max-width: 600px; min-height: 34px"
                         v-if="subpanel.tableQualfiedName"
                         v-model:selectedItems="subpanel.columns"
                         :tableQualfiedName="subpanel.tableQualfiedName"

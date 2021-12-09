@@ -9,10 +9,10 @@
         class="relative flex items-center group z-1"
         :class="[
             isAreaFocused
-                ? ' border-primary-focus border-2 px-3 py-1'
-                : 'border-gray-300 border border-plus px-3-1 py-1-1',
+                ? '  border border-gray-300 px-3 py-1 box-shadow-focus'
+                : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
-            'flex flex-wrap items-center    rounded box-shadow selector-height chip-container ',
+            'flex flex-wrap items-center    rounded  selector-height chip-container ',
             !tableQualfiedName ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
@@ -39,7 +39,7 @@
             :placeholder="placeholder"
             :style="`width:${placeholder.length + 2}ch;`"
             :class="[
-                'p-0 pr-4 text-sm border-none shadow-none outline-none my-0.5 focus-none',
+                'p-0 pr-4 text-sm border-none shadow-none outline-none  focus-none',
                 !tableQualfiedName ? $style.custom_input : '',
             ]"
         />
@@ -144,14 +144,39 @@
                             class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
                             :class="$style.atlanReverse"
                         >
-                            <div class="flex items-center">
-                                <component
-                                    :is="getDataTypeImage(item.type)"
-                                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
-                                ></component>
-                                <span class="mb-0 ml-1 text-sm text-gray-700">
-                                    {{ item.label }}
-                                </span>
+                            <div
+                                class="justify-between parent-ellipsis-container"
+                            >
+                                <div class="parent-ellipsis-container">
+                                    <component
+                                        :is="getDataTypeImage(item.type)"
+                                        class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                                    ></component>
+                                    <span
+                                        class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                                    >
+                                        {{ item.label }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="relative h-full w-14 parent-ellipsis-container-extension"
+                                    v-if="item.isPrimary"
+                                >
+                                    <div
+                                        class="absolute right-0 flex items-center -top-2.5"
+                                    >
+                                        <AtlanIcon
+                                            icon="PrimaryKey"
+                                            style="color: #3ca5bc"
+                                            class="w-4 h-4 mr-1"
+                                        ></AtlanIcon>
+                                        <span
+                                            style="color: #3ca5bc"
+                                            class="text-sm"
+                                            >Pkey</span
+                                        >
+                                    </div>
+                                </div>
                             </div>
                         </a-checkbox>
                     </template>
@@ -273,7 +298,12 @@
                         searchText: queryText.value,
                         tableQualfiedName: tableQualfiedName.value,
                     }),
-                    attributes: ['name', 'displayName', 'dataType'],
+                    attributes: [
+                        'name',
+                        'displayName',
+                        'dataType',
+                        'isPrimary',
+                    ],
                 }
             }
             const { list, replaceBody, data, isLoading } = useAssetListing(
@@ -300,6 +330,7 @@
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     type: ls.attributes?.dataType,
+                    isPrimary: ls.attributes?.isPrimary,
                     value: ls.attributes?.displayName || ls.attributes?.name,
                 }))
                 data.sort((x, y) => {
@@ -482,6 +513,9 @@
     .box-shadow {
         box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
     }
+    .box-shadow-focus {
+        box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
+    }
     .disable-bg {
         background-color: #fbfbfb;
     }
@@ -495,6 +529,19 @@
     }
     .chip-container {
         gap: 4px;
+    }
+    .parent-ellipsis-container {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .parent-ellipsis-container-extension {
+        flex-shrink: 0;
     }
 </style>
 <style lang="less" module>

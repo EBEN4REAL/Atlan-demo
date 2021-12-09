@@ -50,7 +50,7 @@
         </div>
         <div v-else>
             <div
-                class="flex flex-col items-center justify-center w-full p-4 text-center  h-96"
+                class="flex flex-col items-center justify-center w-full p-4 text-center h-96"
             >
                 <img
                     :src="emptySSOImage"
@@ -67,42 +67,54 @@
                 </router-link>
             </div>
         </div>
-        <a-modal
+       <a-modal
             :visible="showDeleteModal"
-            title="Delete SSO Provider"
+            
             :footer="null"
             @cancel="showDeleteSSOModal"
         >
-            Are you sure you want to remove <strong>{{ provider.title }}</strong
-            >?
-            <div class="flex justify-end mt-3">
-                <div>
-                    <AtlanBtn
-                        padding="compact"
-                        size="sm"
-                        class="mx-2 bg-transparent border-transparent shadow-none  text-gray"
-                        @click="showDeleteSSOModal"
-                    >
-                        Cancel
-                    </AtlanBtn>
+            <div class="p-4">
+                <div class="mb-3 text-base">
+                    Delete SSO Provider
                 </div>
-                <div>
-                    <AtlanBtn
-                        padding="compact"
-                        size="sm"
-                        class="font-bold bg-error border-error"
-                        :is-loading="isDeleting"
-                        @click="deleteSSO"
-                        ><span v-if="isDeleting">Deleting</span>
-                        <span v-else>Delete</span></AtlanBtn
-                    >
-                    <!-- <a-button
+                Are you sure you want to remove
+                <strong>{{ provider.title }}</strong
+                >?
+                <div class="flex justify-end mt-2">
+                    <div>
+                        <AtlanBtn
+                            padding="compact"
+                            size="sm"
+                            class="
+                                mx-2
+                                bg-transparent
+                                border-transparent
+                                shadow-none
+                                text-gray
+                            "
+                            @click="showDeleteSSOModal"
+                        >
+                            Cancel
+                        </AtlanBtn>
+                    </div>
+                    <div>
+                        <AtlanBtn
+                            padding="compact"
+                            size="sm"
+                            class="font-bold bg-error border-error"
+                            :is-loading="isDeleting"
+                            @click="deleteSSO"
+                            ><span v-if="isDeleting">Deleting</span>
+                            <span v-else>Delete</span></AtlanBtn
+                        >
+                        <!-- <a-button
                         type="danger"
                         :loading="isDeleting"
                         @click="deleteSSO"
                     >
                         Delete
                     </a-button> -->
+                    </div>
                 </div>
             </div>
         </a-modal>

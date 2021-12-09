@@ -25,7 +25,7 @@ export default function useInsightsTabList(): {
             name: 'Variables',
             component: 'variables',
             icon: 'Queries',
-            isVisible: true,
+            isVisible: false,
         },
         {
             id: 'history',

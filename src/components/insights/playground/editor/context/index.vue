@@ -3,7 +3,7 @@
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
 
         <div class="flex items-center mr-3">
-            <div>
+            <div class="mt-1">
                 <AtlanIcon
                     :icon="
                         getEntityStatusIcon('query', activeInlineTab?.status)
@@ -11,20 +11,79 @@
                     class="w-4 h-4 my-auto mr-1 -mt-0.5"
                 ></AtlanIcon>
             </div>
-            <span
+            <!-- <span
                 class="mr-1 text-base text-gray-500"
                 v-if="activeInlineTab?.savedQueryParentFolderTitle"
                 >{{ activeInlineTab?.savedQueryParentFolderTitle }} /
-            </span>
-            <span class="mr-1 text-base text-gray-700">{{
+            </span> -->
+            <span class="mt-1 mr-1 text-base text-gray-700">{{
                 activeInlineTab.label
             }}</span>
-            <!-- <div class="-mt-0.5">
-                <StatusBadge
-                    :status-id="activeInlineTab.status"
-                    show-no-status
-                ></StatusBadge>
-            </div> -->
+            <AtlanBtn
+                size="sm"
+                color="secondary"
+                padding="compact"
+                v-if="activeInlineTab.queryId && !activeInlineTab.isSaved"
+                class="flex items-center justify-between h-6 ml-2 border-none  button-shadow group"
+                :class="isUpdating ? 'px-4.5' : 'px-2'"
+                :disabled="activeInlineTab.isSaved && activeInlineTab.queryId"
+                @click="$emit('onClickSaveQuery')"
+            >
+                <div
+                    class="flex items-center transition duration-150 rounded  group-hover:text-primary"
+                >
+                    <AtlanIcon
+                        v-if="!isUpdating"
+                        style="margin-right: 2.5px"
+                        icon="Save"
+                    ></AtlanIcon>
+                    <AtlanIcon
+                        v-else
+                        icon="CircleLoader"
+                        style="margin-right: 2.5px"
+                        class="w-4 h-4 animate-spin"
+                    ></AtlanIcon>
+                    <!-- <AtlanIcon style="margin-right: 2.5px" icon="Save"></AtlanIcon> -->
+
+                    <span>Update</span>
+                </div>
+            </AtlanBtn>
+
+            <div
+                v-else-if="activeInlineTab.queryId && activeInlineTab.isSaved"
+                class="transition duration-150 hover:text-primary"
+            >
+                <a-tooltip
+                    color="#363636"
+                    class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer  opacity-70 button-shadow"
+                >
+                    <template #title>
+                        {{ useTimeAgo(activeInlineTab?.updateTime) }}
+                        by {{ activeInlineTab.updatedBy }}
+                    </template>
+                    <AtlanIcon class="mr-1" icon="Check" />Saved
+                </a-tooltip>
+            </div>
+
+            <AtlanBtn
+                size="sm"
+                color="secondary"
+                padding="compact"
+                v-else
+                class="flex items-center h-6 px-3 ml-2 border-none  button-shadow"
+                @click="$emit('onClickSaveQuery')"
+            >
+                <div
+                    class="flex items-center transition duration-150  group-hover:text-primary"
+                >
+                    <AtlanIcon
+                        style="margin-right: 2.5px"
+                        icon="Save"
+                    ></AtlanIcon>
+
+                    <span>Save</span>
+                </div>
+            </AtlanBtn>
         </div>
         <a-popover
             trigger="click"
@@ -200,127 +259,140 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ref, watch, computed } from 'vue'
-    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import StatusBadge from '@common/badge/status/index.vue'
-    import { SourceList } from '~/constant/source'
-    import Connector from '~/components/insights/common/connector/connector.vue'
-    import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
-    import { useConnector } from '~/components/insights/common/composables/useConnector'
-    import { useUtils } from '~/components/insights/common/composables/useUtils'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+import { defineComponent, Ref, inject, ref, watch, computed } from 'vue'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import StatusBadge from '@common/badge/status/index.vue'
+import { SourceList } from '~/constant/source'
+import Connector from '~/components/insights/common/connector/connector.vue'
+import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+import { useConnector } from '~/components/insights/common/composables/useConnector'
+import { useUtils } from '~/components/insights/common/composables/useUtils'
+import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+import AtlanBtn from '~/components/UI/button.vue'
+import { useTimeAgo } from '@vueuse/core'
 
-    export default defineComponent({
-        name: 'Editor Context',
-        components: { StatusBadge, Connector },
-        props: {},
-        setup(props) {
-            const {
-                getConnectionName,
-                setContextDataInInlineTab,
-                getDatabaseName,
-                getSchemaName,
-                getConnectorName,
-            } = useConnector()
-            const { getFirstQueryConnection } = useUtils()
-            const { modifyActiveInlineTab } = useInlineTab()
-            const popoverVisible = ref(false)
-
-            const activeInlineTab = inject(
-                'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
-            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-
-            const connectorsData: Ref<connectorsWidgetInterface> = ref(
-                activeInlineTab.value?.playground?.editor?.context ?? {
-                    attributeName: undefined,
-                    attributeValue: undefined,
-                }
-            )
-
-            const connectorName = computed(() =>
-                getConnectorName(connectorsData.value.attributeValue)
-            )
-            const connectionName = computed(() =>
-                getConnectionName(connectorsData.value.attributeValue)
-            )
-            const databaseName = computed(() =>
-                getDatabaseName(connectorsData.value.attributeValue)
-            )
-            const schemaName = computed(() =>
-                getSchemaName(connectorsData.value.attributeValue)
-            )
-
-            const connectorAsset = computed(() => {
-                return SourceList.find(
-                    (source) => source.id === connectorName.value
-                )
-            })
-
-            const handleChange = () => {
-                /* Here we are making a change, so isSaved will be false */
-                // activeInlineTab.value.isSaved = false
-                setContextDataInInlineTab(activeInlineTab, tabs, connectorsData)
-            }
-
-            const setConnector = (payload: any) => {
-                connectorsData.value = payload
-            }
-            const onPopoverVisibleChange = () => {
-                popoverVisible.value = !popoverVisible.value
-            }
-
-            /* Watchers for updating the connectors when activeinlab change */
-            watch(
-                activeInlineTab,
-                () => {
-                    if (activeInlineTab.value) {
-                        if (
-                            activeInlineTab.value?.playground?.editor?.context
-                                ?.attributeName
-                        ) {
-                            connectorsData.value =
-                                activeInlineTab.value?.playground?.editor?.context
-                        }
-                    } else {
-                        connectorsData.value = {
-                            attributeName: undefined,
-                            attributeValue: undefined,
-                        }
-                    }
-                },
-                { immediate: true }
-            )
-            return {
-                popoverVisible,
-                onPopoverVisibleChange,
-                connectionName,
-                connectorName,
-                schemaName,
-                databaseName,
-                setConnector,
-                connectorsData,
-                handleChange,
-                connectorAsset,
-                activeInlineTab,
-                getEntityStatusIcon,
-            }
+export default defineComponent({
+    name: 'Editor Context',
+    components: { StatusBadge, Connector, AtlanBtn },
+    props: {
+        isUpdating: {
+            type: Boolean,
+            default: false,
         },
-    })
+    },
+    emits: ['onClickSaveQuery'],
+    setup(props) {
+        const {
+            getConnectionName,
+            setContextDataInInlineTab,
+            getDatabaseName,
+            getSchemaName,
+            getConnectorName,
+        } = useConnector()
+        const { getFirstQueryConnection } = useUtils()
+        const { modifyActiveInlineTab } = useInlineTab()
+
+        const popoverVisible = ref(false)
+
+        const activeInlineTab = inject(
+            'activeInlineTab'
+        ) as Ref<activeInlineTabInterface>
+        const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+
+        const connectorsData: Ref<connectorsWidgetInterface> = ref(
+            activeInlineTab.value?.playground?.editor?.context ?? {
+                attributeName: undefined,
+                attributeValue: undefined,
+            }
+        )
+
+        const connectorName = computed(() =>
+            getConnectorName(connectorsData.value.attributeValue)
+        )
+        const connectionName = computed(() =>
+            getConnectionName(connectorsData.value.attributeValue)
+        )
+        const databaseName = computed(() =>
+            getDatabaseName(connectorsData.value.attributeValue)
+        )
+        const schemaName = computed(() =>
+            getSchemaName(connectorsData.value.attributeValue)
+        )
+
+        const connectorAsset = computed(() => {
+            return SourceList.find(
+                (source) => source.id === connectorName.value
+            )
+        })
+
+        const handleChange = () => {
+            /* Here we are making a change, so isSaved will be false */
+            // activeInlineTab.value.isSaved = false
+            setContextDataInInlineTab(activeInlineTab, tabs, connectorsData)
+        }
+
+        const setConnector = (payload: any) => {
+            connectorsData.value = payload
+        }
+        const onPopoverVisibleChange = () => {
+            popoverVisible.value = !popoverVisible.value
+        }
+
+        /* Watchers for updating the connectors when activeinlab change */
+        watch(
+            activeInlineTab,
+            () => {
+                if (activeInlineTab.value) {
+                    if (
+                        activeInlineTab.value?.playground?.editor?.context
+                            ?.attributeName
+                    ) {
+                        connectorsData.value =
+                            activeInlineTab.value?.playground?.editor?.context
+                    }
+                } else {
+                    connectorsData.value = {
+                        attributeName: undefined,
+                        attributeValue: undefined,
+                    }
+                }
+            },
+            { immediate: true }
+        )
+        return {
+            popoverVisible,
+            onPopoverVisibleChange,
+            connectionName,
+            connectorName,
+            schemaName,
+            databaseName,
+            setConnector,
+            connectorsData,
+            handleChange,
+            connectorAsset,
+            activeInlineTab,
+            getEntityStatusIcon,
+            useTimeAgo,
+        }
+    },
+})
 </script>
 <style lang="less" module>
-    .context_popover {
-        :global(.ant-popover) {
-            top: 98px !important;
-        }
+.context_popover {
+    :global(.ant-popover) {
+        top: 98px !important;
     }
+}
 </style>
 <style lang="less" scoped>
-    .connector_icon {
-        margin-top: -2.3px;
-        margin-right: 2px;
-    }
+.connector_icon {
+    margin-top: -2.3px;
+    margin-right: 2px;
+}
+.button-shadow {
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);
+}
 </style>
 
 <route lang="yaml">

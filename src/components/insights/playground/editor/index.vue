@@ -1,7 +1,10 @@
 <template>
     <div class="relative w-full h-full bg-white rounded">
         <div class="w-full h-full overflow-hidden rounded">
-            <EditorContext />
+            <EditorContext
+                :isUpdating="isUpdating"
+                @onClickSaveQuery="saveOrUpdate"
+            />
             <div
                 class="flex items-center justify-between w-full pl-2 pr-3 my-2"
             >
@@ -158,83 +161,6 @@
                                 </div>
                             </AtlanBtn>
                         </div>
-
-                        <AtlanBtn
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            v-if="
-                                activeInlineTab.queryId &&
-                                !activeInlineTab.isSaved
-                            "
-                            class="flex items-center justify-between h-6 ml-2 border-none  button-shadow group"
-                            :class="isUpdating ? 'px-4.5' : 'px-2'"
-                            :disabled="
-                                activeInlineTab.isSaved &&
-                                activeInlineTab.queryId
-                            "
-                            @click="saveOrUpdate"
-                        >
-                            <div
-                                class="flex items-center transition duration-150 rounded  group-hover:text-primary"
-                            >
-                                <AtlanIcon
-                                    v-if="!isUpdating"
-                                    style="margin-right: 2.5px"
-                                    icon="Save"
-                                ></AtlanIcon>
-                                <AtlanIcon
-                                    v-else
-                                    icon="CircleLoader"
-                                    style="margin-right: 2.5px"
-                                    class="w-4 h-4 animate-spin"
-                                ></AtlanIcon>
-                                <!-- <AtlanIcon style="margin-right: 2.5px" icon="Save"></AtlanIcon> -->
-
-                                <span>Update</span>
-                            </div>
-                        </AtlanBtn>
-
-                        <div
-                            v-else-if="
-                                activeInlineTab.queryId &&
-                                activeInlineTab.isSaved
-                            "
-                            class="transition duration-150 hover:text-primary"
-                        >
-                            <a-tooltip
-                                color="#363636"
-                                class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer  opacity-70 button-shadow"
-                            >
-                                <template #title>
-                                    {{
-                                        useTimeAgo(activeInlineTab?.updateTime)
-                                    }}
-                                    by {{ activeInlineTab.updatedBy }}
-                                </template>
-                                <AtlanIcon class="mr-1" icon="Check" />Saved
-                            </a-tooltip>
-                        </div>
-
-                        <AtlanBtn
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            v-else
-                            class="flex items-center h-6 px-3 ml-2 border-none  button-shadow"
-                            @click="saveOrUpdate"
-                        >
-                            <div
-                                class="flex items-center transition duration-150  group-hover:text-primary"
-                            >
-                                <AtlanIcon
-                                    style="margin-right: 2.5px"
-                                    icon="Save"
-                                ></AtlanIcon>
-
-                                <span>Save</span>
-                            </div>
-                        </AtlanBtn>
                         <ThreeDotMenu v-model:showVQB="showVQB" />
                     </div>
                 </div>

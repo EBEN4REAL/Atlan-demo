@@ -135,7 +135,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, watch ,onMounted} from 'vue'
+    import { defineComponent, ref, watch ,onMounted,inject} from 'vue'
     import BulkModal from '~/components/glossary/modal/bulkUploadModal.vue'
     // import useWorkflowLiveRun from '@/glossary/profile/overview/useWorkflowLiveRun'
     // import useArtifacts from '@/glossary/profile/overview/useArtifacts'
@@ -172,6 +172,7 @@
             const isVisible = ref(true)
             const workflowPhase = ref('')
             const nodeName = ref()
+            const reInitTree=inject('reInitTree')
             let nIntervId
             const { progressPercent, name, phase } = useWorkFlowHelper()
 
@@ -215,6 +216,7 @@
                         if (workflowPhase.value === 'Succeeded') {
                             stopGetProgress()
                             getFinalStatus(liveList.value?.items[0].status)
+                            reInitTree()
                         }
                         if (workflowPhase.value === 'Error') {
                             stopGetProgress()
@@ -275,7 +277,7 @@
                             percentage.value = Math.round(
                                progressPercent(liveList.value.items[0])
                                )
-
+                            isWorkflowRunning.value='Running'
                         }
                     }
             })
@@ -289,6 +291,7 @@
                 workflowPhase,
                 isWorkflowRunning,
                 getArtifacts,
+                reInitTree
             }
         },
     })

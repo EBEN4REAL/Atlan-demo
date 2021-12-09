@@ -8,7 +8,10 @@
                 style="min-width: 264px"
             >
                 <div class="h-full border-r border-gray-200">
-                    <GlossaryDiscovery class="h-full"></GlossaryDiscovery>
+                    <GlossaryDiscovery
+                        ref="glossaryDiscovery"
+                        class="h-full"
+                    ></GlossaryDiscovery>
                 </div>
             </pane>
             <pane :size="60" class="bg-white">
@@ -62,6 +65,7 @@
             const localSelected = ref()
             const glossaryStore = useGlossaryStore()
             const assetStore = useAssetStore()
+            const glossaryDiscovery = ref(null)
 
             if (selectedGlossary.value?.guid === id.value) {
                 localSelected.value = selectedGlossary.value
@@ -73,26 +77,24 @@
             }
 
             const updateList = (asset) => {
-                console.log('updateList')
-                console.log(asset)
                 localSelected.value = asset
-                console.log(localSelected.value)
                 glossaryStore.setSelectedGTC(asset)
                 assetStore.setSelectedAsset(asset)
-                console.log(glossaryStore.selectedGTC)
             }
             watch(selectedGlossary, () => {
                 localSelected.value = selectedGlossary.value
-                console.log(glossaryStore.selectedGTC)
             })
-
+            const reInitTree = () => {
+                glossaryDiscovery?.value?.reInitTree()
+            }
             provide('updateList', updateList)
             provide('preview', handlePreview)
-
+            provide('reInitTree', reInitTree)
             return {
                 isItem,
                 selectedGlossary,
                 localSelected,
+                glossaryDiscovery,
             }
         },
     })

@@ -199,7 +199,6 @@
             GlossarySelect,
             GlossaryItem,
             GlossaryTree,
-
             GlossaryActions,
         },
         props: {
@@ -394,7 +393,9 @@
                     }
                 }
             }
-
+            const reInitTree = () => {
+                glossaryTree.value?.reInitTree()
+            }
             const handleCollapse = () => {
                 glossaryTree.value.collapseTree()
             }
@@ -456,6 +457,7 @@
                 defaultEntityType,
                 handleCollapse,
                 onCheck,
+                reInitTree,
             }
         },
     })

@@ -53,8 +53,6 @@
         watch,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { mergeArray } from '~/utils/array'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     import GlossaryTree from '~/components/glossary/index.vue'
@@ -91,22 +89,19 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const checkedKeys = ref(modelValue.value.map((term) => term.termGuid))
-            const { meanings, meaningRelationships } = useAssetInfo()
+            const hasBeenEdited = ref(false);
 
             const list = computed(() => {
                 return localValue.value
             })
 
             const handleChange = (visible) => {
-                if (!visible) {
+                if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
                     emit('change', localValue.value)
+                    hasBeenEdited.value = false
                 }
             }
-
-            const relationshipList = computed(() =>
-                meaningRelationships(selectedAsset.value)
-            )
 
             const icon = (term) => {
                 if (
@@ -135,15 +130,16 @@
                 checkedNodes.forEach((term) => {
                     localValue.value.push(term)
                 })
+                hasBeenEdited.value = true
             }
 
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
+                checkedKeys.value = modelValue.value.map((term) => term.termGuid ?? term.guid)
             })
 
             return {
-                meanings,
                 list,
                 icon,
                 onCheck,

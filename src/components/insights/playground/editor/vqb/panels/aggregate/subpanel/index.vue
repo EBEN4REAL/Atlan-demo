@@ -8,13 +8,11 @@
                 :key="subpanel?.id + index"
             >
                 <!-- {{ subpanel }} -->
-                <div class="flex items-center w-full mb-3">
-                    <!-- <ColumnSelector
-                        style="width: 30%"
-                        v-model:columnSubpanels="columnSubpanels"
-                        :selectedColumn="subpanel?.column"
-                        @change="(val) => handleColumnChange(val, index)"
-                    /> -->
+                <div
+                    class="flex items-center w-full mb-3"
+                    @mouseover="opacity = 100"
+                    @mouseout="opacity = 0"
+                >
                     <ColumnSelector
                         class="flex-1"
                         style="max-width: 30%"
@@ -35,15 +33,13 @@
                         :columnType="subpanel?.column?.type"
                         @checkChange="checkChange"
                     />
-                    <div
-                        class="w-8 h-8 ml-6 text-gray-500 border rounded"
+
+                    <AtlanIcon
                         @click.stop="() => handleDelete(index)"
-                    >
-                        <AtlanIcon
-                            icon="Close"
-                            class="w-6 h-6 ml-0.5 mt-0.5 cursor-pointer"
-                        />
-                    </div>
+                        icon="Close"
+                        class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
+                        :class="`opacity-${opacity}`"
+                    />
                 </div>
             </template>
         </div>
@@ -149,6 +145,8 @@
                 console.log('columns: ', column)
             }
 
+            let opacity = ref(0)
+
             return {
                 selectedAggregates,
                 columnName,
@@ -160,6 +158,7 @@
                 columnSubpanels,
                 selectedColumn,
                 changeColumn,
+                opacity,
             }
         },
     })

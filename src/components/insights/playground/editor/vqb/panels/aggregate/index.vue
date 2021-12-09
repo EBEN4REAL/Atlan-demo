@@ -119,7 +119,7 @@
                 v-if="expand"
             />
             <FooterActions
-                @add="(type) => handleAdd(index, type)"
+                @add="(type, panel) => handleAdd(index, type, panel)"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -163,7 +163,7 @@
     import AggregatorSubPanel from './subpanel/index.vue'
 
     export default defineComponent({
-        name: 'Columns',
+        name: 'Aggregate',
         components: {
             FooterActions,
             Actions,
@@ -214,13 +214,13 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAdd = (index, type) => {
+            const handleAdd = (index, type, panel) => {
                 const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
                 panelCopy.id = type
                 panelCopy.order =
                     Number(activeInlineTab.value.playground.vqb.panels.length) +
                     1
-                panelCopy.subpanels = []
+                panelCopy.subpanels = [{ ...panel }]
                 addPanelsInVQB(
                     Number(index),
                     panelCopy,

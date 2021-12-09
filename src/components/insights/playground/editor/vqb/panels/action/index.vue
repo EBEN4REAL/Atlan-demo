@@ -82,6 +82,7 @@
                         id: uuid,
                         tableQualfiedName: undefined,
                         columns: [],
+                        columsData: [],
                     }
                 }
                 emit('add', type, panel)

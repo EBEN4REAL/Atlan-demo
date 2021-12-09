@@ -6,21 +6,21 @@
         :width="287"
         :closable="false"
     >
-        <div class="h-full pb-10 overflow-scroll bg-gray-50">
+        <div class="h-full pt-8 pb-10 overflow-scroll bg-gray-50">
             <div
                 :class="`close-icon ${!drawerFilter && 'closed'} border border-solid order-gray-300`"
                 @click="handleClickFilter"
             >
                 <AtlanIcon icon="ChevronRight" />
             </div>
-            <div class="p-4 border-b border-solid order-gray-300">
-                No filters applied
-            </div>
+            
             <div class="px-2 filter-container">
                 <AssetFilters
                     v-model="facets"
                     :filter-list="requestFilter"
                     :allow-custom-filters="false"
+                    :no-filter-title="'No filters applied'"
+                    :extra-count-filter="connectorsData.attributeValue ? 1 : 0"
                     class="bg-gray-100"
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
@@ -206,7 +206,7 @@
             watch(response, () => {
                 requestList.value =
                     response.value?.records?.filter(
-                        (req) => req.status === filters.value.status
+                        (req) => Array.isArray(filters.value.status) ? filters.value.status.includes(req.status) : req.status === filters.value.status
                     ) || []
             })
             function isSelected(guid: string): boolean {
@@ -289,16 +289,24 @@
             const handleFilterChange = () => {
                 const facetsValue = facets.value
                 const status = facetsValue.statusRequest ? Object.values(facetsValue.statusRequest) : []
-                const created_by = facetsValue?.requestor?.ownerUsers || []
+                const createdBy = facetsValue?.requestor?.ownerUsers || []
                 const filterMerge = {
                     ...filters.value,
                     status: status.length > 0 ? status : "active",
-                    request_type: [],
-                    created_by
+                    createdBy
                 }
                 filters.value = filterMerge
             }
-            const handleResetEvent = () => {}
+            const handleResetEvent = () => {
+                filters.value = {
+                    status: 'active' as RequestStatus,
+                    request_type: [],
+                }
+                connectorsData.value = {
+                    attributeName: undefined,
+                    attributeValue: undefined,
+                }
+            }
             const BItypes = getBISourceTypes()
             const handleChangeConnector = () => {
                 const filterMerge = {
@@ -307,7 +315,9 @@
                 }
                 filters.value = filterMerge
             }
-            const setConnector = () => {}
+            const setConnector = () => {
+            }
+       
             return {
                 requestList,
                 isSelected,
@@ -331,7 +341,7 @@
                 BItypes,
                 handleChangeConnector,
                 setConnector,
-                connectorsData
+                connectorsData,
                 // listPermission
             }
         },
@@ -346,7 +356,9 @@
     }
     .filter-container{
         .filter-head{
-            display: none;
+            background-color: transparent!important;
+            background: none;
+            box-shadow: none!important;
         }
     }
 </style>

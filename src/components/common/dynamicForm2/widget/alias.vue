@@ -61,33 +61,11 @@
                 return temp
             }
 
-            // const handleInput = (e) => {
-            //     if (property.value.ui.linkedProperty) {
-            //         const temp = `${cleanInput(e.target.value)}-${Math.round(
-            //             new Date().getTime() / 1000
-            //         )}`
-
-            //         formState[property.value.ui.linkedProperty] = temp
-            //     }
-            //     return cleanInput(e.target.value)
-            // }
-
-            // watch(formState[property.value?.ui?.linkedProperty], () => {
-            //     console.log('watch', formState)
-            //     // console.log(property.value.ui.linkedProperty)
-            //     // console.log(formState[property.value.ui.linkedProperty])
-            //     // if (property.value.ui.linkedProperty) {
-            //     //     formState[property.id] = cleanInput(
-            //     //         formState[property.value.ui.linkedProperty]
-            //     //     )
-            //     // }
-            // })
 
             return {
                 property,
                 componentProps,
                 formState,
-                handleInput,
                 cleanInput,
             }
         },

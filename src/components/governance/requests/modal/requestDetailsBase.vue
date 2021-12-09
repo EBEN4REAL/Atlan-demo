@@ -2,7 +2,7 @@
     <a-modal
         style="top: 5rem; right: 0px; margin-left: auto; margin-right: 4rem"
         :mask="false"
-        :bodyStyle="{ padding: '20px' }"
+        :body-style="{ padding: '20px' }"
         class="p-1"
     >
         <template #title>
@@ -15,34 +15,34 @@
             <!-- TOP SECTION -->
             <AssetDetails
                 :asset="request?.destinationEntity"
-                :asset-qf-name="request?.destination_qualified_name"
-                :entityType="request?.entity_type"
+                :asset-qf-name="request?.destinationQualifiedName"
+                :entity-type="request?.entityType"
             />
 
             <!-- BOTTOM SECTION -->
             <AttributeChange
-                :attribute="request.destination_attribute"
-                :value="request.destination_value"
-                v-if="request?.request_type === 'attribute'"
+                v-if="request?.requestType === 'attribute'"
+                :attribute="request.destinationAttribute"
+                :value="request.destinationValue"
             />
             <ClassificationPiece
                 v-if="
-                    request?.request_type === 'create_typedef' &&
+                    request?.requestType === 'create_typedef' &&
                     request?.payload?.classificationDefs
                 "
                 :data="request.payload.classificationDefs"
             />
             <ClassificationPiece
-                v-else-if="request?.request_type === 'attach_classification'"
-                :typeName="request?.payload.typeName"
+                v-else-if="request?.requestType === 'attach_classification'"
+                :type-name="request?.payload.typeName"
             />
             <TermDetails
-                v-if="request?.request_type === 'create_term'"
+                v-if="request?.requestType === 'create_term'"
                 :data="request?.payload"
             />
 
             <TermDetails
-                v-if="request?.request_type === 'term_link'"
+                v-if="request?.requestType === 'term_link'"
                 :data="request?.sourceEntity.attributes"
             />
 
@@ -53,7 +53,7 @@
 
             <p class="mt-auto mb-0 text-gray-500">
                 Requested {{ createdTimeAgo }} by
-                <UserPiece :user="request?.createdByUser" :is-pill="false" />
+                <UserPiece :user="request?.created_by_user" :is-pill="false" />
             </p>
         </div>
         <hr />
@@ -63,18 +63,18 @@
                 <div class="flex items-center">
                     <AtlanButton
                         color="secondary"
-                        @click.stop="$emit('up')"
                         padding="compact"
                         size="sm"
+                        @click.stop="$emit('up')"
                         ><template #label
                             ><AtlanIcon icon="ChevronUp" />
                         </template>
                     </AtlanButton>
                     <AtlanButton
                         color="secondary"
-                        @click.stop="$emit('down')"
                         padding="compact"
                         size="sm"
+                        @click.stop="$emit('down')"
                         ><template #label
                             ><AtlanIcon icon="ChevronDown" />
                         </template>
@@ -106,8 +106,7 @@
     import { computed, defineComponent, PropType, toRefs, reactive } from 'vue'
     import { message } from 'ant-design-vue'
     import { useTimeAgo } from '@vueuse/core'
-    import { useMagicKeys, whenever } from '@vueuse/core'
-    import {
+        import {
         attributeCopyMapping,
         typeCopyMapping,
         requestTypeIcon,
@@ -150,27 +149,27 @@
         emits: ['up', 'down', 'action'],
         setup(props, { emit }) {
             const { request } = toRefs(props)
-            const { a, d } = useMagicKeys()
+            // const { a, d } = useMagicKeys()
             const state = reactive({
                 isLoading: false,
                 message: '',
             })
 
             const requestTitle = computed(() => {
-                let title = `${typeCopyMapping[request.value.request_type]} `
+                let title = `${typeCopyMapping[request.value.requestType]} `
                 // Attribute change title
                 if (
                     ['bm_attribute', 'attribute'].includes(
-                        request.value.request_type
+                        request.value.requestType
                     )
                 ) {
                     title += assetTypeList.find(
-                        (ast) => ast.id == request.value.entity_type
+                        (ast) => ast.id == request.value.entityType
                     )?.label
 
                     title += ` ${
                         attributeCopyMapping[
-                            request.value.destination_attribute
+                            request.value.destinationAttribute
                         ]
                     }`
                 }
@@ -178,9 +177,9 @@
                 return title
             })
 
-            const createdTimeAgo = useTimeAgo(request.value.created_at)
+            const createdTimeAgo = useTimeAgo(request.value.createdAt)
             const createdDate = computed(() =>
-                new Date(request.value.created_at).toLocaleDateString()
+                new Date(request.value.createdAt).toLocaleDateString()
             )
             function raiseErrorMessage(msg?: string) {
                 message.error(msg || 'Request modification failed, try again')

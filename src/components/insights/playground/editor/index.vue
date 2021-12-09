@@ -160,7 +160,7 @@
                             </AtlanBtn>
                         </div>
 
-                        <AtlanBtn
+                        <!-- <AtlanBtn
                             size="sm"
                             color="secondary"
                             padding="compact"
@@ -190,13 +190,12 @@
                                     style="margin-right: 2.5px"
                                     class="w-4 h-4 animate-spin"
                                 ></AtlanIcon>
-                                <!-- <AtlanIcon style="margin-right: 2.5px" icon="Save"></AtlanIcon> -->
 
                                 <span>Update</span>
                             </div>
-                        </AtlanBtn>
+                        </AtlanBtn> -->
 
-                        <div
+                        <!-- <div
                             v-else-if="
                                 activeInlineTab.queryId &&
                                 activeInlineTab.isSaved
@@ -215,9 +214,9 @@
                                 </template>
                                 <AtlanIcon class="mr-1" icon="Check" />Saved
                             </a-tooltip>
-                        </div>
+                        </div> -->
 
-                        <AtlanBtn
+                        <!-- <AtlanBtn
                             size="sm"
                             color="secondary"
                             padding="compact"
@@ -235,8 +234,8 @@
 
                                 <span>Save</span>
                             </div>
-                        </AtlanBtn>
-
+                        </AtlanBtn> -->
+                        <!-- 
                         <a-dropdown>
                             <template #overlay>
                                 <a-menu>
@@ -263,7 +262,7 @@
                                     <span>Share</span>
                                 </div>
                             </AtlanBtn>
-                        </a-dropdown>
+                        </a-dropdown> -->
                         <ThreeDotMenu v-model:showVQB="showVQB" />
                     </div>
                 </div>

@@ -83,7 +83,7 @@
         <a-select
             v-else-if="getDatatypeOfAttribute(attribute) === 'users'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'users' : 'a user'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -92,6 +92,14 @@
             @focus="userSearch"
             @change="handleChange"
         >
+            <template #suffixIcon>
+                <AtlanIcon
+                    v-if="uLoading"
+                    icon="CircleLoader"
+                    class="animate-spin"
+                />
+                <AtlanIcon v-else icon="CaretDown" />
+            </template>
             <a-select-option
                 v-for="(item, index) in userList"
                 :key="index"
@@ -103,7 +111,7 @@
         <a-select
             v-else-if="getDatatypeOfAttribute(attribute) === 'groups'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'groups' : 'a group'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -111,7 +119,16 @@
             :show-arrow="true"
             @focus="groupSearch"
             @change="handleChange"
-            ><a-select-option
+        >
+            <template #suffixIcon>
+                <AtlanIcon
+                    v-if="gLoading"
+                    icon="CircleLoader"
+                    class="animate-spin"
+                />
+                <AtlanIcon v-else icon="CaretDown" />
+            </template>
+            <a-select-option
                 v-for="(item, index) in groupList"
                 :key="index"
                 :value="item.alias"
@@ -122,7 +139,7 @@
         <a-select
             v-else-if="getDatatypeOfAttribute(attribute) === 'enum'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -130,7 +147,11 @@
             :show-arrow="true"
             :options="getEnumOptions(attribute.typeName)"
             @change="handleChange"
-        />
+        >
+            <template #suffixIcon>
+                <AtlanIcon icon="CaretDown" />
+            </template>
+        </a-select>
     </div>
 </template>
 
@@ -172,17 +193,28 @@
                 getEnumOptions,
             } = useCustomMetadataHelpers()
 
-            const { list: userList, handleSearch: handleUserSearch } =
-                useFacetUsers(false)
+            const {
+                list: userList,
+                handleSearch: handleUserSearch,
+                isLoading: uLoading,
+                isReady: isUserReady,
+                error: userError,
+            } = useFacetUsers('username', ['username'], false)
 
             const userSearch = (val) => {
-                handleUserSearch(val)
+                if (!isUserReady?.value || userError.value)
+                    handleUserSearch(val)
             }
 
-            const { list: groupList, handleSearch: handleGroupSearch } =
-                useFacetGroups(false)
+            const {
+                list: groupList,
+                handleSearch: handleGroupSearch,
+                isLoading: gLoading,
+                isReady,
+                error,
+            } = useFacetGroups('alias', ['alias'], false)
             const groupSearch = (val) => {
-                handleGroupSearch(val)
+                if (!isReady?.value || error.value) handleGroupSearch(val)
             }
 
             const isMultivalued = ref(
@@ -210,7 +242,15 @@
                 userList,
                 groupSearch,
                 groupList,
+                gLoading,
+                uLoading,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .center-arrow:deep(.ant-select-arrow) {
+        @apply flex items-center;
+    }
+</style>

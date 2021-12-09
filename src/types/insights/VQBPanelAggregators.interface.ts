@@ -10,3 +10,10 @@ export interface SubpanelAggregator {
     column: SubpanelAggregatorColumn[]
     aggregators: any[]
 }
+
+export interface VQBPanelAggregatorsInterface {
+    id: string
+    order: number
+    hide: boolean
+    subpanels: SubpanelAggregator[]
+}

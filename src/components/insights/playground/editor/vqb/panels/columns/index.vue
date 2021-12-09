@@ -67,7 +67,10 @@
                         >
                             <!-- Show dropdown except the last panel -->
                             <Actions
-                                @add="(type) => handleAdd(index, type)"
+                                @add="
+                                    (type, panel) =>
+                                        handleAdd(index, type, panel)
+                                "
                                 v-model:submenuHovered="submenuHovered"
                                 v-model:containerHovered="containerHovered"
                             />
@@ -97,7 +100,7 @@
                 v-if="expand"
             />
             <FooterActions
-                @add="(type) => handleAdd(index, type)"
+                @add="(type, panel) => handleAdd(index, type, panel)"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -200,11 +203,15 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAdd = (index, type) => {
+            const handleAdd = (index, type, panel) => {
                 const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
                 panelCopy.id = type
                 // if (type === 'aggregate') {
-                panelCopy.subpanels = []
+                panelCopy.subpanels = [
+                    {
+                        ...panel,
+                    },
+                ]
                 // }
                 panelCopy.order =
                     Number(activeInlineTab.value.playground.vqb.panels.length) +

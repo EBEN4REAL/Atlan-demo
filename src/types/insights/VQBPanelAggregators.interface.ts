@@ -5,3 +5,8 @@ export interface SubpanelAggregator {
     columnType: string | undefined
     aggregators: any[]
 }
+export interface VQBPanelAggregatorInterface {
+    id: string
+    hide: boolean
+    subpanels: SubpanelAggregator[]
+}

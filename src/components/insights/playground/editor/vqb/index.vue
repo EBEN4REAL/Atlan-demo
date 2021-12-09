@@ -54,7 +54,7 @@
                         hide: false,
                     },
                     {
-                        id: 'columns',
+                        id: 'aggregate',
                         hide: false,
                     },
                     {

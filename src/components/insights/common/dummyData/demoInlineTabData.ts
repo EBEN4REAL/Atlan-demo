@@ -33,13 +33,13 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                     {
                         order: 1,
                         id: 'columns',
-                        hide: false,
+                        hide: true,
                         subpanels: [
                             {
                                 id: '1',
                                 tableQualifiedName: undefined,
                                 columns: [],
-                                columnsData: []
+                                columnsData: [],
                             },
                         ],
                     },

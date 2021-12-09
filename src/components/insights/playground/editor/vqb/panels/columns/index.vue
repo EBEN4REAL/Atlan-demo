@@ -46,7 +46,13 @@
                                 {{ panel.id }}
                             </p>
                             <p class="text-xs text-gray-500" v-if="!expand">
-                                from Instacart_beverages_master
+                                {{
+                                    getTableNamesStringFromQualfieidNames(
+                                        panel.subpanels.map(
+                                            (e) => e.tableQualfiedName
+                                        )
+                                    )
+                                }}
                             </p>
                         </div>
                     </div>
@@ -138,6 +144,7 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import ColumnSubPanel from './subpanel/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Columns',
@@ -158,6 +165,7 @@
             },
         },
         setup(props, { emit }) {
+            const { getTableNamesStringFromQualfieidNames } = useUtils()
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
@@ -239,6 +247,7 @@
             )
 
             return {
+                getTableNamesStringFromQualfieidNames,
                 submenuHovered,
                 handleMouseOver,
                 handleMouseOut,

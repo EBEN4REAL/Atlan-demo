@@ -231,7 +231,13 @@
                 required: true,
             },
             selectedColumnsData: {
-                type: Array,
+                type: Object as PropType<
+                    Array<{
+                        columnsQualifiedName: string
+                        label: string
+                        type: Number
+                    }>
+                >,
                 required: true,
             },
             tableQualfiedName: {
@@ -379,7 +385,7 @@
                     } else {
                         data.push({
                             type:
-                                dropdownOption.value.find(
+                                selectedColumnsData.value.find(
                                     (e) => e.label === val
                                 )?.type ?? 'Columns',
                             label: val,

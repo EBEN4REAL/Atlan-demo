@@ -284,7 +284,7 @@
                                 {
                                     order: 1,
                                     id: 'columns',
-                                    hide: false,
+                                    hide: true,
                                     columns: [],
                                     columnsData: [],
                                 },

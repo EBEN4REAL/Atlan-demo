@@ -8,7 +8,8 @@
                 <div class="flex items-center w-full mb-3">
                     <TableSelector
                         typeName="Table"
-                        style="width: 30%"
+                        style="max-width: 600px"
+                        class="flex-1 ml-6"
                         v-model:modelValue="subpanel.tableQualfiedName"
                         :filterValues="filteredTablesValues"
                         @change="

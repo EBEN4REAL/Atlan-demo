@@ -1,8 +1,12 @@
 export interface SubpanelColumn {
     id: string
     tableQualfiedName: string | undefined
-    columns: any[]
-    columnsData: []
+    columns: string[]
+    columnsData: Array<{
+        columnsQualifiedName: string
+        label: string
+        type: Number
+    }>
 }
 export interface VQBPanelColumnsInterface {
     order: number

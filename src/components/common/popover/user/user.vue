@@ -11,7 +11,7 @@
                         ></UserAvatar>
                         <div>
                             <div
-                                class="flex items-center text-sm font-semibold capitalize "
+                                class="flex items-center text-sm font-semibold capitalize"
                             >
                                 <span>{{ selectedUser.name }}</span>
                                 <span
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div
-                        class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded "
+                        class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
                     >
                         {{ selectedUser.workspaceRole }}
                     </div>
@@ -54,7 +54,7 @@
                         <span
                             v-for="persona in selectedUser.personaList"
                             :key="persona"
-                            class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded "
+                            class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
                             >{{ persona }}</span
                         >
                     </div>
@@ -70,85 +70,88 @@
 </template>
 
 <script lang="ts">
-import { toRefs, computed, watch, ref } from 'vue'
-import { useUserPreview } from '~/composables/user/showUserPreview'
-import { useUsers } from '~/composables/user/useUsers'
-import AtlanIcon from '../../icon/atlanIcon.vue'
-import useUserPopover from './composables/useUserPopover'
-import SlackMessageCta from './slackMessageCta.vue'
-import UserAvatar from '@/common/avatar/user.vue'
+    import { toRefs, computed, watch, ref } from 'vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useUsers } from '~/composables/user/useUsers'
+    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import useUserPopover from './composables/useUserPopover'
+    import SlackMessageCta from './slackMessageCta.vue'
+    import UserAvatar from '@/common/avatar/user.vue'
 
-export default {
-    name: 'PopoverUser',
-    components: { AtlanIcon, SlackMessageCta, UserAvatar },
-    props: {
-        item: {
-            type: String,
-            required: false,
-            default: '',
-        },
-        visible: {
-            type: Boolean,
-            required: false,
-            default: false,
-        },
-    },
-    emits: [],
-    setup(props) {
-        const { item } = toRefs(props)
-
-        const { setUserUniqueAttribute, showUserPreview } = useUserPreview()
-        const params = {
-            limit: 1,
-            offset: 0,
-            filter: {
-                $and: [{ username: item.value }],
+    export default {
+        name: 'PopoverUser',
+        components: { AtlanIcon, SlackMessageCta, UserAvatar },
+        props: {
+            item: {
+                type: String,
+                required: false,
+                default: '',
             },
-        }
-        const { userList, isLoading, getUserList } = useUsers(params, '')
-        const selectedUser = computed(() =>
-            userList && userList.value && userList.value.length
-                ? userList.value[0]
-                : {}
-        )
+            visible: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+        },
+        emits: [],
+        setup(props) {
+            const { item } = toRefs(props)
 
-        const handleClickViewUser = () => {
-            setUserUniqueAttribute(item.value, 'username')
-            showUserPreview({ allowed: ['about', 'assets', 'groups'] })
-        }
-
-        const handleVisibleChange = (state) => {
-            if (state) {
-                getUserList()
+            const { setUserUniqueAttribute, showUserPreview } = useUserPreview()
+            const params = {
+                limit: 1,
+                offset: 0,
+                filter: {
+                    $and: [{ username: item.value }],
+                },
             }
-        }
+            const { userList, isLoading, getUserList } = useUsers(params, '')
+            const selectedUser = computed(() =>
+                userList && userList.value && userList.value.length
+                    ? userList.value[0]
+                    : {}
+            )
 
-        const { getUserProfiles } = useUserPopover('user', item.value)
-        const userProfiles = computed(() => {
-            console.log('selectedUser', selectedUser.value.attributes?.profiles)
-            if (selectedUser.value.attributes?.profiles) {
+            const handleClickViewUser = () => {
+                setUserUniqueAttribute(item.value, 'username')
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+            }
+
+            const handleVisibleChange = (state) => {
+                if (state) {
+                    getUserList()
+                }
+            }
+
+            const { getUserProfiles } = useUserPopover('user', item.value)
+            const userProfiles = computed(() => {
                 console.log(
-                    'parsed json',
-                    JSON.parse(selectedUser.value.attributes?.profiles)[0]
+                    'selectedUser',
+                    selectedUser.value.attributes?.profiles
                 )
-            }
-            return getUserProfiles(selectedUser?.value)
-        })
+                if (selectedUser.value.attributes?.profiles) {
+                    console.log(
+                        'parsed json',
+                        JSON.parse(selectedUser.value.attributes?.profiles)[0]
+                    )
+                }
+                return getUserProfiles(selectedUser?.value)
+            })
 
-        return {
-            selectedUser,
-            isLoading,
-            handleClickViewUser,
-            handleVisibleChange,
-            getUserList,
-            userProfiles,
-        }
-    },
-}
+            return {
+                selectedUser,
+                isLoading,
+                handleClickViewUser,
+                handleVisibleChange,
+                getUserList,
+                userProfiles,
+            }
+        },
+    }
 </script>
 <style lang="less" scoped>
-.user-popover {
-    width: 370px;
-    padding: 16px;
-}
+    .user-popover {
+        width: 370px;
+        padding: 16px;
+    }
 </style>

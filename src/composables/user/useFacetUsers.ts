@@ -14,14 +14,14 @@ export default function useFacetUsers(immediate = true) {
     params.value.append('columns', 'id')
     params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
 
-    const { data, mutate, isLoading, error } = Users.List(params, {
+    const { data, mutate, isLoading, error, isValidating } = Users.List(params, {
         asyncOptions: {
             immediate,
             resetOnExecute: false,
         },
     })
 
-    const list = ref([])
+    const list: any = ref([])
     watch(data, () => {
         if (data.value?.records) {
             list.value = [...data?.value?.records]
@@ -71,7 +71,7 @@ export default function useFacetUsers(immediate = true) {
     return {
         isLoading,
         error,
-
+        isValidating,
         list,
         total,
         data,

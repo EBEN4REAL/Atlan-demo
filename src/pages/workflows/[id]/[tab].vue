@@ -294,7 +294,7 @@
                 }> = {
                     limit: 1,
                     offset: 0,
-                    sort: 'first_name',
+                    sort: 'firstName',
                     filter: {
                         $and: [
                             {

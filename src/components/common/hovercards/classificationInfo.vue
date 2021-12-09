@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-56 text-gray">
+    <div class="flex flex-col w-56 p-3 text-gray">
         <div class="flex justify-between mb-2 text-sm">
             <!-- {{ classification }} -->
             <span class="text-gray-500">CLASSIFICATION</span>
@@ -12,10 +12,10 @@
         }}</span>
 
         <span class="mb-1 text-xs text-gray-500">Description</span>
-        <span class="text-sm" v-if="classification.description">{{
+        <span v-if="classification.description" class="text-sm">{{
             classification.description
         }}</span>
-        <span class="text-sm" v-else>No description</span>
+        <span v-else class="text-sm">No description</span>
 
         <span
             v-if="classification.propagatedBy"

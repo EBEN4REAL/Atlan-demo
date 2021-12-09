@@ -16,8 +16,8 @@
                         @change="(val) => handleColumnChange(val, index)"
                     /> -->
                     <ColumnSelector
-                        class="flex-1 ml-6"
-                        style="max-width: 600px"
+                        class="flex-1"
+                        style="max-width: 30%"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
@@ -25,8 +25,10 @@
                         @change="(val) => handleColumnChange(val, index)"
                     />
 
+                    <span class="px-3 text-sm text-gray-500">aggregate by</span>
+
                     <AggregateSelector
-                        class="flex-1 ml-6"
+                        class="flex-1"
                         style="max-width: 600px"
                         v-model:selectedItems="subpanel.aggregators"
                         :columnName="subpanel?.column?.label"
@@ -34,12 +36,12 @@
                         @checkChange="checkChange"
                     />
                     <div
-                        class="text-gray-500 hover:text-primary"
+                        class="w-8 h-8 ml-6 text-gray-500 border rounded"
                         @click.stop="() => handleDelete(index)"
                     >
                         <AtlanIcon
                             icon="Close"
-                            class="w-6 h-6 ml-6 -mt-0.5 cursor-pointer"
+                            class="w-6 h-6 ml-0.5 mt-0.5 cursor-pointer"
                         />
                     </div>
                 </div>
@@ -48,7 +50,7 @@
 
         <span>
             <div
-                class="flex items-center mt-3 cursor-pointer text-primary"
+                class="items-center mt-3 cursor-pointer text-primary"
                 @click.stop="handleAddPanel"
             >
                 <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />

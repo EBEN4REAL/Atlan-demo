@@ -38,6 +38,7 @@
                 ></AtlanIcon>
                 <router-link
                     :to="getProfilePath(selectedAsset)"
+                    @click="() => $emit('closeDrawer')"
                     class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(selectedAsset) }}
@@ -217,6 +218,9 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
+            resources: defineAsyncComponent(
+                () => import('@common/widgets/resources/index.vue')
+            ),
             // chat: defineAsyncComponent(
             //     () => import('./tabs/chat/assetChat.vue')
             // ),
@@ -249,7 +253,7 @@
                 default: false,
             },
         },
-        emits: ['assetMutation', 'closeSidebar'],
+        emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
             const { selectedAsset, isDrawer } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
@@ -337,6 +341,7 @@
             const router = useRouter()
 
             const handleAction = (key) => {
+                emit('closeDrawer')
                 switch (key) {
                     case 'open':
                         router.push(getProfilePath(selectedAsset.value))

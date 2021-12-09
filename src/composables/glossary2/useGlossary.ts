@@ -46,6 +46,13 @@ export default function useGlossary(immediate = true) {
                                 '__typeName.keyword': [GLOSSARY_ASSET_TYPE],
                             },
                         },
+                        must: [
+                            {
+                                term: {
+                                    __state: 'ACTIVE',
+                                },
+                            },
+                        ],
                     },
                 },
                 aggs: {

@@ -17,7 +17,7 @@
                     <thead>
                         <tr>
                             <th
-                                class="truncate bg-gray-100 border  border-gray-light"
+                                class="truncate bg-gray-100 border border-gray-light"
                             >
                                 #
                                 <!-- <span class="resize-handle"></span> -->
@@ -27,7 +27,7 @@
                                 v-for="(col, index) in activeInlineTab
                                     .playground.editor.columnList"
                                 :key="index"
-                                class="truncate bg-gray-100 border  border-gray-light"
+                                class="truncate bg-gray-100 border border-gray-light"
                             >
                                 <div class="flex items-center">
                                     <a-tooltip>
@@ -36,13 +36,7 @@
                                         }}</template>
                                         <component
                                             :is="images[getDataType(col.type)]"
-                                            class="
-                                                w-4
-                                                h-4
-                                                mr-1.5
-                                                cursor-pointer
-                                                -mt-0.5
-                                            "
+                                            class="w-4 h-4 mr-1.5 cursor-pointer -mt-0.5"
                                         ></component>
                                     </a-tooltip>
                                     <!-- {{ col.type }} -->
@@ -111,7 +105,7 @@
                 "
             >
                 <AtlanBtn
-                    class="flex items-center justify-between h-6 px-4 py-1 border  button-shadow"
+                    class="flex items-center justify-between h-6 px-4 py-1 border button-shadow"
                     size="lg"
                     color="secondary"
                     padding="compact"
@@ -183,11 +177,11 @@
         props: {
             dataList: {
                 type: Object as PropType<any>,
-                required: true,
+                required: false,
             },
             columnList: {
                 type: Object as PropType<any>,
-                required: true,
+                required: false,
             },
         },
         setup(props) {

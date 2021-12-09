@@ -248,6 +248,9 @@
                 "
                 :savedQueryType="defaultClassification"
                 :parentFolder="queryFolderNamespace"
+                :connector="
+                    activeInlineTab?.explorer?.queries?.connectors?.connector
+                "
                 @onSaveQuery="saveQuery"
             />
             <VQB v-if="showVQB" />

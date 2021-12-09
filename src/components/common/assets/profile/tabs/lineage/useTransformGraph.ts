@@ -5,9 +5,13 @@ export default function useTransformGraph(graph, emit) {
         emit('on-zoom-change', currZoom)
     }
 
-    const fit = () => {
-        graph.value.zoomToFit({ padding: 12 })
-        graph.value.scale(0.6)
+    const fit = (id) => {
+        graph.value.scale(0.7)
+        const cell = graph.value.getCellById(id)
+
+        graph.value.positionCell(cell, 'center', {
+            padding: { left: 200 },
+        })
     }
 
     const fullscreen = (targetEle) => {

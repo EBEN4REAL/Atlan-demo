@@ -11,7 +11,9 @@
             <span v-if="!isEdit && description(selectedAsset)">{{
                 description(selectedAsset)
             }}</span>
-            <span v-else-if="!isEdit && description(selectedAsset) === ''"
+            <span
+                v-else-if="!isEdit && description(selectedAsset) === ''"
+                class="text-gray-500"
                 >No description available</span
             >
             <a-textarea
@@ -36,7 +38,7 @@
         Ref,
         ref,
         toRefs,
-        watch,
+        watchEffect,
     } from 'vue'
     import {
         and,
@@ -103,10 +105,24 @@
                         'true'
             )
 
-            const { d } = useMagicKeys()
+            const { d, enter, shift } = useMagicKeys()
+
+            /* function geeks(event) {
+                // 13 is the keycode for "enter"
+                if (event.keyCode == 13 && event.shiftKey) {
+                    document.getElementById("d").innerHTML = "Triggered enter+shift";
+                }
+                if (event.keyCode == 13 && !event.shiftKey) {
+                    document.getElementById("d").innerHTML = "Triggered enter";
+                }
+            } */
 
             whenever(and(d, notUsingInput), () => {
                 handleEdit()
+            })
+
+            watchEffect(() => {
+                if (enter.value && !shift.value && isEdit.value) handleBlur()
             })
 
             return {

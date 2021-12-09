@@ -27,16 +27,7 @@
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
-                            class="
-                                flex
-                                items-center
-                                justify-center
-                                mr-2
-                                bg-gray-100
-                                border border-gray-300
-                                rounded-full
-                                p-1.5
-                            "
+                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
                             :class="
                                 !expand
                                     ? [
@@ -53,7 +44,7 @@
                         <div class="">
                             <p class="text-sm font-bold text-gray">Aggregate</p>
                             <p class="text-xs text-gray-500" v-if="!expand">
-                                from Instacart_beverages_master
+                                Summarised info
                             </p>
                         </div>
                     </div>
@@ -65,15 +56,7 @@
                         ]"
                     >
                         <div
-                            class="
-                                px-3
-                                py-1.5
-                                border-gray-300
-                                flex
-                                items-center
-                                justify-center
-                                border-r
-                            "
+                            class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
                             <a-checkbox v-model:checked="checkbox"></a-checkbox>
@@ -98,14 +81,7 @@
                             <AtlanBtn
                                 @click.stop="() => handleDelete(index)"
                                 :disabled="Number(index) === 0"
-                                class="
-                                    flex-none
-                                    border-none
-                                    px-3.5
-                                    py-1
-                                    text-gray
-                                    hover:text-red-500
-                                "
+                                class="flex-none border-none px-3.5 py-1 text-gray hover:text-red-500"
                                 size="sm"
                                 color="secondary"
                                 padding="compact"
@@ -132,7 +108,16 @@
                 ></div>
             </div>
             <!-- Show on expand -->
-            <ColumnSubPanel :expand="expand" />
+            <AggregatorSubPanel
+                v-model:subpanels="
+                    activeInlineTab.playground.vqb.panels[index].subpanels
+                "
+                v-model:columnSubpanels="
+                    activeInlineTab.playground.vqb.panels[0].subpanels
+                "
+                :expand="expand"
+                v-if="expand"
+            />
             <FooterActions
                 @add="(type) => handleAdd(index, type)"
                 v-if="
@@ -161,6 +146,7 @@
     import {
         defineComponent,
         toRefs,
+        watch,
         ref,
         ComputedRef,
         Ref,
@@ -174,7 +160,7 @@
     import { VQBPanelType } from '~/types/insights/VQB.interface'
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
-    import ColumnSubPanel from './subpanel/index.vue'
+    import AggregatorSubPanel from './subpanel/index.vue'
 
     export default defineComponent({
         name: 'Columns',
@@ -182,7 +168,7 @@
             FooterActions,
             Actions,
             AtlanBtn,
-            ColumnSubPanel,
+            AggregatorSubPanel,
         },
         props: {
             index: {
@@ -234,6 +220,7 @@
                 panelCopy.order =
                     Number(activeInlineTab.value.playground.vqb.panels.length) +
                     1
+                panelCopy.subpanels = []
                 addPanelsInVQB(
                     Number(index),
                     panelCopy,
@@ -258,6 +245,14 @@
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
             }
+
+            watch(
+                activeInlineTab,
+                () => {
+                    console.log('updated data: ', activeInlineTab.value)
+                },
+                { immediate: true }
+            )
 
             return {
                 submenuHovered,

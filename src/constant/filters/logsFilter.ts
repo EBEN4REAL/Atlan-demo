@@ -102,10 +102,11 @@ export const accessLogsFilter = [
 
 export const requestFilter = [
     {
-        id: 'users',
+        id: 'requestor',
         label: 'Requestor',
         component: 'owners',
         overallCondition: 'OR',
+        selectUserKey: "id",
         attributes: [],
         isDeleted: false,
         isDisabled: false,

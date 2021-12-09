@@ -39,6 +39,21 @@ const fetchAudits = (params: any, guid: string) =>
         {}
     )
 
+const AuditSearch = (
+    guid: string,
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) =>
+    useAPI<Components.Schemas.EntityAuditEventV2[]>(
+        map.GET_ASSET_AUDIT_SEARCH,
+        'POST',
+        {
+            body,
+            pathVariables: { guid },
+        },
+        options || {}
+    )
+
 const fetchRelatedAssets = <T>(
     params: Ref<Record<string, any>> | Record<string, any>,
     options?: useOptions
@@ -49,14 +64,12 @@ const SetClassifications = <T>(
     options?: useOptions
 ) => useAPI<T>(map.ENTITY_SET_CLASSIFICATIONS, 'POST', { body }, options || {})
 
-const GetEntity = <T>(guid: String,
-    options?: useOptions) =>
+const GetEntity = <T>(guid: String, options?: useOptions) =>
     useAPI<T>(
         map.GET_ENTITY,
         'GET',
         {
             pathVariables: { guid },
-
         },
         options || {}
     )
@@ -69,4 +82,5 @@ export const Entity = {
     SetClassifications,
     fetchRelatedAssets,
     GetEntity,
+    AuditSearch,
 }

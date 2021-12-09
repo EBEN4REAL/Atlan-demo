@@ -67,6 +67,7 @@
                         :entityType="entity.typeName"
                         :entity="entity"
                         @delete="handleDelete"
+                        :redirect="shouldRedirect"
                     >
                         <template #trigger>
                             <div class="flex items-center">
@@ -94,7 +95,7 @@
         Ref,
         computed,
     } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { useRoute } from 'vue-router'
 
     // components
     import { message } from 'ant-design-vue'
@@ -191,7 +192,10 @@
             } = toRefs(props)
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
-            const router = useRouter()
+            const route = useRoute()
+            const shouldRedirect = computed(
+                () => route?.params?.id === props?.entity?.guid
+            ) // Should the page be redirect on deletion of the entity
             const showCategories = ref(false)
             const { getAnchorQualifiedName } = useAssetInfo()
             const glossaryQualifiedName = computed(() => {
@@ -254,6 +258,7 @@
                 handleAdd,
                 addGTCNode,
                 handleDelete,
+                shouldRedirect,
             }
         },
     })

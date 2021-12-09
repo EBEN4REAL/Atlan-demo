@@ -40,6 +40,15 @@
                         {{ persona.description }}</span
                     >
                 </div>
+                <div class="flex" v-if="persona?.updatedBy">
+                    last updated by {{ persona.updatedBy }},
+                    <a-tooltip
+                        class="ml-1"
+                        :title="timeStamp(persona.updatedAt, true)"
+                        placement="right"
+                        >{{ timeStamp(persona.updatedAt) }}</a-tooltip
+                    >
+                </div>
             </div>
             <Dropdown class="ml-auto" :options="personaActions"></Dropdown>
         </div>

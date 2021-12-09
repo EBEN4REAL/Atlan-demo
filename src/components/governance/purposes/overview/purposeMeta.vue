@@ -2,18 +2,23 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
+            {{ persona.createdBy }}
             <div class="flex items-center text-sm">
-                <PopOverUser>
+                <PopOverUser :item="persona.createdBy">
                     <UserPill
-                        :username="username"
-                        :allowDelete="false"
+                        :username="persona.createdBy"
+                        :allow-delete="false"
+                        :enable-hover="true"
                     ></UserPill>
                 </PopOverUser>
             </div>
             <span class="text-sm text-gray-500">on</span>
-            <span class="text-sm text-gray">{{
-                persona.created_at?.slice(0, -17)
-            }}</span>
+
+            <a-tooltip
+                :title="timeStamp(persona.createdAt, true)"
+                placement="right"
+                >{{ timeStamp(persona.createdAt) }}</a-tooltip
+            >
 
             <a-switch
                 class="ml-auto"
@@ -100,6 +105,8 @@
     import { selectedPersona } from '../composables/usePurposeList'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
+    import { formatDateTime } from '~/utils/date'
+    import { useTimeAgo } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PurposeMeta',
@@ -109,15 +116,11 @@
                 type: Object as PropType<IPurpose>,
                 required: true,
             },
-            username: {
-                type: String,
-                required: true,
-            },
         },
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
             const { classificationList } = useTypedefData()
-            const { username, persona } = toRefs(props)
+            const { persona } = toRefs(props)
 
             const enablePersonaCheck = ref(true)
 
@@ -185,9 +188,17 @@
                 selectedClassifications.value =
                     mapClassificationsFromNames.value
             })
+            const timeStamp = (time, raw: boolean = false) => {
+                if (time) {
+                    return raw
+                        ? formatDateTime(time) || 'N/A'
+                        : useTimeAgo(time).value
+                }
+                return ''
+            }
 
             return {
-                username,
+                timeStamp,
                 selectedPersona,
                 updateClassifications,
                 selectedPersonaDirty,

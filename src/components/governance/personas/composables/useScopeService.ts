@@ -13,6 +13,10 @@ const scopeList = [
                 label: 'update',
             },
             {
+                value: 'link-assets',
+                label: 'update: Linked assets',
+            },
+            {
                 value: 'entity-create',
                 label: 'create',
             },
@@ -21,41 +25,54 @@ const scopeList = [
                 label: 'delete',
             },
         ],
-        type: 'Asset management',
+        type: 'Asset',
         label: 'Asset',
     },
     {
         scopes: [
             {
-                value: 'entity-add-classification',
-                label: 'add',
+                value: 'entity-update-business-metadata',
+                label: 'update: Custom Metadata',
             },
             {
-                value: 'entity-update-classification',
-                label: 'update',
+                value: 'entity-add-classification',
+                label: 'add: Classifications',
             },
             {
                 value: 'entity-remove-classification',
-                label: 'remove',
+                label: 'remove: Classifications',
+            },
+            {
+                value: 'entity-update-classification',
+                label: 'update: Classifications',
+            },
+
+            {
+                value: 'add-terms',
+                label: 'Add: Terms',
+            },
+            {
+                value: 'remove-terms',
+                label: 'Remove: Terms',
             },
         ],
-        type: 'Classifications',
-        label: 'Classifications',
+        type: 'Governance',
+        label: 'Governance',
     },
     // {
     //     scopes: ['entity-add-label', 'entity-remove-label'],
     //     type: 'Labels',
     // },
-    {
-        scopes: [
-            {
-                value: 'entity-update-business-metadata',
-                label: 'update',
-            },
-        ],
-        type: 'Custom Metadata',
-        label: 'Metadata',
-    },
+    // {
+    //     scopes: [
+    //         {
+    //             value: 'entity-update-business-metadata',
+    //             label: 'update',
+    //         },
+    //     ],
+    //     type: 'Custom Metadata',
+    //     label: 'Metadata',
+    // },
     // {
     //     scopes: [
     //         'admin-purge',

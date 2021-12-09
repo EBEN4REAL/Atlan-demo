@@ -194,6 +194,7 @@ export function useSavedQuery(
                                     id: '1',
                                     tableQualifiedName: undefined,
                                     columns: [],
+                                    columnsData: []
                                 },
                             ],
                         },

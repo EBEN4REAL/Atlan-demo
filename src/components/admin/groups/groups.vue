@@ -68,7 +68,8 @@
         <template v-else-if="groupList?.length">
             <a-table
                 id="groupList"
-                class="overflow-hidden border rounded-lg group-table"
+                class="overflow-hidden border rounded-lg"
+                :class="$style.groupTable"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 :pagination="false"
@@ -87,17 +88,17 @@
                         "
                     >
                         <div
-                            class="flex capitalize truncate cursor-pointer text-primary"
+                            class="flex capitalize truncate cursor-pointer  text-primary"
                         >
                             <div class="mr-2 truncate max-w-3/4">
                                 {{ group.name }}
                             </div>
-                            <div
+                            <!-- <div
                                 v-if="group.isDefault === 'true'"
-                                class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
+                                class="px-2 py-1 text-xs rounded-full  bg-blue-50 text-gray"
                             >
                                 Default
-                            </div>
+                            </div> -->
                         </div>
                         <p class="mb-0 text-gray-500 truncate">
                             {{ group.description }}
@@ -177,7 +178,7 @@
                 limit: 15,
                 offset: 0,
                 filter: {},
-                sort: '-created_at',
+                sort: '-createdAt',
             })
             const pagination = computed(() => ({
                 total: Object.keys(groupListAPIParams.filter).length
@@ -267,7 +268,7 @@
             ) => {
                 // add sort
                 if (Object.keys(sorter).length) {
-                    let sortValue = '-created_at'
+                    let sortValue = '-createdAt'
                     if (sorter.order && sorter.column && sorter.column.sortKey)
                         sortValue = `${sorter.order === 'descend' ? '-' : ''}${
                             sorter.column.sortKey
@@ -276,9 +277,9 @@
                     groupListAPIParams.offset = 0
                 }
                 // modify offset
-                const offset =
-                    (pagination.current - 1) * groupListAPIParams.limit
-                groupListAPIParams.offset = offset
+                // const offset =
+                //     (pagination.current - 1) * groupListAPIParams.limit
+                // groupListAPIParams.offset = offset
                 // fetch groups
                 getGroupList()
             }
@@ -390,7 +391,7 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" scoped>
     #groupList {
         th.ant-table-row-cell-last {
             display: flex;
@@ -404,12 +405,8 @@
     }
 </style>
 
-<style lang="less" scoped>
-    .group-table {
-        // extra row hide hack
-        :global(.ant-table-measure-row) {
-            @apply hidden;
-        }
+<style lang="less" module>
+    .groupTable {
         :global(.ant-table-column-title) {
             @apply text-left;
         }

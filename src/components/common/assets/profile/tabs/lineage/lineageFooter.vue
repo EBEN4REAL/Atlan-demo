@@ -34,10 +34,10 @@
                 </a-tooltip>
             </div>
 
-            <div class="mr-5 cursor-pointer" @click="fit()">
+            <div class="mr-5 cursor-pointer" @click="fit(baseEntityGuid)">
                 <a-tooltip placement="top">
                     <template #title>
-                        <span>fit graph</span>
+                        <span>recenter</span>
                     </template>
 
                     <AtlanIcon icon="Recenter" class="outline-none"></AtlanIcon>
@@ -98,8 +98,18 @@
                 type: Object,
                 required: true,
             },
+            graphHeight: {
+                type: Number,
+            },
+            graphWidth: {
+                type: Number,
+            },
             lineageContainer: {
                 type: Object,
+                required: true,
+            },
+            baseEntityGuid: {
+                type: String,
                 required: true,
             },
             currZoom: {
@@ -110,7 +120,8 @@
         emits: ['on-zoom-change', 'on-show-minimap'],
         setup(props, { emit }) {
             /** DATA */
-            const { graph, lineageContainer } = toRefs(props)
+            const { graph, lineageContainer, graphHeight, graphWidth } =
+                toRefs(props)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
 
@@ -119,6 +130,14 @@
 
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
+                if (isFullscreen.value) {
+                    graph.value.resize(graphWidth.value, graphHeight.value)
+                } else {
+                    graph.value.resize(
+                        graphWidth.value,
+                        graphHeight.value / 1.35
+                    )
+                }
                 fullscreen(lineageContainer)
             }
 

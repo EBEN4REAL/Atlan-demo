@@ -136,6 +136,9 @@
                     saveModalRef = el
                 }
             "
+            :connector="
+                activeInlineTab?.explorer?.queries?.connectors?.connector
+            "
             @onSaveQuery="saveQueryOnCloseTab"
         />
     </div>
@@ -283,6 +286,7 @@
                                     id: 'columns',
                                     hide: false,
                                     columns: [],
+                                    columnsData: [],
                                 },
                             ],
                         },
@@ -724,6 +728,7 @@
                 queryRun,
                 setTabHover,
                 tabHover,
+                isSaving,
             }
         },
     })

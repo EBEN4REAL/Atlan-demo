@@ -240,7 +240,7 @@
             },
         },
 
-        setup(props, { emit, slots }) {
+        setup(props, { emit }) {
             const { tableQualfiedName } = toRefs(props)
             const queryText = ref('')
             const { selectedItems, selectedColumnsData } = useVModels(props)
@@ -483,16 +483,6 @@
                 })
             })
 
-            const hasChips = ref(false)
-
-            // Check if the slot exists by name and has content.
-            // It returns an empty array if it's empty.
-            if (slots?.chip && slots?.chip()?.length) {
-                hasChips.value = true
-            }
-
-            // console.log('slots: ', slots)
-
             return {
                 queryText,
                 clearAllSelected,
@@ -524,7 +514,6 @@
                 setFoucs,
                 isAreaFocused,
                 getDataTypeImage,
-                hasChips,
             }
         },
     })

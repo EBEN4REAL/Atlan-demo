@@ -46,7 +46,7 @@ export interface assetInterface {
         announcementType: string
         announcementUpdatedAt: number
         announcementUpdatedBy: string
-
+        link: string
         table?: {
             guid: string
             typeName: string

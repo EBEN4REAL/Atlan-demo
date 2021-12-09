@@ -4,13 +4,11 @@ import { getFormattedGroup } from '~/composables/group/formatGroup'
 import { Users } from '~/services/service/users'
 import { GET_USER_GROUPS } from '~/services/service/users/key'
 
-export default function getUserGroups(
-    groupListAPIParams: {
-        userId: string
-        params: { limit: number; offset: number; filter: any; sort: string }
-    },
-    cacheProp = ''
-) {
+export default function getUserGroups(groupListAPIParams: {
+    userId: string
+    params: { limit: number; offset: number; filter: any; sort: string }
+    immediate: false
+}) {
     const localGroupsList: Ref<any[]> = ref([])
     const {
         data,
@@ -22,7 +20,9 @@ export default function getUserGroups(
         groupListAPIParams.params,
         groupListAPIParams.userId,
         {
-            cacheKey: cacheProp || GET_USER_GROUPS,
+            asyncOptions: {
+                immediate: groupListAPIParams.immediate,
+            },
         }
     )
 

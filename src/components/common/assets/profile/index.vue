@@ -6,6 +6,7 @@
             v-model:activeKey="activeKey"
             :class="$style.profiletab"
             class="flex-1"
+            :destroy-inactive-tab-pane="true"
             @change="handleChangeTab"
         >
             <a-tab-pane

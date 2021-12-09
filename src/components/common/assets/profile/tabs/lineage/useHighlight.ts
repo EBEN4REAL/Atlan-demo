@@ -1,77 +1,56 @@
-import { ref, watch } from 'vue'
+import { watch } from 'vue'
 import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 
-const { updateEdgesData, updateNodesData } = useUpdateGraph()
-const {
-    getPredecessors,
-    getSuccessors,
-    edgesToHighlightSet,
-    nodesToHighlightSet,
-} = useGetNodes()
+const { highlightNodes, highlightEdges } = useUpdateGraph()
 
 export default function useHighlight(
     graph,
-    baseEntityGuid,
+    baseEntity,
     showProcess,
-    highlightLoadingCords,
+    assetGuidToHighlight,
     highlightedNode,
-    selectedSearchItem,
-    selectedNodeType,
-    emit
+    highlightLoadingCords,
+    onSelectAsset
 ) {
-    const previewedNode = ref('')
-    const getCell = (guid) => graph.value.getCellById(guid)
-    const cell = getCell(baseEntityGuid)
-    const { entity: defaultEntity } = cell.store.data
-
     const getHighlights = async (guid) => {
-        await getPredecessors(graph, guid, showProcess)
-        await getSuccessors(graph, guid, showProcess)
+        let nodesToHighlight = []
+        if (guid.value) {
+            const { predecessors, successors } = useGetNodes(graph, guid.value)
+            nodesToHighlight = [guid.value, ...predecessors, ...successors]
+        }
+
+        return {
+            nodesToHighlight,
+        }
     }
 
     const highlight = async (guid) => {
-        edgesToHighlightSet.clear()
-        nodesToHighlightSet.clear()
-        const isValid = guid && guid !== highlightedNode.value
-        highlightedNode.value = isValid ? guid : ''
-        if (isValid) await getHighlights(guid)
-        const edgesToHighlight = isValid ? Array.from(edgesToHighlightSet) : []
-        await updateEdgesData(graph, edgesToHighlight)
-        const nodesToHighlight = Array.from(nodesToHighlightSet)
-        updateNodesData(graph, highlightedNode, nodesToHighlight)
+        highlightedNode.value =
+            guid && guid !== highlightedNode.value ? guid : ''
+        const { nodesToHighlight } = await getHighlights(highlightedNode)
+        highlightEdges(graph, nodesToHighlight)
+        highlightNodes(graph, highlightedNode, nodesToHighlight)
+        assetGuidToHighlight.value = ''
         highlightLoadingCords.value = {}
     }
 
-    const preview = (node) => {
-        const isValid = node && node?.id !== previewedNode.value
-        const isProcess = node?.store?.data?.entity?.typeName === 'Process'
-        const entityToEmit = isValid ? node.store.data.entity : defaultEntity
-
-        previewedNode.value = isValid ? node?.id : ''
-        // eslint-disable-next-line no-nested-ternary
-        selectedNodeType.value = isValid ? (isProcess ? 'p' : 'np') : ''
-        emit('preview', entityToEmit)
-    }
-
-    watch(selectedSearchItem, (newVal) => {
+    watch(assetGuidToHighlight, (newVal) => {
+        if (!newVal) return
         highlight(newVal)
     })
 
     watch(showProcess, () => {
-        emit('preview', defaultEntity)
+        onSelectAsset(baseEntity.value)
+        highlight(null)
     })
 
     graph.value.on('cell:mouseup', ({ node }) => {
+        onSelectAsset(node.store.data.entity)
         highlight(node?.id)
-        preview(node)
     })
     graph.value.on('blank:click', () => {
+        onSelectAsset(baseEntity.value)
         highlight(null)
-        preview(null)
     })
-
-    return {
-        highlightedNode,
-    }
 }

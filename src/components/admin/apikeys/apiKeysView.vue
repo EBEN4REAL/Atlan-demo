@@ -156,7 +156,9 @@ export default defineComponent({
             resetSelectedAPIKey()
         }
         const handleUpdate = async (apiKey) => {
-            apiKeyDirty.value = apiKey
+            const { rawKey, ...apiKeypayload } = apiKey
+            apiKeyDirty.value = apiKeypayload
+
             const { data, isReady, error, isLoading } =
                 APIKey.Update(apiKeyDirty)
             watch(
@@ -185,7 +187,8 @@ export default defineComponent({
         }
         const handleCreate = async (apiKey) => {
             try {
-                apiKeyDirty.value = apiKey
+                const { rawKey, ...apiKeypayload } = apiKey
+                apiKeyDirty.value = apiKeypayload
                 await createAPIKey()
                 // toggleAPIKeyDrawer()
                 reFetchList()
@@ -224,11 +227,12 @@ export default defineComponent({
         const handleSelectAPIKey = (apikey) => {
             toggleAPIKeyDrawer()
             const localAPIKey = {
-                displayName: apikey?.display_name,
+                displayName: apikey?.displayName,
                 description: apikey?.attributes?.description,
-                validitySeconds: apikey?.['access.token.lifespan'],
+                validitySeconds: apikey?.attributes?.['accessTokenLifespan'],
                 personas: apikey?.attributes?.personas || [],
                 id: apikey?.id,
+                rawKey: { ...(apikey || {}) },
             }
             setSelectedAPIKey({
                 ...localAPIKey,

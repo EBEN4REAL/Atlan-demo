@@ -23,7 +23,7 @@ export const formatDateTime = (
     },
     locale = 'en-US'
 ) => {
-    if (typeof date === 'string')
+    if (typeof date === 'string' && date)
         return new Intl.DateTimeFormat(locale, config).format(new Date(date))
     return new Intl.DateTimeFormat(locale, config).format(date)
 }

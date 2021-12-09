@@ -55,7 +55,7 @@ export default async function useComputeGraph(
 
     /* Nodes */
     await Promise.all(
-        guidEntityMap.map(async (entity) => {
+        guidEntityMap.map(async (entity, index) => {
             const { nodeData, enrichedEntity: ent } = await createNodeData(
                 entity,
                 baseEntityGuid
@@ -84,19 +84,22 @@ export default async function useComputeGraph(
     }
 
     /** Process toggle */
-    const toggleProcess = async () => {
-        await renderLayout()
-        await toggleProcessNodes(graph, showProcess, removedNodes)
-        await updateProcessNodesPosition(graph, 110)
-        highlightEdges(graph, [])
-        isComputeDone.value = true
-    }
+    // const toggleProcess = async () => {
+    //     await renderLayout()
+    //     await toggleProcessNodes(graph, showProcess, removedNodes)
+    //     await updateProcessNodesPosition(graph, 110)
+    //     highlightEdges(graph, [])
+    //     isComputeDone.value = true
+    // }
 
-    await toggleProcess()
+    // await toggleProcess()
 
-    watch(showProcess, async () => {
-        await toggleProcess()
-    })
+    // watch(showProcess, async () => {
+    //     await toggleProcess()
+    // })
+
+    await renderLayout()
+    isComputeDone.value = true
 
     fit(baseEntityGuid)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`

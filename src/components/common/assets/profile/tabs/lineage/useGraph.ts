@@ -55,6 +55,28 @@ export default function useGraph() {
             ...dataObj,
         }
 
+        const columns = enrichedEntity.relationshipAttributes.columns.map(
+            (x, index) => {
+                const text =
+                    x.displayText.charAt(0).toUpperCase() +
+                    x.displayText.slice(1).toLowerCase()
+                return {
+                    id: `${guid}-port-${index + 1}`,
+                    group: 'columnList',
+                    attrs: {
+                        portNameLabel: {
+                            text,
+                        },
+                        portImage: {
+                            'xlink:href': 'https://svgshare.com/i/cdx.svg',
+                            width: 16,
+                            height: 16,
+                        },
+                    },
+                }
+            }
+        )
+
         const nodeData = {
             id: guid,
             typeName,
@@ -63,7 +85,7 @@ export default function useGraph() {
             entity: enrichedEntity,
             isProcess,
             width: isProcess ? 60 : 270,
-            height: 60,
+            height: 70,
             shape: 'html',
             data: computedData,
             html: {
@@ -124,7 +146,61 @@ export default function useGraph() {
                     return node.hasChanged('data')
                 },
             },
+            ports: {
+                groups: {
+                    columnList: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                            {
+                                tagName: 'text',
+                                selector: 'portNameLabel',
+                            },
+                            {
+                                tagName: 'image',
+                                selector: 'portImage',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 268,
+                                height: 40,
+                                strokeWidth: 1,
+                                stroke: '#e6e6eb',
+                                fill: '#ffffff',
+                                magnet: true,
+                                y: -10,
+                            },
+                            portNameLabel: {
+                                ref: 'portBody',
+                                refX: 36,
+                                refY: 12,
+                                fontSize: 16,
+                                fill: '#3e4359',
+                            },
+                            portImage: {
+                                ref: 'portBody',
+                                refX: 12,
+                                refY: 12,
+                            },
+                        },
+                        position: 'erPortPosition',
+                    },
+                },
+                items: [
+                    {
+                        id: `${guid}-port-0`,
+                        group: 'columnList',
+                        zIndex: 0,
+                    },
+                    ...columns,
+                ],
+            },
         }
+
+        if (isProcess) delete nodeData.ports
 
         return { nodeData, enrichedEntity, isProcess }
     }
@@ -172,8 +248,14 @@ export default function useGraph() {
         const stroke = '#C7C7C7'
         const edgeData = {
             id: `${relation.fromEntityId}@${relation.toEntityId}`,
-            source: relation.fromEntityId,
-            target: relation.toEntityId,
+            source: {
+                cell: relation.fromEntityId,
+                port: `${relation.fromEntityId}-port-2`, // TODO: use dynamic relations
+            },
+            target: {
+                cell: relation.toEntityId,
+                port: `${relation.toEntityId}-port-4`, // TODO: use dynamic relations
+            },
             router: {
                 name: 'metro',
             },

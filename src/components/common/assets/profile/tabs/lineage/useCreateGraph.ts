@@ -53,15 +53,34 @@ export default function useCreateGraph(
         },
     })
 
+    Graph.registerPortLayout(
+        'erPortPosition',
+        (portsPositionArgs) => {
+            return portsPositionArgs.map((_, index) => {
+                return {
+                    position: {
+                        x: 1,
+                        y: (index + 1) * 40,
+                    },
+                    angle: 0,
+                }
+            })
+        },
+        true
+    )
+
     /* graphLayout */
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         rankdir: 'LR',
-        nodesep: 20,
         controlPoints: true,
+        nodesepFunc(item) {
+            const length = item.ports?.items.length || null
+            const size = length ? (length - 1) * 25 : 20
+            return size
+        },
         ranksepFunc() {
-            if (showProcess.value) return 80
-            return 45
+            return 120
         },
     })
 

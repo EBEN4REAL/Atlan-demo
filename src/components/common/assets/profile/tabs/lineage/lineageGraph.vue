@@ -362,7 +362,7 @@
 
         // Process Nodes
         &-process {
-            border: 2px solid #e6e6eb;
+            border: 1px solid #e6e6eb;
             border-radius: 100%;
             display: flex;
             align-items: center;
@@ -373,10 +373,10 @@
             cursor: pointer;
 
             &.isHighlightedNode {
-                border: 2px solid #5277d7;
+                border: 1px solid #5277d7;
             }
             &.isHighlightedNodePath {
-                border: 2px solid #5277d7;
+                border: 1px solid #5277d7;
             }
 
             & > .process-icon {
@@ -390,13 +390,13 @@
 
         // Non-Process Nodes
         &-node {
-            padding: 4px 8px 3px 8px;
+            padding: 10px 8px 0px 10px;
             font-size: 16px;
-            border: 2px solid #e6e6eb;
+            border: 1px solid #e6e6eb;
             border-radius: 4px;
             background-color: #ffffff;
             width: 270px;
-            height: 60px;
+            height: 70px;
             cursor: pointer;
             outline: 0 !important;
 
@@ -407,11 +407,11 @@
 
             &.isBase {
                 border-top-left-radius: 0;
-                border: 2px solid #5277d7 !important;
+                border: 1px solid #5277d7 !important;
                 background-color: #ffffff !important;
 
                 &.isHighlightedNode {
-                    border: 2px solid #5277d7 !important;
+                    border: 1px solid #5277d7 !important;
                 }
 
                 .inscr {
@@ -424,11 +424,11 @@
                         background: #ffffff;
                         color: #5277d7;
                         position: absolute;
-                        border: 2px solid #5277d7;
+                        border: 1px solid #5277d7;
                         border-bottom: 0;
-                        top: -33px;
+                        top: -37px;
                         padding: 0 8px;
-                        left: -10px;
+                        left: -11px;
                         border-top-right-radius: 4px;
                         border-top-left-radius: 4px;
                     }
@@ -464,7 +464,7 @@
         }
 
         .isGrayed {
-            border: 2px solid #e6e6eb !important;
+            border: 1px solid #e6e6eb !important;
 
             .node-text {
                 color: #6f7590 !important;
@@ -476,12 +476,12 @@
         }
 
         .isHighlightedNode {
-            border: 2px solid #5277d7 !important;
+            border: 1px solid #5277d7 !important;
             background-color: #e5ecff !important;
         }
 
         .isHighlightedNodePath {
-            border: 2px solid #5277d7;
+            border: 1px solid #5277d7;
             background-color: #ffffff;
         }
     }

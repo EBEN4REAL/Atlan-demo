@@ -88,14 +88,20 @@
                         "
                     >
                         <div
-                            class="flex capitalize truncate cursor-pointer  text-primary"
+                            class="
+                                flex
+                                capitalize
+                                truncate
+                                cursor-pointer
+                                text-primary
+                            "
                         >
                             <div class="mr-2 truncate max-w-3/4">
                                 {{ group.name }}
                             </div>
                             <!-- <div
                                 v-if="group.isDefault === 'true'"
-                                class="px-2 py-1 text-xs rounded-full  bg-blue-50 text-gray"
+                                class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
                             >
                                 Default
                             </div> -->
@@ -112,7 +118,7 @@
                         :mark-as-default-loading="markAsDefaultLoading"
                         :delete-group-loading="deleteGroupLoading"
                         @addMembers="handleAddMembers(group)"
-                        @deleteGroup="handleDeleteGroup(group.id)"
+                        @deleteGroup="handleDeleteGroup(group)"
                         @toggleDefault="handleToggleDefault(group)"
                     />
                 </template>
@@ -136,281 +142,325 @@
     </DefaultLayout>
 </template>
 <script lang="ts">
-    import { ref, reactive, defineComponent, computed, watch } from 'vue'
-    import ErrorView from '@common/error/index.vue'
-    import { message } from 'ant-design-vue'
-    import { useDebounceFn } from '@vueuse/core'
-    import EmptyView from '@common/empty/index.vue'
-    import { Groups } from '~/services/service/groups'
-    import DefaultLayout from '@/admin/layout.vue'
-    import useGroups from '~/composables/group/useGroups'
+import { ref, reactive, defineComponent, computed, watch, h } from 'vue'
+import ErrorView from '@common/error/index.vue'
+import { message, Modal } from 'ant-design-vue'
+import { useDebounceFn } from '@vueuse/core'
+import EmptyView from '@common/empty/index.vue'
+import { Groups } from '~/services/service/groups'
+import DefaultLayout from '@/admin/layout.vue'
+import useGroups from '~/composables/group/useGroups'
 
-    import { useGroupPreview } from '~/composables/group/showGroupPreview'
+import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
-    import ActionButtons from './actionButtons.vue'
-    import AtlanButton from '@/UI/button.vue'
-    import map from '~/constant/accessControl/map'
-    import AddGroup from '@/admin/groups/addGroup.vue'
-    import { columns } from '~/constant/groups'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+import ActionButtons from './actionButtons.vue'
+import AtlanButton from '@/UI/button.vue'
+import map from '~/constant/accessControl/map'
+import AddGroup from '@/admin/groups/addGroup.vue'
+import { columns } from '~/constant/groups'
+import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
-    export default defineComponent({
-        name: 'GroupList',
-        components: {
-            ErrorView,
-            EmptyView,
-            AddGroup,
-            AtlanButton,
-            DefaultLayout,
-            ActionButtons,
-            SearchAndFilter,
-        },
-        setup(props, context) {
-            const defaultTab = ref('about')
-            const showGroupPreview = ref(false)
-            const markAsDefaultLoading = ref(false)
-            const deleteGroupLoading = ref(false)
-            const showActionsDropdown = ref(false)
-            const isGroupDrawerVisible = ref(false)
+export default defineComponent({
+    name: 'GroupList',
+    components: {
+        ErrorView,
+        EmptyView,
+        AddGroup,
+        AtlanButton,
+        DefaultLayout,
+        ActionButtons,
+        SearchAndFilter,
+    },
+    setup(props, context) {
+        const defaultTab = ref('about')
+        const showGroupPreview = ref(false)
+        const markAsDefaultLoading = ref(false)
+        const deleteGroupLoading = ref(false)
+        const showActionsDropdown = ref(false)
+        const isGroupDrawerVisible = ref(false)
 
-            const selectedGroupId = ref('')
-            const groupListAPIParams = reactive({
-                limit: 15,
-                offset: 0,
-                filter: {},
-                sort: '-createdAt',
-            })
-            const pagination = computed(() => ({
-                total: Object.keys(groupListAPIParams.filter).length
-                    ? filteredGroupsCount.value
-                    : totalGroupsCount.value,
-                pageSize: groupListAPIParams.limit,
-                current:
-                    groupListAPIParams.offset / groupListAPIParams.limit + 1,
-            }))
+        const selectedGroupId = ref('')
+        const groupListAPIParams = reactive({
+            limit: 15,
+            offset: 0,
+            filter: {},
+            sort: '-createdAt',
+        })
+        const pagination = computed(() => ({
+            total: Object.keys(groupListAPIParams.filter).length
+                ? filteredGroupsCount.value
+                : totalGroupsCount.value,
+            pageSize: groupListAPIParams.limit,
+            current: groupListAPIParams.offset / groupListAPIParams.limit + 1,
+        }))
 
-            const {
-                groupList,
-                totalGroupsCount,
-                filteredGroupsCount,
-                getGroupList,
-                error,
-                isLoading,
-            } = useGroups(groupListAPIParams)
+        const {
+            groupList,
+            totalGroupsCount,
+            filteredGroupsCount,
+            getGroupList,
+            error,
+            isLoading,
+        } = useGroups(groupListAPIParams)
 
-            // BEGIN: GROUP PREVIEW
-            const {
-                showPreview,
-                showGroupPreview: openPreview,
-                setGroupUniqueAttribute,
-                setDefaultTab,
-                closePreview,
-                groupId,
-            } = useGroupPreview()
+        // BEGIN: GROUP PREVIEW
+        const {
+            showPreview,
+            showGroupPreview: openPreview,
+            setGroupUniqueAttribute,
+            setDefaultTab,
+            closePreview,
+            groupId,
+        } = useGroupPreview()
 
-            const showGroupPreviewDrawer = (
-                group: any,
-                activeTabKey = 'about'
-            ) => {
-                if (showPreview.value && groupId.value === group.id) {
-                    closePreview()
-                } else {
-                    selectedGroupId.value = group.id
-                    setDefaultTab(activeTabKey)
-                    setGroupUniqueAttribute(group.id)
-                    openPreview()
-                }
+        const showGroupPreviewDrawer = (group: any, activeTabKey = 'about') => {
+            if (showPreview.value && groupId.value === group.id) {
+                closePreview()
+            } else {
+                selectedGroupId.value = group.id
+                setDefaultTab(activeTabKey)
+                setGroupUniqueAttribute(group.id)
+                openPreview()
             }
-            watch(showPreview, () => {
-                if (!showPreview.value) getGroupList()
-            })
-            // END: GROUP PREVIEW
+        }
+        watch(showPreview, () => {
+            if (!showPreview.value) getGroupList()
+        })
+        // END: GROUP PREVIEW
 
-            // Logic for search input
-            const searchText = ref<string>('')
-            const onSearch = useDebounceFn(() => {
-                groupListAPIParams.filter = searchText.value
-                    ? {
-                          $or: [
-                              { name: { $ilike: `%${searchText.value}%` } },
-                              {
-                                  attributes: {
-                                      $elemMatch: {
-                                          alias: {
-                                              $ilike: `%${searchText.value}%`,
-                                          },
+        // Logic for search input
+        const searchText = ref<string>('')
+        const onSearch = useDebounceFn(() => {
+            groupListAPIParams.filter = searchText.value
+                ? {
+                      $or: [
+                          { name: { $ilike: `%${searchText.value}%` } },
+                          {
+                              attributes: {
+                                  $elemMatch: {
+                                      alias: {
+                                          $ilike: `%${searchText.value}%`,
                                       },
                                   },
                               },
-                              // { alias: { $ilike: `%${searchText.value}%` } },
-                          ],
-                      }
-                    : {}
+                          },
+                          // { alias: { $ilike: `%${searchText.value}%` } },
+                      ],
+                  }
+                : {}
+            groupListAPIParams.offset = 0
+            getGroupList()
+        }, 600)
+        const clearFilter = () => {
+            groupListAPIParams.filter = {}
+            getGroupList()
+        }
+
+        const handlePagination = (page: number) => {
+            // modify offset
+            const offset = (page - 1) * groupListAPIParams.limit
+            groupListAPIParams.offset = offset
+            getGroupList()
+        }
+
+        const handleTableChange = (
+            pagination: any,
+            filters: any,
+            sorter: any
+        ) => {
+            // add sort
+            if (Object.keys(sorter).length) {
+                let sortValue = '-createdAt'
+                if (sorter.order && sorter.column && sorter.column.sortKey)
+                    sortValue = `${sorter.order === 'descend' ? '-' : ''}${
+                        sorter.column.sortKey
+                    }`
+                groupListAPIParams.sort = sortValue
                 groupListAPIParams.offset = 0
-                getGroupList()
-            }, 600)
-            const clearFilter = () => {
-                groupListAPIParams.filter = {}
-                getGroupList()
             }
+            // modify offset
+            // const offset =
+            //     (pagination.current - 1) * groupListAPIParams.limit
+            // groupListAPIParams.offset = offset
+            // fetch groups
+            getGroupList()
+        }
 
-            const handlePagination = (page: number) => {
-                // modify offset
-                const offset = (page - 1) * groupListAPIParams.limit
-                groupListAPIParams.offset = offset
-                getGroupList()
-            }
+        const handleAddMembers = (group: any) => {
+            showGroupPreviewDrawer(group, 'members')
+        }
 
-            const handleTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
-                // add sort
-                if (Object.keys(sorter).length) {
-                    let sortValue = '-createdAt'
-                    if (sorter.order && sorter.column && sorter.column.sortKey)
-                        sortValue = `${sorter.order === 'descend' ? '-' : ''}${
-                            sorter.column.sortKey
-                        }`
-                    groupListAPIParams.sort = sortValue
-                    groupListAPIParams.offset = 0
-                }
-                // modify offset
-                // const offset =
-                //     (pagination.current - 1) * groupListAPIParams.limit
-                // groupListAPIParams.offset = offset
-                // fetch groups
-                getGroupList()
-            }
+        const handleGroupClick = (group: any) => {
+            showGroupPreviewDrawer(group)
+        }
+        const selectedGroup = computed(() => {
+            let activeGroupObj = {}
+            if (groupList && groupList.value && groupList.value.length)
+                activeGroupObj = groupList.value.find(
+                    (group: any) => group.id === selectedGroupId.value
+                )
+            return activeGroupObj
+        })
 
-            const handleAddMembers = (group: any) => {
-                showGroupPreviewDrawer(group, 'members')
-            }
-
-            const handleGroupClick = (group: any) => {
-                showGroupPreviewDrawer(group)
-            }
-            const selectedGroup = computed(() => {
-                let activeGroupObj = {}
-                if (groupList && groupList.value && groupList.value.length)
-                    activeGroupObj = groupList.value.find(
-                        (group: any) => group.id === selectedGroupId.value
+        const handleClosePreview = () => {
+            defaultTab.value = 'about'
+            showGroupPreview.value = false
+        }
+        const handleDeleteGroup = (group) => {
+            Modal.confirm({
+                title: 'Delete Group',
+                class: 'delete-group-modal',
+                content: () => {
+                    return h('div', [
+                        'Are you sure you want to delete group',
+                        h('span', [' ']),
+                        h(
+                            'span',
+                            {
+                                class: ['font-bold'],
+                            },
+                            [`${group.name}`]
+                        ),
+                        h('span', '?'),
+                    ])
+                },
+                okType: 'danger',
+                autoFocusButton: null,
+                okButtonProps: {
+                    type: 'primary',
+                },
+                okText: 'Delete',
+                cancelText: 'Cancel',
+                async onOk() {
+                    const messageKey = Date.now()
+                    const { data, isReady, error, isLoading } =
+                        Groups.DeleteGroup(group.id)
+                    watch(
+                        [data, isReady, error, isLoading],
+                        () => {
+                            deleteGroupLoading.value = isLoading.value
+                            if (!error.value && !isLoading.value) {
+                                getGroupList()
+                                message.success({
+                                    content: `Group Removed`,
+                                    duration: 1.5,
+                                    key: messageKey,
+                                })
+                            } else if (
+                                error &&
+                                error.value &&
+                                !isLoading.value
+                            ) {
+                                message.error({
+                                    content: `Failed to remove group`,
+                                    duration: 1.5,
+                                    key: messageKey,
+                                })
+                            } else
+                                message.loading({
+                                    content: `Removing group`,
+                                    duration: 0,
+                                    key: messageKey,
+                                })
+                        },
+                        { immediate: true }
                     )
-                return activeGroupObj
+                },
             })
-
-            const handleClosePreview = () => {
-                defaultTab.value = 'about'
-                showGroupPreview.value = false
+        }
+        const handleToggleDefault = (group: any) => {
+            const requestPayload = ref()
+            requestPayload.value = {
+                attributes: {
+                    isDefault: [
+                        `${group.isDefault === 'true' ? 'false' : 'true'}`,
+                    ],
+                },
             }
-            const handleDeleteGroup = (groupId: string) => {
-                const { data, isReady, error, isLoading } =
-                    Groups.DeleteGroup(groupId)
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        deleteGroupLoading.value = isLoading.value
-                        if (isReady && !error.value && !isLoading.value) {
-                            getGroupList()
-                            message.success('Group Removed')
-                        } else if (error && error.value) {
-                            message.error('Failed, try again')
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
-
-            const handleToggleDefault = (group: any) => {
-                const requestPayload = ref()
-                requestPayload.value = {
-                    attributes: {
-                        isDefault: [
-                            `${group.isDefault === 'true' ? 'false' : 'true'}`,
-                        ],
-                    },
-                }
-                const { data, isReady, error, isLoading } = Groups.UpdateGroup(
-                    group.id,
-                    requestPayload
-                )
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        markAsDefaultLoading.value = isLoading.value
-                        if (isReady && !error.value && !isLoading.value) {
-                            message.success(
-                                `Group ${
-                                    group.isDefault === 'true'
-                                        ? 'unmarked'
-                                        : 'marked'
-                                } as default`
-                            )
-                            getGroupList()
-                        } else if (error && error.value) {
-                            message.error(
-                                `Unable to ${
-                                    group.isDefault === 'true'
-                                        ? 'unmark'
-                                        : 'mark'
-                                } group as default, please try again`
-                            )
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
-            return {
-                columns,
-                isGroupDrawerVisible,
-                searchText,
-                onSearch,
-                groupList,
-                pagination,
-                clearFilter,
-                handleTableChange,
-                error,
-                isLoading,
-                handleGroupClick,
-                showGroupPreview,
-                totalGroupsCount,
-                selectedGroup,
-                handleClosePreview,
-                handleDeleteGroup,
-                getGroupList,
-                handleAddMembers,
-                defaultTab,
-                handleToggleDefault,
-                markAsDefaultLoading,
-                deleteGroupLoading,
-                showActionsDropdown,
-                map,
-                handlePagination,
-            }
-        },
-    })
+            const { data, isReady, error, isLoading } = Groups.UpdateGroup(
+                group.id,
+                requestPayload
+            )
+            watch(
+                [data, isReady, error, isLoading],
+                () => {
+                    markAsDefaultLoading.value = isLoading.value
+                    if (isReady && !error.value && !isLoading.value) {
+                        message.success(
+                            `Group ${
+                                group.isDefault === 'true'
+                                    ? 'unmarked'
+                                    : 'marked'
+                            } as default`
+                        )
+                        getGroupList()
+                    } else if (error && error.value) {
+                        message.error(
+                            `Unable to ${
+                                group.isDefault === 'true' ? 'unmark' : 'mark'
+                            } group as default, please try again`
+                        )
+                    }
+                },
+                { immediate: true }
+            )
+        }
+        return {
+            columns,
+            isGroupDrawerVisible,
+            searchText,
+            onSearch,
+            groupList,
+            pagination,
+            clearFilter,
+            handleTableChange,
+            error,
+            isLoading,
+            handleGroupClick,
+            showGroupPreview,
+            totalGroupsCount,
+            selectedGroup,
+            handleClosePreview,
+            handleDeleteGroup,
+            getGroupList,
+            handleAddMembers,
+            defaultTab,
+            handleToggleDefault,
+            markAsDefaultLoading,
+            deleteGroupLoading,
+            showActionsDropdown,
+            map,
+            handlePagination,
+        }
+    },
+})
 </script>
-<style lang="less" scoped>
-    #groupList {
-        th.ant-table-row-cell-last {
-            display: flex;
-            justify-content: center;
-        }
+<style lang="less">
+.delete-group-modal {
+    .ant-modal-confirm-body-wrapper {
+        @apply p-5;
     }
-    .hide-checkbox {
-        .ant-checkbox {
-            display: none;
-        }
-    }
+}
 </style>
-
-<style lang="less" module>
-    .groupTable {
-        :global(.ant-table-column-title) {
-            @apply text-left;
-        }
+<style lang="less" scoped>
+#groupList {
+    th.ant-table-row-cell-last {
+        display: flex;
+        justify-content: center;
     }
+}
+.hide-checkbox {
+    .ant-checkbox {
+        display: none;
+    }
+}
+</style>
+<style lang="less" module>
+.groupTable {
+    :global(.ant-table-column-title) {
+        @apply text-left;
+    }
+}
 </style>
 <route lang="yaml">
 meta:

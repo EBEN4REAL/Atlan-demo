@@ -49,7 +49,11 @@
         </template>
 
         <template #title="entity">
-            <GlossaryTreeItem :item="entity" :class="treeItemClass"  :checkable="checkable" />
+            <GlossaryTreeItem
+                :item="entity"
+                :class="treeItemClass"
+                :checkable="checkable"
+            />
         </template>
     </a-tree>
 </template>
@@ -107,8 +111,8 @@
             checkable: {
                 type: Boolean,
                 required: false,
-                default: false
-            }
+                default: false,
+            },
         },
         emits: ['select', 'check'],
         setup(props, { emit }) {
@@ -142,15 +146,9 @@
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
-                checkable: props.checkable
+                checkable: props.checkable,
             })
 
-            onMounted(() => {
-                initTreeData(defaultGlossary.value)
-            })
-            watch(defaultGlossary, () => {
-                initTreeData(defaultGlossary.value)
-            })
             const addGlossary = (asset) => {
                 addNode(asset)
             }
@@ -179,8 +177,14 @@
             }
             const onCheck = (e, { checkedNodes }) => {
                 emit('check', checkedNodes)
-                console.log('bruh', checkedNodes)
             }
+            onMounted(() => {
+                reInitTree()
+            })
+            watch(defaultGlossary, () => {
+                reInitTree()
+            })
+
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             return {
@@ -204,7 +208,7 @@
                 collapseTree,
                 addGTCNode,
                 reInitTree,
-                onCheck
+                onCheck,
             }
             // data
         },

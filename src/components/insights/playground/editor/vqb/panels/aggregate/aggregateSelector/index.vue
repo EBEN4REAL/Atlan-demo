@@ -225,6 +225,8 @@
                         label: item.label,
                     })
                     // }
+                    // console.log('selected: ', key)
+                    map.value[key] = true
                 })
                 return data
             })

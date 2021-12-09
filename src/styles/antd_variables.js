@@ -8,6 +8,7 @@ import themeColors from './theme/atlan_theme.js'
 const getAntDesignVariables = {
     'primary-color': themeColors.primary.DEFAULT,
     'link-color': themeColors.primary.DEFAULT,
+    'error-color':themeColors.error.DEFAULT,
     'heading-color': themeColors.gray.DEFAULT,
     'text-color': themeColors.gray.DEFAULT,
     'font-family': 'Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !important;',

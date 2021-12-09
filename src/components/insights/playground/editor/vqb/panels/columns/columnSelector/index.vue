@@ -224,7 +224,7 @@
             Loader,
             TablesTree,
         },
-        emits: ['queryTextChange', 'checkboxChange'],
+        // emits: ['queryTextChange', 'checkboxChange'],
         props: {
             selectedItems: {
                 type: Object as PropType<any[]>,
@@ -356,22 +356,22 @@
                 if (e?.target.checked) {
                     selectedItems.value = ['all']
                     map.value = {}
-                    emit('checkboxChange', ['all'])
+                    // emit('checkboxChange', ['all'])
                 } else {
                     selectedItems.value = []
-                    emit('checkboxChange', [])
+                    // emit('checkboxChange', [])
                 }
             }
 
             const input1Change = () => {
                 setFoucs()
                 queryText.value = inputValue1.value
-                emit('queryTextChange')
+                // emit('queryTextChange')
             }
             const input2Change = () => {
                 setFoucs()
                 queryText.value = inputValue2.value
-                emit('queryTextChange')
+                // emit('queryTextChange')
             }
 
             const enrichedSelectedItems = computed(() => {
@@ -423,7 +423,7 @@
                 selectedColumnsData.value = [...columns]
 
                 // console.log('selected columns: ', columns)
-                emit('checkboxChange', selectedItems.value)
+                // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
             }
 

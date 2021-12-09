@@ -1,13 +1,10 @@
 <template>
     <div :class="[' mx-3 mt-1 mb-4']">
         <div class="">
-            <!-- {{ columnSubpanels }} -->
-
             <template
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
-                <!-- {{ subpanel }} -->
                 <div
                     class="flex items-center w-full mb-3"
                     @mouseover="hoverItem = subpanel.id"
@@ -15,7 +12,7 @@
                 >
                     <ColumnSelector
                         class="flex-1"
-                        style="max-width: 45.5%"
+                        style="max-width: 30%"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
@@ -23,15 +20,12 @@
                         @change="(val) => handleColumnChange(val, index)"
                     />
 
-                    <span class="px-3 text-sm text-gray-500">aggregate by</span>
-
-                    <AggregateSelector
-                        class="flex-1 ml-6"
-                        style="max-width: 45%"
-                        v-model:selectedItems="subpanel.aggregators"
-                        :columnName="subpanel?.column?.label"
-                        :columnType="subpanel?.column?.type"
-                        @checkChange="checkChange"
+                    <span class="px-3 text-sm text-gray-500">order by</span>
+                    <!-- {{ subpanel }} -->
+                    <RaisedTab
+                        v-model:active="subpanel.order"
+                        class="mr-auto"
+                        :data="tabConfig"
                     />
 
                     <AtlanIcon
@@ -62,19 +56,19 @@
     import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
     // import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import AggregateSelector from '../aggregateSelector/index.vue'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
-    import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
+    import { SubpanelSort } from '~/types/insights/VQBPanelSort.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
+    import RaisedTab from '@/UI/raisedTab.vue'
     // import ColumnSelector from '../columnSelector/index.vue'
     import ColumnSelector from '../../common/columnSelector/index.vue'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
-            AggregateSelector,
             ColumnSelector,
+            RaisedTab,
         },
         props: {
             expand: {
@@ -83,7 +77,7 @@
                 default: false,
             },
             subpanels: {
-                type: Object as PropType<SubpanelAggregator[]>,
+                type: Object as PropType<SubpanelSort[]>,
                 required: true,
                 default: [],
             },
@@ -126,14 +120,14 @@
             }
 
             const handleAddPanel = () => {
-                const copySubPanels: SubpanelAggregator[] = JSON.parse(
+                const copySubPanels: SubpanelSort[] = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value))
                 )
                 let uuid = generateUUID()
                 copySubPanels.push({
-                    id: uuid,
+                    id: generateUUID(),
                     column: {},
-                    aggregators: [],
+                    order: 'asc',
                 })
                 subpanels.value = copySubPanels
 
@@ -148,6 +142,12 @@
             }
 
             let hoverItem = ref(null)
+            const tabConfig = ref([
+                { key: 'asc', label: 'ASC' },
+                { key: 'desc', label: 'DESC' },
+            ])
+
+            // const selectedOrder = ref('asc')
 
             return {
                 selectedAggregates,
@@ -161,6 +161,8 @@
                 selectedColumn,
                 changeColumn,
                 hoverItem,
+                // selectedOrder,
+                tabConfig,
             }
         },
     })

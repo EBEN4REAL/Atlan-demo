@@ -8,7 +8,7 @@
         :class="$style.classification"
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
     >
-        <template v-for="item in sortedList" :key="item.id">
+        <template v-for="item in classificationList" :key="item.id">
             <a-select-option :value="item.name">
                 <div class="flex items-center truncate">
                     <ClassificationIcon :color="item.options?.color" />
@@ -159,36 +159,15 @@
                     })
                     countFolders.value = folder
                 }
-
-                // console.log('count folders: ', countFolders.value)
-
-                // classificationList.value.forEach((el) => {
-                //     if (el.name in countFolders.value) {
-                //     } else {
-                //         countFolders.value = {
-                //             ...countFolders.value,
-                //             [el.name]: 0,
-                //         }
-                //     }
-
-                //     if (el.name in countQueries.value) {
-                //     } else {
-                //         countQueries.value = {
-                //             ...countQueries.value,
-                //             [el.name]: 0,
-                //         }
-                //     }
-                // })
-                // console.log('aggregated: ', { folder, query })
             })
 
-            const sortedList = computed(() => {
-                return classificationList.value.sort((a, b) => {
-                    if (countQueries.value[a.name] > countQueries.value[b.name])
-                        return -1
-                    else return 1
-                })
-            })
+            // const sortedList = computed(() => {
+            //     return classificationList.value.sort((a, b) => {
+            //         if (countQueries.value[a.name] > countQueries.value[b.name])
+            //             return -1
+            //         else return 1
+            //     })
+            // })
 
             // const sortedList = computed(() => {
             //     return classificationList.value.sort((a, b) => {
@@ -201,7 +180,7 @@
 
             const handleChange = (value) => {
                 localValue.value = value
-                let selection = sortedList.value.find(
+                let selection = classificationList.value.find(
                     (item) => item.name === value
                 )
                 localValue.value = selection
@@ -216,7 +195,8 @@
                 handleChange,
                 countQueries,
                 countFolders,
-                sortedList,
+                // sortedList,
+                classificationList,
             }
         },
     })

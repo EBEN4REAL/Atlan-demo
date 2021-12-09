@@ -18,11 +18,9 @@
             <p class="mb-1 text-sm tracking-wide text-gray-500">Created</p>
             <p class="mb-0 text-gray-700">
                 {{
-                    selectedWorkflow?.workflowtemplate?.metadata
-                        ?.creationTimestamp
+                    selectedWorkflow?.metadata?.creationTimestamp
                         ? formatDateTime(
-                              selectedWorkflow.workflowtemplate.metadata
-                                  .creationTimestamp
+                              selectedWorkflow.metadata.creationTimestamp
                           )
                         : '-'
                 }}
@@ -34,14 +32,13 @@
 <script lang="ts">
     import { defineComponent, PropType, inject } from 'vue'
     import { message } from 'ant-design-vue'
-    import AtlanIcon from '@common/icon/atlanIcon.vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { copyToClipboard } from '~/utils/clipboard'
     import { formatDateTime } from '~/utils/date'
 
     export default defineComponent({
-        components: { AtlanIcon, Tooltip },
+        components: { Tooltip },
         props: {
             selectedWorkflow: {
                 type: Object as PropType<assetInterface>,
@@ -54,9 +51,7 @@
 
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
-                message.success({
-                    content: 'GUID Copied!',
-                })
+                message.success('GUID Copied!')
             }
             return {
                 copyAPI,

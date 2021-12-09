@@ -195,7 +195,7 @@
                 isReady,
                 mutate,
                 filter_record,
-                iDs,
+                allCreatorIDs,
             } = useWorkflowSearchList(false)
 
             const isLoadMore = computed(
@@ -209,7 +209,7 @@
                     content: `${errMsg || `Network Error`}`,
                     key: 'error',
                     duration: 5,
-                })
+                } as any)
             })
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})
@@ -239,14 +239,12 @@
             const isFilterAppplied = ref(false)
 
             const shootQuery = () => {
-                console.log(AllFilters.value)
-                const filters = transformToFilters(AllFilters.value)
-                console.log({ filters })
+                const filters_1 = transformToFilters(AllFilters.value)
                 //! check if filter is user specific applied check to show empty state
-                const filterCopy = filters?.filter
+                const filterCopy: object = filters_1?.filter
                 if (filterCopy.$and?.length === 1) delete filterCopy.$and
                 isFilterAppplied.value = !!Object?.keys(filterCopy).length
-                filterList(filters)
+                filterList(filters_1)
             }
             if (!workflowList.value.length) shootQuery()
 
@@ -289,7 +287,7 @@
                 filter?: any
                 sort?: string
             }> = computed(() =>
-                iDs.value
+                allCreatorIDs.value
                     ? {
                           limit: 1,
                           offset: 0,
@@ -297,7 +295,8 @@
                           filter: {
                               $and: [
                                   {
-                                      $or: iDs.value,
+                                      // ! Filtering by ID(s) is no longer working from the API
+                                      $or: allCreatorIDs.value,
                                   },
                               ],
                           },
@@ -312,7 +311,7 @@
                 })
             }
 
-            watch(iDs, () => {
+            watch(allCreatorIDs, () => {
                 handleGetUser()
             })
 
@@ -360,7 +359,7 @@
                 handleFilterChange,
                 handleFilterInit,
                 handleChangeSort,
-                iDs,
+                allCreatorIDs,
                 params,
                 defaultfiltersList,
             }

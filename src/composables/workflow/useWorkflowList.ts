@@ -22,7 +22,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
     const workflowList = ref([])
     const totalCount = ref()
     const filter_record = ref()
-    const iDs = ref([])
+    const allCreatorIDs = ref([])
 
     watch(data, () => {
         if (!data?.value?.records) return
@@ -30,7 +30,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
             id: el?.metadata.labels['workflows.argoproj.io/creator'],
             emailVerified: true,
         }))
-        iDs.value = [...iDs.value, ...filtered]
+        allCreatorIDs.value = [...allCreatorIDs.value, ...filtered]
         totalCount.value = data.value.total_record
         filter_record.value = data.value.filter_record
         workflowList.value.push(...data.value.records)
@@ -84,7 +84,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
         mutate,
         filter_record,
         isReady,
-        iDs,
+        allCreatorIDs,
     }
 }
 

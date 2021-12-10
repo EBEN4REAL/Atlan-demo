@@ -2,12 +2,7 @@
     <div>
         <a-dropdown :trigger="['hover']" :class="$style.dropdownn">
             <AtlanBtn
-                class="
-                    flex-none
-                    px-3.5
-                    py-1
-                    border-none border-r border-gray-300
-                "
+                class="flex-none px-3.5 py-1 border-none border-r border-gray-300"
                 size="sm"
                 color="secondary"
                 @click.stop="() => {}"
@@ -49,6 +44,7 @@
     import AtlanBtn from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({
         name: 'Columns',
@@ -72,7 +68,32 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const handleAdd = (type) => {
-                emit('add', type)
+                let panel = {}
+                let uuid = generateUUID()
+
+                if (type === 'aggregate') {
+                    panel = {
+                        id: uuid,
+                        column: {},
+                        aggregators: [],
+                    }
+                } else if (type === 'group') {
+                    panel = {
+                        id: uuid,
+                        tableQualfiedName: undefined,
+                        columns: [],
+                        columsData: [],
+                    }
+                } else if (type === 'sort') {
+                    panel = {
+                        id: uuid,
+                        column: {},
+                        order: 'asc',
+                    }
+                }
+                emit('add', type, panel)
+
+                // emit('add', type)
             }
             const items = [
                 {
@@ -81,24 +102,24 @@
                     label: 'Aggregate',
                     class: 'mt-0.5 mr-2',
                 },
-                {
-                    id: 'filter',
-                    icon: 'Filter',
-                    label: 'Filter',
-                    class: 'mr-2',
-                },
+                // {
+                //     id: 'filter',
+                //     icon: 'Filter',
+                //     label: 'Filter',
+                //     class: 'mr-2',
+                // },
                 {
                     id: 'sort',
                     icon: 'Sort',
                     label: 'Sort',
                     class: 'mr-2',
                 },
-                {
-                    id: 'join',
-                    icon: 'Union',
-                    label: 'Join data',
-                    class: 'mr-2',
-                },
+                // {
+                //     id: 'join',
+                //     icon: 'Union',
+                //     label: 'Join data',
+                //     class: 'mr-2',
+                // },
                 {
                     id: 'group',
                     icon: 'BuilderGroup',

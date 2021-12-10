@@ -1,21 +1,28 @@
 <template>
     <div :class="[' mx-3 mt-1 mb-4']">
         <div class="">
-            <!-- {{ columnSubpanels }} -->
-
             <template
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
-                <!-- {{ subpanel }} -->
                 <div
                     class="flex items-center w-full mb-3"
                     @mouseover="hoverItem = subpanel.id"
                     @mouseout="hoverItem = null"
                 >
+                    <div style="width: 90px">
+                        <FilterType
+                            v-if="index !== 0"
+                            v-model:filterType="subpanel.filter.filterType"
+                        />
+                        <span v-else class="flex flex-row-reverse text-gray-500"
+                            >Where</span
+                        >
+                    </div>
+
                     <ColumnSelector
-                        class="flex-1"
-                        style="max-width: 45.5%"
+                        class="flex-1 ml-6"
+                        style="max-width: 30%"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
@@ -23,21 +30,38 @@
                         @change="(val) => handleColumnChange(val, index)"
                     />
 
-                    <span class="px-3 text-sm text-gray-500">aggregate by</span>
-
-                    <AggregateSelector
-                        class="flex-1"
-                        style="max-width: 45%"
-                        v-model:selectedItems="subpanel.aggregators"
+                    <FilterSelector
+                        class="ml-6"
+                        style="width: 300px"
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"
-                        @checkChange="checkChange"
+                        v-model:selectedFilter="subpanel.filter"
                     />
 
+                    <Input
+                        v-if="subpanel?.filter?.type === 'input'"
+                        class="flex-1 ml-6"
+                        style="max-width: 30%"
+                        v-model:inputValue="subpanel.filter.value"
+                    />
+
+                    <MultiInput
+                        v-if="subpanel?.filter?.type === 'multi_input'"
+                        class="flex-1 ml-6"
+                        style="max-width: 30%"
+                        v-model:inputValue="subpanel.filter.value"
+                    />
+
+                    <RangeInput
+                        v-if="subpanel?.filter?.type === 'range_input'"
+                        class="flex-1 ml-6"
+                        style="max-width: 30%"
+                        v-model:inputValue="subpanel.filter.value"
+                    />
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
-                        class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
+                        class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-auto"
                         :class="`opacity-${
                             hoverItem === subpanel.id ? 100 : 0
                         }`"
@@ -46,12 +70,14 @@
             </template>
         </div>
 
-        <span
-            class="items-center mt-3 cursor-pointer text-primary"
-            @click.stop="handleAddPanel"
-        >
-            <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-            <span>Add another</span>
+        <span>
+            <div
+                class="items-center mt-3 cursor-pointer text-primary"
+                @click.stop="handleAddPanel"
+            >
+                <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
+                <span>Add another</span>
+            </div>
         </span>
     </div>
 </template>
@@ -60,19 +86,27 @@
     import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
     // import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
-    import AggregateSelector from '../aggregateSelector/index.vue'
+    import FilterSelector from '../filterSelector/index.vue'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
-    import { SubpanelAggregator } from '~/types/insights/VQBPanelAggregators.interface'
+    import { SubpanelFilter } from '~/types/insights/VQBPanelFilter.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
     // import ColumnSelector from '../columnSelector/index.vue'
     import ColumnSelector from '../../common/columnSelector/index.vue'
+    import Input from '../filterComponents/input.vue'
+    import MultiInput from '../filterComponents/multiInput.vue'
+    import FilterType from '../filterComponents/filterType.vue'
+    import RangeInput from '../filterComponents/rangeInput.vue'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
-            AggregateSelector,
+            FilterSelector,
             ColumnSelector,
+            MultiInput,
+            FilterType,
+            RangeInput,
+            Input,
         },
         props: {
             expand: {
@@ -81,7 +115,7 @@
                 default: false,
             },
             subpanels: {
-                type: Object as PropType<SubpanelAggregator[]>,
+                type: Object as PropType<SubpanelFilter[]>,
                 required: true,
                 default: [],
             },
@@ -117,21 +151,23 @@
                     JSON.stringify(toRaw(subpanels.value[index]))
                 )
                 copySubPanel.column = val
-                copySubPanel.aggregators = []
+                // copySubPanel.filter = {}
 
                 subpanels.value[index] = copySubPanel
-                console.log(subpanels.value)
+                // console.log(subpanels.value)
             }
 
             const handleAddPanel = () => {
-                const copySubPanels: SubpanelAggregator[] = JSON.parse(
+                const copySubPanels: SubpanelFilter[] = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value))
                 )
                 let uuid = generateUUID()
                 copySubPanels.push({
                     id: uuid,
                     column: {},
-                    aggregators: [],
+                    filter: {
+                        filterType: 'and',
+                    },
                 })
                 subpanels.value = copySubPanels
 

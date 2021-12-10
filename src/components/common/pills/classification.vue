@@ -86,7 +86,8 @@
             }
 
             const bgHover = computed(() => {
-                switch (color.value) {
+                const bgColor = color.value?.toLowerCase()
+                switch (bgColor) {
                     case 'red':
                         return 'hover:bg-red-400'
                     case 'green':
@@ -94,7 +95,7 @@
                     case 'yellow':
                         return 'hover:bg-yellow-400'
                     default:
-                        return 'hover:bg-blue-400'
+                        return 'hover:bg-primary'
                 }
             })
 

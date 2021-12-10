@@ -80,6 +80,7 @@
                     name: {
                         type: 'string',
                         ui: {
+                            widget: 'alias',
                             label: 'Connection Name',
                             placeholder: 'Connection Name',
                             required: true,

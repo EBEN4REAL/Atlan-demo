@@ -7,9 +7,9 @@
             >
                 <!-- {{ subpanel }} -->
                 <div class="flex items-center w-full mb-3">
-                    <div class="flex-1 border rounded h-14">
-                        <div class="flex flex-wrap items-center w-full h-14">
-                            <template v-for="item in subpanel.columnsData">
+                    <!-- <div class="flex-1 border rounded h-14"> -->
+                    <!-- <div class="flex flex-wrap items-center w-full"> -->
+                    <!-- <template v-for="item in subpanel.columnsData">
                                 <div
                                     class="flex items-center justify-center px-3 py-1.5 ml-2 text-xs text-gray-700 truncate border rounded-full"
                                     @mouseover="hoverPill = item?.label"
@@ -40,8 +40,8 @@
                                         {{ item.label }}
                                     </div>
                                 </div>
-                            </template>
-                            <a-popover trigger="click" placement="bottomLeft">
+                            </template> -->
+                    <!-- <a-popover trigger="click" placement="bottomLeft">
                                 <div
                                     v-if="subpanel?.columnsData?.length === 0"
                                     class="flex items-center justify-center w-full text-gray-500 h-14"
@@ -66,12 +66,11 @@
                                         "
                                     />
                                 </template>
-                            </a-popover>
-                        </div>
-                    </div>
-
-                    <!-- <ColumnSelector
-                        class="flex-1 h-14"
+                            </a-popover> -->
+                    <!-- </div> -->
+                    <ColumnSelector
+                        class="h-9"
+                        style="min-width: 30%"
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
                         :tableQualfiedName="
@@ -80,7 +79,7 @@
                     >
                         <template #chip="{ item }">
                             <div
-                                class="flex items-center justify-center px-3 py-1.5 my-1 mr-2 text-xs text-gray-700 truncate border rounded-full"
+                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
                             >
                                 <component
                                     v-if="item.type !== 'Columns'"
@@ -99,7 +98,10 @@
                                 </div>
                             </div>
                         </template>
-                    </ColumnSelector> -->
+                    </ColumnSelector>
+                    <!-- </div> -->
+                    <!-- </div> -->
+
                     <div
                         v-if="subpanel.tableQualfiedName"
                         class="text-gray-500 hover:text-primary"

@@ -3,6 +3,7 @@
         :placeholder="`Select from ${totalCount} ${typeName}s`"
         :value="modelValue"
         :allowClear="true"
+        :autofocus="true"
         :showSearch="true"
         :class="$style.selector"
         notFoundContent="No data available"

@@ -59,24 +59,25 @@
 
                         <router-link
                             :to="getProfilePath(item)"
+                            class="flex-shrink mb-0 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                             @click="(e) => e.stopPropagation()"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
                         <CertificateBadge
-                            v-if="certificateStatus(item) && !isScrubbed(item)"
+                            v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"
                             :username="certificateUpdatedBy(item)"
                             :timestamp="certificateUpdatedAt(item)"
-                            class="mb-0.5"
+                            class="mb-1 ml-1"
                         ></CertificateBadge>
+
                         <a-tooltip placement="right"
                             ><template #title>Limited Access</template>
                             <AtlanIcon
                                 v-if="isScrubbed(item)"
                                 icon="Lock"
-                                class="h-4 mb-1"
+                                class="h-4 mb-1 ml-1"
                             ></AtlanIcon
                         ></a-tooltip>
                     </div>
@@ -128,7 +129,7 @@
                             ></AtlanIcon>
 
                             <div
-                                class="text-sm tracking-wider text-gray-500 uppercase "
+                                class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
                             </div>
@@ -137,7 +138,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -176,7 +177,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -224,7 +225,7 @@
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
-                                        class="font-semibold tracking-tight text-gray-500 "
+                                        class="font-semibold tracking-tight text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
                                     Rows</span
@@ -241,7 +242,7 @@
                             </a-tooltip>
                             <span class="text-gray-500">
                                 <span
-                                    class="font-semibold tracking-tight text-gray-500 "
+                                    class="font-semibold tracking-tight text-gray-500"
                                     >{{ columnCount(item, false) }}</span
                                 >
                                 Cols</span

@@ -23,10 +23,10 @@
                         <Description
                             ref="descriptionRef"
                             v-model="localDescription"
-                            @change="handleChangeDescription"
                             :selected-asset="asset"
-                            :readOnly="readOnly"
+                            :read-only="readOnly"
                             class="-ml-1"
+                            @change="handleChangeDescription"
                         />
                     </div>
                 </div>
@@ -37,8 +37,8 @@
                         <Certificate
                             v-model="localCertificate"
                             :selected-asset="asset"
+                            :read-only="readOnly"
                             @change="handleChangeCertificate"
-                            :readOnly="readOnly"
                         />
                     </div>
 
@@ -46,9 +46,9 @@
                         <p class="mb-1 text-sm text-gray-500">Owners</p>
                         <Owners
                             v-model="localOwners"
-                            @change="handleOwnersChange"
                             :selected-asset="asset"
-                            :readOnly="readOnly"
+                            :read-only="readOnly"
+                            @change="handleOwnersChange"
                         />
                     </div>
                 </div>

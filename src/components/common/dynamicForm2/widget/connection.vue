@@ -175,6 +175,34 @@
                             hidden: true,
                         },
                     },
+                    connectorName: {
+                        type: 'string',
+                        default: connector.value,
+                        ui: {
+                            hidden: true,
+                        },
+                    },
+                    sourceLogo: {
+                        type: 'string',
+                        default: connectorImage.value,
+                        ui: {
+                            hidden: true,
+                        },
+                    },
+                    isDiscoverable: {
+                        type: 'boolean',
+                        default: true,
+                        ui: {
+                            hidden: true,
+                        },
+                    },
+                    isEditable: {
+                        type: 'boolean',
+                        default: false,
+                        ui: {
+                            hidden: true,
+                        },
+                    },
                 },
             })
 

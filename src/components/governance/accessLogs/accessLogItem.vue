@@ -74,38 +74,24 @@
 </script>
 
 <template>
-    <div class="flex items-center h-full py-1">
+    <div class="flex items-center py-1">
         <div
             v-if="resourceExists"
             class="flex items-center justify-center"
         >
             <div class="items-center">
-                <span class="text-primary uppercase font-bold">
-                    {{ title }}
+                <div class="flex items-center">
+                    <span class="uppercase font-bold text-primary truncate">
+                        {{ title }}
+                    </span>
                     <CertificateBadge
-                        v-if="
-                            certificateStatus(
-                                assetMetaMap[log._source.resourceQF]
-                            )
-                        "
-                        :status="
-                            certificateStatus(
-                                assetMetaMap[log._source.resourceQF]
-                            )
-                        "
-                        :username="
-                            certificateUpdatedBy(
-                                assetMetaMap[log._source.resourceQF]
-                            )
-                        "
-                        :timestamp="
-                            certificateUpdatedAt(
-                                assetMetaMap[log._source.resourceQF]
-                            )
-                        "
-                        class="mb-0.5"
+                        v-if="certificateStatus(assetMetaMap[log._source.resourceQF])"
+                        :status="certificateStatus(assetMetaMap[log._source.resourceQF])"
+                        :username="certificateUpdatedBy(assetMetaMap[log._source.resourceQF])"
+                        :timestamp="certificateUpdatedBy(assetMetaMap[log._source.resourceQF])"
+                        class="ml-1"
                     />
-                </span>
+                </div>
                 <div class="parent-ellipsis-container">
                     <div class="flex flex-wrap items-center mt-1">
                         <div class="flex items-center mr-2">
@@ -114,29 +100,21 @@
                                     <span>{{ connectorName }}</span>
                                     <span v-if="connectionName">/{{ connectionName }}</span>
                                 </template>
-                                <img :src="connectorImage" class="h-4 mr-1 mb-0.5" />
+                                <img :src="connectorImage" class="h-3 mr-1 mb-0.5" />
                             </a-tooltip>
-                            <div
-                                v-else-if="typeOfResource.toLowerCase() === 'atlasglossarycategory'"
-                                class="flex items-center text-xs text-gray-500 "
-                            >
-                                <AtlanIcon
-                                    icon="Term"
-                                    class="h-4 mb-0.5 mr-1"
-                                />
-                            </div>
-                            <div
+                            <AtlanIcon
+                                v-if="typeOfResource.toLowerCase() === 'atlasglossarycategory'"
+                                icon="Category"
+                                class="h-4 mb-0.5 mr-1"
+                            />
+                            <AtlanIcon
                                 v-else-if="typeOfResource.toLowerCase() === 'atlasglossaryterm'"
-                                class="flex items-center text-xs text-gray-500 "
-                            >
-                                <AtlanIcon
-                                    icon="Term"
-                                    class="h-4 mb-0.5 mr-1"
-                                />
-                            </div>
+                                icon="Term"
+                                class="h-4 mb-0.5 mr-1"
+                            />
                             <div
                                 v-else-if="isGTC(assetMetaMap[log._source.resourceQF])"
-                                class="flex items-center text-xs text-gray-500 "
+                                class="flex items-center text-sm text-gray-500 "
                             >
                                 <AtlanIcon
                                     icon="Glossary"
@@ -147,33 +125,87 @@
                             <div class="text-xs tracking-wider text-gray-500 uppercase">
                                 {{ assetLabel || tyepOfResource }}
                             </div>
-                            <div v-if="databaseName" class="flex items-center text-xs text-gray-500 ml-1">
-                                <AtlanIcon
-                                    icon="Database"
-                                    class="h-4 mr-1"
-                                />
-                                {{ databaseName }}
-                            </div>
-                            <div v-if="schemaName" class="flex items-center text-xs text-gray-500 ml-1">
-                                <AtlanIcon
-                                    icon="Schema"
-                                    class="h-4 mr-1"
-                                />
-                                {{ schemaName }}
-                            </div>
-                            <div v-if="tableName" class="flex items-center text-xs text-gray-500 ml-1">
-                                <AtlanIcon
-                                    icon="Table"
-                                    class="h-4 mr-1"
-                                />
-                                {{ tableName }}
-                            </div>
-                            <div v-if="viewName" class="flex items-center text-xs text-gray-500 ml-1">
-                                <AtlanIcon
-                                    icon="View"
-                                    class="h-4 mr-1"
-                                />
-                                {{ viewName }}
+                            <div
+                                v-if="
+                                    [
+                                        'database',
+                                        'table',
+                                        'view',
+                                        'tablepartition',
+                                        'materialisedview',
+                                        'column',
+                                        'schema',
+                                    ].includes(typeOfResource.toLowerCase())
+                                "
+                                class="flex text-sm text-gray-500"
+                            >
+                                <a-tooltip placement="bottomLeft">
+                                    <div
+                                        v-if="databaseName"
+                                        class="flex items-center text-xs text-gray-500"
+                                    >
+                                        <span class="mx-2">&bull;</span>
+                                        <div class="tracking-tight text-gray-500">{{ databaseName }}</div>
+                                    </div>
+                                    <template #title>
+                                        <span>Database - {{ databaseName }}</span>
+                                    </template>
+                                </a-tooltip>
+                                <a-tooltip placement="bottomLeft">
+                                    <div
+                                        v-if="schemaName"
+                                        class="flex items-center text-xs text-gray-500 "
+                                    >
+                                        <div class="tracking-tight text-gray-500">
+                                            <span class="mx-1">/</span>
+                                            <span v-if="tableName">&#8230;</span>
+                                            <span v-else>{{ schemaName }}</span>
+                                        </div>
+                                    </div>
+                                    <template #title>
+                                        <span>Schema - {{ schemaName }}</span>
+                                    </template>
+                                </a-tooltip>
+                                <div
+                                    v-if="['column'].includes(typeOfResource.toLowerCase())"
+                                    class="flex mr-2 text-sm text-gray-500  gap-x-2"
+                                >
+                                    <a-tooltip
+                                        v-if="tableName"
+                                        placement="bottomLeft"
+                                    >
+                                        <div
+                                            v-if="tableName"
+                                            class="flex items-center text-xs text-gray-500"
+                                        >
+                                            <span class="mx-1">/</span>
+                                            <div class="flex-1 min-w-0 text-gray-500">
+                                                <span v-if="viewName">&#8230;</span>
+                                                <div v-else class="truncate">{{ tableName }}</div>
+                                            </div>
+                                        </div>
+                                        <template #title>
+                                            <span>Table - {{ tableName }}</span>
+                                        </template>
+                                    </a-tooltip>
+                                    <a-tooltip
+                                        v-if="viewName"
+                                        placement="bottomLeft"
+                                    >
+                                        <div
+                                            v-if="viewName"
+                                            class="flex-1 items-center text-xs text-gray-500"
+                                        >
+                                            <span class="mx-1">/</span>
+                                            <div class="text-gray-500 truncate min-w-0">
+                                                {{ viewName }}
+                                            </div>
+                                        </div>
+                                        <template #title>
+                                            <span>View - {{ viewName }}</span>
+                                        </template>
+                                    </a-tooltip>
+                                </div>
                             </div>
                         </div>
                     </div>

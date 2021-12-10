@@ -273,6 +273,7 @@
                 if (!tableQualfiedName.value) return
                 isAreaFocused.value = true
                 nextTick(() => {
+                    console.log(inputRef?.value, 'he')
                     if (tableQualfiedName.value) inputRef?.value?.focus()
                 })
             }

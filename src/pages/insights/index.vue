@@ -20,7 +20,10 @@
     import { useRoute } from 'vue-router'
     import { Insights as InsightsAPI } from '~/services/meta/insights'
     import { message } from 'ant-design-vue'
-    import { SavedQuery } from '~/types/insights/savedQuery.interface'
+    import {
+        SavedQuery,
+        QueryCollection,
+    } from '~/types/insights/savedQuery.interface'
     import useQueryFolderNamespace from '~/components/insights/explorers/queries/composables/useQueryFolderNamespace'
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     // import { QueryFolderNamespace as QueryFolderNamespaceInterface } from '~/types/insights/savedQuery.interface'
@@ -39,7 +42,7 @@
 
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<any> = ref()
-            const queryCollections: Ref<any> = ref()
+            const queryCollections: Ref<QueryCollection[] | undefined> = ref()
             const savedQueryInfo = ref(undefined) as unknown as Ref<
                 SavedQuery | undefined
             >
@@ -294,7 +297,6 @@
                 })
             }
             const fetchQueryCollections = () => {
-                queryCollections.value = 'hii'
                 const { data, error, isLoading } = getQueryCollections()
                 watch([data, error, isLoading], () => {
                     if (isLoading.value === false) {

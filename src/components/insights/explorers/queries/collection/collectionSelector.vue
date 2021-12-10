@@ -38,15 +38,19 @@
         inject,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import {
+        SavedQuery,
+        QueryCollection,
+    } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         emits: ['change', 'update:data'],
         components: { AtlanIcon },
         setup(props, { emit }) {
             const selectedValue = ref()
-            const queryCollections = inject(
-                'queryCollections'
-            ) as ComputedRef<any>
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
             console.log('connection selector', queryCollections.value)
 
             function handleChange(collectionId: string) {

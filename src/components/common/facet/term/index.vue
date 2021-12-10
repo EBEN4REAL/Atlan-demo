@@ -1,7 +1,7 @@
 <template>
     <div class="w-full" data-test-id="terms-facet">
         <div class="w-full mt-1 overflow-y-auto" :style="{ height: height }">
-            <GlossaryTree :checkable="true" @check="onCheck" />
+            <GlossaryTree v-model:checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
         </div>
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
@@ -61,6 +61,7 @@
             const onCheck = (checkedNodes) => {
                 localValue.value.terms = checkedNodes.map((term) => term.attributes.qualifiedName)
             }
+            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.attributes?.guid ?? term.guid))
 
             watch(
                 () => localValue.value.terms,
@@ -85,6 +86,8 @@
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
+                checkedKeys.value = modelValue.value.terms?.map((term) => term?.attributes?.guid ?? term.guid)
+
             })
 
             return {
@@ -92,7 +95,8 @@
                 queryText,
                 showNone,
                 onCheck,
-                noStatus
+                noStatus,
+                checkedKeys
             }
         },
     })

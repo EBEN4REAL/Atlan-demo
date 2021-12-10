@@ -298,6 +298,7 @@ export default defineComponent({
                             },
                             [`${group.name}`]
                         ),
+                        h('span', '?'),
                     ])
                 },
                 okType: 'danger',
@@ -305,7 +306,7 @@ export default defineComponent({
                 okButtonProps: {
                     type: 'primary',
                 },
-                okText: 'Delete',
+                okText: 'Remove',
                 cancelText: 'Cancel',
                 async onOk() {
                     const messageKey = Date.now()

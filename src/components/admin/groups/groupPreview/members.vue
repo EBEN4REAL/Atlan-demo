@@ -306,6 +306,7 @@ export default defineComponent({
                             },
                             [`${props.selectedGroup.name}`]
                         ),
+                        h('span', '?'),
                     ])
                 },
                 okType: 'danger',
@@ -313,7 +314,7 @@ export default defineComponent({
                 okButtonProps: {
                     type: 'primary',
                 },
-                okText: 'Delete',
+                okText: 'Remove',
                 cancelText: 'Cancel',
                 async onOk() {
                     const userId = user.id

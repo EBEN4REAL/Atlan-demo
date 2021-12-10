@@ -2,7 +2,7 @@
     <div>
         <a-dropdown :trigger="['click']">
             <a-button
-                class="rounded focus:ring-2 focus:border-primary"
+                class="rounded focus:ring-2 focus:border-primary border-gray-300"
                 style="min-width: 168px"
             >
                 <div class="flex items-center">

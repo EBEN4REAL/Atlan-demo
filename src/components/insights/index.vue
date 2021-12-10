@@ -61,6 +61,14 @@
                         :refresh-query-tree="refreshQueryTree"
                     />
                 </div>
+                <div
+                    :class="
+                        activeTab.component === 'variables' ? 'z-30' : 'z-10'
+                    "
+                    class="absolute h-full full-width"
+                >
+                    <Variables />
+                </div>
                 <!--explorer pane end -->
             </pane>
             <pane
@@ -83,11 +91,7 @@
             <pane
                 :max-size="activeInlineTab?.assetSidebar?.isVisible ? 25 : 0"
                 :min-size="0"
-                :size="
-                    activeInlineTab?.assetSidebar?.isVisible
-                        ? assetSidebarPaneSize
-                        : 0
-                "
+                :size="sidebarPaneSize"
             >
                 <AssetSidebar />
             </pane>
@@ -112,6 +116,7 @@
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
     import Queries from './explorers/queries/index.vue'
+    import Variables from './explorers/variables/index.vue'
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
 
@@ -142,6 +147,7 @@
             AssetSidebar,
             Schema,
             Queries,
+            Variables,
             History,
             Schedule,
         },
@@ -199,6 +205,11 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
+            const sidebarPaneSize = computed(() =>
+                activeInlineTab.value?.assetSidebar?.isVisible
+                    ? assetSidebarPaneSize.value
+                    : 0
+            )
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -206,6 +217,7 @@
             )
 
             const changeTab = (tab: TabInterface) => {
+                console.log('new tab', tab)
                 activeTabId.value = tab.id
             }
             const editorInstance: Ref<any> = ref()
@@ -348,29 +360,24 @@
                                 attributeValue: undefined,
                             },
                         },
-                        queries: {
-                            connectors: {
-                                connector: undefined,
+                        playground: {
+                            vqb: {
+                                panels: [
+                                    {
+                                        order: 1,
+                                        id: 'columns',
+                                        hide: false,
+                                        subpanels: [
+                                            {
+                                                id: '1',
+                                                tableQualifiedName: undefined,
+                                                columns: [],
+                                                columnsData: [],
+                                            },
+                                        ],
+                                    },
+                                ],
                             },
-                        },
-                    },
-                    playground: {
-                        vqb: {
-                            panels: [
-                                {
-                                    order: 1,
-                                    id: 'columns',
-                                    hide: false,
-                                    subpanels: [
-                                        {
-                                            id: '1',
-                                            tableQualifiedName: undefined,
-                                            columns: [],
-                                            columnsData: [],
-                                        },
-                                    ],
-                                },
-                            ],
                         },
                         editor: {
                             text: '',
@@ -529,6 +536,7 @@
                 resetQueryTree,
                 resetParentGuid,
                 resetType,
+                sidebarPaneSize,
             }
         },
     })

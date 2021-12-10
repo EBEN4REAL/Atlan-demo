@@ -13,7 +13,7 @@
             <SQLSnippet :text="query._source.log.message?.userSqlQuery" />
         </div>
         <div v-if="Object.keys(metadata).length" class="p-4 border-b">
-            <div v-for="meta in Object.keys(metadata)" :key="meta">
+            <div v-for="meta in Object.keys(metadata).sort()" :key="meta">
                 <div v-if="metadata[meta].value" class="flex items-center mb-2">
                     <div class="w-1/4">{{ metadata[meta].keyDisplayName }}</div>
                     <div class="flex items-center w-3/4 mt-1 ml-4">

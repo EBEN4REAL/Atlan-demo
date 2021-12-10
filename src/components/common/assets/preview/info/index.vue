@@ -38,6 +38,7 @@
                 class="mx-4"
                 @change="handleChangeName"
                 ref="nameRef"
+                :readOnly="readOnly"
             />
         </div>
 
@@ -191,6 +192,7 @@
                 class="mx-4"
                 @change="handleChangeDescription"
                 :selected-asset="selectedAsset"
+                :readOnly="readOnly"
             />
         </div>
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
@@ -214,6 +216,7 @@
                 @change="handleOwnersChange"
                 class="px-5"
                 :selected-asset="selectedAsset"
+                :readOnly="readOnly"
             />
         </div>
 
@@ -243,6 +246,7 @@
                 :guid="selectedAsset.guid"
                 v-model="localClassifications"
                 @change="handleClassificationChange"
+                :readOnly="readOnly"
                 class="px-5"
             >
             </Classification>
@@ -264,11 +268,13 @@
             >
                 Terms
             </p>
-            <Terms 
-                :selected-asset="selectedAsset" 
+            <Terms
+                :selected-asset="selectedAsset"
                 v-model="localMeanings"
                 @change="handleMeaningsUpdate"
-                class="px-5">
+                class="px-5"
+                :readOnly="readOnly"
+            >
             </Terms>
         </div>
 
@@ -276,7 +282,7 @@
             v-if="
                 !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
                     selectedAsset.typeName
-                )
+                ) && !readOnly
             "
             class="flex flex-col"
             ref="animationPoint"
@@ -359,6 +365,11 @@
         },
         props: {
             isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            readOnly: {
                 type: Boolean,
                 required: false,
                 default: false,

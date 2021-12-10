@@ -14,6 +14,8 @@
                     v-if="logoUrl"
                     :src="logoUrl"
                     class="w-auto h-8 cursor-pointer select-none"
+                    :alt="defaultLogo"
+                    @error="(e: any) => e.target.src = defaultLogo"
                 />
                 <p class="font-bold text-md" v-else>{{ logoName }}</p>
             </router-link>
@@ -37,6 +39,7 @@
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import { useTenantStore } from '~/store/tenant'
     import { useRoute } from 'vue-router'
+    import defaultLogo from '~/assets/images/your_company.png'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -71,7 +74,14 @@
 
             const logoName = computed(() => tenantStore.displayName)
 
-            return { page, isHome, logoUrl, logoName, currentRoute }
+            return {
+                page,
+                isHome,
+                logoUrl,
+                logoName,
+                currentRoute,
+                defaultLogo,
+            }
         },
     })
 </script>

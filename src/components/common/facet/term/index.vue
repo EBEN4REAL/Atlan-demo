@@ -5,7 +5,7 @@
         </div>
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
-                v-model:checked="localValue.empty"
+                @change="checkNoTerms"
                 class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
             >
                 <component
@@ -64,6 +64,12 @@
                     qualifiedName: term.attributes.qualifiedName
                 }))
             }
+            const checkNoTerms = (t) => {
+                if(!localValue.value?.terms?.length) {
+                    localValue.value.terms = []
+                }
+                localValue.value.empty = t.target.checked
+            }
             const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid))
 
             watch(
@@ -99,7 +105,8 @@
                 showNone,
                 onCheck,
                 noStatus,
-                checkedKeys
+                checkedKeys,
+                checkNoTerms
             }
         },
     })

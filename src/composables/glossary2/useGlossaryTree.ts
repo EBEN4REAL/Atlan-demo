@@ -127,7 +127,10 @@ const useGlossaryTree = ({
                         id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                         key: `${i.guid}`,
                         isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                        checkable: i.typeName === 'AtlasGlossaryTerm' ? checkable : false
+                        checkable:
+                            i.typeName === 'AtlasGlossaryTerm'
+                                ? checkable
+                                : false,
                     }))
                     if (map) {
                         map?.forEach((el) => {
@@ -170,7 +173,7 @@ const useGlossaryTree = ({
                             glossaryGuid: treeNode?.guid,
                             parentCategory: treeNode,
                             selectable: false,
-                            checkable: false
+                            checkable: false,
                         })
                         loadedKeys.value.push(treeNode.dataRef.key)
                         nodeToParentKeyMap[
@@ -213,7 +216,10 @@ const useGlossaryTree = ({
                             id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                             key: `${i.guid}`,
                             isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                            checkable: i.typeName === 'AtlasGlossaryTerm' ? checkable: false
+                            checkable:
+                                i.typeName === 'AtlasGlossaryTerm'
+                                    ? checkable
+                                    : false,
                         }))
                         if (map) {
                             map?.forEach((el) => {
@@ -264,7 +270,7 @@ const useGlossaryTree = ({
                             categoryGuid: treeNode?.guid,
                             parentCategory: treeNode,
                             selectable: false,
-                            checkable: false
+                            checkable: false,
                         })
                         loadedKeys.value.push(treeNode.dataRef.key)
                         nodeToParentKeyMap[
@@ -382,7 +388,10 @@ const useGlossaryTree = ({
                             id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
                             key: `${i.guid}`,
                             isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                            checkable: i.typeName === 'AtlasGlossaryTerm' ? checkable : false
+                            checkable:
+                                i.typeName === 'AtlasGlossaryTerm'
+                                    ? checkable
+                                    : false,
                         }))
                         treeData.value.sort((a, b) => {
                             if (a.typeName === 'AtlasGlossaryTerm') return 1
@@ -402,7 +411,7 @@ const useGlossaryTree = ({
                     id: i.attributes?.qualifiedName,
                     key: i.guid,
                     isLeaf: false,
-                    checkable: false
+                    checkable: false,
                 }
             })
         }
@@ -521,9 +530,7 @@ const useGlossaryTree = ({
                     id: `${getAnchorQualifiedName(asset)}_${
                         asset.attributes?.qualifiedName
                     }`,
-                    key: `${
-                        asset.guid
-                    }`,
+                    key: `${asset.guid}`,
                     isLeaf: true,
                 })
             }
@@ -534,9 +541,7 @@ const useGlossaryTree = ({
                     id: `${getAnchorQualifiedName(asset)}_${
                         asset.attributes?.qualifiedName
                     }`,
-                    key: `${
-                        asset.guid
-                    }`,
+                    key: `${asset.guid}`,
                     isLeaf: false,
                 })
             }
@@ -545,6 +550,66 @@ const useGlossaryTree = ({
 
     const collapseAll = () => {
         expandedKeys.value = []
+    }
+    const updateNode = (asset) => {
+        const currentParents = nodeToParentKeyMap[asset?.guid]
+        if (currentParents) {
+            if (
+                currentParents === 'root' ||
+                (typeof currentParents !== 'string' &&
+                    currentParents?.find((parent) => parent === 'root'))
+            ) {
+                treeData.value = treeData.value.map((treeNode) => {
+                    if (treeNode.key === asset?.guid) {
+                        treeNode.attributes = asset?.attributes
+                    }
+                    return treeNode
+                })
+            } else {
+                let parentStack: string[][]
+
+                const updateNodeNested = (
+                    node: TreeDataItem,
+                    path: string[]
+                ): TreeDataItem => {
+                    const currentPath = path.pop()
+
+                    // if the target node is reached
+                    if (node.key === asset?.guid || !currentPath) {
+                        node.attributes = asset.attributes
+                        return {
+                            ...node,
+                        }
+                    }
+                    return {
+                        ...node,
+                        children: node.children?.map(
+                            (childNode: TreeDataItem) => {
+                                // if the current element is in the path that is needed to reach the target node
+                                if (childNode.key === currentPath) {
+                                    return updateNodeNested(childNode, path)
+                                }
+                                return childNode
+                            }
+                        ),
+                    }
+                }
+
+                // find the path to the node
+                parentStack = recursivelyFindPath(asset?.guid)
+                parentStack.forEach((path) => {
+                    const parent = path.pop()
+
+                    treeData.value = treeData.value.map(
+                        (node: TreeDataItem) => {
+                            if (node?.guid === parent)
+                                return updateNodeNested(node, path)
+                            return node
+                        }
+                    )
+                })
+            }
+        }
     }
     return {
         onLoadData,
@@ -566,6 +631,7 @@ const useGlossaryTree = ({
         recursivelyFindPath,
         collapseAll,
         deleteNode,
+        updateNode,
     }
 }
 

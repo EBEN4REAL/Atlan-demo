@@ -80,12 +80,16 @@
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
                 assetStore.setSelectedAsset(asset)
+                updateTreeNode(asset)
             }
             watch(selectedGlossary, () => {
                 localSelected.value = selectedGlossary.value
             })
             const reInitTree = () => {
                 glossaryDiscovery?.value?.reInitTree()
+            }
+            const updateTreeNode = (asset) => {
+                glossaryDiscovery?.value?.updateTreeNode(asset)
             }
             provide('updateList', updateList)
             provide('preview', handlePreview)

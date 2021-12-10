@@ -20,7 +20,7 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer  text-mdoverflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>
@@ -58,7 +58,7 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-wider text-gray-500 uppercase "
+                            class="text-sm tracking-wider text-gray-500 uppercase"
                         >
                             {{ item.typeName }}
                         </div>
@@ -250,8 +250,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, PropType, watch } from 'vue'
-    import { useMagicKeys } from '@vueuse/core'
+    import { defineComponent, inject, computed, watch } from 'vue'
+    import { useMagicKeys, useActiveElement, whenever, and } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -360,9 +360,14 @@
 
             const { Escape /* keys you want to monitor */ } = useMagicKeys()
 
-            watch(Escape, (v) => {
-                if (v) back()
-            })
+            const activeElement = useActiveElement()
+            const notUsingInput = computed(
+                () =>
+                    activeElement.value?.tagName !== 'INPUT' &&
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
+            )
 
             const back = () => {
                 if (window.history.length <= 1) {
@@ -371,6 +376,10 @@
                 }
                 router.back()
             }
+
+            whenever(and(Escape, notUsingInput), (v) => {
+                if (v) back()
+            })
 
             return {
                 title,

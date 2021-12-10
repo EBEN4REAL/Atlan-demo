@@ -85,14 +85,14 @@ export const blockMenu: CommandItem[] = [
         border: true,
         command: (editor) => editor.chain().focus().toggleImageBlock().run(),
     },
-    {
+    /*   {
         title: 'Google doc',
         key: 'googleDoc',
         helpText: '',
         icon: 'Gdoc',
         border: true,
         command: (editor) => editor.chain().focus().toggleImageBlock().run(),
-    },
+    }, */
 ]
 
 export const menuData: CommandItem[] = [

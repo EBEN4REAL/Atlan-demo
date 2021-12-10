@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col w-full h-full">
-        <AssetHeader :item="asset"></AssetHeader>
+        <AssetHeader :item="asset" />
 
         <a-tabs
             v-model:activeKey="activeKey"

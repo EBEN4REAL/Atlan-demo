@@ -26,7 +26,7 @@
                 shape="circle"
                 :disabled="disabled"
                 size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
@@ -213,14 +213,12 @@
             })
 
             return {
-                disabled,
                 localValue,
                 isPropagated,
                 list,
                 selectedValue,
                 handleChange,
                 handleVisibleChange,
-                guid,
                 handleSelectedChange,
                 classificationFacetRef,
                 isEdit,

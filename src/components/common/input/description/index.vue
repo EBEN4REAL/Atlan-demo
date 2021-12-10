@@ -1,12 +1,15 @@
 <template>
     <div
-        class="flex flex-col px-1 rounded hover:bg-primary-light"
-        :class="isEdit ? 'bg-primary-light' : ''"
+        class="flex flex-col px-1 rounded"
+        :class="{
+            'bg-primary-light': isEdit,
+            'hover:bg-primary-light': !readOnly,
+        }"
     >
         <div
             class="text-sm text-gray-700"
-            @click="handleEdit"
             :class="$style.editable"
+            @click="handleEdit"
         >
             <span v-if="!isEdit && description(selectedAsset)">{{
                 description(selectedAsset)
@@ -17,12 +20,12 @@
                 >No description available</span
             >
             <a-textarea
-                ref="descriptionRef"
-                tabindex="0"
-                v-model:value="localValue"
                 v-else
-                @blur="handleBlur"
+                ref="descriptionRef"
+                v-model:value="localValue"
+                tabindex="0"
                 :rows="4"
+                @blur="handleBlur"
             ></a-textarea>
         </div>
     </div>

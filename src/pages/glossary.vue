@@ -47,7 +47,6 @@
     import GlossaryPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryStore from '~/store/glossary'
-    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         components: {
@@ -64,7 +63,6 @@
             const { selectedGlossary } = useAssetInfo()
             const localSelected = ref()
             const glossaryStore = useGlossaryStore()
-            const assetStore = useAssetStore()
             const glossaryDiscovery = ref(null)
 
             if (selectedGlossary.value?.guid === id.value) {
@@ -73,13 +71,12 @@
             const handlePreview = (asset) => {
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
-                assetStore.setSelectedAsset(asset)
             }
 
             const updateList = (asset) => {
                 localSelected.value = asset
+                handlePreview(asset)
                 glossaryStore.setSelectedGTC(asset)
-                assetStore.setSelectedAsset(asset)
                 updateTreeNode(asset)
             }
             watch(selectedGlossary, () => {

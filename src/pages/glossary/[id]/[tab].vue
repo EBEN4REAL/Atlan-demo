@@ -50,14 +50,12 @@
                 guid: id.value,
             })
             if (selectedAsset.value?.guid === id.value) {
-                console.log(selectedAsset.value.attributes)
-                console.log('tab called')
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }
 
             const fetchKey = computed(() => {
-                if (selectedAsset.value.guid) {
+                if (selectedAsset.value.guid === id.value) {
                     return null
                 }
                 return id.value
@@ -70,7 +68,7 @@
             ])
             const relationAttributes = ref([...DefaultRelationAttributes])
 
-            const { handleSelectedAsset, list, isLoading } = useDiscoverList({
+            const { list, isLoading } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -83,7 +81,7 @@
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
-                    handleSelectedAsset(list.value[0])
+
                     handlePreview(list.value[0])
                 }
             })

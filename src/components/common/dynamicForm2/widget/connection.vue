@@ -169,6 +169,12 @@
                             grid: 3,
                         },
                     },
+                    defaultCredentialGuid: {
+                        type: 'string',
+                        ui: {
+                            hidden: true,
+                        },
+                    },
                 },
             })
 

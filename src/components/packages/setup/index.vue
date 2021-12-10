@@ -294,8 +294,12 @@
                 )
 
                 let connectionQualifiedName = ''
+                const credentialParam = 'credentialGuid'
                 // iterate and set the object
                 connectionBody.forEach((i) => {
+                    const temp = i.body
+                    temp.attributes.defaultCredentialGuid = `{{${credentialParam}}}`
+
                     modelValue.value[i.parameter] = i.body
                     connectionQualifiedName =
                         i.body.attributes.qualifiedName.replaceAll('/', '-')
@@ -323,7 +327,8 @@
                 const credentialBody = getCredentialBody(
                     configMap.value,
                     modelValue.value,
-                    connectionQualifiedName || workflowName
+                    connectionQualifiedName || workflowName,
+                    credentialParam
                 )
 
                 const parameters = []
@@ -331,12 +336,21 @@
                     workflowTemplate.value.spec.templates[0].inputs.parameters.forEach(
                         (p) => {
                             if (modelValue.value[p.name]) {
-                                parameters.push({
-                                    name: p.name,
-                                    value: JSON.stringify(
-                                        modelValue.value[p.name]
-                                    ),
-                                })
+                                if (
+                                    typeof modelValue.value[p.name] === 'object'
+                                ) {
+                                    parameters.push({
+                                        name: p.name,
+                                        value: JSON.stringify(
+                                            modelValue.value[p.name]
+                                        ),
+                                    })
+                                } else {
+                                    parameters.push({
+                                        name: p.name,
+                                        value: modelValue.value[p.name],
+                                    })
+                                }
                             }
                         }
                     )

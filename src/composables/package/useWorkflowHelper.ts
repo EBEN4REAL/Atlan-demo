@@ -18,7 +18,7 @@ export function useWorkflowHelper() {
         return list
     }
 
-    const getCredentialBody = (configMap, formState, name) => {
+    const getCredentialBody = (configMap, formState, name, param) => {
         const list = getCredentialPropertyList(configMap)
 
         const modelList = []
@@ -30,10 +30,11 @@ export function useWorkflowHelper() {
                 `${name}-${index}`
             )
             modelList.push({
-                parameter: i.key,
+                parameter: `${param}`,
                 type: 'credential',
                 body: model,
             })
+            formState[i.key] = `{{${param}}}`
         })
         return modelList
     }

@@ -49,7 +49,7 @@
                             >Query Logs</a-menu-item
                         >
                       <a-menu-item
-                            key="accessLogs"
+                            key="access-logs"
                             v-auth="[map.QUERY_ACCESS_LOGS]"
                             >Access Logs</a-menu-item
                         >

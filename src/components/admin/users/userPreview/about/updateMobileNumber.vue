@@ -77,11 +77,11 @@
                 v-else-if="
                     selectedUser &&
                     selectedUser.attributes &&
-                    selectedUser.attributes.mobileNumber 
+                    selectedUser.attributes.mobileNumber &&
+                    selectedUser.attributes.mobileNumber[0]
                 "
                 class="text-gray"
             >
-                {{ selectedUser.attributes.mobileNumber || '-' }}
             </div>
             <div v-else class="text-gray">--</div>
         </div>

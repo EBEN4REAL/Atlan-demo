@@ -29,7 +29,7 @@ export function useUtils() {
                 res += `${
                     subpanel.column.label
                 } in ${subpanel.order?.toUpperCase()}, `
-            else if (i < subpanels.length - 1 && subpanel.column.label)
+            else if (i <= subpanels.length - 1 && subpanel.column.label)
                 res += `${
                     subpanel.column.label
                 } in ${subpanel.order?.toUpperCase()}`
@@ -57,7 +57,7 @@ export function useUtils() {
                 res += `${subpanel.aggregators
                     .map((e) => e?.toUpperCase())
                     .join(', ')} of ${subpanel.column.label} and `
-            else if (i < subpanels.length - 1 && subpanel.column.label)
+            else if (i <= subpanels.length - 1 && subpanel.column.label)
                 res += `${subpanel.aggregators
                     .map((e) => e?.toUpperCase())
                     .join(', ')} of ${subpanel.column.label}`

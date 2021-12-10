@@ -12,7 +12,7 @@
                 >
                     <ColumnSelector
                         class="flex-1"
-                        style="max-width: 30%"
+                        style="max-width: 45.5%"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName

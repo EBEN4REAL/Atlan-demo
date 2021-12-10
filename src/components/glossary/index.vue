@@ -474,7 +474,11 @@
     .checkableTree {
         max-height: 364px;
         :global(.ant-tree-checkbox) {
-            @apply my-auto;
+            @apply my-auto mr-2;
+            position: absolute;
+            right: 1.5rem;
+            margin-top: 0.5rem;
+            z-index: 99;
         }
     }
 </style>

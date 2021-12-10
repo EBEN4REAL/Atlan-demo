@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded  hover:shadow"
+        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded hover:shadow"
         style="paddingleft: 12px; paddingroght: 12px"
         @mouseover="
             () => {
@@ -133,11 +133,11 @@
                 </div>
             </div>
             <div
-                class="flex items-stretch border border-gray-300 rounded opacity-0  text-gray hover:text-primary"
+                class="flex items-stretch border border-gray-300 rounded opacity-0 text-gray hover:text-primary"
                 :class="editToggle ? 'opacity-100' : ''"
             >
                 <AtlanBtn
-                    class="flex-none px-2 border-l border-gray-300 border-none  hover:text-primary"
+                    class="flex-none px-2 border-l border-gray-300 border-none hover:text-primary"
                     size="sm"
                     color="secondary"
                     padding="compact"
@@ -161,7 +161,7 @@
                     @confirm="removePolicy"
                 >
                     <AtlanBtn
-                        class="flex-none px-2 border-r border-gray-300 border-none  hover:text-red-500"
+                        class="flex-none px-2 border-r border-gray-300 border-none hover:text-red-500"
                         size="sm"
                         color="secondary"
                         data-test-id="policy-delete"
@@ -233,7 +233,10 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
-            const actions = computed(() => findActions(policy.value.actions))
+            const actions = computed(
+                () => findActions(policy.value.actions),
+                type.value
+            )
             const removePolicy = () => {
                 /* Delete when the policy is saved */
                 if (!policy.value?.isNew) emit('delete')

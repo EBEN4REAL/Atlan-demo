@@ -248,9 +248,6 @@ export function useBody(
                         return q
                     })
                 }
-                // if (filterObject) {
-                //     base.filter('terms', '__meanings', filterObject.terms)
-                // }
                 break
             }
             case 'isRootTerm': {

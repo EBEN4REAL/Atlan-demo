@@ -6,30 +6,24 @@
             py-0.5
             pl-1
             pr-2
+            ${bgHover}
             text-sm text-gray-700
             bg-white
             border border-gray-200
             rounded-full
             cursor-pointer
             hover:text-white
-            ${
-                color
-                    ? `hover:bg-${color.toLowerCase()}-400`
-                    : 'hover:bg-pink-400'
-            }
-        `"
+            `"
         :data-test-id="displayName"
     >
         <ClassificationIcon
             icon="ShieldFilled"
             :color="color"
-            class="group-hover:text-white"
             v-if="isPropagated"
         ></ClassificationIcon>
         <ClassificationIcon
             icon="Shield"
             :color="color"
-            class="group-hover:text-white"
             v-else
         ></ClassificationIcon>
 
@@ -47,7 +41,7 @@
 </template>
 
 <script lang="ts">
-    import { toRefs } from 'vue'
+    import { toRefs, computed } from 'vue'
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     export default {
@@ -91,12 +85,27 @@
                 emit('delete', name.value)
             }
 
+            const bgHover = computed(() => {
+                const bgColor = color.value?.toLowerCase()
+                switch (bgColor) {
+                    case 'red':
+                        return 'hover:bg-red-400'
+                    case 'green':
+                        return 'hover:bg-green-400'
+                    case 'yellow':
+                        return 'hover:bg-yellow-400'
+                    default:
+                        return 'hover:bg-primary'
+                }
+            })
+
             return {
                 name,
                 isPropagated,
                 displayName,
                 handleRemove,
                 color,
+                bgHover,
             }
         },
     }

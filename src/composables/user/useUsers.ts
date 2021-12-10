@@ -24,7 +24,7 @@ export const getUserName = (user: any) => {
 const getWorkspaceRole = (user: any) => {
     const { roles, defaultRoles } = user
 
-    const filterHelper = (a) => a.filter((role: string) => role.startsWith('$'))
+    const filterHelper = (a) => a?.filter((role: string) => role.startsWith('$'))??[]
     const atlanRoles = [
         ...new Set([...filterHelper(roles), ...filterHelper(defaultRoles)]),
     ]
@@ -37,12 +37,13 @@ const getWorkspaceRole = (user: any) => {
     if (atlanRoles.includes('$guest')) {
         return 'Guest'
     }
+     return ''
 }
 
 const getUserPersona = (user: any) => {
     const { roles } = user
 
-    const roleFilter = roles.filter(
+    const roleFilter = roles?.filter(
         (role: string) =>
             role !== 'default-roles-default' &&
             !role.startsWith('$') &&
@@ -57,9 +58,9 @@ const getUserRole = (user: any) => {
     let atlanRoles: string[] = []
     const atlanRole = { name: '', code: '' }
 
-    const filterHelper = (a) => a.filter((role: string) => role.startsWith('$'))
+    const filterHelper = (a) => a?.filter((role: string) => role.startsWith('$'))??[]
 
-    const roleFilter = roles.filter(
+    const roleFilter = roles?.filter(
         (role: string) => role !== 'default-roles-default'
     )
 

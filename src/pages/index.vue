@@ -31,7 +31,7 @@
                         alt=""
                     />
                     <span class="text-sm text-gray-500"
-                        >Pets of Atlan, Ginger and Lemon wish you nice day!
+                        >Pets of Atlan, Ginger and Lemon wish you a nice day!
                         🐾</span
                     >
                 </div>

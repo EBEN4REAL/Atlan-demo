@@ -73,15 +73,25 @@ export function useFilter() {
                         type: 'multi_input',
                         name: 'Is not one of'
                     },
+                    // {
+                    //     key: 'is_null',
+                    //     type: 'none',
+                    //     name: 'Is null'
+                    // },
+                    // {
+                    //     key: 'is_not_null',
+                    //     type: 'none',
+                    //     name: 'Is not null'
+                    // },
                     {
-                        key: 'is_null',
+                        key: 'exists',
                         type: 'none',
-                        name: 'Is null'
+                        name: 'Exists'
                     },
                     {
-                        key: 'is_not_null',
+                        key: 'does_not_exists',
                         type: 'none',
-                        name: 'Is not null'
+                        name: 'Does not exists'
                     },
                     {
                         key: 'greater_than',
@@ -104,9 +114,9 @@ export function useFilter() {
                         name: 'Less than equal to'
                     },
                     {
-                        key: 'between',
+                        key: 'between_and_includes',
                         type: 'range_input',
-                        name: 'Between'
+                        name: 'Between and includes'
                     },
                 ]
             },
@@ -134,6 +144,72 @@ export function useFilter() {
                         type: 'multi_input',
                         name: 'Is not one of'
                     },
+                    {
+                        key: 'exists',
+                        type: 'none',
+                        name: 'Exists'
+                    },
+                    {
+                        key: 'does_not_exists',
+                        type: 'none',
+                        name: 'Does not exists'
+                    },
+                    // {
+                    //     key: 'like',
+                    //     type: 'input',
+                    //     name: 'Like'
+                    // },
+                    // {
+                    //     key: 'is_not_like',
+                    //     type: 'input',
+                    //     name: 'Is not like'
+                    // },
+                    {
+                        key: 'contains',
+                        type: 'input',
+                        name: 'Contains'
+                    },
+                    {
+                        key: 'not_contains',
+                        type: 'input',
+                        name: 'Not contains'
+                    },
+                ]
+            },
+            {
+                key: 'date',
+                includes: [...date],
+                functions: [
+                    {
+                        key: 'between_and_includes',
+                        type: 'range_input',
+                        name: 'Between and includes'
+                    },
+                    {
+                        key: 'is',
+                        type: 'input',
+                        name: 'Is'
+                    },
+                    {
+                        key: 'before',
+                        type: 'input',
+                        name: 'Earlier than /  before'
+                    },
+                    {
+                        key: 'after',
+                        type: 'input',
+                        name: 'Later than /  after'
+                    },
+                    // {
+                    //     key: 'is_one_of',
+                    //     type: 'multi_input',
+                    //     name: 'Is one of'
+                    // },
+                    // {
+                    //     key: 'is_not_one_of',
+                    //     type: 'multi_input',
+                    //     name: 'Is not one of'
+                    // },
                     // {
                     //     key: 'exists',
                     //     type: 'none',
@@ -144,20 +220,25 @@ export function useFilter() {
                     //     type: 'none',
                     //     name: 'Does not exists'
                     // },
-                    {
-                        key: 'like',
-                        type: 'input',
-                        name: 'Like'
-                    },
-                    {
-                        key: 'is_not_like',
-                        type: 'input',
-                        name: 'Is not like'
-                    },
+                    // {
+                    //     key: 'like',
+                    //     type: 'input',
+                    //     name: 'Like'
+                    // },
+                    // {
+                    //     key: 'is_not_like',
+                    //     type: 'input',
+                    //     name: 'Is not like'
+                    // },
                     // {
                     //     key: 'contains',
                     //     type: 'input',
                     //     name: 'Contains'
+                    // },
+                    // {
+                    //     key: 'not_contains',
+                    //     type: 'input',
+                    //     name: 'Not contains'
                     // },
                 ]
             },

@@ -417,34 +417,65 @@
                             </a-tooltip>
                         </div>
                     </div>
-
-                    <div
-                        v-if="
-                            list.length > 0 &&
-                            preference?.display?.includes('classifications')
-                        "
-                        class="flex flex-wrap mt-1 gap-x-1"
-                    >
-                        <template
-                            v-for="classification in list"
-                            :key="classification.guid"
+                    <div class="flex gap-x-1">
+                        <div
+                            v-if="
+                                list.length > 0 &&
+                                preference?.display?.includes('classifications')
+                            "
+                            class="flex flex-wrap mt-1 gap-x-1"
                         >
-                            <PopoverClassification
-                                :classification="classification"
+                            <template
+                                v-for="classification in list"
+                                :key="classification.guid"
                             >
-                                <ClassificationPill
-                                    :name="classification.name"
-                                    :display-name="classification?.displayName"
-                                    :is-propagated="
-                                        isPropagated(classification)
-                                    "
-                                    :allow-delete="false"
-                                    :color="
-                                        classification.options?.color.toLowerCase()
-                                    "
-                                ></ClassificationPill>
-                            </PopoverClassification>
-                        </template>
+                                <PopoverClassification
+                                    :classification="classification"
+                                >
+                                    <ClassificationPill
+                                        :name="classification.name"
+                                        :display-name="
+                                            classification?.displayName
+                                        "
+                                        :is-propagated="
+                                            isPropagated(classification)
+                                        "
+                                        :allow-delete="false"
+                                        :color="
+                                            classification.options?.color.toLowerCase()
+                                        "
+                                    ></ClassificationPill>
+                                </PopoverClassification>
+                            </template>
+                        </div>
+                        <div
+                            v-if="
+                                meaningRelationships(item).length > 0 &&
+                                preference?.display?.includes('terms')
+                            "
+                            class="flex flex-wrap mt-1 gap-x-1"
+                        >
+                            <template
+                                v-for="term in meaningRelationships(item)"
+                                :key="term.guid"
+                            >
+                                <div
+                                    class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                                >
+                                    <AtlanIcon
+                                        :icon="termIcon(term)"
+                                        class="group-hover:text-white text-purple mb-0.5"
+                                    ></AtlanIcon>
+
+                                    <div class="ml-1 group-hover:text-white">
+                                        {{
+                                            term.attributes?.name ??
+                                            term.displayText
+                                        }}
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -583,6 +614,7 @@
                 getProfilePath,
                 isUserDescription,
                 isScrubbed,
+                meaningRelationships,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -632,14 +664,33 @@
                 return matchingIdsResult
             })
 
+            const termIcon = (term) => {
+                if (
+                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    'verified'
+                ) {
+                    return 'TermVerified'
+                }
+                if (
+                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    'draft'
+                ) {
+                    return 'TermDraft'
+                }
+                if (
+                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    'deprecated'
+                ) {
+                    return 'TermDeprecated'
+                }
+                return 'Term'
+            }
+
             return {
-                isChecked,
-                showCheckBox,
-                bulkSelectMode,
-                item,
                 isSelected,
                 title,
                 getConnectorImage,
+                termIcon,
                 assetType,
                 dataType,
                 rowCount,
@@ -660,7 +711,7 @@
                 certificateStatusMessage,
                 tableName,
                 viewName,
-                preference,
+                meaningRelationships,
                 assetTypeLabel,
                 description,
                 handlePreview,

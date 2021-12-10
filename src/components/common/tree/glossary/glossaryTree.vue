@@ -68,7 +68,7 @@
         watch,
         ref,
         provide,
-        PropType
+        PropType,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -150,6 +150,7 @@
                 error,
                 isReady,
                 collapseAll,
+                updateNode,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -163,13 +164,13 @@
             const collapseTree = () => {
                 collapseAll()
             }
-            const addTerm = (asset) => {
-                addNode(asset)
-            }
+            // const addTerm = (asset) => {
+            //     addNode(asset)
+            // }
 
-            const addCategory = (asset) => {
-                addNode(asset)
-            }
+            // const addCategory = (asset) => {
+            //     addNode(asset)
+            // }
 
             const addGTCNode = (asset, entity = {}) => {
                 if (entity !== {}) addNode(asset, entity)
@@ -184,10 +185,13 @@
                 initTreeData(defaultGlossary.value)
             }
             const onCheck = (e, { checkedNodes }) => {
-                if(checkedKeys) {
+                if (checkedKeys) {
                     checkedKeys.value = checkedNodes.map((term) => term.guid)
                 }
                 emit('check', checkedNodes)
+            }
+            const updateTreeNode = (asset) => {
+                updateNode(asset)
             }
             onMounted(() => {
                 reInitTree()
@@ -213,14 +217,15 @@
                 error,
                 isReady,
                 height,
-                addTerm,
-                addCategory,
+                // addTerm,
+                // addCategory,
                 treeItemClass,
                 collapseTree,
                 addGTCNode,
                 reInitTree,
                 onCheck,
-                checkedKeys
+                checkedKeys,
+                updateTreeNode,
             }
             // data
         },

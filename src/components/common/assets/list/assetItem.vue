@@ -491,7 +491,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed } from 'vue'
+    import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -500,6 +500,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -512,7 +513,7 @@
         },
         props: {
             item: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: false,
                 default() {
                     return {}

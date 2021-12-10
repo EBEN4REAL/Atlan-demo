@@ -347,11 +347,9 @@
         name: 'AssetDetails',
         components: {
             Connection,
-            // Experts,
             Description,
             Name,
             AnnouncementWidget,
-            // Status,
             Owners,
             Classification,
             SavedQuery,

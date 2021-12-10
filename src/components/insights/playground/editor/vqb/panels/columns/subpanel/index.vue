@@ -138,7 +138,16 @@
                         JSON.stringify(toRaw(subpanels.value[0]))
                     )
                     copySubPanel.columns = []
+                    copySubPanel.columnsData = []
                     copySubPanel.tableQualfiedName = undefined
+                    subpanels.value[index] = copySubPanel
+                    console.log(subpanels.value)
+                } else {
+                    const copySubPanel = JSON.parse(
+                        JSON.stringify(toRaw(subpanels.value[0]))
+                    )
+                    copySubPanel.columns = []
+                    copySubPanel.columnsData = []
                     subpanels.value[index] = copySubPanel
                     console.log(subpanels.value)
                 }

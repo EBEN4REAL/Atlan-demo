@@ -1,23 +1,33 @@
 <template>
     <div class="w-full" data-test-id="terms-facet">
         <div class="w-full mt-1 overflow-y-auto" :style="{ height: height }">
-            <GlossaryTree :checkable="true" @check="onCheck" />
+            <GlossaryTree v-model:checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
+        </div>
+        <div class="px-4 pt-1" v-if="showNone">
+            <a-checkbox
+                v-model:checked="localValue.empty"
+                class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
+            >
+                <component
+                    :is="noStatus"
+                    class="inline-flex self-center w-auto h-4 mb-0.5"
+                />
+                <span class="mb-0 ml-1 text-gray-500">No Terms</span>
+            </a-checkbox>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import {
-        computed,
         defineComponent,
-        Ref,
         ref,
-        toRef,
         toRefs,
         watch,
     } from 'vue'
 
-    import { useTimeoutFn, useVModels } from '@vueuse/core'
+    import { useVModels } from '@vueuse/core'
+    import noStatus from '~/assets/images/status/nostatus.svg'
 
     import GlossaryTree from '~/components/glossary/index.vue'
 
@@ -49,32 +59,38 @@
             const localValue = ref(modelValue.value)
 
             const onCheck = (checkedNodes) => {
-                localValue.value = checkedNodes.map((term) => term.attributes.qualifiedName)
+                localValue.value.terms = checkedNodes.map((term) => ({
+                    guid: term.guid,
+                    qualifiedName: term.attributes.qualifiedName
+                }))
             }
-
-
+            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid))
 
             watch(
-                () => localValue.value,
+                () => localValue.value.terms,
                 (prev, cur) => {
-                    if (!localValue.value) {
-                        localValue.value = null
+                    if (!localValue.value.terms) {
+                        delete localValue.value.terms
                     }
-                    // if (!localValue.value?.empty) {
-                    //     delete localValue.value.empty
-                    // }
-                    if (localValue.value?.length === 0) {
-                        localValue.value = null
+                    if (!localValue.value.empty) {
+                        delete localValue.value.empty
+                    }
+                    if (localValue.value.terms?.length === 0) {
+                        delete localValue.value.terms
                     }
                     modelValue.value = localValue.value
                     emit('change')
                 }
             )
-
+            watch(() => localValue.value.empty, () => {
+                emit('change')
+            })
 
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
+                checkedKeys.value = modelValue.value.terms?.map((term) => term?.guid)
+
             })
 
             return {
@@ -82,6 +98,8 @@
                 queryText,
                 showNone,
                 onCheck,
+                noStatus,
+                checkedKeys
             }
         },
     })

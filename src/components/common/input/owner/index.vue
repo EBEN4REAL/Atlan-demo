@@ -24,7 +24,7 @@
                 v-if="!readOnly"
                 shape="circle"
                 size="small"
-                class="text-center shadow hover:bg-primary-light hover:border-primary"
+                class="text-center shadow  hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
@@ -53,11 +53,28 @@
                 ></GroupPill>
             </PopOverGroup>
         </template>
+        <span
+            class="-ml-1 text-gray-500"
+            v-if="
+                readOnly &&
+                localValue?.ownerGroups?.length < 1 &&
+                localValue?.ownerUsers?.length < 1
+            "
+            >No owners assigned</span
+        >
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, PropType } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        Ref,
+        ref,
+        toRefs,
+        PropType,
+        watch,
+    } from 'vue'
 
     // Utils
     import {
@@ -115,11 +132,6 @@
                 required: false,
                 default: true,
             },
-            usedForAssets: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
@@ -129,8 +141,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, enableHover, destroyTooltipOnHide } =
-                toRefs(props)
+            const { selectedAsset } = toRefs(props)
 
             const localValue = ref(modelValue.value)
 
@@ -196,25 +207,6 @@
                 }
             })
 
-            // const { o, Escape, d } = useMagicKeys()
-
-            // watch(o, (v) => {
-            //     if (v) {
-            //         console.log('o')
-            //         if (!isEdit.value) {
-            //             isEdit.value = true
-            //         }
-            //     }
-            // })
-            // watch(Escape, (v) => {
-            //     if (v) {
-            //         console.log('esc')
-            //         if (isEdit.value) {
-            //             isEdit.value = false
-            //         }
-            //     }
-            // })
-
             const ownerFacetRef: Ref<null | HTMLInputElement> = ref(null)
 
             const handleVisibleChange = (visible) => {
@@ -227,6 +219,11 @@
                     handleChange()
                 }
             }
+
+            watch(selectedAsset, () => {
+                localValue.value.ownerUsers = ownerUsers(selectedAsset.value)
+                localValue.value.ownerGroups = ownerGroups(selectedAsset.value)
+            })
 
             return {
                 ownerGroups,

@@ -44,11 +44,11 @@
                     </a-menu-item-group>
                     <a-menu-item-group title="Logs">
                         <a-menu-item
-                            key="queryLogs"
+                            key="query-logs"
                             v-auth="[map.QUERY_SQL_LOGS]"
                             >Query Logs</a-menu-item
                         >
-                        <a-menu-item
+                      <a-menu-item
                             key="accessLogs"
                             v-auth="[map.QUERY_ACCESS_LOGS]"
                             >Access Logs</a-menu-item

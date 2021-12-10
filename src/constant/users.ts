@@ -57,8 +57,7 @@ export const userColumns = [
         sorter: true,
         width: 400,
         slots: { customRender: 'name' },
-        sortKey: 'first_name',
-        colSpan: 2,
+        sortKey: 'firstName',
         align: 'left',
     },
     {
@@ -75,7 +74,7 @@ export const userColumns = [
         sorter: true,
         width: 200,
         slots: { customRender: 'group' },
-        sortKey: 'group_count',
+        sortKey: 'groupCount',
         dataIndex: 'group_count_string',
     },
     {

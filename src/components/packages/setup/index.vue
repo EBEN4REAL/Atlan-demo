@@ -314,8 +314,11 @@
                 } else {
                     workflowName = `${workflowName}-${seconds.toString()}`
                 }
+
                 body.value.metadata.name = workflowName
                 body.value.metadata.namespace = 'default'
+                body.value.metadata.name = workflowName.replaceAll('/', '-')
+                body.value.metadata.namespace = 'default' // FIXME: change this to tenant name
 
                 const credentialBody = getCredentialBody(
                     configMap.value,
@@ -330,7 +333,9 @@
                             if (modelValue.value[p.name]) {
                                 parameters.push({
                                     name: p.name,
-                                    value: modelValue.value[p.name],
+                                    value: JSON.stringify(
+                                        modelValue.value[p.name]
+                                    ),
                                 })
                             }
                         }
@@ -339,7 +344,7 @@
                     message.error('Something went wrong. Package is not valid.')
                 }
 
-                body.value.metadata.labels['com.atlan.orchestration/ui'] =
+                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] =
                     'true'
                 body.value.spec = {
                     templates: [

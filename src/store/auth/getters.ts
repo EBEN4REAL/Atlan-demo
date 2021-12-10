@@ -15,19 +15,15 @@ export const getters: GettersTree<State> & Getters = {
             i.attributes?.connectorName?.toLowerCase()
         )
 
-        let countMap = duplicateList.reduce((prev, cur) => {
+        const countMap = duplicateList.reduce((prev, cur) => {
             prev[cur] = (prev[cur] || 0) + 1
             return prev
         }, {})
-
-        console.log(countMap)
 
         const sourceList = SourceList.map((i) => ({
             ...i,
             count: countMap[i.id],
         }))
-
-        console.log(sourceList)
 
         return sourceList
             .filter((item) => item.count > 0)

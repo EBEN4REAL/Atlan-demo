@@ -49,7 +49,7 @@
                 if (assetdiscovery.value) {
                     assetdiscovery.value.updateCurrentList(asset)
                 }
-                localSelected.value = asset
+                handlePreview(asset)
             }
 
             provide('updateList', updateList)

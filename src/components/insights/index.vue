@@ -61,6 +61,14 @@
                         :refresh-query-tree="refreshQueryTree"
                     />
                 </div>
+                <div
+                    :class="
+                        activeTab.component === 'variables' ? 'z-30' : 'z-10'
+                    "
+                    class="absolute h-full full-width"
+                >
+                    <Variables />
+                </div>
                 <!--explorer pane end -->
             </pane>
             <pane
@@ -83,11 +91,7 @@
             <pane
                 :max-size="activeInlineTab?.assetSidebar?.isVisible ? 25 : 0"
                 :min-size="0"
-                :size="
-                    activeInlineTab?.assetSidebar?.isVisible
-                        ? assetSidebarPaneSize
-                        : 0
-                "
+                :size="sidebarPaneSize"
             >
                 <AssetSidebar />
             </pane>
@@ -112,6 +116,7 @@
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
     import Queries from './explorers/queries/index.vue'
+    import Variables from './explorers/variables/index.vue'
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
 
@@ -142,6 +147,7 @@
             AssetSidebar,
             Schema,
             Queries,
+            Variables,
             History,
             Schedule,
         },
@@ -192,15 +198,17 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(
-                undefined,
-                !savedQueryGuidFromURL.value
-            )
+            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
                 activeInlineTab,
                 activeInlineTabKey
+            )
+            const sidebarPaneSize = computed(() =>
+                activeInlineTab.value?.assetSidebar?.isVisible
+                    ? assetSidebarPaneSize.value
+                    : 0
             )
             const activeTabId = ref(tabsList[0].id)
 
@@ -209,6 +217,7 @@
             )
 
             const changeTab = (tab: TabInterface) => {
+                console.log('new tab', tab)
                 activeTabId.value = tab.id
             }
             const editorInstance: Ref<any> = ref()
@@ -351,22 +360,24 @@
                                 attributeValue: undefined,
                             },
                         },
-                        queries: {
-                            connectors: {
-                                connector: undefined,
+                        playground: {
+                            vqb: {
+                                panels: [
+                                    {
+                                        order: 1,
+                                        id: 'columns',
+                                        hide: false,
+                                        subpanels: [
+                                            {
+                                                id: '1',
+                                                tableQualifiedName: undefined,
+                                                columns: [],
+                                                columnsData: [],
+                                            },
+                                        ],
+                                    },
+                                ],
                             },
-                        },
-                    },
-                    playground: {
-                        vqb: {
-                            panels: [
-                                {
-                                    order: 1,
-                                    id: 'columns',
-                                    hide: false,
-                                    columns: [],
-                                },
-                            ],
                         },
                         editor: {
                             text: '',
@@ -415,151 +426,6 @@
                     },
                 }
 
-                // let queryTab: activeInlineTabInterface = { ...demoTab }
-
-                // ;(queryTab.key = generateUUID(),
-                //     (queryTab.label = `${tableNameFromURL} preview`),
-                //     (queryTab.isSaved = false),
-                //     (queryTab.queryId = undefined),
-                //     (queryTab.status = 'DRAFT'),
-                //     (queryTab.connectionId = ''),
-                //     (queryTab.description = ''),
-                //     (queryTab.qualifiedName = ''),
-                //     (queryTab.parentGuid = ''),
-                //     (queryTab.parentQualifiedName = ''),
-                //     (queryTab.isSQLSnippet = false),
-                //     (queryTab.savedQueryParentFolderTitle = undefined),
-                //     (queryTab.explorer = {
-                //         schema: {
-                //             connectors: {
-                //                 attributeName: undefined,
-                //                 attributeValue: undefined,
-                //             },
-                //         },
-                //         queries: {
-                //             connectors: {
-                //                 connector: undefined,
-                //             },
-                //         },
-                //     }),
-                //     (queryTab.playground.editor = {
-                //         text: '',
-                //         context: {
-                //             attributeName: undefined,
-                //             attributeValue: undefined,
-                //         },
-                //         dataList: [],
-                //         columnList: [],
-                //         variables: [],
-                //         savedVariables: [],
-                //         limitRows: {
-                //             checked: false,
-                //             rowsCount: -1,
-                //         },
-                //     }),
-                //     (queryTab.playground.resultsPane = {
-                //         activeTab: 0,
-                //         result: {
-                //             title: `Result`,
-                //             runQueryId: undefined,
-                //             isQueryRunning: '',
-                //             queryErrorObj: {},
-                //             totalRowsCount: -1,
-                //             executionTime: -1,
-                //             errorDecorations: [],
-                //             eventSourceInstance: undefined,
-                //             buttonDisable: false,
-                //             isQueryAborted: false,
-                //         },
-                //         metadata: {},
-                //         queries: {},
-                //         joins: {},
-                //         filters: {},
-                //         impersonation: {},
-                //         downstream: {},
-                //         sqlHelp: {},
-                //     }),
-                //     (queryTab.favico = 'https://atlan.com/favicon.ico'),
-                //     (queryTab.assetSidebar = {
-                //         isVisible: false,
-                //         assetInfo: {},
-                //         title: '',
-                //         id: '',
-                //     })
-                // let queryTab: activeInlineTabInterface = {
-                //     key: String(new Date().getTime()),
-                //     label: `${tableNameFromURL} preview`,
-                //     isSaved: false,
-                //     queryId: undefined,
-                //     status: 'DRAFT',
-                //     connectionId: '',
-                //     description: '',
-                //     qualifiedName: '',
-                //     parentGuid: '',
-                //     parentQualifiedName: '',
-                //     isSQLSnippet: false,
-                //     savedQueryParentFolderTitle: undefined,
-                //     explorer: {
-                //         schema: {
-                //             connectors: {
-                //                 attributeName: undefined,
-                //                 attributeValue: undefined,
-                //             },
-                //         },
-                //         queries: {
-                //             connectors: {
-                //                 connector: undefined,
-                //             },
-                //         },
-                //     },
-                //     playground: {
-                //         editor: {
-                //             text: '',
-                //             context: {
-                //                 attributeName: undefined,
-                //                 attributeValue: undefined,
-                //             },
-                //             dataList: [],
-                //             columnList: [],
-                //             variables: [],
-                //             savedVariables: [],
-                //             limitRows: {
-                //                 checked: false,
-                //                 rowsCount: -1,
-                //             },
-                //         },
-                //         resultsPane: {
-                //             activeTab: 0,
-                //             result: {
-                //                 title: `Result`,
-                //                 runQueryId: undefined,
-                //                 isQueryRunning: '',
-                //                 queryErrorObj: {},
-                //                 totalRowsCount: -1,
-                //                 executionTime: -1,
-                //                 errorDecorations: [],
-                //                 eventSourceInstance: undefined,
-                //                 buttonDisable: false,
-                //                 isQueryAborted: false,
-                //             },
-                //             metadata: {},
-                //             queries: {},
-                //             joins: {},
-                //             filters: {},
-                //             impersonation: {},
-                //             downstream: {},
-                //             sqlHelp: {},
-                //         },
-                //     },
-                //     favico: 'https://atlan.com/favicon.ico',
-                //     assetSidebar: {
-                //         isVisible: false,
-                //         assetInfo: {},
-                //         title: '',
-                //         id: '',
-                //     },
-                // }
-
                 let newQuery
                 if (columnNameFromURL) {
                     newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
@@ -568,8 +434,7 @@
                 }
 
                 const attributeName = 'schemaQualifiedName'
-                const attributeValue =
-                    `${databaseQualifiedNameFromURL  }/${  schemaNameFromURL}`
+                const attributeValue = `${databaseQualifiedNameFromURL}/${schemaNameFromURL}`
 
                 // const newText = `${newQuery}${prevText}`
                 queryTab.playground.editor.text = newQuery
@@ -671,6 +536,7 @@
                 resetQueryTree,
                 resetParentGuid,
                 resetType,
+                sidebarPaneSize,
             }
         },
     })

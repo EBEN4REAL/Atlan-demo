@@ -22,7 +22,9 @@
                 <div v-if="apikey.attributes.description">
                     <a-popover trigger="hover" placement="bottom">
                         <template #content>
-                            {{ apikey.attributes.description }}
+                            <div class="px-3 py-1">
+                                {{ apikey.attributes.description }}
+                            </div>
                         </template>
                         <div
                             class="cursor-pointer text-primary"
@@ -39,9 +41,6 @@
                 >
                     {{ apikey.attributes.displayName }}
                 </div>
-            </template>
-            <template #key="{ text: apikey }">
-                {{ apikey.client_id }}
             </template>
             <template #personas="{ text: apikey }">
                 <!-- <span v-if="apikey.attributes.personas">
@@ -61,6 +60,29 @@
                 >
                 </PillGroup>
                 <span v-else> No personas </span>
+            </template>
+            <template #expiry="{ text: apikey }">
+                <div
+                    v-if="
+                        apikey &&
+                        apikey.attributes &&
+                        apikey.attributes.validityStringRelative
+                    "
+                >
+                    <a-tooltip
+                        v-if="apikey.attributes.validityString"
+                        placement="bottom"
+                    >
+                        <template #title>{{
+                            apikey.attributes.validityString
+                        }}</template>
+                        {{ apikey.attributes.validityStringRelative }}
+                    </a-tooltip>
+                    <div v-else>
+                        {{ apikey.attributes.validityStringRelative }}
+                    </div>
+                </div>
+                <div v-else>-</div>
             </template>
             <template #created="{ text: apikey }">
                 <div class="flex items-center">
@@ -88,6 +110,7 @@
                     {{ apikey.attributes.createdAtFormatted }}
                 </div>
             </template>
+
             <template #actions="{ text: apikey }">
                 <a-popover
                     trigger="click"
@@ -112,39 +135,43 @@
                         />
                     </AtlanBtn>
                     <template #content>
-                        <div class="mb-4 text-base font-bold">
-                            Delete API Key
-                        </div>
-                        <div class="mb-3.5">
-                            Are you sure you want to delete
-                            <span class="font-bold">
-                                {{ apikey.attributes.displayName }}?</span
-                            >
-                        </div>
-                        <div class="flex justify-end mb-2">
-                            <AtlanBtn
-                                color="secondary"
-                                padding="compact"
-                                size="sm"
-                                class="mr-3 shadow-sm"
-                                @click="
-                                    isDeletePopoverVisible[apikey.id] = false
-                                "
-                            >
-                                <span>Cancel</span></AtlanBtn
-                            >
-                            <AtlanBtn
-                                v-auth="[map.DELETE_APIKEY]"
-                                size="sm"
-                                class="text-white bg-error border-error"
-                                padding="compact"
-                                :is-loading="deleteAPIKeyLoading"
-                                @click="() => handleDelete(apikey.id)"
-                                ><span v-if="deleteAPIKeyLoading"
-                                    >Deleting</span
+                        <div class="px-4 py-3">
+                            <div class="mb-4 text-base font-bold">
+                                Delete API Key
+                            </div>
+                            <div class="mb-3.5">
+                                Are you sure you want to delete
+                                <span class="font-bold">
+                                    {{ apikey.attributes.displayName }}?</span
                                 >
-                                <span v-else>Delete</span></AtlanBtn
-                            >
+                            </div>
+                            <div class="flex justify-end mb-2">
+                                <AtlanBtn
+                                    color="secondary"
+                                    padding="compact"
+                                    size="sm"
+                                    class="mr-3 shadow-sm"
+                                    @click="
+                                        isDeletePopoverVisible[
+                                            apikey.id
+                                        ] = false
+                                    "
+                                >
+                                    <span>Cancel</span></AtlanBtn
+                                >
+                                <AtlanBtn
+                                    v-auth="[map.DELETE_APIKEY]"
+                                    size="sm"
+                                    class="text-white bg-error border-error"
+                                    padding="compact"
+                                    :is-loading="deleteAPIKeyLoading"
+                                    @click="() => handleDelete(apikey.id)"
+                                    ><span v-if="deleteAPIKeyLoading"
+                                        >Deleting</span
+                                    >
+                                    <span v-else>Delete</span></AtlanBtn
+                                >
+                            </div>
                         </div>
                     </template>
                 </a-popover>
@@ -230,6 +257,13 @@ export default defineComponent({
                 title: 'Personas',
                 slots: { customRender: 'personas' },
                 key: 'personas',
+            },
+
+            {
+                title: 'Expiry',
+                key: 'expiry',
+                ellipsis: true,
+                slots: { customRender: 'expiry' },
             },
             {
                 title: 'Created',

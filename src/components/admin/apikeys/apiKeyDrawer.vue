@@ -17,9 +17,7 @@
                     v-if="!generatedAPIKey.attributes"
                     class="text-lg font-bold"
                 >
-                    {{
-                        apiKeyDirty.id ? apiKeyDirty.displayName : 'Add new key'
-                    }}
+                    {{ apiKeyDirty.id ? apiKey.displayName : 'Add new key' }}
                 </div>
                 <div v-else class="text-lg font-bold">
                     {{ generatedAPIKey.attributes.displayName }}
@@ -219,14 +217,29 @@
                         </template>
                     </a-dropdown>
                 </div>
-                <div v-else-if="validityDateStringRelative">
+                <div
+                    v-else-if="
+                        apiKeyDirty.rawKey &&
+                        apiKeyDirty.rawKey.attributes &&
+                        apiKeyDirty.rawKey.attributes.validityStringRelative
+                    "
+                >
                     <div class="mb-2 mr-2 text-gray-500">Expiry</div>
-                    <a-tooltip v-if="validityDateString" placement="bottom">
-                        <template #title>{{ validityDateString }}</template>
-                        {{ validityDateStringRelative }}
+                    <a-tooltip
+                        v-if="apiKeyDirty.rawKey.attributes.validityString"
+                        placement="bottom"
+                    >
+                        <template #title>{{
+                            apiKeyDirty.rawKey.attributes.validityString
+                        }}</template>
+                        {{
+                            apiKeyDirty.rawKey.attributes.validityStringRelative
+                        }}
                     </a-tooltip>
                     <div v-else>
-                        {{ validityDateStringRelative }}
+                        {{
+                            apiKeyDirty.rawKey.attributes.validityStringRelative
+                        }}
                     </div>
                 </div>
             </div>
@@ -311,41 +324,45 @@
                     <span>Delete</span>
                 </AtlanBtn>
                 <template #content>
-                    <div class="mb-4 text-base font-bold">Delete API Key</div>
-                    <div class="mb-3.5">
-                        Are you sure you want to delete
-                        <span class="font-bold">
-                            {{ apiKeyDirty.displayName }}?</span
-                        >
-                    </div>
-                    <div class="flex justify-end mb-2">
-                        <AtlanBtn
-                            color="secondary"
-                            padding="compact"
-                            size="sm"
-                            class="mr-3 shadow-sm"
-                            @click="isDeletePopoverVisible = false"
-                        >
-                            <span>Cancel</span></AtlanBtn
-                        >
-                        <AtlanBtn
-                            class="
-                                mr-3
-                                text-white
-                                bg-transparent
-                                border-none
-                                bg-error
-                            "
-                            size="lg"
-                            padding="compact"
-                            :is-loading="deleteAPIKeyLoading"
-                            :disabled="deleteAPIKeyLoading"
-                            @click="$emit('deleteAPIKey', apiKeyDirty.id)"
-                        >
-                            <AtlanIcon icon="Delete" />
-                            <span v-if="deleteAPIKeyLoading">Deleting</span>
-                            <span v-else>Delete</span>
-                        </AtlanBtn>
+                    <div class="px-4 py-3">
+                        <div class="mb-4 text-base font-bold">
+                            Delete API Key
+                        </div>
+                        <div class="mb-3.5">
+                            Are you sure you want to delete
+                            <span class="font-bold">
+                                {{ apiKeyDirty.displayName }}?</span
+                            >
+                        </div>
+                        <div class="flex justify-end mb-2">
+                            <AtlanBtn
+                                color="secondary"
+                                padding="compact"
+                                size="sm"
+                                class="mr-3 shadow-sm"
+                                @click="isDeletePopoverVisible = false"
+                            >
+                                <span>Cancel</span></AtlanBtn
+                            >
+                            <AtlanBtn
+                                class="
+                                    mr-3
+                                    text-white
+                                    bg-transparent
+                                    border-none
+                                    bg-error
+                                "
+                                size="lg"
+                                padding="compact"
+                                :is-loading="deleteAPIKeyLoading"
+                                :disabled="deleteAPIKeyLoading"
+                                @click="$emit('deleteAPIKey', apiKeyDirty.id)"
+                            >
+                                <AtlanIcon icon="Delete" />
+                                <span v-if="deleteAPIKeyLoading">Deleting</span>
+                                <span v-else>Delete</span>
+                            </AtlanBtn>
+                        </div>
                     </div>
                 </template>
             </a-popover>
@@ -516,12 +533,13 @@ export default defineComponent({
                     props?.apiKey?.validitySeconds
                 ) {
                     // adding validity in seconds to created timestamp unix epoch to find the date till which the api key is valid
-                    const validityUnixEpoch =
-                        dayjs(
-                            props?.apiKey?.rawKey?.attributes?.createdAt
-                        ).unix() + parseInt(props.apiKey.validitySeconds)
+                    // const validityUnixEpoch =
+                    //     dayjs(
+                    //         props?.apiKey?.rawKey?.attributes?.createdAt
+                    //     ).unix() + parseInt(props.apiKey.validitySeconds)
                     // getting dayjs obj from the calculated unix epoch to pass in datepicker
-                    validityDate.value = dayjs.unix(validityUnixEpoch)
+                    validityDate.value =
+                        props?.apiKey?.rawKey?.attributes?.validity
                 } else {
                     const validityUnixEpoch =
                         dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS

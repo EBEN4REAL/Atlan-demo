@@ -36,7 +36,30 @@
             const groupData = computed(() => groupList.value[0] || {})
             const bussinesCountRef = ref(0)
             const assetCountRef = ref(0)
-
+            const memberListParams = {
+                groupId: groupList.value[0]?.id,
+                params: {
+                    limit: 10,
+                    offset: 0,
+                    sort: 'firstName',
+                    filter: {},
+                },
+            }
+            const { memberList } = useGroupMembers(memberListParams)
+            watch(memberList, () => {
+                const arrUserName = memberList.value.map((el) => el.username)
+                const { bussinesCount, assetCount } = useUserPopover(
+                    'group',
+                    arrUserName
+                )
+                watch(
+                    [assetCount, bussinesCount],
+                    ([newAssetCount, newBussinesCount]) => {
+                        assetCountRef.value = newAssetCount
+                        bussinesCountRef.value = newBussinesCount
+                    }
+                )
+            })
             const { showGroupPreview, setGroupUniqueAttribute } =
                 useGroupPreview()
             const handleClickGroup = () => {

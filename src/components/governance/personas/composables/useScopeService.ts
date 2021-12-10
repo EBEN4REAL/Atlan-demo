@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 // import scopeAPI from '../apis/scopes'
 
-const scopeList = [
+const purposeScopeList = [
     {
         scopes: [
             {
@@ -11,10 +11,6 @@ const scopeList = [
             {
                 value: 'entity-update',
                 label: 'update',
-            },
-            {
-                value: 'link-assets',
-                label: 'update: Linked assets',
             },
             {
                 value: 'entity-create',
@@ -48,8 +44,12 @@ const scopeList = [
             },
 
             {
-                value: 'link-terms',
-                label: 'link Terms',
+                value: 'add-terms',
+                label: 'Add: Terms',
+            },
+            {
+                value: 'remove-terms',
+                label: 'Remove: Terms',
             },
         ],
         type: 'Governance',
@@ -96,9 +96,69 @@ const scopeList = [
     //     type: 'Type',
     // },
 ]
+const personaScopeList = [
+    {
+        scopes: [
+            {
+                value: 'entity-read',
+                label: 'read',
+            },
+            {
+                value: 'entity-update',
+                label: 'update',
+            },
+            {
+                value: 'link-assets',
+                label: 'update: Linked assets',
+            },
+            {
+                value: 'entity-create',
+                label: 'create',
+            },
+            {
+                value: 'entity-delete',
+                label: 'delete',
+            },
+        ],
+        type: 'Asset',
+        label: 'Asset',
+    },
+    {
+        scopes: [
+            {
+                value: 'entity-update-business-metadata',
+                label: 'update: Custom Metadata',
+            },
+            {
+                value: 'entity-add-classification',
+                label: 'add: Classifications',
+            },
+            {
+                value: 'entity-remove-classification',
+                label: 'remove: Classifications',
+            },
+            {
+                value: 'entity-update-classification',
+                label: 'update: Classifications',
+            },
+
+            {
+                value: 'add-terms',
+                label: 'Add: Terms',
+            },
+            {
+                value: 'remove-terms',
+                label: 'Remove: Terms',
+            },
+        ],
+        type: 'Governance',
+        label: 'Governance',
+    },
+]
 
 export default function scopeService() {
-    function listScopes() {
+    // purposes | persona
+    function listScopes(type: string) {
         // const { data, error, isLoading } = scopeAPI.getScopes()
         // const scopeList = computed(() => data.value?.scopes)
 
@@ -106,10 +166,17 @@ export default function scopeService() {
 
         // FIXME: Remove these hardcoded mappings and
         //  use then API service when they are ready
-
-        return { scopeList }
+        if (type === 'persona')
+            return {
+                scopeList: personaScopeList,
+            }
+        else if (type === 'purpose')
+            return {
+                scopeList: purposeScopeList,
+            }
     }
-    function findActions(actions: string[]) {
+    function findActions(actions: string[], type: string) {
+        let scopeList = type === 'persona' ? personaScopeList : purposeScopeList
         let res = [
             { label: 'Asset', action: [] },
             { label: 'Classifications', action: [] },

@@ -87,8 +87,8 @@
                 property,
                 componentProps,
                 formState,
-                handleInput,
                 cleanInput,
+                handleInput,
             }
         },
     })

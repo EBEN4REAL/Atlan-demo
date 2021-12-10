@@ -8,19 +8,24 @@
                 style="min-width: 264px"
             >
                 <div class="h-full border-r border-gray-200">
-                    <GlossaryDiscovery class="h-full"></GlossaryDiscovery>
+                    <GlossaryDiscovery
+                        ref="glossaryDiscovery"
+                        class="h-full"
+                    ></GlossaryDiscovery>
                 </div>
             </pane>
-            <pane :size="50" class="bg-white">
+            <pane :size="60" class="bg-white">
                 <div class="flex w-full h-full">
-                    <!-- <BulkUploadProgress /> -->
                     <router-view
                         v-if="isItem"
                         :selected-asset="selectedGlossary"
                     />
                 </div>
             </pane>
-            <pane min-size="28" max-size="28" :size="28" class="bg-white">
+            <pane
+                class="bg-white asset-preview-container"
+                style="max-width: 420px"
+            >
                 <div
                     class="h-full bg-white border-l xs:hidden sm:hidden md:block lg:block"
                 >
@@ -42,14 +47,11 @@
     import GlossaryPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryStore from '~/store/glossary'
-    import useAssetStore from '~/store/asset'
-    // import BulkUploadProgress from '~/components/common/widgets/bulkUploadProgress/progressWidget.vue'
 
     export default defineComponent({
         components: {
             GlossaryDiscovery,
             GlossaryPreview,
-            // BulkUploadProgress,
         },
         setup() {
             useHead({
@@ -61,7 +63,7 @@
             const { selectedGlossary } = useAssetInfo()
             const localSelected = ref()
             const glossaryStore = useGlossaryStore()
-            const assetStore = useAssetStore()
+            const glossaryDiscovery = ref(null)
 
             if (selectedGlossary.value?.guid === id.value) {
                 localSelected.value = selectedGlossary.value
@@ -69,28 +71,31 @@
             const handlePreview = (asset) => {
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
-                assetStore.setSelectedAsset(asset)
             }
+
             const updateList = (asset) => {
                 localSelected.value = asset
+                handlePreview(asset)
                 glossaryStore.setSelectedGTC(asset)
-                assetStore.setSelectedAsset(asset)
+                updateTreeNode(asset)
             }
             watch(selectedGlossary, () => {
-                if (isItem.value) localSelected.value = selectedGlossary.value
+                localSelected.value = selectedGlossary.value
             })
-            watch(isItem, () => {
-                if (!id.value) {
-                    localSelected.value = null
-                }
-            })
+            const reInitTree = () => {
+                glossaryDiscovery?.value?.reInitTree()
+            }
+            const updateTreeNode = (asset) => {
+                glossaryDiscovery?.value?.updateTreeNode(asset)
+            }
             provide('updateList', updateList)
             provide('preview', handlePreview)
-
+            provide('reInitTree', reInitTree)
             return {
                 isItem,
                 selectedGlossary,
                 localSelected,
+                glossaryDiscovery,
             }
         },
     })

@@ -77,12 +77,12 @@
                 v-else-if="
                     selectedUser &&
                     selectedUser.attributes &&
-                    selectedUser.attributes.mobile_number &&
-                    selectedUser.attributes.mobile_number[0]
+                    selectedUser.attributes.mobileNumber &&
+                    selectedUser.attributes.mobileNumber[0]
                 "
                 class="text-gray"
             >
-                {{ selectedUser.attributes.mobile_number[0] || '-' }}
+            {{ selectedUser.attributes.mobileNumber[0] || '--'}}
             </div>
             <div v-else class="text-gray">--</div>
         </div>
@@ -110,14 +110,14 @@
         setup(props, context) {
             const isUpdate = ref(false)
             const mobileNumberLocal = ref(
-                props?.selectedUser?.attributes?.mobile_number?.[0] ?? ''
+                props?.selectedUser?.attributes?.mobileNumber?.[0] ?? ''
             )
             const updateErrorMessage = ref('')
             const updateSuccess = ref(false)
             const updateLoading = ref(false)
             const onUpdate = () => {
                 mobileNumberLocal.value =
-                    props?.selectedUser?.attributes?.mobile_number?.[0] ?? ''
+                    props?.selectedUser?.attributes?.mobileNumber?.[0] ?? ''
                 updateErrorMessage.value = ''
                 isUpdate.value = true
             }
@@ -134,7 +134,7 @@
             const handleUpdate = () => {
                 requestPayload.value = {
                     attributes: {
-                        mobile_number: [mobileNumberLocal.value],
+                        mobileNumber: [mobileNumberLocal.value.toString()],
                     },
                 }
                 updateLoading.value = true
@@ -150,7 +150,7 @@
                             // context.emit("updatedUser");
                             updateSuccess.value = true
                             updateErrorMessage.value = ''
-                            props.selectedUser.attributes.mobile_number =
+                            props.selectedUser.attributes.mobileNumber =
                                 mobileNumberLocal.value
                             isUpdate.value = false
                             setTimeout(() => {

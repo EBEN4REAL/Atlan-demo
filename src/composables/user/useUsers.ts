@@ -24,7 +24,7 @@ export const getUserName = (user: any) => {
 const getWorkspaceRole = (user: any) => {
     const { roles, defaultRoles } = user
 
-    const filterHelper = (a) => a.filter((role: string) => role.startsWith('$'))
+    const filterHelper = (a) => a?.filter((role: string) => role.startsWith('$'))??[]
     const atlanRoles = [
         ...new Set([...filterHelper(roles), ...filterHelper(defaultRoles)]),
     ]
@@ -37,12 +37,13 @@ const getWorkspaceRole = (user: any) => {
     if (atlanRoles.includes('$guest')) {
         return 'Guest'
     }
+     return ''
 }
 
 const getUserPersona = (user: any) => {
     const { roles } = user
 
-    const roleFilter = roles.filter(
+    const roleFilter = roles?.filter(
         (role: string) =>
             role !== 'default-roles-default' &&
             !role.startsWith('$') &&
@@ -57,9 +58,9 @@ const getUserRole = (user: any) => {
     let atlanRoles: string[] = []
     const atlanRole = { name: '', code: '' }
 
-    const filterHelper = (a) => a.filter((role: string) => role.startsWith('$'))
+    const filterHelper = (a) => a?.filter((role: string) => role.startsWith('$'))??[]
 
-    const roleFilter = roles.filter(
+    const roleFilter = roles?.filter(
         (role: string) => role !== 'default-roles-default'
     )
 
@@ -118,8 +119,8 @@ export const getFormattedUser = (user: any) => {
         role_object: getUserRole(user),
         workspaceRole: getWorkspaceRole(user),
         personaList: getUserPersona(user),
-        created_at_time_ago: user.created_timestamp
-            ? useTimeAgo(user.created_timestamp).value
+        created_at_time_ago: user.createdTimestamp
+            ? useTimeAgo(user.createdTimestamp).value
             : '',
     }
     return localUser
@@ -159,8 +160,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         if (data.value.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                    getFormattedUser(user)
-                )
+                      getFormattedUser(user)
+                  )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 
@@ -174,6 +175,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
                     localUsersList.value = escapedData
                 }
             }
+        } else {
+            userList.value = []
         }
     })
 

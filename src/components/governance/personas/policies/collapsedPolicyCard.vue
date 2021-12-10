@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded  group hover:shadow"
+        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded group hover:shadow"
     >
         <div class="flex items-center mb-4 gap-x-3">
             <span
@@ -94,7 +94,7 @@
             <div class="flex items-center gap-y-1.5 gap-x-2 flex-1 flex-wrap">
                 <template v-for="item in splitAssets.a" :key="item.label">
                     <div
-                        class="flex items-center justify-center px-3 text-sm text-gray-700 border border-gray-300 rounded-full "
+                        class="flex items-center justify-center px-3 text-sm text-gray-700 border border-gray-300 rounded-full"
                         style="padding-top: 4px; padding-bottom: 4px"
                     >
                         {{ item.label }}
@@ -103,7 +103,7 @@
                 <template v-for="item in splitAssets.b" :key="item.label">
                     <div
                         v-if="showAll"
-                        class="flex items-center justify-center px-3 text-sm text-gray-700 border border-gray-300 rounded-full "
+                        class="flex items-center justify-center px-3 text-sm text-gray-700 border border-gray-300 rounded-full"
                         style="padding-top: 4px; padding-bottom: 4px"
                     >
                         {{ item.label }}
@@ -124,10 +124,10 @@
                 </div>
             </div>
             <div
-                class="flex items-stretch border border-gray-300 rounded opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
+                class="flex items-stretch border border-gray-300 rounded opacity-0 group-hover:opacity-100 text-gray hover:text-primary"
             >
                 <AtlanBtn
-                    class="flex-none px-2 border-l border-gray-300 border-none  hover:text-primary"
+                    class="flex-none px-2 border-l border-gray-300 border-none hover:text-primary"
                     size="sm"
                     color="secondary"
                     padding="compact"
@@ -151,7 +151,7 @@
                     @confirm="removePolicy"
                 >
                     <AtlanBtn
-                        class="flex-none px-2 border-r border-gray-300 border-none  hover:text-red-500"
+                        class="flex-none px-2 border-r border-gray-300 border-none hover:text-red-500"
                         size="sm"
                         color="secondary"
                         data-test-id="policy-delete"
@@ -212,7 +212,10 @@
             const assetsIcons = computed(() => {
                 return policy.value?.assets?.map((name) => getAssetIcon(name))
             })
-            const actions = computed(() => findActions(policy.value.actions))
+            const actions = computed(
+                () => findActions(policy.value.actions),
+                type.value
+            )
 
             const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)

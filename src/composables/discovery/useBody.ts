@@ -229,7 +229,24 @@ export function useBody(
             }
             case 'terms': {
                 if (filterObject) {
-                    base.filter('term', '__meanings', filterObject)
+                    base.filter('bool', (q) => {
+                        if (filterObject.terms?.length > 0)
+                            q.orFilter(
+                                'terms',
+                                '__meanings',
+                                filterObject.terms.map((term) => term.qualifiedName)
+                            )
+
+                        if (filterObject.empty === true) {
+                            q.orFilter('bool', (query) => {
+                                return query.filter('bool', (query2) => {
+                                    query2.notFilter('exists', '__meanings')
+                                    return query2
+                                })
+                            })
+                        }
+                        return q
+                    })
                 }
                 break
             }

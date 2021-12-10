@@ -40,13 +40,13 @@
                         class="flex items-center text-sm text-gray-500 cursor-pointer gap-x-1"
                         @click="showUserPreviewDrawer"
                     >
-                        <AtlanIcon v-if="creator?.first_name" icon="User" />
-                        <span>{{ creator?.first_name }}</span>
+                        <AtlanIcon v-if="creator?.firstName" icon="User" />
+                        <span>{{ creator?.firstName }}</span>
                     </div>
 
                     <div v-if="latRun" class="flex text-sm text-gray-500">
                         <div
-                            v-if="creator?.first_name"
+                            v-if="creator?.firstName"
                             class="mr-3"
                             style="color: rgb(196, 196, 196)"
                         >
@@ -58,7 +58,7 @@
                     </div>
                     <template v-if="totalRun">
                         <div
-                            v-if="latRun || creator?.first_name"
+                            v-if="latRun || creator?.firstName"
                             style="color: rgb(196, 196, 196)"
                         >
                             •
@@ -73,9 +73,6 @@
             </div>
             <div class="flex space-x-2">
                 <UtilityButtons />
-                <!-- <a-button size="small" @click="$emit('openLogs')"
-                    >Logs</a-button
-                > -->
             </div>
         </div>
     </div>

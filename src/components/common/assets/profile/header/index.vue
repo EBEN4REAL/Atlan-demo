@@ -19,24 +19,24 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>
 
                     <CertificateBadge
-                        v-if="certificateStatus(item) && !isScrubbed(item)"
+                        v-if="certificateStatus(item)"
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
                         :timestamp="certificateUpdatedAt(item)"
-                        class="mb-0.5"
+                        class="mb-1 ml-1"
                     ></CertificateBadge>
                     <a-tooltip placement="right"
                         ><template #title>Limited Access</template>
                         <AtlanIcon
                             v-if="isScrubbed(item)"
                             icon="Lock"
-                            class="h-4 mb-1"
+                            class="h-4 mb-1 ml-1"
                         ></AtlanIcon
                     ></a-tooltip>
                 </div>

@@ -102,24 +102,24 @@
                     label: 'Aggregate',
                     class: 'mt-0.5 mr-2',
                 },
-                {
-                    id: 'filter',
-                    icon: 'Filter',
-                    label: 'Filter',
-                    class: 'mr-2',
-                },
+                // {
+                //     id: 'filter',
+                //     icon: 'Filter',
+                //     label: 'Filter',
+                //     class: 'mr-2',
+                // },
                 {
                     id: 'sort',
                     icon: 'Sort',
                     label: 'Sort',
                     class: 'mr-2',
                 },
-                {
-                    id: 'join',
-                    icon: 'Union',
-                    label: 'Join data',
-                    class: 'mr-2',
-                },
+                // {
+                //     id: 'join',
+                //     icon: 'Union',
+                //     label: 'Join data',
+                //     class: 'mr-2',
+                // },
                 {
                     id: 'group',
                     icon: 'BuilderGroup',

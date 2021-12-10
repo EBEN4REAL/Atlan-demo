@@ -14,7 +14,7 @@
     </div>
 
     <SearchAndFilter
-        placeholder="Search accross atlan..."
+        placeholder="Search across atlan..."
         class=""
         @click="showModal"
     />

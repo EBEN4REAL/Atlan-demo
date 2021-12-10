@@ -253,7 +253,7 @@ export default defineComponent({
         }, 600)
         const clearFilter = () => {
             groupListAPIParams.filter = {}
-            searchText.value=''
+            searchText.value = ''
             getGroupList()
         }
 
@@ -322,7 +322,7 @@ export default defineComponent({
                             },
                             [`${group.name}`]
                         ),
-                        h('span','?')
+                        h('span', '?'),
                     ])
                 },
                 okType: 'danger',

@@ -179,7 +179,7 @@
 
             const clearFilter = () => {
                 userListAPIParams.filter = {}
-                searchText.value=''
+                searchText.value = ''
                 statusFilter.value = []
                 getUserList()
             }

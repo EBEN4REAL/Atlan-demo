@@ -666,20 +666,21 @@ export default defineComponent({
                 title: 'Action',
                 slots: { customRender: 'action' },
                 key: 'action',
+                width: 140,
             },
             {
                 title: 'User',
                 key: 'user',
                 ellipsis: true,
                 slots: { customRender: 'user' },
-                width: 120,
+                width: 140,
             },
             {
                 title: 'Status',
                 key: 'status',
                 ellipsis: true,
                 slots: { customRender: 'status' },
-                width: 120,
+                width: 140,
             },
             {
                 title: 'Timestamp',

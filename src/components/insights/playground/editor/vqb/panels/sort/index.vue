@@ -230,7 +230,7 @@
             )
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
-            const expand = ref(false)
+            const expand = ref(true)
             const actionPanel = ref(false)
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'

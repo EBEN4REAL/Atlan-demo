@@ -12,7 +12,7 @@
                 >
                     <ColumnSelector
                         class="flex-1"
-                        style="max-width: 30%"
+                        style="max-width: 45.5%"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
@@ -110,10 +110,10 @@
                 console.log('col change: ', val)
 
                 const copySubPanel = JSON.parse(
-                    JSON.stringify(toRaw(subpanels.value[0]))
+                    JSON.stringify(toRaw(subpanels.value[index]))
                 )
                 copySubPanel.column = val
-                copySubPanel.aggregators = []
+                // copySubPanel.aggregators = []
 
                 subpanels.value[index] = copySubPanel
                 console.log(subpanels.value)

@@ -24,7 +24,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementType,
         announcementTitle,
         readmeContent,
-        meaningRelationships
+        meaningRelationships,
     } = useAssetInfo()
 
     const entity = ref({
@@ -199,9 +199,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             relationshipAttributes: {
                 meanings: localMeanings.value.map((term) => ({
                     typeName: 'AtlasGlossaryTerm',
-                    guid: term.guid
-                }))
-            }
+                    guid: term.guid,
+                })),
+            },
         }
         body.value.entities = [entity.value]
         currentMessage.value = 'Terms have been updated'
@@ -272,17 +272,27 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(error, () => {
         if (title(selectedAsset?.value) !== localName.value) {
             localName.value = title(selectedAsset?.value)
-            if(nameRef.value?.handleReset)
+            if (nameRef.value?.handleReset)
                 nameRef.value?.handleReset(localName.value)
         }
         if (description(selectedAsset?.value) !== localDescription.value) {
             localDescription.value = description(selectedAsset?.value)
-            if(descriptionRef.value?.handleReset)
+            if (descriptionRef.value?.handleReset)
                 descriptionRef.value?.handleReset(localDescription.value)
         }
-        localMeanings.value = meaningRelationships(selectedAsset.value)
-        localOwners.value.ownerUsers =  ownerUsers(selectedAsset.value)
-        localOwners.value.ownerGroups = ownerGroups(selectedAsset.value)
+        if (ownerUsers(selectedAsset?.value) !== localOwners.value.ownerUsers) {
+            localOwners.value.ownerUsers = ownerUsers(selectedAsset?.value)
+        }
+        if (
+            ownerGroups(selectedAsset?.value) !== localOwners.value.ownerGroups
+        ) {
+            localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
+        }
+        if (
+            meaningRelationships(selectedAsset?.value) !== localMeanings.value
+        ) {
+            localMeanings.value = meaningRelationships(selectedAsset.value)
+        }
 
         message.error(
             error.value?.response?.data?.errorCode +

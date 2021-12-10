@@ -259,6 +259,7 @@ import useTypedefData from '~/composables/typedefs/useTypedefData'
 import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
 import { Folder } from '~/types/insights/savedQuery.interface'
 import VQB from '~/components/insights/playground/editor/vqb/index.vue'
+import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
 
 export default defineComponent({
     components: {
@@ -410,10 +411,18 @@ export default defineComponent({
                 activeInlineTab.value.playground.resultsPane.result.runQueryId
             const currState = !queryId ? 'run' : 'abort'
             if (currState === 'run') {
-                /* Get selected Text from editor */
-                const selectedText = toRaw(editorInstance.value)
-                    .getModel()
-                    .getValueInRange(toRaw(editorInstance.value).getSelection())
+                /* If VQB enabled, run VQB Query */
+                let selectedText = ''
+                if (showVQB.value) {
+                    selectedText = generateSQLQuery(activeInlineTab.value)
+                } else {
+                    /* Get selected Text from editor */
+                    selectedText = toRaw(editorInstance.value)
+                        .getModel()
+                        .getValueInRange(
+                            toRaw(editorInstance.value).getSelection()
+                        )
+                }
 
                 console.log('query selected: ', selectedText)
 
@@ -442,10 +451,18 @@ export default defineComponent({
                 activeInlineTab.value.playground.resultsPane.result.runQueryId
             const currState = !queryId ? 'run' : 'abort'
             if (currState === 'run') {
-                /* Get selected Text from editor */
-                const selectedText = toRaw(editorInstance.value)
-                    .getModel()
-                    .getValueInRange(toRaw(editorInstance.value).getSelection())
+                /* If VQB enabled, run VQB Query */
+                let selectedText = ''
+                if (showVQB.value) {
+                    selectedText = generateSQLQuery(activeInlineTab.value)
+                } else {
+                    /* Get selected Text from editor */
+                    selectedText = toRaw(editorInstance.value)
+                        .getModel()
+                        .getValueInRange(
+                            toRaw(editorInstance.value).getSelection()
+                        )
+                }
 
                 useAddEvent('insights', 'query', 'run', undefined)
                 queryRun(
@@ -584,6 +601,13 @@ export default defineComponent({
                 if (e.metaKey || e.ctrlKey) {
                     e.preventDefault()
                     saveOrUpdate()
+                }
+                //prevent the default action
+            }
+            if (e.key === 'Q' || e.key === 'q') {
+                if (e.ctrlKey) {
+                    e.preventDefault()
+                    showVQB.value = !showVQB.value
                 }
                 //prevent the default action
             }

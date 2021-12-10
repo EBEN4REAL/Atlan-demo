@@ -59,9 +59,12 @@
             const localValue = ref(modelValue.value)
 
             const onCheck = (checkedNodes) => {
-                localValue.value.terms = checkedNodes.map((term) => term.attributes.qualifiedName)
+                localValue.value.terms = checkedNodes.map((term) => ({
+                    guid: term.guid,
+                    qualifiedName: term.attributes.qualifiedName
+                }))
             }
-            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.attributes?.guid ?? term.guid))
+            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid))
 
             watch(
                 () => localValue.value.terms,
@@ -86,7 +89,7 @@
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
-                checkedKeys.value = modelValue.value.terms?.map((term) => term?.attributes?.guid ?? term.guid)
+                checkedKeys.value = modelValue.value.terms?.map((term) => term?.guid)
 
             })
 

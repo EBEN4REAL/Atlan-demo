@@ -8,98 +8,6 @@
                 @onClickRunQuery="toggleRun"
                 @toggleVQB="toggleVQB"
             />
-            <div
-                class="flex items-center justify-between w-full pl-2 pr-3 my-2"
-            >
-                <div class="flex items-center text-base">
-                    <div class="flex items-center">
-                        <a-tooltip color="#363636">
-                            <template #title>Custom variables</template>
-                            <div
-                                class="items-center justify-center px-1 rounded cursor-pointer  hover:bg-gray-300"
-                                :class="showcustomToolBar ? 'bg-gray-300' : ''"
-                                @click="toggleCustomToolbar"
-                            >
-                                <AtlanIcon
-                                    icon="CustomVariable"
-                                    class="w-4 h-4"
-                                />
-                            </div>
-                        </a-tooltip>
-                        <a-tooltip color="#363636">
-                            <template #title>Format text</template>
-                            <div
-                                class="
-                                    items-center
-                                    justify-center
-                                    px-1
-                                    ml-2
-                                    py-0.5
-                                    -mt-0.5
-                                    rounded
-                                    cursor-pointer
-                                    hover:bg-gray-300
-                                    group
-                                "
-                                @click="formatDocument"
-                            >
-                                <AtlanIcon icon="FormatText" class="w-4 h-4" />
-                            </div>
-                        </a-tooltip>
-
-                        <div
-                            :class="fullSreenState ? 'bg-gray-300' : ''"
-                            class="
-                                items-center
-                                justify-center
-                                px-1
-                                ml-1
-                                py-0.5
-                                -mt-0.5
-                                rounded
-                                cursor-pointer
-                                hover:bg-gray-300
-                                group
-                            "
-                        >
-                            <div
-                                class="
-                                    items-center
-                                    justify-center
-                                    rounded
-                                    cursor-pointer
-                                    hover:bg-gray-300
-                                    py-0.5
-                                "
-                                @click="tFullScreen"
-                            >
-                                <a-tooltip
-                                    color="#363636"
-                                    v-if="fullSreenState"
-                                >
-                                    <template #title>Exit full screen</template>
-                                    <AtlanIcon
-                                        class="w-4 h-4 border-gray-500"
-                                        icon="ExitFullScreen"
-                                    />
-                                </a-tooltip>
-                                <a-tooltip
-                                    color="#363636"
-                                    v-else
-                                    :overlayClassName="$style.tooltip"
-                                >
-                                    <template #title>Go full screen</template>
-                                    <AtlanIcon
-                                        class="w-4 h-4 border-gray-500"
-                                        icon="FullScreen"
-                                    />
-                                </a-tooltip>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <CustomVariablesNav v-if="editorInstance && showcustomToolBar" />
             <SaveQueryModal
                 v-model:showSaveQueryModal="showSaveQueryModal"
                 :saveQueryLoading="saveQueryLoading"
@@ -118,75 +26,188 @@
             <VQB v-if="showVQB" />
             <Monaco @editorInstance="setInstance" />
 
-            <div
-                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
-                style="z-index: 2"
-            >
-                <div class="flex items-center">
-                    <!-- <WarehouseConnector /> -->
+            <!-- START: EDITOR FOOTER -->
+            <div class="absolute bottom-0 left-0 flex flex-col w-full">
+                <CustomVariablesNav
+                    v-if="editorInstance && showcustomToolBar"
+                    class="border-t"
+                />
+                <div
+                    class="flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
+                    style="z-index: 2"
+                >
                     <div class="flex items-center">
-                        <AtlanIcon
-                            @click="toggleExplorerPane"
-                            icon="ExplorerTrigger"
-                            class="w-4 h-4 mr-4"
-                        />
-                        <!-- <span class="mr-4">
-                            Output limit:&nbsp;{{ limitRows.rowsCount }}
-                        </span>-->
+                        <!-- <WarehouseConnector /> -->
                         <div class="flex items-center">
-                            <a-checkbox
-                                :class="$style.checkbox_style"
-                                v-model:checked="limitRows.checked"
-                                class="text-xs"
-                            >
-                                <span class="text-gray-500">
-                                    Limit to
-                                    {{ limitRows.rowsCount }}
-                                    rows
-                                </span>
-                            </a-checkbox>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center">
-                    <div class="flex" v-if="editorFocused">
-                        <span class="mr-2"
-                            >Ln:&nbsp;{{ editorPos.lineNumber }}</span
-                        >
-                        <span class="mr-2"
-                            >Col:&nbsp; {{ editorPos.column }}</span
-                        >
-                    </div>
-                    <!-- <span class="ml-2 mr-4"
-                        >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
-                    > -->
-                    <div class="flex items-center justify-center">
-                        <div class @click="togglePane">
+                            <!-- explorer toggle -->
                             <a-tooltip color="#363636">
-                                <template #title
-                                    >Toggle output pane ( ctrl + j )</template
+                                <template #title>Toggle sidebar</template>
+                                <div
+                                    class="p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300 group"
                                 >
-
-                                <AtlanIcon
-                                    icon="OutputpaneTrigger"
-                                    class="w-4 h-4 text-gray-500"
-                                />
+                                    <AtlanIcon
+                                        @click="toggleExplorerPane"
+                                        icon="ExplorerTrigger"
+                                        class="w-4 h-4"
+                                    />
+                                </div>
                             </a-tooltip>
-                        </div>
-                        <div class="ml-2" @click="toggleAssetPreview">
+                            <!-- full screen button -->
+                            <div
+                                class="p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
+                                :class="fullSreenState ? 'bg-gray-300' : ''"
+                            >
+                                <div class="items-center justify-center group">
+                                    <div
+                                        class="items-center justify-center"
+                                        @click="tFullScreen"
+                                    >
+                                        <a-tooltip
+                                            color="#363636"
+                                            v-if="fullSreenState"
+                                        >
+                                            <template #title
+                                                >Exit full screen</template
+                                            >
+                                            <AtlanIcon
+                                                class="w-4 h-4 border-gray-500"
+                                                icon="ExitFullScreen"
+                                            />
+                                        </a-tooltip>
+                                        <a-tooltip
+                                            color="#363636"
+                                            v-else
+                                            :overlayClassName="$style.tooltip"
+                                        >
+                                            <template #title
+                                                >Go full screen</template
+                                            >
+                                            <AtlanIcon
+                                                class="w-4 h-4 border-gray-500"
+                                                icon="FullScreen"
+                                            />
+                                        </a-tooltip>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- format sql -->
                             <a-tooltip color="#363636">
-                                <template #title>Toggle asset preview</template>
-
-                                <AtlanIcon
-                                    icon="SidebarTrigger"
-                                    class="w-4 h-4 text-gray-500"
-                                />
+                                <template #title>Format SQL</template>
+                                <div
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300 group"
+                                    @click="formatDocument"
+                                >
+                                    <AtlanIcon
+                                        icon="FormatText"
+                                        class="w-4 h-4"
+                                    />
+                                </div>
                             </a-tooltip>
+                            <!-- preview sql -->
+                            <a-popover
+                                placement="bottom"
+                                trigger="click"
+                                :overlayStyle="{ padding: '0px !important' }"
+                                @visibleChange="
+                                    (visible) => {
+                                        if (!visible) {
+                                            showQueryPreview = false
+                                        }
+                                    }
+                                "
+                            >
+                                <template #content>
+                                    <div>
+                                        <VQBSQLPreview />
+                                    </div>
+                                </template>
+                                <div
+                                    v-if="showVQB"
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
+                                    :class="
+                                        showQueryPreview ? 'bg-gray-300' : ''
+                                    "
+                                    @click="toggleQueryPreviewPopover"
+                                >
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="w-4 h-4 text-gray-500"
+                                    />
+                                </div>
+                            </a-popover>
+                            <!-- Custom variables -->
+                            <a-tooltip color="#363636">
+                                <template #title>Custom variables</template>
+                                <div
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
+                                    :class="
+                                        showcustomToolBar ? 'bg-gray-300' : ''
+                                    "
+                                    @click="toggleCustomToolbar"
+                                >
+                                    <AtlanIcon
+                                        icon="CustomVariable"
+                                        class="w-4 h-4"
+                                    />
+                                </div>
+                            </a-tooltip>
+                            <!-- limit 100 -->
+                            <div class="flex items-center px-1">
+                                <a-checkbox
+                                    :class="$style.checkbox_style"
+                                    v-model:checked="limitRows.checked"
+                                    class="text-xs"
+                                >
+                                    <span class="text-gray-500">
+                                        Limit to
+                                        {{ limitRows.rowsCount }}
+                                        rows
+                                    </span>
+                                </a-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="flex" v-if="editorFocused">
+                            <span class="mr-2"
+                                >Ln:&nbsp;{{ editorPos.lineNumber }}</span
+                            >
+                            <span class="mr-2"
+                                >Col:&nbsp; {{ editorPos.column }}</span
+                            >
+                        </div>
+                        <!-- <span class="ml-2 mr-4"
+                            >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
+                        > -->
+                        <div class="flex items-center justify-center">
+                            <div class @click="togglePane">
+                                <a-tooltip color="#363636">
+                                    <template #title
+                                        >Toggle output pane ( ctrl + j
+                                        )</template
+                                    >
+                                    <AtlanIcon
+                                        icon="OutputpaneTrigger"
+                                        class="w-4 h-4 text-gray-500"
+                                    />
+                                </a-tooltip>
+                            </div>
+                            <div class="ml-2" @click="toggleAssetPreview">
+                                <a-tooltip color="#363636">
+                                    <template #title
+                                        >Toggle asset preview</template
+                                    >
+                                    <AtlanIcon
+                                        icon="SidebarTrigger"
+                                        class="w-4 h-4 text-gray-500"
+                                    />
+                                </a-tooltip>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- END: EDITOR FOOTER -->
         </div>
     </div>
 </template>
@@ -236,9 +257,10 @@ import { useConnector } from '~/components/insights/common/composables/useConnec
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 import EditorContext from '~/components/insights/playground/editor/context/index.vue'
 import useTypedefData from '~/composables/typedefs/useTypedefData'
-
+import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
 import { Folder } from '~/types/insights/savedQuery.interface'
 import VQB from '~/components/insights/playground/editor/vqb/index.vue'
+import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
 
 export default defineComponent({
     components: {
@@ -247,6 +269,7 @@ export default defineComponent({
         CustomVariablesNav,
         SaveQueryModal,
         AtlanBtn,
+        VQBSQLPreview,
         StatusBadge,
         EditorContext,
         WarehouseConnector,
@@ -281,6 +304,7 @@ export default defineComponent({
         })
         const showcustomToolBar = ref(false)
         const showVQB = ref(false)
+        const showQueryPreview = ref(false)
 
         const activeInlineTab = inject(
             'activeInlineTab'
@@ -388,10 +412,18 @@ export default defineComponent({
                 activeInlineTab.value.playground.resultsPane.result.runQueryId
             const currState = !queryId ? 'run' : 'abort'
             if (currState === 'run') {
-                /* Get selected Text from editor */
-                const selectedText = toRaw(editorInstance.value)
-                    .getModel()
-                    .getValueInRange(toRaw(editorInstance.value).getSelection())
+                /* If VQB enabled, run VQB Query */
+                let selectedText = ''
+                if (showVQB.value) {
+                    selectedText = generateSQLQuery(activeInlineTab.value)
+                } else {
+                    /* Get selected Text from editor */
+                    selectedText = toRaw(editorInstance.value)
+                        .getModel()
+                        .getValueInRange(
+                            toRaw(editorInstance.value).getSelection()
+                        )
+                }
 
                 console.log('query selected: ', selectedText)
 
@@ -420,10 +452,18 @@ export default defineComponent({
                 activeInlineTab.value.playground.resultsPane.result.runQueryId
             const currState = !queryId ? 'run' : 'abort'
             if (currState === 'run') {
-                /* Get selected Text from editor */
-                const selectedText = toRaw(editorInstance.value)
-                    .getModel()
-                    .getValueInRange(toRaw(editorInstance.value).getSelection())
+                /* If VQB enabled, run VQB Query */
+                let selectedText = ''
+                if (showVQB.value) {
+                    selectedText = generateSQLQuery(activeInlineTab.value)
+                } else {
+                    /* Get selected Text from editor */
+                    selectedText = toRaw(editorInstance.value)
+                        .getModel()
+                        .getValueInRange(
+                            toRaw(editorInstance.value).getSelection()
+                        )
+                }
 
                 useAddEvent('insights', 'query', 'run', undefined)
                 queryRun(
@@ -511,6 +551,11 @@ export default defineComponent({
             }
         }
 
+        /* VQB Preview */
+        const toggleQueryPreviewPopover = () => {
+            showQueryPreview.value = !showQueryPreview.value
+        }
+
         /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -560,6 +605,13 @@ export default defineComponent({
                 }
                 //prevent the default action
             }
+            if (e.key === 'Q' || e.key === 'q') {
+                if (e.ctrlKey) {
+                    e.preventDefault()
+                    showVQB.value = !showVQB.value
+                }
+                //prevent the default action
+            }
         }
         onMounted(() => {
             window.addEventListener('keydown', _keyListener)
@@ -585,6 +637,8 @@ export default defineComponent({
 
         /* ------------------------------------------ */
         return {
+            toggleQueryPreviewPopover,
+            showQueryPreview,
             showVQB,
             permissions,
             saveOrUpdate,

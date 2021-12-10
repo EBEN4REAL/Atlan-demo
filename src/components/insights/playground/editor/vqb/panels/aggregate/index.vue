@@ -73,7 +73,13 @@
                                 ]"
                                 v-if="!expand"
                             >
-                                Summarised info
+                                {{
+                                    getSummarisedInfoOfAggregationPanel(
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ].subpanels
+                                    )
+                                }}
                             </p>
                         </div>
                     </div>
@@ -199,6 +205,7 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import AggregatorSubPanel from './subpanel/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -220,6 +227,7 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
+            const { getSummarisedInfoOfAggregationPanel } = useUtils()
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
@@ -311,6 +319,7 @@
                 handleDelete,
                 handleAddPanel,
                 findTimeLineHeight,
+                getSummarisedInfoOfAggregationPanel,
             }
         },
     })

@@ -68,7 +68,13 @@
                                 ]"
                                 v-if="!expand"
                             >
-                                Summarised info
+                                {{
+                                    getSummarisedInfoOfGroupPanel(
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ].subpanels
+                                    )
+                                }}
                             </p>
                         </div>
                     </div>
@@ -194,6 +200,7 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import GroupSubPanel from './subpanel/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Groups',
@@ -214,6 +221,8 @@
             },
         },
         setup(props, { emit }) {
+            const { getSummarisedInfoOfGroupPanel } = useUtils()
+
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
@@ -306,6 +315,7 @@
                 handleDelete,
                 handleAddPanel,
                 findTimeLineHeight,
+                getSummarisedInfoOfGroupPanel,
             }
         },
     })

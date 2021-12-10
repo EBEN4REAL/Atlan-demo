@@ -332,6 +332,9 @@
                     immediate: true,
                 }
             )
+            watch(tableQualfiedName, () => {
+                map.value = {}
+            })
             const placeholder = computed(() => {
                 if (tableQualfiedName.value) {
                     return `Search from ${totalCount.value} columns`
@@ -425,7 +428,12 @@
 
                 selectedColumnsData.value = [...columns]
 
-                // console.log('selected columns: ', columns)
+                console.log(
+                    map.value,
+                    'selected columns: ',
+                    columns,
+                    selectedColumnsData.value
+                )
                 // emit('checkboxChange', selectedItems.value)
                 setFocusedCusror()
             }
@@ -479,6 +487,8 @@
                 selectedItems.value = []
                 map.value = {}
                 selectAll.value = false
+                selectedColumnsData.value = []
+                console.log(map.value, 'destroy')
             }
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight

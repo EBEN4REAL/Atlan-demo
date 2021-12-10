@@ -109,6 +109,8 @@ export default defineComponent({
 .ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder {
     @apply text-gray-500 !important;
 }
+</style>
+<style lang="less">
 .provider-wrapper {
     width: 546px;
 }

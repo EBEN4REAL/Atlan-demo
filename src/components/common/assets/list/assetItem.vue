@@ -83,11 +83,12 @@
                     </div>
 
                     <div v-if="description(item)" class="flex mt-0.5">
-                        <span
+                        <Tooltip
                             v-if="preference?.display?.includes('description')"
                             class="text-xs text-gray-500"
-                            >{{ description(item) }}</span
-                        >
+                            :tooltip-text="description(item)"
+                            :rows="2"
+                        />
                     </div>
 
                     <!-- Info bar -->
@@ -275,12 +276,6 @@
                             class="flex items-center mr-2"
                         >
                             <div class="flex items-center">
-                                <!-- <component
-                                :is="dataTypeImage(item)"
-                                class="w-auto h-4 text-gray-500"
-                                style="margin-top: 1px"
-                            ></component> -->
-
                                 <component
                                     :is="dataTypeCategoryImage(item)"
                                     class="h-4 text-gray-500 mr-0.5 mb-0.5"
@@ -457,7 +452,7 @@
         <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
         <AssetDrawer
             :data="selectedAssetDrawerData"
-            :showDrawer="showAssetSidebarDrawer"
+            :show-drawer="showAssetSidebarDrawer"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
         />
@@ -466,6 +461,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, computed } from 'vue'
+    import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -481,6 +477,7 @@
             ClassificationPill,
             PopoverClassification,
             AssetDrawer,
+            Tooltip,
         },
         props: {
             item: {

@@ -340,8 +340,7 @@
                     message.error('Something went wrong. Package is not valid.')
                 }
 
-                body.value.metadata.labels['com.atlan.orchestration/ui'] =
-                    'true'
+                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] = 'true'
                 body.value.spec = {
                     templates: [
                         {

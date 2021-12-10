@@ -37,7 +37,7 @@ export default function useRoles() {
 
     const { state, STATES } = swrvState(data, error, isValidating)
     const roleList = computed(() => {
-        if (data.value && data.value.records.length) {
+        if (data.value && data.value.records &&  data.value.records.length) {
             return data.value.records.map((role: any) => getFormattedRole(role))
         }
         return []

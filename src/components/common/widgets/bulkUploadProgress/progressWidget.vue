@@ -31,7 +31,7 @@
                 class="flex items-center font-bold"
             >
                 <AtlanIcon
-                    :icon="errorCount ? 'RunWarning' : 'RunSuccess'"
+                    :icon="errorCount ? 'Warning' : 'RunSuccess'"
                     class="w-auto h-4 mr-2"
                 />
                 Upload completed

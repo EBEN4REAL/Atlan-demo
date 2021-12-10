@@ -31,11 +31,14 @@
                     <span class="text-error">Delete configuration</span>
                 </AtlanBtn>
             </div>
-            <MinimalTab
-                v-model:active="activeTabKey"
-                :data="tabConfig"
-                class="sso-tabs"
-            />
+            <div class="sso-tabs">
+                <MinimalTab
+                    v-model:active="activeTabKey"
+                    :data="tabConfig"
+             
+                />
+            </div>
+           
             <keep-alive>
                 <UpdateSSOConfig
                     v-if="activeTabKey === 'configure'"
@@ -48,7 +51,7 @@
                 </div>
             </keep-alive>
         </div>
-        <div v-else>
+        <!-- <div v-else>
             <div
                 class="flex flex-col items-center justify-center w-full p-4 text-center h-96"
             >
@@ -66,17 +69,14 @@
                     </AtlanBtn>
                 </router-link>
             </div>
-        </div>
-       <a-modal
+        </div> -->
+        <a-modal
             :visible="showDeleteModal"
-            
             :footer="null"
             @cancel="showDeleteSSOModal"
         >
             <div class="p-4">
-                <div class="mb-3 text-base">
-                    Delete SSO Provider
-                </div>
+                <div class="mb-3 text-base">Delete SSO Provider</div>
                 Are you sure you want to remove
                 <strong>{{ provider.title }}</strong
                 >?
@@ -85,13 +85,7 @@
                         <AtlanBtn
                             padding="compact"
                             size="sm"
-                            class="
-                                mx-2
-                                bg-transparent
-                                border-transparent
-                                shadow-none
-                                text-gray
-                            "
+                            class="mx-2 bg-transparent border-transparent shadow-none text-gray"
                             @click="showDeleteSSOModal"
                         >
                             Cancel
@@ -122,6 +116,7 @@
 </template>
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
+    import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
     import { message } from 'ant-design-vue'
     import UpdateSSOConfig from '~/components/admin/sso/update/updateSSOConfig.vue'
@@ -148,12 +143,12 @@
             const router = useRouter()
             const alias = computed(() => route?.params?.alias || '')
             const tenantStore = useTenantStore()
-
-            const identityProviders: Array<any> =
-                tenantStore.identityProviders || []
+            const { identityProviders } = storeToRefs(tenantStore)
+            // const identityProviders: Array<any> =
+            //     tenantStore.identityProviders || []
             const ssoProvider: any = computed(
                 () =>
-                    identityProviders.find(
+                    identityProviders.value.find(
                         (idp) => idp?.alias === alias.value
                     ) || {}
             )
@@ -226,11 +221,13 @@
     })
 </script>
 <style lang="less">
-    .sso-tabs {
+.sso-tabs {
+     .minimal-tab-bar{
         .ant-tabs-tab:first-child {
             margin-left: 0 !important;
         }
-    }
+        }
+}
 </style>
 <route lang="yaml">
 meta:

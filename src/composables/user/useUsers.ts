@@ -119,7 +119,8 @@ export const getFormattedUser = (user: any) => {
         workspaceRole: getWorkspaceRole(user),
         personaList: getUserPersona(user),
         created_at_time_ago: user.createdTimestamp
-            ? useTimeAgo(user.createdTimestamp).value : '',
+            ? useTimeAgo(user.createdTimestamp).value
+            : '',
     }
     return localUser
 }
@@ -158,8 +159,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         if (data.value.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                    getFormattedUser(user)
-                )
+                      getFormattedUser(user)
+                  )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 
@@ -173,6 +174,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
                     localUsersList.value = escapedData
                 }
             }
+        } else {
+            userList.value = []
         }
     })
 

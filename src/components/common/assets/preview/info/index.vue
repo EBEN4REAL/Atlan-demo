@@ -212,7 +212,6 @@
 
             <Owners
                 v-model="localOwners"
-                :used-for-assets="true"
                 @change="handleOwnersChange"
                 class="px-5"
                 :selected-asset="selectedAsset"

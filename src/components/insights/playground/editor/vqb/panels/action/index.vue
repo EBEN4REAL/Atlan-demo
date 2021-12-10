@@ -90,6 +90,14 @@
                         column: {},
                         order: 'asc',
                     }
+                } else if (type === 'filter') {
+                    panel = {
+                        id: uuid,
+                        column: {},
+                        filter: {
+                            filterType: 'and',
+                        },
+                    }
                 }
                 emit('add', type, panel)
 
@@ -102,12 +110,12 @@
                     label: 'Aggregate',
                     class: 'mt-0.5 mr-2',
                 },
-                // {
-                //     id: 'filter',
-                //     icon: 'Filter',
-                //     label: 'Filter',
-                //     class: 'mr-2',
-                // },
+                {
+                    id: 'filter',
+                    icon: 'Filter',
+                    label: 'Filter',
+                    class: 'mr-2',
+                },
                 {
                     id: 'sort',
                     icon: 'Sort',

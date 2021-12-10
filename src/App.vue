@@ -25,7 +25,7 @@
             const { data: permissions } = usePermissions()
 
             // tenant
-            // useTenant()
+            useTenant()
 
             // typedefs
             const { data: typedef } = useTypedefs()

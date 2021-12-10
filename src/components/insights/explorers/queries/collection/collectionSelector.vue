@@ -27,34 +27,36 @@
 </template>
 
 <script lang="ts">
-import {
-    computed,
-    defineComponent,
-    ref,
-    Ref,
-    toRefs,
-    PropType,
-    ComputedRef,
-    inject,
-} from 'vue'
-import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        Ref,
+        toRefs,
+        PropType,
+        ComputedRef,
+        inject,
+    } from 'vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
-export default defineComponent({
-    emits: ['change', 'update:data'],
-    components: { AtlanIcon },
-    setup(props, { emit }) {
-        const selectedValue = ref()
-        const queryCollections = inject('queryCollections') as ComputedRef<any>
-        console.log('connection selector', queryCollections.value)
+    export default defineComponent({
+        emits: ['change', 'update:data'],
+        components: { AtlanIcon },
+        setup(props, { emit }) {
+            const selectedValue = ref()
+            const queryCollections = inject(
+                'queryCollections'
+            ) as ComputedRef<any>
+            console.log('connection selector', queryCollections.value)
 
-        function handleChange(collectionId: string) {
-            emit('update:data', collectionId)
-        }
-        return {
-            handleChange,
-            queryCollections,
-            selectedValue,
-        }
-    },
-})
+            function handleChange(collectionId: string) {
+                emit('update:data', collectionId)
+            }
+            return {
+                handleChange,
+                queryCollections,
+                selectedValue,
+            }
+        },
+    })
 </script>

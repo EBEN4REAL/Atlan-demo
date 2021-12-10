@@ -6,7 +6,7 @@
             py-0.5
             pl-1
             pr-2
-            hover:bg-${color}-400
+            ${bgHover}
             text-sm text-gray-700
             bg-white
             border border-gray-200
@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-    import { toRefs } from 'vue'
+    import { toRefs, computed } from 'vue'
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     export default {
@@ -85,12 +85,26 @@
                 emit('delete', name.value)
             }
 
+            const bgHover = computed(() => {
+                switch (color.value) {
+                    case 'red':
+                        return 'hover:bg-red-400'
+                    case 'green':
+                        return 'hover:bg-green-400'
+                    case 'yellow':
+                        return 'hover:bg-yellow-400'
+                    default:
+                        return 'hover:bg-blue-400'
+                }
+            })
+
             return {
                 name,
                 isPropagated,
                 displayName,
                 handleRemove,
                 color,
+                bgHover,
             }
         },
     }

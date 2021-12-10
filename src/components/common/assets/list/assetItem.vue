@@ -458,6 +458,7 @@
             :data="selectedAssetDrawerData"
             :showDrawer="showAssetSidebarDrawer"
             @closeDrawer="handleCloseDrawer"
+            @update="handleListUpdate"
         />
     </div>
 </template>
@@ -536,7 +537,7 @@
                 default: false,
             },
         },
-        emits: ['listItem:check', 'unlinkAsset', 'preview'],
+        emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
             const {
                 preference,
@@ -598,6 +599,10 @@
             const handleCloseDrawer = () => {
                 selectedAssetDrawerData.value = {}
                 showAssetSidebarDrawer.value = false
+            }
+
+            const handleListUpdate = (asset) => {
+                emit('updateDrawer', asset)
             }
 
             const isSelected = computed(() => {
@@ -662,6 +667,7 @@
                 description,
                 handlePreview,
                 isGTC,
+                handleListUpdate,
                 getAnchorName,
                 categories,
                 parentCategory,

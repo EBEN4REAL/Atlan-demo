@@ -116,21 +116,20 @@
                     <a-button v-if="status === 'success'">
                         <router-link to="/assets"> Back to Assets</router-link>
                     </a-button>
-                </template>
-
-                <div
-                    class="flex flex-col items-center justify-center gap-y-2"
-                    v-if="errorMesssage"
-                >
-                    <span>{{ errorMesssage }}</span>
-                    <a-button
-                        v-if="status === 'error'"
-                        @click="handleBackToSetup"
+                    <div
+                        class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
+                        v-if="errorMesssage"
                     >
-                        <AtlanIcon icon="ChevronLeft"></AtlanIcon>
-                        Back to setup
-                    </a-button>
-                </div>
+                        <span>{{ errorMesssage }}</span>
+                        <a-button
+                            v-if="status === 'error'"
+                            @click="handleBackToSetup"
+                        >
+                            <AtlanIcon icon="ChevronLeft"></AtlanIcon>
+                            Back to setup
+                        </a-button>
+                    </div>
+                </template>
             </a-result>
         </div>
     </div>
@@ -242,7 +241,7 @@
             const { isLoading, isReady, execute, error, data, workflow } =
                 createWorkflow(body)
 
-            const dependentKey = ref('dependencies')
+            const dependentKey = ref(workflow)
             const {} = useRunList({}, dependentKey)
 
             const status = ref(null)
@@ -298,12 +297,12 @@
                 // iterate and set the object
                 connectionBody.forEach((i) => {
                     modelValue.value[i.parameter] = i.body
-                    connectionQualifiedName = i.body.attributes.qualifiedName
-                    let connectionName = i.body.attributes.name
+                    connectionQualifiedName =
+                        i.body.attributes.qualifiedName.replaceAll('/', '-')
                     // add qualifiedname to label
                     if (connectionQualifiedName) {
                         body.value.metadata.labels[
-                            `com.atlan.orchestration/${connectionName}`
+                            `com.atlan.orchestration/${connectionQualifiedName}`
                         ] = 'true'
                     }
                 })
@@ -315,8 +314,11 @@
                 } else {
                     workflowName = `${workflowName}-${seconds.toString()}`
                 }
-                body.value.metadata.name = workflowName.replaceAll("/", "-")
-                body.value.metadata.namespace = "default"  // FIXME: change this to tenant name
+
+                body.value.metadata.name = workflowName
+                body.value.metadata.namespace = 'default'
+                body.value.metadata.name = workflowName.replaceAll('/', '-')
+                body.value.metadata.namespace = 'default' // FIXME: change this to tenant name
 
                 const credentialBody = getCredentialBody(
                     configMap.value,
@@ -331,7 +333,9 @@
                             if (modelValue.value[p.name]) {
                                 parameters.push({
                                     name: p.name,
-                                    value: JSON.stringify(modelValue.value[p.name])
+                                    value: JSON.stringify(
+                                        modelValue.value[p.name]
+                                    ),
                                 })
                             }
                         }
@@ -340,7 +344,8 @@
                     message.error('Something went wrong. Package is not valid.')
                 }
 
-                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] = 'true'
+                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] =
+                    'true'
                 body.value.spec = {
                     templates: [
                         {

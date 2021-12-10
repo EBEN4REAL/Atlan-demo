@@ -1,6 +1,6 @@
 <template>
     <div
-        class="max-w-full p-4 overflow-x-auto overflow-y-auto rounded"
+        class="relative max-w-full p-4 overflow-x-auto overflow-y-auto rounded"
         :class="background === '' ? 'bg-gray-100' : background"
         style="max-height: 220px"
     >
@@ -14,6 +14,13 @@
                 ></div>
             </div>
         </template>
+        <div
+            class="absolute cursor-pointer top-3 right-3"
+            v-if="true"
+            @click="handleCopy"
+        >
+            <AtlanIcon icon="CopyOutlined" class="w-4 h-4 text-gray-500" />
+        </div>
     </div>
 </template>
 
@@ -23,6 +30,7 @@
     import { message } from 'ant-design-vue'
     import { format } from 'sql-formatter'
     import { languageTokens } from '~/components/insights/playground/editor/monaco/sqlTokens'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     export default defineComponent({
         name: 'SQL Snippet',
@@ -36,9 +44,14 @@
                 type: String,
                 default: '',
             },
+            enableCopy: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         setup(props, { emit }) {
-            const { text } = toRefs(props)
+            const { text, enableCopy } = toRefs(props)
             const formattedText = computed(() =>
                 format(text.value, {
                     language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
@@ -65,6 +78,10 @@
                     }
                 }
                 return color
+            }
+            const handleCopy = () => {
+                copyToClipboard(formattedText.value)
+                message.success('Query Copied!')
             }
 
             const generateHTMLFromLine = (
@@ -97,7 +114,12 @@
                 return html
             }
 
-            return { renderedLines, generateHTMLFromLine }
+            return {
+                renderedLines,
+                enableCopy,
+                generateHTMLFromLine,
+                handleCopy,
+            }
         },
     })
 </script>

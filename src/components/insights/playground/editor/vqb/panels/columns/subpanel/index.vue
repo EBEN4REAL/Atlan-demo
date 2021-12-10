@@ -1,66 +1,105 @@
 <template>
-    <div
-        ref="container"
-        @click="setFoucs"
-        @focusout="handleContainerBlur"
-        tabindex="0"
-        class="relative"
-        v-if="expand"
-        :class="[
-            cols.length > 0 ? '' : ' justify-center',
-            isAreaFocused
-                ? ' border-primary-focus border-2 border-shift-minus'
-                : 'border-gray-300 border border-shift-plus',
-            ,
-            'flex flex-wrap items-center  mx-3 mt-1 mb-4  rounded  ',
-        ]"
-        @click.stop="() => {}"
-    >
-        <p class="text-sm text-gray-500 py-1.5" v-if="cols.length == 0">
-            Add columns to fetch results
-        </p>
-        <template
-            v-else
-            v-for="(item, index) in cols"
-            :key="item.label + index"
-        >
-            <Pill
-                :label="item.label"
-                @action="() => handleDeleteColumn(index)"
-                :hasAction="true"
-                class="my-1 mr-2"
-                @click.stop="() => {}"
-                ><template #prefix>
-                    <component
-                        :is="getDataTypeImage(item.type)"
-                        class="flex-none w-auto h-4 -mt-0.5"
-                    ></component>
-                </template>
-            </Pill>
-        </template>
-        <div
-            v-if="isAreaFocused"
-            @click.stop="() => {}"
-            class="absolute z-10 pb-2 overflow-auto bg-white rounded custom-shadow"
-            :style="`left:${clickPos.left}px;top:${clickPos.top}px`"
-            style="width: 330px; height: 250px"
-        >
-            <TablesTree @selectedColumn="onSelectedColumn" />
+    <div :class="[' mx-3 mt-1 mb-4']">
+        <div class="">
+            <template
+                v-for="(subpanel, index) in subpanels"
+                :key="subpanel?.id + index"
+            >
+                <div class="flex items-center w-full mb-3">
+                    <TableSelector
+                        typeName="Table"
+                        style="max-width: 45%"
+                        class="flex-1"
+                        v-model:modelValue="subpanel.tableQualfiedName"
+                        :filterValues="filteredTablesValues"
+                        @change="
+                            (val) => hanldeTableQualifiedNameChange(val, index)
+                        "
+                    />
+                    <ColumnSelector
+                        class="flex-1 ml-6"
+                        style="max-width: 45%; min-height: 34px"
+                        v-if="subpanel.tableQualfiedName"
+                        v-model:selectedItems="subpanel.columns"
+                        v-model:selectedColumnsData="subpanel.columnsData"
+                        :tableQualfiedName="subpanel.tableQualfiedName"
+                    >
+                        <template #chip="{ item }">
+                            <div
+                                class="flex items-center px-3 py-0.5 truncate justify-center mr-2 text-xs text-gray-700 rounded-full bg-gray-light"
+                            >
+                                <component
+                                    v-if="item.type !== 'Columns'"
+                                    :is="getDataTypeImage(item.type)"
+                                    class="flex-none -mt-0.5 h-4 w-4 text-xs text-gray-500 mr-1"
+                                ></component>
+                                <AtlanIcon
+                                    v-else
+                                    icon="Columns"
+                                    class="w-4 h-4 mr-1 text-xs text-gray-500"
+                                />
+                                <div
+                                    class="truncate ... overflow-ellipsis overflow-hidden"
+                                >
+                                    {{ item.label }}
+                                </div>
+                            </div>
+                        </template>
+                    </ColumnSelector>
+                    <!-- <div
+                        v-if="subpanel.tableQualfiedName"
+                        class="text-gray-500 hover:text-primary"
+                        @click.stop="() => handleDelete(index)"
+                    >
+                        <AtlanIcon
+                            icon="Close"
+                            class="w-6 h-6 ml-3 -mt-0.5 cursor-pointer"
+                        />
+                    </div> -->
+                </div>
+            </template>
         </div>
+        <!-- <span
+            class="items-center mt-3 cursor-pointer text-primary"
+            @click.stop="handleAddPanel"
+        >
+            <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
+            <span>Add another</span>
+        </span> -->
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import {
+        ComputedRef,
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+        inject,
+        Ref,
+        computed,
+        onUpdated,
+        PropType,
+        toRaw,
+    } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
+    import TableSelector from '../tableSelector/index.vue'
+    import ColumnSelector from '../columnSelector/index.vue'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
+    import { useVModels } from '@vueuse/core'
+    import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
             Pill,
             TablesTree,
+            TableSelector,
+            ColumnSelector,
         },
         props: {
             expand: {
@@ -68,59 +107,87 @@
                 required: true,
                 default: false,
             },
+            subpanels: {
+                type: Object as PropType<SubpanelColumn[]>,
+                required: true,
+                default: [],
+            },
         },
 
         setup(props, { emit }) {
-            const { getDataTypeImage } = useColumn()
+            const { subpanels } = useVModels(props)
             const { expand } = toRefs(props)
-            const isAreaFocused = ref(false)
-            const container = ref()
-            const clickPos = ref({ left: 0, top: 0 })
-            const cols = ref([{ type: 'string', label: 'customer_name' }])
-            const setFoucs = (e) => {
-                const rect = e.target.getBoundingClientRect()
-                let x = e.clientX - rect.left //x position within the element.
-                if (e.clientX + 330 > rect.right) {
-                    x = x - (e.clientX + 330 - rect.right + 10)
+            const filteredTablesValues = computed(() =>
+                subpanels.value.map((subpanel) => subpanel.tableQualfiedName)
+            )
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+            const { getDataTypeImage } = useColumn()
+            const tableQualfiedName = ref(undefined)
+
+            const cols = ref([])
+            watch(tableQualfiedName, () => {
+                if (!tableQualfiedName.value) {
+                    cols.value = []
                 }
-                const y = e.clientY - rect.top //y position within the element.
-                clickPos.value = {
-                    left: x,
-                    top: y,
+            })
+            const hanldeTableQualifiedNameChange = (val, index) => {
+                if (!val) {
+                    const copySubPanel = JSON.parse(
+                        JSON.stringify(toRaw(subpanels.value[0]))
+                    )
+                    copySubPanel.columns = []
+                    copySubPanel.columnsData = []
+                    copySubPanel.tableQualfiedName = undefined
+                    subpanels.value[index] = copySubPanel
+                    console.log(subpanels.value)
+                } else {
+                    const copySubPanel = JSON.parse(
+                        JSON.stringify(toRaw(subpanels.value[0]))
+                    )
+                    copySubPanel.columns = []
+                    copySubPanel.columnsData = []
+                    subpanels.value[index] = copySubPanel
+                    console.log(subpanels.value)
                 }
-                isAreaFocused.value = true
-            }
-            const onBlur = () => {
-                isAreaFocused.value = false
-            }
-            const handleContainerBlur = (event) => {
-                // if the blur was because of outside focus
-                // currentTarget is the parent element, relatedTarget is the clicked element
-                if (!container.value.contains(event.relatedTarget)) {
-                    isAreaFocused.value = false
-                }
-            }
-            const handleDeleteColumn = (index: any) => {
-                cols.value.splice(index, 1)
             }
 
-            const onSelectedColumn = (node: any) => {
-                console.log(node, 'node')
-                const label = node?.dataRef?.name
-                const type = node?.dataRef?.dataType?.toLowerCase()
-                cols.value.push({ type, label })
+            const handleAddPanel = () => {
+                const copySubPanels: SubpanelColumn[] = JSON.parse(
+                    JSON.stringify(toRaw(subpanels.value))
+                )
+                copySubPanels.push({
+                    id: generateUUID(),
+                    tableQualfiedName: undefined,
+                    columns: [],
+                    columnsData: [],
+                })
+                subpanels.value = copySubPanels
+            }
+
+            const handleDelete = (index) => {
+                if (index == 0) {
+                    const copySubPanel = JSON.parse(
+                        JSON.stringify(toRaw(subpanels.value[0]))
+                    )
+                    copySubPanel.columns = []
+                    copySubPanel.tableQualfiedName = undefined
+                    subpanels.value[index] = copySubPanel
+                } else {
+                    subpanels.value.splice(index, 1)
+                }
             }
 
             return {
-                clickPos,
-                handleDeleteColumn,
-                onSelectedColumn,
-                container,
-                handleContainerBlur,
-                onBlur,
-                setFoucs,
-                isAreaFocused,
+                filteredTablesValues,
+                activeInlineTab,
+                handleDelete,
+                handleAddPanel,
+                hanldeTableQualifiedNameChange,
+                subpanels,
                 getDataTypeImage,
+                tableQualfiedName,
                 cols,
             }
         },

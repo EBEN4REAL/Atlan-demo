@@ -39,14 +39,26 @@
                             "
                             style="z-index: 2"
                         >
-                            <AtlanIcon icon="Columns" class="w-4 h-4" />
+                            <AtlanIcon
+                                icon="Columns"
+                                class="w-4 h-4"
+                                :class="[
+                                    expand ? 'text-primary' : 'text-gray-500',
+                                ]"
+                            />
                         </div>
                         <div class="">
                             <p class="text-sm font-bold capitalize text-gray">
                                 {{ panel.id }}
                             </p>
                             <p class="text-xs text-gray-500" v-if="!expand">
-                                from Instacart_beverages_master
+                                {{
+                                    getTableNamesStringFromQualfieidNames(
+                                        panel.subpanels.map(
+                                            (e) => e.tableQualfiedName
+                                        )
+                                    )
+                                }}
                             </p>
                         </div>
                     </div>
@@ -69,7 +81,7 @@
                             <Actions
                                 @add="
                                     (type, panel) =>
-                                        handleAdd(index, type, panel)
+                                        handleAddPanel(index, type, panel)
                                 "
                                 v-model:submenuHovered="submenuHovered"
                                 v-model:containerHovered="containerHovered"
@@ -100,7 +112,7 @@
                 v-if="expand"
             />
             <FooterActions
-                @add="(type, panel) => handleAdd(index, type, panel)"
+                @add="(type, panel) => handleAddPanel(index, type, panel)"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -141,6 +153,7 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import ColumnSubPanel from './subpanel/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Columns',
@@ -161,6 +174,7 @@
             },
         },
         setup(props, { emit }) {
+            const { getTableNamesStringFromQualfieidNames } = useUtils()
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
@@ -185,7 +199,7 @@
             const expand = ref(getInitialExpandValue())
 
             const checkbox = ref(true)
-            const { addPanelsInVQB, deletePanelsInVQB } = useVQB()
+            const { deletePanelsInVQB, handleAdd } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -203,26 +217,17 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAdd = (index, type, panel) => {
-                const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
-                panelCopy.id = type
-                // if (type === 'aggregate') {
-                panelCopy.subpanels = [
-                    {
-                        ...panel,
-                    },
-                ]
-                // }
-                panelCopy.order =
-                    Number(activeInlineTab.value.playground.vqb.panels.length) +
-                    1
-                addPanelsInVQB(
-                    Number(index),
-                    panelCopy,
+            const handleAddPanel = (index, type, panel) => {
+                handleAdd(
+                    index,
+                    type,
+                    panel,
+                    activeInlineTab,
                     activeInlineTabKey,
                     inlineTabs
                 )
             }
+
             const handleDelete = (index) => {
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
             }
@@ -246,6 +251,7 @@
             )
 
             return {
+                getTableNamesStringFromQualfieidNames,
                 submenuHovered,
                 handleMouseOver,
                 handleMouseOut,
@@ -259,7 +265,7 @@
                 checkbox,
                 panel,
                 handleDelete,
-                handleAdd,
+                handleAddPanel,
                 findTimeLineHeight,
             }
         },

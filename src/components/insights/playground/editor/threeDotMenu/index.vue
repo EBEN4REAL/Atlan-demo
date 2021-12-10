@@ -3,7 +3,7 @@
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
-                class="flex cursor-pointer h-6 items-center justify-center py-0.5 ml-2 -mr-2 px-1 border-white text-gray-500"
+                class="flex cursor-pointer h-6 items-center justify-center py-0.5 -mr-2 px-1 border-white text-gray-500"
             >
                 <AtlanIcon class icon="KebabMenu" />
             </div>
@@ -428,6 +428,40 @@
                     <hr />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
+                        <a-sub-menu key="shareQuery" style="min-width: 200px">
+                            <template #title>
+                                <div
+                                    class="flex items-center justify-between w-full mr-2"
+                                >
+                                    <div
+                                        class="flex items-center justify-between w-full text-gray-500"
+                                    >
+                                        <span class="text-gray-700"
+                                            >Share query</span
+                                        >
+                                    </div>
+                                    <AtlanIcon
+                                        icon="ChevronRight"
+                                        class="ml-2 text-gray-500 -mt-0.5"
+                                    />
+                                </div>
+                            </template>
+                            <template #expandIcon />
+                            <div class="text-gray-700" style="min-width: 200px">
+                                <a-menu-item
+                                    key="copyLink"
+                                    class="px-4 py-2 text-sm"
+                                    @click="copyURL"
+                                >
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <span>Copy Link</span>
+                                    </div>
+                                </a-menu-item>
+                            </div>
+                        </a-sub-menu>
+
                         <a-menu-item @click="duplicateQuery" class="px-4 py-2"
                             >Duplicate query</a-menu-item
                         >
@@ -477,18 +511,16 @@
     import { themes } from '~/components/insights/playground/editor/monaco/themeLoader'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { useVModels } from '@vueuse/core'
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { message } from 'ant-design-vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {},
-        props: {
-            showVQB: {
-                type: Boolean,
-                required: true,
-                default: false,
-            },
-        },
-        setup(props) {
-            const { showVQB } = useVModels(props)
+        props: {},
+        emits: ['toggleVQB'],
+        setup(props, { emit }) {
+            const showVQB = ref(false)
             const router = useRouter()
             const {
                 setEditorTheme,
@@ -647,6 +679,15 @@
             }
             const toggleVQB = () => {
                 showVQB.value = !showVQB.value
+                emit('toggleVQB', showVQB.value)
+            }
+            const copyURL = () => {
+                const URL = window.location.href
+                copyToClipboard(URL)
+                message.success({
+                    content: 'Link Copied!',
+                })
+                useAddEvent('insights', 'query', 'link_copied', undefined)
             }
             return {
                 vqbQueryRoute,
@@ -673,6 +714,7 @@
                 cursorHoverChange,
                 isThisCursorActive,
                 capitalizeFirstLetter,
+                copyURL,
             }
         },
     })

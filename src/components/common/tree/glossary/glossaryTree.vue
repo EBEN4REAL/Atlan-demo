@@ -39,6 +39,7 @@
         :loadedKeys="loadedKeys"
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
+        v-model:checked-keys="checkedKeys"
         :class="$style.glossaryTree"
         :checkable="checkable"
         :checkStrictly="false"
@@ -67,6 +68,7 @@
         watch,
         ref,
         provide,
+        PropType
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -113,12 +115,18 @@
                 required: false,
                 default: false,
             },
+            checkedKeys: {
+                type: Object as PropType<string[]>,
+                required: false,
+            },
         },
-        emits: ['select', 'check'],
+        emits: ['select', 'check', 'update:checkedKeys'],
         setup(props, { emit }) {
             const router = useRouter()
 
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
+            const { checkedKeys } = useVModels(props, emit)
+
             const glossaryStore = useGlossaryStore()
             const parentGlossaryGuid = computed(() => {
                 const selectedGlossary = glossaryStore.list.find(
@@ -176,6 +184,9 @@
                 initTreeData(defaultGlossary.value)
             }
             const onCheck = (e, { checkedNodes }) => {
+                if(checkedKeys) {
+                    checkedKeys.value = checkedNodes.map((term) => term.guid)
+                }
                 emit('check', checkedNodes)
             }
             onMounted(() => {
@@ -209,6 +220,7 @@
                 addGTCNode,
                 reInitTree,
                 onCheck,
+                checkedKeys
             }
             // data
         },

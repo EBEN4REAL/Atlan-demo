@@ -25,11 +25,16 @@
                             v-model="localDescription"
                             @change="handleChangeDescription"
                             :selected-asset="asset"
+                            :readOnly="readOnly"
                         />
                     </div>
                 </div>
                 <div class="flex gap-x-32">
-                    <div ref="animationPoint" class="flex flex-col">
+                    <div
+                        ref="animationPoint"
+                        v-if="!readOnly"
+                        class="flex flex-col"
+                    >
                         <p class="mb-1 text-sm text-gray-500">Certificate</p>
 
                         <Certificate
@@ -46,6 +51,7 @@
                             :used-for-assets="true"
                             @change="handleOwnersChange"
                             :selected-asset="asset"
+                            :readOnly="readOnly"
                         />
                     </div>
                 </div>
@@ -101,10 +107,10 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            editPermission: {
+            readOnly: {
                 type: Boolean,
                 required: false,
-                default: true,
+                default: false,
             },
         },
         setup(props) {

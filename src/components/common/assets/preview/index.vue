@@ -39,19 +39,37 @@
                 <router-link
                     :to="getProfilePath(selectedAsset)"
                     @click="() => $emit('closeDrawer')"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md hover:underline overflow-ellipsis whitespace-nowrap"
+                    :class="
+                        isDrawer &&
+                        ['column'].includes(
+                            selectedAsset.typeName?.toLowerCase()
+                        )
+                            ? 'pointer-events-none text-gray-500'
+                            : 'text-primary'
+                    "
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
-
                 <CertificateBadge
-                    v-if="certificateStatus(selectedAsset)"
+                    v-if="
+                        certificateStatus(selectedAsset) &&
+                        !isScrubbed(selectedAsset)
+                    "
                     :status="certificateStatus(selectedAsset)"
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
                     class="mb-0.5"
                 ></CertificateBadge>
+                <a-tooltip placement="bottomRight"
+                    ><template #title>Limited Access</template>
+                    <AtlanIcon
+                        v-if="isScrubbed(selectedAsset)"
+                        icon="Lock"
+                        class="h-4 mb-0.5"
+                    ></AtlanIcon
+                ></a-tooltip>
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -145,6 +163,7 @@
                 :key="index"
                 class="overflow-y-auto"
                 :destroyInactiveTabPane="true"
+                :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
             >
                 <template #tab>
                     <PreviewTabsIcon
@@ -154,6 +173,7 @@
                         :emoji="tab.emoji"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
+                        :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
                 </template>
 
@@ -163,6 +183,7 @@
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
                     :isDrawer="isDrawer"
+                    :readOnly="isScrubbed(selectedAsset)"
                     :data="tab.data"
                 ></component>
             </a-tab-pane>
@@ -186,7 +207,6 @@
     import { debouncedWatch } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
-
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -289,6 +309,7 @@
                 certificateStatusMessage,
                 assetTypeLabel,
                 getProfilePath,
+                isScrubbed,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -385,6 +406,7 @@
                 getAssetQueryPath,
                 handleAction,
                 getProfilePath,
+                isScrubbed,
             }
         },
     })

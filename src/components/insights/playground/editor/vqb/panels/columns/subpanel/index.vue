@@ -8,7 +8,8 @@
                 <div class="flex items-center w-full mb-3">
                     <TableSelector
                         typeName="Table"
-                        style="width: 30%"
+                        style="max-width: 45%"
+                        class="flex-1"
                         v-model:modelValue="subpanel.tableQualfiedName"
                         :filterValues="filteredTablesValues"
                         @change="
@@ -17,7 +18,7 @@
                     />
                     <ColumnSelector
                         class="flex-1 ml-6"
-                        style="max-width: 600px; min-height: 34px"
+                        style="max-width: 45%; min-height: 34px"
                         v-if="subpanel.tableQualfiedName"
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"

@@ -188,13 +188,13 @@ export function useSavedQuery(
                         {
                             order: 1,
                             id: 'columns',
-                            hide: false,
+                            hide: true,
                             subpanels: [
                                 {
                                     id: '1',
                                     tableQualifiedName: undefined,
                                     columns: [],
-                                    columnsData: []
+                                    columnsData: [],
                                 },
                             ],
                         },

@@ -24,7 +24,7 @@
                 v-if="!readOnly"
                 shape="circle"
                 size="small"
-                class="text-center shadow hover:bg-primary-light hover:border-primary"
+                class="text-center shadow  hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
@@ -53,6 +53,15 @@
                 ></GroupPill>
             </PopOverGroup>
         </template>
+        <span
+            class="-ml-1 text-gray-500"
+            v-if="
+                readOnly &&
+                localValue?.ownerGroups?.length < 1 &&
+                localValue?.ownerUsers?.length < 1
+            "
+            >No owners assigned</span
+        >
     </div>
 </template>
 

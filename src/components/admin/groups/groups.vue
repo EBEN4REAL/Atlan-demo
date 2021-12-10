@@ -321,7 +321,7 @@ export default defineComponent({
                             },
                             [`${group.name}`]
                         ),
-                        h('span', '?'),
+                        h('span','?')
                     ])
                 },
                 okType: 'danger',
@@ -441,6 +441,22 @@ export default defineComponent({
         @apply p-5;
     }
 }
+#groupList {
+    th.ant-table-row-cell-last {
+        display: flex;
+        justify-content: center;
+    }
+}
+.hide-checkbox {
+    .ant-checkbox {
+        display: none;
+    }
+}
+.delete-group-modal {
+    .ant-modal-confirm-body-wrapper {
+        @apply p-5;
+    }
+}
 </style>
 <style lang="less" scoped>
 #groupList {
@@ -456,7 +472,11 @@ export default defineComponent({
 }
 </style>
 <style lang="less" module>
-.groupTable {
+.group-table {
+    // extra row hide hack
+    :global(.ant-table-measure-row) {
+        @apply hidden;
+    }
     :global(.ant-table-column-title) {
         @apply text-left;
     }

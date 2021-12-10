@@ -456,6 +456,13 @@ export default function useAssetInfo() {
 
     const isEditAllowed = (asset: assetInterface) => {}
 
+    const isScrubbed = (asset: assetInterface) => {
+        if (asset?.scrubbed) {
+            return true
+        }
+        return false
+    }
+
     // const modifiedBy = (asset: assetInterface) =>
     //     attributes(asset)?.__modifiedBy
 
@@ -942,5 +949,6 @@ export default function useAssetInfo() {
         isNonBiAsset,
         getLineagePath,
         isUserDescription,
+        isScrubbed,
     }
 }

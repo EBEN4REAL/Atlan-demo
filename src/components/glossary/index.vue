@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex flex-col items-stretch flex-1 h-full mb-1"
-        :class="{ checkable: $style.checkableTree }"
+        :class="{ [$style.checkableTree]: checkable  }"
         ref="glossaryBox"
     >
         <div
@@ -95,6 +95,7 @@
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
             :checkable="checkable"
+            v-model:checked-keys="checkedKeys"
             @check="onCheck"
         ></GlossaryTree>
 
@@ -152,6 +153,7 @@
         PropType,
     } from 'vue'
     import { useRouter } from 'vue-router'
+    import { useVModels } from '@vueuse/core'
 
     import EmptyView from '@common/empty/index.vue'
     import { useDebounceFn } from '@vueuse/core'
@@ -216,18 +218,18 @@
             },
             checkable: {
                 type: Boolean,
-                reuired: false,
+                required: false,
                 default: false,
             },
             checkedKeys: {
                 type: Object as PropType<string[]>,
                 required: false,
-                default: [],
             },
         },
-        emits: ['check'],
+        emits: ['check', 'update:checkedKeys'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
+            const { checkedKeys } = useVModels(props, emit)
             const router = useRouter()
             const { getGlossaryByQF } = useGlossaryData()
             const selectedGlossaryQf = ref(
@@ -458,6 +460,7 @@
                 handleCollapse,
                 onCheck,
                 reInitTree,
+                checkedKeys
             }
         },
     })
@@ -470,7 +473,6 @@
     }
     .checkableTree {
         max-height: 364px;
-
         :global(.ant-tree-checkbox) {
             @apply my-auto;
         }

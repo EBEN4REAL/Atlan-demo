@@ -28,23 +28,60 @@
                     <div class="flex items-center">
                         <div
                             class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
-                            :class="
-                                !expand
-                                    ? [
-                                          'flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5 text-gray-500',
-                                      ]
-                                    : [
-                                          'flex items-center justify-center mr-2 bg-primary-light  border-primary-focus rounded-full p-1.5 text-primary',
-                                      ]
-                            "
+                            :class="[
+                                isChecked
+                                    ? 'text-gray-500 bg-gray-100 border border-gray-300'
+                                    : 'text-gray-400 bg-gray-100 border border-gray-300',
+                                isChecked && expand
+                                    ? 'border-primary-focus bg-primary-light text-primary '
+                                    : '',
+                                'flex items-center justify-center mr-2  rounded-full p-1.5 ',
+                            ]"
                             style="z-index: 2"
                         >
-                            <AtlanIcon icon="Columns" class="w-4 h-4" />
+                            <div
+                                class="relative flex items-center justify-center"
+                            >
+                                <AtlanIcon
+                                    icon="Trigger"
+                                    :class="[
+                                        isChecked
+                                            ? 'text-gray-500'
+                                            : 'text-gray-400',
+                                        isChecked && expand
+                                            ? 'text-primary'
+                                            : '',
+                                        'absolute w-4 h-4 dead-center',
+                                    ]"
+                                />
+                                <div class="w-4 h-4"></div>
+                            </div>
                         </div>
                         <div class="">
-                            <p class="text-sm font-bold text-gray">Aggregate</p>
-                            <p class="text-xs text-gray-500" v-if="!expand">
-                                Summarised info
+                            <p
+                                :class="[
+                                    isChecked ? 'text-gray' : 'text-gray-500',
+                                    'text-sm font-bold  ',
+                                ]"
+                            >
+                                Aggregate
+                            </p>
+                            <p
+                                :class="[
+                                    isChecked
+                                        ? 'text-gray-500'
+                                        : 'text-gray-400',
+                                    'text-xs',
+                                ]"
+                                v-if="!expand"
+                            >
+                                {{
+                                    getSummarisedInfoOfAggregationPanel(
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ].subpanels
+                                    )
+                                }}
                             </p>
                         </div>
                     </div>
@@ -59,7 +96,12 @@
                             class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
-                            <a-checkbox v-model:checked="checkbox"></a-checkbox>
+                            <a-checkbox
+                                v-model:checked="
+                                    activeInlineTab.playground.vqb.panels[index]
+                                        .hide
+                                "
+                            ></a-checkbox>
                         </div>
                         <div
                             class="border-r border-gray-300"
@@ -73,7 +115,7 @@
                             <Actions
                                 @add="
                                     (type, panel) =>
-                                        handleAdd(index, type, panel)
+                                        handleAddPanel(index, type, panel)
                                 "
                                 v-model:submenuHovered="submenuHovered"
                                 v-model:containerHovered="containerHovered"
@@ -122,7 +164,7 @@
                 v-if="expand"
             />
             <FooterActions
-                @add="(type, panel) => handleAdd(index, type, panel)"
+                @add="(type, panel) => handleAddPanel(index, type, panel)"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -147,6 +189,7 @@
 
 <script lang="ts">
     import {
+        computed,
         defineComponent,
         toRefs,
         watch,
@@ -164,6 +207,7 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import AggregatorSubPanel from './subpanel/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -185,6 +229,12 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
+            const { getSummarisedInfoOfAggregationPanel } = useUtils()
+            const isChecked = computed(
+                () =>
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .hide
+            )
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
             const expand = ref(false)
@@ -199,7 +249,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const checkbox = ref(true)
-            const { addPanelsInVQB, deletePanelsInVQB } = useVQB()
+            const { deletePanelsInVQB, handleAdd } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -217,16 +267,12 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAdd = (index, type, panel) => {
-                const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
-                panelCopy.id = type
-                panelCopy.order =
-                    Number(activeInlineTab.value.playground.vqb.panels.length) +
-                    1
-                panelCopy.subpanels = [{ ...panel }]
-                addPanelsInVQB(
-                    Number(index),
-                    panelCopy,
+            const handleAddPanel = (index, type, panel) => {
+                handleAdd(
+                    index,
+                    type,
+                    panel,
+                    activeInlineTab,
                     activeInlineTabKey,
                     inlineTabs
                 )
@@ -241,6 +287,7 @@
                 actionPanel.value = !actionPanel.value
             }
             const handleMouseOut = () => {
+                console.log(containerHovered.value && !submenuHovered.value)
                 if (containerHovered.value && !submenuHovered.value) {
                     containerHovered.value = false
                 }
@@ -258,6 +305,7 @@
             )
 
             return {
+                isChecked,
                 submenuHovered,
                 handleMouseOver,
                 handleMouseOut,
@@ -271,8 +319,9 @@
                 checkbox,
                 panel,
                 handleDelete,
-                handleAdd,
+                handleAddPanel,
                 findTimeLineHeight,
+                getSummarisedInfoOfAggregationPanel,
             }
         },
     })
@@ -286,5 +335,10 @@
     }
     .rotate-0 {
         transform: rotate(0deg);
+    }
+    .dead-center {
+        transform: translate(-39%, -45%);
+        top: 50%;
+        left: 50%;
     }
 </style>

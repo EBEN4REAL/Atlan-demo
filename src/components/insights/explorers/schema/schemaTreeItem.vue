@@ -1235,7 +1235,7 @@
                                 {
                                     order: 1,
                                     id: 'columns',
-                                    hide: false,
+                                    hide: true,
                                     subpanels: [
                                         {
                                             id: '1',

@@ -6,13 +6,13 @@
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         tabindex="0"
-        class="relative flex items-center group"
+        class="relative flex items-center z-1"
         :class="[
             isAreaFocused
-                ? ' border-primary-focus border-2 '
-                : 'border-gray-300 border border-plus',
+                ? '  border border-gray-300 px-3 py-1 box-shadow-focus'
+                : 'border-gray-300 border  px-3 py-1 box-shadow',
             ,
-            'flex flex-wrap items-center    rounded box-shadow selector-height px-3',
+            'flex flex-wrap items-center    rounded  selector-height chip-container ',
             !tableQualfiedName ? ' cursor-not-allowed disable-bg' : '',
         ]"
         @click.stop="() => {}"
@@ -43,7 +43,7 @@
             :placeholder="placeholder"
             :style="`width:${placeholder.length + 2}ch;`"
             :class="[
-                'p-0 pr-4 text-sm border-none shadow-none outline-none my-0.5 focus-none',
+                'p-0 pr-4 ml-2 text-sm border-none shadow-none outline-none  focus-none',
                 !tableQualfiedName ? $style.custom_input : '',
             ]"
         />
@@ -54,7 +54,7 @@
             @change="input2Change"
             :placeholder="placeholder"
             :class="[
-                'w-full p-0  border-none shadow-none outline-none text-sm  focus-none',
+                'w-full p-0 ml-2  border-none shadow-none outline-none text-sm  focus-none',
                 !tableQualfiedName ? $style.custom_input : '',
             ]"
         />
@@ -164,6 +164,7 @@
 
 <script lang="ts">
     import {
+        onUpdated,
         computed,
         watch,
         defineComponent,
@@ -226,8 +227,13 @@
             const clickPos = ref({ left: 0, top: 0 })
             const setFoucs = () => {
                 if (!tableQualfiedName.value) return
-                inputChange()
                 isAreaFocused.value = true
+                nextTick(() => {
+                    if (tableQualfiedName.value) inputRef?.value?.focus()
+                })
+            }
+            const setFocusedCusror = () => {
+                if (!tableQualfiedName.value) return
                 nextTick(() => {
                     if (tableQualfiedName.value) inputRef?.value?.focus()
                 })
@@ -258,7 +264,12 @@
                         searchText: queryText.value,
                         tableQualfiedName: tableQualfiedName.value,
                     }),
-                    attributes: ['name', 'displayName', 'dataType'],
+                    attributes: [
+                        'name',
+                        'displayName',
+                        'dataType',
+                        'isPrimary',
+                    ],
                 }
             }
             const { list, replaceBody, data, isLoading } = useAssetListing(
@@ -310,7 +321,7 @@
             // let selectedColumn = ref({})
 
             const onSelectItem = (item) => {
-                inputChange()
+                setFocusedCusror()
                 // selectedColumn.value = item
                 emit('change', item)
             }
@@ -377,6 +388,13 @@
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
                 console.log(container.value)
+            })
+            onUpdated(() => {
+                nextTick(() => {
+                    if (topPosShift.value !== container.value?.offsetHeight) {
+                        topPosShift.value = container.value?.offsetHeight
+                    }
+                })
             })
 
             return {

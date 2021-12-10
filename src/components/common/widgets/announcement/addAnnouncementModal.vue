@@ -101,9 +101,14 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
-            const { asset } = toRefs(props)
+            const { asset, readOnly } = toRefs(props)
             const { title } = useAssetInfo()
 
             const visible = ref<boolean>(false)
@@ -144,9 +149,11 @@
             }
 
             const showModal = async () => {
-                visible.value = true
-                await nextTick()
-                titleBar.value?.focus()
+                if (!readOnly?.value) {
+                    visible.value = true
+                    await nextTick()
+                    titleBar.value?.focus()
+                }
             }
 
             const handleMenuClick = (announcement) => {

@@ -57,22 +57,36 @@ export function useAggregate() {
             {
                 key: 'min',
                 label: 'Min',
-                excludes: [...text, ...date, ...boolean, ...array, ...object, ...geography],
+                excludes: [
+                    ...text,
+                    ...date,
+                    ...boolean,
+                    ...array,
+                    ...object,
+                    ...geography,
+                ],
             },
             {
                 key: 'max',
                 label: 'Max',
-                excludes: [...text, ...date, ...boolean, ...array, ...object, ...geography],
+                excludes: [
+                    ...text,
+                    ...date,
+                    ...boolean,
+                    ...array,
+                    ...object,
+                    ...geography,
+                ],
             },
             {
                 key: 'count',
                 label: 'Count',
-                excludes: [...array, ...object, ...geography]
+                excludes: [...array, ...object, ...geography],
             },
             {
-                key: 'uniqueCount',
+                key: 'unique',
                 label: 'Unique Count',
-                excludes: [...array, ...object, ...geography]
+                excludes: [...array, ...object, ...geography],
             },
             {
                 key: 'sum',

@@ -1,7 +1,13 @@
 <template>
     <div class="relative w-full h-full bg-white rounded">
         <div class="w-full h-full overflow-hidden rounded">
-            <EditorContext />
+            <EditorContext
+                :isUpdating="isUpdating"
+                :isQueryRunning="isQueryRunning"
+                @onClickSaveQuery="saveOrUpdate"
+                @onClickRunQuery="toggleRun"
+                @toggleVQB="toggleVQB"
+            />
             <div
                 class="flex items-center justify-between w-full pl-2 pr-3 my-2"
             >
@@ -91,179 +97,6 @@
                                 />
                             </div>
                         </a-popover>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <div class="flex text-sm">
-                        <div class="flex" v-if="permissions.runQuery">
-                            <AtlanBtn
-                                class="flex items-center h-6 px-3 button-shadow"
-                                size="sm"
-                                color="primary"
-                                padding="compact"
-                                :disabled="
-                                    activeInlineTab?.playground?.resultsPane
-                                        ?.result?.buttonDisable
-                                "
-                                @click="toggleRun"
-                            >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        v-if="
-                                            isQueryRunning === 'loading'
-                                                ? false
-                                                : true
-                                        "
-                                        style="margin-right: 2.5px"
-                                        icon="Play"
-                                        class="text-white rounded"
-                                    ></AtlanIcon>
-                                    <AtlanIcon
-                                        v-else
-                                        icon="CircleLoader"
-                                        style="margin-right: 2.5px"
-                                        class="w-4 h-4 text-white animate-spin"
-                                    ></AtlanIcon>
-                                    <div>
-                                        <span
-                                            v-if="
-                                                !activeInlineTab?.playground
-                                                    .resultsPane?.result
-                                                    ?.runQueryId
-                                            "
-                                            class="text-white"
-                                            >Run</span
-                                        >
-                                        <span
-                                            v-else-if="
-                                                activeInlineTab?.playground
-                                                    .resultsPane?.result
-                                                    ?.runQueryId &&
-                                                !activeInlineTab?.playground
-                                                    ?.resultsPane?.result
-                                                    ?.buttonDisable
-                                            "
-                                            class="text-white"
-                                            >Abort</span
-                                        >
-                                        <span
-                                            v-else-if="
-                                                activeInlineTab?.playground
-                                                    ?.resultsPane?.result
-                                                    ?.buttonDisable
-                                            "
-                                            class="text-white"
-                                            >Aborting</span
-                                        >
-                                    </div>
-                                </div>
-                            </AtlanBtn>
-                        </div>
-
-                        <!-- <AtlanBtn
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            v-if="
-                                activeInlineTab.queryId &&
-                                !activeInlineTab.isSaved
-                            "
-                            class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
-                            :class="isUpdating ? 'px-4.5' : 'px-2'"
-                            :disabled="
-                                activeInlineTab.isSaved &&
-                                activeInlineTab.queryId
-                            "
-                            @click="saveOrUpdate"
-                        >
-                            <div
-                                class="flex items-center transition duration-150 rounded group-hover:text-primary"
-                            >
-                                <AtlanIcon
-                                    v-if="!isUpdating"
-                                    style="margin-right: 2.5px"
-                                    icon="Save"
-                                ></AtlanIcon>
-                                <AtlanIcon
-                                    v-else
-                                    icon="CircleLoader"
-                                    style="margin-right: 2.5px"
-                                    class="w-4 h-4 animate-spin"
-                                ></AtlanIcon>
-
-                                <span>Update</span>
-                            </div>
-                        </AtlanBtn> -->
-
-                        <!-- <div
-                            v-else-if="
-                                activeInlineTab.queryId &&
-                                activeInlineTab.isSaved
-                            "
-                            class="transition duration-150 hover:text-primary"
-                        >
-                            <a-tooltip
-                                color="#363636"
-                                class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
-                            >
-                                <template #title>
-                                    {{
-                                        useTimeAgo(activeInlineTab?.updateTime)
-                                    }}
-                                    by {{ activeInlineTab.updatedBy }}
-                                </template>
-                                <AtlanIcon class="mr-1" icon="Check" />Saved
-                            </a-tooltip>
-                        </div> -->
-
-                        <!-- <AtlanBtn
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            v-else
-                            class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
-                            @click="saveOrUpdate"
-                        >
-                            <div
-                                class="flex items-center transition duration-150 group-hover:text-primary"
-                            >
-                                <AtlanIcon
-                                    style="margin-right: 2.5px"
-                                    icon="Save"
-                                ></AtlanIcon>
-
-                                <span>Save</span>
-                            </div>
-                        </AtlanBtn> -->
-                        <!-- 
-                        <a-dropdown>
-                            <template #overlay>
-                                <a-menu>
-                                    <a-menu-item key="1" @click="copyURL"
-                                        >Copy link</a-menu-item
-                                    >
-                                </a-menu>
-                            </template>
-                            <AtlanBtn
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                                class="flex items-center h-6 px-3 ml-2 border-none button-shadow group"
-                            >
-                                <div
-                                    class="flex items-center transition duration-150 group-hover:text-primary"
-                                >
-                                    <AtlanIcon
-                                        style="margin-right: 2.5px"
-                                        icon="Share"
-                                        class="transition duration-150 group-hover:text-primary"
-                                    ></AtlanIcon>
-
-                                    <span>Share</span>
-                                </div>
-                            </AtlanBtn>
-                        </a-dropdown> -->
-                        <ThreeDotMenu v-model:showVQB="showVQB" />
                     </div>
                 </div>
             </div>
@@ -376,7 +209,6 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
-    import ThreeDotMenu from '~/components/insights/playground/editor/threeDotMenu/index.vue'
     import { editor } from 'monaco-editor'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
@@ -406,19 +238,17 @@
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
-
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
 
     export default defineComponent({
         components: {
-            VQBSQLPreview,
             VQB,
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
             CustomVariablesNav,
             SaveQueryModal,
             AtlanBtn,
-            ThreeDotMenu,
+            VQBSQLPreview,
             StatusBadge,
             EditorContext,
             WarehouseConnector,
@@ -453,7 +283,7 @@
                 rowsCount: 100,
             })
             const showcustomToolBar = ref(false)
-            const showVQB = ref(true)
+            const showVQB = ref(false)
             const showQueryPreview = ref(false)
 
             const activeInlineTab = inject(
@@ -638,14 +468,6 @@
                 )
             }
 
-            const copyURL = () => {
-                const URL = window.location.href
-                copyToClipboard(URL)
-                message.success({
-                    content: 'Link Copied!',
-                })
-                useAddEvent('insights', 'query', 'link_copied', undefined)
-            }
             const toggleCustomToolbar = () => {
                 showcustomToolBar.value = !showcustomToolBar.value
             }
@@ -736,6 +558,10 @@
                 }
             })
 
+            function toggleVQB() {
+                showVQB.value = !showVQB.value
+            }
+
             const _keyListener = (e) => {
                 if (e.key === 'Enter') {
                     if (e.metaKey || e.ctrlKey) {
@@ -784,6 +610,7 @@
 
             /* ------------------------------------------ */
             return {
+                toggleQueryPreviewPopover,
                 showQueryPreview,
                 showVQB,
                 permissions,
@@ -810,8 +637,6 @@
                 isQueryRunning,
                 formatDocument,
                 toggleCustomToolbar,
-                toggleQueryPreviewPopover,
-                copyURL,
                 updateQuery,
                 openSaveQueryModal,
                 saveQuery,
@@ -819,6 +644,7 @@
                 toggleRun,
                 queryFolderNamespace,
                 defaultClassification,
+                toggleVQB,
             }
         },
     })

@@ -289,6 +289,8 @@ import ShieldCheck from '~/assets/images/icons/shield-check.svg'
 import CustomVariable from '~/assets/images/icons/customVariable.svg'
 
 import FolderSearch from '~/assets/images/icons/folder-search.svg'
+import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
+import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
 
 export default {
     BuilderGroup,
@@ -572,4 +574,6 @@ export default {
     AtlanBot,
     EmptyClassifications,
     FolderSearch,
+    FolderNav24,
+    FolderNav24Active
 }

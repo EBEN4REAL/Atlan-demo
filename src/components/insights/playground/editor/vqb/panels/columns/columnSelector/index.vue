@@ -45,6 +45,7 @@
         />
         <a-input
             v-if="selectedItems.length == 0"
+            ref="initialRef"
             :disabled="!tableQualfiedName"
             v-model:value="inputValue2"
             @change="input2Change"
@@ -261,6 +262,7 @@
             ) as ComputedRef<activeInlineTabInterface>
 
             const inputRef = ref()
+            const initialRef = ref()
             const selectAll = ref(false)
             const mouseOver = ref(false)
             const topPosShift = ref(0)
@@ -480,7 +482,6 @@
             }
             onMounted(() => {
                 topPosShift.value = container.value?.offsetHeight
-                console.log(container.value)
             })
             onUpdated(() => {
                 nextTick(() => {
@@ -491,6 +492,7 @@
             })
 
             return {
+                initialRef,
                 queryText,
                 clearAllSelected,
                 findVisibility,

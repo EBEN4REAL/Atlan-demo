@@ -111,6 +111,10 @@ export const AssetRelationAttributes = [
     'dataflow',
     'report',
     'page',
+    '__timestamp',
+    '__modificationTimestamp',
+    '__modifiedBy',
+    '__createdBy',
 ]
 
 export const DefaultRelationAttributes = []

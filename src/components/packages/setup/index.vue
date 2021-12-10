@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-1 border-r border-gray-200">
-        <div class="flex flex-col w-full h-full">
+        <div class="flex flex-col w-full h-full" v-if="!status">
             <a-steps
                 v-if="steps.length > 0"
                 v-model:current="currentStep"
@@ -8,7 +8,6 @@
             >
                 <template v-for="step in steps" :key="step.id">
                     <a-step>
-                        <!-- <span slot="title">Finished</span> -->
                         <template #title>{{ step.title }}</template>
                     </a-step>
                 </template>
@@ -56,7 +55,7 @@
 
                 <div
                     class="flex gap-x-2"
-                    v-if="currentStep !== steps.length - 1"
+                    v-if="currentStep == steps.length - 1"
                 >
                     <a-button type="primary" class="px-6" @click="handleSubmit"
                         >Run</a-button
@@ -83,6 +82,56 @@
                     </a-popconfirm>
                 </div>
             </div>
+        </div>
+        <div
+            class="flex flex-col items-center justify-center w-full h-full"
+            v-if="status"
+        >
+            <div class="flex flex-col justify-center" v-if="isLoading">
+                <a-spin size="large" />
+                <div>Setting up Workflow</div>
+            </div>
+            <a-result
+                :status="status"
+                :title="title"
+                :sub-title="subTitle"
+                v-else
+            >
+                <template #extra v-if="status === 'success'">
+                    <a-progress
+                        :percent="100"
+                        :showInfo="false"
+                        status="active"
+                        :stroke-color="{
+                            '0%': '#108ee9',
+                            '100%': '#87d068',
+                        }"
+                        class="mb-3"
+                    />
+                    <a-button v-if="status === 'success'">
+                        <router-link to="/workflows">
+                            Track Progress</router-link
+                        >
+                    </a-button>
+                    <a-button v-if="status === 'success'">
+                        <router-link to="/assets"> Back to Assets</router-link>
+                    </a-button>
+                </template>
+
+                <div
+                    class="flex flex-col items-center justify-center gap-y-2"
+                    v-if="errorMesssage"
+                >
+                    <span>{{ errorMesssage }}</span>
+                    <a-button
+                        v-if="status === 'error'"
+                        @click="handleBackToSetup"
+                    >
+                        <AtlanIcon icon="ChevronLeft"></AtlanIcon>
+                        Back to setup
+                    </a-button>
+                </div>
+            </a-result>
         </div>
     </div>
 </template>
@@ -111,6 +160,7 @@
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+    import { useRunList } from '~/composables/package/useRunList'
 
     // Composables
 
@@ -188,7 +238,37 @@
                 spec: {},
                 payload: [],
             })
-            const { isLoading, isReady, execute } = createWorkflow(body)
+
+            const { isLoading, isReady, execute, error, data, workflow } =
+                createWorkflow(body)
+
+            const dependentKey = ref('dependencies')
+            const {} = useRunList({}, dependentKey)
+
+            const status = ref(null)
+            const title = ref('Setting up a workflow')
+            const subTitle = ref(
+                'Saving & validating your inputs and credentials'
+            )
+            const errorMesssage = ref('')
+
+            watch(data, () => {
+                title.value = 'Workflow is in progress'
+                subTitle.value =
+                    'You can also track the progress of workflows in the Workflow Center'
+                status.value = 'success'
+            })
+
+            watch(error, () => {
+                if (error.value) {
+                    status.value = 'error'
+                    title.value = 'Workflow setup has failed'
+                    subTitle.value =
+                        'Something went wrong during setup process. Reach out to support@atlan.com for any help.'
+
+                    errorMesssage.value = error.value?.response?.data?.message
+                }
+            })
 
             const {
                 getCredentialPropertyList,
@@ -196,6 +276,10 @@
                 getConnectionBody,
                 getConnectionPropertyList,
             } = useWorkflowHelper()
+
+            const handleRetry = () => {
+                execute(true)
+            }
 
             const handleSubmit = () => {
                 // Copy labels and annotations of the worfklow template
@@ -210,13 +294,14 @@
                     modelValue.value
                 )
 
-                let connectionName = ''
+                let connectionQualifiedName = ''
                 // iterate and set the object
                 connectionBody.forEach((i) => {
                     modelValue.value[i.parameter] = i.body
-                    connectionName = i.body.attributes.name
+                    connectionQualifiedName = i.body.attributes.qualifiedName
+                    let connectionName = i.body.attributes.name
                     // add qualifiedname to label
-                    if (connectionName) {
+                    if (connectionQualifiedName) {
                         body.value.metadata.labels[
                             `com.atlan.orchestration/${connectionName}`
                         ] = 'true'
@@ -225,35 +310,37 @@
                 const seconds = Math.round(new Date().getTime() / 1000)
 
                 let workflowName = workflowTemplate.value.metadata.name
-                if (connectionName) {
-                    workflowName = `${workflowName}-${connectionName}-${seconds.toString()}`
+                if (connectionQualifiedName) {
+                    workflowName = `${workflowName}-${connectionQualifiedName}`
                 } else {
                     workflowName = `${workflowName}-${seconds.toString()}`
                 }
-                body.value.metadata.name = workflowName
+                body.value.metadata.name = workflowName.replaceAll("/", "-")
+                body.value.metadata.namespace = "default"  // FIXME: change this to tenant name
 
                 const credentialBody = getCredentialBody(
                     configMap.value,
                     modelValue.value,
-                    connectionName || workflowName
+                    connectionQualifiedName || workflowName
                 )
 
                 const parameters = []
                 if (workflowTemplate.value.spec.templates.length > 0) {
                     workflowTemplate.value.spec.templates[0].inputs.parameters.forEach(
                         (p) => {
-                            parameters.push({
-                                name: p.name,
-                                value: modelValue.value[p.name],
-                            })
+                            if (modelValue.value[p.name]) {
+                                parameters.push({
+                                    name: p.name,
+                                    value: JSON.stringify(modelValue.value[p.name])
+                                })
+                            }
                         }
                     )
                 } else {
                     message.error('Something went wrong. Package is not valid.')
                 }
 
-                body.value.metadata.labels['com.atlan.orchestration/ui'] =
-                    'true'
+                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] = 'true'
                 body.value.spec = {
                     templates: [
                         {
@@ -280,8 +367,14 @@
                 }
                 body.value.payload = [...credentialBody]
 
-                console.log(body.value)
-                // execute()
+                status.value = 'loading'
+                errorMesssage.value = ''
+
+                execute(true)
+            }
+
+            const handleBackToSetup = () => {
+                status.value = null
             }
 
             return {
@@ -301,6 +394,16 @@
                 handlePrevious,
                 handleSubmit,
                 getCredentialPropertyList,
+                status,
+                error,
+                isLoading,
+                subTitle,
+                title,
+                data,
+                workflow,
+                handleRetry,
+                errorMesssage,
+                handleBackToSetup,
             }
         },
     })

@@ -96,13 +96,7 @@
                 <span class="text-sm text-gray-500 required">Assets</span>
             </div>
             <div
-                class="
-                    flex flex-wrap
-                    items-center
-                    flex-grow
-                    gap-x-1 gap-y-1.5
-                    mb-6
-                "
+                class="flex flex-wrap items-center flex-grow gap-x-1 gap-y-1.5 mb-6"
             >
                 <PillGroup
                     v-model:data="assets"
@@ -125,12 +119,7 @@
                                     <template #prefix>
                                         <AtlanIcon
                                             icon="Add"
-                                            class="
-                                                h-4
-                                                -mx-1.5
-                                                text-gray
-                                                group-hover:text-white
-                                            "
+                                            class="h-4 -mx-1.5 text-gray group-hover:text-white"
                                         />
                                     </template>
                                 </Pill>
@@ -147,7 +136,7 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="flex items-center  text-primary group-hover:text-white"
+                                            class="flex items-center text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -168,7 +157,7 @@
                                 >
                                     <template #prefix>
                                         <div
-                                            class="flex items-center  text-primary group-hover:text-white"
+                                            class="flex items-center text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -203,6 +192,7 @@
             <MetadataScopes
                 v-model:actions="policy.actions"
                 class="mb-6"
+                type="persona"
                 @change="onScopesChange"
             />
             <div

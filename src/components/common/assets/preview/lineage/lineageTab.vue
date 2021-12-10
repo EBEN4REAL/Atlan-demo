@@ -9,12 +9,21 @@
             >
                 <a-radio-button value="BOTH" size="small">All</a-radio-button>
                 <a-radio-button value="UPSTREAM" size="small"
-                    >Upstream</a-radio-button
-                >
+                    >Upstream
+                    <span :class="$style.chip">{{
+                        upstreamGuids?.length
+                    }}</span>
+                </a-radio-button>
                 <a-radio-button value="DOWNSTREAM" size="small"
-                    >Downstream</a-radio-button
+                    >Downstream
+                    <span :class="$style.chip">{{
+                        downstreamGuids?.length
+                    }}</span></a-radio-button
                 >
             </a-radio-group>
+            <router-link :to="link" class="underline text-primary"
+                >View Graph</router-link
+            >
         </div>
         <Assets :selectedGuids="selectedGuids" ref="assetList"></Assets>
     </div>
@@ -90,6 +99,12 @@
                     name: 'Downstream',
                 },
             ]
+
+            const link = computed(() => {
+                const baseUrl = window.location.origin
+                const text = `/assets/${guid.value}/lineage`
+                return text
+            })
 
             /** COMPUTED */
             const guid = computed(() => selectedAsset.value.guid)
@@ -259,41 +274,20 @@
                 handleChangeDirection,
                 upstreamGuids,
                 downstreamGuids,
+                link,
             }
         },
     })
 </script>
 
-<style scoped>
-    .chip {
-        @apply px-1 pt-1 pb-0.5 mr-1 ml-3 rounded tracking-wide text-xs font-bold text-primary bg-primary-light;
-    }
-    :global(.ant-tabs .ant-tabs-right-content) {
-        @apply pr-0 !important;
-    }
-</style>
 <style lang="less" module>
-    .filter {
-        :global(.ant-collapse-item) {
-            @apply border-b;
-            @apply border-gray-300;
-        }
+    .chip {
+        @apply self-center text-xs font-bold tracking-wide text-gray-400 ml-0;
+    }
 
-        :global(.ant-collapse-header) {
-            @apply px-5 !important;
-            @apply py-4 !important;
-        }
-
-        :global(.ant-collapse-arrow) {
-            font-size: 0.85rem !important;
-            right: 20px !important;
-        }
-
-        :global(.ant-collapse-content-box) {
-            padding-right: 0px;
-            padding-left: 0px;
-            padding-top: 0px !important;
-            @apply pb-4 !important;
+    :global(.ant-radio-button-wrapper-checked) {
+        .chip {
+            @apply text-white;
         }
     }
 </style>

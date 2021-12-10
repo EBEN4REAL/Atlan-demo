@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PreviewHeader :name="selectedWorkflow.name" type="workflow" />
+        <PreviewHeader :name="selectedWorkflow.metadata.name" type="workflow" />
         <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.previewtab"

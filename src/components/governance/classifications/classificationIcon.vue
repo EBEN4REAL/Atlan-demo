@@ -9,6 +9,7 @@
     import { defineComponent, PropType, toRefs, computed } from 'vue'
 
     import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
+    import { capitalizeFirstLetter } from '~/utils/string'
 
     export default defineComponent({
         name: 'ClassificationIcon',
@@ -20,13 +21,13 @@
             },
             icon: {
                 type: String as PropType<'ShieldFilled' | 'Shield'>,
-                required: true,
+                required: false,
                 default: 'Shield',
             },
         },
         setup(props, { emit }) {
             // const { color, icon } = toRefs(props)
-            const color = computed(() => props.color)
+            const color = computed(() => capitalizeFirstLetter(props.color))
             const icon = computed(() => props.icon)
             return {
                 getClassificationColorHex,

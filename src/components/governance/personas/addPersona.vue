@@ -95,7 +95,7 @@
                         dataPolicies: [],
                     })) as IPersona
                     message.success({
-                        content: `${title.value} persona Created`,
+                        content: `${title.value} persona created`,
                         duration: 1.5,
                         key: messageKey,
                     })

@@ -3,7 +3,7 @@
         <div class="w-full p-4 pb-1">
             <Connector
                 v-model:data="connectorsData"
-                class=""
+                :bgGrayForSelector="true"
                 :filter-source-ids="BItypes"
                 :is-leaf-node-selectable="false"
                 :item="{
@@ -90,7 +90,8 @@
 
     import useSchemaExplorerTree from './composables/useSchemaExplorerTree'
 
-    import { tableInterface ,
+    import {
+        tableInterface,
         Attributes,
         Database,
         Schema,
@@ -111,7 +112,6 @@
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import SchemaFilter from './schemaFilter.vue'
 
-    
     export default defineComponent({
         components: { Connector, SchemaTree, SchemaFilter },
         props: {},
@@ -310,7 +310,7 @@
                                 activeInlineTab?.value?.explorer?.schema?.connectors
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
-                                { ...activeInlineTab.value}
+                                { ...activeInlineTab.value }
 
                             const firstConnection = getFirstQueryConnection()
                             if (

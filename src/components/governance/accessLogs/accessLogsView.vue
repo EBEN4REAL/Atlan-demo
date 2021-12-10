@@ -49,7 +49,19 @@
                             @change="handleSearch"
                         ></a-input-search>
                     </div>
-                    <div class="flex-grow w-0"></div>
+                     <div class="mr-3">
+                        <a-tooltip placement="bottom">
+                            <template #title> Refresh </template>
+                            <AtlanBtn
+                                class="px-2 bg-transparent border-gray-300"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="refetchList"
+                                ><AtlanIcon icon="Refresh"></AtlanIcon
+                            ></AtlanBtn>
+                        </a-tooltip>
+                    </div>
 
                     <TimeFrameSelector
                         v-model:modelValue="timeFrame"
@@ -223,18 +235,15 @@
             const logActionValues = facets.value?.logAction?.actions
             const userTypes = facets.value?.userType?.userTypes
             const properties = facets.value?.properties
-            let schemaName = ''
-            let dbName = ''
+            let schemaQualifiedName = ''
+            let dbQualifiedName = ''
             let connectionQF = ''
             let connectorName = ''
             if (connectorFacet) {
                 if (connectorFacet === 'schemaQualifiedName') {
-                    dbName = getDatabaseName(facetValue) || ''
-                    schemaName = getSchemaName(facetValue) || ''
-                    connectionQF = getConnectionQualifiedName(facetValue) || ''
+                    schemaQualifiedName = facetValue || ''
                 } else if (connectorFacet === 'databaseQualifiedName') {
-                    dbName = getDatabaseName(facetValue) || ''
-                    connectionQF = getConnectionQualifiedName(facetValue) || ''
+                    dbQualifiedName = facetValue || ''
                 } else if (connectorFacet === 'connectionQualifiedName') {
                     connectionQF = facetValue || ''
                 } else if (connectorFacet === 'connectorName') {
@@ -251,8 +260,8 @@
                 logActionValues,
                 userTypes,
                 properties,
-                dbName,
-                schemaName,
+                dbQualifiedName,
+                schemaQualifiedName,
                 connectionQF,
                 connectorName,
                 searchText: searchText.value,
@@ -308,6 +317,7 @@
             totalLogsCount,
             EmptyLogsIllustration,
             assetListLoading,
+            refetchList
         }
     },
 })

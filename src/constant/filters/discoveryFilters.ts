@@ -50,6 +50,16 @@ export const discoveryFilters = [
         exclude: false,
     },
     {
+        id: 'terms',
+        label: 'Terms',
+        component: 'terms',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
         id: 'properties',
         label: 'Properties',
         component: 'properties',

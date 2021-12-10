@@ -27,7 +27,8 @@ export interface activeInlineTabInterface {
         queries: {
             connectors: {
                 connector: string | undefined
-            }
+            },
+            queryCollectionId: string
         }
     }
     favico: string | undefined

@@ -75,7 +75,7 @@
 
             const updateList = (asset) => {
                 localSelected.value = asset
-                glossaryStore.setSelectedGTC(asset)
+                handlePreview(asset)
             }
             watch(selectedGlossary, () => {
                 localSelected.value = selectedGlossary.value

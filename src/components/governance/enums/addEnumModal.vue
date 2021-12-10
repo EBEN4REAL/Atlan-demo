@@ -7,37 +7,39 @@
         :footer="false"
         destroy-on-close
     >
-        <a-form layout="vertical">
-            <a-form-item label="Name">
-                <a-input
-                    id="name-input"
-                    v-model:value="form.name"
-                    placeholder="Name the label"
-                ></a-input>
-            </a-form-item>
+        <div class="p-4">
+            <a-form layout="vertical">
+                <a-form-item label="Name">
+                    <a-input
+                        id="name-input"
+                        v-model:value="form.name"
+                        placeholder="Name the label"
+                    ></a-input>
+                </a-form-item>
 
-            <a-form-item label="Values">
-                <a-select
-                    mode="tags"
-                    placeholder="Enter enum values"
-                    :value="form.elementDefs"
-                    :open="false"
-                    @change="form.elementDefs = $event"
-                />
-            </a-form-item>
-            <div class="flex items-center justify-end space-x-3">
-                <a-button class="border-0" @click="$emit('close')"
-                    >Cancel</a-button
-                >
-                <a-button
-                    type="primary"
-                    :loading="isLoading"
-                    :disabled="!form.name"
-                    @click="handleOK"
-                    >{{ isEdit ? 'Update' : 'Create' }}</a-button
-                >
-            </div>
-        </a-form>
+                <a-form-item label="Values">
+                    <a-select
+                        mode="tags"
+                        placeholder="Enter enum values"
+                        :value="form.elementDefs"
+                        :open="false"
+                        @change="form.elementDefs = $event"
+                    />
+                </a-form-item>
+                <div class="flex items-center justify-end space-x-3">
+                    <a-button class="border-0" @click="$emit('close')"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        type="primary"
+                        :loading="isLoading"
+                        :disabled="!form.name"
+                        @click="handleOK"
+                        >{{ isEdit ? 'Update' : 'Create' }}</a-button
+                    >
+                </div>
+            </a-form>
+        </div>
         <!-- <EnumDetails
             ref="enumDetailsComponent"
             :is-new="true"

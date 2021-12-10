@@ -5,24 +5,77 @@
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
+                <!-- {{ subpanel }} -->
                 <div class="flex items-center w-full mb-3">
-                    <TableSelector
-                        typeName="Table"
-                        style="max-width: 45%"
-                        class="flex-1"
-                        v-model:modelValue="subpanel.tableQualfiedName"
-                        :filterValues="filteredTablesValues"
-                        @change="
-                            (val) => hanldeTableQualifiedNameChange(val, index)
-                        "
-                    />
+                    <!-- <div class="flex-1 border rounded h-14"> -->
+                    <!-- <div class="flex flex-wrap items-center w-full"> -->
+                    <!-- <template v-for="item in subpanel.columnsData">
+                                <div
+                                    class="flex items-center justify-center px-3 py-1.5 ml-2 text-xs text-gray-700 truncate border rounded-full"
+                                    @mouseover="hoverPill = item?.label"
+                                    @mouseout="hoverPill = null"
+                                    :class="
+                                        hoverPill === item?.label
+                                            ? 'bg-primary text-white'
+                                            : ''
+                                    "
+                                >
+                                    <component
+                                        :is="getDataTypeImage(item?.type)"
+                                        class="flex-none w-4 h-4 mr-1 text-xs"
+                                        :class="
+                                            hoverPill === item?.label
+                                                ? 'text-white'
+                                                : 'text-gray-500'
+                                        "
+                                    ></component>
+                                    <div
+                                        class="truncate ... overflow-ellipsis overflow-hidden -mb-0.5"
+                                        :class="
+                                            hoverPill === item?.label
+                                                ? 'bg-primary text-white'
+                                                : ''
+                                        "
+                                    >
+                                        {{ item.label }}
+                                    </div>
+                                </div>
+                            </template> -->
+                    <!-- <a-popover trigger="click" placement="bottomLeft">
+                                <div
+                                    v-if="subpanel?.columnsData?.length === 0"
+                                    class="flex items-center justify-center w-full text-gray-500 h-14"
+                                >
+                                    click here to add columns to group column
+                                    results
+                                </div>
+                                <div
+                                    v-else
+                                    class="flex-1 w-full ant-dropdown-link h-14"
+                                ></div>
+                                <template #content>
+                                    <ColumnSelector
+                                        style="width: 300px; margin-top: -20px"
+                                        v-model:selectedItems="subpanel.columns"
+                                        v-model:selectedColumnsData="
+                                            subpanel.columnsData
+                                        "
+                                        :tableQualfiedName="
+                                            columnSubpanels[0]
+                                                ?.tableQualfiedName
+                                        "
+                                    />
+                                </template>
+                            </a-popover> -->
+                    <!-- </div> -->
                     <ColumnSelector
-                        class="flex-1 ml-6"
-                        style="max-width: 45%; min-height: 34px"
-                        v-if="subpanel.tableQualfiedName"
+                        class="h-9"
+                        style="min-width: 30%"
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
-                        :tableQualfiedName="subpanel.tableQualfiedName"
+                        :tableQualfiedName="
+                            columnSubpanels[0]?.tableQualfiedName
+                        "
                     >
                         <template #chip="{ item }">
                             <div
@@ -46,7 +99,10 @@
                             </div>
                         </template>
                     </ColumnSelector>
-                    <!-- <div
+                    <!-- </div> -->
+                    <!-- </div> -->
+
+                    <div
                         v-if="subpanel.tableQualfiedName"
                         class="text-gray-500 hover:text-primary"
                         @click.stop="() => handleDelete(index)"
@@ -55,7 +111,7 @@
                             icon="Close"
                             class="w-6 h-6 ml-3 -mt-0.5 cursor-pointer"
                         />
-                    </div> -->
+                    </div>
                 </div>
             </template>
         </div>
@@ -79,17 +135,16 @@
         inject,
         Ref,
         computed,
-        onUpdated,
         PropType,
         toRaw,
     } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import TablesTree from '~/components/insights/playground/editor/vqb/dropdowns/tables/index.vue'
-    import TableSelector from '../tableSelector/index.vue'
-    import ColumnSelector from '../columnSelector/index.vue'
+    import ColumnSelector from '../../columns/columnSelector/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { SubpanelColumn } from '~/types/insights/VQBPanelColumns.interface'
+    import { SubpanelGroupColumn } from '~/types/insights/VQBPanelGroups.interface'
     import { useVModels } from '@vueuse/core'
     import { generateUUID } from '~/utils/helper/generator'
 
@@ -98,7 +153,6 @@
         components: {
             Pill,
             TablesTree,
-            TableSelector,
             ColumnSelector,
         },
         props: {
@@ -108,6 +162,11 @@
                 default: false,
             },
             subpanels: {
+                type: Object as PropType<SubpanelGroupColumn[]>,
+                required: true,
+                default: [],
+            },
+            columnSubpanels: {
                 type: Object as PropType<SubpanelColumn[]>,
                 required: true,
                 default: [],
@@ -115,7 +174,7 @@
         },
 
         setup(props, { emit }) {
-            const { subpanels } = useVModels(props)
+            const { subpanels, columnSubpanels } = useVModels(props)
             const { expand } = toRefs(props)
             const filteredTablesValues = computed(() =>
                 subpanels.value.map((subpanel) => subpanel.tableQualfiedName)
@@ -138,27 +197,19 @@
                         JSON.stringify(toRaw(subpanels.value[0]))
                     )
                     copySubPanel.columns = []
-                    copySubPanel.columnsData = []
                     copySubPanel.tableQualfiedName = undefined
-                    subpanels.value[index] = copySubPanel
-                    console.log(subpanels.value)
-                } else {
-                    const copySubPanel = JSON.parse(
-                        JSON.stringify(toRaw(subpanels.value[0]))
-                    )
-                    copySubPanel.columns = []
-                    copySubPanel.columnsData = []
                     subpanels.value[index] = copySubPanel
                     console.log(subpanels.value)
                 }
             }
 
             const handleAddPanel = () => {
-                const copySubPanels: SubpanelColumn[] = JSON.parse(
+                const copySubPanels: SubpanelGroupColumn[] = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value))
                 )
+                const uuid = generateUUID()
                 copySubPanels.push({
-                    id: generateUUID(),
+                    id: uuid,
                     tableQualfiedName: undefined,
                     columns: [],
                     columnsData: [],
@@ -179,6 +230,8 @@
                 }
             }
 
+            let hoverPill = ref(null)
+
             return {
                 filteredTablesValues,
                 activeInlineTab,
@@ -189,6 +242,8 @@
                 getDataTypeImage,
                 tableQualfiedName,
                 cols,
+                columnSubpanels,
+                hoverPill,
             }
         },
     })

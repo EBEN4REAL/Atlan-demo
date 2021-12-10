@@ -27,7 +27,7 @@
         >
             <Shortcut shortcutKey="n" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Name</span>
                 </div>
@@ -173,7 +173,7 @@
         <div class="flex flex-col">
             <Shortcut shortcutKey="d" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span>Description</span>
                     <a-tooltip title="User Description" placement="left">
@@ -204,7 +204,7 @@
         >
             <Shortcut shortcutKey="o" action="set owners" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Owners</span>
                 </div>
@@ -235,7 +235,7 @@
                 placement="left"
             >
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Classification</span>
                 </div>
@@ -263,7 +263,7 @@
             class="flex flex-col"
         >
             <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
                 Terms
             </p>
@@ -277,18 +277,10 @@
             </Terms>
         </div>
 
-        <div
-            v-if="
-                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
-                    selectedAsset.typeName
-                ) && !readOnly
-            "
-            class="flex flex-col"
-            ref="animationPoint"
-        >
+        <div v-if="!readOnly" class="flex flex-col" ref="animationPoint">
             <Shortcut shortcutKey="c" action="set certificate" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Certificate</span>
                 </div>

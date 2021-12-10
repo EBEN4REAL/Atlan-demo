@@ -4,5 +4,5 @@ import { BASE_PATH } from '..'
 export const LIST_ROLES = 'LIST_ROLES'
 
 export const map = {
-    [LIST_ROLES]: () => getAPIPath(BASE_PATH, '/workspaceroles?type=default'),
+    [LIST_ROLES]: () => getAPIPath(BASE_PATH, '/roles'),
 }

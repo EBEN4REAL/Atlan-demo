@@ -73,7 +73,8 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     if (sortPanel?.hide) {
         sortPanel?.subpanels.forEach((subpanel) => {
             const order = subpanel.order === 'asc'
-            select.order(subpanel.column.label, order)
+            if (subpanel.column.label)
+                select.order(subpanel.column.label, order)
         })
         // console.log(select.toString(), 'select.toString()')
     }

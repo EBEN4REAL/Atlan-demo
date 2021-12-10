@@ -27,7 +27,7 @@
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
+                            class="flex items-center justify-center mr-2 border border-gray-300 rounded-full p-1.5"
                             :class="[
                                 isChecked
                                     ? 'text-gray-500 bg-gray-100 border border-gray-300'
@@ -45,7 +45,7 @@
                                     isChecked
                                         ? 'text-gray-500'
                                         : 'text-gray-400',
-                                    expand ? 'text-primary' : '',
+                                    isChecked && expand ? 'text-primary' : '',
                                     ' w-4 h-4 ',
                                 ]"
                             />

@@ -45,7 +45,7 @@
                                     isChecked
                                         ? 'text-gray-500'
                                         : 'text-gray-400',
-                                    expand ? 'text-primary' : '',
+                                    isChecked && expand ? 'text-primary' : '',
                                     ' w-4 h-4 ',
                                 ]"
                             />

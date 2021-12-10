@@ -237,7 +237,7 @@
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
-
+    import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
 
@@ -248,6 +248,7 @@
             CustomVariablesNav,
             SaveQueryModal,
             AtlanBtn,
+            VQBSQLPreview,
             StatusBadge,
             EditorContext,
             WarehouseConnector,
@@ -609,6 +610,7 @@
 
             /* ------------------------------------------ */
             return {
+                toggleQueryPreviewPopover,
                 showQueryPreview,
                 showVQB,
                 permissions,

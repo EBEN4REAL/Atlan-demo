@@ -48,7 +48,9 @@
                                         isChecked
                                             ? 'text-gray-500'
                                             : 'text-gray-400',
-                                        expand ? 'text-primary' : '',
+                                        isChecked && expand
+                                            ? 'text-primary'
+                                            : '',
                                         'absolute w-4 h-4 dead-center',
                                     ]"
                                 />

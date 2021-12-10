@@ -1,6 +1,7 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
+            v-if="!readOnly"
             placement="leftBottom"
             :overlayClassName="$style.certificatePopover"
             @visibleChange="handleVisibleChange"
@@ -21,27 +22,28 @@
                     </a-textarea>
                 </div>
             </template>
-
-            <CertificatePill
-                v-if="
-                    certificateStatus(selectedAsset) !== 'NONE' &&
-                    certificateStatus(selectedAsset)
-                "
-                class="w-full"
-                :status="certificateStatus(selectedAsset)"
-                :message="certificateStatusMessage(selectedAsset)"
-                :username="certificateUpdatedBy(selectedAsset)"
-                :timestamp="certificateUpdatedAt(selectedAsset)"
-            ></CertificatePill>
-            <a-button
-                v-else
-                shape="circle"
-                size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
-            >
-                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-            ></a-button>
         </a-popover>
+
+        <CertificatePill
+            v-if="
+                certificateStatus(selectedAsset) !== 'NONE' &&
+                certificateStatus(selectedAsset)
+            "
+            class="w-full"
+            :status="certificateStatus(selectedAsset)"
+            :message="certificateStatusMessage(selectedAsset)"
+            :username="certificateUpdatedBy(selectedAsset)"
+            :timestamp="certificateUpdatedAt(selectedAsset)"
+        ></CertificatePill>
+        <a-button
+            v-else-if="!readOnly"
+            shape="circle"
+            size="small"
+            class="text-center shadow  hover:bg-primary-light hover:border-primary"
+        >
+            <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
+        ></a-button>
+        <span class="text-sm text-gray-500" v-else>No certification</span>
     </div>
 </template>
 
@@ -86,6 +88,11 @@
                 type: Object as PropType<assetInterface>,
                 required: false,
                 default: () => {},
+            },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['change', 'update:modelValue'],

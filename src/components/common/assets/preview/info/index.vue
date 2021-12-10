@@ -281,7 +281,7 @@
             v-if="
                 !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
                     selectedAsset.typeName
-                ) && !readOnly
+                )
             "
             class="flex flex-col"
             ref="animationPoint"
@@ -299,6 +299,7 @@
                 v-model="localCertificate"
                 @change="handleChangeCertificate"
                 :selected-asset="selectedAsset"
+                :readOnly="readOnly"
             />
         </div>
         <a-modal

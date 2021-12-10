@@ -27,7 +27,7 @@
                 style="max-width: 420px"
             >
                 <div
-                    class="h-full bg-white border-l xs:hidden sm:hidden md:block lg:block"
+                    class="h-full bg-white border-l  xs:hidden sm:hidden md:block lg:block"
                 >
                     <GlossaryPreview
                         :selected-asset="localSelected"
@@ -47,7 +47,6 @@
     import GlossaryPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryStore from '~/store/glossary'
-    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         components: {
@@ -64,7 +63,6 @@
             const { selectedGlossary } = useAssetInfo()
             const localSelected = ref()
             const glossaryStore = useGlossaryStore()
-            const assetStore = useAssetStore()
             const glossaryDiscovery = ref(null)
 
             if (selectedGlossary.value?.guid === id.value) {
@@ -73,13 +71,11 @@
             const handlePreview = (asset) => {
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
-                assetStore.setSelectedAsset(asset)
             }
 
             const updateList = (asset) => {
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
-                assetStore.setSelectedAsset(asset)
             }
             watch(selectedGlossary, () => {
                 localSelected.value = selectedGlossary.value

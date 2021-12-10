@@ -35,7 +35,7 @@
                     <a-tab-pane key="1" tab="Emoji">
                         <Picker
                             :data="emojiIndex"
-                            set="twitter"
+                            set="apple"
                             auto-focus
                             :show-preview="false"
                             :emoji-tooltip="false"
@@ -83,93 +83,93 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+import { defineComponent, toRefs } from 'vue'
 
-    // Emoji
-    import data from 'emoji-mart-vue-fast/data/twitter.json'
-    import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
-    import 'emoji-mart-vue-fast/css/emoji-mart.css'
+// Emoji
+import data from 'emoji-mart-vue-fast/data/apple.json'
+import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
+import 'emoji-mart-vue-fast/css/emoji-mart.css'
 
-    import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
+import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
-    import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
-    const emojiIndex = new EmojiIndex(data)
+import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
+const emojiIndex = new EmojiIndex(data)
 
-    export default defineComponent({
-        components: {
-            Picker,
-            CustomMetadataAvatar,
+export default defineComponent({
+    components: {
+        Picker,
+        CustomMetadataAvatar,
+    },
+    props: {
+        metadata: {
+            required: true,
+            type: Object,
+            default: () => {},
         },
-        props: {
-            metadata: {
-                required: true,
-                type: Object,
-                default: () => {},
-            },
-        },
-        setup(props) {
-            /**
-             * Store options as form
-             * After image upload or emoji set, update form value
-             * Watch form value update and if changed, update CM
-             */
+    },
+    setup(props) {
+        /**
+         * Store options as form
+         * After image upload or emoji set, update form value
+         * Watch form value update and if changed, update CM
+         */
 
-            const { metadata } = toRefs(props)
+        const { metadata } = toRefs(props)
 
-            const {
-                popOverVisible,
-                isUploading,
-                imageUrl,
-                isUpdating,
-                fileList,
-                handleUploadImage,
-                handleEmojiSelect,
-                removeAvatar,
-            } = useCustomMetadataAvatar(metadata)
+        const {
+            popOverVisible,
+            isUploading,
+            imageUrl,
+            isUpdating,
+            fileList,
+            handleUploadImage,
+            handleEmojiSelect,
+            removeAvatar,
+        } = useCustomMetadataAvatar(metadata)
 
-            return {
-                emojiIndex,
-                popOverVisible,
-                isUploading,
-                isUpdating,
-                imageUrl,
-                fileList,
-                handleUploadImage,
-                handleEmojiSelect,
-                removeAvatar,
-            }
-        },
-    })
+        return {
+            emojiIndex,
+            popOverVisible,
+            isUploading,
+            isUpdating,
+            imageUrl,
+            fileList,
+            handleUploadImage,
+            handleEmojiSelect,
+            removeAvatar,
+        }
+    },
+})
 </script>
 
 <style lang="less">
-    .cm-avatar-update-modal {
-        .emoji-mart {
-            border: unset;
+.cm-avatar-update-modal {
+    .emoji-mart {
+        border: unset;
 
-            .emoji-mart-anchor-selected {
-                color: rgb(82, 119, 215) !important;
-            }
-            .emoji-mart-anchor:hover {
-                color: rgb(51, 81, 155) !important;
-            }
-            .emoji-mart-anchor-bar {
-                background-color: rgb(82, 119, 215) !important;
-            }
+        .emoji-mart-anchor-selected {
+            color: rgb(82, 119, 215) !important;
         }
+        .emoji-mart-anchor:hover {
+            color: rgb(51, 81, 155) !important;
+        }
+        .emoji-mart-anchor-bar {
+            background-color: rgb(82, 119, 215) !important;
+        }
+    }
 
-        .ant-tabs-nav {
-            padding-left: 15px;
-            margin-bottom: 0;
-        }
+    .ant-tabs-nav {
+        padding-left: 15px;
+        margin-bottom: 0;
     }
-    .metadata-avatar-uploader {
-        .ant-upload.ant-upload-select {
-            display: block;
-        }
+}
+.metadata-avatar-uploader {
+    .ant-upload.ant-upload-select {
+        display: block;
     }
-    button.emoji-mart-emoji,
-    .emoji-mart-category .emoji-mart-emoji span {
-        cursor: pointer;
-    }
+}
+button.emoji-mart-emoji,
+.emoji-mart-category .emoji-mart-emoji span {
+    cursor: pointer;
+}
 </style>

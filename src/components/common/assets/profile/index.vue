@@ -6,17 +6,20 @@
             v-model:activeKey="activeKey"
             :class="$style.profiletab"
             class="flex-1"
+            :destroy-inactive-tab-pane="true"
             @change="handleChangeTab"
         >
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
                 :key="tab.id"
                 :tab="tab.label"
+                :disabled="isScrubbed(asset) && tab.scrubbed"
             >
                 <component
                     :is="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
+                    :readOnly="isScrubbed(asset)"
                     @preview="$emit('preview', $event)"
                 ></component>
             </a-tab-pane>
@@ -87,7 +90,7 @@
             provide('actions', actions)
             provide('selectedAsset', asset)
 
-            const { getProfileTabs } = useAssetInfo()
+            const { getProfileTabs, isScrubbed } = useAssetInfo()
 
             const activeKey = ref()
             const route = useRoute()
@@ -105,6 +108,7 @@
                 getProfileTabs,
                 activeKey,
                 handleChangeTab,
+                isScrubbed,
             }
         },
     })

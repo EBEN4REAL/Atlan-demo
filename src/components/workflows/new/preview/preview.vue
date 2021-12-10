@@ -278,6 +278,7 @@
                 delete info.uiConfig
                 delete info.logo
                 delete info.icon
+                delete info.config
 
                 return info || {}
             })

@@ -46,7 +46,7 @@ export interface assetInterface {
         announcementType: string
         announcementUpdatedAt: number
         announcementUpdatedBy: string
-
+        link: string
         table?: {
             guid: string
             typeName: string
@@ -88,6 +88,7 @@ export interface assetInterface {
     }
     categoryCount: number
     termsCount: number
+    scrubbed: boolean
     classificationNames: string[]
     classifications: classificationInterface[]
     displayText: string

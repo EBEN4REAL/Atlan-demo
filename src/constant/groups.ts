@@ -40,7 +40,6 @@ export const columns = [
         ellipsis: true,
         width: 370,
         sortKey: 'alias',
-        colSpan: 2,
         slots: { title: 'customTitle', customRender: 'name' },
     },
     {

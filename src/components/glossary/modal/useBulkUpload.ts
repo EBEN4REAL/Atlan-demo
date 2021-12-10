@@ -14,7 +14,9 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
         metadata: {
             name: `atlan-gtc-bulk-upload-${guid.slice(-8)}`, // will be static for this usecase
             namespace: 'default',
-            labels: {},
+            labels: {
+                'com.atlan.orchestration/atlan-ui': 'true',
+            },
         },
         spec: {
             arguments: {
@@ -139,9 +141,7 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
         // CODEFLOW:
         // update workflow -> if error then create workflow ( with submit=true ) and show messgaes accordingly-> if success then run workflow -> show messages accordingly
         updateWorkflow()
-        console.log(guid, fileS3Key)
         workflowName.value = `atlan-gtc-bulk-upload-${guid.slice(-8)}`
-        console.log(isWorkflowRunning)
     }
 
     return { startUpload }

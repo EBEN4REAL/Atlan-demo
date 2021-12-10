@@ -18,7 +18,7 @@
     </div>
     <div v-else class="flex w-full h-full">
         <div
-            class="flex flex-col h-full bg-white border-r border-gray-300  facets"
+            class="flex flex-col h-full bg-white border-r border-gray-300 facets"
         >
             <AtlanBtn
                 class="m-2"
@@ -62,40 +62,13 @@
                         <template #filter>
                             <Preferences @sort="handleChangeSort" />
                         </template>
-                        <!-- <template #buttonAggregation>
-                        <span>({{ projection.length }})</span>
-                    </template> -->
                     </SearchAndFilter>
                 </div>
-                <!-- <div v-if="workflowList.length && !queryText" class="mx-3">
-                    <p class="mb-2 text-xl font-bold text-gray-600">Featured</p>
-                    <WorkflowCards
-                        v-model:autoSelect="autoSelect"
-                        :list="workflowList.slice(10, 14)"
-                        :selected-item-id="selectedItemId"
-                        @preview="handlePreview"
-                    />
-                </div>
-                <div v-if="workflowList.length && !queryText" class="mx-3">
-                    <p class="mb-2 text-xl font-bold text-gray-600">
-                        Suggested
-                    </p>
-                    <WorkflowCards
-                        v-model:autoSelect="autoSelect"
-                        :list="workflowList.slice(15, 19)"
-                        :selected-item-id="selectedItemId"
-                        @preview="handlePreview"
-                    />
-                </div> -->
 
                 <div
                     v-auth="access.LIST_WORKFLOWTEMPLATE"
                     class="overflow-y-auto"
-                    :style="
-                        queryText || true
-                            ? `height: calc(100vh - 9.5rem)`
-                            : `height: calc(100vh - 29rem)`
-                    "
+                    :style="`height: calc(100vh - 9.5rem)`"
                 >
                     <EmptyState
                         v-if="workflowList.length === 0 && !isLoading"
@@ -259,7 +232,7 @@
             const shootQuery = () => {
                 const filtered = transformToFilters(
                     AllFilters.value,
-                    'display_name'
+                    'displayName'
                 )
                 //! check if filter is user specific applied check to show empty state
 

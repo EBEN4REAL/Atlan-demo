@@ -30,7 +30,7 @@
                     <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
                     ID</a-menu-item
                 >
-                <a-menu-item
+                <!-- <a-menu-item
                     key="2"
                     v-auth="map.DELETE_BUSINESS_METADATA"
                     class="text-red-500"
@@ -38,7 +38,7 @@
                 >
                     <AtlanIcon class="inline mr-2" icon="Trash" />
                     Delete</a-menu-item
-                >
+                > -->
             </a-menu>
         </template>
     </a-dropdown>

@@ -11,6 +11,7 @@
             <div class="flex w-full text-xs">
                 <div class="flex items-center justify-between flex-1">
                     <div class="flex items-center mr-1">
+                        <!-- {{ currentConnector }} -->
                         <QueryFolderSelector
                             :connector="currentConnector"
                             :savedQueryType="queryType"
@@ -144,16 +145,16 @@
         components: { StatusBadge, QueryFolderSelector, AtlanBtn },
         props: {
             showSaveQueryModal: {
-                type: Object as PropType<boolean>,
+                type: Boolean as PropType<boolean>,
                 required: true,
             },
             saveQueryLoading: {
-                type: Object as PropType<boolean>,
+                type: Boolean as PropType<boolean>,
                 required: true,
             },
             parentFolder: {
                 type: Object as PropType<object | undefined>,
-                required: true,
+                required: false,
                 default: {},
             },
             connector: {
@@ -163,7 +164,7 @@
             },
             savedQueryType: {
                 type: Object as PropType<object>,
-                required: true,
+                required: false,
             },
         },
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],

@@ -37,8 +37,8 @@
                     <span v-if="r.phase !== 'Running'" class="mb-1 text-sm">
                         {{
                             timeDiffCalc(
-                                new Date(r.started_at),
-                                new Date(r.finished_at)
+                                new Date(r.startedAt),
+                                new Date(r.finishedAt)
                             )
                         }}
                     </span>
@@ -46,10 +46,10 @@
                         &bull;
                     </span>
                     <span v-if="r.phase === 'Running'" class="mb-1 text-sm">
-                        {{ timeAgo(r.started_at) }}</span
+                        {{ timeAgo(r.startedAt) }}</span
                     >
                     <span v-else class="mb-1 text-sm">
-                        {{ timeAgo(r.finished_at) }}</span
+                        {{ timeAgo(r.finishedAt) }}</span
                     >
                 </p>
             </div>

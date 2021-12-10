@@ -59,17 +59,26 @@
 
                         <router-link
                             :to="getProfilePath(item)"
+                            @click="(e) => e.stopPropagation()"
                             class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </router-link>
                         <CertificateBadge
-                            v-if="certificateStatus(item)"
+                            v-if="certificateStatus(item) && !isScrubbed(item)"
                             :status="certificateStatus(item)"
                             :username="certificateUpdatedBy(item)"
                             :timestamp="certificateUpdatedAt(item)"
                             class="mb-0.5"
                         ></CertificateBadge>
+                        <a-tooltip placement="right"
+                            ><template #title>Limited Access</template>
+                            <AtlanIcon
+                                v-if="isScrubbed(item)"
+                                icon="Lock"
+                                class="h-4 mb-1"
+                            ></AtlanIcon
+                        ></a-tooltip>
                     </div>
 
                     <div v-if="description(item)" class="flex mt-0.5">
@@ -434,7 +443,9 @@
                                         isPropagated(classification)
                                     "
                                     :allow-delete="false"
-                                    :color="classification.options?.color"
+                                    :color="
+                                        classification.options?.color.toLowerCase()
+                                    "
                                 ></ClassificationPill>
                             </PopoverClassification>
                         </template>
@@ -447,6 +458,7 @@
             :data="selectedAssetDrawerData"
             :showDrawer="showAssetSidebarDrawer"
             @closeDrawer="handleCloseDrawer"
+            @update="handleListUpdate"
         />
     </div>
 </template>
@@ -525,7 +537,7 @@
                 default: false,
             },
         },
-        emits: ['listItem:check', 'unlinkAsset', 'preview'],
+        emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
             const {
                 preference,
@@ -572,6 +584,7 @@
                 classifications,
                 getProfilePath,
                 isUserDescription,
+                isScrubbed,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -586,6 +599,10 @@
             const handleCloseDrawer = () => {
                 selectedAssetDrawerData.value = {}
                 showAssetSidebarDrawer.value = false
+            }
+
+            const handleListUpdate = (asset) => {
+                emit('updateDrawer', asset)
             }
 
             const isSelected = computed(() => {
@@ -650,6 +667,7 @@
                 description,
                 handlePreview,
                 isGTC,
+                handleListUpdate,
                 getAnchorName,
                 categories,
                 parentCategory,
@@ -661,6 +679,7 @@
                 selectedAssetDrawerData,
                 handleCloseDrawer,
                 isUserDescription,
+                isScrubbed,
             }
         },
     })

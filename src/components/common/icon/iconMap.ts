@@ -200,9 +200,7 @@ import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
-import LeftJoin from '~/assets/images/icons/left-join.svg'
 import Trigger from '~/assets/images/icons/trigger.svg'
-import RightJoin from '~/assets/images/icons/right-join.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
@@ -292,11 +290,20 @@ import FolderSearch from '~/assets/images/icons/folder-search.svg'
 import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
 import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
 
+import InnerJoin from '~/assets/images/icons/InnerJoin.svg'
+import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
+import RightJoin from '~/assets/images/icons/RightJoin.svg'
+import TableSwap from '~/assets/images/icons/swapTable.svg'
+import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
+
 export default {
     BuilderGroup,
     Trigger,
     LeftJoin,
     RightJoin,
+    InnerJoin,
+    TableSwap,
+    JoinHeader,
     Sort,
     Union,
     ShieldCheck,

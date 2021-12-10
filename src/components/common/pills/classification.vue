@@ -19,13 +19,11 @@
         <ClassificationIcon
             icon="ShieldFilled"
             :color="color"
-            class="group-hover:text-white"
             v-if="isPropagated"
         ></ClassificationIcon>
         <ClassificationIcon
             icon="Shield"
             :color="color"
-            class="group-hover:text-white"
             v-else
         ></ClassificationIcon>
 

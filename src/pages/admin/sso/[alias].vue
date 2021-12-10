@@ -226,11 +226,13 @@
     })
 </script>
 <style lang="less">
-    .sso-tabs {
+.sso-tabs {
+     .minimal-tab-bar{
         .ant-tabs-tab:first-child {
             margin-left: 0 !important;
         }
-    }
+        }
+}
 </style>
 <route lang="yaml">
 meta:

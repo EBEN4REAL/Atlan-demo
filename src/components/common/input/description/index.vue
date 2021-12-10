@@ -32,8 +32,7 @@
     import {
         computed,
         defineComponent,
-        nextTick,
-        inject,
+        watch,
         PropType,
         Ref,
         ref,
@@ -72,7 +71,7 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly } = toRefs(props)
+            const { readOnly, selectedAsset } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
@@ -118,6 +117,10 @@
             watchEffect(() => {
                 if (enter.value && !shift.value && isEdit.value) handleBlur()
             })
+            watch(
+                selectedAsset,
+                () => (localValue.value = description(selectedAsset.value))
+            )
 
             return {
                 localValue,

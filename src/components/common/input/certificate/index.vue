@@ -49,12 +49,10 @@
     import {
         defineComponent,
         PropType,
-        toRefs,
+        watch,
         computed,
         ref,
-        inject,
-        nextTick,
-        reactive,
+        toRefs,
     } from 'vue'
     import {
         and,
@@ -63,19 +61,12 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
-    // import { message } from 'ant-design-vue'
-    // import updateAsset from '~/composables/discovery/updateAsset'
     import { assetInterface } from '~/types/assets/asset.interface'
-    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { certificateList } from '~/constant/certification'
-    // import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     import CertificatePill from '@/common/pills/certificate.vue'
     import CertificateFacet from '@/common/facet/certificate/index.vue'
     import whoami from '~/composables/user/whoami'
-
-    import confetti from '~/utils/confetti'
 
     export default defineComponent({
         name: 'CertificateWidget',
@@ -102,6 +93,7 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
+            const { selectedAsset } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -152,6 +144,14 @@
                     handleChange()
                     isEdit.value = false
                 }
+            })
+
+            watch(selectedAsset, () => {
+                localValue.value.certificateStatus = certificateStatus(
+                    selectedAsset.value
+                )
+                localValue.value.certificateStatusMessage =
+                    certificateStatusMessage(selectedAsset.value)
             })
 
             return {

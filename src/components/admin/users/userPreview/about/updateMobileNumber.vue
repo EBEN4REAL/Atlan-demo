@@ -82,7 +82,6 @@
                 "
                 class="text-gray"
             >
-                {{ selectedUser.attributes.mobileNumber[0] || '-' }}
             </div>
             <div v-else class="text-gray">--</div>
         </div>

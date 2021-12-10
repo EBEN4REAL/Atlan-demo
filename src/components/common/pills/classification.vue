@@ -6,18 +6,14 @@
             py-0.5
             pl-1
             pr-2
+            hover:bg-${color}-400
             text-sm text-gray-700
             bg-white
             border border-gray-200
             rounded-full
             cursor-pointer
             hover:text-white
-            ${
-                color
-                    ? `hover:bg-${color.toLowerCase()}-400`
-                    : 'hover:bg-pink-400'
-            }
-        `"
+            `"
         :data-test-id="displayName"
     >
         <ClassificationIcon

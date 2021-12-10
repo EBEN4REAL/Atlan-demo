@@ -27,7 +27,7 @@
                                 style="width: 150px"
                             >
                                 <div
-                                    class="p-3 text-xs font-bold text-gray-500 border-b "
+                                    class="p-3 text-xs font-bold text-gray-500 border-b"
                                 >
                                     {{ opt.popover?.field }}
                                 </div>
@@ -41,7 +41,7 @@
                                 style="width: 150px"
                             >
                                 <div
-                                    class="p-3 text-xs font-bold text-gray-500  border-b-light bg-primary-light"
+                                    class="p-3 text-xs font-bold text-gray-500 border-b-light bg-primary-light"
                                 >
                                     {{ opt.popover?.field }}
                                 </div>
@@ -84,18 +84,18 @@
                     label: 'None',
                     borderBottom: true,
                 },
-                {
-                    value: 'MASK_DATE_SHOW_YEAR',
-                    label: 'Show only year',
-                    borderBottom: false,
-                    popover: {
-                        field: 'Date of birth',
-                        value: '24/4/1990',
-                        maskedValue: '01/01/1990',
-                        helpText:
-                            'Show only the year portion of a date string and default the month and day to 01/01',
-                    },
-                },
+                // {
+                //     value: 'MASK_DATE_SHOW_YEAR',
+                //     label: 'Show only year',
+                //     borderBottom: false,
+                //     popover: {
+                //         field: 'Date of birth',
+                //         value: '24/4/1990',
+                //         maskedValue: '01/01/1990',
+                //         helpText:
+                //             'Show only the year portion of a date string and default the month and day to 01/01',
+                //     },
+                // },
 
                 {
                     value: 'MASK_SHOW_FIRST_4',

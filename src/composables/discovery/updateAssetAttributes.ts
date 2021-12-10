@@ -24,7 +24,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementType,
         announcementTitle,
         readmeContent,
-        meanings,
+        meaningRelationships,
     } = useAssetInfo()
 
     const entity = ref({
@@ -88,7 +88,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
 
-    const localMeanings = ref(meanings(selectedAsset.value))
+    const localMeanings = ref(meaningRelationships(selectedAsset.value))
 
     const localResource = ref({
         link: '',
@@ -194,9 +194,17 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate()
     }
     const handleMeaningsUpdate = () => {
-        entity.value.attributes.meanings = localMeanings.value
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                meanings: localMeanings.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })),
+            },
+        }
         body.value.entities = [entity.value]
-
+        currentMessage.value = 'Terms have been updated'
         mutate()
     }
     // Resource Addition
@@ -264,11 +272,13 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(error, () => {
         if (title(selectedAsset?.value) !== localName.value) {
             localName.value = title(selectedAsset?.value)
-            nameRef.value?.handleReset(localName.value)
+            if (nameRef.value?.handleReset)
+                nameRef.value?.handleReset(localName.value)
         }
         if (description(selectedAsset?.value) !== localDescription.value) {
             localDescription.value = description(selectedAsset?.value)
-            descriptionRef.value?.handleReset(localDescription.value)
+            if (descriptionRef.value?.handleReset)
+                descriptionRef.value?.handleReset(localDescription.value)
         }
         if (ownerUsers(selectedAsset?.value) !== localOwners.value.ownerUsers) {
             localOwners.value.ownerUsers = ownerUsers(selectedAsset?.value)
@@ -278,6 +288,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ) {
             localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
         }
+        if (
+            meaningRelationships(selectedAsset?.value) !== localMeanings.value
+        ) {
+            localMeanings.value = meaningRelationships(selectedAsset.value)
+        }
+
         message.error(
             error.value?.response?.data?.errorCode +
                 ' ' +
@@ -355,6 +371,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     whenever(isErrorClassification, () => {
+        localClassifications.value = classifications(selectedAsset.value)
         message.error(
             error.value?.response?.data?.errorCode +
                 ' ' +

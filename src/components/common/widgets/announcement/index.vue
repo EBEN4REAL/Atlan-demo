@@ -21,10 +21,10 @@
                 {{ announcementUpdatedAt(selectedAsset, true) }}
             </div>
         </div>
-        <div>
+        <div v-if="!isScrubbed(selectedAsset)">
             <a-dropdown trigger="click" placement="bottomRight">
                 <a-button
-                    class="px-2 bg-transparent border-none shadow-none  hover:bg-white hover:shadow-sm"
+                    class="px-2 bg-transparent border-none shadow-none hover:bg-white hover:shadow-sm"
                 >
                     <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
                 </a-button>
@@ -53,9 +53,9 @@
 
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
 
     export default defineComponent({
         name: 'AnnouncementWidget',
@@ -75,6 +75,7 @@
                 announcementType,
                 announcementUpdatedAt,
                 announcementUpdatedBy,
+                isScrubbed,
             } = useAssetInfo()
 
             const bgClass = computed(() => {
@@ -109,6 +110,7 @@
                 announcementType,
                 announcementUpdatedAt,
                 announcementUpdatedBy,
+                isScrubbed,
                 bgClass,
                 icon,
             }

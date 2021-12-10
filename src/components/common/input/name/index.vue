@@ -5,37 +5,28 @@
     >
         <div
             class="text-sm text-gray-700"
-            @click="handleEdit"
             :class="$style.editable"
+            @click="handleEdit"
         >
             <span v-if="!isEdit && localValue">{{ localValue }}</span>
             <span v-else-if="!isEdit && localValue === ''"
                 >No name available</span
             >
             <a-input
-                ref="nameRef"
-                tabindex="0"
-                v-model:value="localValue"
                 v-else
-                @blur="handleBlur"
+                ref="nameRef"
+                v-model:value="localValue"
+                tabindex="0"
                 :rows="4"
+                @blur="handleBlur"
+                @pressEnter="handleBlur"
             ></a-input>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        nextTick,
-        onMounted,
-        PropType,
-        Ref,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
     import {
         and,
         useActiveElement,
@@ -51,11 +42,6 @@
             modelValue: {
                 type: String,
                 required: true,
-            },
-            editPermission: {
-                type: Boolean,
-                required: false,
-                default: true,
             },
             readOnly: {
                 type: Boolean,
@@ -99,7 +85,9 @@
             const notUsingInput = computed(
                 () =>
                     activeElement.value?.tagName !== 'INPUT' &&
-                    activeElement.value?.tagName !== 'TEXTAREA'
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
             )
 
             const { n } = useMagicKeys()

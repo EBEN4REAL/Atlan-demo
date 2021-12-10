@@ -27,7 +27,7 @@
                 style="max-width: 420px"
             >
                 <div
-                    class="h-full bg-white border-l  xs:hidden sm:hidden md:block lg:block"
+                    class="h-full bg-white border-l xs:hidden sm:hidden md:block lg:block"
                 >
                     <GlossaryPreview
                         :selected-asset="localSelected"
@@ -76,12 +76,17 @@
             const updateList = (asset) => {
                 localSelected.value = asset
                 handlePreview(asset)
+                glossaryStore.setSelectedGTC(asset)
+                updateTreeNode(asset)
             }
             watch(selectedGlossary, () => {
                 localSelected.value = selectedGlossary.value
             })
             const reInitTree = () => {
                 glossaryDiscovery?.value?.reInitTree()
+            }
+            const updateTreeNode = (asset) => {
+                glossaryDiscovery?.value?.updateTreeNode(asset)
             }
             provide('updateList', updateList)
             provide('preview', handlePreview)

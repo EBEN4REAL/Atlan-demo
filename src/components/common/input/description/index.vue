@@ -8,8 +8,8 @@
     >
         <div
             class="text-sm text-gray-700"
-            @click="handleEdit"
             :class="$style.editable"
+            @click="handleEdit"
         >
             <span v-if="!isEdit && description(selectedAsset)">{{
                 description(selectedAsset)
@@ -20,12 +20,12 @@
                 >No description available</span
             >
             <a-textarea
-                ref="descriptionRef"
-                tabindex="0"
-                v-model:value="localValue"
                 v-else
-                @blur="handleBlur"
+                ref="descriptionRef"
+                v-model:value="localValue"
+                tabindex="0"
                 :rows="4"
+                @blur="handleBlur"
             ></a-textarea>
         </div>
     </div>

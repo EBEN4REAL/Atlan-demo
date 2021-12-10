@@ -22,11 +22,7 @@
             "
             class="flex flex-col"
         >
-            <Shortcut
-                shortcut-key="n"
-                action="set description"
-                placement="left"
-            >
+            <Shortcut shortcut-key="n" action="set name" placement="left">
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >

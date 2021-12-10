@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex flex-col items-stretch flex-1 h-full mb-1"
-        :class="{ [$style.checkableTree]: checkable  }"
+        :class="{ [$style.checkableTree]: checkable }"
         ref="glossaryBox"
     >
         <div
@@ -398,6 +398,10 @@
             const reInitTree = () => {
                 glossaryTree.value?.reInitTree()
             }
+            const updateTreeNode = (asset) => {
+                glossaryTree.value?.updateTreeNode(asset)
+            }
+
             const handleCollapse = () => {
                 glossaryTree.value.collapseTree()
             }
@@ -460,7 +464,8 @@
                 handleCollapse,
                 onCheck,
                 reInitTree,
-                checkedKeys
+                checkedKeys,
+                updateTreeNode,
             }
         },
     })

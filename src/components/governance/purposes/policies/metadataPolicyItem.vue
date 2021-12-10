@@ -85,6 +85,7 @@
             <MetadataScopes
                 v-model:actions="policy.actions"
                 class="mb-6"
+                type="purpose"
                 @change="onScopesChange"
             />
             <div

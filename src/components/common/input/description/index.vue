@@ -1,7 +1,10 @@
 <template>
     <div
-        class="flex flex-col px-1 rounded hover:bg-primary-light"
-        :class="isEdit ? 'bg-primary-light' : ''"
+        class="flex flex-col px-1 rounded"
+        :class="{
+            'bg-primary-light': isEdit,
+            'hover:bg-primary-light': !readOnly,
+        }"
     >
         <div
             class="text-sm text-gray-700"

@@ -123,7 +123,7 @@
                                 {{ anchorName }}
                             </div>
                             <div class="text-xs tracking-wider text-gray-500 uppercase">
-                                {{ assetLabel || tyepOfResource }}
+                                {{ assetLabel || typeOfResource }}
                             </div>
                             <div
                                 v-if="

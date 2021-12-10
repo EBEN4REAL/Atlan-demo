@@ -15,8 +15,8 @@
         >
             <template #asset="{ text: log }">
                 <AccessLogItem
-                    :asset-meta-map="assetMetaMap"
                     :log="log"
+                    :asset-meta-map="assetMetaMap"
                 />
             </template>
             <template #action="{ text: log }">
@@ -178,7 +178,7 @@ import AccessLogItem from '@/governance/accessLogs/accessLogItem.vue'
 
 export default defineComponent({
     name: 'AccessLogsTable',
-    components: { AccessLogItem, Avatar },
+    components: { AccessLogItem, Avatar, CertificateBadge },
     props: {
         accessLogsList: {
             type: Array,

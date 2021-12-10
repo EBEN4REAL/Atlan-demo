@@ -15,11 +15,14 @@
                             v-if="index !== 0"
                             v-model:filterType="subpanel.filter.filterType"
                         />
+                        <span v-else class="flex flex-row-reverse text-gray-500"
+                            >Where</span
+                        >
                     </div>
 
                     <ColumnSelector
-                        style="width: 300px"
-                        class="ml-6"
+                        class="flex-1 ml-6"
+                        style="max-width: 30%"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
@@ -38,24 +41,27 @@
                     <Input
                         v-if="subpanel?.filter?.type === 'input'"
                         class="flex-1 ml-6"
+                        style="max-width: 30%"
                         v-model:inputValue="subpanel.filter.value"
                     />
 
                     <MultiInput
                         v-if="subpanel?.filter?.type === 'multi_input'"
                         class="flex-1 ml-6"
+                        style="max-width: 30%"
                         v-model:inputValue="subpanel.filter.value"
                     />
 
                     <RangeInput
                         v-if="subpanel?.filter?.type === 'range_input'"
                         class="flex-1 ml-6"
+                        style="max-width: 30%"
                         v-model:inputValue="subpanel.filter.value"
                     />
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
-                        class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer"
+                        class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-auto"
                         :class="`opacity-${
                             hoverItem === subpanel.id ? 100 : 0
                         }`"

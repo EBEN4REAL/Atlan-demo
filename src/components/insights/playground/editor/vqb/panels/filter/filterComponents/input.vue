@@ -2,7 +2,7 @@
     <a-input
         v-model:value="inputValue"
         placeholder="Enter Value"
-        class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
+        class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         style="height: 32px !important"
     />
 </template>

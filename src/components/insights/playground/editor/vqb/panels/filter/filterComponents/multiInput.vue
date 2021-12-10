@@ -2,7 +2,7 @@
     <a-select
         v-model:value="inputValue"
         mode="tags"
-        class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
+        class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         :class="$style.multi_input"
         style="height: 32px !important"
         placeholder="Enter value"
@@ -44,7 +44,7 @@
         :global(.ant-select-selection-item) {
             @apply text-xs !important;
             border-radius: 100px !important;
-            margin: 6px !important;
+            margin: 4px !important;
             height: 20px !important;
             padding-top: 1.5px !important;
             // padding-bottom: 4px !important;
@@ -53,6 +53,16 @@
             background-color: rgb(243, 243, 243);
 
             @apply text-gray-500 !important;
+        }
+        :global(.ant-select-selector) {
+            @apply border-gray-300 !important;
+            @apply text-gray-700 !important;
+        }
+        :global(.ant-select-selection-placeholder) {
+            @apply text-gray-500 !important;
+        }
+        :global(.ant-select-selection-item-remove) {
+            margin-top: 1px !important;
         }
     }
 </style>

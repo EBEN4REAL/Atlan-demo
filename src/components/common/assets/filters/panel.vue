@@ -245,6 +245,12 @@
                         : `${list?.length} applied`
                 }
 
+                if(id === 'terms' && facetMap.value[id]) {
+                    let count = facetMap.value[id].terms.length
+                    if(facetMap.value[id].empty) count = count + 1
+                    return `${count} applied`
+                }
+
                 if (id === 'certificateStatus' && facetMap.value[id]) {
                     return facetMap.value[id]?.length < 3
                         ? facetMap.value[id].join(',')

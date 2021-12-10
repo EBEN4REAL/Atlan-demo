@@ -49,6 +49,13 @@ export type Table = Omit<
     typeName: 'Table'
     attributes: Attributes
 }
+export type View = Omit<
+    Components.Schemas.AtlasEntityHeader,
+    'attributes' | 'typeName'
+> & {
+    typeName: 'View'
+    attributes: Attributes
+}
 export type Column = Omit<
     Components.Schemas.AtlasEntityHeader,
     'attributes' | 'typeName'

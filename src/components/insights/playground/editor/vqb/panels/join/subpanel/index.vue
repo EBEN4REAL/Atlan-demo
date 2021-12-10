@@ -15,6 +15,8 @@
                         v-model:selectedJoinType="subpanel.joinType"
                     />
 
+                    <TreeColumnSelector typeName="Table" style="width: 300px" />
+
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
@@ -47,12 +49,14 @@
     import { SubpanelJoin } from '~/types/insights/VQBPanelJoins.interface'
     import { generateUUID } from '~/utils/helper/generator'
     import { useVModels } from '@vueuse/core'
+    import TreeColumnSelector from '~/components/insights/playground/editor/vqb/panels/common/treeColumnsSelector/index.vue'
     // import ColumnSelector from '../columnSelector/index.vue'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {
             JoinSelector,
+            TreeColumnSelector,
         },
         props: {
             expand: {

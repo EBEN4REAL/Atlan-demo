@@ -1,4 +1,5 @@
 import useTypedefData from '../typedefs/useTypedefData'
+import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 import { formatDate } from '../../utils/date'
 
 const numberTypes = ['int', 'double', 'byte', 'short', 'long']
@@ -6,12 +7,13 @@ const numberTypes = ['int', 'double', 'byte', 'short', 'long']
 export default function useCustomMetadataHelpers() {
     const { enumList } = useTypedefData()
 
-    const getDatatypeOfAttribute = (a) => {
-        if (a?.typeName && typeof a.typeName !== 'undefined') {
-            if (numberTypes.includes(a?.typeName)) return 'number'
+    const getDatatypeOfAttribute = (a: CMA) => {
+        const parsedType = a.options.primitiveType ?? a?.typeName?.includes('array') ? a?.typeName?.split('<')[1]?.split('>')[0] : a?.typeName
+        if (parsedType && typeof parsedType !== 'undefined') {
+            if (numberTypes.includes(parsedType)) return 'number'
             if (a?.options?.isEnum?.includes('true')) return 'enum'
 
-            if (a?.typeName?.includes('string')) {
+            if (parsedType?.includes('string')) {
                 if (a?.options?.customType?.includes('users')) return 'users'
                 if (a?.options?.customType?.includes('groups')) return 'groups'
                 if (a?.options?.customType?.includes('url')) return `url`
@@ -19,7 +21,7 @@ export default function useCustomMetadataHelpers() {
                 return 'text'
             }
         }
-        return a?.typeName || ''
+        return parsedType || ''
     }
 
     const isLink = (v: any, name: string) => {
@@ -45,7 +47,7 @@ export default function useCustomMetadataHelpers() {
             }
             if (type === 'date') {
                 return formatDate(
-                    Number.isInteger(value) ? value : parseInt(value)
+                    Number.isInteger(value) ? value : parseInt(value, 10)
                 )
             }
             if (Array.isArray(value)) {
@@ -55,7 +57,7 @@ export default function useCustomMetadataHelpers() {
                     type.toLowerCase().includes('date')
                 )
                     value = value.map((v) =>
-                        formatDate(Number.isInteger(v) ? v : parseInt(v))
+                        formatDate(Number.isInteger(v) ? v : parseInt(v, 10))
                     )
                 return value.join(', ')
             }

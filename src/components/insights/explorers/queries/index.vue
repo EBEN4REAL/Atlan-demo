@@ -218,6 +218,7 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
+        name: 'QueryExplorer',
         components: {
             RaisedTab,
             QueryTree,

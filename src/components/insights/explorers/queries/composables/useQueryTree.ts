@@ -54,7 +54,7 @@ interface useSavedQueriesTreeProps {
     queryCollectionGuid: Ref<string | undefined>
 }
 
-const useTree = ({
+const useQueryTree = ({
     emit,
     openSavedQueryInNewTab,
     cacheKey,
@@ -716,4 +716,4 @@ const useTree = ({
     }
 }
 
-export default useTree
+export default useQueryTree

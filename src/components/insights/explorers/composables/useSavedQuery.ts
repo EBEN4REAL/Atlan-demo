@@ -180,6 +180,11 @@ export function useSavedQuery(
                     connectors: {
                         connector: savedQuery.attributes.connectorName,
                     },
+                    collections: {
+                        // copy from last tab
+                        guid: activeInlineTab.value.explorer.queries.collection.guid,
+                        qualifiedName: activeInlineTab.value.explorer.queries.collection.qualifiedName
+                    }
                 },
             },
             playground: {
@@ -298,10 +303,6 @@ export function useSavedQuery(
         /* NEED TO CHECK IF qualifiedName will also change acc to connectors it has connectionQualifiedName */
         const qualifiedName = activeInlineTab?.qualifiedName
         const rawQuery = activeInlineTab?.playground?.editor?.text
-        const compiledQuery = getParsedQuery(
-            activeInlineTab?.playground.editor.variables,
-            activeInlineTab?.playground?.editor?.text
-        )
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
 
@@ -329,7 +330,6 @@ export function useSavedQuery(
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     rawQuery,
-                    compiledQuery,
                     variablesSchemaBase64,
                     isPrivate: true,
                     parent: {
@@ -414,10 +414,6 @@ export function useSavedQuery(
         const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
         const rawQuery = activeInlineTab.playground.editor.text
-        const compiledQuery = getParsedQuery(
-            activeInlineTab?.playground.editor.variables,
-            rawQuery as string
-        )
         const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
@@ -442,7 +438,6 @@ export function useSavedQuery(
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     rawQuery,
-                    compiledQuery,
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
@@ -529,10 +524,10 @@ export function useSavedQuery(
         parentFolderGuid: string
     ) => {
         const editorInstanceRaw = toRaw(editorInstance.value)
+        // eslint-disable-next-line prefer-destructuring
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
-        const attributeName =
-            activeInlineTab.value.explorer.schema.connectors.attributeName
+        // eslint-disable-next-line prefer-object-spread
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
             activeInlineTab.value
@@ -543,29 +538,22 @@ export function useSavedQuery(
         // /* Editor text */
         // activeInlineTabCopy.playground.editor.text = ''
 
-        const uuidv4 = generateUUID()
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
-        const connectionGuid = ''
         const connectionName = getConnectorName(attributeValue)
         const name = saveQueryData.title
-        const description = saveQueryData.description
-        const certificateStatus = saveQueryData.certificateStatus
-        const isSQLSnippet = saveQueryData.isSQLSnippet
+        const {description} = saveQueryData
+        const {certificateStatus} = saveQueryData
+        const {isSQLSnippet} = saveQueryData
         const rawQuery = editorInstanceRaw?.getValue()
-        const compiledQuery = getParsedQuery(
-            activeInlineTab.value.playground.editor.variables,
-            editorInstanceRaw?.getValue() as string
-        )
-        // const rawQuery = activeInlineTabCopy.playground.editor.text
-        // const compiledQuery = activeInlineTabCopy.playground.editor.text
-        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
+        const qualifiedName = "1"
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab.value.playground.editor.variables
         )
+        const collectionQualifiedName = activeInlineTab.value.explorer.queries.collection.qualifiedName
         // const variablesSchemaBase64 = []
 
         const body = ref<Record<string, any>>({
@@ -584,10 +572,9 @@ export function useSavedQuery(
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     rawQuery,
-                    compiledQuery,
                     variablesSchemaBase64,
-                    connectionId: connectionGuid,
                     isPrivate: true,
+                    collectionQualifiedName,
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -595,20 +582,11 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
+        body.value.entity.attributes.parentQualifiedName = parentFolderQF
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
-        }
-        if (type && type.length && parentFolderQF == 'root') {
-            body.value.entity.classifications = [
-                {
-                    attributes: {},
-                    propagate: true,
-                    removePropagationsOnEntityDelete: true,
-                    typeName: type,
-                    validityPeriods: [],
-                },
-            ]
+            // TODO:@rohan: add a check for collections, hardcoded to folder currently
+            typeName: "QueryFolder"
         }
         // chaing loading to true
         saveQueryLoading.value = true
@@ -618,28 +596,28 @@ export function useSavedQuery(
         )
 
         watch([data, error, isLoading], () => {
-            if (isLoading.value == false) {
+            if (isLoading.value === false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
                     const savedQuery = data.value.mutatedEntities.CREATE[0]
-                    /* properties not coming in the response */
-                    savedQuery.attributes.defaultSchemaQualifiedName =
-                        defaultSchemaQualifiedName
-                    savedQuery.attributes.connectorName = connectorName
-                    savedQuery.attributes.connectionQualifiedName =
-                        connectionQualifiedName
-                    savedQuery.attributes.connectionGuid = connectionGuid
-                    savedQuery.attributes.connectionName = connectionName
-                    savedQuery.attributes.name = name
-                    savedQuery.attributes.description = description
-                    savedQuery.attributes.certificateStatus = certificateStatus
-                    savedQuery.attributes.isSQLSnippet = isSQLSnippet
+                    /* start: properties not coming in the response */
+                    // savedQuery.attributes.defaultSchemaQualifiedName =
+                    //     defaultSchemaQualifiedName
+                    // savedQuery.attributes.connectorName = connectorName
+                    // savedQuery.attributes.connectionQualifiedName =
+                    //     connectionQualifiedName
+                    // savedQuery.attributes.collectionQualifiedName = collectionQualifiedName
+                    // savedQuery.attributes.connectionName = connectionName
+                    // savedQuery.attributes.name = name
+                    // savedQuery.attributes.description = description
+                    // savedQuery.attributes.certificateStatus = certificateStatus
+                    // savedQuery.attributes.isSQLSnippet = isSQLSnippet
+                    
                     /* Initial should be empty */
-                    savedQuery.attributes.rawQuery = ''
-                    savedQuery.attributes.compiledQuery = ''
-                    savedQuery.attributes.qualifiedName = qualifiedName
+                    // savedQuery.attributes.rawQuery = ''
                     savedQuery.attributes.variablesSchemaBase64 = []
-                    /* properties not coming in the response */
+                    /* end: properties not coming in the response */
+                    
                     showSaveQueryModal.value = false
                     message.success({
                         content: `${name} query saved!`,
@@ -794,10 +772,6 @@ export function useSavedQuery(
         const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
         const rawQuery = activeInlineTab.playground.editor.text
-        const compiledQuery = getParsedQuery(
-            activeInlineTab?.playground.editor.variables,
-            rawQuery as string
-        )
         const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
@@ -826,7 +800,6 @@ export function useSavedQuery(
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     rawQuery,
-                    compiledQuery,
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: false,

@@ -320,6 +320,13 @@
                 activeInlineTabKey
             )
 
+            const queryCollectionQualifiedName = ref(
+                activeInlineTab.value.explorer.queries.collection.qualifiedName
+            )
+            const queryCollectionQualifiedGuid = ref(
+                activeInlineTab.value.explorer.queries.collection.guid
+            )
+
             const {
                 treeData: treeData,
                 loadedKeys: loadedKeys,
@@ -345,6 +352,8 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
+                queryCollectionQualifiedName,
+                queryCollectionQualifiedGuid,
             })
 
             const folderOpened = ref(true)

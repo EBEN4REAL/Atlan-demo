@@ -16,7 +16,7 @@
                             :connector="currentConnector"
                             :savedQueryType="queryType"
                             :parentFolder="parentFolder"
-                            @folderChange="getSelectedFolder"
+                            @folderChange="setSelectedFolder"
                         />
                     </div>
                     <div>
@@ -142,6 +142,7 @@
     // import AddTerms from './addTerms.vue'
 
     export default defineComponent({
+        name: 'SavedQueryModal',
         components: { StatusBadge, QueryFolderSelector, AtlanBtn },
         props: {
             showSaveQueryModal: {
@@ -216,7 +217,7 @@
                 })
                 return max_number
             }
-            const getSelectedFolder = (folder) => {
+            const setSelectedFolder = (folder) => {
                 selectedParentFolder.value = folder.dataRef
                 selectedFolderClassification.value =
                     folder.selectedFolderClassification
@@ -254,19 +255,6 @@
                 await nextTick()
                 titleBarRef.value?.focus()
             })
-            // const selectFolder = (folder: Folder) => {
-            //     selectedParentFolder.value = folder
-            // }
-
-            // watch(
-            //     parentFolder,
-            //     () => {
-            //         console.log('parent folder: ', parentFolder.value)
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
 
             return {
                 getLastUntitledNumber,
@@ -286,7 +274,7 @@
                 createSaveQuery,
                 handleMenuClick,
                 selectedParentFolder,
-                getSelectedFolder,
+                setSelectedFolder,
 
                 saveTerms,
             }

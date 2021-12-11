@@ -32,6 +32,13 @@
                 </template>
             </AddGtcModal>
         </div>
+
+        <div
+            v-else-if="item?.typeName === 'loadMore'"
+            class="flex flex-col space-y-2"
+        >
+            <span class="text-primary">Load more</span>
+        </div>
         <div
             v-else
             class="flex items-center justify-between w-full py-0 m-0 group"

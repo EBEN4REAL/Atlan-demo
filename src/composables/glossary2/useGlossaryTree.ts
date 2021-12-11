@@ -49,7 +49,7 @@ const useGlossaryTree = ({
     parentGlossaryQualifiedName,
     nodesKey = 'guid',
 }: UseTreeParams) => {
-    const limit = ref(20)
+    const limit = ref(8)
     const offset = ref(0)
     const queryText = ref('')
     const facets = ref({
@@ -155,6 +155,12 @@ const useGlossaryTree = ({
                                     treeNode?.dataRef?.key
                             }
                         })
+                        console.log(treeNode)
+                        checkAndAddLoadMoreNode(
+                            data.value,
+                            treeNode.dataRef.key,
+                            treeNode.dataRef.key
+                        )
 
                         treeNode.dataRef.children.push(...map)
                         loadedKeys.value.push(treeNode.dataRef.key)
@@ -214,7 +220,7 @@ const useGlossaryTree = ({
                         let map = data.value?.entities?.map((i) => ({
                             ...i,
                             id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                            key: `${i.guid}`,
+                            key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                             isLeaf: i.typeName === 'AtlasGlossaryTerm',
                             checkable:
                                 i.typeName === 'AtlasGlossaryTerm'
@@ -249,6 +255,14 @@ const useGlossaryTree = ({
                             treeNode.dataRef.children = []
                             treeNode.dataRef.children.push(...map)
                             loadedKeys.value.push(treeNode.dataRef.key)
+
+                            console.log(treeNode)
+                            checkAndAddLoadMoreNode(
+                                data.value,
+                                treeNode.dataRef.guid,
+                                treeNode.dataRef.guid,
+                                treeNode
+                            )
                         } else {
                             loadedKeys.value.push(treeNode.dataRef.key)
                         }
@@ -347,7 +361,10 @@ const useGlossaryTree = ({
             expandNode([], event)
             // selectedKeys.value = []
         }
-        emit('select', event.node.dataRef)
+        if (event?.node?.typeName === 'loadMore') {
+            console.log('load more clicked')
+            console.log(event?.node)
+        } else emit('select', event.node.dataRef)
     }
 
     const glossaryStore = useGlossaryStore()
@@ -397,6 +414,7 @@ const useGlossaryTree = ({
                             if (a.typeName === 'AtlasGlossaryTerm') return 1
                             return -1
                         })
+                        checkAndAddLoadMoreNode(data.value, 'root', 'root')
                     }
                 } catch (e) {
                     console.log(e)
@@ -610,6 +628,88 @@ const useGlossaryTree = ({
                 })
             }
         }
+    }
+
+    const checkAndAddLoadMoreNode = (
+        response: BasicSearchResponse<Term>,
+        parentGuid: string,
+        key?: string,
+        treeNode
+    ) => {
+        console.log(response)
+        let searchParams
+        try {
+            searchParams = JSON.parse(response.searchParameters?.query ?? '{}')
+        } catch {
+            searchParams = { size: limit.value, from: 0 }
+        }
+        console.log(searchParams)
+        const localLimit = searchParams.size ?? limit.value
+        const offset = searchParams.from ?? 0
+        const approxCount = response.approximateCount
+
+        if (approxCount && localLimit && approxCount > localLimit + offset) {
+            console.log('yes add the load more')
+            if (key === 'root') {
+                console.log('add load more in root ')
+                console.log(treeData.value)
+                treeData.value.push({
+                    key: (key ?? parentGuid) + '_Load_More',
+                    title: 'Load more',
+                    isLeaf: true,
+                    isLoading: false,
+                    click: () => {
+                        handleLoadMore(treeNode)
+                    },
+                    typeName: 'loadMore',
+                    guid: 'LoadMore',
+                    checkable: false,
+                    parent: treeNode,
+                })
+            } else {
+                const path = recursivelyFindPath(parentGuid)[0] // parentGuid will always be a guid of a category (since terms cannot be parents). Hence there will always be atmost 1 path
+
+                console.log('add load more in ', path)
+                const addLoadMoreInNestedNode = (node: TreeDataItem) => {
+                    const currentPath = path.pop()
+                    if (node.guid === parentGuid && !currentPath) {
+                        node.children?.push({
+                            key: (key ?? parentGuid) + '_Load_More',
+                            title: 'Load more',
+                            isLeaf: true,
+                            isLoading: false,
+                            typeName: 'loadMore',
+                            click: () => {
+                                console.log('clicked')
+                                handleLoadMore(treeNode)
+                            },
+                            guid: 'LoadMore',
+                            checkable: false,
+                        })
+                        return node
+                    }
+                    return {
+                        ...node,
+                        children: node.children?.map((child) => {
+                            if (child.guid === currentPath)
+                                return addLoadMoreInNestedNode(child)
+                            return child
+                        }),
+                    }
+                }
+                const parent = path?.pop()
+
+                treeData.value = treeData.value.map((node) => {
+                    if (node.guid === parent)
+                        return addLoadMoreInNestedNode(node)
+                    return node
+                })
+            }
+        }
+    }
+    const handleLoadMore = (treeNode) => {
+        console.log('handleLoad More')
+        console.log(treeNode)
     }
     return {
         onLoadData,

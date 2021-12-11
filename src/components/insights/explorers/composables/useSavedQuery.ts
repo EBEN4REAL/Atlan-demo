@@ -477,6 +477,8 @@ export function useSavedQuery(
         const qualifiedName = "1"
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
+            const defaultDatabaseQualifiedName =
+            getDatabaseQualifiedName(attributeValue) ?? undefined
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab.value.playground.editor.variables
         )
@@ -495,6 +497,7 @@ export function useSavedQuery(
                     certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
+                    defaultDatabaseQualifiedName,
                     description,
                     ownerUsers: [username.value],
                     tenantId: 'default',
@@ -527,21 +530,6 @@ export function useSavedQuery(
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
                     const savedQuery = data.value.mutatedEntities.CREATE[0]
-                    /* start: properties not coming in the response */
-                    // savedQuery.attributes.defaultSchemaQualifiedName =
-                    //     defaultSchemaQualifiedName
-                    // savedQuery.attributes.connectorName = connectorName
-                    // savedQuery.attributes.connectionQualifiedName =
-                    //     connectionQualifiedName
-                    // savedQuery.attributes.collectionQualifiedName = collectionQualifiedName
-                    // savedQuery.attributes.connectionName = connectionName
-                    // savedQuery.attributes.name = name
-                    // savedQuery.attributes.description = description
-                    // savedQuery.attributes.certificateStatus = certificateStatus
-                    // savedQuery.attributes.isSQLSnippet = isSQLSnippet
-                    
-                    /* Initial should be empty */
-                    // savedQuery.attributes.rawQuery = ''
                     savedQuery.attributes.variablesSchemaBase64 = []
                     /* end: properties not coming in the response */
                     
@@ -558,6 +546,7 @@ export function useSavedQuery(
                         router.push({ path: `insights`, query: queryParams })
                     }
                     activeInlineTabCopy.queryId = guid
+                    activeInlineTabCopy.collectionQulaifiedName = collectionQualifiedName
                     openSavedQueryInNewTab(savedQuery)
                 } else {
                     console.log(error.value.toString())
@@ -688,18 +677,17 @@ export function useSavedQuery(
         activeInlineTabCopy.label = saveQueryData.title
         activeInlineTabCopy.status = saveQueryData.certificateStatus
 
-        const uuidv4 = generateUUID()
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''
         const connectionName = getConnectorName(attributeValue)
         const name = saveQueryData.title
-        const description = saveQueryData.description
-        const certificateStatus = saveQueryData.certificateStatus
-        const isSQLSnippet = saveQueryData.isSQLSnippet
+        const {description} = saveQueryData
+        const {certificateStatus} = saveQueryData
+        const {isSQLSnippet} = saveQueryData
         const rawQuery = activeInlineTab.playground.editor.text
-        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
+        const qualifiedName = "1"
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
         const defaultDatabaseQualifiedName =
@@ -708,6 +696,8 @@ export function useSavedQuery(
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
+
+        const collectionQualifiedName = activeInlineTab.explorer.queries.collection.qualifiedName
 
         const body = ref<Record<string, any>>({
             entity: {
@@ -730,6 +720,7 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: false,
+                    collectionQualifiedName
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -740,8 +731,11 @@ export function useSavedQuery(
         body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
+            // TODO:@rohan: add a check for collections, hardcoded to folder currently
+            typeName: "QueryFolder"
         }
-        if (type && type.length && parentFolderQF == 'root') {
+        console.log("hola hola hola parentFolderQF", parentFolderQF)
+        if (type && type.length && parentFolderQF === 'root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},
@@ -824,6 +818,7 @@ export function useSavedQuery(
                     activeInlineTabCopy.parentGuid = parentGuid
                     activeInlineTabCopy.parentQualifiedName =
                         parentQualifiedName
+                    activeInlineTabCopy.collectionQulaifiedName = collectionQualifiedName
 
                     const {
                         data: data2,
@@ -838,7 +833,6 @@ export function useSavedQuery(
                                 activeInlineTabCopy.assetSidebar.assetInfo =
                                     data2.value?.entity
                                 // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
-                            } else {
                             }
                         }
                     })

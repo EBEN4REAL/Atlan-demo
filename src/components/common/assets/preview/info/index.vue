@@ -299,6 +299,28 @@
                 @change="handleChangeCertificate"
             />
         </div>
+
+        <div
+            v-if="
+               selectedAsset.typeName === 'AtlasGlossaryTerm'
+            "
+            class="flex flex-col"
+        >
+            <p
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+            >
+                Categories
+            </p>
+            <Categories
+                v-model="localMeanings"
+                :selected-asset="selectedAsset"
+                class="px-5"
+                :read-only="readOnly"
+                @change="handleMeaningsUpdate"
+            >
+            </Categories>
+        </div>
+
         <a-modal
             v-model:visible="sampleDataVisible"
             :footer="null"
@@ -330,6 +352,7 @@
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
+    import Categories from '@/common/input/categories/categories.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -350,6 +373,7 @@
             SQL,
             Terms,
             Shortcut,
+            Categories,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(

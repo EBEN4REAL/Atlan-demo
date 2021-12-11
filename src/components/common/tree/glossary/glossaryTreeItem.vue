@@ -36,6 +36,7 @@
         <div
             v-else-if="item?.typeName === 'loadMore'"
             class="flex flex-col space-y-2"
+            @click="item.click"
         >
             <span class="text-primary">Load more</span>
         </div>

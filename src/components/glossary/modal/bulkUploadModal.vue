@@ -10,23 +10,24 @@
         <!-- modal title -->
         <template #title>
             <span class="text-base font-bold text-gray-700"
-                >Bulk Upload Terms from CSV</span
+                >Bulk Upload Terms</span
             >
         </template>
         <!-- Modal body -->
 
-        <div class="flex px-4 space-x-32">
+        <div class="flex flex-col items-center px-4 mx-4 bg-gray-100">
+            <atlan-icon icon="BulkUpload" class="h-40" />
             <FormGen :config="formConfig" @vchange="handleFormChange" />
-            <span class="ml-12 text-gray-500"
-                >Click the button on the left to upload a valid CSV file
-                containing data.</span
-            >
         </div>
         <!-- Modal footer -->
         <template #footer>
-            <div class="flex items-center">
-                <a-button class="px-2" @click="handleDownload"
-                    >Download sample CSV template</a-button
+            <div class="flex items-center justify-center py-3">
+                <span
+                    class="px-2 border-0 shadow-none outline-none cursor-pointer hover:text-primary"
+                    @click="handleDownload"
+                >
+                    <atlan-icon icon="Download" class="mr-1" />
+                    Click here to download Sample CSV template</span
                 >
                 <!-- TODO: Uncomment when doc for bulk is ready -->
                 <!-- <span class="text-primary ml-7">Learn more</span> -->
@@ -71,6 +72,7 @@
                         id: 'test',
                         label: '',
                         isVisible: true,
+                        accept:'.csv',
                         requestConfig: {
                             url: getBasePath(),
                             formDataFormat: {

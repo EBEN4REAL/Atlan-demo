@@ -667,18 +667,19 @@ const useTree = ({
         loadedKeys.value.push(treeNode.dataRef.key)
     }
 
-    watch([connector, savedQueryType], () => {
+    watch(queryCollectionQualifiedName, () => {
         isInitingTree.value = true
         loadedKeys.value = []
         expandedKeys.value = []
         // currentSelectedNode.value = queryFolderNamespace
 
-        console.log('savedQuery: ', savedQueryType)
+        console.log('change queryCollectionQualifiedName: ', queryCollectionQualifiedName)
         initTreeData()
     })
     onMounted(() => {
         isInitingTree.value = true
-        if (queryFolderNamespace.value?.guid) initTreeData()
+        initTreeData()
+        // if (queryFolderNamespace.value?.guid) initTreeData()
     })
     watch(queryFolderNamespace, (newQueryFolderNamespace) => {
         isInitingTree.value = true

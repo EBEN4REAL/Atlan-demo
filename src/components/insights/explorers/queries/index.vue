@@ -361,6 +361,8 @@
             }
 
             const updateCollection = ({ qname, guid }) => {
+                selectedCollectionQname.value = qname
+                selectedCollectionGuid.value = guid
                 console.log('update collection', qname, guid)
                 setCollectionsDataInInlineTab(
                     activeInlineTab,

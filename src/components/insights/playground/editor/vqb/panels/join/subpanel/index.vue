@@ -11,11 +11,32 @@
                     @mouseout="hoverItem = null"
                 >
                     <JoinSelector
-                        style="width: 300px"
+                        style="width: 30%; max-width: 300px"
                         v-model:selectedJoinType="subpanel.joinType"
                     />
 
-                    <TreeColumnSelector typeName="Table" style="width: 300px" />
+                    <TreeColumnSelector
+                        class="flex-1"
+                        style="max-width: 30%"
+                        v-model:selectedColumn="subpanel.columnsDataLeft"
+                    />
+                    <div>
+                        <a-tooltip placement="top" color="#363636">
+                            <template #title>
+                                <span>Swap Tables</span>
+                            </template>
+                            <AtlanIcon
+                                @click.stop="() => swapTables(index)"
+                                icon="TableSwap"
+                                class="w-4 h-4 text-gray-300 mt-0.5 cursor-pointer outline-none"
+                            />
+                        </a-tooltip>
+                    </div>
+                    <TreeColumnSelector
+                        class="flex-1"
+                        style="max-width: 30%"
+                        v-model:selectedColumn="subpanel.columnsDataRight"
+                    />
 
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
@@ -124,6 +145,15 @@
                 subpanels.value.splice(index, 1)
             }
 
+            const swapTables = (index) => {
+                console.log('subpanel: ', subpanels.value[index])
+                let columnsDataLeft = subpanels.value[index].columnsDataLeft
+                let columnsDataRight = subpanels.value[index].columnsDataRight
+
+                subpanels.value[index].columnsDataLeft = columnsDataRight
+                subpanels.value[index].columnsDataRight = columnsDataLeft
+            }
+
             const changeColumn = (column) => {
                 console.log('columns: ', column)
             }
@@ -137,6 +167,7 @@
                 checkChange,
                 handleAddPanel,
                 handleDelete,
+                swapTables,
                 handleColumnChange,
                 selectedColumn,
                 changeColumn,

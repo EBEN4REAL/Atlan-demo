@@ -1,17 +1,38 @@
 <template>
     <a-popover placement="bottomLeft" :trigger="['click']">
         <div
-            class="w-full border-gray-300 box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-            style="height: 32px; width: 300px"
+            class="flex items-center px-2 mx-3 border border-gray-300 rounded box-shadow focus:border-primary-focus"
+            style="height: 32px"
         >
-            Select from {{ totalCount }} tables
+            <div
+                v-if="selectedColumn?.label"
+                style="max-width: 450px"
+                class="flex items-center truncate"
+            >
+                <component
+                    :is="
+                        dataTypeImage({
+                            attributes: { dataType: selectedColumn?.type },
+                        })
+                    "
+                    class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
+                ></component>
+                <span
+                    class="mb-0 ml-1 text-sm text-gray-700 parent-ellipsis-container-base"
+                >
+                    {{ placeholder }}
+                </span>
+            </div>
+            <span v-else>
+                {{ placeholder }}
+            </span>
         </div>
         <template #content>
             <div v-if="!tableSelected?.qualifiedName">
                 <a-input
                     v-model:value="tableText"
                     placeholder="Enter table name"
-                    class="border-gray-300 rounded-none focus:outline-none"
+                    class="border-l-0 border-r-0 rounded-none outline-none"
                     style="height: 36px; width: 400px"
                 >
                     <template #suffix>
@@ -28,10 +49,11 @@
                         class="w-auto h-10 animate-spin"
                         style="margin-left: 175px; margin-top: 100px"
                     ></AtlanIcon>
+
                     <template
                         v-if="tableDropdownOption.length !== 0 && !isLoading"
                         v-for="(item, index) in tableDropdownOption"
-                        :key="item.value + index"
+                        :key="item?.label + index"
                     >
                         <div
                             class="flex items-center justify-between pl-4 pr-2 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
@@ -103,7 +125,7 @@
                 <a-input
                     v-model:value="columnText"
                     placeholder="Enter column name"
-                    class="border-gray-300 rounded-none focus:outline-none"
+                    class="border-l-0 border-r-0 rounded-none outline-none"
                     style="height: 36px; width: 400px"
                 >
                     <template #suffix>
@@ -123,12 +145,18 @@
                     <template
                         v-if="columnDropdownOption.length !== 0 && !isLoading"
                         v-for="(item, index) in columnDropdownOption"
-                        :key="item.value + index"
+                        :key="item?.label + index"
                     >
                         <div
                             class="flex items-center justify-between pl-4 pr-4 cursor-pointer h-9 truncanimate-spin hover:bg-primary-selected-focus"
                             style="width: 400px"
                             @click="onSelectColumn(item)"
+                            :class="
+                                selectedColumn?.columnQualifiedName ===
+                                item?.qualifiedName
+                                    ? 'bg-primary-light'
+                                    : ''
+                            "
                         >
                             <div class="flex items-center truncate">
                                 <component
@@ -189,16 +217,21 @@
     import Loader from '@common/loaders/page.vue'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { useVModels } from '@vueuse/core'
 
     import useBody from './useBody'
-    import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
 
     export default defineComponent({
         name: 'Table Selector',
         components: {
             Loader,
         },
-        props: {},
+        props: {
+            selectedColumn: {
+                type: Object,
+                required: true,
+            },
+        },
         setup(props, { emit }) {
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -206,6 +239,8 @@
 
             const tableText = ref('')
             const columnText = ref('')
+
+            const { selectedColumn } = useVModels(props)
 
             const {
                 isPrimary,
@@ -247,15 +282,9 @@
                     immediate: true,
                 }
             )
-            watch(
-                tableText,
-                () => {
-                    replaceBody(getTableInitialBody())
-                },
-                {
-                    immediate: true,
-                }
-            )
+            watch(tableText, () => {
+                replaceBody(getTableInitialBody())
+            })
 
             let tableSelected = ref(null)
 
@@ -281,7 +310,6 @@
                     if (x.label > y.label) return 1
                     return 0
                 })
-                console.log
                 return data
             })
 
@@ -332,7 +360,7 @@
             }
 
             const onSelectTable = (item) => {
-                console.log('selected table: ', item)
+                // console.log('selected table: ', item)
                 tableSelected.value = item
                 replaceBody(getColumnInitialBody(item))
             }
@@ -343,8 +371,34 @@
             }
 
             const onSelectColumn = (item) => {
-                console.log(item)
+                let qualifiedName = item?.qualifiedName.split('/')
+                let size = qualifiedName?.length
+                console.log(
+                    'name: ',
+                    `${qualifiedName[size - 2]}.${qualifiedName[size - 1]}`
+                )
+                selectedColumn.value = {
+                    label: item.label,
+                    type: item.type,
+                    value: item.label,
+                    columnQualifiedName: item.qualifiedName,
+                }
+                console.log()
             }
+
+            const placeholder = computed(() => {
+                if (selectedColumn?.value?.label) {
+                    let data =
+                        selectedColumn.value.columnQualifiedName.split('/')
+                    return `${data[data.length - 2]}.${data[data.length - 1]}`
+                }
+
+                let data = !tableSelected?.qualifiedName
+                    ? `select from ${totalCount.value} tables`
+                    : `select from ${totalCount.value} columns`
+
+                return data
+            })
 
             return {
                 totalCount,
@@ -365,6 +419,8 @@
                 dataType,
                 assetType,
                 certificateStatus,
+                selectedColumn,
+                placeholder,
             }
         },
     })

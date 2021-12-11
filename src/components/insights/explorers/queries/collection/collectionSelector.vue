@@ -42,6 +42,7 @@
         SavedQuery,
         QueryCollection,
     } from '~/types/insights/savedQuery.interface'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         emits: ['update:data'],
@@ -51,6 +52,15 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+
+            selectedValue.value = activeInlineTab.value.explorer.queries
+                .collection
+                ? activeInlineTab.value.explorer.queries.collection.guid
+                : ''
+
             console.log('connection selector', queryCollections.value)
 
             function handleChange(collectionId: string) {

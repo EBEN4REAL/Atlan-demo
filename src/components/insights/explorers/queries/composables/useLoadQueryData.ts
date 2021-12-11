@@ -55,7 +55,6 @@ const useLoadQueryData = ({
         'connectorName',
         'connectionId',
         'connectionQualifiedName',
-        'parentFolderQualifiedName',
         'defaultSchemaQualifiedName',
         'defaultDatabaseQualifiedName',
         'parentFolder',
@@ -178,7 +177,7 @@ const useLoadQueryData = ({
         body.value.dsl.query.bool.must.push(
             {
                 term: {
-                    "parentFolderQualifiedName": folderGuid
+                    "parentQualifiedName": folderGuid
                 }
             }
         )

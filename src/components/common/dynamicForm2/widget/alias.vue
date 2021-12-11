@@ -69,7 +69,6 @@
                     const temp = `${cleanInput(e.target.value)}-${Math.round(
                         new Date().getTime() / 1000
                     )}`
-
                     formState[property.value.ui.linkedProperty] = temp
                 }
                 return cleanInput(e.target.value)

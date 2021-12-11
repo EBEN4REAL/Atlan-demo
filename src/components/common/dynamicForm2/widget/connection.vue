@@ -82,7 +82,7 @@
                         ui: {
                             widget: 'alias',
                             label: 'Connection Name',
-                            placeholder: 'Connection Name',
+                            placeholder: 'environment',
                             required: true,
                             grid: 5,
                             prefixImage: connectorImage.value,

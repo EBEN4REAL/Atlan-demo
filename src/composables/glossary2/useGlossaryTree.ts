@@ -128,7 +128,7 @@ const useGlossaryTree = ({
                     let map = data.value?.entities?.map((i) => ({
                         ...i,
                         id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                        key: `${i.guid}`,
+                        key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
                         isLeaf: i.typeName === 'AtlasGlossaryTerm',
                         checkable:
                             i.typeName === 'AtlasGlossaryTerm'
@@ -421,7 +421,7 @@ const useGlossaryTree = ({
                         treeData.value = data.value?.entities.map((i) => ({
                             ...i,
                             id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
-                            key: `${i.guid}`,
+                            key: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
                             isLeaf: i.typeName === 'AtlasGlossaryTerm',
                             checkable:
                                 i.typeName === 'AtlasGlossaryTerm'
@@ -445,7 +445,7 @@ const useGlossaryTree = ({
                 return {
                     ...i,
                     id: i.attributes?.qualifiedName,
-                    key: i.guid,
+                    key: i.attributes?.qualifiedName,
                     isLeaf: false,
                     checkable: false,
                 }
@@ -470,7 +470,7 @@ const useGlossaryTree = ({
                     updatedChildren.push({
                         ...asset,
                         id: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
-                        key: `${asset.guid}`,
+                        key: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
                         isLeaf: asset.typeName === 'AtlasGlossaryTerm',
                     })
                 }
@@ -555,7 +555,7 @@ const useGlossaryTree = ({
                 treeData.value.unshift({
                     ...asset,
                     id: asset.attributes?.qualifiedName,
-                    key: asset.guid,
+                    key: asset.attributes?.qualifiedName,
                     isLeaf: false,
                 })
             }
@@ -566,7 +566,9 @@ const useGlossaryTree = ({
                     id: `${getAnchorQualifiedName(asset)}_${
                         asset.attributes?.qualifiedName
                     }`,
-                    key: `${asset.guid}`,
+                    key: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
                     isLeaf: true,
                 })
             }
@@ -577,7 +579,9 @@ const useGlossaryTree = ({
                     id: `${getAnchorQualifiedName(asset)}_${
                         asset.attributes?.qualifiedName
                     }`,
-                    key: `${asset.guid}`,
+                    key: `${getAnchorQualifiedName(asset)}_${
+                        asset.attributes?.qualifiedName
+                    }`,
                     isLeaf: false,
                 })
             }

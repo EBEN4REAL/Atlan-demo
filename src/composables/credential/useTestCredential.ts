@@ -16,6 +16,7 @@ export function useTestCredential(
 
     options.asyncOptions = ref({
         immediate: false,
+        resetOnExecute: true,
     })
 
     const { data, mutate, error, isLoading, isValidating, isReady } =

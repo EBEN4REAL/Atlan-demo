@@ -15,7 +15,7 @@
     </div>
     <template v-else-if="configMap">
         <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
-        <div class="flex items-center">
+        <div class="flex">
             <a-button
                 :loading="isLoadingTest"
                 @click="handleTestAuthentication"
@@ -279,11 +279,11 @@
             provide('credentialBody', credentialBody)
 
             const handleTestAuthentication = async () => {
-                console.log()
-                resetError()
                 const e = await validateForm()
+
                 if (!e) {
                     refresh()
+                    resetError()
                 } else {
                     testMessage.value = 'Please enter correct credentials'
                     testIcon.value = 'Error'
@@ -295,10 +295,14 @@
                 successMessage()
             })
             watch(errorTest, () => {
+                console.log('err')
                 console.log(errorTest.value?.response?.data.message)
-                errorMessage(
-                    `Not able to authenticate your credentials - ${errorTest.value?.response?.data?.message}`
-                )
+
+                if (errorTest) {
+                    errorMessage(
+                        `Not able to authenticate your credentials - ${errorTest.value?.response?.data?.message}`
+                    )
+                }
             })
 
             return {

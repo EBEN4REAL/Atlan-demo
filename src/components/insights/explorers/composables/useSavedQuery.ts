@@ -1,8 +1,8 @@
-import { Ref, ComputedRef, ref, toRaw, watch } from 'vue'
+import { Ref, ComputedRef, ref, toRaw, watch, inject } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-import { SavedQuery } from '~/types/insights/savedQuery.interface'
+import { SavedQuery, QueryCollection  } from '~/types/insights/savedQuery.interface'
 import {
     decodeQuery as decodeBase64Data,
     serializeQuery,
@@ -29,6 +29,9 @@ export function useSavedQuery(
     const { username } = whoami()
     const tenantStore = useTenantStore()
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
+    const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
     const {
         getConnectorName,
         getConnectionQualifiedName,
@@ -201,6 +204,11 @@ export function useSavedQuery(
             activeInlineTabKey.value = key
         }
     }
+    
+    const getCollectionByQualifiedName = (qualifiedName: string) => {
+        return queryCollections.value.find(collection => collection.attributes.qualifiedName === qualifiedName)
+    }
+    
     /* Involved network requests */
     const updateSavedQuery = (
         editorInstance: Ref<any>,
@@ -227,15 +235,18 @@ export function useSavedQuery(
         const certificateStatus = activeInlineTab?.status
         const description = activeInlineTab?.description
         const isSQLSnippet = activeInlineTab?.isSQLSnippet
+        const collectionQualifiedName = getCollectionByQualifiedName(activeInlineTab.collectionQulaifiedName)?.attributes.qualifiedName
+        console.log("update saved query collectionQualifiedName", collectionQualifiedName)
         /* NEED TO CHECK IF qualifiedName will also change acc to connectors it has connectionQualifiedName */
         const qualifiedName = activeInlineTab?.qualifiedName
+        // const 
         const rawQuery = activeInlineTab?.playground?.editor?.text
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
 
         const defaultDatabaseQualifiedName =
             getDatabaseQualifiedName(attributeValue) ?? undefined
-
+        
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
@@ -253,6 +264,7 @@ export function useSavedQuery(
                     isSnippet: isSQLSnippet,
                     connectionId: connectionQualifiedName,
                     connectionQualifiedName,
+                    collectionQualifiedName,
                     description,
                     ownerUsers: [username.value],
                     tenantId: 'default',

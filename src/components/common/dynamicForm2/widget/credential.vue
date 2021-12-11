@@ -261,7 +261,11 @@
             )
 
             watch(credentialBody, () => {
-                console.log('chaneg credentials -----')
+                console.log(
+                    'chaneg credentials -----',
+                    formState,
+                    property.value.ui.credentialType
+                )
                 // formState[`${property.value.id}`] = credentialBody.value
             })
 
@@ -275,6 +279,7 @@
             provide('credentialBody', credentialBody)
 
             const handleTestAuthentication = async () => {
+                console.log()
                 resetError()
                 const e = await validateForm()
                 if (!e) {

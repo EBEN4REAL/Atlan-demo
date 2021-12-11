@@ -320,16 +320,3 @@ export const glossaryFilters = [
         exclude: false,
     },
 ]
-
-export const packageFilters = [
-    {
-        id: 'certificateStatus',
-        label: 'Certificate',
-        component: 'certificate',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-    },
-]

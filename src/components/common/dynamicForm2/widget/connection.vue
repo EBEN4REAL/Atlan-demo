@@ -1,7 +1,12 @@
 <template>
     <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
-    <div class="">
-        <p>Existing Connections</p>
+    <div class="p-3 bg-gray-100 rounded" v-if="list.length > 0">
+        <p>Existing Connections ({{ approximateCount }})</p>
+        <div class="flex flex-col">
+            <div v-for="(connection, index) in list" :key="connection.guid">
+                {{ connection.attributes.name }}
+            </div>
+        </div>
     </div>
 </template>
 
@@ -83,7 +88,7 @@
                 ]
             })
 
-            const {} = useIndexSearch({
+            const { data, approximateCount } = useIndexSearch({
                 attributes: [
                     'name',
                     'description',
@@ -127,6 +132,14 @@
                         },
                     },
                 },
+            })
+
+            const list = ref([])
+
+            watch(data, () => {
+                if (data.value.entities) {
+                    list.value = data.value.entities
+                }
             })
 
             const seconds = Math.round(new Date().getTime() / 1000)
@@ -319,6 +332,9 @@
                 connectorImage,
                 connector,
                 sourceCategory,
+                approximateCount,
+                data,
+                list,
             }
         },
     })

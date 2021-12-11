@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { getNodeSourceImage } from './util.js'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { map as entityMap } from '~/services/meta/entity/key'
+
 import {
     iconVerified,
     iconDraft,
@@ -33,7 +34,6 @@ export default function useGraph() {
         const isBase = guid === baseEntityGuid
         const source = getSource(entity)
         const img = getNodeSourceImage[source]
-
         const enrichedEntity = !isProcess ? await getEntity(guid) : entity
         const { attributes } = enrichedEntity
         let { displayText } = enrichedEntity
@@ -54,28 +54,6 @@ export default function useGraph() {
             isGrayed: false,
             ...dataObj,
         }
-
-        const columns = enrichedEntity.relationshipAttributes.columns.map(
-            (x, index) => {
-                const text =
-                    x.displayText.charAt(0).toUpperCase() +
-                    x.displayText.slice(1).toLowerCase()
-                return {
-                    id: `${guid}-port-${index + 1}`,
-                    group: 'columnList',
-                    attrs: {
-                        portNameLabel: {
-                            text,
-                        },
-                        portImage: {
-                            'xlink:href': 'https://svgshare.com/i/cdx.svg',
-                            width: 16,
-                            height: 16,
-                        },
-                    },
-                }
-            }
-        )
 
         const nodeData = {
             id: guid,
@@ -142,7 +120,7 @@ export default function useGraph() {
                           ${data?.isGrayed ? 'isGrayed' : ''}"> ${iconProcess}
                         </div>`
                 },
-                shouldComponentUpdate(node: Cell) {
+                shouldComponentUpdate(node) {
                     return node.hasChanged('data')
                 },
             },
@@ -170,7 +148,7 @@ export default function useGraph() {
                                 strokeWidth: 1,
                                 stroke: '#e6e6eb',
                                 fill: '#ffffff',
-                                magnet: true,
+                                event: 'port:click',
                                 y: -10,
                             },
                             portNameLabel: {
@@ -179,11 +157,13 @@ export default function useGraph() {
                                 refY: 12,
                                 fontSize: 16,
                                 fill: '#3e4359',
+                                event: 'port:click',
                             },
                             portImage: {
                                 ref: 'portBody',
                                 refX: 12,
                                 refY: 12,
+                                event: 'port:click',
                             },
                         },
                         position: 'erPortPosition',
@@ -195,7 +175,6 @@ export default function useGraph() {
                         group: 'columnList',
                         zIndex: 0,
                     },
-                    ...columns,
                 ],
             },
         }
@@ -250,11 +229,11 @@ export default function useGraph() {
             id: `${relation.fromEntityId}@${relation.toEntityId}`,
             source: {
                 cell: relation.fromEntityId,
-                port: `${relation.fromEntityId}-port-2`, // TODO: use dynamic relations
+                port: `${relation.fromEntityId}-port-0`, // TODO: use dynamic relations
             },
             target: {
                 cell: relation.toEntityId,
-                port: `${relation.toEntityId}-port-4`, // TODO: use dynamic relations
+                port: `${relation.toEntityId}-port-0`, // TODO: use dynamic relations
             },
             router: {
                 name: 'metro',

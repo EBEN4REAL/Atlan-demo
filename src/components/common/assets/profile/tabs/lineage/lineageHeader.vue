@@ -142,7 +142,6 @@
         emits: ['show-process', 'show-impacted-assets', 'show-add-lineage'],
         setup(props, { emit }) {
             /** INJECTIONS */
-            /** INJECTIONS */
             const control = inject('control')
             const showProcess = inject('showProcess')
             const depth = inject('depth')
@@ -156,7 +155,6 @@
             const currDepth = computed(
                 () => lineageDepths.find((x) => x.id === depth.value)?.label
             )
-
             const isLeafNode = computed(() => {
                 const id = highlightedNode.value || baseEntityGuid.value
                 const cell = graph.value.getCellById(id)

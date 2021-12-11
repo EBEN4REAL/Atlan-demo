@@ -1,6 +1,4 @@
-import { ref, watch } from 'vue'
-// import graphlib from '@dagrejs/graphlib'
-import useUpdateGraph from './useUpdateGraph'
+import { ref } from 'vue'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
 
@@ -8,15 +6,11 @@ export default async function useComputeGraph(
     graph,
     graphLayout,
     lineageData,
-    showProcess,
     searchItems,
     currZoom,
-    removedNodes,
     isComputeDone,
     emit
 ) {
-    const { highlightEdges, toggleProcessNodes, updateProcessNodesPosition } =
-        useUpdateGraph()
     const { createNodeData, createEdgeData } = useGraph()
     const { fit } = useTransformGraph(graph, emit)
 
@@ -32,30 +26,9 @@ export default async function useComputeGraph(
     edges.value = []
     nodes.value = []
 
-    // const getCyclicStatus = () => {
-    //     const g = new graphlib.Graph({
-    //         directed: true,
-    //     })
-    //     if (lineageData.value && lineageData.value.guidEntityMap) {
-    //         Object.values(lineageData.value.guidEntityMap).forEach((value) => {
-    //             g.setNode(value.guid, {
-    //                 ...value,
-    //             })
-    //         })
-
-    //         lineageData.value.relations.forEach((item) => {
-    //             g.setEdge(item.fromEntityId, item.toEntityId)
-    //         })
-    //     }
-
-    //     return !graphlib.alg.isAcyclic(g)
-    // }
-    // const isCyclic = getCyclicStatus()
-    const isCyclic = null
-
     /* Nodes */
     await Promise.all(
-        guidEntityMap.map(async (entity, index) => {
+        guidEntityMap.map(async (entity) => {
             const { nodeData, enrichedEntity: ent } = await createNodeData(
                 entity,
                 baseEntityGuid
@@ -75,7 +48,7 @@ export default async function useComputeGraph(
     })
 
     /* Render */
-    const renderLayout = async () => {
+    const renderLayout = () => {
         model.value = graphLayout.value.layout({
             edges: edges.value,
             nodes: nodes.value,
@@ -83,26 +56,9 @@ export default async function useComputeGraph(
         graph.value.fromJSON(model.value)
     }
 
-    /** Process toggle */
-    // const toggleProcess = async () => {
-    //     await renderLayout()
-    //     await toggleProcessNodes(graph, showProcess, removedNodes)
-    //     await updateProcessNodesPosition(graph, 110)
-    //     highlightEdges(graph, [])
-    //     isComputeDone.value = true
-    // }
-
-    // await toggleProcess()
-
-    // watch(showProcess, async () => {
-    //     await toggleProcess()
-    // })
-
-    await renderLayout()
+    renderLayout()
     isComputeDone.value = true
 
     fit(baseEntityGuid)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-
-    return { isCyclic }
 }

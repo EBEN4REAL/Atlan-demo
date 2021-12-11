@@ -13,6 +13,13 @@
             </div>
         </div>
 
+        <a-spin
+            v-if="loaderCords.x"
+            :style="`position: absolute; left: ${loaderCords.x - 25}px; top: ${
+                loaderCords.y - 148
+            }px; z-index: 999`"
+        />
+
         <!-- Graph Container -->
         <div style="display: flex">
             <div ref="graphContainer" style="flex: 1"></div>
@@ -22,7 +29,7 @@
             v-if="isComputeDone"
             :base-entity-guid="lineage.baseEntityGuid"
             :highlighted-node="highlightedNode"
-            :is-cyclic="isCyclic"
+            :is-cyclic="false"
             :graph="graph"
             @show-process="onShowProcess($event)"
             @show-impacted-assets="onShowImpactedAssets($event)"
@@ -79,16 +86,6 @@
         provide,
         toRefs,
         inject,
-        watch,
-        onBeforeMount,
-        onBeforeUpdate,
-        onUpdated,
-        onBeforeUnmount,
-        onErrorCaptured,
-        onRenderTracked,
-        onRenderTriggered,
-        onActivated,
-        onDeactivated,
     } from 'vue'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
@@ -136,13 +133,10 @@
             const showImpactedAssets = ref(false)
             const showAddLineage = ref(false)
             const showMinimap = ref(false)
-            const useCyclic = ref(false)
             const searchItems = ref([])
-            const selectedSearchItem = ref('')
-            const isCyclic = ref(false)
             const assetGuidToHighlight = ref('')
             const highlightedNode = ref('')
-            const highlightLoadingCords = ref({})
+            const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
 
@@ -162,29 +156,22 @@
                     graphLayout,
                     graphContainer,
                     minimapContainer,
-                    showProcess,
                     graphWidth,
                     graphHeight
                 )
 
                 // useComputeGraph
-                const { isCyclic: ic } = await useComputeGraph(
+                await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
-                    showProcess,
                     searchItems,
                     currZoom,
-                    removedNodes,
                     isComputeDone,
                     emit
                 )
-                isCyclic.value = ic
 
                 // events
-                graph.value.on('cell:mousedown', ({ e }) => {
-                    highlightLoadingCords.value = { x: e.clientX, y: e.clientY }
-                })
                 graph.value.on('blank:mousewheel', () => {
                     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
                 })
@@ -199,7 +186,7 @@
                     showProcess,
                     assetGuidToHighlight,
                     highlightedNode,
-                    highlightLoadingCords,
+                    loaderCords,
                     onSelectAsset
                 )
             }
@@ -249,10 +236,9 @@
                 graphContainer,
                 minimapContainer,
                 currZoom,
-                isCyclic,
                 highlightedNode,
                 isComputeDone,
-                highlightLoadingCords,
+                loaderCords,
                 graphHeight,
                 graphWidth,
                 onShowImpactedAssets,

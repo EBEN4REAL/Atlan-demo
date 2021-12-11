@@ -5,7 +5,6 @@ export default function useCreateGraph(
     graphLayout,
     graphContainer,
     minimapContainer,
-    showProcess,
     graphWidth,
     graphHeight
 ) {
@@ -55,17 +54,14 @@ export default function useCreateGraph(
 
     Graph.registerPortLayout(
         'erPortPosition',
-        (portsPositionArgs) => {
-            return portsPositionArgs.map((_, index) => {
-                return {
-                    position: {
-                        x: 1,
-                        y: (index + 1) * 40,
-                    },
-                    angle: 0,
-                }
-            })
-        },
+        (portsPositionArgs) =>
+            portsPositionArgs.map((_, index) => ({
+                position: {
+                    x: 1,
+                    y: (index + 1) * 40,
+                },
+                angle: 0,
+            })),
         true
     )
 
@@ -74,10 +70,8 @@ export default function useCreateGraph(
         type: 'dagre',
         rankdir: 'LR',
         controlPoints: true,
-        nodesepFunc(item) {
-            const length = item.ports?.items.length || null
-            const size = length ? (length - 1) * 25 : 20
-            return size
+        nodesepFunc() {
+            return 10
         },
         ranksepFunc() {
             return 120

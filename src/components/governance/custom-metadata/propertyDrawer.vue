@@ -50,14 +50,13 @@
                             label="Type"
                         >
                             <a-select
-                                v-model:value="form.typeName"
+                                v-model:value="form.options.primitiveType"
                                 show-search
                                 :disabled="isEdit"
                                 :get-popup-container="
                                     (target) => target.parentNode
                                 "
                                 list-height="240"
-                                @change="handleTypeNameChange"
                             >
                                 <a-select-option
                                     v-for="(type, index) in attributesTypes"
@@ -251,21 +250,23 @@
                     >
                         <div class="w-full">
                             <a-form-item
-                                v-if="form.typeName !== 'boolean'"
+                                v-if="isMultiValuedSupport"
                                 class="mb-2"
                             >
                                 <div class="flex justify-between">
                                     <label :for="`${form.name}-isFacet`"
-                                        >Allow multiple values</label
-                                    >
+                                        >Allow multiple values
+                                    </label>
                                     <a-switch
                                         :id="`${form.name}-isFacet`"
                                         v-model:checked="
                                             form.options.multiValueSelect
                                         "
+                                        :disabled="isEdit"
                                         class=""
                                         :name="`${form.name}-isFacet`"
                                         size="small"
+                                        @change="handleTypeNameChange"
                                     />
                                 </div>
                             </a-form-item>
@@ -346,6 +347,7 @@
         computed,
         toRefs,
         watch,
+        Ref,
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
     import {
@@ -357,15 +359,14 @@
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
             NewEnumForm,
-            VNodes: (_, { attrs }) => {
-                return attrs.vnodes
-            },
+            VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
             metadata: {
@@ -375,12 +376,12 @@
         },
         emits: ['addedProperty'],
         setup(props, { emit }) {
-            const initializeForm = () => ({
+            const initializeForm = (): CMA => ({
                 ...DEFAULT_ATTRIBUTE,
             })
             // data
             const visible = ref<boolean>(false)
-            const form = ref<object>(initializeForm())
+            const form = ref<CMA>(initializeForm())
             const loading = ref<boolean>(false)
             const isEdit = ref<boolean>(false)
             const newEnumMode = ref<boolean>(false)
@@ -415,6 +416,7 @@
                     const { customApplicableEntityTypes } = theProperty.options
                     if (customApplicableEntityTypes) {
                         if (typeof customApplicableEntityTypes === 'string') {
+                            // eslint-disable-next-line no-param-reassign
                             theProperty.options.customApplicableEntityTypes =
                                 JSON.parse(customApplicableEntityTypes)
                         }
@@ -441,6 +443,7 @@
                     )
                 }
                 message.error('Error occured, try again')
+                return null
             }
 
             const handleUpdateProperty = async () => {
@@ -514,20 +517,6 @@
                         }
                     })
                 } else {
-                    //handle if is Enum, to change typeName to selected Enum
-                    if (
-                        form.value.options.isEnum === 'true' ||
-                        form.value.options.isEnum === true
-                    )
-                        tempForm.typeName = tempForm.options.enumType
-                    // handle if is user, group or name
-                    if (
-                        form.value.typeName === 'users' ||
-                        form.value.typeName === 'url' ||
-                        form.value.typeName === 'groups'
-                    )
-                        tempForm.typeName = 'string'
-
                     tempBM.attributeDefs.push(tempForm)
                     const { data, error, isReady } = Types.updateCustomMetadata(
                         {
@@ -692,6 +681,42 @@
                 else enumSearchValue.value = ''
             }
 
+            const isMultiValuedSupport = computed(() => {
+                const blackList = ['boolean', 'date']
+                return !blackList.includes(form.value.options.primitiveType)
+            })
+
+            const handleArrayType = () => {
+                form.value.typeName = ['groups', 'users', 'url'].includes(
+                    form.value.options.primitiveType
+                )
+                    ? `array<string>`
+                    : `array<${form.value.options.primitiveType}>`
+            }
+
+            watch(
+                [
+                    () => form.value.options.primitiveType,
+                    () => form.value.options.multiValueSelect,
+                ],
+                ([v1, v2]) => {
+                    if (v2 === 'true' || v2 === true) handleArrayType()
+                    else {
+                        if (
+                            form.value.options.isEnum === 'true' ||
+                            form.value.options.isEnum === true
+                        )
+                            form.value.typeName = form.value.options.enumType
+
+                        // handle if is user, group or name
+                        if (['users', 'url', 'groups'].includes(v1))
+                            form.value.typeName = 'string'
+                        else form.value.typeName = v1
+                    }
+                },
+                { immediate: true }
+            )
+
             // fix cause: enumSearchValue resets when select dropdown closes
             watch(enumSearchValue, (newValue, oldValue) => {
                 if (newValue) {
@@ -700,6 +725,8 @@
             })
 
             return {
+                isMultiValuedSupport,
+                handleArrayType,
                 visible,
                 form,
                 attributesTypes,

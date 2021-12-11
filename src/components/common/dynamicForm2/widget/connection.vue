@@ -1,5 +1,8 @@
 <template>
     <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
+    <div class="">
+        <p>Existing Connections</p>
+    </div>
 </template>
 
 <script>
@@ -22,6 +25,7 @@
     import ErrorView from '@common/error/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
     import { shortUUID } from '~/utils/helper/generator'
+    import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
@@ -73,6 +77,58 @@
                 ]
             })
 
+            const sourceCategory = computed(() => {
+                return workflowTemplate.value?.metadata.labels[
+                    'com.atlan.orchestration/sourceCategory'
+                ]
+            })
+
+            const {} = useIndexSearch({
+                attributes: [
+                    'name',
+                    'description',
+                    '__guid',
+                    '__createdBy',
+                    'ownerUsers',
+                    'ownerGroups',
+                    'allowQuery',
+                    'allowPreview',
+                ],
+                dsl: {
+                    from: 0,
+                    size: 10,
+                    aggs: {
+                        group_by_connection: {
+                            terms: {
+                                field: 'qualifiedName',
+                                size: 100,
+                            },
+                        },
+                    },
+                    post_filter: {
+                        bool: {
+                            filter: {
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                connectorName: 'athena',
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                '__typeName.keyword':
+                                                    'Connection',
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            })
+
             const seconds = Math.round(new Date().getTime() / 1000)
 
             const configMap = ref({
@@ -83,8 +139,9 @@
                             widget: 'alias',
                             label: 'Connection Name',
                             placeholder: 'environment',
+                            help: "Name of your connection which represents your source environment. Example - 'production', 'development', 'gold', 'analytics' ",
                             required: true,
-                            grid: 5,
+                            grid: 3,
                             prefixImage: connectorImage.value,
                             prefixText: `${connector.value}-`,
                             rules: [
@@ -104,6 +161,7 @@
                             label: 'Qualified Name',
                             placeholder: '',
                             disabled: true,
+                            hidden: true,
                             grid: 4,
                             rules: [
                                 {
@@ -116,19 +174,22 @@
                     },
                     ownerUsers: {
                         type: 'string',
+
                         ui: {
+                            help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'userMultiple',
                             label: 'Owner Users',
-                            start: 1,
-                            grid: 5,
+
+                            grid: 3,
                         },
                     },
                     ownerGroups: {
                         type: 'string',
                         ui: {
+                            help: 'These group of users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'groupMultiple',
                             label: 'Owner Groups',
-                            grid: 4,
+                            grid: 3,
                         },
                     },
                     allowQuery: {
@@ -138,6 +199,7 @@
                         ui: {
                             label: 'Allow SQL Query',
                             start: 1,
+                            help: 'Users will be run SQL query on the assets',
                             grid: 3,
                             rules: [
                                 {
@@ -152,6 +214,7 @@
                         default: true,
                         ui: {
                             label: 'Allow Data Preview',
+                            help: 'Users will be view sample preview of the assets',
                             grid: 3,
                             rules: [
                                 {
@@ -166,6 +229,7 @@
                         default: 10000,
                         ui: {
                             label: 'Max Row Limit',
+                            help: 'Maximum number of rows that can be returned by a query. This is to prevent users from running large queries.',
                             grid: 3,
                         },
                     },
@@ -203,7 +267,48 @@
                             hidden: true,
                         },
                     },
+                    category: {
+                        type: 'string',
+                        default: sourceCategory.value,
+                        ui: {
+                            hidden: true,
+                        },
+                    },
                 },
+                anyOf: [
+                    {
+                        properties: {
+                            category: {
+                                const: 'warehouse',
+                            },
+                        },
+                        required: ['allowQuery', 'allowPreview', 'rowLimit'],
+                    },
+                    {
+                        properties: {
+                            category: {
+                                const: 'rdbms',
+                            },
+                        },
+                        required: ['allowQuery', 'allowPreview', 'rowLimit'],
+                    },
+                    {
+                        properties: {
+                            category: {
+                                const: 'queryengine',
+                            },
+                        },
+                        required: ['allowQuery', 'allowPreview', 'rowLimit'],
+                    },
+                    {
+                        properties: {
+                            category: {
+                                const: 'lake',
+                            },
+                        },
+                        required: ['allowQuery', 'allowPreview', 'rowLimit'],
+                    },
+                ],
             })
 
             return {
@@ -213,6 +318,7 @@
                 workflowTemplate,
                 connectorImage,
                 connector,
+                sourceCategory,
             }
         },
     })

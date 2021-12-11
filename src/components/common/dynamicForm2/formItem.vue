@@ -20,7 +20,6 @@
 
                 <a-form-item
                     :name="property.name"
-                    :help="property.ui?.help"
                     :required="property.required"
                     :rules="property.ui.rules"
                     v-else

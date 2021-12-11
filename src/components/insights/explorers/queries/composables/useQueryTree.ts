@@ -50,6 +50,8 @@ interface useSavedQueriesTreeProps {
     savedQueryType: Ref<string>
     queryFolderNamespace: Ref<Folder>
     permissions: { [index: string]: string | undefined }
+    queryCollectionQualifiedName: Ref<string | undefined>
+    queryCollectionGuid: Ref<string | undefined>
 }
 
 const useTree = ({
@@ -62,6 +64,8 @@ const useTree = ({
     savedQueryType,
     queryFolderNamespace,
     permissions,
+    queryCollectionQualifiedName,
+    queryCollectionQualifiedGuid,
 }: useSavedQueriesTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, string> = {}
@@ -87,7 +91,7 @@ const useTree = ({
     const immediateParentGuid = ref<string>(queryFolderNamespace.value?.guid)
 
     const { getQueryFolders, getQueries, getSubFolders, getFolderQueries } =
-        useLoadQueryData({ connector, savedQueryType, queryFolderNamespace })
+        useLoadQueryData({ connector, savedQueryType, queryFolderNamespace, collectionQualifiedName: queryCollectionQualifiedName })
 
     /** *
      * @param targetGuid - guid / key of the node whose path needs to be found

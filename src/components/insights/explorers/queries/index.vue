@@ -44,14 +44,7 @@
                 <div
                     class="flex items-center justify-between w-full text-gray-500 h-9"
                 >
-                    <div class="flex items-center justify-between w-full">
-                        <div class="w-9/12">
-                            <ClassificationDropdown
-                                :modelValue="classificationValue"
-                                @change="onClassificationChange"
-                                :connector="connector"
-                            />
-                        </div>
+                    <div class="flex items-center justify-end w-full">
                         <div class="flex items-center">
                             <div class>
                                 <a-tooltip
@@ -243,14 +236,11 @@
     import QueryFilter from './queryFilter.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
-    import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
-
     export default defineComponent({
         components: {
             RaisedTab,
             QueryTree,
             Connector,
-            ClassificationDropdown,
             // SaveQueryModal,
             QueryFilter,
             LoadingView,
@@ -330,6 +320,13 @@
                         ?.attributeValue
                 )
             )
+            const selectedCollectionQname = ref(
+                activeInlineTab.value?.explorer?.queries?.collection
+                    ?.qualifiedName
+            )
+            const selectedCollectionGuid = ref(
+                activeInlineTab.value?.explorer?.queries?.collection?.guid
+            )
             const { focusEditor } = useEditor()
             const BItypes = getBISourceTypes()
 
@@ -339,13 +336,6 @@
                     : ''
             )
             const savedQueryType: Ref<object> = ref(classificationList.value[0])
-
-            const onClassificationChange = (value) => {
-                // emit('change', checkedValues)
-                console.log('change: ', value)
-                selectedClassification.value = value.name
-                savedQueryType.value = value
-            }
 
             const {
                 openSavedQueryInNewTab,
@@ -370,11 +360,13 @@
                 )
             }
 
-            const updateCollection = (collectionId: string) => {
+            const updateCollection = ({ qname, guid }) => {
+                console.log('update collection', qname, guid)
                 setCollectionsDataInInlineTab(
                     activeInlineTab,
                     inlineTabs,
-                    collectionId
+                    qname,
+                    guid
                 )
             }
 
@@ -682,6 +674,8 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
+                queryCollectionQualifiedName: selectedCollectionQname,
+                queryCollectionQualifiedGuid: selectedCollectionGuid,
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =
@@ -875,8 +869,6 @@
                 }
             })
 
-            const classificationValue = ref(savedQueryType.value)
-
             return {
                 searchTreeData,
                 onFilterChange,
@@ -914,8 +906,6 @@
                 queryFolderNamespace,
                 BItypes,
                 currentSelectedNode,
-                classificationValue,
-                onClassificationChange,
                 totalFilteredCount,
                 updateCollection,
             }

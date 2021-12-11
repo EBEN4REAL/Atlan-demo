@@ -73,16 +73,19 @@ const useQueryCollection = () => {
     const setCollectionsDataInInlineTab = (
         activeInlineTab: Ref<activeInlineTabInterface>,
         tabs: Ref<activeInlineTabInterface[]>,
-        queryCollectionId: string
+        qualifiedName: string,
+        guid: string
     ) => {
-
+        console.log("setCollectionsDataInInlineTab", qualifiedName, guid)
         // eslint-disable-next-line prefer-object-spread
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
             activeInlineTab.value
         )
-
-        activeInlineTabCopy.explorer.queries.queryCollectionId = queryCollectionId
+        activeInlineTabCopy.explorer.queries.collection = {
+            qualifiedName,
+            guid,
+        }
         modifyActiveInlineTab(
             activeInlineTabCopy,
             tabs,

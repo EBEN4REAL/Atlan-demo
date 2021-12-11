@@ -44,7 +44,7 @@
     } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
-        emits: ['change', 'update:data'],
+        emits: ['update:data'],
         components: { AtlanIcon },
         setup(props, { emit }) {
             const selectedValue = ref()
@@ -54,7 +54,15 @@
             console.log('connection selector', queryCollections.value)
 
             function handleChange(collectionId: string) {
-                emit('update:data', collectionId)
+                const collection = queryCollections.value?.find(
+                    (coll) => coll.guid === collectionId
+                )
+                const data = {
+                    qname: collection?.attributes.qualifiedName,
+                    guid: collectionId,
+                }
+                console.log('collection selected', data)
+                emit('update:data', data)
             }
             return {
                 handleChange,

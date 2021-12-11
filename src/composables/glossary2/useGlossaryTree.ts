@@ -679,63 +679,42 @@ const useGlossaryTree = ({
             localLimit &&
             approxCount > localLimit + localOffset
         ) {
-            if (key === 'root') {
-                treeData.value.push({
-                    key: treeNode?.guid + '_Load_More',
-                    title: 'Load more',
-                    isLeaf: true,
-                    isLoading: false,
-                    click: () => {
-                        handleLoadMore(treeNode, localLimit + localOffset)
-                    },
-                    typeName: 'loadMore',
-                    guid: 'LoadMore',
-                    checkable: false,
-                    selectable: false,
-                })
-            } else {
-                const path = recursivelyFindPath(parentGuid)[0]
-                console.log(path)
+            const path = recursivelyFindPath(parentGuid)[0]
+            console.log(path)
 
-                const addLoadMoreInNestedNode = (node: TreeDataItem) => {
-                    const currentPath = path.pop()
-                    if (node.guid === parentGuid && !currentPath) {
-                        node.children?.push({
-                            key: treeNode?.guid + '_Load_More',
-                            title: 'Load more',
-                            isLeaf: true,
-                            isLoading: false,
-                            typeName: 'loadMore',
-                            click: () => {
-                                handleLoadMore(
-                                    treeNode,
-                                    localLimit + localOffset
-                                )
-                            },
-                            guid: 'LoadMore',
-                            checkable: false,
-                            selectable: false,
-                            parent: treeNode,
-                        })
-                        return node
-                    }
-                    return {
-                        ...node,
-                        children: node.children?.map((child) => {
-                            if (child.guid === currentPath)
-                                return addLoadMoreInNestedNode(child)
-                            return child
-                        }),
-                    }
-                }
-                const parent = path?.pop()
-
-                treeData.value = treeData.value.map((node) => {
-                    if (node.guid === parent)
-                        return addLoadMoreInNestedNode(node)
+            const addLoadMoreInNestedNode = (node: TreeDataItem) => {
+                const currentPath = path.pop()
+                if (node.guid === parentGuid && !currentPath) {
+                    node.children?.push({
+                        key: treeNode?.guid + '_Load_More',
+                        title: 'Load more',
+                        isLeaf: true,
+                        isLoading: false,
+                        typeName: 'loadMore',
+                        click: () => {
+                            handleLoadMore(treeNode, localLimit + localOffset)
+                        },
+                        guid: 'LoadMore',
+                        checkable: false,
+                        selectable: false,
+                    })
                     return node
-                })
+                }
+                return {
+                    ...node,
+                    children: node.children?.map((child) => {
+                        if (child.guid === currentPath)
+                            return addLoadMoreInNestedNode(child)
+                        return child
+                    }),
+                }
             }
+            const parent = path?.pop()
+
+            treeData.value = treeData.value.map((node) => {
+                if (node.guid === parent) return addLoadMoreInNestedNode(node)
+                return node
+            })
         }
     }
     const handleLoadMore = async (treeNode, localOffset) => {
@@ -743,101 +722,117 @@ const useGlossaryTree = ({
         console.log(treeNode)
         offset.value = localOffset
         console.log(offset.value)
-        treeNode.dataRef.children = treeNode.dataRef.children.filter((node) => {
-            console.log(node.key !== `${treeNode?.guid}_Load_More`)
-            return node.key === `${treeNode?.guid}_Load_More`
+        const path = recursivelyFindPath(treeNode?.guid)[0]
+
+        const appendNewNodes = (node: TreeDataItem) => {
+            console.log('in append new node')
+            const currentPath = path.pop()
+
+            if (node.guid === treeNode?.guid && !currentPath) {
+                const newChildren = node.children?.filter(
+                    (child) => child.title !== 'Load more'
+                )
+                console.log(newChildren)
+                const getChildren = async () => {
+                    if (treeNode.typeName === 'AtlasGlossary') {
+                        facets.value = {
+                            typeNames: [
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ],
+                            glossary: treeNode.attributes?.qualifiedName,
+                            isRootTerm: true,
+                            isRootCategory: true,
+                        }
+                        generateBody()
+                        try {
+                            await mutate()
+
+                            let map = data.value?.entities?.map((i) => ({
+                                ...i,
+                                id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                                key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                                isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                                checkable:
+                                    i.typeName === 'AtlasGlossaryTerm'
+                                        ? checkable
+                                        : false,
+                            }))
+                            if (map) {
+                                newChildren?.push(...map)
+                                console.log(newChildren)
+                                checkAndAddLoadMoreNode(
+                                    data.value,
+                                    node?.guid,
+                                    node?.guid,
+                                    node
+                                )
+                            }
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    } else if (treeNode.typeName === 'AtlasGlossaryCategory') {
+                        facets.value = {
+                            typeNames: [
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ],
+                            glossary:
+                                treeNode.attributes?.anchor?.uniqueAttributes
+                                    ?.qualifiedName,
+                            parentCategory: treeNode.attributes?.qualifiedName,
+                        }
+
+                        generateBody()
+                        try {
+                            await mutate()
+                            if (data.value?.entities) {
+                                let map = data.value?.entities?.map((i) => ({
+                                    ...i,
+                                    id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                                    key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
+                                    isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                                    checkable:
+                                        i.typeName === 'AtlasGlossaryTerm'
+                                            ? checkable
+                                            : false,
+                                }))
+                                if (map) {
+                                    newChildren.push(...map)
+                                    checkAndAddLoadMoreNode(
+                                        data.value,
+                                        node?.guid,
+                                        node?.guid,
+                                        node
+                                    )
+                                }
+                            }
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    }
+                }
+                getChildren()
+                // Load More Node
+                return {
+                    ...node,
+                    children: newChildren,
+                }
+            }
+            return {
+                ...node,
+                children: node.children?.map((child) => {
+                    if (child.guid === currentPath) return appendNewNodes(child)
+                    return child
+                }),
+            }
+        }
+
+        const parent = path?.pop()
+        treeData.value = treeData.value.map((node) => {
+            if (node.guid === parent) return appendNewNodes(node)
+            return node
         })
-        console.log(treeNode.dataRef.children)
-        // if (treeNode.typeName === 'AtlasGlossary') {
-        //     facets.value = {
-        //         typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-        //         glossary: treeNode.attributes?.qualifiedName,
-        //         isRootTerm: true,
-        //         isRootCategory: true,
-        //     }
-        //     generateBody()
-        //     try {
-        //         await mutate()
-
-        //         if (error.value) {
-        //             loadedKeys.value.push(treeNode.dataRef.key)
-        //             treeNode.dataRef.isLoading = false
-        //             treeNode.dataRef.isError = error
-        //         } else {
-        //             if (!treeNode.dataRef.children) {
-        //                 treeNode.dataRef.children = []
-        //             }
-        //             let map = data.value?.entities?.map((i) => ({
-        //                 ...i,
-        //                 id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-        //                 key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-        //                 isLeaf: i.typeName === 'AtlasGlossaryTerm',
-        //                 checkable:
-        //                     i.typeName === 'AtlasGlossaryTerm'
-        //                         ? checkable
-        //                         : false,
-        //             }))
-        //             if (map) {
-        //                 console.log(map)
-        //                 treeNode.dataRef.children.push(...map)
-        //                 checkAndAddLoadMoreNode(
-        //                     data.value,
-        //                     treeNode.dataRef.guid,
-        //                     treeNode.dataRef.guid,
-        //                     treeNode
-        //                 )
-        //             }
-        //         }
-        //     } catch (e) {
-        //         console.log(e)
-        //     }
-        // } else if (treeNode.typeName === 'AtlasGlossaryCategory') {
-        //     facets.value = {
-        //         typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-        //         glossary:
-        //             treeNode.attributes?.anchor?.uniqueAttributes
-        //                 ?.qualifiedName,
-        //         parentCategory: treeNode.attributes?.qualifiedName,
-        //     }
-
-        //     generateBody()
-        //     try {
-        //         await mutate()
-        //         if (error.value) {
-        //             loadedKeys.value.push(treeNode.dataRef.key)
-        //             treeNode.dataRef.isLoading = false
-        //             treeNode.dataRef.isError = error
-        //         } else {
-        //             if (!treeNode.dataRef.children) {
-        //                 treeNode.dataRef.children = []
-        //             }
-        //             if (data.value?.entities) {
-        //                 let map = data.value?.entities?.map((i) => ({
-        //                     ...i,
-        //                     id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-        //                     key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-        //                     isLeaf: i.typeName === 'AtlasGlossaryTerm',
-        //                     checkable:
-        //                         i.typeName === 'AtlasGlossaryTerm'
-        //                             ? checkable
-        //                             : false,
-        //                 }))
-        //                 if (map) {
-        //                     console.log(map)
-        //                     treeNode.dataRef.children.push(...map)
-        //                     checkAndAddLoadMoreNode(
-        //                         data.value,
-        //                         treeNode.dataRef.guid,
-        //                         treeNode.dataRef.guid,
-        //                         treeNode
-        //                     )
-        //                 }
-        //             }
-        //         }
-        //     } catch (e) {
-        //         console.log(e)
-        //     }
-        // }
     }
     return {
         onLoadData,

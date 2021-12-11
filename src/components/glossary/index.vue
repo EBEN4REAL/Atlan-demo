@@ -95,7 +95,7 @@
             @select="handlePreview"
             :defaultGlossary="selectedGlossaryQf"
             :checkable="checkable"
-            v-model:checked-keys="checkedKeys"
+            v-model:checked-guids="checkedKeys"
             @check="onCheck"
         ></GlossaryTree>
 

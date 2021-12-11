@@ -35,7 +35,8 @@ interface UseTreeParams {
     cacheKey?: string
     isAccordion?: boolean
     nodesKey?: 'qualifiedName' | 'guid'
-    checkable: Boolean
+    checkable: Boolean,
+    checkedGuids?: string[]
 }
 
 const useGlossaryTree = ({
@@ -48,6 +49,7 @@ const useGlossaryTree = ({
     parentGlossaryGuid,
     parentGlossaryQualifiedName,
     nodesKey = 'guid',
+    checkedGuids = []
 }: UseTreeParams) => {
     const limit = ref(8)
     const offset = ref(0)
@@ -69,6 +71,7 @@ const useGlossaryTree = ({
     })
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
+    const checkedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
     const treeData = ref<TreeDataItem[]>([])
 
@@ -149,6 +152,12 @@ const useGlossaryTree = ({
                                     nodeToParentKeyMap[el.guid] = [
                                         treeNode.dataRef.key,
                                     ]
+                                }
+                                if(checkable && checkedGuids?.includes(el.guid)) {
+                                    console.log(el.guid)
+                                    if(!checkedKeys.value.includes(el.guid)) {
+                                        checkedKeys.value.push(el.guid)
+                                    }
                                 }
                             } else {
                                 nodeToParentKeyMap[el.guid] =
@@ -247,6 +256,12 @@ const useGlossaryTree = ({
                                             treeNode.dataRef.key,
                                         ]
                                     }
+                                    if(checkable && checkedGuids?.includes(el.guid)) {
+                                        console.log(el.guid)
+                                        if(!checkedKeys.value.includes(el.guid)) {
+                                            checkedKeys.value.push(el.guid)
+                                        }
+                                    }
                                 } else {
                                     nodeToParentKeyMap[el.guid] =
                                         treeNode?.dataRef?.key
@@ -300,6 +315,9 @@ const useGlossaryTree = ({
                 treeNode.dataRef.isError = e
             }
         }
+
+
+
     }
 
     const expandNode = (expanded: string[], event: any) => {
@@ -316,7 +334,7 @@ const useGlossaryTree = ({
                 expandedKeys.value?.splice(index, 1)
             }
             expandedKeys.value = [...expandedKeys.value]
-        }
+        } 
     }
 
     const recursivelyFindPath = (
@@ -718,6 +736,7 @@ const useGlossaryTree = ({
         data,
         loadedKeys,
         expandedKeys,
+        checkedKeys,
         selectNode,
         selectedKeys,
         glossaryList,

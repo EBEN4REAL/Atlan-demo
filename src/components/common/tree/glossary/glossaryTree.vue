@@ -39,7 +39,7 @@
         :loadedKeys="loadedKeys"
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
-        v-model:checked-keys="checkedKeys"
+        :checked-keys="checkedKeys"
         :class="$style.glossaryTree"
         :checkable="checkable"
         :checkStrictly="false"
@@ -115,17 +115,17 @@
                 required: false,
                 default: false,
             },
-            checkedKeys: {
+            checkedGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
             },
         },
-        emits: ['select', 'check', 'update:checkedKeys'],
+        emits: ['select', 'check', 'update:checkedGuids'],
         setup(props, { emit }) {
             const router = useRouter()
 
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
-            const { checkedKeys } = useVModels(props, emit)
+            const { checkedGuids } = useVModels(props, emit)
 
             const glossaryStore = useGlossaryStore()
             const parentGlossaryGuid = computed(() => {
@@ -151,11 +151,13 @@
                 isReady,
                 collapseAll,
                 updateNode,
+                checkedKeys
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
                 checkable: props.checkable,
+                checkedGuids: checkedGuids.value
             })
 
             const addGlossary = (asset) => {

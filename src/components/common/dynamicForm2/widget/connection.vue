@@ -1,10 +1,12 @@
 <template>
     <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
     <div class="p-3 bg-gray-100 rounded" v-if="list.length > 0">
-        <p>Existing Connections ({{ approximateCount }})</p>
+        <p class="font-bold">Existing Connections ({{ approximateCount }})</p>
         <div class="flex flex-col">
             <div v-for="(connection, index) in list" :key="connection.guid">
                 {{ connection.attributes.name }}
+
+                {{ aggregationMap('group_by_connection') }}
             </div>
         </div>
     </div>
@@ -88,7 +90,7 @@
                 ]
             })
 
-            const { data, approximateCount } = useIndexSearch({
+            const { data, approximateCount, aggregationMap } = useIndexSearch({
                 attributes: [
                     'name',
                     'description',
@@ -105,11 +107,12 @@
                     aggs: {
                         group_by_connection: {
                             terms: {
-                                field: 'qualifiedName',
+                                field: 'connectionQualifiedName',
                                 size: 100,
                             },
                         },
                     },
+
                     post_filter: {
                         bool: {
                             filter: {
@@ -124,6 +127,11 @@
                                             term: {
                                                 '__typeName.keyword':
                                                     'Connection',
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                __state: 'ACTIVE',
                                             },
                                         },
                                     ],
@@ -335,6 +343,7 @@
                 approximateCount,
                 data,
                 list,
+                aggregationMap,
             }
         },
     })

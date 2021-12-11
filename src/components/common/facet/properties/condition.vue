@@ -32,13 +32,16 @@
 
         <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
             <DynamicInput2
+                class="w-full"
                 v-model="localCondition.value"
                 :data-type="
                     attribute.options?.customType ||
                     attribute.subTypeName ||
-                    attribute.typeName
+                    attribute.options.primitiveType
                 "
-                :multiple="attribute?.options?.multiValueSelect === 'true'"
+                :multiple="
+                    attribute?.options?.multiValueSelect === 'true' && false
+                "
                 @change="handleValueChange"
             />
         </div>
@@ -53,7 +56,7 @@
     import { operators } from '~/constant/filters/operators'
 
     export default defineComponent({
-        name: 'TermPopover',
+        name: 'Condition',
         components: { DynamicInput2 },
         props: {
             attribute: {
@@ -80,7 +83,9 @@
             const { attribute } = toRefs(props)
 
             const operatorDataType = computed(() => {
-                let keys = []
+                if (attribute.value?.options?.primitiveType)
+                    return attribute.value.options.primitiveType
+                const keys: string[] = []
                 keys.push(attribute.value?.typeName)
 
                 if (attribute.value?.subTypeName) {

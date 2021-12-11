@@ -9,7 +9,11 @@ import { Workflows } from '~/services/service/workflows'
 
 export const isWorkflowRunning = ref(false)
 export const workflowName = ref('')
-const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
+const useBulkUpload = ({
+    guid = '',
+    fileS3Key = '',
+    glossaryName = '',
+} = {}) => {
     const body = computed(() => ({
         metadata: {
             name: `atlan-gtc-bulk-upload-${guid.slice(-8)}`, // will be static for this usecase
@@ -33,6 +37,10 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
                         name: 'glossary-type',
                         value: 'term', // signifies what can be uploaded : term || categories
                     },
+                    {
+                        name: 'glossary-name',
+                        value: glossaryName,
+                    },
                 ],
             },
             templates: [
@@ -55,6 +63,10 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
                                         {
                                             name: 'glossary-type',
                                             value: 'term',
+                                        },
+                                        {
+                                            name: 'glossary-name',
+                                            value: glossaryName,
                                         },
                                     ],
                                 },
@@ -146,12 +158,12 @@ const useBulkUpload = ({ guid = '', fileS3Key = '' } = {}) => {
 
     return { startUpload }
 }
-export function useArtifacts({ nodeName, outputName }) {
+export function useArtifacts({ nodeName, outputName, WFRunName }) {
     const params = ref(new URLSearchParams())
     const pathVariables = ref({})
 
     pathVariables.value = {
-        workflowName: workflowName.value,
+        workflowName: WFRunName,
         nodeName,
         outputName,
     }

@@ -76,80 +76,6 @@ export function useSavedQuery(
         console.log(connectors, 'connectors')
         console.log('saved query: ', savedQuery)
 
-        // const newTab: activeInlineTabInterface = inlineTabsDemoData[0]
-        // newTab.attributes = savedQuery.attributes
-        // ;(newTab.label = savedQuery.attributes.name ?? ''),
-        //     (newTab.key = savedQuery?.guid),
-        //     (newTab.favico = 'https://atlan.com/favicon.ico'),
-        //     (newTab.isSaved = true),
-        //     (newTab.queryId = savedQuery.guid),
-        //     (newTab.updateTime =
-        //         savedQuery?.updateTime ??
-        //         savedQuery.attributes.__modificationTimestamp),
-        //     (newTab.updatedBy =
-        //         savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy),
-        //     (newTab.connectionId = savedQuery.attributes.connectionId),
-        //     (newTab.description = savedQuery.attributes.description as string),
-        //     (newTab.qualifiedName = savedQuery.attributes.qualifiedName),
-        //     (newTab.parentGuid = savedQuery.attributes?.parent?.guid),
-        //     (newTab.parentQualifiedName =
-        //         savedQuery.attributes.parentFolderQualifiedName),
-        //     (newTab.isSQLSnippet = savedQuery.attributes.isSnippet as boolean),
-        //     (newTab.status = savedQuery.attributes.certificateStatus as string),
-        //     (newTab.savedQueryParentFolderTitle = savedQuery?.parentTitle),
-        //     (newTab.explorer = {
-        //         schema: {
-        //             connectors: connectors,
-        //         },
-        //     },
-
-        // newTab.playground.editor= {
-        //     text: savedQuery.attributes.rawQuery,
-        //     dataList: [],
-        //     columnList: [],
-        //     variables: decodedVariables,
-        //     savedVariables: [],
-        //     limitRows: {
-        //         checked: false,
-        //         rowsCount: -1,
-        //     },
-        //     context: {
-        //         // attributeName: 'defaultSchemaQualifiedName',
-        //         // attributeValue: defaultSchemaQualifiedName,
-        //         ...connectors
-
-        //     },
-        // }
-        // newTab.playground.resultsPane= {
-        //     activeTab:
-        //         activeInlineTab.value?.playground.resultsPane.activeTab ?? 0,
-        //     result: {
-        //         title: savedQuery.attributes.name,
-        //         isQueryRunning: '',
-        //         queryErrorObj: {},
-        //         errorDecorations: [],
-        //         totalRowsCount: -1,
-        //         executionTime: -1,
-        //         runQueryId: undefined,
-        //         buttonDisable: false,
-        //         eventSourceInstance: undefined,
-        //     },
-        //     metadata: {},
-        //     queries: {},
-        //     joins: {},
-        //     filters: {},
-        //     impersonation: {},
-        //     downstream: {},
-        //     sqlHelp: {},
-        // }
-
-        // newTab.assetSidebar = {
-        //     // for taking the previous state from active tab
-        //     isVisible: false,
-        //     assetInfo: savedQuery,
-        //     title: activeInlineTab.value?.assetSidebar.title ?? '',
-        //     id: activeInlineTab.value?.assetSidebar.id ?? '',
-        // }
 
         const newTab: activeInlineTabInterface = {
             attributes: savedQuery.attributes,
@@ -172,6 +98,7 @@ export function useSavedQuery(
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
             status: savedQuery.attributes.certificateStatus as string,
             savedQueryParentFolderTitle: savedQuery?.parentTitle,
+            collectionQulaifiedName: savedQuery.attributes.collectionQualifiedName,
             explorer: {
                 schema: {
                     connectors: connectors,
@@ -180,10 +107,10 @@ export function useSavedQuery(
                     connectors: {
                         connector: savedQuery.attributes.connectorName,
                     },
-                    collections: {
+                    collection: {
                         // copy from last tab
-                        guid: activeInlineTab.value.explorer.queries.collection.guid,
-                        qualifiedName: activeInlineTab.value.explorer.queries.collection.qualifiedName
+                        guid: activeInlineTab?.value?.explorer?.queries?.collection?.guid,
+                        qualifiedName: savedQuery.attributes.collectionQualifiedName
                     }
                 },
             },

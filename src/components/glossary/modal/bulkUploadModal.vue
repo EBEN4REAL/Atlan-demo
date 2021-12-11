@@ -36,98 +36,105 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
-    import FormGen from '~/components/common/formGenerator/index.vue'
-    import useBulkUpload from `@/glossary/modal/useBulkUpload.ts`
-    import { isWorkflowRunning } from `@/glossary/modal/useBulkUpload.ts`
-    import { message } from 'ant-design-vue'
+        import { defineComponent, ref } from 'vue'
+        import FormGen from '~/components/common/formGenerator/index.vue'
+        import useBulkUpload from `@/glossary/modal/useBulkUpload.ts`
+        import { isWorkflowRunning } from `@/glossary/modal/useBulkUpload.ts`
+        import { message } from 'ant-design-vue'
+        import CSVData from '~/assets/samples/terms-template.json'
+    import { downloadFile } from '~/utils/library/download'
 
-    export default defineComponent({
-        components: { FormGen },
-        props: {
-            entity: {
-                type: Object,
-                required: true,
-                default: () => {},
+        export default defineComponent({
+            components: { FormGen },
+            props: {
+                entity: {
+                    type: Object,
+                    required: true,
+                    default: () => {},
+                },
             },
-        },
-        emits: [],
-        setup(props, { emit }) {
-            // data
-            const visible = ref<boolean>(false)
-            const fileS3Key = ref('') // s3 key is what we get from the files api
-            // http on local https on production
-            const getBasePath = function (): any {
-                if (process.env.NODE_ENV === 'development')
-                    return 'http://{{domain}}/api/service/files'
-                return 'https://{{domain}}/api/service/files'
-            }
+            emits: [],
+            setup(props, { emit }) {
+                // data
+                const visible = ref<boolean>(false)
+                const fileS3Key = ref('') // s3 key is what we get from the files api
+                // http on local https on production
+                const getBasePath = function (): any {
+                    if (process.env.NODE_ENV === 'development')
+                        return 'http://{{domain}}/api/service/files'
+                    return 'https://{{domain}}/api/service/files'
+                }
 
-            const formConfig = ref([
-                {
-                    type: 'upload',
-                    id: 'test',
-                    label: '',
-                    isVisible: true,
-                    requestConfig: {
-                        url: getBasePath(),
-                        formDataFormat: {
-                            name: 'name',
-                            file: '{{file}}',
-                            prefix: 'prefix',
+                const formConfig = ref([
+                    {
+                        type: 'upload',
+                        id: 'test',
+                        label: '',
+                        isVisible: true,
+                        requestConfig: {
+                            url: getBasePath(),
+                            formDataFormat: {
+                                name: 'name',
+                                file: '{{file}}',
+                                prefix: 'prefix',
+                            },
                         },
                     },
-                },
-            ]) // this drives the upload form
+                ]) // this drives the upload form
 
-            // function to show modal
-            const showModal = () => {
-                if (isWorkflowRunning.value) {
-                    message.error({
-                        content: `Sorry, this action cannot be completed because there is an ongoing upload for this glossary. Retry again later.`,
-                        duration: 5,
-                    })
-                } else {
-                    visible.value = true
+                // function to show modal
+                const showModal = () => {
+                    if (isWorkflowRunning.value) {
+                        message.error({
+                            content: `Sorry, this action cannot be completed because there is an ongoing upload for this glossary. Retry again later.`,
+                            duration: 5,
+                        })
+                    } else {
+                        visible.value = true
+                    }
                 }
-            }
-            const handleCancel = () => {
-                visible.value = false
-            }
-
-            // get called on file upload
-            const handleFormChange = (data) => {
-                if (data.key) {
-                    fileS3Key.value = data.key
-                    const { startUpload } = useBulkUpload({
-                        guid: props?.entity?.guid,
-                        fileS3Key,
-                    })
-                    startUpload()
-                    visible.value = false // close modal on hit submit
+                const handleCancel = () => {
+                    visible.value = false
                 }
-            }
 
-            // handles download of sample file
-            const handleDownload = () => {
-                const link = window.document.createElement('a')
-                link.setAttribute(
-                    'href',
-                    '/src/assets/samples/terms-template.csv'
-                )
-                link.setAttribute('download', 'sample.csv')
-                link.click()
-            }
-            return {
-                handleCancel,
-                showModal,
-                visible,
-                formConfig,
-                handleFormChange,
-                handleDownload,
-            }
-        },
-    })
+                // get called on file upload
+                const handleFormChange = (data) => {
+                    if (data.key) {
+                        fileS3Key.value = data.key
+                        const { startUpload } = useBulkUpload({
+                            guid: props?.entity?.guid,
+                            fileS3Key,
+                        })
+                        startUpload()
+                        visible.value = false // close modal on hit submit
+                    }
+                }
+
+                // handles download of sample file
+                const handleDownload=()=>{
+                    const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+                    const header = Object.keys(CSVData[0])
+                    const csv = [
+                          header.join(','), // header row first
+                      ...CSVData.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+                    ].join('\r\n')
+
+                    console.log(csv)
+                    const fileName='Sample'
+
+                    downloadFile(csv, fileName)
+                }
+
+                return {
+                    handleCancel,
+                    showModal,
+                    visible,
+                    formConfig,
+                    handleFormChange,
+                    handleDownload,
+                }
+            },
+        })
 </script>
 
 <style lang="less" module>

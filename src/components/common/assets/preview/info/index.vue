@@ -278,15 +278,7 @@
             </Terms>
         </div>
 
-        <div
-            v-if="
-                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
-                    selectedAsset.typeName
-                )
-            "
-            ref="animationPoint"
-            class="flex flex-col"
-        >
+        <div ref="animationPoint" class="flex flex-col">
             <Shortcut
                 shortcut-key="c"
                 action="set certificate"

@@ -9,7 +9,6 @@ overrides:
 specifiers:
   '@babel/core': ^7.16.0
   '@babel/eslint-parser': ^7.16.3
-  '@dagrejs/graphlib': ^2.1.4
   '@intlify/vite-plugin-vue-i18n': ^3.2.1
   '@rollup/plugin-strip': ^2.1.0
   '@tailwindcss/line-clamp': ^0.2.2
@@ -120,7 +119,6 @@ specifiers:
   xlsx: ^0.17.4
 
 dependencies:
-  '@dagrejs/graphlib': 2.1.4
   '@tailwindcss/typography': 0.4.1_tailwindcss@2.2.19
   '@tiptap/core': 2.0.0-beta.137
   '@tiptap/extension-code': 2.0.0-beta.25_@tiptap+core@2.0.0-beta.137
@@ -1450,12 +1448,6 @@ packages:
   /@ctrl/tinycolor/3.4.0:
     resolution: {integrity: sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==}
     engines: {node: '>=10'}
-    dev: false
-
-  /@dagrejs/graphlib/2.1.4:
-    resolution: {integrity: sha512-QCg9sL4uhjn468FDEsb/S9hS2xUZSrv/+dApb1Ze5VKO96pTXKNJZ6MGhIpgWkc1TVhbVGH9/7rq/Mf8/jWicw==}
-    dependencies:
-      lodash: 4.17.21
     dev: false
 
   /@emmetio/abbreviation/2.2.2:

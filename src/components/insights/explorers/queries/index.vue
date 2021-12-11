@@ -3,14 +3,49 @@
         class="flex flex-col items-center w-full h-full bg-white query-explorer"
     >
         <div class="w-full p-4 pb-0 rounded">
-            <!-- <Connector
-                :connector="connector"
-                @update:data="updateConnector"
-                :filterSourceIds="BItypes"
-            /> -->
-            <CollectionSelector
-                @update:data="updateCollection"
-            ></CollectionSelector>
+            <div class="flex items-center">
+                <CollectionSelector
+                    @update:data="updateCollection"
+                ></CollectionSelector>
+                <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
+                <a-dropdown :trigger="['click']">
+                    <a-button size="small">
+                        <AtlanIcon :icon="'Add'"></AtlanIcon>
+                    </a-button>
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                key="0"
+                                @click="
+                                    () =>
+                                        toggleCreateQueryModal(
+                                            currentSelectedNode
+                                        )
+                                "
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="NewQuery"
+                                        color="#5277D7"
+                                        class="h-4 mr-2 outline-none hover:text-primary"
+                                    />
+                                    <span>New Query</span>
+                                </div>
+                            </a-menu-item>
+                            <a-menu-item key="1" @click="createFolderInput">
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        color="#5277D7"
+                                        icon="NewFolder"
+                                        class="h-4 mr-2 outline-none hover:text-primary"
+                                    />
+                                    <span>New Folder</span>
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
+            </div>
             <div class="flex flex-row space-x-2">
                 <a-input
                     v-model:value="searchQuery"
@@ -37,63 +72,6 @@
         </div>
         <!-- <div class="w-full my-4 border-b"></div> -->
         <div class="w-full h-full mt-2">
-            <div
-                class="w-full px-4 h-9"
-                v-if="!searchQuery?.length && !totalFilteredCount"
-            >
-                <div
-                    class="flex items-center justify-between w-full text-gray-500 h-9"
-                >
-                    <div class="flex items-center justify-end w-full">
-                        <div class="flex items-center">
-                            <div class>
-                                <a-tooltip
-                                    placement="top"
-                                    color="#363636"
-                                    v-if="permissions.public.createQuery"
-                                >
-                                    <template #title>
-                                        <span>New query</span>
-                                    </template>
-                                    <AtlanIcon
-                                        @click="
-                                            () =>
-                                                toggleCreateQueryModal(
-                                                    currentSelectedNode
-                                                )
-                                        "
-                                        icon="NewQuery"
-                                        color="#5277D7"
-                                        class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
-                                    />
-                                </a-tooltip>
-                                <!-- ----------- -->
-                            </div>
-                            <div class>
-                                <a-tooltip
-                                    placement="top"
-                                    color="#363636"
-                                    v-if="
-                                        resolvePublicFolderCreationPermission()
-                                    "
-                                >
-                                    <template #title>
-                                        <span>New folder</span>
-                                    </template>
-                                    <AtlanIcon
-                                        @click="createFolderInput"
-                                        color="#5277D7"
-                                        icon="NewFolder"
-                                        class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
-                                    />
-                                </a-tooltip>
-                                <!-- CREATE FOLDER PERMISSIONS -->
-                            </div>
-                        </div>
-                    </div>
-                    <!-- {{ savedQueryType }} -->
-                </div>
-            </div>
             <div
                 v-if="!searchQuery?.length && !totalFilteredCount"
                 class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
@@ -221,7 +199,6 @@
     import useQueryTree from './composables/useQueryTree'
     import useSearchQueries from './composables/useSearchQueries'
 
-    import Connector from '~/components/insights/common/connector/connectorOnly.vue'
     import CollectionSelector from './collection/collectionSelector.vue'
     // import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import LoadingView from '@common/loaders/section.vue'
@@ -235,12 +212,12 @@
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import QueryFilter from './queryFilter.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         components: {
             RaisedTab,
             QueryTree,
-            Connector,
             // SaveQueryModal,
             QueryFilter,
             LoadingView,
@@ -252,6 +229,7 @@
                         '~/components/insights/playground/editor/saveQuery/index.vue'
                     )
             ),
+            AtlanIcon,
         },
         props: {
             reset: {

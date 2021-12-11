@@ -8,8 +8,11 @@
                     @update:data="updateCollection"
                 ></CollectionSelector>
                 <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
-                <a-dropdown :trigger="['click']">
-                    <a-button size="small">
+                <a-dropdown
+                    :trigger="['click']"
+                    class="ml-auto shadow-none h-7"
+                >
+                    <a-button size="small" :class="$style.filterButton">
                         <AtlanIcon :icon="'Add'"></AtlanIcon>
                     </a-button>
                     <template #overlay>

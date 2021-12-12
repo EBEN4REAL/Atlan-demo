@@ -525,10 +525,16 @@ export function useSavedQuery(
             },
         })
         body.value.entity.attributes.parentQualifiedName = parentFolderQF
-        body.value.entity.attributes.parent = {
-            guid: parentFolderGuid,
-            // TODO:@rohan: add a check for collections, hardcoded to folder currently
-            typeName: "QueryFolder"
+        if (parentFolderQF.includes("/folder")) {
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid,
+                typeName: "QueryFolder"
+            }
+        } else {
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid,
+                typeName: "QueryCollection"
+            }
         }
         // chaing loading to true
         saveQueryLoading.value = true
@@ -744,23 +750,20 @@ export function useSavedQuery(
             },
         })
         body.value.entity.attributes.parentQualifiedName = parentFolderQF
-        body.value.entity.attributes.parent = {
-            guid: parentFolderGuid,
-            // TODO:@rohan: add a check for collections, hardcoded to folder currently
-            typeName: "QueryFolder"
+        if (parentFolderQF.includes("/folder")) {
+            // folder is parent
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid,
+                typeName: "QueryFolder"
+            }
+        } else {
+            // collection is parent
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid,
+                typeName: "QueryCollection"
+            }
         }
         console.log("hola hola hola parentFolderQF", parentFolderQF)
-        if (type && type.length && parentFolderQF === 'root') {
-            body.value.entity.classifications = [
-                {
-                    attributes: {},
-                    propagate: true,
-                    removePropagationsOnEntityDelete: true,
-                    typeName: type,
-                    validityPeriods: [],
-                },
-            ]
-        }
         // chaing loading to true
         saveQueryLoading.value = true
         const { data, error, isLoading } = Insights.CreateSavedQuery(

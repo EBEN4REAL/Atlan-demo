@@ -43,7 +43,7 @@
                         <div class="capitalize">
                             {{ getActionUser(log.user) }}
                         </div>
-                        <div class="mx-3 name-time-separator"></div>
+                        <div class="mx-3 timeline-name-time-separator"></div>
                         <div>{{ timeAgo(log.timestamp) }}</div>
                     </div>
                 </a-timeline-item>
@@ -195,33 +195,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .ant-timeline-item {
-        margin-bottom: 0 !important;
-        padding-bottom: 40px !important;
-    }
-
-    .ant-timeline-item-last {
-        padding-bottom: 20px !important;
-    }
-    .ant-timeline-item-dot {
-        width: 13px;
-        height: 13px;
-        border-radius: 50%;
-    }
-
-    .name-time-separator {
-        height: 5px;
-        width: 5px;
-        background-color: #c4c4c4;
-        border-radius: 50%;
-    }
-
-    :global(.ant-timeline-item-content) {
-        margin-left: 22px;
-    }
-    :global(.ant-timeline-item-head-custom) {
-        padding: 0 !important;
-    }
-</style>

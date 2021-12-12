@@ -13,8 +13,7 @@
                 <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
                         :checked="map[item[selectUserKey]]"
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
-                        :class="$style.atlanReverse"
+                        class="atlanReverse inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
                         @change="
                             (checked) =>
                                 handleChange(checked, item[selectUserKey])
@@ -144,14 +143,3 @@
     })
 </script>
 
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

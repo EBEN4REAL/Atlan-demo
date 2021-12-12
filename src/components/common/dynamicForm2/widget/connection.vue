@@ -219,8 +219,8 @@
                             help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'userMultiple',
                             label: 'Owner Users',
-
-                            grid: 3,
+                            start: 1,
+                            grid: 5,
                         },
                     },
                     ownerGroups: {
@@ -229,7 +229,8 @@
                             help: 'These group of users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'groupMultiple',
                             label: 'Owner Groups',
-                            grid: 3,
+
+                            grid: 4,
                         },
                     },
                     allowQuery: {

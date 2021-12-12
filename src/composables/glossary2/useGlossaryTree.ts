@@ -56,6 +56,10 @@ const useGlossaryTree = ({
     const queryText = ref('')
     const facets = ref({
         typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+        glossary: '',
+        isRootTerm: true,
+        isRootCategory: true,
+        parentCategory: ''
     })
     const aggregations = ref([])
     const postFacets = ref({})
@@ -687,8 +691,10 @@ const useGlossaryTree = ({
         }
         const localLimit = searchParams.size ?? limit.value
         const localOffset = searchParams.from ?? 0
-        const approxCount = response.approximateCount
+        const approxCount = response.approximateCount ?? 0
 
+        const numberOfLoadMore = (approxCount - localLimit) < localLimit ? (approxCount - localLimit) : localLimit
+        
         if (
             approxCount &&
             localLimit &&
@@ -697,12 +703,13 @@ const useGlossaryTree = ({
             if( parentKey === 'root') {
                 treeData.value.push({
                     key: 'root' + '_Load_More',
-                    title: 'Load more',
+                    title: `Load ${numberOfLoadMore} more`,
                     isLeaf: true,
                     isLoading: false,
                     typeName: 'loadMore',
                     click: () => {
                         handleLoadMore(localLimit + localOffset, 'root', parentGlossaryQf, parentCategoryQf)
+                        console.log(this, 'bruh')
                     },
                     guid: 'LoadMore',
                     checkable: false,
@@ -718,12 +725,14 @@ const useGlossaryTree = ({
                     if (node.guid === parentGuid && !currentPath) {
                         node.children?.push({
                             key: node?.guid + '_Load_More',
-                            title: 'Load more',
+                            title: `Load ${numberOfLoadMore} more`,
                             isLeaf: true,
                             isLoading: false,
                             typeName: 'loadMore',
-                            click: () => {
+                            click () {
+                                this.dataRef.isLoading = true
                                 handleLoadMore(localLimit + localOffset, node?.guid, parentGlossaryQf, parentCategoryQf)
+
                             },
                             guid: 'LoadMore',
                             checkable: false,
@@ -749,124 +758,119 @@ const useGlossaryTree = ({
             }
         }
     }
+
     const handleLoadMore = async (localOffset: number, parentGuid: string | 'root', parentGlossaryQf: string, parentCategoryQf?: string) => {
         offset.value = localOffset
-        if(parentGuid === 'root') {
+        const path = recursivelyFindPath(parentGuid)[0]
+        console.log(path)
+        console.log('parentGuid', parentGuid)
+        console.log('parentGlossaryQf', parentGlossaryQf)
+        console.log('parentCategoryQf', parentCategoryQf)
+        const getChildren = async () => {
+            const children: any[] = []
+            facets.value = {
+                typeNames: [
+                    'AtlasGlossaryTerm',
+                    'AtlasGlossaryCategory',
+                ],
+                glossary: parentGlossaryQf,
+                isRootTerm: parentCategoryQf ? false : true ,
+                isRootCategory: parentCategoryQf ? false : true,
+                parentCategory: parentCategoryQf
+            }
+            generateBody()
+            try {
+                await mutate()
 
+                let map = data.value?.entities?.map((i) => ({
+                    ...i,
+                    id: `${parentGlossaryQf}_${i.attributes?.qualifiedName}`,
+                    key: `${parentGlossaryQf}_${i.attributes?.qualifiedName}`,
+                    isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                    checkable:
+                        i.typeName === 'AtlasGlossaryTerm'
+                            ? checkable
+                            : false,
+                }))
+                map?.forEach((el) => {
+                    if (el.typeName === 'AtlasGlossaryTerm') {
+                        const currentParentList =
+                            nodeToParentKeyMap[el.guid]
+                        if (
+                            currentParentList &&
+                            currentParentList.length &&
+                            typeof currentParentList !== 'string'
+                        ) {
+                            currentParentList.push(
+                                parentGuid
+                            )
+                            nodeToParentKeyMap[el.guid] =
+                                currentParentList
+                        } else {
+                            nodeToParentKeyMap[el.guid] = [
+                                parentGuid,
+                            ]
+                        }
+                    } else {
+                        nodeToParentKeyMap[el.guid] =
+                        parentGuid
+                    }
+                })
+                if (data.value) {
+                    children?.push(...map)
+                    checkAndAddLoadMoreNode({
+                        response: data.value,
+                        parentGuid: parentGuid,
+                        parentKey: parentGuid,
+                        parentGlossaryQf,
+                        parentCategoryQf
+                    })
+                }
+                return children;
+            } catch (e) {
+                console.log(e)
+                return []
+            }
         }
-        const path = recursivelyFindPath(treeNode?.guid)[0]
+        const newChildren = await getChildren()
 
-        const appendNewNodes = (node: TreeDataItem) => {
-            console.log('in append new node')
-            const currentPath = path.pop()
-
-            if (node.guid === treeNode?.guid && !currentPath) {
-                const newChildren = node.children?.filter(
-                    (child) => child.title !== 'Load more'
-                )
-                console.log(newChildren)
-                const getChildren = async () => {
-                    if (treeNode.typeName === 'AtlasGlossary') {
-                        facets.value = {
-                            typeNames: [
-                                'AtlasGlossaryTerm',
-                                'AtlasGlossaryCategory',
-                            ],
-                            glossary: treeNode.attributes?.qualifiedName,
-                            isRootTerm: true,
-                            isRootCategory: true,
-                        }
-                        generateBody()
-                        try {
-                            await mutate()
-
-                            let map = data.value?.entities?.map((i) => ({
-                                ...i,
-                                id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                                key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                                isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                                checkable:
-                                    i.typeName === 'AtlasGlossaryTerm'
-                                        ? checkable
-                                        : false,
-                            }))
-                            if (data.value) {
-                                newChildren?.push(...map)
-                                console.log(newChildren)
-                                checkAndAddLoadMoreNode({
-                                    response: data.value,
-                                    parentGuid: node?.guid,
-                                    parentKey: node?.guid,
-                                    parentGlossaryQf,
-                                    parentCategoryQf
-                                })
-                            }
-                        } catch (e) {
-                            console.log(e)
-                        }
-                    } else if (treeNode.typeName === 'AtlasGlossaryCategory') {
-                        facets.value = {
-                            typeNames: [
-                                'AtlasGlossaryTerm',
-                                'AtlasGlossaryCategory',
-                            ],
-                            glossary:
-                                treeNode.attributes?.anchor?.uniqueAttributes
-                                    ?.qualifiedName,
-                            parentCategory: treeNode.attributes?.qualifiedName,
-                        }
-
-                        generateBody()
-                        try {
-                            await mutate()
-                            if (data.value?.entities) {
-                                let map = data.value?.entities?.map((i) => ({
-                                    ...i,
-                                    id: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                                    key: `${treeNode.attributes?.qualifiedName}_${i.attributes?.qualifiedName}`,
-                                    isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                                    checkable:
-                                        i.typeName === 'AtlasGlossaryTerm'
-                                            ? checkable
-                                            : false,
-                                }))
-                                if (data.value) {
-                                    newChildren.push(...map)
-                                    checkAndAddLoadMoreNode(
-                                        response: data.value,
-                                        parentGuid: node?.guid,
-                                        parentKey: node?.guid,
-                                        parentGlossaryQf,
-                                        parentCategoryQf
-                                    )
-                                }
-                            }
-                        } catch (e) {
-                            console.log(e)
-                        }
+        if(parentGuid === 'root') {
+            treeData.value.push(...newChildren)
+        } else {
+            const appendNewNodes = (node: TreeDataItem) => {
+                const currentPath = path.pop()
+                
+                if (node.guid === parentGuid && !currentPath) {
+                    let updatedChildren = node.children?.filter(
+                        (child) => child.typeName !== 'loadMore'
+                    )
+                    
+                    if(updatedChildren && updatedChildren.length){
+                        updatedChildren.push(...newChildren)
+                    }
+                    else updatedChildren = newChildren
+                    
+                    return {
+                        ...node,
+                        children: updatedChildren,
                     }
                 }
-                getChildren()
-                // Load More Node
                 return {
                     ...node,
-                    children: newChildren,
+                    children: node.children?.map((child) => {
+                        if (child.guid === currentPath) return appendNewNodes(child)
+                        return child
+                    }),
                 }
             }
-            return {
-                ...node,
-                children: node.children?.map((child) => {
-                    if (child.guid === currentPath) return appendNewNodes(child)
-                    return child
-                }),
-            }
+    
+            const parent = path?.pop()
+            treeData.value = treeData.value.map((node) => {
+                if (node.guid === parent) return appendNewNodes(node)
+                return node
+            })
         }
 
-        const parent = path?.pop()
-        treeData.value = treeData.value.map((node) => {
-            if (node.guid === parent) return appendNewNodes(node)
-            return node
-        })
     }
     return {
         onLoadData,

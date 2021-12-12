@@ -78,14 +78,14 @@ keycloak
             })
             inputFocusDirective(app)
             authDirective(app)
-            ;(window as any).analytics.identify(authStore?.id, {
-                name: authStore.name || '',
-                firstName: authStore.firstName,
-                lastName: authStore.lastName,
-                email: authStore.email || '',
-                username: authStore.username || '',
-                roles: authStore.roles || [],
-            })
+                ; (window as any).analytics.identify(authStore?.id, {
+                    name: authStore.name || '',
+                    firstName: authStore.firstName,
+                    lastName: authStore.lastName,
+                    email: authStore.email || '',
+                    username: authStore.username || '',
+                    roles: authStore.roles || [],
+                })
 
             app.use(router).mount('#app')
         }
@@ -109,6 +109,8 @@ router.beforeEach(async (to, from, next) => {
             return next()
         }
         return window.location.reload()
+    } else {
+        window.location.replace("/404");
     }
     return next()
 })

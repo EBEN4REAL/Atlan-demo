@@ -188,7 +188,7 @@
             }
             const onCheck = (e, { checkedNodes }) => {
                 if (checkedKeys) {
-                    checkedKeys.value = checkedNodes.map((term) => term.guid)
+                    checkedKeys.value = checkedNodes.map((node) => node.key)
                 }
                 emit('check', checkedNodes)
             }

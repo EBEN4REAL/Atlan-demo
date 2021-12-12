@@ -57,6 +57,7 @@
             const { showNone } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid))
 
             const onCheck = (checkedNodes) => {
                 localValue.value.terms = checkedNodes.map((term) => ({
@@ -64,13 +65,13 @@
                     qualifiedName: term.attributes.qualifiedName
                 }))
             }
+            
             const checkNoTerms = (t) => {
                 if(!localValue.value?.terms?.length) {
                     localValue.value.terms = []
                 }
                 localValue.value.empty = t.target.checked
             }
-            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid))
 
             watch(
                 () => localValue.value.terms,

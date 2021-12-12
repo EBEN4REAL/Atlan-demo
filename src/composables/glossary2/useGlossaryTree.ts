@@ -165,8 +165,9 @@ const useGlossaryTree = ({
                                     checkedGuids?.includes(el.guid)
                                 ) {
                                     console.log(el.guid)
-                                    if (!checkedKeys.value.includes(el.guid)) {
-                                        checkedKeys.value.push(el.guid)
+                                    const key =  `${treeNode.attributes?.qualifiedName}_${el.attributes?.qualifiedName}`
+                                    if (!checkedKeys.value.includes(key)) {
+                                        checkedKeys.value.push(key)
                                     }
                                 }
                             } else {
@@ -269,10 +270,11 @@ const useGlossaryTree = ({
                                         checkedGuids?.includes(el.guid)
                                     ) {
                                         console.log(el.guid)
+                                        const key = `${treeNode.attributes?.qualifiedName}_${el.attributes?.qualifiedName}`
                                         if (
-                                            !checkedKeys.value.includes(el.guid)
+                                            !checkedKeys.value.includes(key)
                                         ) {
-                                            checkedKeys.value.push(el.guid)
+                                            checkedKeys.value.push(key)
                                         }
                                     }
                                 } else {

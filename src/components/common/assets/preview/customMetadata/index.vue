@@ -321,6 +321,6 @@
 </script>
 <style scoped>
     .scrollheight {
-        max-height: calc(100vh - 12rem);
+        max-height: calc(100vh - 7rem);
     }
 </style>

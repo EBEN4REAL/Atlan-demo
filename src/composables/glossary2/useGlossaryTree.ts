@@ -10,7 +10,7 @@ import useGtcEntity from '~/composables/glossary/useGtcEntity'
 
 // types
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
-import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
+import { IndexSearchResponse } from '~/services/meta/search/index'
 
 // store
 import useGlossaryStore from '~/store/glossary'
@@ -95,7 +95,7 @@ const useGlossaryTree = ({
     }
 
     const { data, mutate, isLoading, error, isReady } =
-        useIndexSearch<assetInterface>(
+        useIndexSearch<Category | Term>(
             defaultBody,
             dependentKey,
             false,
@@ -136,7 +136,7 @@ const useGlossaryTree = ({
                                 ? checkable
                                 : false,
                     }))
-                    if (map) {
+                    if (data.value) {
                         map?.forEach((el) => {
                             if (el.typeName === 'AtlasGlossaryTerm') {
                                 const currentParentList =
@@ -173,12 +173,11 @@ const useGlossaryTree = ({
                         console.log(treeNode)
                         treeNode.dataRef.children.push(...map)
                         loadedKeys.value.push(treeNode.dataRef.key)
-                        checkAndAddLoadMoreNode(
-                            data.value,
-                            treeNode.dataRef.guid,
-                            treeNode.dataRef.guid,
-                            treeNode
-                        )
+                        checkAndAddLoadMoreNode({
+                            response: data.value,
+                            parentGuid:treeNode.dataRef.guid,
+                            parentGlossaryQf: treeNode.attributes?.qualifiedName 
+                        })
                     } else {
                         // treeNode.dataRef.children = null
                         treeNode.dataRef.children.push({
@@ -283,12 +282,13 @@ const useGlossaryTree = ({
                             loadedKeys.value.push(treeNode.dataRef.key)
 
                             console.log(treeNode)
-                            checkAndAddLoadMoreNode(
-                                data.value,
-                                treeNode.dataRef.guid,
-                                treeNode.dataRef.guid,
-                                treeNode
-                            )
+                            checkAndAddLoadMoreNode({
+                                response: data.value,
+                                parentGuid: treeNode.dataRef.guid,
+                                parentGlossaryQf: treeNode.attributes?.anchor?.uniqueAttributes
+                                ?.qualifiedName,
+                                parentCategoryQf: treeNode.attributes?.qualifiedName
+                            })
                         } else {
                             loadedKeys.value.push(treeNode.dataRef.key)
                         }
@@ -437,7 +437,12 @@ const useGlossaryTree = ({
                             if (a.typeName === 'AtlasGlossaryTerm') return 1
                             return -1
                         })
-                        checkAndAddLoadMoreNode(data.value, 'root', 'root')
+                        checkAndAddLoadMoreNode({
+                            response: data.value, 
+                            parentGuid: 'root', 
+                            parentKey: 'root',
+                            parentGlossaryQf: defaultGlossaryQf
+                        })
                     }
                 } catch (e) {
                     console.log(e)
@@ -546,6 +551,7 @@ const useGlossaryTree = ({
             recursivelyAddOrDeleteNode(asset, guid, 'delete')
         }
     }
+
     const addNode = (asset, entity): TreeDataItem => {
         if (entity && entity !== {}) {
             recursivelyAddOrDeleteNode(
@@ -596,6 +602,7 @@ const useGlossaryTree = ({
     const collapseAll = () => {
         expandedKeys.value = []
     }
+    
     const updateNode = (asset) => {
         const currentParents = nodeToParentKeyMap[asset?.guid]
         if (currentParents) {
@@ -657,19 +664,27 @@ const useGlossaryTree = ({
         }
     }
 
-    const checkAndAddLoadMoreNode = (
-        response: BasicSearchResponse<Term>,
+    interface checkAndAddLoadMoreParams {
+        response: IndexSearchResponse<Term | Category>,
         parentGuid: string,
-        key?: string,
-        treeNode
-    ) => {
+        parentKey?: string | 'root',
+        parentGlossaryQf: string,
+        parentCategoryQf?: string
+    }
+
+    const checkAndAddLoadMoreNode = ({
+        response,
+        parentGuid,
+        parentKey,
+        parentGlossaryQf,
+        parentCategoryQf
+    }: checkAndAddLoadMoreParams) => {
         let searchParams
         try {
             searchParams = JSON.parse(response.searchParameters?.query ?? '{}')
         } catch {
             searchParams = { size: limit.value, from: 0 }
         }
-        console.log(treeNode)
         const localLimit = searchParams.size ?? limit.value
         const localOffset = searchParams.from ?? 0
         const approxCount = response.approximateCount
@@ -679,49 +694,66 @@ const useGlossaryTree = ({
             localLimit &&
             approxCount > localLimit + localOffset
         ) {
-            const path = recursivelyFindPath(parentGuid)[0]
-            console.log(path)
+            if( parentKey === 'root') {
+                treeData.value.push({
+                    key: 'root' + '_Load_More',
+                    title: 'Load more',
+                    isLeaf: true,
+                    isLoading: false,
+                    typeName: 'loadMore',
+                    click: () => {
+                        handleLoadMore(localLimit + localOffset, 'root', parentGlossaryQf, parentCategoryQf)
+                    },
+                    guid: 'LoadMore',
+                    checkable: false,
+                    selectable: false,
+                })
+            } else {
 
-            const addLoadMoreInNestedNode = (node: TreeDataItem) => {
-                const currentPath = path.pop()
-                if (node.guid === parentGuid && !currentPath) {
-                    node.children?.push({
-                        key: treeNode?.guid + '_Load_More',
-                        title: 'Load more',
-                        isLeaf: true,
-                        isLoading: false,
-                        typeName: 'loadMore',
-                        click: () => {
-                            handleLoadMore(treeNode, localLimit + localOffset)
-                        },
-                        guid: 'LoadMore',
-                        checkable: false,
-                        selectable: false,
-                    })
+                const path = recursivelyFindPath(parentGuid)[0]
+                console.log(path, 'bruh path')
+    
+                const addLoadMoreInNestedNode = (node: TreeDataItem) => {
+                    const currentPath = path.pop()
+                    if (node.guid === parentGuid && !currentPath) {
+                        node.children?.push({
+                            key: node?.guid + '_Load_More',
+                            title: 'Load more',
+                            isLeaf: true,
+                            isLoading: false,
+                            typeName: 'loadMore',
+                            click: () => {
+                                handleLoadMore(localLimit + localOffset, node?.guid, parentGlossaryQf, parentCategoryQf)
+                            },
+                            guid: 'LoadMore',
+                            checkable: false,
+                            selectable: false,
+                        })
+                        return node
+                    }
+                    return {
+                        ...node,
+                        children: node.children?.map((child) => {
+                            if (child.guid === currentPath)
+                                return addLoadMoreInNestedNode(child)
+                            return child
+                        }),
+                    }
+                }
+                const parent = path?.pop()
+    
+                treeData.value = treeData.value.map((node) => {
+                    if (node.guid === parent) return addLoadMoreInNestedNode(node)
                     return node
-                }
-                return {
-                    ...node,
-                    children: node.children?.map((child) => {
-                        if (child.guid === currentPath)
-                            return addLoadMoreInNestedNode(child)
-                        return child
-                    }),
-                }
+                })
             }
-            const parent = path?.pop()
-
-            treeData.value = treeData.value.map((node) => {
-                if (node.guid === parent) return addLoadMoreInNestedNode(node)
-                return node
-            })
         }
     }
-    const handleLoadMore = async (treeNode, localOffset) => {
-        console.log('handleLoad More')
-        console.log(treeNode)
+    const handleLoadMore = async (localOffset: number, parentGuid: string | 'root', parentGlossaryQf: string, parentCategoryQf?: string) => {
         offset.value = localOffset
-        console.log(offset.value)
+        if(parentGuid === 'root') {
+
+        }
         const path = recursivelyFindPath(treeNode?.guid)[0]
 
         const appendNewNodes = (node: TreeDataItem) => {
@@ -758,15 +790,16 @@ const useGlossaryTree = ({
                                         ? checkable
                                         : false,
                             }))
-                            if (map) {
+                            if (data.value) {
                                 newChildren?.push(...map)
                                 console.log(newChildren)
-                                checkAndAddLoadMoreNode(
-                                    data.value,
-                                    node?.guid,
-                                    node?.guid,
-                                    node
-                                )
+                                checkAndAddLoadMoreNode({
+                                    response: data.value,
+                                    parentGuid: node?.guid,
+                                    parentKey: node?.guid,
+                                    parentGlossaryQf,
+                                    parentCategoryQf
+                                })
                             }
                         } catch (e) {
                             console.log(e)
@@ -797,13 +830,14 @@ const useGlossaryTree = ({
                                             ? checkable
                                             : false,
                                 }))
-                                if (map) {
+                                if (data.value) {
                                     newChildren.push(...map)
                                     checkAndAddLoadMoreNode(
-                                        data.value,
-                                        node?.guid,
-                                        node?.guid,
-                                        node
+                                        response: data.value,
+                                        parentGuid: node?.guid,
+                                        parentKey: node?.guid,
+                                        parentGlossaryQf,
+                                        parentCategoryQf
                                     )
                                 }
                             }

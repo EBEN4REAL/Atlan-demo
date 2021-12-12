@@ -6,7 +6,14 @@
             <div v-for="(connection, index) in list" :key="connection.guid">
                 {{ connection.attributes.name }}
 
-                {{ aggregationMap('group_by_connection') }}
+                <span>
+                    ({{
+                        getMap(aggregationMap('group_by_connection'))[
+                            connection.attributes.qualifiedName
+                        ]
+                    }}
+                    Assets)</span
+                >
             </div>
         </div>
     </div>
@@ -90,57 +97,68 @@
                 ]
             })
 
-            const { data, approximateCount, aggregationMap } = useIndexSearch({
-                attributes: [
-                    'name',
-                    'description',
-                    '__guid',
-                    '__createdBy',
-                    'ownerUsers',
-                    'ownerGroups',
-                    'allowQuery',
-                    'allowPreview',
-                ],
-                dsl: {
-                    from: 0,
-                    size: 10,
-                    aggs: {
-                        group_by_connection: {
-                            terms: {
-                                field: 'connectionQualifiedName',
-                                size: 100,
+            const { data, approximateCount, aggregationMap, getMap } =
+                useIndexSearch({
+                    attributes: [
+                        'name',
+                        'description',
+                        '__guid',
+                        '__createdBy',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'allowQuery',
+                        'allowPreview',
+                    ],
+                    dsl: {
+                        from: 0,
+                        size: 10,
+                        aggs: {
+                            group_by_connection: {
+                                terms: {
+                                    field: 'connectionQualifiedName',
+                                    size: 100,
+                                },
                             },
                         },
-                    },
+                        query: {
+                            bool: {
+                                filter: {
+                                    bool: {
+                                        must: [
+                                            {
+                                                term: {
+                                                    connectorName: 'athena',
+                                                },
+                                            },
+                                            {
+                                                term: {
+                                                    __state: 'ACTIVE',
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
 
-                    post_filter: {
-                        bool: {
-                            filter: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                connectorName: 'athena',
+                        post_filter: {
+                            bool: {
+                                filter: {
+                                    bool: {
+                                        must: [
+                                            {
+                                                term: {
+                                                    '__typeName.keyword':
+                                                        'Connection',
+                                                },
                                             },
-                                        },
-                                        {
-                                            term: {
-                                                '__typeName.keyword':
-                                                    'Connection',
-                                            },
-                                        },
-                                        {
-                                            term: {
-                                                __state: 'ACTIVE',
-                                            },
-                                        },
-                                    ],
+                                        ],
+                                    },
                                 },
                             },
                         },
                     },
-                },
-            })
+                })
 
             const list = ref([])
 
@@ -344,6 +362,7 @@
                 data,
                 list,
                 aggregationMap,
+                getMap,
             }
         },
     })

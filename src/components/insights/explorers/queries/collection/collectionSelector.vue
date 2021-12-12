@@ -8,19 +8,41 @@
     >
         <template #content>
             <div class="flex flex-col w-full">
-                <div style="height: 200px; overflow-y: auto" class="px-2 py-2">
+                <div class="px-2 py-2">
                     <div
-                        v-for="collection in queryCollections"
-                        :key="collection.guid"
-                        class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
-                        @click="handleChange(collection.guid)"
+                        v-for="(collectionArr, index) in [
+                            sharedCollections,
+                            privateCollections,
+                        ]"
+                        :key="index"
+                        :class="{ 'mb-3': index === 0 }"
                     >
-                        <AtlanIcon
-                            icon="Group"
-                            class="self-center w-4 h-4 pr-1"
-                        ></AtlanIcon>
-                        <div class="overflow-ellipsis group-hover:text-primary">
-                            {{ collection.attributes.name }}
+                        <span
+                            v-if="collectionArr?.length"
+                            class="text-xs font-bold text-gray-500"
+                            >{{ index === 0 ? 'Shared' : 'Private' }}</span
+                        >
+                        <div
+                            v-for="collection in collectionArr"
+                            :key="collection.guid"
+                            class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
+                            @click="handleChange(collection.guid)"
+                        >
+                            <AtlanIcon
+                                v-if="index === 0"
+                                icon="Group"
+                                class="self-center w-4 h-4 pr-1"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                v-else
+                                icon="User"
+                                class="self-center w-4 h-4 pr-1"
+                            ></AtlanIcon>
+                            <div
+                                class="overflow-ellipsis group-hover:text-primary"
+                            >
+                                {{ collection.attributes.name }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -71,11 +93,17 @@
         QueryCollection,
     } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
+    import { useAuthStore } from '~/store/auth'
 
     export default defineComponent({
+        name: 'CollectionSelector',
         emits: ['update:data'],
         components: { AtlanIcon },
         setup(props, { emit }) {
+            // store
+            const authStore = useAuthStore()
+            // variables
             const selectedValue = ref()
             const isVisible = ref(false)
             const queryCollections = inject('queryCollections') as ComputedRef<
@@ -84,17 +112,30 @@
             const queryCollectionsLoading: ComputedRef<boolean> = inject(
                 'queryCollectionsLoading'
             )
+            const username = authStore.username
 
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
+            // computed
             const selectedCollection = computed(() => {
                 const collection = queryCollections.value?.find(
                     (coll) => coll.guid === selectedValue.value
                 )
                 return collection
             })
+
+            const sharedCollections = computed(() =>
+                queryCollections.value?.filter(
+                    (coll) => !isCollectionPrivate(coll, username)
+                )
+            )
+            const privateCollections = computed(() =>
+                queryCollections.value?.filter((coll) =>
+                    isCollectionPrivate(coll, username)
+                )
+            )
 
             function handleChange(collectionId: string) {
                 isVisible.value = false
@@ -139,6 +180,10 @@
                 selectedValue,
                 selectedCollection,
                 isVisible,
+                isCollectionPrivate,
+                username,
+                sharedCollections,
+                privateCollections,
             }
         },
     })

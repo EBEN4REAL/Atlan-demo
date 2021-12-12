@@ -12,6 +12,7 @@ import {
 } from '~/constant/projection'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { QueryCollection } from '~/types/insights/savedQuery.interface'
 
 const useQueryCollection = () => {
 
@@ -98,6 +99,16 @@ const useQueryCollection = () => {
         getQueryCollections,
         setCollectionsDataInInlineTab
     }
+}
+
+export const isCollectionPrivate = (collection: QueryCollection, username: string) => {
+    // created by user
+    // owner/viewer are empty
+    // eslint-disable-next-line no-underscore-dangle
+    const isCreatedByCurrentUser = collection.attributes.__createdBy === username;
+    const hasNoViewers = collection.attributes.viewerUsers.length === 0 && collection.attributes.viewerGroups.length === 0;
+    const hasNoUsers = collection.attributes.ownerUsers.length === 0 && collection.attributes.ownerGroups.length === 0;
+    return isCreatedByCurrentUser && hasNoUsers && hasNoViewers;
 }
 
 export default useQueryCollection

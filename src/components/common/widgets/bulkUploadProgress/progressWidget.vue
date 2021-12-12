@@ -31,7 +31,7 @@
                 class="flex items-center font-bold"
             >
                 <AtlanIcon
-                    :icon="errorCount ? 'RunWarning' : 'RunSuccess'"
+                    :icon="errorCount ? 'Warning' : 'RunSuccess'"
                     class="w-auto h-4 mr-2"
                 />
                 Upload completed
@@ -148,6 +148,7 @@
     } from `@/glossary/modal/useBulkUpload.ts`
     import { getRunList } from '~/composables/workflow/useWorkflowList'
     import useWorkFlowHelper from '~/composables/workflow/useWorkFlowHelper'
+    import { downloadFile } from '~/utils/library/download'
 
     export default defineComponent({
         name: 'BulkUploadProgress',
@@ -172,6 +173,7 @@
             const isVisible = ref(true)
             const workflowPhase = ref('')
             const nodeName = ref()
+            const WFRunName=ref()
             const reInitTree=inject('reInitTree')
             let nIntervId
             const { progressPercent, name, phase } = useWorkFlowHelper()
@@ -215,6 +217,7 @@
                         )
                         if (workflowPhase.value === 'Succeeded') {
                             stopGetProgress()
+                            WFRunName.value=liveList.value?.items[0]?.metadata?.name
                             getFinalStatus(liveList.value?.items[0].status)
                             reInitTree()
                         }
@@ -237,19 +240,14 @@
             // gets and downloads the artifacts CSV on errors
             const getArtifacts = () => {
                 const { data, error, isLoading, mutate } = useArtifacts({
+                    WFRunName:WFRunName.value,
                     nodeName: nodeName.value,
                     outputName: 'results',
                 })
                 watch(data, () => {
                     if (data.value && !error.value) {
-                        const link = window.document.createElement('a')
-                        link.setAttribute(
-                            'href',
-                            'data:text/csv;charset=utf-8,%EF%BB%BF' +
-                                encodeURI(data.value)
-                        )
-                        link.setAttribute('download', 'upload_data.csv')
-                        link.click()
+                   const fileName='Results CSV'
+                    downloadFile(data.value, fileName)
                     } else {
                         message.error({
                             content: `Could not get file!`,

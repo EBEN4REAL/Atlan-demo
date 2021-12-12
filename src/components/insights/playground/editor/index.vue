@@ -8,28 +8,6 @@
                 @onClickRunQuery="toggleRun"
                 @toggleVQB="toggleVQB"
             />
-            <div
-                class="flex items-center justify-between w-full pl-2 pr-3 my-2"
-            >
-                <div class="flex items-center text-base">
-                    <div class="flex items-center">
-                        <a-tooltip color="#363636">
-                            <template #title>Custom variables</template>
-                            <div
-                                class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
-                                :class="showcustomToolBar ? 'bg-gray-300' : ''"
-                                @click="toggleCustomToolbar"
-                            >
-                                <AtlanIcon
-                                    icon="CustomVariable"
-                                    class="w-4 h-4"
-                                />
-                            </div>
-                        </a-tooltip>
-                    </div>
-                </div>
-            </div>
-            <CustomVariablesNav v-if="editorInstance && showcustomToolBar" />
             <SaveQueryModal
                 v-model:showSaveQueryModal="showSaveQueryModal"
                 :saveQueryLoading="saveQueryLoading"
@@ -49,159 +27,182 @@
             <Monaco @editorInstance="setInstance" />
 
             <!-- START: EDITOR FOOTER -->
-            <div
-                class="absolute bottom-0 left-0 flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
-                style="z-index: 2"
-            >
-                <div class="flex items-center">
-                    <!-- <WarehouseConnector /> -->
+            <div class="absolute bottom-0 left-0 flex flex-col w-full">
+                <CustomVariablesNav
+                    v-if="editorInstance && showcustomToolBar"
+                    class="border-t"
+                />
+                <div
+                    class="flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white "
+                    style="z-index: 2"
+                >
                     <div class="flex items-center">
-                        <!-- explorer toggle -->
-                        <a-tooltip color="#363636">
-                            <template #title>Toggle sidebar</template>
-                            <div
-                                class="p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300 group"
-                            >
-                                <AtlanIcon
-                                    @click="toggleExplorerPane"
-                                    icon="ExplorerTrigger"
-                                    class="w-4 h-4"
-                                />
-                            </div>
-                        </a-tooltip>
-                        <!-- full screen button -->
-                        <div
-                            class="p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
-                            :class="fullSreenState ? 'bg-gray-300' : ''"
-                        >
-                            <div class="items-center justify-center group">
+                        <!-- <WarehouseConnector /> -->
+                        <div class="flex items-center">
+                            <!-- explorer toggle -->
+                            <a-tooltip color="#363636">
+                                <template #title>Toggle sidebar</template>
                                 <div
-                                    class="items-center justify-center"
-                                    @click="tFullScreen"
+                                    class="p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300 group"
                                 >
-                                    <a-tooltip
-                                        color="#363636"
-                                        v-if="fullSreenState"
+                                    <AtlanIcon
+                                        @click="toggleExplorerPane"
+                                        icon="ExplorerTrigger"
+                                        class="w-4 h-4"
+                                    />
+                                </div>
+                            </a-tooltip>
+                            <!-- full screen button -->
+                            <div
+                                class="p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
+                                :class="fullSreenState ? 'bg-gray-300' : ''"
+                            >
+                                <div class="items-center justify-center group">
+                                    <div
+                                        class="items-center justify-center"
+                                        @click="tFullScreen"
                                     >
-                                        <template #title
-                                            >Exit full screen</template
+                                        <a-tooltip
+                                            color="#363636"
+                                            v-if="fullSreenState"
                                         >
-                                        <AtlanIcon
-                                            class="w-4 h-4 border-gray-500"
-                                            icon="ExitFullScreen"
-                                        />
-                                    </a-tooltip>
-                                    <a-tooltip
-                                        color="#363636"
-                                        v-else
-                                        :overlayClassName="$style.tooltip"
-                                    >
-                                        <template #title
-                                            >Go full screen</template
+                                            <template #title
+                                                >Exit full screen</template
+                                            >
+                                            <AtlanIcon
+                                                class="w-4 h-4 border-gray-500"
+                                                icon="ExitFullScreen"
+                                            />
+                                        </a-tooltip>
+                                        <a-tooltip
+                                            color="#363636"
+                                            v-else
+                                            :overlayClassName="$style.tooltip"
                                         >
-                                        <AtlanIcon
-                                            class="w-4 h-4 border-gray-500"
-                                            icon="FullScreen"
-                                        />
-                                    </a-tooltip>
+                                            <template #title
+                                                >Go full screen</template
+                                            >
+                                            <AtlanIcon
+                                                class="w-4 h-4 border-gray-500"
+                                                icon="FullScreen"
+                                            />
+                                        </a-tooltip>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- format sql -->
-
-                        <a-tooltip color="#363636">
-                            <template #title>Format SQL</template>
-                            <div
-                                class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300 group"
-                                @click="formatDocument"
-                            >
-                                <AtlanIcon icon="FormatText" class="w-4 h-4" />
-                            </div>
-                        </a-tooltip>
-
-                        <!-- preview sql -->
-                        <a-popover
-                            placement="bottom"
-                            trigger="click"
-                            :overlayStyle="{ padding: '0px !important' }"
-                            @visibleChange="
-                                (visible) => {
-                                    if (!visible) {
-                                        showQueryPreview = false
+                            <!-- format sql -->
+                            <a-tooltip color="#363636">
+                                <template #title>Format SQL</template>
+                                <div
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300 group"
+                                    @click="formatDocument"
+                                >
+                                    <AtlanIcon
+                                        icon="FormatText"
+                                        class="w-4 h-4"
+                                    />
+                                </div>
+                            </a-tooltip>
+                            <!-- preview sql -->
+                            <a-popover
+                                placement="bottom"
+                                trigger="click"
+                                :overlayStyle="{ padding: '0px !important' }"
+                                @visibleChange="
+                                    (visible) => {
+                                        if (!visible) {
+                                            showQueryPreview = false
+                                        }
                                     }
-                                }
-                            "
-                        >
-                            <template #content>
-                                <div>
-                                    <VQBSQLPreview />
-                                </div>
-                            </template>
-
-                            <div
-                                v-if="showVQB"
-                                class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
-                                :class="showQueryPreview ? 'bg-gray-300' : ''"
-                                @click="toggleQueryPreviewPopover"
+                                "
                             >
-                                <AtlanIcon
-                                    icon="Info"
-                                    class="w-4 h-4 text-gray-500"
-                                />
-                            </div>
-                        </a-popover>
-
-                        <!-- limit 100 -->
-                        <div class="flex items-center px-1">
-                            <a-checkbox
-                                :class="$style.checkbox_style"
-                                v-model:checked="limitRows.checked"
-                                class="text-xs"
-                            >
-                                <span class="text-gray-500">
-                                    Limit to
-                                    {{ limitRows.rowsCount }}
-                                    rows
-                                </span>
-                            </a-checkbox>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center">
-                    <div class="flex" v-if="editorFocused">
-                        <span class="mr-2"
-                            >Ln:&nbsp;{{ editorPos.lineNumber }}</span
-                        >
-                        <span class="mr-2"
-                            >Col:&nbsp; {{ editorPos.column }}</span
-                        >
-                    </div>
-                    <!-- <span class="ml-2 mr-4"
-                        >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
-                    > -->
-                    <div class="flex items-center justify-center">
-                        <div class @click="togglePane">
-                            <a-tooltip color="#363636">
-                                <template #title
-                                    >Toggle output pane ( ctrl + j )</template
+                                <template #content>
+                                    <div>
+                                        <VQBSQLPreview />
+                                    </div>
+                                </template>
+                                <div
+                                    v-if="showVQB"
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
+                                    :class="
+                                        showQueryPreview ? 'bg-gray-300' : ''
+                                    "
+                                    @click="toggleQueryPreviewPopover"
                                 >
-
-                                <AtlanIcon
-                                    icon="OutputpaneTrigger"
-                                    class="w-4 h-4 text-gray-500"
-                                />
-                            </a-tooltip>
-                        </div>
-                        <div class="ml-2" @click="toggleAssetPreview">
+                                    <AtlanIcon
+                                        icon="Info"
+                                        class="w-4 h-4 text-gray-500"
+                                    />
+                                </div>
+                            </a-popover>
+                            <!-- Custom variables -->
                             <a-tooltip color="#363636">
-                                <template #title>Toggle asset preview</template>
-
-                                <AtlanIcon
-                                    icon="SidebarTrigger"
-                                    class="w-4 h-4 text-gray-500"
-                                />
+                                <template #title>Custom variables</template>
+                                <div
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer  hover:bg-gray-300"
+                                    :class="
+                                        showcustomToolBar ? 'bg-gray-300' : ''
+                                    "
+                                    @click="toggleCustomToolbar"
+                                >
+                                    <AtlanIcon
+                                        icon="CustomVariable"
+                                        class="w-4 h-4"
+                                    />
+                                </div>
                             </a-tooltip>
+                            <!-- limit 100 -->
+                            <div class="flex items-center px-1">
+                                <a-checkbox
+                                    :class="$style.checkbox_style"
+                                    v-model:checked="limitRows.checked"
+                                    class="text-xs"
+                                >
+                                    <span class="text-gray-500">
+                                        Limit to
+                                        {{ limitRows.rowsCount }}
+                                        rows
+                                    </span>
+                                </a-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="flex" v-if="editorFocused">
+                            <span class="mr-2"
+                                >Ln:&nbsp;{{ editorPos.lineNumber }}</span
+                            >
+                            <span class="mr-2"
+                                >Col:&nbsp; {{ editorPos.column }}</span
+                            >
+                        </div>
+                        <!-- <span class="ml-2 mr-4"
+                            >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
+                        > -->
+                        <div class="flex items-center justify-center">
+                            <div class @click="togglePane">
+                                <a-tooltip color="#363636">
+                                    <template #title
+                                        >Toggle output pane ( ctrl + j
+                                        )</template
+                                    >
+                                    <AtlanIcon
+                                        icon="OutputpaneTrigger"
+                                        class="w-4 h-4 text-gray-500"
+                                    />
+                                </a-tooltip>
+                            </div>
+                            <div class="ml-2" @click="toggleAssetPreview">
+                                <a-tooltip color="#363636">
+                                    <template #title
+                                        >Toggle asset preview</template
+                                    >
+                                    <AtlanIcon
+                                        icon="SidebarTrigger"
+                                        class="w-4 h-4 text-gray-500"
+                                    />
+                                </a-tooltip>
+                            </div>
                         </div>
                     </div>
                 </div>

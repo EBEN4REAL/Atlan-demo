@@ -6,8 +6,6 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
-
-    import Users from '@/admin/users/users.vue'
     import Classifications from '@/governance/classifications/classifications.vue'
     import NoAccess from '@/common/secured/access.vue'
 
@@ -16,7 +14,6 @@
     export default defineComponent({
         name: 'ClassificationsPage',
         components: {
-            Users,
             NoAccess,
             Classifications,
         },

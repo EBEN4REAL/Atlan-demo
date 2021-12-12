@@ -1,6 +1,6 @@
 <template>
     <EmptyView
-        v-if="!error && !searchText && !isLoading && !groupList?.length"
+        v-if="!totalGroupsCount"
         empty-screen="CreateGroups"
         headline="Create a new group"
         button-text="Create Group"
@@ -253,6 +253,7 @@ export default defineComponent({
         }, 600)
         const clearFilter = () => {
             groupListAPIParams.filter = {}
+            searchText.value = ''
             getGroupList()
         }
 
@@ -321,7 +322,7 @@ export default defineComponent({
                             },
                             [`${group.name}`]
                         ),
-                        h('span','?')
+                        h('span', '?'),
                     ])
                 },
                 okType: 'danger',

@@ -2,7 +2,7 @@
     <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"
@@ -128,6 +128,7 @@
                             :item="item"
                             :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
+                            @updateDrawer="updateCurrentList"
                             :preference="preference"
                             :show-check-box="showCheckBox"
                             :bulk-select-mode="
@@ -329,7 +330,6 @@
                 error,
                 selectedAsset,
                 quickChange,
-                handleSelectedAsset,
                 updateList,
             } = useDiscoverList({
                 isCache: true,
@@ -349,7 +349,6 @@
 
             const updateCurrentList = (asset) => {
                 updateList(asset)
-                handleSelectedAsset(asset)
             }
 
             const handleSearchChange = useDebounceFn(() => {

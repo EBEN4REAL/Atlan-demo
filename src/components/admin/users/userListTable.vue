@@ -45,7 +45,7 @@
             </div>
         </template>
         <template #role="{ text: user }">
-            {{ user || '-' }}
+            {{ user || 'No role attached' }}
         </template>
         <template #status="{ text: user }">
             <div

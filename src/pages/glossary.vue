@@ -39,15 +39,22 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, provide, watch, ref } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        provide,
+        watch,
+        ref,
+        onMounted,
+    } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
 
     import GlossaryDiscovery from '@/glossary/index.vue'
     import GlossaryPreview from '@/common/assets/preview/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryStore from '~/store/glossary'
-    import useAssetStore from '~/store/asset'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         components: {
@@ -59,13 +66,17 @@
                 title: 'Glossary',
             })
             const route = useRoute()
+            const router = useRouter()
             const id = computed(() => route?.params?.id || null)
             const isItem = computed(() => !!route.params.id)
             const { selectedGlossary } = useAssetInfo()
+            const { getGlossaryByQF, getFirstGlossaryQF } = useGlossaryData()
             const localSelected = ref()
             const glossaryStore = useGlossaryStore()
-            const assetStore = useAssetStore()
             const glossaryDiscovery = ref(null)
+            const selectedGlossaryQf = ref(
+                glossaryStore.activeGlossaryQualifiedName
+            )
 
             if (selectedGlossary.value?.guid === id.value) {
                 localSelected.value = selectedGlossary.value
@@ -73,13 +84,12 @@
             const handlePreview = (asset) => {
                 localSelected.value = asset
                 glossaryStore.setSelectedGTC(asset)
-                assetStore.setSelectedAsset(asset)
             }
 
             const updateList = (asset) => {
                 localSelected.value = asset
+                handlePreview(asset)
                 glossaryStore.setSelectedGTC(asset)
-                assetStore.setSelectedAsset(asset)
                 updateTreeNode(asset)
             }
             watch(selectedGlossary, () => {
@@ -91,6 +101,26 @@
             const updateTreeNode = (asset) => {
                 glossaryDiscovery?.value?.updateTreeNode(asset)
             }
+            onMounted(() => {
+                if (selectedGlossary.value?.guid) {
+                    router.push(`/glossary/${selectedGlossary.value?.guid}`)
+                }
+                if (!id.value) {
+                    if (selectedGlossaryQf.value?.length) {
+                        router.push(
+                            `/glossary/${
+                                getGlossaryByQF(selectedGlossaryQf.value)?.guid
+                            }`
+                        )
+                    } else {
+                        router.push(
+                            `/glossary/${
+                                getGlossaryByQF(getFirstGlossaryQF())?.guid
+                            }`
+                        )
+                    }
+                }
+            })
             provide('updateList', updateList)
             provide('preview', handlePreview)
             provide('reInitTree', reInitTree)
@@ -99,6 +129,8 @@
                 selectedGlossary,
                 localSelected,
                 glossaryDiscovery,
+                selectedGlossaryQf,
+                getGlossaryByQF,
             }
         },
     })

@@ -1,5 +1,11 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
+        <div
+            v-if="showFilters"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
+        >
+            <PackageFilters :filter-list="packageFilters"></PackageFilters>
+        </div>
         <div class="flex-col flex-1 h-full border-r border-gray-200">
             <div class="flex flex-col px-6 py-6 text-2xl font-extrabold">
                 <a-input class="w-1/2" placeholder="Search Packages"></a-input>
@@ -141,6 +147,8 @@
     import ErrorView from '@common/error/discover.vue'
 
     import PackageList from '@/packages/list/index.vue'
+    import PackageFilters from './filters/index.vue'
+    import { packageFilters } from '~/constant/filters/packageFilters'
 
     import Editor from '@/common/editor/index.vue'
 
@@ -152,6 +160,7 @@
             Editor,
             PackageList,
             EmptyView,
+            PackageFilters,
             ErrorView,
         },
         props: {
@@ -222,6 +231,7 @@
                 handleSetup,
                 error,
                 handleSetupSandbox,
+                packageFilters,
             }
         },
     })
@@ -243,7 +253,7 @@
 
 <style scoped>
     .asset-preview-container {
-        min-width: 420px !important;
-        max-width: 420px !important;
+        min-width: 360px !important;
+        max-width: 360px !important;
     }
 </style>

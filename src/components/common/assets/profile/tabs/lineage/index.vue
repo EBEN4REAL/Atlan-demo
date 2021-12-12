@@ -47,7 +47,6 @@
         ref,
         provide,
         onMounted,
-        onUnmounted,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
     import { whenever } from '@vueuse/core'

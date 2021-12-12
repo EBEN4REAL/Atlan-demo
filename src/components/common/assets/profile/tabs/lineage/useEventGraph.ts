@@ -211,20 +211,17 @@ export default function useEventGraph(
         e.stopPropagation()
         const ele = e.originalEvent.path.find((x) => x.getAttribute('port'))
         const portId = ele.getAttribute('port')
-        if (chp.value[node.id] && node.getPort(chp.value[node.id])) {
+        if (chp.value[node.id] && node.getPort(chp.value[node.id]))
             node.setPortProp(chp.value[node.id], 'attrs/portBody', {
                 fill: '#ffffff',
             })
-        }
         if (chp.value[node.id] !== portId)
             node.setPortProp(portId, 'attrs/portBody', {
                 fill: '#e5ecff',
             })
-        if (chp.value[node.id]) {
+        if (chp.value[node.id])
             chp.value[node.id] = chp.value[node.id] !== portId ? portId : ''
-        } else {
-            chp.value = { ...chp.value, ...{ [node.id]: portId } }
-        }
+        else chp.value = { ...chp.value, ...{ [node.id]: portId } }
     })
 
     graph.value.on('blank:mousewheel', () => {

@@ -174,7 +174,6 @@ const useGlossaryTree = ({
                                     treeNode?.dataRef?.guid
                             }
                         })
-                        console.log(treeNode)
                         treeNode.dataRef.children.push(...map)
                         loadedKeys.value.push(treeNode.dataRef.key)
                         checkAndAddLoadMoreNode({
@@ -285,7 +284,6 @@ const useGlossaryTree = ({
                             treeNode.dataRef.children.push(...map)
                             loadedKeys.value.push(treeNode.dataRef.key)
 
-                            console.log(treeNode)
                             checkAndAddLoadMoreNode({
                                 response: data.value,
                                 parentGuid: treeNode.dataRef.guid,
@@ -707,9 +705,9 @@ const useGlossaryTree = ({
                     isLeaf: true,
                     isLoading: false,
                     typeName: 'loadMore',
-                    click: () => {
+                    click(){
+                        this.dataRef.isLoading = true
                         handleLoadMore(localLimit + localOffset, 'root', parentGlossaryQf, parentCategoryQf)
-                        console.log(this, 'bruh')
                     },
                     guid: 'LoadMore',
                     checkable: false,
@@ -718,7 +716,6 @@ const useGlossaryTree = ({
             } else {
 
                 const path = recursivelyFindPath(parentGuid)[0]
-                console.log(path, 'bruh path')
     
                 const addLoadMoreInNestedNode = (node: TreeDataItem) => {
                     const currentPath = path.pop()
@@ -762,10 +759,7 @@ const useGlossaryTree = ({
     const handleLoadMore = async (localOffset: number, parentGuid: string | 'root', parentGlossaryQf: string, parentCategoryQf?: string) => {
         offset.value = localOffset
         const path = recursivelyFindPath(parentGuid)[0]
-        console.log(path)
-        console.log('parentGuid', parentGuid)
-        console.log('parentGlossaryQf', parentGlossaryQf)
-        console.log('parentCategoryQf', parentCategoryQf)
+
         const getChildren = async () => {
             const children: any[] = []
             facets.value = {

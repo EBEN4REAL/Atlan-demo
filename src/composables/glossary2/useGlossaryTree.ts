@@ -784,8 +784,8 @@ const useGlossaryTree = ({
 
                 let map = data.value?.entities?.map((i) => ({
                     ...i,
-                    id: `${parentGlossaryQf}_${i.attributes?.qualifiedName}`,
-                    key: `${parentGlossaryQf}_${i.attributes?.qualifiedName}`,
+                    id: `${parentGlossaryQf}_${parentCategoryQf}_${i.attributes?.qualifiedName}`,
+                    key: `${parentGlossaryQf}_${parentCategoryQf}_${i.attributes?.qualifiedName}`,
                     isLeaf: i.typeName === 'AtlasGlossaryTerm',
                     checkable:
                         i.typeName === 'AtlasGlossaryTerm'

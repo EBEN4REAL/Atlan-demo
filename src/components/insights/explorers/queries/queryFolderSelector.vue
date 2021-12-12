@@ -106,6 +106,7 @@
         inject,
         ComputedRef,
         computed,
+        onMounted,
     } from 'vue'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -325,7 +326,11 @@
             const toggleFolder = () => {
                 folderOpened.value = !folderOpened.value
             }
-
+            onMounted(() => {
+                if (!parentFolder.value || !parentFolder.value.guid) {
+                    onSelect('root', 'root')
+                }
+            })
             return {
                 onSelect,
                 selectedFolder,

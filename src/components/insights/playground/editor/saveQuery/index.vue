@@ -185,7 +185,6 @@
             //     ref({}) as Ref<Folder>
             // )
             const selectedParentFolder = ref<Folder | null>(null)
-            const selectedFolderClassification = ref(null)
 
             const untitledRegex = /(?:Untitled )([0-9]+)/gim
             const inlineTabs = inject('inlineTabs') as ComputedRef<
@@ -222,8 +221,6 @@
             }
             const setSelectedFolder = (folder) => {
                 selectedParentFolder.value = folder.dataRef
-                selectedFolderClassification.value =
-                    folder.selectedFolderClassification
             }
 
             let assetTerms = []
@@ -247,12 +244,7 @@
                         selectedParentFolder.value?.attributes?.qualifiedName,
                     parentGuid: selectedParentFolder.value?.guid,
                 }
-                emit(
-                    'onSaveQuery',
-                    saveQueryData,
-                    assetTerms,
-                    selectedFolderClassification.value
-                )
+                emit('onSaveQuery', saveQueryData, assetTerms)
             }
             onMounted(async () => {
                 await nextTick()

@@ -1,13 +1,6 @@
 <template>
     <div class="popover-container">
         <div class="w-full h-full pb-4">
-            <div class="my-1 mb-2 w-9/11">
-                <ClassificationDropdown
-                    :modelValue="savedQueryType"
-                    @change="onClassificationChange"
-                    :connector="connector"
-                />
-            </div>
             <!--explorer pane start -->
             <div class="w-full h-full pr-4 overflow-y-scroll bg-white">
                 <div class="flex w-full rounded">
@@ -17,14 +10,14 @@
                         @click="toggleFolder"
                     ></AtlanIcon>
                     <div
-                        @click="onSelect('root', 'root')"
                         class="flex w-full py-1 rounded cursor-pointer"
                         :class="`${
                             selectedFolderContext?.guid ===
-                            queryFolderNamespace?.guid
+                            selectedCollection?.guid
                                 ? 'bg-primary-selected-focus w-9/11'
                                 : 'bg-white'
                         }`"
+                        @click="onSelect('root', 'root')"
                     >
                         <AtlanIcon
                             :icon="folderOpened ? 'FolderOpen' : 'FolderClosed'"
@@ -32,13 +25,14 @@
                         ></AtlanIcon>
                         <span
                             class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                            >{{ savedQueryType2?.displayName }} Folder</span
                         >
+                            {{ selectedCollection?.attributes.name }}
+                        </span>
                     </div>
                 </div>
                 <div v-if="folderOpened" class="mt-1 ml-3">
                     <query-tree-list
-                        :savedQueryType="savedQueryType2"
+                        v-if="treeData.length"
                         :tree-data="treeData"
                         :on-load-data="onLoadData"
                         :select-node="onSelect"
@@ -47,9 +41,8 @@
                         :loaded-keys="loadedKeys"
                         :selected-keys="selectedKeys"
                         :expanded-keys="expandedKeys"
-                        :selectedNewFolder="selectedFolderContext"
-                        :selectedFolderHide="selectedNewFolder"
-                        v-if="treeData.length"
+                        :selected-new-folder="selectedFolderContext"
+                        :selected-folder-hide="selectedNewFolder"
                     />
                     <div
                         v-else
@@ -73,12 +66,8 @@
         defineComponent,
         toRefs,
         ref,
-        watch,
-        reactive,
         PropType,
         Ref,
-        // onBeforeMount,
-        // Vue,
         inject,
         ComputedRef,
         computed,
@@ -96,21 +85,13 @@
         Folder,
         QueryCollection,
     } from '~/types/insights/savedQuery.interface'
-    import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
 
     export default defineComponent({
         components: {
             QueryTreeList,
             AtlanBtn,
-            ClassificationDropdown,
-            // AssetDropdown,
         },
         props: {
-            // selectedFolderQF: {
-            //     type: String,
-            //     required: false,
-            //     default: '',
-            // },
             connector: {
                 type: String as PropType<string | undefined>,
                 required: true,
@@ -137,53 +118,53 @@
             const { connector, savedQueryType, selectedNewFolder } =
                 toRefs(props)
 
-            const savedQueryType2: Ref<object> = ref(savedQueryType.value)
             const queryFolderNamespace = inject<Ref<Folder>>(
                 'queryFolderNamespace',
                 ref({}) as Ref<Folder>
             )
 
-            const selectedFolder = ref('Folder')
+            const selectedFolder = ref()
             const selectedKey = ref<string[]>([])
             let dropdownVisible = ref(false)
             let selectedFolderContext = ref({})
+            const selectedCollection = computed(() => {
+                const collection = queryCollections.value?.find(
+                    (coll) =>
+                        coll.attributes.qualifiedName ===
+                        activeInlineTab.value.explorer.queries.collection
+                            .qualifiedName
+                )
+                return collection
+            })
 
             // console.log('already selected: ', props.selectedFolderQF)
 
             const onSelect = (selected: any, event: any) => {
                 // console.log('folder select: ', event)
 
-                console.log('savedQueryType2: ', savedQueryType2.value)
                 if (event === 'root') {
-                    let rootData = {
-                        ...queryFolderNamespace.value,
-                        attributes: {
-                            ...queryFolderNamespace.value.attributes,
-                            parentQualifiedName: 'namespace',
-                        },
-                    }
+                    const rootData = selectedCollection.value
 
                     let data = {
                         dataRef: {
                             ...rootData,
                         },
-                        selectedFolderClassification: savedQueryType2.value,
                     }
 
                     if (
                         selectedNewFolder?.value.guid ===
-                        queryFolderNamespace.value.guid
+                        selectedCollection?.value?.guid
                     ) {
                         console.log(`same folder can't be selected`)
                         emit('folderChange', null)
                     } else {
-                        selectedKey.value = [rootData.guid]
-                        selectedFolder.value = 'Root'
+                        selectedKey.value = [selectedCollection?.value?.guid]
+                        selectedFolder.value =
+                            selectedCollection.value?.attributes.name
                         dropdownVisible.value = false
 
                         selectedFolderContext.value = {
                             ...rootData,
-                            selectedFolderClassification: savedQueryType2.value,
                         }
 
                         emit('folderChange', data)
@@ -207,14 +188,10 @@
 
                             selectedFolderContext.value = {
                                 ...item,
-                                selectedFolderClassification:
-                                    savedQueryType2.value,
                             }
 
                             emit('folderChange', {
                                 dataRef: event.node,
-                                selectedFolderClassification:
-                                    savedQueryType2.value,
                             })
                         }
                     }
@@ -233,31 +210,6 @@
             }
 
             const classificationValue = ref()
-            let selectedClassification = ref(savedQueryType2?.value?.name)
-
-            const onClassificationChange = (value) => {
-                // emit('change', checkedValues)
-                console.log('change: ', value)
-                selectedClassification.value = value.name
-                savedQueryType2.value = value
-            }
-
-            const selectedCollection = computed(() => {
-                const collection = queryCollections.value?.find(
-                    (coll) =>
-                        coll.attributes.qualifiedName ===
-                        activeInlineTab.value.explorer.queries.collection
-                            .qualifiedName
-                )
-                return collection
-            })
-
-            // const isSelectedType = (type: 'personal' | 'all') => {
-            //     return savedQueryType2.value === type
-            // }
-            // const onSelectQueryType = (type: 'personal' | 'all') => {
-            //     savedQueryType2.value = type
-            // }
 
             const pushGuidToURL = (guid: string) => {
                 const queryParams = { id: guid }
@@ -300,7 +252,6 @@
                 openSavedQueryInNewTab,
                 pushGuidToURL,
                 connector,
-                savedQueryType: selectedClassification,
                 queryFolderNamespace,
                 /* PERMISSIONS */
                 permissions: {
@@ -323,8 +274,6 @@
                 onSelect,
                 selectedFolder,
                 // treeData,
-
-                savedQueryType2,
                 treeData,
                 loadedKeys,
                 isInitingTree,
@@ -343,9 +292,9 @@
                 showDropdown,
                 selectedNewFolder,
                 classificationValue,
-                onClassificationChange,
                 selectedFolderContext,
                 queryFolderNamespace,
+                selectedCollection,
             }
         },
     })

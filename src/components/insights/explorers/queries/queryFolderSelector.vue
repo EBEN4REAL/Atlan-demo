@@ -195,8 +195,6 @@
                             dataRef: {
                                 ...rootData,
                             },
-                            selectedFolderClassification:
-                                savedQueryType2.value?.name,
                         }
                         if (savedQueryType.value) {
                             selectedFolder.value = `${savedQueryType.value?.displayName} folder`
@@ -205,7 +203,6 @@
                         dropdownVisible.value = false
                         selectedFolderContext.value = {
                             ...rootData,
-                            selectedFolderClassification: savedQueryType2.value,
                         }
 
                         emit('folderChange', data)
@@ -217,14 +214,10 @@
 
                             selectedFolderContext.value = {
                                 ...parentFolder.value,
-                                selectedFolderClassification:
-                                    savedQueryType2.value,
                             }
 
                             emit('folderChange', {
                                 dataRef: parentFolder.value,
-                                selectedFolderClassification:
-                                    savedQueryType2.value.name,
                             })
                         }
                     }
@@ -242,7 +235,7 @@
                         },
                     }
 
-                    selectedKey.value = [selectedCollection.value?.guid]
+                    selectedKey.value = [selectedCollection?.value?.guid]
                     dropdownVisible.value = false
                     // selectedFolderContext.value = data
                     selectedFolderContext.value = {
@@ -263,8 +256,6 @@
                     }
                     emit('folderChange', {
                         dataRef: event.node,
-                        selectedFolderClassification:
-                            savedQueryType2.value.name,
                     })
                 }
             }

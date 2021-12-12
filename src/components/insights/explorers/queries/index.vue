@@ -697,7 +697,6 @@
             const saveQuery = async (saveQueryData: {
                 saveQueryData: any
                 assetTerms: any
-                selectedParentType
             }) => {
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
                     saveQueryData,

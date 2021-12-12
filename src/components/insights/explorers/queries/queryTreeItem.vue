@@ -720,18 +720,11 @@
             }
 
             let selectedFolder = ref(null)
-            let selectedType = ref(null)
 
             const getSelectedFolder = (folder) => {
                 if (folder) {
-                    console.log('folder: ', folder.selectedFolderClassification)
                     console.log('folder selected', folder?.dataRef)
                     selectedFolder.value = folder?.dataRef
-                    selectedType.value = folder.selectedFolderClassification
-                    // console.log(
-                    //     'folder.selectedFolderClassification',
-                    //     selectedType.value.name
-                    // )
                 } else {
                     console.log('no folder selected')
                     selectedFolder.value = null
@@ -771,16 +764,7 @@
                         }
                         // console.log('select QFN')
                         // if (selectedType.value?.name) {
-                        newEntity.classifications = [
-                            {
-                                attributes: {},
-                                propagate: true,
-                                entityGuid: item.guid,
-                                removePropagationsOnEntityDelete: true,
-                                typeName: selectedType.value?.name,
-                                validityPeriods: [],
-                            },
-                        ]
+                        newEntity.classifications = []
 
                         // } else {
                         //     newEntity.classifications = []

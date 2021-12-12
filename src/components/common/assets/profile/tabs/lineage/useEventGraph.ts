@@ -216,9 +216,10 @@ export default function useEventGraph(
                 fill: '#ffffff',
             })
         }
-        node.setPortProp(portId, 'attrs/portBody', {
-            fill: '#e5ecff',
-        })
+        if (chp.value[node.id] !== portId)
+            node.setPortProp(portId, 'attrs/portBody', {
+                fill: '#e5ecff',
+            })
         if (chp.value[node.id]) {
             chp.value[node.id] = portId
         } else {

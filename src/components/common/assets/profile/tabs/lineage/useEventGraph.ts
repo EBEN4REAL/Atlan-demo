@@ -221,7 +221,7 @@ export default function useEventGraph(
                 fill: '#e5ecff',
             })
         if (chp.value[node.id]) {
-            chp.value[node.id] = portId
+            chp.value[node.id] = chp.value[node.id] !== portId ? portId : ''
         } else {
             chp.value = { ...chp.value, ...{ [node.id]: portId } }
         }

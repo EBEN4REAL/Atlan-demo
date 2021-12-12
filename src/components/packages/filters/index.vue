@@ -164,7 +164,7 @@
                     return true
                 })
                 if (allowCustomFilters.value) {
-                    return [...arr, ...cmList(typeName.value)]
+                    return [...arr]
                 }
                 return [...arr]
             })

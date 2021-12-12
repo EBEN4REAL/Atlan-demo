@@ -153,6 +153,7 @@
     import Editor from '@/common/editor/index.vue'
 
     import { usePackageList } from '~/composables/package/usePackageList'
+    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -190,17 +191,27 @@
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
-            const filters = ref({})
+            const facets = ref({
+                verified: true,
+            })
             const dependentKey = ref('DEFAULT_PACKAGES')
 
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
-            const { refresh, isLoading, list, error } = usePackageList({
+            // const { refresh, isLoading, list, error } = usePackageList({
+            //     isCache: true,
+            //     dependentKey,
+            //     queryText,
+            //     filters,
+            //     limit,
+            //     offset,
+            // })
+
+            const { isLoading, list, error } = usePackageDiscoverList({
                 isCache: true,
                 dependentKey,
-                queryText,
-                filters,
+                facets,
                 limit,
                 offset,
             })
@@ -232,6 +243,8 @@
                 error,
                 handleSetupSandbox,
                 packageFilters,
+                list,
+                facets,
             }
         },
     })

@@ -6,8 +6,9 @@ import axios from 'axios'
 
 import { Search } from '~/services/meta/search'
 import { useOptions } from '~/services/api/common'
+import { Workflows } from '~/services/service/workflows'
 
-export default function useIndexSearch<T>(
+export default function usePackageIndexSearch(
     body: Record<string, any> | Ref<Record<string, any>>,
     dependentKey?: Ref<any>,
     isCache?: boolean,
@@ -15,12 +16,10 @@ export default function useIndexSearch<T>(
     ttl?: Number | 0
 ) {
     const options: useOptions = {}
-
     let cancel = axios.CancelToken.source()
     options.options = ref({
         cancelToken: cancel.token,
     })
-
     if (!isCache) {
         if (dependentKey) {
             if (!dependentKey.value) {
@@ -44,40 +43,13 @@ export default function useIndexSearch<T>(
         if (isLocal) {
             options.cacheOptions.cache = new LocalStorageCache()
         }
-
-        console.log(dependentKey)
         options.cacheKey = dependentKey
     }
 
+    console.log(body)
+
     const { data, mutate, error, isLoading, isValidating, isReady } =
-        Search.IndexSearch<T>(body, options)
-
-    const approximateCount = computed(() => {
-        if (data?.value?.approximateCount) {
-            return data.value?.approximateCount
-        }
-        return 0
-    })
-
-    const aggregationMap = (key, isNested?) => {
-        if (data?.value?.aggregations) {
-            if (data?.value?.aggregations[key]) {
-                if (isNested) {
-                    return data?.value?.aggregations[key]?.nested_group?.buckets
-                } else {
-                    return data?.value?.aggregations[key].buckets
-                }
-            }
-        }
-        return []
-    }
-    const getMap = (buckets) => {
-        const map = {}
-        buckets.forEach((bucket) => {
-            map[bucket.key] = bucket.doc_count
-        })
-        return map
-    }
+        Workflows.worfklowPackageIndex({}, body, options)
 
     const cancelRequest = () => {
         if (cancel) {
@@ -98,15 +70,13 @@ export default function useIndexSearch<T>(
         data,
         options,
         cancel,
-        approximateCount,
-        aggregationMap,
         mutate,
         refresh,
         isReady,
         error,
         isLoading,
         isValidating,
-        getMap,
+
         cancelRequest,
     }
 }

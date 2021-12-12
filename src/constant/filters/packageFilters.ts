@@ -1,7 +1,7 @@
 export const packageFilters = [
     {
         id: 'packageType',
-        label: 'Type',
+        label: 'Use Case',
         component: 'packageType',
         overallCondition: 'OR',
         attributes: [],
@@ -10,9 +10,9 @@ export const packageFilters = [
         exclude: false,
     },
     {
-        id: 'publisher',
-        label: 'Publisher',
-        component: 'publisher',
+        id: 'sourceType',
+        label: 'Source',
+        component: 'sourceType',
         overallCondition: 'OR',
         attributes: [],
         isDeleted: false,

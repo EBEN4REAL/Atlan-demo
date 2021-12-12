@@ -47,7 +47,7 @@ export const DEFAULT_ATTRIBUTE: CMA = {
         // new options
         multiValueSelect: false,
         allowFiltering: true,
-        allowSearch: false,
+        allowSearch: true,
         primitiveType: 'string'
         // customType:'url' // added on submit for user, link or group
     },

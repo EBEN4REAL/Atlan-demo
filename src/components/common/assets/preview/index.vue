@@ -38,7 +38,7 @@
                 ></AtlanIcon>
                 <router-link
                     :to="getProfilePath(selectedAsset)"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>

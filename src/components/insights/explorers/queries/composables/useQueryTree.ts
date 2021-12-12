@@ -371,7 +371,7 @@ const useQueryTree = ({
             guid,
             refetchEntityType
         })
-        if (guid === queryFolderNamespace.value?.guid) {
+        if (guid === collection?.value?.guid) {
             let folderResponse: IndexSearchResponse<Folder> | null = null
             let queryResponse: IndexSearchResponse<SavedQuery> | null = null
 

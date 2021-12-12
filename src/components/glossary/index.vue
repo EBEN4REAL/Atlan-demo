@@ -93,7 +93,7 @@
             ref="glossaryTree"
             :height="height"
             @select="handlePreview"
-            :defaultGlossary="selectedGlossaryQf"
+            :defaultGlossary="checkable ? '' :selectedGlossaryQf"
             :checkable="checkable"
             v-model:checked-guids="checkedKeys"
             @check="onCheck"

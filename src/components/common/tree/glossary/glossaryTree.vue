@@ -198,9 +198,9 @@
             onMounted(() => {
                 reInitTree()
             })
-            watch(defaultGlossary, () => {
-                reInitTree()
-            })
+            // watch(defaultGlossary, () => {
+            //     reInitTree()
+            // })
 
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)

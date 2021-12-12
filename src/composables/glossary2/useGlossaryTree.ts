@@ -829,6 +829,7 @@ const useGlossaryTree = ({
         const newChildren = await getChildren()
 
         if(parentGuid === 'root') {
+            treeData.value = treeData.value.filter((child) => child.typeName !== 'loadMore')
             treeData.value.push(...newChildren)
         } else {
             const appendNewNodes = (node: TreeDataItem) => {
@@ -866,6 +867,16 @@ const useGlossaryTree = ({
         }
 
     }
+
+    watch(parentGlossaryQualifiedName, (newParentGlossaryQF) => {
+        offset.value = 0
+        queryText.value = ''
+        loadedKeys.value = []
+        selectedKeys.value = []
+        checkedKeys.value = []
+        expandedKeys.value = []
+        initTreeData(newParentGlossaryQF)
+    })
     return {
         onLoadData,
         expandNode,

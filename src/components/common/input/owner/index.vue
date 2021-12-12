@@ -5,7 +5,7 @@
     >
         <a-popover
             v-model:visible="isEdit"
-            placement="leftBottom"
+            :placement="placementPos"
             :overlay-class-name="$style.ownerPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
@@ -24,7 +24,7 @@
                 v-if="!readOnly"
                 shape="circle"
                 size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
@@ -136,6 +136,10 @@
                 type: Object as PropType<assetInterface>,
                 required: false,
                 default: () => {},
+            },
+            placementPos: {
+                type: String,
+                default: 'leftBottom',
             },
         },
         emits: ['change', 'update:modelValue'],

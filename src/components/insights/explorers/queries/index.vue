@@ -11,6 +11,7 @@
                 <a-dropdown
                     :trigger="['click']"
                     class="ml-auto shadow-none h-7"
+                    placement="bottomRight"
                 >
                     <a-button size="small" :class="$style.filterButton">
                         <AtlanIcon :icon="'Add'"></AtlanIcon>
@@ -43,6 +44,16 @@
                                         class="h-4 mr-2 outline-none hover:text-primary"
                                     />
                                     <span>New Folder</span>
+                                </div>
+                            </a-menu-item>
+                            <a-menu-item key="1" @click="toggleCollectionModal">
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        color="#5277D7"
+                                        icon="Platform"
+                                        class="h-4 mr-2 outline-none hover:text-primary"
+                                    />
+                                    <span>New Collection</span>
                                 </div>
                             </a-menu-item>
                         </a-menu>
@@ -151,7 +162,10 @@
                 </div>
             </div>
         </div>
-
+        <CreateCollectionModal
+            v-if="showCollectionModal"
+            v-model:showCollectionModal="showCollectionModal"
+        />
         <SaveQueryModal
             v-if="showSaveQueryModal"
             v-model:showSaveQueryModal="showSaveQueryModal"
@@ -235,6 +249,12 @@
                         '~/components/insights/playground/editor/saveQuery/index.vue'
                     )
             ),
+            CreateCollectionModal: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/insights/explorers/queries/collection/createCollectionModal.vue'
+                    )
+            ),
             AtlanIcon,
         },
         props: {
@@ -270,6 +290,7 @@
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const saveQueryLoading = ref(false)
+            const showCollectionModal = ref(false)
             const searchQuery = ref('')
             const raisedTabConfig = [
                 { key: 'personal', label: 'Personal' },
@@ -758,6 +779,10 @@
                 refetchNode(all_guid, type)
             }
 
+            const toggleCollectionModal = () => {
+                showCollectionModal.value = !showCollectionModal.value
+            }
+
             onMounted(() => {
                 selectedKeys.value = [activeInlineTabKey.value]
             })
@@ -906,6 +931,8 @@
                 updateCollection,
                 queryCollectionsLoading,
                 selectedCollection,
+                toggleCollectionModal,
+                showCollectionModal,
             }
         },
     })

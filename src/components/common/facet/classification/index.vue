@@ -30,8 +30,7 @@
                             <a-checkbox
                                 :value="item.name"
                                 :data-test-id="item.displayName"
-                                :class="$style.atlanReverse"
-                                class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
+                                class="inline-flex atlanReverse flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
                             >
                                 <div class="flex items-center">
                                     <ClassificationIcon :color="item.options?.color" />
@@ -171,15 +170,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

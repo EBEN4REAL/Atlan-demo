@@ -206,6 +206,7 @@ import RightJoin from '~/assets/images/icons/right-join.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
+import Gdoc from '~/assets/images/integrations/gDoc.svg'
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
@@ -259,6 +260,7 @@ import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
 import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
 import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
+import BulkUpload from '~/assets/images/icons/bulk-upload.svg'
 import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
@@ -288,6 +290,8 @@ import ShieldCheck from '~/assets/images/icons/shield-check.svg'
 import CustomVariable from '~/assets/images/icons/customVariable.svg'
 
 import FolderSearch from '~/assets/images/icons/folder-search.svg'
+import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
+import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
 
 export default {
     BuilderGroup,
@@ -566,9 +570,12 @@ export default {
     ViewDeprecated,
     ViewDraft,
     ViewVerified,
+    Gdoc,
     CustomVariable,
     AtlanBot,
     EmptyClassifications,
-    CustomVariable,
-    FolderSearch
+    FolderSearch,
+    FolderNav24,
+    FolderNav24Active,
+    BulkUpload,
 }

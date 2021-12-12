@@ -1,26 +1,31 @@
 <template>
     <div
-        class="flex flex-col px-1 rounded hover:bg-primary-light"
-        :class="isEdit ? 'bg-primary-light' : ''"
+        class="flex flex-col px-1 rounded"
+        :class="{
+            'bg-primary-light': isEdit,
+            'hover:bg-primary-light': !readOnly,
+        }"
     >
         <div
             class="text-sm text-gray-700"
-            @click="handleEdit"
             :class="$style.editable"
+            @click="handleEdit"
         >
             <span v-if="!isEdit && description(selectedAsset)">{{
                 description(selectedAsset)
             }}</span>
-            <span v-else-if="!isEdit && description(selectedAsset) === ''"
+            <span
+                v-else-if="!isEdit && description(selectedAsset) === ''"
+                class="text-gray-500"
                 >No description available</span
             >
             <a-textarea
-                ref="descriptionRef"
-                tabindex="0"
-                v-model:value="localValue"
                 v-else
-                @blur="handleBlur"
+                ref="descriptionRef"
+                v-model:value="localValue"
+                tabindex="0"
                 :rows="4"
+                @blur="handleBlur"
             ></a-textarea>
         </div>
     </div>
@@ -30,13 +35,12 @@
     import {
         computed,
         defineComponent,
-        nextTick,
-        inject,
+        watch,
         PropType,
         Ref,
         ref,
         toRefs,
-        watch,
+        watchEffect,
     } from 'vue'
     import {
         and,
@@ -56,10 +60,10 @@
                 type: String,
                 required: true,
             },
-            editPermission: {
+            readOnly: {
                 type: Boolean,
                 required: false,
-                default: true,
+                default: false,
             },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -70,6 +74,7 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const { readOnly, selectedAsset } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
@@ -90,8 +95,10 @@
                 handleChange()
             }
             const handleEdit = () => {
-                isEdit.value = true
-                start()
+                if (!readOnly?.value) {
+                    isEdit.value = true
+                    start()
+                }
             }
 
             const activeElement = useActiveElement()
@@ -103,11 +110,20 @@
                         'true'
             )
 
-            const { d } = useMagicKeys()
+            const { d, enter, shift } = useMagicKeys()
 
             whenever(and(d, notUsingInput), () => {
+                console.log(activeElement.value)
                 handleEdit()
             })
+
+            watchEffect(() => {
+                if (enter.value && !shift.value && isEdit.value) handleBlur()
+            })
+            watch(
+                selectedAsset,
+                () => (localValue.value = description(selectedAsset.value))
+            )
 
             return {
                 localValue,

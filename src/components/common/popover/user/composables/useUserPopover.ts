@@ -32,10 +32,27 @@ function useUserPopover(type: string, item: any) {
         })
         return count
     })
+
+    const getUserProfiles = (user: any) => {
+        const profile = user?.attributes?.profiles
+        let profileObj = {}
+        if (profile && profile.length) {
+            const profileJsonStr = profile[0]
+            try {
+                profileObj = JSON.parse(profileJsonStr)[0]
+                console.log("profileObj", profileObj)
+            } catch (error) {
+                console.error('error parsing user profile json', error)
+            }
+        }
+        return profileObj;
+    }
+
     return {
         data,
         bussinesCount,
         assetCount,
+        getUserProfiles
     }
 }
 

@@ -5,37 +5,28 @@
     >
         <div
             class="text-sm text-gray-700"
-            @click="handleEdit"
             :class="$style.editable"
+            @click="handleEdit"
         >
             <span v-if="!isEdit && localValue">{{ localValue }}</span>
             <span v-else-if="!isEdit && localValue === ''"
                 >No name available</span
             >
             <a-input
-                ref="nameRef"
-                tabindex="0"
-                v-model:value="localValue"
                 v-else
-                @blur="handleBlur"
+                ref="nameRef"
+                v-model:value="localValue"
+                tabindex="0"
                 :rows="4"
+                @blur="handleBlur"
+                @pressEnter="handleBlur"
             ></a-input>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        nextTick,
-        onMounted,
-        PropType,
-        Ref,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs } from 'vue'
     import {
         and,
         useActiveElement,
@@ -52,15 +43,16 @@
                 type: String,
                 required: true,
             },
-            editPermission: {
+            readOnly: {
                 type: Boolean,
                 required: false,
-                default: true,
+                default: false,
             },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const { readOnly } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const nameRef: Ref<null | HTMLInputElement> = ref(null)
@@ -83,15 +75,19 @@
                 handleChange()
             }
             const handleEdit = () => {
-                isEdit.value = true
-                start()
+                if (!readOnly?.value) {
+                    isEdit.value = true
+                    start()
+                }
             }
 
             const activeElement = useActiveElement()
             const notUsingInput = computed(
                 () =>
                     activeElement.value?.tagName !== 'INPUT' &&
-                    activeElement.value?.tagName !== 'TEXTAREA'
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
             )
 
             const { n } = useMagicKeys()

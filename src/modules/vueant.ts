@@ -48,6 +48,7 @@ import {
     Image,
     Row,
     Col,
+    Result,
 } from 'ant-design-vue'
 import { UserModule } from '~/types/vitessg'
 
@@ -94,6 +95,7 @@ export const install: UserModule = ({ app }) => {
     app.use(Upload)
     app.use(Row)
     app.use(Col)
+    app.use(Result)
 
     app.config.globalProperties.$message = message
     app.config.globalProperties.$error = Modal.error

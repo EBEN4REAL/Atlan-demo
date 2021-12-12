@@ -39,14 +39,22 @@
         :loadedKeys="loadedKeys"
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
+        v-model:checked-keys="checkedKeys"
         :class="$style.glossaryTree"
+        :checkable="checkable"
+        :checkStrictly="false"
+        @check="onCheck"
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />
         </template>
 
         <template #title="entity">
-            <GlossaryTreeItem :item="entity" :class="treeItemClass" />
+            <GlossaryTreeItem
+                :item="entity"
+                :class="treeItemClass"
+                :checkable="checkable"
+            />
         </template>
     </a-tree>
 </template>
@@ -60,6 +68,7 @@
         watch,
         ref,
         provide,
+        PropType,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -101,12 +110,23 @@
                 required: false,
                 default: () => '',
             },
+            checkable: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            checkedKeys: {
+                type: Object as PropType<string[]>,
+                required: false,
+            },
         },
-        emits: ['select'],
+        emits: ['select', 'check', 'update:checkedKeys'],
         setup(props, { emit }) {
             const router = useRouter()
 
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
+            const { checkedKeys } = useVModels(props, emit)
+
             const glossaryStore = useGlossaryStore()
             const parentGlossaryGuid = computed(() => {
                 const selectedGlossary = glossaryStore.list.find(
@@ -130,31 +150,27 @@
                 error,
                 isReady,
                 collapseAll,
+                updateNode,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
+                checkable: props.checkable,
             })
 
-            onMounted(() => {
-                initTreeData(defaultGlossary.value)
-            })
-            watch(defaultGlossary, () => {
-                initTreeData(defaultGlossary.value)
-            })
             const addGlossary = (asset) => {
                 addNode(asset)
             }
             const collapseTree = () => {
                 collapseAll()
             }
-            const addTerm = (asset) => {
-                addNode(asset)
-            }
+            // const addTerm = (asset) => {
+            //     addNode(asset)
+            // }
 
-            const addCategory = (asset) => {
-                addNode(asset)
-            }
+            // const addCategory = (asset) => {
+            //     addNode(asset)
+            // }
 
             const addGTCNode = (asset, entity = {}) => {
                 if (entity !== {}) addNode(asset, entity)
@@ -168,6 +184,22 @@
             const reInitTree = () => {
                 initTreeData(defaultGlossary.value)
             }
+            const onCheck = (e, { checkedNodes }) => {
+                if (checkedKeys) {
+                    checkedKeys.value = checkedNodes.map((term) => term.guid)
+                }
+                emit('check', checkedNodes)
+            }
+            const updateTreeNode = (asset) => {
+                updateNode(asset)
+            }
+            onMounted(() => {
+                reInitTree()
+            })
+            watch(defaultGlossary, () => {
+                reInitTree()
+            })
+
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             return {
@@ -185,12 +217,15 @@
                 error,
                 isReady,
                 height,
-                addTerm,
-                addCategory,
+                // addTerm,
+                // addCategory,
                 treeItemClass,
                 collapseTree,
                 addGTCNode,
                 reInitTree,
+                onCheck,
+                checkedKeys,
+                updateTreeNode,
             }
             // data
         },

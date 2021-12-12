@@ -8,9 +8,7 @@ export const CREATE_GLOSSARY_CATEGORY = 'CREATE_GLOSSARY_CATEGORY'
 export const CREATE_GLOSSARY_TERM = 'CREATE_GLOSSARY_TERM'
 
 // deletion
-export const DELETE_GLOSSARY = 'DELETE_GLOSSARY'
-export const DELETE_GLOSSARY_CATEGORY = 'DELETE_GLOSSARY_CATEGORY'
-export const DELETE_GLOSSARY_TERM = 'DELETE_GLOSSARY_TERM'
+export const DELETE_GTC = 'DELETE_GTC'
 
 // link and unlink
 export const ASSIGN_TERM_LINKED_ASSETS = 'ASSIGN_TERM_LINKED_ASSETS'
@@ -22,12 +20,8 @@ export const map = {
         getAPIPath(BASE_PATH, '/glossary/category'),
     [CREATE_GLOSSARY_TERM]: () => getAPIPath(BASE_PATH, '/glossary/term'),
 
-    [DELETE_GLOSSARY]: ({ guid }: Record<string, string>) =>
-        getAPIPath('meta', `/glossary/${guid}`),
-    [DELETE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) =>
-        getAPIPath('meta', `/glossary/category/${guid}`),
-    [DELETE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) =>
-        getAPIPath('meta', `/glossary/term/${guid}`),
+    [DELETE_GTC]: ({ guid }: Record<string, string>) =>
+        getAPIPath('meta', `/entity/guid/${guid}`),
 
     [ASSIGN_TERM_LINKED_ASSETS]: ({ guid }: Record<string, string>) =>
         getAPIPath('meta', `/glossary/terms/${guid}/assignedEntities`),

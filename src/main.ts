@@ -78,14 +78,14 @@ keycloak
             })
             inputFocusDirective(app)
             authDirective(app)
-                ; (window as any).analytics.identify(authStore?.id, {
-                    name: authStore.name || '',
-                    firstName: authStore.firstName,
-                    lastName: authStore.lastName,
-                    email: authStore.email || '',
-                    username: authStore.username || '',
-                    roles: authStore.roles || [],
-                })
+            ;(window as any).analytics.identify(authStore?.id, {
+                name: authStore.name || '',
+                firstName: authStore.firstName,
+                lastName: authStore.lastName,
+                email: authStore.email || '',
+                username: authStore.username || '',
+                roles: authStore.roles || [],
+            })
 
             app.use(router).mount('#app')
         }
@@ -98,10 +98,12 @@ keycloak
 router.beforeEach(async (to, from, next) => {
     if (to.matched.some((record) => record.meta.requiresAuth)) {
         if (authStore.isAuthenticated) {
-            const requiredRole = to.matched.find((record) => !!record.meta.role)?.meta.role
+            const requiredRole = to.matched.find((record) => !!record.meta.role)
+                ?.meta.role
             if (requiredRole) {
                 const allRoles = authStore.decodedToken?.realm_access?.roles
-                if (allRoles?.length && allRoles.includes(requiredRole)) return next()
+                if (allRoles?.length && allRoles.includes(requiredRole))
+                    return next()
                 return next(false)
             }
             return next()

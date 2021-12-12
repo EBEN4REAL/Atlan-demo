@@ -69,6 +69,13 @@ export default function useIndexSearch<T>(
         }
         return []
     }
+    const getMap = (buckets) => {
+        const map = {}
+        buckets.forEach((bucket) => {
+            map[bucket.key] = bucket.doc_count
+        })
+        return map
+    }
 
     const cancelRequest = () => {
         if (cancel) {
@@ -97,6 +104,7 @@ export default function useIndexSearch<T>(
         error,
         isLoading,
         isValidating,
+        getMap,
         cancelRequest,
     }
 }

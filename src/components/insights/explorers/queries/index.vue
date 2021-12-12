@@ -46,6 +46,7 @@
                             <ClassificationDropdown
                                 :modelValue="classificationValue"
                                 @change="onClassificationChange"
+                                :connector="connector"
                             />
                         </div>
                         <div class="flex items-center">
@@ -236,6 +237,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
+
     export default defineComponent({
         components: {
             RaisedTab,
@@ -301,7 +303,6 @@
             ) as ComputedRef<activeInlineTabInterface>
             const { classificationList } = useTypedefData()
 
-            const savedQueryType: Ref<object> = ref(classificationList.value[0])
             // console.log('hello world: ', classificationList.value)
             const editorInstance = inject('editorInstance') as Ref<any>
             const activeInlineTabKey = inject(
@@ -328,6 +329,8 @@
                     ? classificationList.value[0].name
                     : ''
             )
+            const savedQueryType: Ref<object> = ref(classificationList.value[0])
+
             const onClassificationChange = (value) => {
                 // emit('change', checkedValues)
                 console.log('change: ', value)
@@ -642,7 +645,7 @@
                 onLoadData: onLoadData,
                 expandNode: expandNode,
                 selectNode: selectNode,
-                refetchNode: refetchNode1,
+                refetchNode: refetchNode,
                 immediateParentGuid: immediateParentGuid,
                 nodeToParentKeyMap: nodeToParentKeyMap,
                 updateNode: updateNode,
@@ -744,14 +747,7 @@
                 const all_guid =
                     nodeToParentKeyMap[guid] ?? queryFolderNamespace.value.guid
 
-                refetchNode1(all_guid, type)
-            }
-
-            const refetchNode = (
-                guid: string,
-                type: 'query' | 'queryFolder'
-            ) => {
-                refetchNode1(guid, type)
+                refetchNode(all_guid, type)
             }
 
             onMounted(() => {
@@ -846,11 +842,11 @@
                                 async (guid, index) => {
                                     // console.log('reset: ', index)
 
-                                    await refetchNode1(guid, resetType.value)
+                                    await refetchNode(guid, resetType.value)
                                 }
                             )
                         } else {
-                            await refetchNode1(
+                            await refetchNode(
                                 resetParentGuid.value,
                                 resetType.value
                             )

@@ -29,27 +29,8 @@
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
         </a-popover>
-        <template v-if="usedForAssets">
-            <template
-                v-for="username in ownerUsers(selectedAsset)"
-                :key="username"
-            >
-                <PopOverUser :item="username">
-                    <UserPill
-                        :username="username"
-                        :allow-delete="!readOnly"
-                        :enable-hover="enableHover"
-                        @click="handleClickUser(username)"
-                        @delete="handleDeleteUser"
-                    ></UserPill>
-                </PopOverUser>
-            </template>
-        </template>
-        <template
-            v-for="username in localValue?.ownerUsers"
-            v-else
-            :key="username"
-        >
+
+        <template v-for="username in localValue?.ownerUsers" :key="username">
             <PopOverUser :item="username">
                 <UserPill
                     :username="username"
@@ -60,19 +41,8 @@
                 ></UserPill>
             </PopOverUser>
         </template>
-        <template v-if="usedForAssets">
-            <template v-for="name in ownerGroups(selectedAsset)" :key="name">
-                <PopOverGroup :item="name">
-                    <GroupPill
-                        :name="name"
-                        :allowDelete="!readOnly"
-                        @delete="handleDeleteGroup"
-                        @click="handleClickGroup(name)"
-                        :enableHover="enableHover"
-                    ></GroupPill>
-                </PopOverGroup> </template
-        ></template>
-        <template v-for="name in localValue?.ownerGroups" v-else :key="name">
+
+        <template v-for="name in localValue?.ownerGroups" :key="name">
             <PopOverGroup :item="name">
                 <GroupPill
                     :name="name"
@@ -83,11 +53,28 @@
                 ></GroupPill>
             </PopOverGroup>
         </template>
+        <span
+            class="-ml-1 text-gray-500"
+            v-if="
+                readOnly &&
+                localValue?.ownerGroups?.length < 1 &&
+                localValue?.ownerUsers?.length < 1
+            "
+            >No owners assigned</span
+        >
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, PropType } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        Ref,
+        ref,
+        toRefs,
+        PropType,
+        watch,
+    } from 'vue'
 
     // Utils
     import {
@@ -145,11 +132,6 @@
                 required: false,
                 default: true,
             },
-            usedForAssets: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
@@ -159,8 +141,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, enableHover, destroyTooltipOnHide } =
-                toRefs(props)
+            const { selectedAsset } = toRefs(props)
 
             const localValue = ref(modelValue.value)
 
@@ -226,25 +207,6 @@
                 }
             })
 
-            // const { o, Escape, d } = useMagicKeys()
-
-            // watch(o, (v) => {
-            //     if (v) {
-            //         console.log('o')
-            //         if (!isEdit.value) {
-            //             isEdit.value = true
-            //         }
-            //     }
-            // })
-            // watch(Escape, (v) => {
-            //     if (v) {
-            //         console.log('esc')
-            //         if (isEdit.value) {
-            //             isEdit.value = false
-            //         }
-            //     }
-            // })
-
             const ownerFacetRef: Ref<null | HTMLInputElement> = ref(null)
 
             const handleVisibleChange = (visible) => {
@@ -257,6 +219,11 @@
                     handleChange()
                 }
             }
+
+            watch(selectedAsset, () => {
+                localValue.value.ownerUsers = ownerUsers(selectedAsset.value)
+                localValue.value.ownerGroups = ownerGroups(selectedAsset.value)
+            })
 
             return {
                 ownerGroups,

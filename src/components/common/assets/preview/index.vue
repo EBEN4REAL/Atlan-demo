@@ -38,19 +38,35 @@
                 ></AtlanIcon>
                 <router-link
                     :to="getProfilePath(selectedAsset)"
-                    class="flex-shrink mb-0 mr-1 overflow-hidden font-bold leading-none truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                    :class="
+                        isDrawer &&
+                        ['column'].includes(
+                            selectedAsset.typeName?.toLowerCase()
+                        )
+                            ? 'pointer-events-none text-gray-500'
+                            : 'text-primary'
+                    "
+                    class="flex-shrink mb-0 overflow-hidden font-bold leading-none truncate cursor-pointer text-md hover:underline overflow-ellipsis whitespace-nowrap"
+                    @click="() => $emit('closeDrawer')"
                 >
                     {{ title(selectedAsset) }}
                 </router-link>
-
                 <CertificateBadge
                     v-if="certificateStatus(selectedAsset)"
                     :status="certificateStatus(selectedAsset)"
                     :username="certificateUpdatedBy(selectedAsset)"
                     :timestamp="certificateUpdatedAt(selectedAsset)"
                     placement="bottomRight"
-                    class="mb-0.5"
+                    class="mb-0.5 ml-1"
                 ></CertificateBadge>
+                <a-tooltip placement="bottomRight"
+                    ><template #title>Limited Access</template>
+                    <AtlanIcon
+                        v-if="isScrubbed(selectedAsset)"
+                        icon="Lock"
+                        class="h-4 mb-0.5 ml-1"
+                    ></AtlanIcon
+                ></a-tooltip>
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -137,13 +153,14 @@
                     : 'height: calc(100% - 84px)'
             "
             tab-position="left"
-            :destroyInactiveTabPane="true"
+            :destroy-inactive-tab-pane="true"
         >
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset)"
                 :key="index"
                 class="overflow-y-auto"
-                :destroyInactiveTabPane="true"
+                :destroy-inactive-tab-pane="true"
+                :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
             >
                 <template #tab>
                     <PreviewTabsIcon
@@ -153,15 +170,17 @@
                         :emoji="tab.emoji"
                         :active-icon="tab.activeIcon"
                         :is-active="activeKey === index"
+                        :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
                 </template>
 
                 <component
-                    v-if="tab.component"
                     :is="tab.component"
+                    v-if="tab.component"
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
-                    :isDrawer="isDrawer"
+                    :is-drawer="isDrawer"
+                    :read-only="isScrubbed(selectedAsset)"
                     :data="tab.data"
                 ></component>
             </a-tab-pane>
@@ -185,7 +204,6 @@
     import { debouncedWatch } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
-
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -216,6 +234,9 @@
             ),
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
+            ),
+            resources: defineAsyncComponent(
+                () => import('@common/widgets/resources/index.vue')
             ),
             // chat: defineAsyncComponent(
             //     () => import('./tabs/chat/assetChat.vue')
@@ -249,7 +270,7 @@
                 default: false,
             },
         },
-        emits: ['assetMutation', 'closeSidebar'],
+        emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
             const { selectedAsset, isDrawer } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
@@ -285,6 +306,7 @@
                 certificateStatusMessage,
                 assetTypeLabel,
                 getProfilePath,
+                isScrubbed,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -337,6 +359,7 @@
             const router = useRouter()
 
             const handleAction = (key) => {
+                emit('closeDrawer')
                 switch (key) {
                     case 'open':
                         router.push(getProfilePath(selectedAsset.value))
@@ -380,6 +403,7 @@
                 getAssetQueryPath,
                 handleAction,
                 getProfilePath,
+                isScrubbed,
             }
         },
     })

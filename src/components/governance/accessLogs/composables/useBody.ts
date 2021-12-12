@@ -6,8 +6,8 @@ interface useBodyProps {
     gte: string
     lt: string
     connectionQF?: string | undefined
-    dbName?: string | undefined
-    schemaName?: string | undefined
+    dbQualifiedName?: string | undefined
+    schemaQualifiedName?: string | undefined
     logStatusValues?: string[] | undefined
     logActionValues?: string[] | undefined
     userTypes?: string[] | undefined
@@ -27,8 +27,8 @@ interface useBodyProps {
  * @param gte The `from` time filter.
  * @param lt The `to` time filter.
  * @param connectionQF The qualified name of the connection.
- * @param dbName The name of the database.
- * @param schemaName The name of the schema.
+ * @param dbQualifiedName The name of the database.
+ * @param schemaQualifiedName The name of the schema.
  * @param logStatusValues The filters of log statuses.
  * @param logActionValues The filters of log actions.
  * @param userTypes The types of users: `User`, `BOT`, and `API Key`.
@@ -44,8 +44,8 @@ export default function useBody({
     gte,
     lt,
     connectionQF,
-    dbName,
-    schemaName,
+    dbQualifiedName,
+    schemaQualifiedName,
     logStatusValues,
     logActionValues,
     userTypes,
@@ -66,46 +66,32 @@ export default function useBody({
         format: 'strict_date_optional_time',
         time_zone: timezone,
     })
+    // If we have the name of the connector.
     if (connectorName) {
-        base.query('wildcard', 'resource.keyword', {
-            value: `*${connectorName}*`,
-        })
-    } else if (connectionQF) {
-        // If we have a qualified name for the connection.
-        base.query(
-            'wildcard',
+        base.filter(
+            'regexp',
             'resource.keyword',
-            {
-                value: `*${connectionQF}*`,
-            },
-            {},
-            (connectorQFFilteredQuery) => {
-                // If we have a database too, use a nested filter.
-                if (dbName) {
-                    return connectorQFFilteredQuery.query(
-                        'wildcard',
-                        'resource.keyword',
-                        {
-                            value: `*${dbName}*`,
-                        },
-                        {},
-                        (dbFilteredQuery) => {
-                            // If we have a schema too, use a nested filter.
-                            if (schemaName) {
-                                dbFilteredQuery.query(
-                                    'wildcard',
-                                    'resource.keyword',
-                                    {
-                                        value: `*${schemaName}*`,
-                                    }
-                                )
-                            }
-                            return dbFilteredQuery
-                        }
-                    )
-                }
-                return connectorQFFilteredQuery
-            }
+            `.+/\\[.*\\]/.*/${connectorName}/.*`
+        )
+    }
+    // If we have a qualified name for the connection.
+    if (connectionQF) {
+        base.filter(
+            'regexp',
+            'resource.keyword',
+            `.+/\\[.*\\]/${connectionQF}.*`
+        )
+    } else if (dbQualifiedName) {
+        base.filter(
+            'regexp',
+            'resource.keyword',
+            `.+/\\[.*\\]/${dbQualifiedName}.*`
+        )
+    } else if (schemaQualifiedName) {
+        base.filter(
+            'regexp',
+            'resource.keyword',
+            `.+/\\[.*\\]/${schemaQualifiedName}.*`
         )
     }
     // If we have the search text.
@@ -136,33 +122,27 @@ export default function useBody({
 
         if (!includeAPIKeys) {
             if (includeBots && includeUsers) {
-                base.notQuery(
+                base.notFilter(
                     'prefix',
                     'reqUser.keyword',
                     'service-account-apikey'
                 )
             } else if (!includeBots && includeUsers) {
-                base.notQuery('prefix', 'reqUser.keyword', 'service-account')
+                base.notFilter('wildcard', 'reqUser.keyword', {
+                    value: '*argo*',
+                })
             } else if (includeBots && !includeUsers) {
-                base.query(
-                    'prefix',
-                    'reqUser.keyword',
-                    'service-account'
-                ).notQuery(
-                    'prefix',
-                    'reqUser.keyword',
-                    'service-account-apikey'
-                )
+                base.filter('wildcard', 'reqUser.keyword', {
+                    value: '*argo*',
+                })
             }
         } else if (!includeBots) {
             if (includeAPIKeys && includeUsers) {
-                base.notQuery(
-                    'regexp',
-                    'reqUser.keyword',
-                    'service-account-(?!apikey)([a-z0-9]+)$'
-                )
+                base.notFilter('wildcard', 'reqUser.keyword', {
+                    value: '*argo*',
+                })
             } else if (includeAPIKeys && !includeUsers) {
-                base.query(
+                base.filter(
                     'prefix',
                     'reqUser.keyword',
                     'service-account-apikey'
@@ -170,7 +150,13 @@ export default function useBody({
             }
         } else if (!includeUsers) {
             if (includeAPIKeys && includeBots) {
-                base.query('prefix', 'reqUser.keyword', 'service-account')
+                base.orFilter(
+                    'prefix',
+                    'reqUser.keyword',
+                    'service-account-apikey'
+                ).orFilter('wildcard', 'reqUser.keyword', {
+                    value: '*argo*',
+                })
             }
         }
     }
@@ -178,7 +164,7 @@ export default function useBody({
         base.filter('terms', 'reqUser.keyword', usernames)
     if (properties) {
         // All the regular expressions listed below, assume a format of
-        // {Asset Type}/[{some weird number}]/{qualified name of asset}
+        // {Asset Type}/[{Classification}]/{qualified name of asset}
         Object.keys(properties).forEach((key) => {
             properties[key].forEach((element) => {
                 if (element.value) {
@@ -204,11 +190,9 @@ export default function useBody({
                         )
                     }
                     if (element.operator === 'endsWith') {
-                        base.filter(
-                            'regexp',
-                            element.operand,
-                            `.+/\\[.*\\]/.*${element.value}`
-                        )
+                        base.filter('wildcard', element.operand, {
+                            value: `*${element.value}`,
+                        })
                     }
                     if (element.operator === 'pattern') {
                         base.filter('regexp', element.operand, element.value)

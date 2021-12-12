@@ -35,7 +35,7 @@ export function useSavedQuery(
         getSchemaQualifiedName,
         getDatabaseQualifiedName,
         getConnectorsDataFromQualifiedNames,
-        getConnectorsDataFromQualifiedNamesAll
+        getConnectorsDataFromQualifiedNamesAll,
     } = useConnector()
     const { getParsedQuery } = useEditor()
 
@@ -63,7 +63,7 @@ export function useSavedQuery(
         const connectionQualifiedName =
             savedQuery.attributes.connectionQualifiedName
 
-            console.log('saved query: ', savedQuery?.attributes)
+        console.log('saved query: ', savedQuery?.attributes)
 
         const defaultDatabaseQualifiedName =
             savedQuery?.attributes?.defaultDatabaseQualifiedName
@@ -101,8 +101,8 @@ export function useSavedQuery(
         //         schema: {
         //             connectors: connectors,
         //         },
-        //     }, 
-      
+        //     },
+
         // newTab.playground.editor= {
         //     text: savedQuery.attributes.rawQuery,
         //     dataList: [],
@@ -184,7 +184,21 @@ export function useSavedQuery(
             },
             playground: {
                 vqb: {
-                    panels: [{ order: 1, id: 'columns', hide: false, columns: [] }],
+                    panels: [
+                        {
+                            order: 1,
+                            id: 'columns',
+                            hide: true,
+                            subpanels: [
+                                {
+                                    id: '1',
+                                    tableQualifiedName: undefined,
+                                    columns: [],
+                                    columnsData: [],
+                                },
+                            ],
+                        },
+                    ],
                 },
                 editor: {
                     text: savedQuery.attributes.rawQuery,
@@ -197,7 +211,7 @@ export function useSavedQuery(
                         rowsCount: -1,
                     },
                     context: {
-                        ...connectors
+                        ...connectors,
                     },
                 },
                 resultsPane: {
@@ -291,7 +305,8 @@ export function useSavedQuery(
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
 
-        const defaultDatabaseQualifiedName = getDatabaseQualifiedName(attributeValue) ?? undefined
+        const defaultDatabaseQualifiedName =
+            getDatabaseQualifiedName(attributeValue) ?? undefined
 
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
@@ -329,7 +344,6 @@ export function useSavedQuery(
 
         console.log('update query body: ', body.value)
 
-        
         isUpdating.value = true
         const { data, error, isLoading } = Insights.UpdateSavedQuery(
             body.value,
@@ -443,7 +457,7 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type && type.length && parentFolderQF=='root') {
+        if (type && type.length && parentFolderQF == 'root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},
@@ -585,7 +599,7 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type && type.length && parentFolderQF=='root') {
+        if (type && type.length && parentFolderQF == 'root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},
@@ -705,7 +719,7 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid.value,
         }
-        if (type && type.length && parentFolderQF.value==='root') {
+        if (type && type.length && parentFolderQF.value === 'root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},
@@ -787,8 +801,9 @@ export function useSavedQuery(
         const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
-        const defaultDatabaseQualifiedName = getDatabaseQualifiedName(attributeValue) ?? undefined
-            getSchemaQualifiedName(attributeValue) ?? undefined
+        const defaultDatabaseQualifiedName =
+            getDatabaseQualifiedName(attributeValue) ?? undefined
+        getSchemaQualifiedName(attributeValue) ?? undefined
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
@@ -826,7 +841,7 @@ export function useSavedQuery(
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
-        if (type && type.length && parentFolderQF=='root') {
+        if (type && type.length && parentFolderQF == 'root') {
             body.value.entity.classifications = [
                 {
                     attributes: {},

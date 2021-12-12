@@ -49,7 +49,7 @@
                 @event="$router.push('/workflows')"
             />
         </div>
-        <div v-else-if="graphData.name" class="absolute w-full h-full">
+        <div v-else-if="graphData?.name" class="absolute w-full h-full">
             <MonitorGraph
                 :selected-pod="selectedPod"
                 :graph-data="graphData"

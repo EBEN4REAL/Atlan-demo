@@ -1,5 +1,9 @@
 <template>
-    <a-input v-bind="componentProps" v-model:value="formState[property.id]">
+    <a-input
+        v-bind="componentProps"
+        :value="formState[property.id]"
+        @input="formState[property.id] = handleInput($event)"
+    >
         <template
             #prefix
             v-if="componentProps.prefixText || componentProps.prefixImage"
@@ -54,7 +58,11 @@
             const formState = inject('formState')
             const componentProps = computed(() => property.value.ui)
 
-            return { property, componentProps, formState }
+            const handleInput = (e) => {
+                return e.target.value
+            }
+
+            return { property, componentProps, formState, handleInput }
         },
     })
 </script>

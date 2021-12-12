@@ -1,5 +1,5 @@
 <template>
-    <h2 class="mb-3 text-xl font-bold">Relevant for you</h2>
+    <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
     <a-tabs v-model:activeKey="relevantTab" @change="selectRelevantTab($event)">
         <a-tab-pane v-for="t in relevantTabList" :key="t.id" :tab="t.name"
             ><component
@@ -42,13 +42,21 @@
                 }, */
                 {
                     id: 1,
-                    name: 'Your assets',
+                    name: 'My Assets',
                     component: 'AssetList',
                     typeName: ['Table'],
                     icon: 'NoRelevantAsset',
                     emptyText: 'All your assets will appear here.',
                 },
-                {
+                // {
+                //     id: 2,
+                //     name: 'Assets Owned',
+                //     component: 'AssetList',
+                //     typeName: ['Table'],
+                //     icon: 'NoRelevantAsset',
+                //     emptyText: 'All your assets will appear here.',
+                // },
+                /*{
                     id: 2,
                     name: 'Your terms',
                     component: 'AssetList',
@@ -64,7 +72,7 @@
                     icon: 'NoRelevantAsset',
                     emptyText: 'All your saved queries will appear here.',
                 },
-                /* {
+                {
                     id: 4,
                     name: 'Subscribed',
                     component: 'Subscribed',

@@ -1,47 +1,51 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
-            placement="leftBottom"
-            :overlayClassName="$style.certificatePopover"
-            @visibleChange="handleVisibleChange"
+            v-if="!readOnly"
             v-model:visible="isEdit"
+            placement="leftBottom"
+            :overlay-class-name="$style.certificatePopover"
             :trigger="['click']"
+            @visibleChange="handleVisibleChange"
         >
             <template #content>
                 <CertificateFacet
-                    :isRadio="true"
                     v-model="localValue.certificateStatus"
+                    :is-radio="true"
                 ></CertificateFacet>
                 <div class="px-3 mt-1">
                     <p class="text-sm text-gray-500">Message</p>
                     <a-textarea
-                        :rows="4"
                         v-model:value="localValue.certificateStatusMessage"
+                        :rows="4"
                     >
                     </a-textarea>
                 </div>
             </template>
-
-            <CertificatePill
-                v-if="
-                    certificateStatus(selectedAsset) !== 'NONE' &&
-                    certificateStatus(selectedAsset)
-                "
-                class="w-full"
-                :status="certificateStatus(selectedAsset)"
-                :message="certificateStatusMessage(selectedAsset)"
-                :username="certificateUpdatedBy(selectedAsset)"
-                :timestamp="certificateUpdatedAt(selectedAsset)"
-            ></CertificatePill>
-            <a-button
-                v-else
-                shape="circle"
-                size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
-            >
-                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-            ></a-button>
         </a-popover>
+
+        <CertificatePill
+            v-if="
+                certificateStatus(selectedAsset) !== 'NONE' &&
+                certificateStatus(selectedAsset)
+            "
+            class="w-full"
+            :status="certificateStatus(selectedAsset)"
+            :message="certificateStatusMessage(selectedAsset)"
+            :username="certificateUpdatedBy(selectedAsset)"
+            :timestamp="certificateUpdatedAt(selectedAsset)"
+            @click="() => (isEdit = true)"
+        ></CertificatePill>
+        <a-button
+            v-else-if="!readOnly"
+            shape="circle"
+            size="small"
+            class="text-center shadow hover:bg-primary-light hover:border-primary"
+            @click="() => (isEdit = true)"
+        >
+            <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
+        ></a-button>
+        <span v-else class="text-sm text-gray-500">No certification</span>
     </div>
 </template>
 
@@ -49,12 +53,10 @@
     import {
         defineComponent,
         PropType,
-        toRefs,
+        watch,
         computed,
         ref,
-        inject,
-        nextTick,
-        reactive,
+        toRefs,
     } from 'vue'
     import {
         and,
@@ -63,19 +65,12 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
-    // import { message } from 'ant-design-vue'
-    // import updateAsset from '~/composables/discovery/updateAsset'
     import { assetInterface } from '~/types/assets/asset.interface'
-    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { certificateList } from '~/constant/certification'
-    // import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     import CertificatePill from '@/common/pills/certificate.vue'
     import CertificateFacet from '@/common/facet/certificate/index.vue'
     import whoami from '~/composables/user/whoami'
-
-    import confetti from '~/utils/confetti'
 
     export default defineComponent({
         name: 'CertificateWidget',
@@ -96,12 +91,18 @@
                 required: false,
                 default: () => {},
             },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
+            const { selectedAsset } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -152,6 +153,14 @@
                     handleChange()
                     isEdit.value = false
                 }
+            })
+
+            watch(selectedAsset, () => {
+                localValue.value.certificateStatus = certificateStatus(
+                    selectedAsset.value
+                )
+                localValue.value.certificateStatusMessage =
+                    certificateStatusMessage(selectedAsset.value)
             })
 
             return {

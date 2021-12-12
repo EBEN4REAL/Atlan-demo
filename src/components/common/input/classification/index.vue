@@ -22,14 +22,11 @@
                 </div>
             </template>
             <a-button
+                v-if="!readOnly"
                 shape="circle"
                 :disabled="disabled"
                 size="small"
-                class="
-                    text-center
-                    shadow
-                    hover:bg-primary-light hover:border-primary
-                "
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
@@ -41,12 +38,15 @@
                     :name="classification.name"
                     :display-name="classification?.displayName"
                     :is-propagated="isPropagated(classification)"
-                    :allow-delete="true"
+                    :allow-delete="!readOnly"
                     :color="classification.options?.color"
                     @delete="handleDeleteClassification"
                 />
             </Popover>
         </template>
+        <span class="-ml-1 text-gray-500" v-if="readOnly && list?.length < 1"
+            >No linked classifications</span
+        >
     </div>
 </template>
 
@@ -95,6 +95,11 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -208,14 +213,12 @@
             })
 
             return {
-                disabled,
                 localValue,
                 isPropagated,
                 list,
                 selectedValue,
                 handleChange,
                 handleVisibleChange,
-                guid,
                 handleSelectedChange,
                 classificationFacetRef,
                 isEdit,

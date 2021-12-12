@@ -675,7 +675,7 @@ const useQueryTree = ({
         loadedKeys.value = []
         expandedKeys.value = []
         isInitingTree.value = true
-        const newCollectionQualifiedName = newColletion.attributes.qualifiedName
+        const newCollectionQualifiedName = newColletion?.attributes?.qualifiedName
         if (newCollectionQualifiedName) {
             immediateParentFolderQF.value = newCollectionQualifiedName
             immediateParentGuid.value = collection.value?.guid

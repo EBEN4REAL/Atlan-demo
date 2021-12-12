@@ -258,6 +258,7 @@
                     parentQualifiedName: '',
                     isSQLSnippet: false,
                     savedQueryParentFolderTitle: undefined,
+                    collectionQulaifiedName: '',
                     explorer: {
                         schema: {
                             connectors: {
@@ -274,6 +275,14 @@
                                 connector:
                                     activeInlineTab.value?.explorer?.queries
                                         .connectors.connector,
+                            },
+                            collection: {
+                                qualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.qualifiedName,
+                                parentQualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.guid,
                             },
                         },
                     },

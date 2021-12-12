@@ -37,7 +37,6 @@
 
         <!-- Lineage Footer -->
         <LineageFooter
-            v-if="isComputeDone"
             :graph="graph"
             :lineage-container="lineageContainer"
             :curr-zoom="currZoom"

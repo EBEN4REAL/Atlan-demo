@@ -46,7 +46,7 @@ export default function useCreateGraph(
                     if (cell.isNode()) return NV
                 },
                 createCellView(cell) {
-                    if (cell.isEdge()) return null
+                    if (!cell.isNode()) return null
                 },
             },
         },

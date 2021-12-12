@@ -81,6 +81,7 @@
         // Vue,
         inject,
         ComputedRef,
+        computed,
     } from 'vue'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -91,7 +92,10 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    import { Folder } from '~/types/insights/savedQuery.interface'
+    import {
+        Folder,
+        QueryCollection,
+    } from '~/types/insights/savedQuery.interface'
     import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
 
     export default defineComponent({
@@ -125,6 +129,9 @@
         setup(props, { emit }) {
             const route = useRoute()
             const permissions = inject('permissions') as ComputedRef<any>
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
 
             const router = useRouter()
             const { connector, savedQueryType, selectedNewFolder } =
@@ -235,6 +242,16 @@
                 savedQueryType2.value = value
             }
 
+            const selectedCollection = computed(() => {
+                const collection = queryCollections.value?.find(
+                    (coll) =>
+                        coll.attributes.qualifiedName ===
+                        activeInlineTab.value.explorer.queries.collection
+                            .qualifiedName
+                )
+                return collection
+            })
+
             // const isSelectedType = (type: 'personal' | 'all') => {
             //     return savedQueryType2.value === type
             // }
@@ -290,6 +307,7 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
+                collection: selectedCollection,
             })
 
             const folderOpened = ref(true)

@@ -188,6 +188,7 @@
     import {
         Folder,
         SavedQueryInterface,
+        QueryCollection,
     } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
@@ -292,7 +293,9 @@
                 'queryFolderNamespace',
                 ref({}) as Ref<Folder>
             )
-
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
             const { setConnectorsDataInInlineTab, getConnectorName } =
                 useConnector()
             const { setCollectionsDataInInlineTab } = useQueryCollection()
@@ -302,13 +305,17 @@
                         ?.attributeValue
                 )
             )
-            const selectedCollectionQname = ref(
-                activeInlineTab.value?.explorer?.queries?.collection
-                    ?.qualifiedName
-            )
-            const selectedCollectionGuid = ref(
-                activeInlineTab.value?.explorer?.queries?.collection?.guid
-            )
+
+            const selectedCollection = computed(() => {
+                const collection = queryCollections.value?.find(
+                    (coll) =>
+                        coll.attributes.qualifiedName ===
+                        activeInlineTab.value.explorer.queries.collection
+                            .qualifiedName
+                )
+                return collection
+            })
+
             const { focusEditor } = useEditor()
             const BItypes = getBISourceTypes()
 
@@ -343,9 +350,6 @@
             }
 
             const updateCollection = ({ qname, guid }) => {
-                selectedCollectionQname.value = qname
-                selectedCollectionGuid.value = guid
-                console.log('update collection', qname, guid)
                 setCollectionsDataInInlineTab(
                     activeInlineTab,
                     inlineTabs,
@@ -405,7 +409,7 @@
                     // check if there are existing inputs to avoid duplication
                     if (!existingInputs.length && newFolderCreateable.value) {
                         let parentFolder
-                        if (guid === queryFolderNamespace.value.guid) {
+                        if (guid === selectedCollection?.value?.guid) {
                             parentFolder =
                                 document.querySelector(
                                     '.query-explorer  .ant-tree'
@@ -430,7 +434,7 @@
                             'h-8'
                         )
                         let childCount = 0
-                        if (guid !== queryFolderNamespace.value.guid) {
+                        if (guid !== selectedCollection?.value?.guid) {
                             console.log(
                                 'parentChild: ',
                                 parentFolder.children[0].children.length
@@ -455,7 +459,7 @@
                         let caret =
                             '<span class="mt-2 -ml-1 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
 
-                        if (guid !== queryFolderNamespace.value.guid) {
+                        if (guid !== selectedCollection?.value?.guid) {
                             caret =
                                 '<span class="mr-0.5 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
                         }
@@ -561,7 +565,7 @@
                         ul.appendChild(div)
                         // console.log('child: ul: ', ul)
 
-                        if (guid === queryFolderNamespace.value.guid) {
+                        if (guid === selectedCollection?.value?.guid) {
                             parentFolder.prepend(ul)
                             // console.log('input parent append')
                         } else {
@@ -591,7 +595,7 @@
                 }
                 if (
                     (loaded && expanded) ||
-                    guid === queryFolderNamespace?.value.guid
+                    guid === selectedCollection?.value?.guid
                 ) {
                     appendInput()
                 }
@@ -658,8 +662,7 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
-                queryCollectionQualifiedName: selectedCollectionQname,
-                queryCollectionQualifiedGuid: selectedCollectionGuid,
+                collection: selectedCollection,
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =

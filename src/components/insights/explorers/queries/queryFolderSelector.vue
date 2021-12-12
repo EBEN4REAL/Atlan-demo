@@ -108,6 +108,7 @@
         // Vue,
         inject,
         ComputedRef,
+        computed,
     } from 'vue'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -118,7 +119,10 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    import { Folder } from '~/types/insights/savedQuery.interface'
+    import {
+        Folder,
+        QueryCollection,
+    } from '~/types/insights/savedQuery.interface'
     // import { colSize } from 'ant-design-vue/lib/grid/Col'
     import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
 
@@ -156,6 +160,9 @@
                 'queryFolderNamespace',
                 ref({}) as Ref<Folder>
             )
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
 
             const selectedFolder = ref('Folder')
             const selectedKey = ref<string[]>([])
@@ -320,12 +327,15 @@
                 activeInlineTabKey
             )
 
-            const queryCollectionQualifiedName = ref(
-                activeInlineTab.value.explorer.queries.collection.qualifiedName
-            )
-            const queryCollectionQualifiedGuid = ref(
-                activeInlineTab.value.explorer.queries.collection.guid
-            )
+            const selectedCollection = computed(() => {
+                const collection = queryCollections.value?.find(
+                    (coll) =>
+                        coll.attributes.qualifiedName ===
+                        activeInlineTab.value.explorer.queries.collection
+                            .qualifiedName
+                )
+                return collection
+            })
 
             const {
                 treeData: treeData,
@@ -352,8 +362,7 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
-                queryCollectionQualifiedName,
-                queryCollectionQualifiedGuid,
+                collection: selectedCollection,
             })
 
             const folderOpened = ref(true)

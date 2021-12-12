@@ -4,6 +4,7 @@ import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import {
     Attributes,
     Folder,
+    QueryCollection,
     SavedQuery,
 } from '~/types/insights/savedQuery.interface'
 import {
@@ -50,8 +51,7 @@ interface useSavedQueriesTreeProps {
     savedQueryType: Ref<string>
     queryFolderNamespace: Ref<Folder>
     permissions: { [index: string]: string | undefined }
-    queryCollectionQualifiedName: Ref<string | undefined>
-    queryCollectionGuid: Ref<string | undefined>
+    collection: ComputedRef<QueryCollection>
 }
 
 const useQueryTree = ({
@@ -64,8 +64,7 @@ const useQueryTree = ({
     savedQueryType,
     queryFolderNamespace,
     permissions,
-    queryCollectionQualifiedName,
-    queryCollectionQualifiedGuid,
+    collection
 }: useSavedQueriesTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, string> = {}
@@ -85,10 +84,11 @@ const useQueryTree = ({
     const selectedCache = store.get(selectedCacheKey)
     const expandedCache = store.get(expandedCacheKey)
 
-    const immediateParentFolderQF = ref<string>(
-        queryFolderNamespace.value?.attributes?.qualifiedName
-    )
-    const immediateParentGuid = ref<string>(queryFolderNamespace.value?.guid)
+    const queryCollectionQualifiedName = computed(() => collection?.value?.attributes.qualifiedName)
+    const queryCollectionGuid = computed(() => collection?.value?.guid)
+
+    const immediateParentFolderQF = ref<string>(queryCollectionQualifiedName.value)
+    const immediateParentGuid = ref<string>(queryCollectionGuid.value)
 
     const { getQueryFolders, getQueries, getSubFolders, getFolderQueries } =
         useLoadQueryData({ connector, savedQueryType, queryFolderNamespace, collectionQualifiedName: queryCollectionQualifiedName })
@@ -310,7 +310,7 @@ const useQueryTree = ({
                 item.attributes.parentFolderQualifiedName
             immediateParentGuid.value = nodeToParentKeyMap[item.guid]
 
-            openSavedQueryInNewTab({...item, parentTitle: parentTitle})
+            openSavedQueryInNewTab({...item, parentTitle})
             
             selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {
@@ -667,11 +667,15 @@ const useQueryTree = ({
         loadedKeys.value.push(treeNode.dataRef.key)
     }
 
-    watch(queryCollectionQualifiedName, () => {
-        isInitingTree.value = true
+    watch(queryCollectionQualifiedName, (newCollectionQualifiedName) => {
         loadedKeys.value = []
         expandedKeys.value = []
-        // currentSelectedNode.value = queryFolderNamespace
+        isInitingTree.value = true
+        if (newCollectionQualifiedName) {
+            immediateParentFolderQF.value = newCollectionQualifiedName
+            immediateParentGuid.value = collection.value?.guid
+            // currentSelectedNode.value = collection
+        }
 
         console.log('change queryCollectionQualifiedName: ', queryCollectionQualifiedName)
         initTreeData()

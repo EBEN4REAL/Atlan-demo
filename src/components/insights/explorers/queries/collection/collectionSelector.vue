@@ -63,6 +63,7 @@
         ComputedRef,
         inject,
         onMounted,
+        watch,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import {
@@ -80,14 +81,13 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
+            const queryCollectionsLoading: ComputedRef<boolean> = inject(
+                'queryCollectionsLoading'
+            )
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-
-            selectedValue.value = activeInlineTab.value.explorer.queries
-                .collection
-                ? activeInlineTab.value.explorer.queries.collection.guid
-                : ''
 
             const selectedCollection = computed(() => {
                 const collection = queryCollections.value?.find(
@@ -106,10 +106,31 @@
                     qname: collection?.attributes.qualifiedName,
                     guid: collectionId,
                 }
-                console.log('collection selected', data)
+                console.log(
+                    'useQueryTree collection selected',
+                    selectedValue.value
+                )
                 emit('update:data', data)
             }
+
+            function selectDefaultValue() {
+                selectedValue.value = activeInlineTab.value.explorer.queries
+                    .collection
+                    ? activeInlineTab.value.explorer.queries.collection.guid
+                    : ''
+                handleChange(selectedValue.value)
+            }
+
+            watch(queryCollectionsLoading, (newLoading) => {
+                if (!newLoading) {
+                    selectDefaultValue()
+                }
+            })
+
             onMounted(() => {
+                if (!queryCollectionsLoading.value) {
+                    selectDefaultValue()
+                }
                 // changeDisplayText()
             })
             return {

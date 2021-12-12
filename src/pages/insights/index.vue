@@ -42,6 +42,7 @@
 
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<any> = ref()
+            const queryCollectionsLoading = ref(true)
             const queryCollections: Ref<QueryCollection[] | undefined> = ref()
             const savedQueryInfo = ref(undefined) as unknown as Ref<
                 SavedQuery | undefined
@@ -96,6 +97,7 @@
             provide('savedQueryInfo', savedQueryInfo)
             provide('queryFolderNamespace', queryFolderNamespace)
             provide('queryCollections', queryCollections)
+            provide('queryCollectionsLoading', queryCollectionsLoading)
             provide('permissions', permissions)
             /* --------------------- */
             console.log(savedQueryGuidFromURL.value)
@@ -298,8 +300,10 @@
             }
             const fetchQueryCollections = () => {
                 const { data, error, isLoading } = getQueryCollections()
+                queryCollectionsLoading.value = true
                 watch([data, error, isLoading], () => {
                     if (isLoading.value === false) {
+                        queryCollectionsLoading.value = false
                         if (error.value === undefined) {
                             if (
                                 data.value?.entities &&

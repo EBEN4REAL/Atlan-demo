@@ -86,6 +86,7 @@
             >
                 <div class="w-full h-full bg-white">
                     <query-tree
+                        v-if="!queryCollectionsLoading"
                         @toggleCreateQueryModal="toggleCreateQueryModal"
                         @createFolderInput="createFolderInput"
                         :savedQueryType="savedQueryType"
@@ -296,6 +297,7 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
+            const queryCollectionsLoading = inject('queryCollectionsLoading')
             const { setConnectorsDataInInlineTab, getConnectorName } =
                 useConnector()
             const { setCollectionsDataInInlineTab } = useQueryCollection()
@@ -350,6 +352,13 @@
             }
 
             const updateCollection = ({ qname, guid }) => {
+                // selectedCollection.value = queryCollections.value?.find(
+                //     (coll) =>
+                //         coll.attributes.qualifiedName ===
+                //         activeInlineTab.value.explorer.queries.collection
+                //             .qualifiedName
+                // )
+                console.log('useQueryTree updateCollection', { qname, guid })
                 setCollectionsDataInInlineTab(
                     activeInlineTab,
                     inlineTabs,
@@ -895,6 +904,8 @@
                 currentSelectedNode,
                 totalFilteredCount,
                 updateCollection,
+                queryCollectionsLoading,
+                selectedCollection,
             }
         },
     })

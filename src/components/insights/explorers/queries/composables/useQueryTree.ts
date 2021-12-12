@@ -1,4 +1,4 @@
-import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
+import { watch, ref, Ref, computed, ComputedRef, onMounted, inject } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
 import {
@@ -78,6 +78,7 @@ const useQueryTree = ({
     const selectedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
     let currentSelectedNode = ref(queryFolderNamespace.value)
+    const queryCollectionsLoading: Ref<boolean> = inject('queryCollectionsLoading')
 
     const selectedCacheKey = `${cacheKey ?? 'queryTree'}_selected`
     const expandedCacheKey = `${cacheKey ?? 'queryTree'}_expanded`
@@ -128,6 +129,7 @@ const useQueryTree = ({
      * @param guid - Guid of the parent Glossary
      */
     const initTreeData = async () => {
+        console.log("useQueryTree initTreeData called", { queryCollectionQualifiedName: queryCollectionQualifiedName.value })
         treeData.value = []
 
         const queries = await getQueries()
@@ -140,6 +142,7 @@ const useQueryTree = ({
 
         if (permissions?.readFolders) {
             folders.entities?.forEach((folder) => {
+                // TODO:@rohan: fix this
                 if (!folder.attributes.parentFolder) {
                     treeData.value.push({
                         ...returnTreeDataItemAttributes(folder),
@@ -153,6 +156,7 @@ const useQueryTree = ({
         }
         if (permissions?.readQueries) {
             queries.entities?.forEach((query) => {
+                // TODO:@rohan: fix this
                 if (!query.attributes.folder) {
                     treeData.value.push({
                         ...returnTreeDataItemAttributes(query),
@@ -667,22 +671,26 @@ const useQueryTree = ({
         loadedKeys.value.push(treeNode.dataRef.key)
     }
 
-    watch(queryCollectionQualifiedName, (newCollectionQualifiedName) => {
+    watch(collection, (newColletion) => {
         loadedKeys.value = []
         expandedKeys.value = []
         isInitingTree.value = true
+        const newCollectionQualifiedName = newColletion.attributes.qualifiedName
         if (newCollectionQualifiedName) {
             immediateParentFolderQF.value = newCollectionQualifiedName
             immediateParentGuid.value = collection.value?.guid
             // currentSelectedNode.value = collection
         }
 
-        console.log('change queryCollectionQualifiedName: ', queryCollectionQualifiedName)
+        console.log('useQueryTree change queryCollectionQualifiedName: ', queryCollectionQualifiedName)
         initTreeData()
     })
     onMounted(() => {
-        isInitingTree.value = true
-        initTreeData()
+        console.log("useQueryTree mounted", {queryCollectionsLoading: queryCollectionsLoading.value})
+        if (!queryCollectionsLoading.value) {
+            isInitingTree.value = true
+            initTreeData()
+        }
         // if (queryFolderNamespace.value?.guid) initTreeData()
     })
     watch(queryFolderNamespace, (newQueryFolderNamespace) => {

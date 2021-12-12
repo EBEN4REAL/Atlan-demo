@@ -11,7 +11,7 @@ export default function useInsightsTabList(): {
             name: 'Schema',
             component: 'schema',
             icon: 'Schema2',
-            isVisible: true,
+            isVisible: false,
         },
         {
             id: 'queries',

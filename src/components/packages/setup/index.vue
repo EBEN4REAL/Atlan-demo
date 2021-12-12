@@ -302,7 +302,7 @@
 
                     modelValue.value[i.parameter] = i.body
                     connectionQualifiedName =
-                        i.body.attributes.qualifiedName.replaceAll('/', '-')
+                        i.body.attributes.qualifiedName?.replaceAll('/', '-')
                     // add qualifiedname to label
                     if (connectionQualifiedName) {
                         body.value.metadata.labels[
@@ -386,10 +386,12 @@
                 }
                 body.value.payload = [...credentialBody]
 
-                status.value = 'loading'
-                errorMesssage.value = ''
+                // status.value = 'loading'
+                // errorMesssage.value = ''
 
-                execute(true)
+                console.log(body)
+
+                // execute(true)
             }
 
             const handleBackToSetup = () => {

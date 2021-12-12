@@ -1,7 +1,21 @@
 <template>
     <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
-    <div class="">
-        <p>Existing Connections</p>
+    <div class="p-3 bg-gray-100 rounded" v-if="list.length > 0">
+        <p class="font-bold">Existing Connections ({{ approximateCount }})</p>
+        <div class="flex flex-col">
+            <div v-for="(connection, index) in list" :key="connection.guid">
+                {{ connection.attributes.name }}
+
+                <span>
+                    ({{
+                        getMap(aggregationMap('group_by_connection'))[
+                            connection.attributes.qualifiedName
+                        ]
+                    }}
+                    Assets)</span
+                >
+            </div>
+        </div>
     </div>
 </template>
 
@@ -83,50 +97,76 @@
                 ]
             })
 
-            const {} = useIndexSearch({
-                attributes: [
-                    'name',
-                    'description',
-                    '__guid',
-                    '__createdBy',
-                    'ownerUsers',
-                    'ownerGroups',
-                    'allowQuery',
-                    'allowPreview',
-                ],
-                dsl: {
-                    from: 0,
-                    size: 10,
-                    aggs: {
-                        group_by_connection: {
-                            terms: {
-                                field: 'qualifiedName',
-                                size: 100,
+            const { data, approximateCount, aggregationMap, getMap } =
+                useIndexSearch({
+                    attributes: [
+                        'name',
+                        'description',
+                        '__guid',
+                        '__createdBy',
+                        'ownerUsers',
+                        'ownerGroups',
+                        'allowQuery',
+                        'allowPreview',
+                    ],
+                    dsl: {
+                        from: 0,
+                        size: 10,
+                        aggs: {
+                            group_by_connection: {
+                                terms: {
+                                    field: 'connectionQualifiedName',
+                                    size: 100,
+                                },
                             },
                         },
-                    },
-                    post_filter: {
-                        bool: {
-                            filter: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                connectorName: 'athena',
+                        query: {
+                            bool: {
+                                filter: {
+                                    bool: {
+                                        must: [
+                                            {
+                                                term: {
+                                                    connectorName:
+                                                        connector.value,
+                                                },
                                             },
-                                        },
-                                        {
-                                            term: {
-                                                '__typeName.keyword':
-                                                    'Connection',
+                                            {
+                                                term: {
+                                                    __state: 'ACTIVE',
+                                                },
                                             },
-                                        },
-                                    ],
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+
+                        post_filter: {
+                            bool: {
+                                filter: {
+                                    bool: {
+                                        must: [
+                                            {
+                                                term: {
+                                                    '__typeName.keyword':
+                                                        'Connection',
+                                                },
+                                            },
+                                        ],
+                                    },
                                 },
                             },
                         },
                     },
-                },
+                })
+
+            const list = ref([])
+
+            watch(data, () => {
+                if (data.value.entities) {
+                    list.value = data.value.entities
+                }
             })
 
             const seconds = Math.round(new Date().getTime() / 1000)
@@ -179,8 +219,8 @@
                             help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'userMultiple',
                             label: 'Owner Users',
-
-                            grid: 3,
+                            start: 1,
+                            grid: 5,
                         },
                     },
                     ownerGroups: {
@@ -189,7 +229,8 @@
                             help: 'These group of users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'groupMultiple',
                             label: 'Owner Groups',
-                            grid: 3,
+
+                            grid: 4,
                         },
                     },
                     allowQuery: {
@@ -319,6 +360,11 @@
                 connectorImage,
                 connector,
                 sourceCategory,
+                approximateCount,
+                data,
+                list,
+                aggregationMap,
+                getMap,
             }
         },
     })

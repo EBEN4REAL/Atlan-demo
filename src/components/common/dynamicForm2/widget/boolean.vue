@@ -49,10 +49,10 @@
             const localValue = ref(modelValue.value)
 
             const handleChange = () => {
-                console.log('change')
                 modelValue.value = localValue.value
                 emit('change', localValue.value)
             }
+
             return { property, componentProps, list, localValue, handleChange }
         },
     })

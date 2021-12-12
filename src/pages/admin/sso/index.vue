@@ -1,6 +1,7 @@
 <template>
     <div class="flex flex-col justify-center h-full">
         <component
+            v-if="isAccess"
             :is="
                 identityProviders.length && alias
                     ? 'router-view'
@@ -8,13 +9,7 @@
             "
             class="flex flex-col justify-center h-3/4"
         />
-        <!-- <DisplaySSO
-            v-if="identityProviders.length"
-            :provider-details="identityProviders[0] || {}"
-        />
-        <div v-else class="flex flex-col justify-center h-3/4">
-            <EmptySSOScreen />
-        </div> -->
+       <NoAccess v-else />
     </div>
 </template>
 <script lang="ts">
@@ -25,6 +20,7 @@
     import DisplaySSO from '@/admin/sso/update/displaySSO.vue'
     import { useTenantStore } from '~/store/tenant'
     import NoAccess from '@/common/secured/access.vue'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         name: 'SSO',
@@ -52,9 +48,12 @@
                 identityProviders.value.length
             )
                 router.push(`/admin/sso/${alias.value}`)
+                
+            const { isAccess } = useAuth()
             return {
                 identityProviders,
                 alias,
+                isAccess
             }
         },
     })

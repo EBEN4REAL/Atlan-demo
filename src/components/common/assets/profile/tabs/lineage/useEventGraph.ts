@@ -12,13 +12,14 @@ import useGetNodes from './useGetNodes'
 
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 
-export default function useHighlight(
+export default function useEventGraph(
     graph,
     baseEntity,
     showProcess,
     assetGuidToHighlight,
     highlightedNode,
     loaderCords,
+    currZoom,
     onSelectAsset
 ) {
     const getHighlights = (guid) => {
@@ -71,6 +72,7 @@ export default function useHighlight(
                     id: `${node.id}-port-${x.guid}`,
                     group: 'columnList',
                     attrs: {
+                        portBody: {},
                         portNameLabel: {
                             text,
                         },
@@ -199,13 +201,35 @@ export default function useHighlight(
         isNodeClicked.value = false
         getColumnsList(node, node.store.data.entity)
     })
-    graph.value.on('port:click', ({ e, ...x }) => {
-        e.stopPropagation()
-        loaderCords.value = { x: e.clientX, y: e.clientY }
-        loaderCords.value = {}
-    })
     graph.value.on('blank:click', () => {
         onSelectAsset(baseEntity.value)
         highlight(null)
+    })
+
+    const chp = ref({}) // chp -> currentHilightedPort
+    graph.value.on('port:click', ({ e, node }) => {
+        e.stopPropagation()
+        const ele = e.originalEvent.path.find((x) => x.getAttribute('port'))
+        const portId = ele.getAttribute('port')
+        if (chp.value[node.id] && node.getPort(chp.value[node.id])) {
+            node.setPortProp(chp.value[node.id], 'attrs/portBody', {
+                fill: '#ffffff',
+            })
+        }
+        node.setPortProp(portId, 'attrs/portBody', {
+            fill: '#e5ecff',
+        })
+        if (chp.value[node.id]) {
+            chp.value[node.id] = portId
+        } else {
+            chp.value = { ...chp.value, ...{ [node.id]: portId } }
+        }
+    })
+
+    graph.value.on('blank:mousewheel', () => {
+        currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+    })
+    graph.value.on('cell:mousewheel', () => {
+        currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     })
 }

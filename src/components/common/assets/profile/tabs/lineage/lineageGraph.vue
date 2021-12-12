@@ -31,7 +31,6 @@
             :highlighted-node="highlightedNode"
             :is-cyclic="false"
             :graph="graph"
-            @show-process="onShowProcess($event)"
             @show-impacted-assets="onShowImpactedAssets($event)"
             @show-add-lineage="onShowAddLineage($event)"
         />
@@ -95,7 +94,7 @@
     /** COMPOSABLES */
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
-    import useHighlight from './useHighlight'
+    import useEventGraph from './useEventGraph'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -121,10 +120,9 @@
 
             /** DATA */
             const { lineage } = toRefs(props)
-            const graphHeight = ref(null)
-            const graphWidth = ref(null)
+            const graphHeight = ref(0)
+            const graphWidth = ref(0)
             const removedNodes = ref([])
-
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref(null)
@@ -171,22 +169,15 @@
                     emit
                 )
 
-                // events
-                graph.value.on('blank:mousewheel', () => {
-                    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-                })
-                graph.value.on('cell:mousewheel', () => {
-                    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-                })
-
-                // useHighlight
-                useHighlight(
+                // useEventGraph
+                useEventGraph(
                     graph,
                     baseEntity,
                     showProcess,
                     assetGuidToHighlight,
                     highlightedNode,
                     loaderCords,
+                    currZoom,
                     onSelectAsset
                 )
             }
@@ -232,6 +223,7 @@
                 showProcess,
                 showMinimap,
                 showImpactedAssets,
+                showAddLineage,
                 lineageContainer,
                 graphContainer,
                 minimapContainer,

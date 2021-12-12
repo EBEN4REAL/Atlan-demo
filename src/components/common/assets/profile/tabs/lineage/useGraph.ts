@@ -149,7 +149,7 @@ export default function useGraph() {
                                 stroke: '#e6e6eb',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -10,
+                                y: -9.5,
                             },
                             portNameLabel: {
                                 ref: 'portBody',

@@ -130,7 +130,7 @@
                         'connectorName',
                         'connectionId',
                         'connectionQualifiedName',
-                        'parentFolderQualifiedName',
+                        'parentQualifiedName',
                         'defaultSchemaQualifiedName',
                         'parentFolder',
                         'columns',

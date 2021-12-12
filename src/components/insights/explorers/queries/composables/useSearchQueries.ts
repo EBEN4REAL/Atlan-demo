@@ -44,7 +44,7 @@ const searchQueries = (
         'connectorName',
         'connectionId',
         'connectionQualifiedName',
-        'parentFolderQualifiedName',
+        'parentQualifiedName',
         'defaultSchemaQualifiedName',
         'defaultDatabaseQualifiedName',
         'parentFolder',

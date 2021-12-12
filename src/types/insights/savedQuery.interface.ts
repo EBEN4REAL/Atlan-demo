@@ -41,7 +41,7 @@ export type QueryFolderAttributes = Attributes & {
     parentFolder?: Components.Schemas.AtlasObjectId
     columns?: Components.Schemas.AtlasObjectId[]
     collectionQualifiedName: string
-    parentFolderQualifiedName: string
+    parentQualifiedName: string
     parentQualifiedName: string
 }
 
@@ -50,7 +50,7 @@ export type SavedQueryAttributes = Attributes & {
     compiledQuery: string
     rawQuery: string
     collectionQualifiedName: string
-    parentFolderQualifiedName: string
+    parentQualifiedName: string
     parentQualifiedName: string
 }
 

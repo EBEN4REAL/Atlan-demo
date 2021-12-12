@@ -766,7 +766,7 @@
                                 guid: selectedParentGuid,
                                 typeName: selectedFolder.value.typeName,
                             },
-                            parentFolderQualifiedName:
+                            parentQualifiedName:
                                 selectedFolder.value.attributes.qualifiedName,
                         }
                         // console.log('select QFN')
@@ -800,7 +800,7 @@
                                 guid: selectedParentGuid,
                                 typeName: selectedFolder.value.typeName,
                             },
-                            parentFolderQualifiedName:
+                            parentQualifiedName:
                                 selectedFolder.value.attributes.qualifiedName,
                         }
                         newEntity.classifications = []

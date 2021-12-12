@@ -244,7 +244,7 @@ const useQueryTree = ({
         // const item = event.node.dataRef.entity as Folder | SavedQuery
 
         // if (item.typeName === 'Query') {
-        //     immediateParentFolderQF.value = item.attributes.parentFolderQualifiedName;
+        //     immediateParentFolderQF.value = item.attributes.parentQualifiedName;
         //     immediateParentGuid.value = nodeToParentKeyMap[item.guid];
 
         // } else if(item.typeName === 'QueryFolder') {
@@ -307,7 +307,7 @@ const useQueryTree = ({
 
         if (item.typeName === 'Query') {
             immediateParentFolderQF.value =
-                item.attributes.parentFolderQualifiedName
+                item.attributes.parentQualifiedName
             immediateParentGuid.value = nodeToParentKeyMap[item.guid]
 
             openSavedQueryInNewTab({...item, parentTitle})

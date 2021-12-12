@@ -97,7 +97,7 @@ export function useSavedQuery(
             qualifiedName: savedQuery.attributes.qualifiedName,
             parentGuid: savedQuery.attributes?.parent?.guid,
             parentQualifiedName:
-                savedQuery.attributes.parentFolderQualifiedName,
+                savedQuery.attributes.parentQualifiedName,
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
             status: savedQuery.attributes.certificateStatus as string,
             savedQueryParentFolderTitle: savedQuery?.parentTitle,
@@ -274,7 +274,7 @@ export function useSavedQuery(
                     parent: {
                         guid: activeInlineTab.parentGuid,
                     },
-                    parentFolderQualifiedName:
+                    parentQualifiedName:
                         activeInlineTab?.parentQualifiedName,
                 },
                 guid: activeInlineTab?.queryId,
@@ -387,7 +387,7 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
+        body.value.entity.attributes.parentQualifiedName = parentFolderQF
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
@@ -577,8 +577,10 @@ export function useSavedQuery(
         saveFolderLoading: Ref<boolean>,
         type: string,
         parentFolderQF: Ref<string>,
-        parentFolderGuid: Ref<string>
+        parentFolderGuid: Ref<string>,
+        collection: ComputedRef<QueryCollection>
     ) => {
+        console.log("parentFolderQF", parentFolderQF.value)
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
         const attributeName =
@@ -591,6 +593,7 @@ export function useSavedQuery(
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''
         const connectionName = getConnectorName(attributeValue)
+        const collectionQualifiedName = collection.value.attributes.qualifiedName
 
         const name = folderName
 
@@ -608,6 +611,7 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName,
                     connectionQualifiedName,
+                    collectionQualifiedName,
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     connectionId: connectionGuid,
@@ -620,21 +624,20 @@ export function useSavedQuery(
             },
         })
 
-        body.value.entity.attributes.parentFolderQualifiedName =
+        body.value.entity.attributes.parentQualifiedName =
             parentFolderQF.value
-        body.value.entity.attributes.parent = {
-            guid: parentFolderGuid.value,
-        }
-        if (type && type.length && parentFolderQF.value === 'root') {
-            body.value.entity.classifications = [
-                {
-                    attributes: {},
-                    propagate: true,
-                    removePropagationsOnEntityDelete: true,
-                    typeName: type,
-                    validityPeriods: [],
-                },
-            ]
+        if (parentFolderQF.value.includes("/folder")) {
+                // parent is folder
+                body.value.entity.attributes.parent = {
+                    guid: parentFolderGuid.value,
+                    typeName: "QueryFolder"
+                }
+        } else {
+            // parent is collection
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid.value,
+                typeName: "QueryCollection"
+            }
         }
         // chaing loading to true
         saveFolderLoading.value = true
@@ -740,7 +743,7 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
+        body.value.entity.attributes.parentQualifiedName = parentFolderQF
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
             // TODO:@rohan: add a check for collections, hardcoded to folder currently

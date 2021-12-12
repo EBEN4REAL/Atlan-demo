@@ -183,7 +183,7 @@
                             ...item,
                             attributes: {
                                 ...item.attributes,
-                                parentFolderQualifiedName: 'namespace',
+                                parentQualifiedName: 'namespace',
                             },
                         }
 
@@ -234,7 +234,7 @@
                         ...queryFolderNamespace.value,
                         attributes: {
                             ...queryFolderNamespace.value.attributes,
-                            parentFolderQualifiedName: 'namespace',
+                            parentQualifiedName: 'namespace',
                         },
                     }
 

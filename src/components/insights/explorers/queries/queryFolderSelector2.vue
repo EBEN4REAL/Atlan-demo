@@ -159,7 +159,7 @@
                         ...queryFolderNamespace.value,
                         attributes: {
                             ...queryFolderNamespace.value.attributes,
-                            parentFolderQualifiedName: 'namespace',
+                            parentQualifiedName: 'namespace',
                         },
                     }
 

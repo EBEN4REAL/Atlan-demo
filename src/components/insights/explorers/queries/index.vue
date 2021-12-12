@@ -491,7 +491,8 @@
                                 saveQueryLoading,
                                 savedQueryType.value?.name,
                                 getRelevantTreeData().parentQualifiedName,
-                                getRelevantTreeData().parentGuid
+                                getRelevantTreeData().parentGuid,
+                                selectedCollection
                             )
                             watch(data, async (newData) => {
                                 if (newData) {

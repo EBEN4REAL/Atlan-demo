@@ -5,6 +5,7 @@
             :mask="false"
             :width="450"
             :closable="false"
+            :destroy-on-close="true"
         >
             <div class="flex items-center justify-between px-3 py-4 border-b">
                 <div>
@@ -57,6 +58,7 @@
                                     (target) => target.parentNode
                                 "
                                 list-height="240"
+                                @change="handleTypeNameChange"
                             >
                                 <a-select-option
                                     v-for="(type, index) in attributesTypes"
@@ -81,9 +83,8 @@
                     <!-- Conditonals ============================================ -->
                     <div
                         v-if="
-                            (form.options.isEnum === 'true' ||
-                                form.options.isEnum === true) &&
-                            !isEdit
+                            form.options.isEnum === 'true' ||
+                            form.options.isEnum === true
                         "
                         class="relative p-3 mb-4 border rounded"
                     >
@@ -98,7 +99,8 @@
                                 no-results-text="No enum found"
                                 placeholder="Select enum"
                                 :options="finalEnumsList"
-                                @change="updateEnumValues"
+                                :disabled="isEdit"
+                                @change="handleEnumSelect"
                                 @search="handleEnumSearch"
                             >
                                 <template #notFoundContent><p></p></template>
@@ -266,7 +268,6 @@
                                         class=""
                                         :name="`${form.name}-isFacet`"
                                         size="small"
-                                        @change="handleTypeNameChange"
                                     />
                                 </div>
                             </a-form-item>
@@ -377,7 +378,7 @@
         emits: ['addedProperty'],
         setup(props, { emit }) {
             const initializeForm = (): CMA => ({
-                ...DEFAULT_ATTRIBUTE,
+                ...JSON.parse(JSON.stringify(DEFAULT_ATTRIBUTE)),
             })
             // data
             const visible = ref<boolean>(false)
@@ -412,7 +413,7 @@
             const open = (theProperty, makeEdit, index) => {
                 enumSearchValue.value = ''
                 // when open we send the property value and if is undefined, means we creating new prioperty
-                if (theProperty !== undefined) {
+                if (theProperty) {
                     const { customApplicableEntityTypes } = theProperty.options
                     if (customApplicableEntityTypes) {
                         if (typeof customApplicableEntityTypes === 'string') {
@@ -422,12 +423,9 @@
                         }
                     }
                     form.value = { ...theProperty }
+                    console.table(form.value)
                 } else {
                     form.value = initializeForm()
-                    // somehow these 2 remained, so reset them
-                    form.value.options.isEnum = false
-                    delete form.value.options.enumType
-                    delete form.value.enumValues
                 }
 
                 propertyIndex.value = index
@@ -562,43 +560,7 @@
                 }, 100)
             }
 
-            /**
-             * @param {String} value new type name selected
-             * @desc set enum boolean in options & emit changes
-             */
-            const handleTypeNameChange = (value: string) => {
-                // ? check if enum
-                if (value === 'enum') {
-                    form.value.options.isEnum = true
-                    updateEnumValues()
-                } else {
-                    form.value.options.isEnum = false
-                    delete form.value.enumValues
-                }
-
-                if (['groups', 'users', 'url'].includes(value))
-                    form.value.options.customType = value
-                else delete form.value.options.customType
-            }
-
-            // enums
-            const enumTypeOtions = ref(null)
-
-            // * Composables
             const { enumList } = useTypedefData()
-
-            /** @return all enum list data formatted of the component */
-            const finalEnumsList = computed(() => {
-                if (enumList.value && enumList.value?.length) {
-                    return enumList.value?.map((item) => ({
-                        value: item.name,
-                        key: item.guid,
-                        title: item.name,
-                        // children: undefined,
-                    }))
-                }
-                return []
-            })
 
             /**
              * @desc list of the options of the selected enum
@@ -641,6 +603,46 @@
                     delete form.value.enumValues
                 }
             }
+
+            const handleEnumSelect = (v) => {
+                form.value.typeName = v
+                updateEnumValues()
+            }
+
+            /**
+             * @param {String} value new type name selected
+             * @desc set enum boolean in options & emit changes
+             */
+            const handleTypeNameChange = (value: string) => {
+                // ? check if enum
+                if (value === 'enum') {
+                    form.value.options.isEnum = true
+                    updateEnumValues()
+                } else {
+                    form.value.options.isEnum = false
+                    delete form.value.enumValues
+                }
+
+                if (['groups', 'users', 'url'].includes(value))
+                    form.value.options.customType = value
+                else delete form.value.options.customType
+            }
+
+            // enums
+            const enumTypeOtions = ref(null)
+
+            /** @return all enum list data formatted of the component */
+            const finalEnumsList = computed(() => {
+                if (enumList.value && enumList.value?.length) {
+                    return enumList.value?.map((item) => ({
+                        value: item.name,
+                        key: item.guid,
+                        title: item.name,
+                        // children: undefined,
+                    }))
+                }
+                return []
+            })
 
             const handleApplicableEntityTypeChange = (data) => {
                 /**
@@ -687,6 +689,13 @@
             })
 
             const handleArrayType = () => {
+                if (form.value.options.primitiveType === 'enum') {
+                    form.value.typeName = `array<${
+                        form.value.options.enumType ?? ''
+                    }>`
+                    return
+                }
+
                 form.value.typeName = ['groups', 'users', 'url'].includes(
                     form.value.options.primitiveType
                 )
@@ -698,21 +707,19 @@
                 [
                     () => form.value.options.primitiveType,
                     () => form.value.options.multiValueSelect,
+                    () => form.value.options.enumType,
                 ],
-                ([v1, v2]) => {
+                ([v1, v2, v3]) => {
                     if (v2 === 'true' || v2 === true) handleArrayType()
-                    else {
-                        if (
-                            form.value.options.isEnum === 'true' ||
-                            form.value.options.isEnum === true
-                        )
-                            form.value.typeName = form.value.options.enumType
-
-                        // handle if is user, group or name
-                        if (['users', 'url', 'groups'].includes(v1))
-                            form.value.typeName = 'string'
-                        else form.value.typeName = v1
-                    }
+                    else if (
+                        form.value.options.isEnum === 'true' ||
+                        form.value.options.isEnum === true
+                    )
+                        form.value.typeName = form.value.options.enumType
+                    // handle if is user, group or name
+                    else if (['users', 'url', 'groups'].includes(v1))
+                        form.value.typeName = 'string'
+                    else form.value.typeName = v1
                 },
                 { immediate: true }
             )
@@ -725,6 +732,7 @@
             })
 
             return {
+                handleEnumSelect,
                 isMultiValuedSupport,
                 handleArrayType,
                 visible,

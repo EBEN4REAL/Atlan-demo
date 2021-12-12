@@ -386,12 +386,9 @@
                 }
                 body.value.payload = [...credentialBody]
 
-                // status.value = 'loading'
-                // errorMesssage.value = ''
-
-                console.log(body)
-
-                // execute(true)
+                status.value = 'loading'
+                errorMesssage.value = ''
+                execute(true)
             }
 
             const handleBackToSetup = () => {

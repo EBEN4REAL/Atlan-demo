@@ -152,8 +152,8 @@
         </div>
 
         <SaveQueryModal
-            v-model:showSaveQueryModal="showSaveQueryModal"
             v-if="showSaveQueryModal"
+            v-model:showSaveQueryModal="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"
             :ref="
                 (el) => {

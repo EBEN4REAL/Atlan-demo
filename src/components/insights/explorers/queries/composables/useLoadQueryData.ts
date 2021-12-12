@@ -21,20 +21,12 @@ import whoami from '~/composables/user/whoami'
 import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 
 interface useLoadQueryDataProps {
-    connector: Ref<string | undefined>
-    // savedQueryType?: Ref<'personal' | 'all'>
-    savedQueryType?: Ref<string>
-    queryFolderNamespace: Ref<Folder>
     collectionQualifiedName?: Ref<string | undefined>
 }
 
 const useLoadQueryData = ({
-    connector,
-    savedQueryType,
-    queryFolderNamespace,
     collectionQualifiedName
 }: useLoadQueryDataProps) => {
-    // ditch: connector, savedQueryType, queryFolderNamespace
 
     const { username } = whoami()
 

@@ -132,7 +132,10 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { List } from '~/constant/status'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
-    import { Folder } from '~/types/insights/savedQuery.interface'
+    import {
+        Folder,
+        QueryCollection,
+    } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'
 

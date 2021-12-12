@@ -91,7 +91,7 @@ const useQueryTree = ({
     const immediateParentGuid = ref<string>(queryCollectionGuid.value)
 
     const { getQueryFolders, getQueries, getSubFolders, getFolderQueries } =
-        useLoadQueryData({ connector, savedQueryType, queryFolderNamespace, collectionQualifiedName: queryCollectionQualifiedName })
+        useLoadQueryData({ collectionQualifiedName: queryCollectionQualifiedName })
 
     /** *
      * @param targetGuid - guid / key of the node whose path needs to be found

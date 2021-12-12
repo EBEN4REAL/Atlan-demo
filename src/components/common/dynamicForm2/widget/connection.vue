@@ -127,7 +127,8 @@
                                         must: [
                                             {
                                                 term: {
-                                                    connectorName: 'athena',
+                                                    connectorName:
+                                                        connector.value,
                                                 },
                                             },
                                             {

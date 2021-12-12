@@ -43,6 +43,7 @@
                         v-model="formState[property.id]"
                         :baseKey="baseKey"
                         :property="property"
+                        :configMap="configMap"
                     ></Component>
                 </a-form-item>
             </div>

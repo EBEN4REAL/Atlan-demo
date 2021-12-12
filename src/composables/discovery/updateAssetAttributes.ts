@@ -25,6 +25,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementTitle,
         readmeContent,
         meaningRelationships,
+        categories
     } = useAssetInfo()
 
     const entity = ref({
@@ -89,6 +90,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     const localMeanings = ref(meaningRelationships(selectedAsset.value))
+    const localCategories = ref(categories(selectedAsset.value))
 
     const localResource = ref({
         link: '',
@@ -390,6 +392,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localClassifications,
         localAnnouncement,
         localMeanings,
+        localCategories,
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,

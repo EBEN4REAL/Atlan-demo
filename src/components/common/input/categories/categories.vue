@@ -2,16 +2,35 @@
     <div class="flex flex-wrap items-center gap-1 text-sm text-gray-500">
         <a-popover
             placement="leftBottom"
+            class="ant-select-open"
             :overlay-class-name="$style.categoryPopover"
             :trigger="['click']"
             @visibleChange="onPopoverClose"
         >
             <template #content>
-                <GlossaryTree
-                    v-model:checkedKeys="checkedKeys"
-                    :checkable="true"
-                    @check="onCheck"
-                />
+                <a-tree-select
+                    v-model:value="checkedKeys"
+                    :tree-data="treeData"
+                    :loadData="onLoadData"
+                    :treeCheckStrictly="true"
+                    :getPopupContainer="getContainer"
+                    :defaultOpen="true"
+                    :open="true"
+                    :loading="true"
+                    style="width: 100%"
+                    :dropdownStyle="{ position: 'static', overflow: 'hidden' }"
+                    tree-checkable
+                    allow-clear
+                    :show-checked-strategy="SHOW_ALL"
+                    placeholder="Please select"
+                    ref="treeSelectRef"
+                >
+                      <template #suffixIcon><AtlanIcon icon="Search" /></template>
+                      <template #title="item"><AtlanIcon :icon="icon(item.node)" /> {{item.title}}</template>
+                </a-tree-select>
+                <div :class="$style.categoryWidget" id="categoryWidget">
+
+                </div>
             </template>
             <a-button
                 v-if="!readOnly"
@@ -24,24 +43,24 @@
             ></a-button>
         </a-popover>
         <div class="flex flex-wrap gap-1 text-sm">
-            <template v-for="term in list" :key="term.guid">
+            <template v-for="category in checkedKeys" :key="category.value">
                 <div
                     class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                 >
                     <AtlanIcon
-                        :icon="icon(term)"
+                        :icon="icon(category)"
                         class="group-hover:text-white text-purple mb-0.5"
                     ></AtlanIcon>
 
                     <div class="ml-1 group-hover:text-white">
-                        {{ term.attributes?.name ?? term.displayText }}
+                        {{ category.label }}
                     </div>
                 </div>
             </template>
             <span
-                v-if="readOnly && list?.length < 1"
+                v-if="readOnly && checkedKeys?.length < 1"
                 class="-ml-1 text-gray-500"
-                >No linked terms</span
+                >This term does not belong to any category</span
             >
         </div>
     </div>
@@ -55,14 +74,17 @@
         ref,
         toRefs,
         watch,
+        onMounted
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { TreeSelect } from 'ant-design-vue';
 
     import GlossaryTree from '~/components/glossary/index.vue'
+    import useCategoriesWidget from './useCategoriesWidget';
 
     export default defineComponent({
-        name: 'TermsWidget',
+        name: 'CategoriesWidget',
         components: { GlossaryTree },
         props: {
             selectedAsset: {
@@ -93,21 +115,19 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const checkedKeys = ref(
-                modelValue.value.map((category) => category.guid)
+                modelValue.value.map((category) => ({
+                    label: category.attributes.name,
+                    value: category.guid
+                }))
             )
+            const SHOW_ALL = TreeSelect.SHOW_ALL;
 
             const hasBeenEdited = ref(false)
-            const list = computed(() => localValue.value)
-                    //             {
-                    //     "guid": "a70c8fd9-9456-49ea-923d-efbf20a6b401",
-                    //     "typeName": "AtlasGlossaryCategory",
-                    //     "attributes": {
-                    //         "name": "cat1"
-                    //     },
-                    //     "uniqueAttributes": {
-                    //         "qualifiedName": "xtRwr0OOOCeWaz37uXLc2@QhWrP2am5t3J4bbK5rdwh"
-                    //     }
-                    // },
+            const treeSelectRef = ref(null)
+            const getContainer = () => {
+                return document.getElementById('categoryWidget')
+            }
+
             // Categories in modelValue and localValue
             // ref selectedKeys guids from modelValue
             // on change update modelValue,
@@ -116,7 +136,7 @@
             // composable
             // take parent guid
             // on mount or parent guid change fetch all categories and return data
-            
+            const { initCategories, treeData, onLoadData } = useCategoriesWidget({parentGlossaryQf: selectedAsset.value.attributes.anchor.uniqueAttributes.qualifiedName ?? ''})
 
             const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
@@ -126,26 +146,26 @@
                 }
             }
 
-            const icon = (term) => {
+            const icon = (category) => {
                 if (
-                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    category?.attributes?.certificateStatus?.toLowerCase() ===
                     'verified'
                 ) {
-                    return 'TermVerified'
+                    return 'CategoryVerified'
                 }
                 if (
-                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    category?.attributes?.certificateStatus?.toLowerCase() ===
                     'draft'
                 ) {
-                    return 'TermDraft'
+                    return 'CategoryDraft'
                 }
                 if (
-                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    category?.attributes?.certificateStatus?.toLowerCase() ===
                     'deprecated'
                 ) {
-                    return 'TermDeprecated'
+                    return 'CategoryDeprecated'
                 }
-                return 'Term'
+                return 'Category'
             }
 
             const onCheck = (checkedNodes) => {
@@ -156,21 +176,29 @@
                 hasBeenEdited.value = true
             }
 
+            onMounted(async () => {
+                await initCategories()
+            })
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
-                checkedKeys.value = modelValue.value.map(
-                    (term) => term.termGuid ?? term.guid
-                )
+                checkedKeys.value = modelValue.value.map((category) => ({
+                    label: category.attributes.name,
+                    value: category.guid
+                }))
             })
 
             return {
-                list,
                 icon,
                 onCheck,
                 onPopoverClose,
                 localValue,
                 checkedKeys,
+
+                initCategories, treeData, onLoadData,
+                SHOW_ALL,
+                getContainer,
+                treeSelectRef
             }
         },
     })
@@ -178,8 +206,21 @@
 <style lang="less" module>
     .categoryPopover {
         :global(.ant-popover-inner-content) {
-            @apply px-0 py-3 !important;
+            @apply p-4 !important;
             width: 350px !important;
+        }
+    }
+
+    .categoryWidget {
+        max-height: 200px;
+        min-height: 100px;
+        @apply  overflow-y-auto overflow-x-hidden;
+         
+        div {
+            position: static !important;
+        }
+        :global(.ant-select-dropdown) {
+            box-shadow: none;
         }
     }
 </style>

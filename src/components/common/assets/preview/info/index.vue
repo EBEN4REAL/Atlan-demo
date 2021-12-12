@@ -312,7 +312,7 @@
                 Categories
             </p>
             <Categories
-                v-model="localMeanings"
+                v-model="localCategories"
                 :selected-asset="selectedAsset"
                 class="px-5"
                 :read-only="readOnly"
@@ -435,6 +435,7 @@
                 localOwners,
                 localClassifications,
                 localMeanings,
+                localCategories,
                 handleMeaningsUpdate,
                 handleChangeName,
                 handleChangeDescription,
@@ -506,6 +507,7 @@
                 localMeanings,
                 handleMeaningsUpdate,
                 isUserDescription,
+                localCategories,
             }
         },
     })

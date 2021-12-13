@@ -4,7 +4,7 @@
             <div>
                 <AtlanIcon
                     icon="ChevronDown"
-                    class="ml-3 text-gray-500 transition-transform duration-300 transform"
+                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
             </div>
@@ -65,14 +65,18 @@
             const { scopeList } = useScopeService().listScopes(type.value)
             const collapseRef = ref()
 
-            const groupedActions = computed(() =>
+            const groupedActions = computed(() => {
                 scopeList.map((scp) => ({
                     type: scp.type,
                     scopes: actions.value.filter((ac) =>
                         scp.scopes.find((e) => e.value === ac)
                     ),
                 }))
-            )
+                console.log('here', actions.value)
+                console.log('this', scopeList)
+
+                return scopeList
+            })
 
             const defaultExpandedState = ref(scopeList.map((scp) => scp.type))
 

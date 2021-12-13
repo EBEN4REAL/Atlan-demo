@@ -4,11 +4,11 @@
             placement="leftBottom"
             :overlay-class-name="$style.termPopover"
             :trigger="['click']"
-            @visibleChange="handleChange"
+            @visibleChange="onPopoverClose"
         >
             <template #content>
                 <GlossaryTree
-                    v-model:checkedKeys="checkedKeys"
+                    v-model:checkedGuids="checkedGuids"
                     :checkable="true"
                     @check="onCheck"
                 />
@@ -93,14 +93,14 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const checkedKeys = ref(
+            const checkedGuids = ref(
                 modelValue.value.map((term) => term.termGuid)
             )
             const hasBeenEdited = ref(false)
 
             const list = computed(() => localValue.value)
 
-            const handleChange = (visible) => {
+            const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
                     emit('change', localValue.value)
@@ -129,19 +129,35 @@
                 }
                 return 'Term'
             }
+            // if node has not been loaded, it will not be in checked node
+            // even if it is in checkedKeys
 
-            const onCheck = (checkedNodes) => {
-                localValue.value = []
+            //  CHECK EVENT
+            //   
+            //  just append to loaclValue
+            //
+
+            // UNCHECK EVENT
+            //
+            //
+
+            const onCheck = (checkedNodes, { checkedKeys, checked}) => {
                 checkedNodes.forEach((term) => {
-                    localValue.value.push(term)
+                    if(!localValue.value.find((localTerm) => ((localTerm.guid ?? localTerm.termGuid) === term.guid)))
+                        localValue.value.push(term)
                 })
+                console.log(checkedGuids.value)
+                console.log(localValue.value)
+                localValue.value = localValue.value.filter((term) => checkedGuids.value.includes(term.termGuid ?? term.guid))
                 hasBeenEdited.value = true
+                console.log('after', localValue.value)
+
             }
 
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
-                checkedKeys.value = modelValue.value.map(
+                checkedGuids.value = modelValue.value.map(
                     (term) => term.termGuid ?? term.guid
                 )
             })
@@ -150,9 +166,9 @@
                 list,
                 icon,
                 onCheck,
-                handleChange,
+                onPopoverClose,
                 localValue,
-                checkedKeys,
+                checkedGuids,
             }
         },
     })

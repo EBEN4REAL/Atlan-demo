@@ -1,7 +1,7 @@
 <template>
     <div class="w-full" data-test-id="terms-facet">
         <div class="w-full mt-1 overflow-y-auto" :style="{ height: height }">
-            <GlossaryTree v-model:checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
+            <GlossaryTree v-model:checkedGuids="checkedKeys" :checkable="true" @check="onCheck" />
         </div>
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
@@ -65,7 +65,7 @@
                     qualifiedName: term.attributes.qualifiedName
                 }))
             }
-            
+
             const checkNoTerms = (t) => {
                 if(!localValue.value?.terms?.length) {
                     localValue.value.terms = []

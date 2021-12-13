@@ -95,7 +95,7 @@
             @select="handlePreview"
             :defaultGlossary="checkable ? '' :selectedGlossaryQf"
             :checkable="checkable"
-            v-model:checked-guids="checkedKeys"
+            v-model:checked-guids="checkedGuids"
             @check="onCheck"
         ></GlossaryTree>
 
@@ -221,15 +221,15 @@
                 required: false,
                 default: false,
             },
-            checkedKeys: {
+            checkedGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
             },
         },
-        emits: ['check', 'update:checkedKeys'],
+        emits: ['check', 'update:checkedGuids'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
-            const { checkedKeys } = useVModels(props, emit)
+            const { checkedGuids } = useVModels(props, emit)
             const router = useRouter()
             const { getGlossaryByQF } = useGlossaryData()
             const selectedGlossaryQf = ref(
@@ -420,8 +420,8 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
-            const onCheck = (checkedNodes) => {
-                emit('check', checkedNodes)
+            const onCheck = (checkedNodes, { checkedKeys, checked}) => {
+                emit('check', checkedNodes, { checkedKeys, checked})
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
@@ -464,7 +464,7 @@
                 handleCollapse,
                 onCheck,
                 reInitTree,
-                checkedKeys,
+                checkedGuids,
                 updateTreeNode,
             }
         },

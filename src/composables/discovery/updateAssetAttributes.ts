@@ -199,7 +199,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             relationshipAttributes: {
                 meanings: localMeanings.value.map((term) => ({
                     typeName: 'AtlasGlossaryTerm',
-                    guid: term.guid,
+                    guid: term.guid ?? term.termGuid,
                 })),
             },
         }

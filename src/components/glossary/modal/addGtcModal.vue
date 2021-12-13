@@ -313,7 +313,10 @@
                 if (error.value) {
                     console.error(error.value)
                 } else {
-                    if (!isCreateMore.value) visible.value = false
+                    if (!isCreateMore.value) {
+                        visible.value = false
+                    }
+                    resetInput()
                     message.success(`${typeNameTitle.value} created`)
 
                     if (guidCreatedMaps.value?.length > 0) {

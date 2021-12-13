@@ -126,7 +126,6 @@
             const handleAddGlossary = (asset) => {
                 glossaryStore.addGlossary(asset)
                 glossaryStore.setSelectedGTC(asset?.attributes?.qualifiedName)
-                console.log(glossaryStore)
                 router.push(
                     `/glossary/${getGlossaryByQF(getFirstGlossaryQF())?.guid}`
                 )
@@ -148,7 +147,7 @@
                                 getGlossaryByQF(getFirstGlossaryQF())?.guid
                             }`
                         )
-                    }
+                    } else router.push('/glossary')
                 }
             })
 

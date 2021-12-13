@@ -12,17 +12,6 @@
             :workflowTemplate="localSelected"
             :configMap="localConfig"
         ></PackagesSetup>
-        <div class="flex flex-col" style="width: 33%; min-width: 33%">
-            <Preview
-                v-if="!sandbox && localConfig"
-                :workflowTemplate="localSelected"
-            ></Preview>
-            <Sandbox
-                v-if="sandbox && localConfig"
-                v-model:configMap="localConfig"
-                v-model:workflowTemplate="localSelected"
-            ></Sandbox>
-        </div>
     </div>
 </template>
 
@@ -62,6 +51,7 @@
                 required: false,
             },
         },
+        emits: ['select'],
         setup(props, { emit }) {
             const route = useRoute()
             const id = computed(() => route?.params?.id || '')
@@ -89,6 +79,7 @@
 
             watch(workflowPackage, () => {
                 localSelected.value = workflowPackage.value
+                emit('select', workflowPackage.value)
             })
 
             watch(data, () => {

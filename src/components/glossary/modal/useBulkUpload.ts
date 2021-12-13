@@ -37,10 +37,6 @@ const useBulkUpload = ({
                         name: 'glossary-type',
                         value: 'term', // signifies what can be uploaded : term || categories
                     },
-                    {
-                        name: 'glossary-name',
-                        value: glossaryName,
-                    },
                 ],
             },
             templates: [
@@ -63,10 +59,6 @@ const useBulkUpload = ({
                                         {
                                             name: 'glossary-type',
                                             value: 'term',
-                                        },
-                                        {
-                                            name: 'glossary-name',
-                                            value: glossaryName,
                                         },
                                     ],
                                 },

@@ -8,16 +8,15 @@ export default function useCustomMetadataHelpers() {
     const { enumList } = useTypedefData()
 
     const getDatatypeOfAttribute = (a: CMA) => {
-        const parsedType = a.options.primitiveType ?? a?.typeName?.includes('array') ? a?.typeName?.split('<')[1]?.split('>')[0] : a?.typeName
+        const parsedType = a.options.primitiveType || (a.typeName.includes('array') ? a.typeName.split('<')[1]?.split('>')[0] : a.typeName)
         if (parsedType && typeof parsedType !== 'undefined') {
             if (numberTypes.includes(parsedType)) return 'number'
-            if (a?.options?.isEnum?.includes('true')) return 'enum'
+            if (a?.options?.isEnum === 'true' || a?.options?.isEnum === true) return 'enum'
 
             if (parsedType?.includes('string')) {
                 if (a?.options?.customType?.includes('users')) return 'users'
                 if (a?.options?.customType?.includes('groups')) return 'groups'
                 if (a?.options?.customType?.includes('url')) return `url`
-
                 return 'text'
             }
         }

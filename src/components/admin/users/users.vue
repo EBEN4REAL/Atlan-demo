@@ -53,7 +53,13 @@
         </div>
         <!-- Table for users-->
         <template v-else>
-            <template v-if="userList.length">
+            <div
+                v-if="isLoading"
+                class="flex items-center justify-center h-full"
+            >
+                <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+            </div>
+            <template v-else-if="userList.length && isReady">
                 <UserListTable
                     v-auth="map.LIST_USERS"
                     :user-list="userList"
@@ -78,11 +84,14 @@
                 <div
                     v-auth="map.LIST_USERS"
                     class="flex justify-end max-w-full mt-4"
+                    v-if="pagination.total > 1"
                 >
-                    <a-pagination
-                        :total="pagination.total"
+                    <Pagination
                         :current="pagination.current"
+                        :total-pages="pagination.total"
+                        :loading="isLoading"
                         :page-size="pagination.pageSize"
+                        :offset="pagination.offset"
                         @change="handlePagination"
                     />
                 </div>
@@ -132,10 +141,12 @@
     import { Users } from '~/services/service/users/index'
     import map from '~/constant/accessControl/map'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import Pagination from '@/common/list/pagination.vue'
 
     export default defineComponent({
         name: 'UsersView',
         components: {
+            Pagination,
             SearchAndFilter,
             UserListTable,
             AtlanButton,
@@ -162,7 +173,7 @@
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
-                limit: 15,
+                limit: 50,
                 offset: 0,
                 sort: 'firstName',
                 filter: { $and: [] },
@@ -174,6 +185,7 @@
                 getUserList,
                 isLoading,
                 error,
+                isReady,
                 totalUserCount,
             } = useUsers(userListAPIParams)
 
@@ -189,9 +201,12 @@
             const selectedInvite = ref({})
 
             const pagination = computed(() => ({
-                total: filteredUserCount.value,
+                total: Math.ceil(
+                    filteredUserCount.value / userListAPIParams.limit
+                ),
                 pageSize: userListAPIParams.limit,
                 current: userListAPIParams.offset / userListAPIParams.limit + 1,
+                offset: userListAPIParams.offset,
             }))
 
             const updateFilters = () => {
@@ -450,6 +465,7 @@
             }
 
             return {
+                isReady,
                 tenantName,
                 map,
                 resendInvite,
@@ -489,6 +505,7 @@
                 confirmEnableDisablePopover,
                 selectedUserId,
                 totalUserCount,
+                userListAPIParams,
                 limit: userListAPIParams.limit,
                 offset: userListAPIParams.offset,
                 updateFilters,

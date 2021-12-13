@@ -26,12 +26,16 @@
                 >
                     <template #label>
                         {{ property.ui?.label }}
+
                         <a-tooltip
+                            tabindex="-1"
                             :title="property.ui.help"
                             v-if="property.ui.help"
                             placement="topRight"
                         >
-                            <AtlanIcon icon="Info" class="ml-1"></AtlanIcon>
+                            <span
+                                ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                            ></span>
                         </a-tooltip>
                     </template>
                     <Component
@@ -39,6 +43,7 @@
                         v-model="formState[property.id]"
                         :baseKey="baseKey"
                         :property="property"
+                        :configMap="configMap"
                     ></Component>
                 </a-form-item>
             </div>

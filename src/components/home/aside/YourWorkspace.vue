@@ -38,10 +38,11 @@
                     desc: 'Setup, run & monitor workflow runs',
                     icon: 'WorkflowsIcon',
                 },
-                admin: {
-                    desc: 'One place to manage your Workspace',
-                    icon: 'AdminCenterIcon',
-                },
+                // TODO: Hidden for paytm rollout, will enable it back
+                // admin: {
+                //     desc: 'One place to manage your Workspace',
+                //     icon: 'AdminCenterIcon',
+                // },
             }
 
             const worksplaceList = computed(() => {
@@ -50,8 +51,9 @@
                     ...i,
                     ...worksplaceListMeta[i.id],
                 }))
-                const admin = bottomNavKeys.find((x) => x.id === 'admin')
-                list.push({ ...admin, ...worksplaceListMeta.admin })
+                // TODO: Hidden for paytm rollout, will enable it back
+                //const admin = bottomNavKeys.find((x) => x.id === 'admin')
+                //list.push({ ...admin, ...worksplaceListMeta.admin })
                 return list
             })
             return { worksplaceList }

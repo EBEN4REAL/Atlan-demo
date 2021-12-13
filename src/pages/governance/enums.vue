@@ -1,4 +1,5 @@
 <template>
+ <div v-if="isAccess">
     <div v-auth="map.LIST_ENUM" class="h-full">
         <div v-if="isLoading" class="flex items-center justify-center h-64">
             <a-spin size="large" />
@@ -73,12 +74,13 @@
             </a-empty>
         </div>
     </div>
-    <!--   <NoAcces v-else /> -->
     <AddEnumModal
         v-if="addModalVisible"
         @add="addToList"
         @close="toggleAddModal(false)"
     />
+ </div>
+  <NoAcces v-else />
 </template>
 
 <script lang="ts">
@@ -95,6 +97,7 @@
     import NoAcces from '@/admin/common/noAccessPage.vue'
     import noEnumImage from '~/assets/images/admin/no-metadata.png'
     import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         components: {
@@ -125,7 +128,7 @@
             function toggleAddModal(state: boolean) {
                 addModalVisible.value = state
             }
-
+            const { isAccess } = useAuth()
             return {
                 enumList,
                 addModalVisible,
@@ -138,6 +141,7 @@
                 searchText,
                 searchedEnumList,
                 map,
+                isAccess
             }
         },
         data() {
@@ -150,6 +154,7 @@
 </script>
 <route lang="yaml">
 meta:
-layout: default
-requiresAuth: true
+    layout: default
+    requiresAuth: true
+    permissions: [LIST_ENUM]
 </route>

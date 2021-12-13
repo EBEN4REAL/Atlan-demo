@@ -40,14 +40,12 @@ export const DEFAULT_ATTRIBUTE: CMA = {
         applicableEntityTypes: JSON.stringify(['Asset']),
         customApplicableEntityTypes: applicableEntityTypesOptions.reduce((acc, item) => [...acc, ...(item?.children?.map(v => v.value) ?? [])], []),
         maxStrLength: '100000000',
-        isBadge: false,
-        isFacet: true,
         isEnum: false,
         enumType: '',
         // new options
         multiValueSelect: false,
         allowFiltering: true,
-        allowSearch: false,
+        allowSearch: true,
         primitiveType: 'string'
         // customType:'url' // added on submit for user, link or group
     },

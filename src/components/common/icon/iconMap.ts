@@ -292,6 +292,9 @@ import CustomVariable from '~/assets/images/icons/customVariable.svg'
 import FolderSearch from '~/assets/images/icons/folder-search.svg'
 import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
 import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
+import Verified from '~/assets/images/status/verified.svg'
+import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
+import Compass from '~/assets/images/icons/Compass.svg'
 
 export default {
     BuilderGroup,
@@ -578,4 +581,7 @@ export default {
     FolderNav24,
     FolderNav24Active,
     BulkUpload,
+    Verified,
+    ShieldBlank,
+    Compass,
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col">
         <div
             class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm filter-head"
         >
@@ -27,7 +27,7 @@
             </div>
         </div>
         <slot></slot>
-        <div class="h-full overflow-y-auto">
+        <div class="overflow-y-auto">
             <a-collapse
                 v-model:activeKey="localActiveKeyValue"
                 :accordion="isAccordion"
@@ -56,12 +56,11 @@
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     import Panel from './panel.vue'
 
     export default defineComponent({
-        name: 'CommonFilter',
+        name: 'PackageFilter',
         components: {
             Panel,
         },
@@ -139,7 +138,6 @@
             const forceRender = () => {
                 componentState.value += 1
             }
-            const { getList: cmList } = useCustomMetadataFacet()
 
             const dynamicList = computed(() => {
                 const arr = filterList.value?.filter((el) => {
@@ -163,9 +161,6 @@
                     }
                     return true
                 })
-                if (allowCustomFilters.value) {
-                    return [...arr, ...cmList(typeName.value)]
-                }
                 return [...arr]
             })
 

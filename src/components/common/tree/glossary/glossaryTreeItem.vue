@@ -32,6 +32,24 @@
                 </template>
             </AddGtcModal>
         </div>
+
+        <div
+            v-else-if="item?.typeName === 'loadMore'"
+            class="flex items-center justify-between w-full py-0 m-0 group"
+            @click="item.click"
+        >
+            <div class="text-primary">{{ item.title }}</div>
+            <div v-if="item.isLoading">
+                <a-spin
+                    size="small"
+                    icon="Loader"
+                    class="w-auto h-4 mr-1 animate-spin"
+                ></a-spin>
+            </div>
+            <div v-else-if="!item.isLoading && item.isError">
+                <AtlanIcon icon="Error"></AtlanIcon>
+            </div>
+        </div>
         <div
             v-else
             class="flex items-center justify-between w-full py-0 m-0 group"

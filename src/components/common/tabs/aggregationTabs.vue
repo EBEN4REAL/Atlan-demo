@@ -82,10 +82,17 @@
                     return ''
                 },
             },
+            noAll: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { list, icon } = toRefs(props)
+            const { list, icon, noAll } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const selectedTab = ref(modelValue.value)
             const dataList = ref(list.value)
@@ -121,7 +128,7 @@
                         dataList.value.push(currentType)
                     }
                     if (sum !== 0) {
-                        if (dataList.value.length !== 1) {
+                        if (dataList.value.length !== 1 && !noAll.value) {
                             dataList.value.unshift({
                                 id: '__all',
                                 label: 'All',

@@ -91,12 +91,7 @@
                     <div class="flex items-center pt-3 pr-4">
                         <SearchAndFilter
                             v-model:value="searchPersona"
-                            :placeholder="`Search from ${
-                                (selectedPersonaDirty?.metadataPolicies
-                                    ?.length || 0) +
-                                    (selectedPersonaDirty?.dataPolicies
-                                        ?.length || 0) ?? 0
-                            } personas`"
+                            :placeholder="`Search from ${totalPolicy} personas`"
                             class="bg-white"
                             :autofocus="true"
                             size="minimal"
@@ -145,10 +140,11 @@
                             </template>
                         </a-dropdown>
                     </div>
-                    <div class="px-3 py-4 container-tabs">
+                    <div v-if="totalPolicy !== 0" class="px-3 py-4 container-tabs">
                         <AggregationTabs
                             v-model="activeTabFilter"
                             :list="tabFilterList"
+                            :noAll="true"
                         />
                     </div>
                 </div>
@@ -255,7 +251,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, computed } from 'vue'
+    import { defineComponent, PropType, ref, computed, watch } from 'vue'
     import { message } from 'ant-design-vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -320,7 +316,10 @@
                     handleClick: () => addPolicy('data'),
                 },
             ]
-
+            
+            watch(selectedPersonaDirty, () => {
+                activeTabFilter.value = ''
+            })
             async function savePolicyUI(type: PolicyType, id: string) {
                 const messageKey = Date.now()
                 message.loading({
@@ -376,36 +375,37 @@
                 }
             }
             const tabFilterList = computed(() => {
-                return [
+                const listFilter = [
                     {
-                        id: 'allPersona',
+                        id: 'all Persona',
                         label: 'All ',
                         count:
-                            (selectedPersonaDirty?.value?.metadataPolicies
-                                ?.length || 0) +
-                            (selectedPersonaDirty?.value?.dataPolicies
-                                ?.length || 0),
-                    },
-                    {
+                           ( selectedPersonaDirty?.value?.metadataPolicies
+                                ?.length || 0) + (selectedPersonaDirty?.value?.dataPolicies?.length || 0)
+                    }
+                ]
+                const lengthMetaData = selectedPersonaDirty?.value?.metadataPolicies?.length || 0
+                const lengthDataPolicy = selectedPersonaDirty?.value?.dataPolicies?.length || 0
+                if(lengthMetaData > 0){
+                    listFilter.push({
                         id: 'metaData',
                         label: 'MetaData',
-                        count:
-                            selectedPersonaDirty?.value?.metadataPolicies
-                                ?.length || 0,
-                    },
-                    {
+                        count: lengthMetaData
+                    })
+                }
+                if(lengthDataPolicy > 0){
+                    listFilter.push({
                         id: 'data',
-                        label: 'Data',
-                        count:
-                            selectedPersonaDirty?.value?.dataPolicies?.length ||
-                            0,
-                    },
-                ]
+                        label: 'data',
+                        count: lengthDataPolicy
+                    })
+                }
+                return listFilter
             })
             const metaDataComputed = computed(() => {
                 if (
                     !activeTabFilter.value ||
-                    activeTabFilter.value === 'allPersona' ||
+                    activeTabFilter.value === 'all Persona' ||
                     activeTabFilter.value === 'metaData'
                 ) {
                     const deteMeta =
@@ -421,7 +421,7 @@
             const dataPolicyComputed = computed(() => {
                 if (
                     !activeTabFilter.value ||
-                    activeTabFilter.value === 'allPersona' ||
+                    activeTabFilter.value === 'all Persona' ||
                     activeTabFilter.value === 'data'
                 ) {
                     const dataPolicy =
@@ -437,6 +437,9 @@
             const handleSelectPolicy = (policy) => {
                 selectedPolicy.value = policy
             }
+            const totalPolicy = computed(() => {
+                return (selectedPersonaDirty.value?.metadataPolicies?.length || 0) + (selectedPersonaDirty.value?.dataPolicies?.length || 0) ?? 0
+            })
             return {
                 newIdTag,
                 activeTabKey,
@@ -457,6 +460,7 @@
                 dataPolicyComputed,
                 handleSelectPolicy,
                 selectedPolicy,
+                totalPolicy
             }
         },
     })

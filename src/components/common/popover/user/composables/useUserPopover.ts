@@ -40,19 +40,19 @@ function useUserPopover(type: string, item: any) {
             const profileJsonStr = profile[0]
             try {
                 profileObj = JSON.parse(profileJsonStr)[0]
-                console.log("profileObj", profileObj)
+                console.log('profileObj', profileObj)
             } catch (error) {
                 console.error('error parsing user profile json', error)
             }
         }
-        return profileObj;
+        return profileObj
     }
 
     return {
         data,
         bussinesCount,
         assetCount,
-        getUserProfiles
+        getUserProfiles,
     }
 }
 

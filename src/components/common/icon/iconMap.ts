@@ -164,6 +164,7 @@ import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import Teams from '~/assets/images/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
@@ -262,6 +263,7 @@ import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
 import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
 import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
+import GlossaryGettingStarted from '~/assets/images/icons/glossary-getting-started.svg'
 import BulkUpload from '~/assets/images/icons/bulk-upload.svg'
 import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
@@ -585,7 +587,9 @@ export default {
     FolderNav24,
     FolderNav24Active,
     BulkUpload,
+    GlossaryGettingStarted,
     Verified,
     ShieldBlank,
     Compass,
+    Teams,
 }

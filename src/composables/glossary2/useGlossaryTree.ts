@@ -51,7 +51,7 @@ const useGlossaryTree = ({
     nodesKey = 'guid',
     checkedGuids = [],
 }: UseTreeParams) => {
-    const limit = ref(8)
+    const limit = ref(100)
     const offset = ref(0)
     const queryText = ref('')
     const facets = ref({
@@ -135,7 +135,7 @@ const useGlossaryTree = ({
                                 ? checkable
                                 : false,
                     }))
-                    if (data.value) {
+                    if (data.value && map) {
                         map?.forEach((el) => {
                             if (el.typeName === 'AtlasGlossaryTerm') {
                                 const currentParentList =
@@ -385,7 +385,7 @@ const useGlossaryTree = ({
     const selectNode = (selected: any, event: any) => {
         if (!event.node.isLeaf) {
             expandNode([], event)
-            // selectedKeys.value = []
+            // selectedKeys.value.push(event.node)
         }
         emit('select', event.node.dataRef)
     }

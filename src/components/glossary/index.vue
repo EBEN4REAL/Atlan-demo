@@ -70,13 +70,16 @@
                     </a-popover>
                 </template>
             </SearchAdvanced>
-            <atlan-icon
-                v-if="!queryText"
-                icon="TreeCollapseAll"
-                class="h-4 mt-2 ml-2 cursor-pointer"
-                @click="handleCollapse"
-            >
-            </atlan-icon>
+            <a-tooltip>
+                <template #title>Collapse all </template>
+                <atlan-icon
+                    v-if="!queryText"
+                    icon="TreeCollapseAll"
+                    class="h-4 mt-2 ml-2 cursor-pointer"
+                    @click="handleCollapse"
+                >
+                </atlan-icon>
+            </a-tooltip>
         </div>
 
         <div class="w-full px-4" v-if="queryText">

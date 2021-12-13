@@ -40,11 +40,10 @@
             />
             <a-tag
                 v-else-if="!updatingTags && allowUpdate"
-                class="bg-white"
-                style="background: #fff; border-style: dashed"
+                class="flex items-center text-xs content-center bg-white border-dashed rounded-3xl text-gray-500"
                 @click="showInput"
             >
-                <fa icon="fal plus" class="pushtop"></fa>New Tag
+                + Add
             </a-tag>
         </div>
     </div>

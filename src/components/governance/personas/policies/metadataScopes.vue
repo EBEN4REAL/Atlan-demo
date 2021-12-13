@@ -72,9 +72,6 @@
                         scp.scopes.find((e) => e.value === ac)
                     ),
                 }))
-                console.log('here', actions.value)
-                console.log('this', scopeList)
-
                 return scopeList
             })
 

@@ -43,6 +43,7 @@
                 v-model="queryText"
                 :connectorName="facets?.hierarchy?.connectorName"
                 :autofocus="true"
+                ref="searchBar"
                 :allowClear="true"
                 @change="handleSearchChange"
                 placeholder="Search terms & categories..."
@@ -93,7 +94,7 @@
             ref="glossaryTree"
             :height="height"
             @select="handlePreview"
-            :defaultGlossary="checkable ? '' :selectedGlossaryQf"
+            :defaultGlossary="checkable ? '' : selectedGlossaryQf"
             :checkable="checkable"
             v-model:checked-guids="checkedGuids"
             @check="onCheck"
@@ -124,7 +125,7 @@
                 v-else
                 empty-screen="EmptyDiscover"
                 desc="We didnt find anything that matches your search criteria"
-                button-text="Reset Filter"
+                button-text="Clear search"
                 class="mb-10"
                 @event="handleResetEvent"
             ></EmptyView>
@@ -241,6 +242,7 @@
             const { checkedGuids } = useVModels(props, emit)
             const router = useRouter()
             const { getGlossaryByQF } = useGlossaryData()
+            const searchBar = ref(null)
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -347,6 +349,9 @@
                 offset.value = 0
                 quickChange()
                 glossaryStore.setActiveFacet(facets.value)
+                if (searchBar.value) {
+                    searchBar.value?.clearInput()
+                }
             }
 
             const handleAssetTypeChange = () => {
@@ -429,8 +434,8 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
-            const onCheck = (checkedNodes, { checkedKeys, checked}) => {
-                emit('check', checkedNodes, { checkedKeys, checked})
+            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
+                emit('check', checkedNodes, { checkedKeys, checked })
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
@@ -475,6 +480,7 @@
                 reInitTree,
                 checkedGuids,
                 updateTreeNode,
+                searchBar,
             }
         },
     })

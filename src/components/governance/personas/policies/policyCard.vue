@@ -1,20 +1,9 @@
 <template>
     <div
-        class="
-            flex flex-col
-            py-2
-            text-gray-500
-            border-gray-300
-            cursor-pointer
-            group
-            hover:bg-primary-light
-            card-policy
-        "
+        class="flex flex-col py-2 text-gray-500 border-b border-gray-300 cursor-pointer group hover:bg-primary-light card-policy last:border-0"
         :class="
             selectedPolicy.id === policy.id
                 ? 'outline-primary bg-primary-light'
-                : !isLastElement
-                ? 'border-b'
                 : ''
         "
         @click="handleClickPlicyCard"
@@ -157,16 +146,7 @@
                 </div>
             </div>
             <div
-                class="
-                    flex
-                    items-stretch
-                    border border-gray-300
-                    rounded
-                    opacity-0
-                    group-hover:opacity-100
-                    text-gray
-                    hover:text-primary
-                "
+                class="flex items-stretch border border-gray-300 rounded opacity-0 group-hover:opacity-100 text-gray hover:text-primary"
             >
                 <!-- <AtlanBtn
                     class="flex-none px-2 border-l border-gray-300 border-none hover:text-primary"
@@ -188,17 +168,12 @@
                     :title="getPopoverContent(policy)"
                     ok-text="Yes"
                     :ok-type="'default'"
-                    overlayClassName="popoverConfirm"
+                    overlay-class-name="popoverConfirm"
                     cancel-text="Cancel"
                     @confirm="removePolicy"
                 >
                     <AtlanBtn
-                        class="
-                            flex-none
-                            px-2
-                            border-r border-gray-300 border-none
-                            hover:text-red-500
-                        "
+                        class="flex-none px-2 border-r border-gray-300 border-none hover:text-red-500"
                         size="sm"
                         color="secondary"
                         data-test-id="policy-delete"
@@ -244,29 +219,25 @@
                 type: Object as PropType<DataPolicies & MetadataPolicies>,
                 required: true,
             },
-            isLastElement: {
-                type: Boolean,
-                required: false,
-            },
         },
         emits: ['edit', 'cancel', 'delete', 'clickCard'],
         setup(props, { emit }) {
-            const { policy, type, isLastElement } = toRefs(props)
+            const { policy, type } = toRefs(props)
             const { findActions } = useScopeService()
             const { getAssetIcon } = useUtils()
             const showAll = ref(false)
-            const assets = computed(() => {
-                return policy.value.assets.map((name) => ({
+            const assets = computed(() =>
+                policy.value.assets.map((name) => ({
                     label:
                         name.split('/').length > 3
                             ? name.split('/').slice(3).join('/')
                             : name.split('/').slice(2).join('/'),
                 }))
-            })
+            )
             const splitAssets = computed(() => splitArray(3, assets.value))
-            const assetsIcons = computed(() => {
-                return policy.value?.assets?.map((name) => getAssetIcon(name))
-            })
+            const assetsIcons = computed(() =>
+                policy.value?.assets?.map((name) => getAssetIcon(name))
+            )
             const actions = computed(
                 () => findActions(policy.value.actions),
                 type.value
@@ -288,9 +259,8 @@
                 }
                 return policy.value.connectionName
             })
-            const getPopoverContent = (policy: any) => {
-                return `Are you sure you want to delete ${policy?.name}?`
-            }
+            const getPopoverContent = (policy: any) =>
+                `Are you sure you want to delete ${policy?.name}?`
             const handleClickPlicyCard = () => {
                 emit('clickCard', policy.value)
             }

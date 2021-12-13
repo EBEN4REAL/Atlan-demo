@@ -15,17 +15,8 @@
                             {{ t?.data?.label }}
                         </div>
                         <div
-                            class="
-                                px-1
-                                py-0.5
-                                ml-2
-                                text-xs
-                                font-bold
-                                rounded
-                                flex
-                                items-center
-                            "
                             v-if="t?.data?.key === 'policies'"
+                            class="px-1 py-0.5 ml-2 text-xs font-bold rounded flex items-center"
                             :class="
                                 activeTabKey === t?.data?.key
                                     ? 'text-primary bg-primary-light'
@@ -41,17 +32,8 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                px-1
-                                py-0.5
-                                ml-2
-                                text-xs
-                                font-bold
-                                rounded
-                                flex
-                                items-center
-                            "
                             v-if="t?.data?.key === 'users'"
+                            class="px-1 py-0.5 ml-2 text-xs font-bold rounded flex items-center"
                             :class="
                                 activeTabKey === t?.data?.key
                                     ? 'text-primary bg-primary-light'
@@ -147,7 +129,7 @@
                         <AggregationTabs
                             v-model="activeTabFilter"
                             :list="tabFilterList"
-                            :noAll="true"
+                            :no-all="true"
                         />
                     </div>
                 </div>
@@ -166,11 +148,11 @@
                         class="px-3 bg-white"
                         :policy="policy"
                         type="meta"
+                        :selected-policy="selectedPolicy"
                         @edit="setEditFlag('meta', policy.id!)"
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                         @clickCard="handleSelectPolicy"
-                        :selectedPolicy="selectedPolicy"
                     />
                 </template>
                 <template
@@ -188,15 +170,14 @@
                     /> -->
                     <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
                     <PolicyCard
-                        :isLastElement="idx === dataPolicyComputed?.length - 1"
                         class="px-3 bg-white"
                         :policy="policy"
                         type="data"
+                        :selected-policy="selectedPolicy"
                         @edit="setEditFlag('data', policy.id!)"
                         @delete="deletePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                         @clickCard="handleSelectPolicy"
-                        :selectedPolicy="selectedPolicy"
                     />
                 </template>
                 <!-- For pusing the new edit policy to bottom -->
@@ -246,8 +227,8 @@
             </div>
             <PersonaUsersGroups
                 v-else-if="activeTabKey === 'users'"
-                class="pt-6 pb-2"
                 v-model:persona="persona"
+                class="pt-6 pb-2"
             />
         </div>
     </template>
@@ -444,14 +425,13 @@
             const handleSelectPolicy = (policy) => {
                 selectedPolicy.value = policy
             }
-            const totalPolicy = computed(() => {
-                return (
+            const totalPolicy = computed(
+                () =>
                     (selectedPersonaDirty.value?.metadataPolicies?.length ||
                         0) +
                         (selectedPersonaDirty.value?.dataPolicies?.length ||
                             0) ?? 0
-                )
-            })
+            )
             return {
                 newIdTag,
                 activeTabKey,

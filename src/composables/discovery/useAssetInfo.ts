@@ -104,7 +104,14 @@ export default function useAssetInfo() {
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
-    const links = (asset: assetInterface) => attributes(asset)?.links
+    const links = (asset: assetInterface) => {
+        const allLinks = attributes(asset)?.links
+
+        const activeLinks = allLinks?.filter(
+            (link) => link?.attributes?.__state === 'ACTIVE'
+        )
+        return activeLinks
+    }
     const link = (asset: assetInterface) => attributes(asset)?.link
 
     const getTabs = (list, typeName: string) => {

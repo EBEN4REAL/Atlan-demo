@@ -116,7 +116,6 @@
             const { links } = useAssetInfo()
             const hasUserLevelSlackIntegration = true
             const hasTenantLevelSlackIntegration = true
-            console.log('links', links)
 
             function getPreviewComponent(url) {
                 if (

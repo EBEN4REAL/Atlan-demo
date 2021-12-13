@@ -5,6 +5,8 @@ import whoami from '~/composables/user/whoami'
 
 import { useGroupPreview } from '~/composables/group/showGroupPreview'
 import useGroups from '~/composables/group/useGroups'
+import bodybuilder from 'bodybuilder'
+import { Search } from '~/services/meta/search'
 
 /**
  * A composable for driving the userOrGroupPreview component. Under the hood,
@@ -30,14 +32,14 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             filter:
                 uniqueAttribute.value === 'username'
                     ? {
-                        $and: [
-                            { emailVerified: true },
-                            { username: userNameUser },
-                        ],
-                    }
+                          $and: [
+                              { emailVerified: true },
+                              { username: userNameUser },
+                          ],
+                      }
                     : {
-                        $and: [{ emailVerified: true }, { id: userId.value }],
-                    },
+                          $and: [{ emailVerified: true }, { id: userId.value }],
+                      },
         }))
 
         const { userList, getUserList, isLoading, error } = useUsers(
@@ -50,6 +52,38 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                 ? userList.value[0]
                 : []
         )
+
+        const query = bodybuilder()
+            .filter('term', 'ownerUsers', selectedUser)
+            .aggregation('terms', '__typeName.keyword', {}, 'group_by_typeName')
+            .size(10)
+            .build()
+        const { data } = Search.IndexSearch({ dsl: query }, {})
+        const businessCount = computed(() => {
+            const terms = [
+                'atlasglossary',
+                'atlasglossarycategory',
+                'atlasglossaryterm',
+            ]
+            const aggs =
+                data?.value?.aggregations?.group_by_typeName?.buckets || []
+            let count = 0
+            aggs.forEach((el) => {
+                if (terms.includes(el.key.toLowerCase())) {
+                    count += el.doc_count
+                }
+            })
+            return count
+        })
+        const assetCount = computed(() => {
+            const aggs =
+                data?.value?.aggregations?.group_by_typeName?.buckets || []
+            let count = 0
+            aggs.forEach((el) => {
+                count += el.doc_count
+            })
+            return count
+        })
 
         // Obtaining logged in user.
         const currentUser = whoami()

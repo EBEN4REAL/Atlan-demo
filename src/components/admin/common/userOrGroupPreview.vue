@@ -24,7 +24,7 @@
             </ErrorView>
         </div>
         <template v-else-if="isValidEntity">
-            <div class="relative flex m-6">
+            <div class="relative flex mx-4 my-5">
                 <Avatar
                     v-if="isValidUser"
                     :image-url="imageUrl"
@@ -34,24 +34,40 @@
                         selectedUser.username ||
                         selectedUser.email
                     "
-                    :avatar-size="40"
-                    :avatar-shape="'circle'"
+                    :avatar-size="46"
+                    :avatar-shape="'square'"
                 />
-                <div class="ml-3">
-                    <div class="text-xl capitalize text-gray">
-                        {{ title }}
-                    </div>
-                    <AtlanIcon
-                        icon="Cross"
-                        class="absolute top-0 right-0 cursor-pointer"
-                        @click="$emit('close')"
-                    />
-                    <div class="text-gray-500">
-                        <span class="mr-1">@{{ name }}</span>
-                        <span v-if="details">
-                            <span class="text-gray-300">|</span>
-                            <span class="ml-1">{{ details }}</span>
-                        </span>
+                <div class="ml-4 w-full">
+                    <div class="flex text-gray-500 items-center content-center">
+                        <div class="w-4/5">
+                            <div class="text-base capitalize text-gray-700 font-bold">
+                                {{ title }}
+                            </div>
+                            <span class="w-28 text-sm truncate">
+                                @{{ name }}
+                            </span>
+                            <span
+                                v-if="details"
+                                class="ml-2 bg-gray-200 text-gray-700 content-center text-xs uppercase py-1 px-2 rounded"
+                            >
+                                {{ details }}
+                            </span>
+                        </div>
+                        <div class="ml-auto">
+                            <a-button-group>
+                                <a-button
+                                    v-if="slackEnabled"
+                                    class="border border-solid border-gray-300"
+                                    html-type="a"
+                                    :href="slackUrl"
+                                >
+                                    <AtlanIcon icon="Slack" />
+                                </a-button>
+                                <a-button class="border border-solid border-gray-300">
+                                    <AtlanIcon icon="KebabMenu" />
+                                </a-button>
+                            </a-button-group>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -96,6 +112,7 @@
     import SidePanelTabHeaders from '@common/tabs/sidePanelTabHeaders.vue'
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
+    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -211,6 +228,19 @@
                 }
                 return ''
             })
+            const userProfiles = computed(() => selectedUser.value?.attributes?.profiles)
+            const slackProfile = computed(() => {
+                if (userProfiles.value?.length > 0) {
+                    const firstProfile = JSON.parse(userProfiles.value[0])
+                    if (firstProfile && firstProfile.length > 0 && firstProfile[0].hasOwnProperty('slack')) {
+                        return firstProfile[0].slack
+                    }
+                }
+                return ""
+            })
+
+            const slackEnabled = computed(() => slackProfile.value)
+            const slackUrl = computed(() => slackEnabled.value ? getDeepLinkFromUserDmLink(slackEnabled.value) : "#")
             return {
                 tabs,
                 isValidEntity,
@@ -228,6 +258,8 @@
                 handleUpdate,
                 activeKey,
                 imageUrl,
+                slackEnabled,
+                slackUrl
             }
         },
     })

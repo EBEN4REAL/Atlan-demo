@@ -1,6 +1,7 @@
 <template>
     <div class="flex w-full h-full bg-white">
         <splitpanes
+            v-if="isItem"
             class="w-full h-full bg-white"
             :class="$style.splitpane__styles"
         >
@@ -31,6 +32,29 @@
                 </div>
             </pane>
         </splitpanes>
+        <div
+            v-else
+            class="flex flex-col items-center justify-center w-full h-full"
+        >
+            <atlan-icon icon="GlossaryGettingStarted" class="mb-10 mr-2 h-36" />
+            <span class="mb-5 text-2xl font-bold">
+                Start building your Business Glossary!</span
+            >
+            <span class="w-1/2 mb-16 text-base text-center"
+                >Create a searchable source of truth for all your business terms
+                & metrics for your organization. Link these terms to all your
+                data assets.</span
+            >
+            <AddGTCModal entityType="AtlasGlossary" @add="handleAddGlossary">
+                <template #trigger>
+                    <a-button
+                        class="flex items-center px-8 py-2 space-x-2"
+                        type="primary"
+                        >Get Started <atlan-icon icon="ArrowRight"
+                    /></a-button>
+                </template>
+            </AddGTCModal>
+        </div>
     </div>
 </template>
 
@@ -48,6 +72,7 @@
 
     import GlossaryDiscovery from '@/glossary/index.vue'
     import GlossaryPreview from '@/common/assets/preview/index.vue'
+    import AddGTCModal from '@/glossary/modal/addGtcModal.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryStore from '~/store/glossary'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
@@ -56,6 +81,7 @@
         components: {
             GlossaryDiscovery,
             GlossaryPreview,
+            AddGTCModal,
         },
         setup() {
             useHead({
@@ -97,6 +123,14 @@
             const updateTreeNode = (asset) => {
                 glossaryDiscovery?.value?.updateTreeNode(asset)
             }
+            const handleAddGlossary = (asset) => {
+                glossaryStore.addGlossary(asset)
+                glossaryStore.setSelectedGTC(asset?.attributes?.qualifiedName)
+                console.log(glossaryStore)
+                router.push(
+                    `/glossary/${getGlossaryByQF(getFirstGlossaryQF())?.guid}`
+                )
+            }
             onMounted(() => {
                 if (selectedGlossary.value?.guid) {
                     router.push(`/glossary/${selectedGlossary.value?.guid}`)
@@ -108,7 +142,7 @@
                                 getGlossaryByQF(selectedGlossaryQf.value)?.guid
                             }`
                         )
-                    } else {
+                    } else if (getFirstGlossaryQF()) {
                         router.push(
                             `/glossary/${
                                 getGlossaryByQF(getFirstGlossaryQF())?.guid
@@ -117,6 +151,7 @@
                     }
                 }
             })
+
             provide('updateList', updateList)
             provide('preview', handlePreview)
             provide('reInitTree', reInitTree)
@@ -127,6 +162,7 @@
                 glossaryDiscovery,
                 selectedGlossaryQf,
                 getGlossaryByQF,
+                handleAddGlossary,
             }
         },
     })

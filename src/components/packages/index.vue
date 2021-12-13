@@ -173,7 +173,6 @@
                 error,
                 handleSetupSandbox,
                 packageFilters,
-                list,
                 facets,
             }
         },

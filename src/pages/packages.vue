@@ -1,14 +1,7 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex flex-1 h-full">
-            <router-view v-if="isItem" @select="handleSelect"></router-view>
-
-            <keep-alive>
-                <PackageDiscoveryList
-                    :style="displayStyle"
-                    @select="handleSelect"
-                ></PackageDiscoveryList>
-            </keep-alive>
+            <PackageDiscoveryList></PackageDiscoveryList>
         </div>
 
         <div
@@ -25,18 +18,22 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
+    import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
 
     import PackageDiscoveryList from '@/packages/index.vue'
     import PackagePreview from '@/packages/preview/index.vue'
 
     export default defineComponent({
-        name: 'WorkflowSetupPage',
+        name: 'PackageSetupPage',
         components: {
             PackageDiscoveryList,
             PackagePreview,
         },
         setup(props, { emit }) {
+            useHead({
+                title: 'Packages',
+            })
             const selectedPackage = ref(null)
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)

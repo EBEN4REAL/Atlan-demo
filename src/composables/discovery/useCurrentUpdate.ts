@@ -3,8 +3,7 @@ import { ref, Ref, watch, computed } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 
 import useIndexSearch from './useIndexSearch'
-import { assetTypeList } from '~/constant/assetType'
-import useAssetStore from '~/store/asset'
+
 import { useBody } from './useBody'
 import useTypedefData from '~/composables/typedefs/useTypedefData'
 
@@ -22,9 +21,9 @@ interface DiscoverListParams {
     relationAttributes?: Ref<string[]>
 }
 
-const { customMetadataProjections } = useTypedefData()
-
 export function useCurrentUpdate({ id }: DiscoverListParams) {
+    const { customMetadataProjections } = useTypedefData()
+
     const defaultBody = ref({})
 
     const defaultAttributes = ref([

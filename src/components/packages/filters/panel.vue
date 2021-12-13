@@ -93,6 +93,7 @@
     import QueryStatus from '@/common/facet/queryStatus/index.vue'
     import Hierarchy from '@/common/facet/hierarchy/index.vue'
     import PackageType from '@/common/facet/packageType/index.vue'
+    import SourceType from '@/common/facet/sourceType/index.vue'
     import Publisher from '@/common/facet/publisher/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -111,6 +112,7 @@
             CheckBoxOption,
             PackageType,
             Publisher,
+            SourceType,
             Connector: defineAsyncComponent(
                 () => import('@common/treeselect/connector/index.vue')
             ),

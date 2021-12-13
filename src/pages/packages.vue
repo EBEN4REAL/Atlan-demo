@@ -1,11 +1,27 @@
 <template>
-    <PackageDiscovery
-        v-if="!isItem"
-        ref="assetdiscovery"
-        @setup="handleSetup"
-        @sandbox="handleSandbox"
-    ></PackageDiscovery>
-    <router-view :selectedPackage="selectedPackage" v-else></router-view>
+    <div class="flex w-full h-full overflow-x-hidden bg-white">
+        <div class="flex flex-1 h-full">
+            <router-view v-if="isItem"></router-view>
+
+            <keep-alive>
+                <PackageDiscovery
+                    :style="isItem ? 'display: none !important;' : ''"
+                    ref="assetdiscovery"
+                    @select="handleSelect"
+                ></PackageDiscovery>
+            </keep-alive>
+        </div>
+
+        <div
+            class="relative hidden h-full bg-white border-l border-gray-200 asset-preview-container md:block"
+        >
+            <PackagePreview
+                :selectedPackage="selectedPackage"
+                @setup="handleSetup"
+                @sandbox="handleSandbox"
+            ></PackagePreview>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -13,12 +29,14 @@
     import { useRoute, useRouter } from 'vue-router'
 
     import PackageDiscovery from '@/packages/index.vue'
+    import PackagePreview from '@/packages/preview/index.vue'
     import { useMagicKeys } from '@vueuse/core'
 
     export default defineComponent({
         name: 'WorkflowSetupPage',
         components: {
             PackageDiscovery,
+            PackagePreview,
         },
         setup(props, { emit }) {
             const selectedPackage = ref(null)
@@ -35,6 +53,11 @@
                     query: {},
                 })
             }
+
+            const handleSelect = (item: any) => {
+                selectedPackage.value = item
+            }
+
             const handleSandbox = (item: any) => {
                 selectedPackage.value = item
                 const url = selectedPackage.value.metadata.name
@@ -49,6 +72,7 @@
                 handleSandbox,
                 selectedPackage,
                 isItem,
+                handleSelect,
             }
         },
     })
@@ -60,3 +84,10 @@ meta:
     requiresAuth: true
     permissions: [LIST_WORKFLOWTEMPLATE]
 </route>
+
+<style scoped>
+    .asset-preview-container {
+        min-width: 360px !important;
+        max-width: 360px !important;
+    }
+</style>

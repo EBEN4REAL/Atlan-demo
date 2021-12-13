@@ -7,7 +7,7 @@ export const workspaceCentreList = [
         icon: 'GovernanceCenter',
         label: 'Governance Center',
         isActive: true,
-        auth: page.PAGE_PLATFORM,
+        auth: page.PAGE_GOVERNANCE,
     },
     {
         path: '/admin',

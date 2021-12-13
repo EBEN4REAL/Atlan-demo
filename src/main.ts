@@ -17,9 +17,9 @@ import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
 
 const app = createApp(App)
+app.use(createPinia())
 const head = createHead()
 app.use(head)
-app.use(createPinia())
 
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
@@ -110,7 +110,7 @@ router.beforeEach(async (to, from, next) => {
         }
         return window.location.reload()
     } else {
-        window.location.replace("/404");
+        window.location.replace('/404')
     }
     return next()
 })

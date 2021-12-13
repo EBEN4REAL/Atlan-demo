@@ -29,8 +29,7 @@
             </div>
 
             <div
-                class="flex px-6 py-3 border-t"
-                :class="currentStep !== 0 ? 'justify-between' : 'justify-end'"
+                class="flex justify-between px-6 py-3 border-t"
                 v-if="currentStep < steps.length"
             >
                 <a-button
@@ -41,6 +40,10 @@
                     <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
                     >Back</a-button
                 >
+
+                <a-button v-if="currentStep == 0" @click="handleExit">
+                    <AtlanIcon icon="ChevronLeft"></AtlanIcon> All Packages
+                </a-button>
                 <a-button
                     @click="handleNext"
                     class="text-primary"
@@ -116,6 +119,7 @@
                     <a-button v-if="status === 'success'">
                         <router-link to="/assets"> Back to Assets</router-link>
                     </a-button>
+
                     <div
                         class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                         v-if="errorMesssage"
@@ -160,6 +164,7 @@
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
     import { useRunList } from '~/composables/package/useRunList'
+    import { useRouter } from 'vue-router'
 
     // Composables
 
@@ -386,16 +391,17 @@
                 }
                 body.value.payload = [...credentialBody]
 
-                // status.value = 'loading'
-                // errorMesssage.value = ''
-
-                console.log(body)
-
-                // execute(true)
+                status.value = 'loading'
+                errorMesssage.value = ''
+                execute(true)
             }
 
             const handleBackToSetup = () => {
                 status.value = null
+            }
+            const router = useRouter()
+            const handleExit = (key) => {
+                router.replace(`/packages`)
             }
 
             return {
@@ -425,6 +431,7 @@
                 handleRetry,
                 errorMesssage,
                 handleBackToSetup,
+                handleExit,
             }
         },
     })

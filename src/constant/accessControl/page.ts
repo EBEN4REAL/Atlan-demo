@@ -8,4 +8,5 @@ export default {
     PAGE_GLOSSARY: [],
     PAGE_ASSETS: [],
     PAGE_HOME: [],
+    PAGE_GOVERNANCE: [map.LIST_CLASSIFICATION],
 }

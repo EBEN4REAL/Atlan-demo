@@ -5,20 +5,35 @@
             <h2 class="text-gray-800 text-3xl font-semibold"><span class="text-primary">404</span> Page not found</h2>
             <!--p class="mt-2 text-gray-600">Please check the URL in the adress bar and try again.</p-->
         </div>
-        test
-        <PackageDiscoveryList></PackageDiscoveryList>
 </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+
+    import { defineComponent, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
-     import PackageDiscoveryList from '@/packages/index.vue'
+      import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
     export default defineComponent({
-                components: {
-            PackageDiscoveryList,
-        },
+
+        setup(props, { emit }) {
+                        const limit = ref(20)
+            const offset = ref(0)
+            const queryText = ref('')
+            const facets = ref({
+                verified: true,
+            })
+            const dependentKey = ref('DEFAULT_PACKAGES')
+                    const { isLoading, list, error } = usePackageDiscoverList({
+                isCache: true,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+            })
+        }
+
+
     });
 </script>
 

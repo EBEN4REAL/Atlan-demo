@@ -135,7 +135,7 @@ const useGlossaryTree = ({
                                 ? checkable
                                 : false,
                     }))
-                    if (data.value) {
+                    if (data.value && map) {
                         map?.forEach((el) => {
                             if (el.typeName === 'AtlasGlossaryTerm') {
                                 const currentParentList =

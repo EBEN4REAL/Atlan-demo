@@ -109,12 +109,13 @@
                             :on-load-data="onLoadData"
                             :select-node="selectNode"
                             :expand-node="expandNode"
-                            :is-loading="isInitingTree"
+                            :is-loading="isQueriesLoading"
                             :loaded-keys="loadedKeys"
                             :selected-keys="selectedKeys"
                             :expanded-keys="expandedKeys"
                             :showEmptyState="showEmptyState"
                             :refreshQueryTree="refreshQueryTree"
+                            :QueriesFetchError="QueriesFetchError"
                         />
                     </div>
                     <!--explorer pane end -->
@@ -129,7 +130,7 @@
                     "
                 >
                     <div v-if="searchLoading" class="pl-6">
-                        <LoadingView />
+                        <Loader />
                     </div>
                     <div v-else-if="searchResults?.entities?.length">
                         <div class="w-full h-full bg-white">
@@ -141,7 +142,7 @@
                                 :on-load-data="onLoadData"
                                 :select-node="selectNode"
                                 :expand-node="expandNode"
-                                :is-loading="isInitingTree"
+                                :is-loading="isQueriesLoading"
                                 :loaded-keys="loadedKeys"
                                 :selected-keys="selectedKeys"
                                 :expanded-keys="expandedKeys"
@@ -305,9 +306,6 @@
                 required: true,
             },
             resetQueryTree: {
-                type: Function,
-            },
-            refreshQueryTree: {
                 type: Function,
             },
             resetType: {
@@ -731,6 +729,9 @@
                 nodeToParentKeyMap: nodeToParentKeyMap,
                 updateNode: updateNode,
                 currentSelectedNode: currentSelectedNode,
+                errorReq: QueriesFetchError,
+                isLoading: isQueriesLoading,
+                initTreeData: refreshQueryTree,
                 // addInputBox,
                 // removeInputBox,
             } = useQueryTree({
@@ -943,6 +944,9 @@
             })
 
             return {
+                refreshQueryTree,
+                isQueriesLoading,
+                QueriesFetchError,
                 errorObjectForCollection,
                 searchTreeData,
                 onFilterChange,

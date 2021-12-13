@@ -157,7 +157,8 @@
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0
                             ) {
-                                queryCollections.value = data.value.entities
+                                queryCollections.value =
+                                    data.value.entities ?? []
                                 console.log(
                                     'fetchQueryCollections',
                                     data.value.entities

@@ -76,7 +76,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
+    import { defineComponent, ref, computed } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
 
@@ -84,21 +84,15 @@
     import PackageFilters from './filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
 
-    import Editor from '@/common/editor/index.vue'
-
-    import { usePackageList } from '~/composables/package/usePackageList'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
-    import AtlanIcon from '../common/icon/atlanIcon.vue'
 
     export default defineComponent({
-        name: 'AssetDiscovery',
+        name: 'PackageDiscovery',
         components: {
-            Editor,
             PackageList,
             EmptyView,
             PackageFilters,
             ErrorView,
-            AtlanIcon,
         },
         props: {
             showFilters: {

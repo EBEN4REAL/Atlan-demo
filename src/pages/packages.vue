@@ -1,12 +1,11 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex flex-1 h-full">
-            <router-view v-if="isItem"></router-view>
+            <router-view v-if="isItem" @select="handleSelect"></router-view>
 
             <keep-alive>
                 <PackageDiscovery
                     :style="isItem ? 'display: none !important;' : ''"
-                    ref="assetdiscovery"
                     @select="handleSelect"
                 ></PackageDiscovery>
             </keep-alive>

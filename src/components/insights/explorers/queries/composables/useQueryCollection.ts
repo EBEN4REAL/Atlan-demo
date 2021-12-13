@@ -16,6 +16,7 @@ import whoami from '~/composables/user/whoami'
 import { Insights } from '~/services/meta/insights/index'
 import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
+import useBody from './useBody'
 
 const useQueryCollection = () => {
     const { modifyActiveInlineTab } = useInlineTab()
@@ -38,29 +39,11 @@ const useQueryCollection = () => {
         'classifications',
         ...InternalAttributes,
     ]
-    const body = ref()
+    const body = ref({})
 
     const refreshBody = () => {
         body.value = {
-            dsl: {
-                size: 100,
-                query: {
-                    bool: {
-                        filter: {
-                            bool: {
-                                must: [
-                                    {
-                                        term: {
-                                            '__typeName.keyword':
-                                                'QueryCollection',
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    },
-                },
-            },
+            dsl: useBody({}),
             attributes,
         }
     }
@@ -85,8 +68,8 @@ const useQueryCollection = () => {
         ownerGroups,
         viewerUsers,
         viewerGroups,
-        icon, 
-        iconType
+        icon,
+        iconType,
     }) => {
         const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const tenantId = tenantStore.tenantRaw.realm
@@ -104,7 +87,7 @@ const useQueryCollection = () => {
                     viewerGroups,
                     tenantId,
                     icon,
-                    iconType
+                    iconType,
                 },
             },
         })

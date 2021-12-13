@@ -149,6 +149,7 @@
 <script lang="ts">
     import emojiData from 'emoji-mart-vue-fast/data/apple.json'
     import {
+        inject,
         defineComponent,
         Ref,
         ref,
@@ -182,6 +183,9 @@
             const title: Ref<string> = ref('')
             const description: Ref<string | undefined> = ref('')
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
+            const refetchQueryCollection = inject(
+                'refetchQueryCollection'
+            ) as Ref<Function>
             const saveQueryLoading = ref(false)
             const selectedEmoji = ref()
             const isShareable = ref(true)
@@ -258,6 +262,8 @@
                             error.value === undefined
                         ) {
                             closeModal()
+                            /* Fetch fresh collections */
+                            refetchQueryCollection.value()
                         }
                     },
                     {

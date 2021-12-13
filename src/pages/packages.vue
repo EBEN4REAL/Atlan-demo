@@ -4,10 +4,10 @@
             <router-view v-if="isItem" @select="handleSelect"></router-view>
 
             <keep-alive>
-                <PackageDiscovery
+                <PackageDiscoveryList
                     :style="displayStyle"
                     @select="handleSelect"
-                ></PackageDiscovery>
+                ></PackageDiscoveryList>
             </keep-alive>
         </div>
 
@@ -27,13 +27,13 @@
     import { computed, defineComponent, ref } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
-    import PackageDiscovery from '@/packages/index.vue'
+    import PackageDiscoveryList from '@/packages/index.vue'
     import PackagePreview from '@/packages/preview/index.vue'
 
     export default defineComponent({
         name: 'WorkflowSetupPage',
         components: {
-            PackageDiscovery,
+            PackageDiscoveryList,
             PackagePreview,
         },
         setup(props, { emit }) {

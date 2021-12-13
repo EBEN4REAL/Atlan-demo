@@ -22,7 +22,7 @@
 
                 <div class="flex flex-col flex-1 h-full py-4">
                     <div
-                        class="flex flex-col px-6 pb-4 font-extrabold py-4text-2xl"
+                        class="flex flex-col px-6 py-4 pb-4 font-extrabold focus-within:text-2xl"
                     >
                         <a-input
                             class="w-1/2"
@@ -32,7 +32,7 @@
 
                     <div
                         class="flex flex-col px-6 py-4"
-                        v-if="list.length == 0"
+                        v-if="list?.length == 0"
                     >
                         <div
                             v-if="isLoading"
@@ -46,29 +46,19 @@
                         <div
                             v-if="!isLoading && error"
                             class="flex items-center justify-center flex-grow"
-                        >
-                            <ErrorView></ErrorView>
-                        </div>
+                        ></div>
                         <div
-                            v-else-if="list.length === 0 && !isLoading"
+                            v-else-if="list?.length === 0 && !isLoading"
                             class="flex-grow"
-                        >
-                            <EmptyView
-                                empty-screen="EmptyDiscover"
-                                desc="
-                           No packages were found
-                        "
-                                class="mb-10"
-                            ></EmptyView>
-                        </div>
+                        ></div>
                     </div>
-                    <!--     <div class="flex flex-1 overflow-y-auto">
+                    <div class="flex flex-1 overflow-y-auto">
                         <PackageList
                             :list="list"
                             class="px-6"
                             @select="handleSelect"
                         ></PackageList>
-                    </div>-->
+                    </div>
                 </div>
             </div>
         </div>

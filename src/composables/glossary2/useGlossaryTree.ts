@@ -357,8 +357,8 @@ const useGlossaryTree = ({
             a.attributes.name > b.attributes.name
                 ? 1
                 : b.attributes.name > a.attributes.name
-                ? -1
-                : 0
+                    ? -1
+                    : 0
         )
     )
 
@@ -506,7 +506,7 @@ const useGlossaryTree = ({
         }
     }
     const addNode = (asset, entity): TreeDataItem => {
-        if (entity && entity !== {}) {
+        if (entity) {
             recursivelyAddOrDeleteNode(
                 asset,
                 entity?.value?.guid || entity?.guid,
@@ -527,9 +527,8 @@ const useGlossaryTree = ({
             if (asset.typeName === 'AtlasGlossaryTerm') {
                 treeData.value.unshift({
                     ...asset,
-                    id: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
+                    id: `${getAnchorQualifiedName(asset)}_${asset.attributes?.qualifiedName
+                        }`,
                     key: `${asset.guid}`,
                     isLeaf: true,
                 })
@@ -538,9 +537,8 @@ const useGlossaryTree = ({
             if (asset.typeName === 'AtlasGlossaryCategory') {
                 treeData.value.unshift({
                     ...asset,
-                    id: `${getAnchorQualifiedName(asset)}_${
-                        asset.attributes?.qualifiedName
-                    }`,
+                    id: `${getAnchorQualifiedName(asset)}_${asset.attributes?.qualifiedName
+                        }`,
                     key: `${asset.guid}`,
                     isLeaf: false,
                 })

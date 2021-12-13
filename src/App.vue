@@ -28,7 +28,7 @@
             useTenant()
 
             // typedefs
-            const { data: typedef } = useTypedefs()
+            // const { data: typedef } = useTypedefs()
 
             // // connections
             useConnection()

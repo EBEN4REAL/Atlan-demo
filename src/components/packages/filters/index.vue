@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col">
         <div
             class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm filter-head"
         >
@@ -27,7 +27,7 @@
             </div>
         </div>
         <slot></slot>
-        <div class="h-full overflow-y-auto">
+        <div class="overflow-y-auto">
             <a-collapse
                 v-model:activeKey="localActiveKeyValue"
                 :accordion="isAccordion"

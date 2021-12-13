@@ -4,7 +4,7 @@
             <AtlanIcon
                 icon="Dots"
                 v-if="!isHome"
-                class="h-6 mr-2 rounded cursor-pointer select-none  hover:bg-primary-light hover:text-primary"
+                class="h-6 mr-2 rounded cursor-pointer select-none hover:bg-primary-light hover:text-primary"
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
             />
@@ -20,14 +20,37 @@
                 <p class="font-bold text-md" v-else>{{ logoName }}</p>
             </router-link>
         </div>
-        <div
-            class="flex items-center h-full pl-3 border-l cursor-pointer  justify-self-end"
-        >
+        <div class="flex items-center h-full cursor-pointer justify-self-end">
+            <a-dropdown placement="bottomRight">
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item>
+                            <a href="/packages">New Package</a>
+                        </a-menu-item>
+                        <a-menu-item>
+                            <a href="/insights">New Query</a>
+                        </a-menu-item>
+                        <a-menu-item>
+                            <a href="/governance/personas">New Persona</a>
+                        </a-menu-item>
+                        <a-menu-item>
+                            <a href="/governance/purposes">New Purpose</a>
+                        </a-menu-item>
+                    </a-menu></template
+                >
+
+                <a-button size="small"
+                    ><AtlanIcon icon="Add" class="text-primary"></AtlanIcon>
+                    <AtlanIcon icon="ChevronDown" class="h-3 ml-1"></AtlanIcon>
+                </a-button>
+            </a-dropdown>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" /> -->
             <!-- <AtlanIcon icon="Notification" class="h-5 mr-3" /> -->
-            <UserPersonalAvatar class="self-center" />
+            <div class="pl-3 ml-3 border-l">
+                <UserPersonalAvatar class="self-center" />
+            </div>
         </div>
     </div>
 </template>
@@ -38,12 +61,14 @@
 
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import { useTenantStore } from '~/store/tenant'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     import defaultLogo from '~/assets/images/your_company.png'
+    import AtlanIcon from '../icon/atlanIcon.vue'
+    import AssetMenu from '../assets/profile/header/assetMenu.vue'
 
     export default defineComponent({
         name: 'Navigation Menu',
-        components: { UserPersonalAvatar },
+        components: { UserPersonalAvatar, AtlanIcon, AssetMenu },
         props: {
             page: { type: String, required: false },
             isSidebarActive: {
@@ -74,6 +99,11 @@
 
             const logoName = computed(() => tenantStore.displayName)
 
+            const router = useRouter()
+            const handleNewPackage = () => {
+                router.push('/packages')
+            }
+
             return {
                 page,
                 isHome,
@@ -81,6 +111,7 @@
                 logoName,
                 currentRoute,
                 defaultLogo,
+                handleNewPackage,
             }
         },
     })

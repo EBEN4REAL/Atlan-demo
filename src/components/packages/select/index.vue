@@ -1,75 +1,53 @@
 <template>
-    <div class="flex flex-1">
-        <div class="flex flex-col h-full">
-            <div
-                class="flex items-center px-5 py-3 text-base font-bold border-b border-gray-200 overflow-ellipsis"
-            >
-                <a-button class="mr-3"
-                    ><AtlanIcon icon="ChevronLeft"></AtlanIcon
-                ></a-button>
-                Select a package
+    <div class="flex w-full h-full overflow-x-hidden bg-white">
+        <div
+            v-if="showFilters"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
+        >
+            <PackageFilters :filter-list="packageFilters"></PackageFilters>
+        </div>
+        <div class="flex-col flex-1 h-full border-r border-gray-200">
+            <div class="flex flex-col px-6 py-6 text-2xl font-extrabold">
+                <a-input class="w-1/2" placeholder="Search Packages"></a-input>
             </div>
 
-            <div class="flex flex-1 overflow-y-auto">
+            <div
+                class="flex flex-col px-6 overflow-y-auto"
+                style="height: calc(100% - 100px)"
+            >
                 <div
-                    v-if="showFilters"
-                    class="flex flex-col bg-gray-100 border-r border-gray-300 facets"
+                    v-if="isLoading"
+                    class="flex items-center justify-center flex-grow"
                 >
-                    <PackageFilters
-                        :filter-list="packageFilters"
-                    ></PackageFilters>
+                    <AtlanIcon
+                        icon="Loader"
+                        class="w-auto h-10 animate-spin"
+                    ></AtlanIcon>
                 </div>
-
-                <div class="flex flex-col flex-1 h-full py-4">
-                    <div
-                        class="flex flex-col px-6 pb-4 font-extrabold py-4text-2xl"
-                    >
-                        <a-input
-                            class="w-1/2"
-                            placeholder="Search Packages"
-                        ></a-input>
-                    </div>
-
-                    <div
-                        class="flex flex-col px-6 py-4"
-                        v-if="list.length == 0"
-                    >
-                        <div
-                            v-if="isLoading"
-                            class="flex items-center justify-center flex-grow"
-                        >
-                            <AtlanIcon
-                                icon="Loader"
-                                class="w-auto h-10 animate-spin"
-                            ></AtlanIcon>
-                        </div>
-                        <div
-                            v-if="!isLoading && error"
-                            class="flex items-center justify-center flex-grow"
-                        >
-                            <ErrorView></ErrorView>
-                        </div>
-                        <div
-                            v-else-if="list.length === 0 && !isLoading"
-                            class="flex-grow"
-                        >
-                            <EmptyView
-                                empty-screen="EmptyDiscover"
-                                desc="
+                <div
+                    v-if="!isLoading && error"
+                    class="flex items-center justify-center flex-grow"
+                >
+                    <ErrorView></ErrorView>
+                </div>
+                <div
+                    v-else-if="list.length === 0 && !isLoading"
+                    class="flex-grow"
+                >
+                    <EmptyView
+                        empty-screen="EmptyDiscover"
+                        desc="
                            No packages were found
                         "
-                                class="mb-10"
-                            ></EmptyView>
-                        </div>
-                    </div>
-                    <div class="flex flex-1 overflow-y-auto">
-                        <PackageList
-                            :list="list"
-                            class="px-6"
-                            @select="handleSelect"
-                        ></PackageList>
-                    </div>
+                        class="mb-10"
+                    ></EmptyView>
                 </div>
+
+                <PackageList
+                    :list="list"
+                    @select="handleSelect"
+                    v-else
+                ></PackageList>
             </div>
         </div>
     </div>
@@ -81,14 +59,13 @@
     import ErrorView from '@common/error/discover.vue'
 
     import PackageList from '@/packages/list/index.vue'
-    import PackageFilters from './filters/index.vue'
+    import PackageFilters from '../filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
 
     import Editor from '@/common/editor/index.vue'
 
     import { usePackageList } from '~/composables/package/usePackageList'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
-    import AtlanIcon from '../common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -98,7 +75,6 @@
             EmptyView,
             PackageFilters,
             ErrorView,
-            AtlanIcon,
         },
         props: {
             showFilters: {
@@ -122,7 +98,7 @@
                 default: false,
             },
         },
-        emits: ['setup', 'sandbox', 'select'],
+        emits: ['setup', 'sandbox'],
         setup(props, { emit }) {
             const limit = ref(20)
             const offset = ref(0)
@@ -158,7 +134,6 @@
 
             const handleSelect = (item) => {
                 selectedPackage.value = item
-                emit('select', item)
             }
 
             const handleSetup = (item) => {

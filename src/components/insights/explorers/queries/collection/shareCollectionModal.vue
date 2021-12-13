@@ -14,7 +14,7 @@
                 class="flex items-center justify-between text-gray-500 flex-nowrap"
             >
                 <span class="flex-none font-bold text text-gray"
-                    >Share
+                    >Invite to
                     <span
                         class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg"
                         >{{ item?.attributes?.name }}</span

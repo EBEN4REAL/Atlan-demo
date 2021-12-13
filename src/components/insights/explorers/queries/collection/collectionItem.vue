@@ -31,15 +31,25 @@
                     <a-menu>
                         <!-- RENAME FOLDER PERMISSIONS -->
                         <a-menu-item key="share" @click="toggleShareQueryModal"
-                            >Share collection</a-menu-item
+                            >Invite</a-menu-item
                         >
-                        <a-menu-item key="edit">Edit collection</a-menu-item>
+                        <a-menu-item
+                            key="edit"
+                            @click="toggleShowCollectionModal"
+                            >Edit collection</a-menu-item
+                        >
                     </a-menu>
                 </template>
             </a-dropdown>
         </div>
         <ShareCollectionModal
             v-model:showShareModal="showShareQueryModal"
+            :item="item"
+        />
+        <CreateCollectionModal
+            v-if="showCollectionModal"
+            v-model:showCollectionModal="showCollectionModal"
+            :is-create="false"
             :item="item"
         />
     </div>
@@ -69,6 +79,12 @@
                         '~/components/insights/explorers/queries/collection/shareCollectionModal.vue'
                     )
             ),
+            CreateCollectionModal: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/insights/explorers/queries/collection/createCollectionModal.vue'
+                    )
+            ),
         },
         props: {
             item: {
@@ -92,12 +108,19 @@
                 showShareQueryModal.value = !showShareQueryModal.value
             }
 
+            const showCollectionModal = ref(false)
+            const toggleShowCollectionModal = () => {
+                showCollectionModal.value = !showCollectionModal.value
+            }
+
             return {
                 item,
                 index,
                 handleChange,
                 showShareQueryModal,
                 toggleShareQueryModal,
+                showCollectionModal,
+                toggleShowCollectionModal,
             }
         },
     })

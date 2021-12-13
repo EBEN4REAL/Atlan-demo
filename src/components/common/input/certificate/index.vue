@@ -57,6 +57,7 @@
         computed,
         ref,
         toRefs,
+        watchEffect,
     } from 'vue'
     import {
         and,
@@ -133,7 +134,7 @@
                     activeElement.value?.attributes?.contenteditable?.value !==
                         'true'
             )
-            const { c, Escape, v } = useMagicKeys()
+            const { c, Escape, v, enter, shift } = useMagicKeys()
             whenever(and(c, notUsingInput), () => {
                 if (!isEdit.value) {
                     isEdit.value = true
@@ -141,7 +142,6 @@
             })
 
             whenever(and(v, notUsingInput), () => {
-                console.log('dd')
                 if (isEdit.value) {
                     localValue.value.certificateStatus = 'VERIFIED'
                     handleChange()
@@ -150,6 +150,14 @@
 
             whenever(and(Escape), () => {
                 if (isEdit.value) {
+                    handleChange()
+                    isEdit.value = false
+                }
+            })
+
+            watchEffect(() => {
+                if (enter.value && !shift.value && isEdit.value) {
+                    localValue.value.certificateUpdatedBy = username.value
                     handleChange()
                     isEdit.value = false
                 }

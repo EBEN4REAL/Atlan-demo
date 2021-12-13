@@ -328,6 +328,10 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useRoute, useRouter } from 'vue-router'
+
+    const { inlineTabRemove } = useInlineTab()
 
     import { message } from 'ant-design-vue'
 
@@ -385,6 +389,10 @@
                 title,
                 certificateStatus,
             } = useAssetInfo()
+
+            const route = useRoute()
+            const router = useRouter()
+
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -412,6 +420,10 @@
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchNode', () => {})
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
@@ -633,18 +645,40 @@
             }
 
             let isDeleteLoading = ref(false)
+
+            const pushGuidToURL = (guid: string | undefined) => {
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                if (guid) {
+                    queryParams.id = guid
+                    router.push({ path: `insights`, query: queryParams })
+                } else {
+                    router.push({ path: `insights`, query: queryParams })
+                }
+            }
+
             const delteItem = (type: 'Query' | 'QueryFolder') => {
+                let key = item.value.guid
                 const { data, error, isLoading } = Insights.DeleteEntity(
                     item.value.guid,
                     {}
                 )
                 isDeleteLoading.value = true
+
                 watch([data, error, isLoading], ([newData, newError]) => {
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
                         useAddEvent('insights', 'folder', 'deleted', undefined)
                         showDeletePopover.value = false
+
+                        inlineTabRemove(
+                            key,
+                            inlineTabs,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+
                         setTimeout(() => {
                             refetchParentNode(
                                 props.item.guid,

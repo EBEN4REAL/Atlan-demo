@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col py-4 text-gray-500 border-b border-gray-300 rounded cursor-pointer group hover:bg-primary-light card-policy"
+        class="flex flex-col py-2 text-gray-500 border-b border-gray-300 rounded cursor-pointer group hover:bg-primary-light card-policy"
         :class="selectedPolicy.id === policy.id ?  'outline-primary bg-primary-light' : ''"
         @click="handleClickPlicyCard"
     >
@@ -10,6 +10,7 @@
                 data-test-id="policy-name"
                 >{{ policy.name }}</span
             >
+             <AtlanIcon icon="ShieldBlank" :class="policy.allow ? 'allow-icon' : ''" />
            <!-- <div class="flex items-center border rounded bg-gray-light">
                 <img
                     :src="getImage(connectionQfName?.split('/')[1])"
@@ -34,7 +35,6 @@
                 >{{type === 'meta' ? 'Metadata Policy' : 'Data Policy'}}</span
             >
         </div>
-        <div class="flex items-center mb-3 gap-x-6">
             <!-- <span class="flex-none text-sm" v-if="policy.assets.length > 0">
                 <b class="text-gray-700">{{ policy.assets.length }}</b> assets
                 selected
@@ -89,9 +89,8 @@
                     <span>{{ policy.maskType }}</span>
                 </div>
             </div> -->
-        </div>
         <div class="flex flex-wrap items-center gap-y-1.5">
-            <div class="flex items-center gap-y-1.5 gap-x-2 flex-1 flex-wrap">
+            <div class="flex items-center gap-y-1.5 gap-x-1 flex-1 flex-wrap">
                 <div class="flex items-center">
                     <img
                         :src="getImage(connectionQfName?.split('/')[1])"
@@ -103,6 +102,7 @@
                 </div>
                 <template v-if="policy.assets.length > 0">
                     <div class="dot"/>
+                    <AtlanIcon icon="Compass" />
                     <span class="flex-none text-sm" >
                         {{ policy.assets.length }} assets
                     </span>
@@ -274,6 +274,13 @@
     })
 </script>
 
+<style lang="less">
+    .allow-icon{
+        path {
+            fill: #00a680!important;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .card-policy{
         margin: 1px;

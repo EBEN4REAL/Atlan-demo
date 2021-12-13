@@ -1,6 +1,9 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex flex-1 h-full">
+            {{ isItem }}
+
+            testing text
             <router-view v-if="isItem" @select="handleSelect"></router-view>
 
             <keep-alive>

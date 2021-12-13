@@ -30,7 +30,7 @@
                 <template #overlay>
                     <a-menu>
                         <a-menu-item>
-                            <a href="/packages">New Package</a>
+                            <a href="/workflows/setup">New Workflow</a>
                         </a-menu-item>
                         <a-menu-item>
                             <a href="/insights">New Query</a>
@@ -44,8 +44,10 @@
                     </a-menu></template
                 >
 
-                <a-button size="small"
-                    ><AtlanIcon icon="Add" class="text-primary"></AtlanIcon>
+                <a-button
+                    size="small"
+                    class="text-white bg-green-500 border-green-500"
+                    ><AtlanIcon icon="Add" class="text-white"></AtlanIcon> New
                     <AtlanIcon icon="ChevronDown" class="h-3 ml-1"></AtlanIcon>
                 </a-button>
             </a-dropdown>
@@ -98,7 +100,6 @@
 
             const logoUrl = computed(() => {
                 if (tenantStore.displayNameHtml) {
-                    return 'please change this, only for testing'
                     return `${window.location.origin}/api/service/avatars/_logo_`
                 }
                 return ''

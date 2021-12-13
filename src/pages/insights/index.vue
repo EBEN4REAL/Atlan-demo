@@ -8,7 +8,6 @@
         defineComponent,
         provide,
         ref,
-        toRef,
         computed,
         Ref,
         watch,
@@ -41,7 +40,7 @@
             const router = useRouter()
             const { getQueryCollections } = useQueryCollection()
             const savedQueryGuidFromURL = ref(route.query?.id)
-
+            let refetchQueryCollection = ref() as Ref<Function>
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<any> = ref()
             const queryCollectionsLoading = ref(true)
@@ -100,6 +99,7 @@
             provide('queryFolderNamespace', queryFolderNamespace)
             provide('queryCollections', queryCollections)
             provide('queryCollectionsLoading', queryCollectionsLoading)
+            provide('refetchQueryCollection', refetchQueryCollection)
             provide('permissions', permissions)
             /* --------------------- */
             console.log(savedQueryGuidFromURL.value)
@@ -145,9 +145,11 @@
                 })
             }
             const fetchQueryCollections = () => {
-                const { data, error, isLoading } = getQueryCollections()
+                const { data, error, isLoading, mutate } = getQueryCollections()
+                refetchQueryCollection.value = mutate
                 queryCollectionsLoading.value = true
                 watch([data, error, isLoading], () => {
+                    queryCollectionsLoading.value = true
                     if (isLoading.value === false) {
                         queryCollectionsLoading.value = false
                         if (error.value === undefined) {
@@ -155,7 +157,6 @@
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0
                             ) {
-                                // queryCollections.value = 'data.value.entities'
                                 queryCollections.value = data.value.entities
                                 console.log(
                                     'fetchQueryCollections',
@@ -163,6 +164,7 @@
                                 )
                             }
                         } else {
+                            queryCollectionsLoading.value = false
                             message.error({
                                 content: `Error fetching collections`,
                             })

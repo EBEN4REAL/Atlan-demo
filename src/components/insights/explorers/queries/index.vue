@@ -2,138 +2,110 @@
     <div
         class="flex flex-col items-center w-full h-full bg-white query-explorer"
     >
-        <div class="w-full p-4 pb-0 rounded">
-            <div class="flex items-center">
-                <CollectionSelector
-                    @update:data="updateCollection"
-                ></CollectionSelector>
-                <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
-                <a-dropdown
-                    :trigger="['click']"
-                    class="ml-auto shadow-none h-7"
-                    placement="bottomRight"
-                >
-                    <a-button size="small" :class="$style.filterButton">
-                        <AtlanIcon :icon="'Add'"></AtlanIcon>
-                    </a-button>
-                    <template #overlay>
-                        <a-menu>
-                            <a-menu-item
-                                key="0"
-                                @click="
-                                    () =>
-                                        toggleCreateQueryModal(
-                                            currentSelectedNode
-                                        )
-                                "
-                            >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        icon="NewQuery"
-                                        color="#5277D7"
-                                        class="h-4 mr-2 outline-none hover:text-primary"
-                                    />
-                                    <span>New Query</span>
-                                </div>
-                            </a-menu-item>
-                            <a-menu-item key="1" @click="createFolderInput">
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        color="#5277D7"
-                                        icon="NewFolder"
-                                        class="h-4 mr-2 outline-none hover:text-primary"
-                                    />
-                                    <span>New Folder</span>
-                                </div>
-                            </a-menu-item>
-                            <a-menu-item key="1" @click="toggleCollectionModal">
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        color="#5277D7"
-                                        icon="Platform"
-                                        class="h-4 mr-2 outline-none hover:text-primary"
-                                    />
-                                    <span>New Collection</span>
-                                </div>
-                            </a-menu-item>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
-            </div>
-            <div class="flex flex-row space-x-2">
-                <a-input
-                    v-model:value="searchQuery"
-                    class="h-8 mt-2 rounded"
-                    :class="$style.inputSearch"
-                    placeholder="Search Queries"
-                >
-                    <template #suffix>
-                        <AtlanIcon icon="Search" color="#6F7590" />
-                    </template>
-                </a-input>
-                <a-popover trigger="click" placement="bottomLeft">
-                    <a-button
-                        class="flex items-center w-8 h-8 p-2 mt-2"
-                        :class="$style.filterButton"
+        <div v-if="queryCollections && !queryCollectionsLoading" class="w-full">
+            <div class="w-full p-4 pb-0 rounded">
+                <div class="flex items-center">
+                    <CollectionSelector
+                        @update:data="updateCollection"
+                    ></CollectionSelector>
+                    <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
+                    <a-dropdown
+                        :trigger="['click']"
+                        class="ml-auto shadow-none h-7"
+                        placement="bottomRight"
                     >
-                        <AtlanIcon icon="Filter" />
-                    </a-button>
-                    <template #content>
-                        <QueryFilter @change="onFilterChange" />
-                    </template>
-                </a-popover>
-            </div>
-        </div>
-        <!-- <div class="w-full my-4 border-b"></div> -->
-        <div class="w-full h-full mt-2">
-            <div
-                v-if="!searchQuery?.length && !totalFilteredCount"
-                class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
-                :style="
-                    fullSreenState
-                        ? 'height: calc( 100vh - 140px )'
-                        : 'height: calc( 100vh - 120px )'
-                "
-            >
-                <div class="w-full h-full bg-white">
-                    <query-tree
-                        v-if="!queryCollectionsLoading"
-                        @toggleCreateQueryModal="toggleCreateQueryModal"
-                        @createFolderInput="createFolderInput"
-                        :savedQueryType="savedQueryType"
-                        :tree-data="treeData"
-                        :on-load-data="onLoadData"
-                        :select-node="selectNode"
-                        :expand-node="expandNode"
-                        :is-loading="isInitingTree"
-                        :loaded-keys="loadedKeys"
-                        :selected-keys="selectedKeys"
-                        :expanded-keys="expandedKeys"
-                        :showEmptyState="showEmptyState"
-                        :refreshQueryTree="refreshQueryTree"
-                    />
+                        <a-button size="small" :class="$style.filterButton">
+                            <AtlanIcon :icon="'Add'"></AtlanIcon>
+                        </a-button>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    key="0"
+                                    @click="
+                                        () =>
+                                            toggleCreateQueryModal(
+                                                currentSelectedNode
+                                            )
+                                    "
+                                >
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="NewQuery"
+                                            color="#5277D7"
+                                            class="h-4 mr-2 outline-none hover:text-primary"
+                                        />
+                                        <span>New Query</span>
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item key="1" @click="createFolderInput">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            color="#5277D7"
+                                            icon="NewFolder"
+                                            class="h-4 mr-2 outline-none hover:text-primary"
+                                        />
+                                        <span>New Folder</span>
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item
+                                    key="1"
+                                    @click="toggleCollectionModal"
+                                >
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            color="#5277D7"
+                                            icon="Platform"
+                                            class="h-4 mr-2 outline-none hover:text-primary"
+                                        />
+                                        <span>New Collection</span>
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
                 </div>
-                <!--explorer pane end -->
-            </div>
-            <div
-                v-else
-                class="relative w-full p-3 pt-0 pl-6 mt-2 overflow-y-auto"
-                :style="
-                    fullSreenState
-                        ? 'height: calc( 100vh- 140px )'
-                        : 'height: calc( 100vh- 120px )'
-                "
-            >
-                <div v-if="searchLoading" class="pl-6">
-                    <LoadingView />
+                <div class="flex flex-row space-x-2">
+                    <a-input
+                        v-model:value="searchQuery"
+                        class="h-8 mt-2 rounded"
+                        :class="$style.inputSearch"
+                        placeholder="Search Queries"
+                    >
+                        <template #suffix>
+                            <AtlanIcon icon="Search" color="#6F7590" />
+                        </template>
+                    </a-input>
+                    <a-popover trigger="click" placement="bottomLeft">
+                        <a-button
+                            class="flex items-center w-8 h-8 p-2 mt-2"
+                            :class="$style.filterButton"
+                        >
+                            <AtlanIcon icon="Filter" />
+                        </a-button>
+                        <template #content>
+                            <QueryFilter @change="onFilterChange" />
+                        </template>
+                    </a-popover>
                 </div>
-                <div v-else-if="searchResults?.entities?.length">
+            </div>
+            <!-- <div class="w-full my-4 border-b"></div> -->
+            <div class="w-full h-full mt-2">
+                <div
+                    v-if="!searchQuery?.length && !totalFilteredCount"
+                    class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
+                    :style="
+                        fullSreenState
+                            ? 'height: calc( 100vh - 140px )'
+                            : 'height: calc( 100vh - 120px )'
+                    "
+                >
                     <div class="w-full h-full bg-white">
                         <query-tree
+                            v-if="!queryCollectionsLoading"
                             @toggleCreateQueryModal="toggleCreateQueryModal"
                             @createFolderInput="createFolderInput"
                             :savedQueryType="savedQueryType"
-                            :tree-data="searchTreeData"
+                            :tree-data="treeData"
                             :on-load-data="onLoadData"
                             :select-node="selectNode"
                             :expand-node="expandNode"
@@ -141,26 +113,87 @@
                             :loaded-keys="loadedKeys"
                             :selected-keys="selectedKeys"
                             :expanded-keys="expandedKeys"
+                            :showEmptyState="showEmptyState"
                             :refreshQueryTree="refreshQueryTree"
                         />
                     </div>
+                    <!--explorer pane end -->
                 </div>
                 <div
-                    v-else-if="!searchResults?.entities"
-                    class="flex flex-col items-center justify-center mt-14"
+                    v-else
+                    class="relative w-full p-3 pt-0 pl-6 mt-2 overflow-y-auto"
+                    :style="
+                        fullSreenState
+                            ? 'height: calc( 100vh- 140px )'
+                            : 'height: calc( 100vh- 120px )'
+                    "
                 >
-                    <AtlanIcon
-                        icon="EmptySearchQuery"
-                        class="h-32 no-svaved-query-icon text-primary"
-                    />
-                    <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
+                    <div v-if="searchLoading" class="pl-6">
+                        <LoadingView />
+                    </div>
+                    <div v-else-if="searchResults?.entities?.length">
+                        <div class="w-full h-full bg-white">
+                            <query-tree
+                                @toggleCreateQueryModal="toggleCreateQueryModal"
+                                @createFolderInput="createFolderInput"
+                                :savedQueryType="savedQueryType"
+                                :tree-data="searchTreeData"
+                                :on-load-data="onLoadData"
+                                :select-node="selectNode"
+                                :expand-node="expandNode"
+                                :is-loading="isInitingTree"
+                                :loaded-keys="loadedKeys"
+                                :selected-keys="selectedKeys"
+                                :expanded-keys="expandedKeys"
+                                :refreshQueryTree="refreshQueryTree"
+                            />
+                        </div>
+                    </div>
+                    <div
+                        v-else-if="!searchResults?.entities"
+                        class="flex flex-col items-center justify-center mt-14"
                     >
-                        Sorry, we couldn’t find
-                        <br />the query you were looking for
-                    </p>
+                        <AtlanIcon
+                            icon="EmptySearchQuery"
+                            class="h-32 no-svaved-query-icon text-primary"
+                        />
+                        <p
+                            class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
+                        >
+                            Sorry, we couldn’t find
+                            <br />the query you were looking for
+                        </p>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div
+            v-else-if="!queryCollections && queryCollectionsLoading"
+            class="flex items-center justify-center h-full"
+        >
+            <Loader></Loader>
+        </div>
+        <div
+            v-else-if="!queryCollections && !queryCollectionsLoading"
+            class="flex items-center justify-center h-full"
+        >
+            <ErrorView :error="errorObjectForCollection">
+                <div class="mt-3">
+                    <a-button
+                        data-test-id="try-again"
+                        size="large"
+                        type="primary"
+                        ghost
+                        @click="
+                            () => {
+                                refetchQueryCollection()
+                            }
+                        "
+                    >
+                        <fa icon="fal sync" class="mr-2"></fa>Try again
+                    </a-button>
+                </div>
+            </ErrorView>
         </div>
         <CreateCollectionModal
             v-if="showCollectionModal"
@@ -232,12 +265,16 @@
     import QueryFilter from './queryFilter.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import Loader from '@common/loaders/page.vue'
+    import ErrorView from '@common/error/index.vue'
 
     export default defineComponent({
         name: 'QueryExplorer',
         components: {
+            Loader,
             RaisedTab,
             QueryTree,
+            ErrorView,
             // SaveQueryModal,
             QueryFilter,
             LoadingView,
@@ -280,7 +317,17 @@
         },
         setup(props, { emit }) {
             let { reset, resetParentGuid, resetType } = toRefs(props)
-            const route = useRoute()
+            const route =
+                useRoute() /* FIXME: Hardcoded error object error for collection request get's failed */
+            const errorObjectForCollection = ref({
+                response: {
+                    status: 400,
+                    data: {
+                        errorMessage:
+                            'Failed to fetch collections. Please try again',
+                    },
+                },
+            })
             const permissions = inject('permissions') as ComputedRef<any>
             const { qualifiedName } = useAssetInfo()
             const { modifyActiveInlineTab } = useInlineTab()
@@ -318,7 +365,12 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
-            const queryCollectionsLoading = inject('queryCollectionsLoading')
+            const queryCollectionsLoading = inject(
+                'queryCollectionsLoading'
+            ) as Ref<Boolean>
+            const refetchQueryCollection = inject(
+                'refetchQueryCollection'
+            ) as Function
             const { setConnectorsDataInInlineTab, getConnectorName } =
                 useConnector()
             const { setCollectionsDataInInlineTab } = useQueryCollection()
@@ -891,6 +943,7 @@
             })
 
             return {
+                errorObjectForCollection,
                 searchTreeData,
                 onFilterChange,
                 resolvePublicFolderCreationPermission,
@@ -929,7 +982,9 @@
                 currentSelectedNode,
                 totalFilteredCount,
                 updateCollection,
+                queryCollections,
                 queryCollectionsLoading,
+                refetchQueryCollection,
                 selectedCollection,
                 toggleCollectionModal,
                 showCollectionModal,

@@ -30,11 +30,11 @@
                     </div>
 
                     <div class="flex flex-1 overflow-y-auto">
-                        <!-- <PackageList
+                        <PackageList
                             :list="list"
                             class="px-6"
                             @select="handleSelect"
-                        ></PackageList> -->
+                        ></PackageList>
                     </div>
                 </div>
             </div>
@@ -44,9 +44,9 @@
 
 <script lang="ts">
     import { defineComponent, ref, computed } from 'vue'
-    // import EmptyView from '@common/empty/index.vue'
-    // import ErrorView from '@common/error/discover.vue'
-    // import PackageList from '@/packages/list/index.vue'
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
+    import PackageList from '@/packages/list/index.vue'
     import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
@@ -55,6 +55,9 @@
         name: 'PackageDiscovery',
         components: {
             PackageFilters,
+            PackageList,
+            ErrorView,
+            EmptyView,
         },
         props: {
             initialFilters: {
@@ -115,12 +118,12 @@
                 placeholder,
                 dirtyTimestamp,
                 searchDirtyTimestamp,
-                // isLoading,
-                // list,
+                isLoading,
+                list,
                 handleSelect,
                 selectedPackage,
 
-                // error,
+                error,
                 packageFilters,
                 facets,
             }

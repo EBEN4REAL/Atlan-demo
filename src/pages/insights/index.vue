@@ -114,6 +114,11 @@
                                             '__typeName.keyword': 'Query',
                                         },
                                     },
+                                    {
+                                        term: {
+                                            __state: 'ACTIVE',
+                                        },
+                                    },
                                 ],
                             },
                         },

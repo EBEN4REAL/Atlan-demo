@@ -80,7 +80,10 @@
             />
 
             <div
-                v-if="(queryList && queryList.length) || isLoading"
+                v-if="
+                    pagination.total > 1 &&
+                    ((queryList && queryList.length) || isLoading)
+                "
                 class="flex flex-row items-center justify-end w-full mt-4"
             >
                 <Pagination

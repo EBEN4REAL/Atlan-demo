@@ -81,7 +81,10 @@
             />
 
             <div
-                v-if="(accessLogsList && accessLogsList.length) || isLoading"
+                v-if="
+                    ((accessLogsList && accessLogsList.length) || isLoading) &&
+                    pagination.total > 1
+                "
                 class="flex flex-row items-center justify-end w-full mt-4"
             >
                 <Pagination

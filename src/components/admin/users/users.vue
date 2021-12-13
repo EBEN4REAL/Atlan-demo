@@ -78,6 +78,7 @@
                 <div
                     v-auth="map.LIST_USERS"
                     class="flex justify-end max-w-full mt-4"
+                    v-if="pagination.total > 1"
                 >
                     <Pagination
                         :current="pagination.current"
@@ -193,7 +194,9 @@
             const selectedInvite = ref({})
 
             const pagination = computed(() => ({
-                total: filteredUserCount.value / userListAPIParams.limit,
+                total: Math.ceil(
+                    filteredUserCount.value / userListAPIParams.limit
+                ),
                 pageSize: userListAPIParams.limit,
                 current: userListAPIParams.offset / userListAPIParams.limit + 1,
                 offset: userListAPIParams.offset,

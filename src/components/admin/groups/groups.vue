@@ -117,7 +117,10 @@
                     />
                 </template>
             </a-table>
-            <div class="flex justify-end max-w-full mt-4">
+            <div
+                class="flex justify-end max-w-full mt-4"
+                v-if="pagination.total > 1"
+            >
                 <Pagination
                     :current="pagination.current"
                     :totalPages="pagination.total"

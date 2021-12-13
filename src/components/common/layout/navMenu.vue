@@ -25,7 +25,7 @@
                 <template #overlay>
                     <a-menu>
                         <a-menu-item>
-                            <a href="/packages">New Package</a>
+                            <a href="/workflows/setup">New Workflow</a>
                         </a-menu-item>
                         <a-menu-item>
                             <a href="/insights">New Query</a>

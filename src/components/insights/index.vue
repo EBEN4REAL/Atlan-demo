@@ -156,6 +156,8 @@
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
             >
+            const runQuery = inject('runQuery')
+
             const {
                 explorerPaneSize,
                 assetSidebarPaneSize,
@@ -276,6 +278,21 @@
                             savedQueryInfo.value?.attributes?.parent?.attributes
                                 ?.name,
                     })
+
+                    // console.log('run query: ', savedQueryInfo.value)
+
+                    if (runQuery.value === 'true') {
+                        queryRun(
+                            activeInlineTab,
+                            getData,
+                            limitRows,
+                            null,
+                            null,
+                            savedQueryInfo.value?.attributes.rawQuery,
+                            editorInstance,
+                            monacoInstance
+                        )
+                    }
                 }
             })
             watch(editorConfig, () => {
@@ -360,25 +377,36 @@
                                 attributeValue: undefined,
                             },
                         },
-                        playground: {
-                            vqb: {
-                                panels: [
-                                    {
-                                        order: 1,
-                                        id: 'columns',
-                                        hide: false,
-                                        subpanels: [
-                                            {
-                                                id: '1',
-                                                tableQualifiedName: undefined,
-                                                columns: [],
-                                                columnsData: [],
-                                            },
-                                        ],
-                                    },
-                                ],
+                        queries: {
+                            connectors: {
+                                connector: undefined,
+                            },
+                            collection: {
+                                guid: '',
+                                qualifiedName: undefined,
+                                parentQualifiedName: undefined,
                             },
                         },
+                    },
+                    playground: {
+                        vqb: {
+                            panels: [
+                                {
+                                    order: 1,
+                                    id: 'columns',
+                                    hide: false,
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                            columnsData: [],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+
                         editor: {
                             text: '',
                             context: {
@@ -417,6 +445,7 @@
                             sqlHelp: {},
                         },
                     },
+
                     favico: 'https://atlan.com/favicon.ico',
                     assetSidebar: {
                         isVisible: false,
@@ -450,30 +479,18 @@
                 }
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
-                // activeInlineTabKey.value = queryTab.key
-                // syncInlineTabsInLocalStorage(tabsArray.value)
 
-                const range = toRaw(editorInstance.value)
-                    ?.getModel()
-                    ?.getFullModelRange()
-                toRaw(editorInstance.value)?.setSelection(range)
-
-                const selectedQuery = toRaw(editorInstance.value)
-                    ?.getModel()
-                    ?.getValueInRange(
-                        toRaw(editorInstance.value)?.getSelection()
-                    )
-
-                // queryRun(
-                //     activeInlineTab,
-                //     getData,
-                //     limitRows,
-                //     null,
-                //     null,
-                //     selectedQuery,
-                //     editorInstance,
-                //     monacoInstance
-                // )
+                console.log('detect query: ', newQuery)
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    newQuery,
+                    editorInstance,
+                    monacoInstance
+                )
             }
 
             onMounted(() => {

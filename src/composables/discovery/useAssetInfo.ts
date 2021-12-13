@@ -248,8 +248,7 @@ export default function useAssetInfo() {
             const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
-            // console.log('assetType: ', asset.guid)
-            queryPath = `/insights?id=${asset.guid}`
+            queryPath = `/insights?id=${asset.guid}&runQuery=true`
         } else {
             queryPath = `/insights`
         }
@@ -382,6 +381,12 @@ export default function useAssetInfo() {
             attributes(asset)?.compiledQuery !== ''
         ) {
             return attributes(asset)?.compiledQuery
+        }
+        return '~'
+    }
+    const rawQuery = (asset: assetInterface) => {
+        if (attributes(asset)?.rawQuery && attributes(asset)?.rawQuery !== '') {
+            return attributes(asset)?.rawQuery
         }
         return '~'
     }
@@ -883,6 +888,7 @@ export default function useAssetInfo() {
         isPartition,
         isDist,
         compiledQuery,
+        rawQuery,
         definition,
         description,
         classifications,

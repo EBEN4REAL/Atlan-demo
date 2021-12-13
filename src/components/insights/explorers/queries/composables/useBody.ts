@@ -26,6 +26,7 @@ export default function useBody({
             value: `*${searchText}*`,
         })
     base.filter('term', '__typeName.keyword', 'QueryCollection')
+    base.filter('term', '__state', 'ACTIVE')
     base.hasFilter
 
     return base.build()

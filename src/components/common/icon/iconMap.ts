@@ -32,6 +32,8 @@ import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
+import EmptySampleData from '~/assets/images/illustrations/empty_sample_data.svg'
+import ErrorSampleData from '~/assets/images/illustrations/error_sample_data.svg'
 import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
@@ -343,6 +345,8 @@ export default {
     Relation,
     MorningIcon,
     AfternoonIcon,
+    EmptySampleData,
+    ErrorSampleData,
     Resources,
     FAQS,
     TableSummary,

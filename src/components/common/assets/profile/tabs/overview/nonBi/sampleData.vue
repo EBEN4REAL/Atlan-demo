@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-center w-full border rounded  h-96 border-gray-light"
+        class="flex items-center justify-center w-full border rounded h-96 border-gray-light"
     >
         <div v-if="isLoading" class="flex items-center text-lg leading-none">
             <AtlanIcon
@@ -9,13 +9,34 @@
             ></AtlanIcon>
             <span>Getting sample data</span>
         </div>
+        <div v-else-if="error && !isLoading" class="flex flex-col items-center">
+            <AtlanIcon
+                icon="ErrorSampleData"
+                class="w-auto"
+                style="height: 146px"
+            ></AtlanIcon>
+            <div class="flex flex-col items-center justify-center mt-0">
+                <p class="mb-0 text-base font-bold text-gray-700">
+                    {{ error?.response?.data?.errorMessage }}
+                </p>
+                <p class="mt-2 mb-0 text-base text-gray-500">
+                    <span v-if="error?.response?.data?.errorName"
+                        >{{ error?.response?.data?.errorName }} :
+                    </span>
+                    <span v-if="error?.response?.data?.errorCode">
+                        {&nbsp;{{ error?.response?.data?.errorCode }}&nbsp;}
+                    </span>
+                </p>
+            </div>
+        </div>
+        <div v-else-if="results.length < 1 && !isLoading"></div>
         <div v-else class="w-full h-full">
             <AtlanTable :dataList="results">
                 <template #header>
                     <thead>
                         <tr>
                             <th
-                                class="truncate bg-gray-100 border  border-gray-light"
+                                class="truncate bg-gray-100 border border-gray-light"
                             >
                                 #
                                 <!-- <span class="resize-handle"></span> -->
@@ -32,13 +53,7 @@
                                         }}</template>
                                         <component
                                             :is="images[col.data_type]"
-                                            class="
-                                                w-4
-                                                h-4
-                                                mr-1
-                                                cursor-pointer
-                                                -mt-0.5
-                                            "
+                                            class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
                                         ></component>
                                     </a-tooltip>
 
@@ -102,7 +117,7 @@
             }
 
             /** METHODS */
-            const { data, isLoading } = Insights.GetSampleData(body)
+            const { data, isLoading, error } = Insights.GetSampleData(body)
             const getDataType = (type: string) => {
                 let label = ''
                 dataTypeCategoryList.forEach((i) => {
@@ -110,6 +125,7 @@
                 })
                 return label
             }
+
             /** WATCHERS */
             watch([data], () => {
                 if (data.value) {
@@ -133,11 +149,17 @@
                     })
                 }
             })
+            watch([error], () => {
+                if (error.value) {
+                    console.log(error.value.errorMessage)
+                }
+            })
             return {
                 tableColumns,
                 results,
                 isLoading,
                 images,
+                error,
             }
         },
     })

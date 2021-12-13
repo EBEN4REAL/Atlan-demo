@@ -385,7 +385,7 @@ const useGlossaryTree = ({
     const selectNode = (selected: any, event: any) => {
         if (!event.node.isLeaf) {
             expandNode([], event)
-            // selectedKeys.value = []
+            // selectedKeys.value.push(event.node)
         }
         emit('select', event.node.dataRef)
     }

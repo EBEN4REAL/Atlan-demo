@@ -118,44 +118,46 @@ export function useSmtp() {
         updateSMTPConfig(payload)
     }
 
-    const testSmtpConfig = async () => {
-        testSmtpConfigState.value = 'TESTING'
-        if (!passwordReentered.value) {
-            testSmtpConfigState.value = 'INVALID'
-            testSmtpConfigError.value = 'Please re-enter password to test'
-            timerMessage(testSmtpConfigState)
-            timerMessage(testSmtpConfigError)
+    const testSmtpConfig = () => {
+        // if (passwordReentered.value) {
+        //     testSmtpConfigState.value = 'INVALID'
+        //     testSmtpConfigError.value = 'Please re-enter password to test'
+        //     timerMessage(testSmtpConfigState)
+        //     timerMessage(testSmtpConfigError)
 
-            return
-        }
-        const params = {
+        //     return
+        // }
+        const testErrorMessage = ref('')
+        testErrorMessage.value = ''
+
+        const params = computed(() => ({
             host: smtpServer.value.host,
             port: parseInt(smtpServer.value.port, 10),
             username: smtpServer.value.user,
             password: smtpServer.value.password,
             sslEnabled: smtpServer.value.ssl === 'true',
             tlsEnabled: smtpServer.value.startTls === 'true',
-        }
+        }))
 
-        const { data: testSmtpConfigReqData, error: testSmtpConfigReqError } =
-            Tenant.TestSmtpConfig(params)
+        const { data, isLoading, error, isReady, mutate } =
+            Tenant.TestSmtpConfig(params, { asyncOptions: { immediate: false } })
 
-        testSmtpConfigState.value = 'TESTING'
 
-        watch([testSmtpConfigReqData, testSmtpConfigReqError], () => {
-            if (testSmtpConfigReqData.value && !testSmtpConfigReqError.value) {
-                testSmtpConfigState.value = 'VALID'
-                timerMessage(testSmtpConfigState)
-            } else {
-                const errorMessage =
-                    testSmtpConfigReqError.value.response.data.error
-                testSmtpConfigState.value = 'INVALID'
-                testSmtpConfigError.value = `Error - ${errorMessage}`
-                timerMessage(testSmtpConfigState)
-                timerMessage(testSmtpConfigError)
+
+        watch([error, isLoading], (e) => {
+            if (isLoading.value)
+                testErrorMessage.value = ''
+            if (error?.value) {
+                const errorMessage = e.response?.data?.message
+                testErrorMessage.value = errorMessage
             }
         })
+
+        return {
+            isLoading, error, isReady, mutate, data, testErrorMessage
+        }
     }
+
     const triggerBlur = (refName: any) => {
         refName.value.onFieldBlur()
     }

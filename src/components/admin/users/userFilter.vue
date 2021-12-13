@@ -55,11 +55,11 @@
                 emit('change', valueToUpdate)
             }
             watch(
-            () => props.modelValue,
-            () => {
-                if (!props.modelValue.length) statusFilter.value = []
-            }
-        )
+                () => props.modelValue,
+                () => {
+                    if (!props.modelValue?.length) statusFilter.value = []
+                }
+            )
 
             return {
                 userStatusOptions,

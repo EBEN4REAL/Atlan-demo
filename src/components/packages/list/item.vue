@@ -4,7 +4,9 @@
         :class="isSelected ? 'border-primary shadow-lg' : ''"
     >
         <div class="flex items-center mb-2" v-if="item.metadata.annotations">
-            <div class="p-2 mr-2 bg-white border border-gray-200 rounded-full">
+            <div
+                class="relative w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
+            >
                 <img
                     v-if="
                         item.metadata.annotations[
@@ -35,17 +37,21 @@
                 <span v-else class="self-center w-6 h-6">
                     {{ '\ud83d\udce6' }}</span
                 >
+                <div class="absolute -right-1 -top-2">
+                    <a-tooltip title="Certified" placement="left">
+                        <AtlanIcon icon="Verified" class="ml-1"></AtlanIcon>
+                    </a-tooltip>
+                </div>
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col w-2/3">
                 <div class="text-sm font-bold truncate overflow-ellipsis">
                     {{
                         item.metadata.annotations[
                             'orchestration.atlan.com/name'
                         ]
                     }}
-                    <AtlanIcon icon="Verified"></AtlanIcon>
                 </div>
-                <div class="text-sm truncate overflow-ellipsis">
+                <div class="flex text-sm truncate overflow-ellipsis">
                     By
                     {{
                         item.metadata.annotations['package.argoproj.io/author']

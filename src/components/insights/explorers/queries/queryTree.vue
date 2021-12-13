@@ -112,7 +112,7 @@ TR
                             ghost
                             @click="
                                 () => {
-                                    refetchTreeData()
+                                    refreshQueryTree()
                                 }
                             "
                         >

@@ -18,11 +18,7 @@
                 >
                 <div class="flex items-center text-gray-700">
                     <span class="mr-2 text-sm">Share with others</span>
-                    <a-switch
-                        :id="shareCollection"
-                        v-model:checked="isPrivate"
-                        size="small"
-                    />
+                    <a-switch v-model:checked="isShareable" size="small" />
                 </div>
             </div>
         </template>
@@ -84,35 +80,24 @@
                     <a-textarea
                         v-model:value="description"
                         placeholder="Describe your collection"
-                        class="h-20 text-sm"
+                        class="w-full h-20 text-sm border-gray-300 rounded-lg focus:border-primary-focus focus:border-2 focus:outline-none"
                     />
                 </div>
             </div>
-            <div class="p-3 mt-4 mb-5 bg-gray-100 rounded">
+            <div class="px-4 py-2 mt-4 mb-5 bg-gray-100 rounded-lg">
                 <!-- Shared/Private selector -->
-                <div class="flex flex-col">
-                    <span class="font-bold">Visbility</span>
-                    <a-radio-group
-                        v-model:value="isPrivate"
-                        @change="onChangePrivate"
-                        class="mt-0"
-                    >
-                        <a-radio :value="false"> Team </a-radio>
-                        <a-radio :value="true"> Private </a-radio>
-                    </a-radio-group>
-                </div>
+
                 <!-- Shared access control -->
-                <div class="flex flex-col mt-3" v-if="!isPrivate">
+                <div class="flex flex-col" v-if="isShareable">
                     <div>
                         <span class="font-bold">Viewers</span>
                         <UserSelectWidget
-                            class="mt-1"
                             :read-only="false"
                             :model-value="viewers"
                             placementPos="bottomLeft"
                         />
                     </div>
-                    <div class="mt-2">
+                    <div class="mt-3">
                         <span class="font-bold">Editors</span>
                         <UserSelectWidget
                             class="mt-1"
@@ -199,7 +184,7 @@
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
             const saveQueryLoading = ref(false)
             const selectedEmoji = ref()
-            const isPrivate = ref(false)
+            const isShareable = ref(true)
             const popOverVisible = ref(false)
             const editors = ref({
                 ownerGroups: [],
@@ -288,7 +273,7 @@
                 titleBarRef,
                 title,
                 description,
-                isPrivate,
+                isShareable,
                 onChangePrivate,
                 editors,
                 viewers,

@@ -68,10 +68,10 @@ export default defineConfig(({ mode }) => {
                 libs: [],
             }),
             svgLoader(),
-            {
-                ...strip({ include: '**/*.+(vue|js|ts)' }),
-                apply: 'build'
-            },
+            // {
+            //     ...strip({ include: '**/*.+(vue|js|ts)' }),
+            //     apply: 'build'
+            // },
             // Components(),
         ],
         optimizeDeps: {

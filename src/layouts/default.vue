@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, provide, ref, watch } from 'vue'
     import { useRouter } from 'vue-router'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import PreviewDrawer from '@/common/drawer/previewDrawer.vue'
@@ -95,6 +95,10 @@
             const showModal = () => {
                 isCmndKVisible.value = true
             }
+            provide('togglecmdK', () => {
+                isCmndKVisible.value = !isCmndKVisible.value
+            })
+
             // watch for shortcut keys for command k
             whenever(keyK, () => {
                 if (

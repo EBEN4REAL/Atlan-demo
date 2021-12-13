@@ -18,7 +18,7 @@ interface DiscoverListParams {
     relationAttributes?: Ref<string[]>
 }
 
-export function usePackageDiscoverList({
+export default function usePackageDiscoverList({
     isCache,
     dependentKey,
     queryText,
@@ -49,16 +49,16 @@ export function usePackageDiscoverList({
     const localKey = ref(dependentKey?.value)
 
     generateBody()
-
+    debugger
     const { data, refresh, isLoading, isValidating, cancelRequest, error } =
         usePackageIndexSearch(defaultBody, localKey, isCache, false, 1)
-
     const list = ref([])
 
     // For column widget
     const freshList = ref([])
 
     watch(data, () => {
+        debugger
         if (offset?.value > 0) {
             data.value?.hits.hits.forEach((item) => {
                 list.value.push(item._source)

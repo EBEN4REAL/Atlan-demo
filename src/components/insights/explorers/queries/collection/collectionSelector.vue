@@ -25,24 +25,12 @@
                         <div
                             v-for="collection in collectionArr"
                             :key="collection.guid"
-                            class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
-                            @click="handleChange(collection.guid)"
                         >
-                            <AtlanIcon
-                                v-if="index === 0"
-                                icon="Group"
-                                class="self-center w-4 h-4 pr-1"
-                            ></AtlanIcon>
-                            <AtlanIcon
-                                v-else
-                                icon="User"
-                                class="self-center w-4 h-4 pr-1"
-                            ></AtlanIcon>
-                            <div
-                                class="overflow-ellipsis group-hover:text-primary"
-                            >
-                                {{ collection.attributes.name }}
-                            </div>
+                            <CollectionItem
+                                :item="collection"
+                                :index="index"
+                                :handle-change="handleChange"
+                            />
                         </div>
                     </div>
                 </div>
@@ -59,25 +47,13 @@
             ></AtlanIcon>
         </div>
     </a-popover>
-    <!-- <a-select
-        style="width: 200px"
-        @change="handleChange"
-        v-model:value="selectedValue"
-    >
-        <a-select-option
-            v-for="collection in queryCollections"
-            :key="collection?.guid"
-            :value="collection?.guid"
-        >
-            {{ collection.attributes.name }}
-        </a-select-option>
-    </a-select> -->
 </template>
 
 <script lang="ts">
     import {
         computed,
         defineComponent,
+        defineAsyncComponent,
         ref,
         Ref,
         toRefs,
@@ -88,18 +64,25 @@
         watch,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import {
-        SavedQuery,
-        QueryCollection,
-    } from '~/types/insights/savedQuery.interface'
+    import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { useAuthStore } from '~/store/auth'
+    import CollectionItem from './collectionItem.vue'
 
     export default defineComponent({
         name: 'CollectionSelector',
         emits: ['update:data'],
-        components: { AtlanIcon },
+        components: {
+            AtlanIcon,
+            CollectionItem,
+            ShareCollectionModal: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/insights/explorers/queries/collection/shareCollectionModal.vue'
+                    )
+            ),
+        },
         setup(props, { emit }) {
             // store
             const authStore = useAuthStore()
@@ -174,6 +157,16 @@
                 }
                 // changeDisplayText()
             })
+
+            const shareCollectionModal = ref(null)
+
+            const showShareCollectionModal = (item) => {
+                shareCollectionModal.value = item?.guid
+            }
+            const closeShareCollectionModal = (item) => {
+                shareCollectionModal.value = null
+            }
+
             return {
                 handleChange,
                 queryCollections,
@@ -184,6 +177,9 @@
                 username,
                 sharedCollections,
                 privateCollections,
+                showShareCollectionModal,
+                shareCollectionModal,
+                closeShareCollectionModal,
             }
         },
     })

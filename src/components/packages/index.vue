@@ -14,7 +14,7 @@
             <div class="flex flex-1 overflow-y-auto">
                 <div
                     v-if="showFilters"
-                    class="flex flex-col bg-gray-100 border-r border-gray-300 facets"
+                    class="flex flex-col bg-gray-100 border-r border-gray-300 filters"
                 >
                     <PackageFilters
                         :filter-list="packageFilters"
@@ -80,11 +80,9 @@
     import { defineComponent, ref, computed } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
-
     import PackageList from '@/packages/list/index.vue'
-    import PackageFilters from './filters/index.vue'
+    import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
-
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
@@ -181,22 +179,8 @@
 </script>
 
 <style lang="less">
-    .facets {
+    .filters {
         max-width: 264px;
         width: 25%;
-    }
-</style>
-
-<style lang="less" module>
-    .filterPopover {
-        max-width: 200px;
-        min-width: 200px;
-    }
-</style>
-
-<style scoped>
-    .asset-preview-container {
-        min-width: 360px !important;
-        max-width: 360px !important;
     }
 </style>

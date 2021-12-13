@@ -259,7 +259,7 @@
     import { message } from 'ant-design-vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
-    import PolicyCard from './policies/collapsedPolicyCard.vue'
+    import PolicyCard from './policies/policyCard.vue'
     import PersonaUsersGroups from './users/personaUsersGroups.vue'
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'

@@ -1,6 +1,15 @@
 <template>
     <div
-        class="flex flex-col py-2 text-gray-500 border-gray-300 cursor-pointer  group hover:bg-primary-light card-policy"
+        class="
+            flex flex-col
+            py-2
+            text-gray-500
+            border-gray-300
+            cursor-pointer
+            group
+            hover:bg-primary-light
+            card-policy
+        "
         :class="
             selectedPolicy.id === policy.id
                 ? 'outline-primary bg-primary-light'
@@ -148,7 +157,16 @@
                 </div>
             </div>
             <div
-                class="flex items-stretch border border-gray-300 rounded opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
+                class="
+                    flex
+                    items-stretch
+                    border border-gray-300
+                    rounded
+                    opacity-0
+                    group-hover:opacity-100
+                    text-gray
+                    hover:text-primary
+                "
             >
                 <!-- <AtlanBtn
                     class="flex-none px-2 border-l border-gray-300 border-none hover:text-primary"
@@ -175,7 +193,12 @@
                     @confirm="removePolicy"
                 >
                     <AtlanBtn
-                        class="flex-none px-2 border-r border-gray-300 border-none  hover:text-red-500"
+                        class="
+                            flex-none
+                            px-2
+                            border-r border-gray-300 border-none
+                            hover:text-red-500
+                        "
                         size="sm"
                         color="secondary"
                         data-test-id="policy-delete"

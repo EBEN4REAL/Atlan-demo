@@ -11,7 +11,7 @@
                 Select a package
             </div>
 
-            <div class="flex flex-1 overflow-y-auto">
+            <!--  <div class="flex flex-1 overflow-y-auto">
                 <div
                     v-if="showFilters"
                     class="flex flex-col bg-gray-100 border-r border-gray-300 filters"
@@ -70,28 +70,28 @@
                             @select="handleSelect"
                         ></PackageList>
                     </div>
-                </div>
-            </div>
+                </div> 
+            </div>-->
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, computed } from 'vue'
-    import EmptyView from '@common/empty/index.vue'
-    import ErrorView from '@common/error/discover.vue'
-    import PackageList from '@/packages/list/index.vue'
-    import PackageFilters from '@/packages/filters/index.vue'
+    // import EmptyView from '@common/empty/index.vue'
+    // import ErrorView from '@common/error/discover.vue'
+    // import PackageList from '@/packages/list/index.vue'
+    // import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'PackageDiscovery',
         components: {
-            PackageList,
-            EmptyView,
-            PackageFilters,
-            ErrorView,
+            // PackageList,
+            // EmptyView,
+            // PackageFilters,
+            // ErrorView,
         },
         props: {
             showFilters: {

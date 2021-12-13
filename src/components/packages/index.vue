@@ -49,7 +49,7 @@
     // import PackageList from '@/packages/list/index.vue'
     import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
-    // import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'PackageDiscovery',
@@ -94,13 +94,13 @@
             //     offset,
             // })
 
-            // const { isLoading, list, error } = usePackageDiscoverList({
-            //     isCache: true,
-            //     dependentKey,
-            //     facets,
-            //     limit,
-            //     offset,
-            // })
+            const { isLoading, list, error } = usePackageDiscoverList({
+                isCache: true,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+            })
 
             const placeholder = computed(() => 'Search all packages')
 

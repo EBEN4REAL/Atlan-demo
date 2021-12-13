@@ -15,7 +15,7 @@
                 class="w-auto"
                 style="height: 146px"
             ></AtlanIcon>
-            <div class="flex flex-col items-center justify-center mt-0">
+            <div class="flex flex-col items-center justify-center">
                 <p class="mb-0 text-base font-bold text-gray-700">
                     {{ error?.response?.data?.errorMessage }}
                 </p>
@@ -29,7 +29,24 @@
                 </p>
             </div>
         </div>
-        <div v-else-if="results.length < 1 && !isLoading"></div>
+        <div
+            v-else-if="results.length < 1 && !isLoading"
+            class="flex flex-col items-center"
+        >
+            <AtlanIcon
+                icon="EmptySampleData"
+                class="w-auto"
+                style="height: 118px"
+            ></AtlanIcon>
+            <div class="flex flex-col items-center justify-center">
+                <p class="mb-0 text-base font-bold text-gray-700">
+                    Sample data unavailable!
+                </p>
+                <p class="mt-2 mb-0 text-base text-gray-500">
+                    Sample data is unavailable for this dataset.
+                </p>
+            </div>
+        </div>
         <div v-else class="w-full h-full">
             <AtlanTable :dataList="results">
                 <template #header>

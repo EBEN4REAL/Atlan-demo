@@ -5,6 +5,8 @@
             <h2 class="text-gray-800 text-3xl font-semibold"><span class="text-primary">404</span> Page not found</h2>
             <!--p class="mt-2 text-gray-600">Please check the URL in the adress bar and try again.</p-->
         </div>
+        test
+        <PackageDiscoveryList></PackageDiscoveryList>
 </div>
     </div>
 </template>
@@ -12,7 +14,11 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
     import { useRouter } from 'vue-router'
+     import PackageDiscoveryList from '@/packages/index.vue'
     export default defineComponent({
+                components: {
+            PackageDiscoveryList,
+        },
     });
 </script>
 

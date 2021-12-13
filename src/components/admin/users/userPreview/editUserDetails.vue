@@ -10,6 +10,12 @@
             </a-button>
         </div>
     </div>
+    <a-form
+        ref="formRef"
+        :model="formData"
+        :rules="rules"
+        layout="vertical"
+    >
     <div class="pb-6 border-solid border-b border-gray-200">
         <div class="flex justify-center">
             <Avatar
@@ -20,12 +26,6 @@
                 :avatar-size="100"
             />
         </div>
-        <a-form
-            ref="formRef"
-            :model="formData"
-            :rules="rules"
-            layout="vertical"
-        >
             <a-form-item label="First Name" prop="firstName">
                 <a-input
                     v-model:value="formData.firstName"
@@ -64,23 +64,27 @@
                 />
             </a-form-item>
             <UpdateSkills :user="selectedUser" :allow-update="isCurrentUser" />
-        </a-form>
     </div>
     <div class="py-6">
         <p class="uppercase text-gray-500 text-sm">Contact Details</p>
         <div class="mt-4">
-            <div class="text-gray-500 text-sm">Slack</div>
-            <a-input
-                v-model:value="formData.slack"
-                class="mt-2"
-                :loading="isRequestLoading"
+            <a-form-item
+                label="Slack"
+                prop="slack"
+                help="Open a direct message with yourself on Slack in your browser and copy the url. It will look something like this: myorg.slack.com/client/id"
             >
-                <template #prefix>
-                    <span class="border-solid border-gray-300 pr-2 border-r">
-                        <AtlanIcon icon="Slack" />
-                    </span>
-                </template>
-            </a-input>
+                <a-input
+                    v-model:value="formData.slack"
+                    class="mt-2"
+                    :loading="isRequestLoading"
+                >
+                    <template #prefix>
+                        <span class="border-solid border-gray-300 pr-2 border-r">
+                            <AtlanIcon icon="Slack" />
+                        </span>
+                    </template>
+                </a-input>
+            </a-form-item>
         </div>
 <!--        <div class="mt-6">-->
 <!--            <div class="text-gray-500 text-sm">Teams</div>-->
@@ -97,6 +101,7 @@
 <!--            </a-input>-->
 <!--        </div>-->
     </div>
+    </a-form>
 </template>
 
 <script lang="ts">

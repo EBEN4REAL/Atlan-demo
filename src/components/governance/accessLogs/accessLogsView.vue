@@ -88,6 +88,8 @@
                     :current="pagination.current"
                     :total="pagination.total"
                     :loading="isLoading"
+                    :pageSize="size"
+                    :offset="from"
                     @change="handlePagination"
                 />
             </div>
@@ -278,6 +280,8 @@
                 handleFilterChange()
             }
             return {
+                from,
+                size,
                 accessLogsList,
                 isLoading,
                 handleSearch,

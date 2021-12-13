@@ -83,6 +83,8 @@
                         :current="pagination.current"
                         :total="pagination.total"
                         :loading="isLoading"
+                        :pageSize="pagination.pageSize"
+                        :offset="pagination.offset"
                         @change="handlePagination"
                     />
                 </div>
@@ -164,7 +166,7 @@
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
-                limit: 15,
+                limit: 50,
                 offset: 0,
                 sort: 'firstName',
                 filter: { $and: [] },
@@ -194,6 +196,7 @@
                 total: filteredUserCount.value,
                 pageSize: userListAPIParams.limit,
                 current: userListAPIParams.offset / userListAPIParams.limit + 1,
+                offset: userListAPIParams.offset,
             }))
 
             const updateFilters = () => {
@@ -491,6 +494,7 @@
                 confirmEnableDisablePopover,
                 selectedUserId,
                 totalUserCount,
+                userListAPIParams,
                 limit: userListAPIParams.limit,
                 offset: userListAPIParams.offset,
                 updateFilters,

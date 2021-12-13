@@ -121,7 +121,9 @@
                 <Pagination
                     :current="pagination.current"
                     :total="pagination.total"
+                    :pageSize="pagination.pageSize"
                     :loading="isLoading"
+                    :offset="pagination.offset"
                     @change="handlePagination"
                 />
             </div>
@@ -189,6 +191,7 @@
                 pageSize: groupListAPIParams.limit,
                 current:
                     groupListAPIParams.offset / groupListAPIParams.limit + 1,
+                offset: groupListAPIParams.offset,
             }))
 
             const {
@@ -412,6 +415,7 @@
                 columns,
                 isGroupDrawerVisible,
                 searchText,
+                groupListAPIParams,
                 onSearch,
                 groupList,
                 pagination,

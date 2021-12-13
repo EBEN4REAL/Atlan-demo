@@ -80,13 +80,18 @@
             />
 
             <div
-                v-if="(queryList && queryList.length) || isLoading"
+                v-if="
+                    pagination.total > 1 &&
+                    ((queryList && queryList.length) || isLoading)
+                "
                 class="flex flex-row items-center justify-end w-full mt-4"
             >
                 <Pagination
                     :current="pagination.current"
-                    :total="pagination.total"
+                    :totalPages="pagination.total"
                     :loading="isLoading"
+                    :pageSize="size"
+                    :offset="from"
                     @change="handlePagination"
                 />
             </div>
@@ -191,7 +196,7 @@
             )
             const lt = ref(dayjs().format())
             const from = ref(0)
-            const size = ref(6)
+            const size = ref(20)
             const {
                 getDatabaseName,
                 getSchemaName,
@@ -308,6 +313,8 @@
                 handleFilterChange()
             }
             return {
+                size,
+                from,
                 selectedRowKeys,
                 isQueryPreviewDrawerVisible,
                 selectedQuery,

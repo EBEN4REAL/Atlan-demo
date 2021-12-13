@@ -45,8 +45,11 @@
             />
         </a-drawer>
 
+        <div v-if="isLoading" class="flex items-center justify-center h-full">
+            <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+        </div>
         <div
-            v-if="error"
+            v-else-if="error"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -117,11 +120,16 @@
                     />
                 </template>
             </a-table>
-            <div class="flex justify-end max-w-full mt-4">
+            <div
+                class="flex justify-end max-w-full mt-4"
+                v-if="pagination.total > 1"
+            >
                 <Pagination
                     :current="pagination.current"
-                    :total="pagination.total"
+                    :totalPages="pagination.total"
+                    :pageSize="pagination.pageSize"
                     :loading="isLoading"
+                    :offset="pagination.offset"
                     @change="handlePagination"
                 />
             </div>
@@ -177,20 +185,11 @@
 
             const selectedGroupId = ref('')
             const groupListAPIParams = reactive({
-                limit: 15,
+                limit: 50,
                 offset: 0,
                 filter: {},
                 sort: '-createdAt',
             })
-            const pagination = computed(() => ({
-                total: Object.keys(groupListAPIParams.filter).length
-                    ? filteredGroupsCount.value
-                    : totalGroupsCount.value,
-                pageSize: groupListAPIParams.limit,
-                current:
-                    groupListAPIParams.offset / groupListAPIParams.limit + 1,
-            }))
-
             const {
                 groupList,
                 totalGroupsCount,
@@ -199,6 +198,20 @@
                 error,
                 isLoading,
             } = useGroups(groupListAPIParams)
+
+            const pagination = computed(() => ({
+                total: Object.keys(groupListAPIParams.filter).length
+                    ? Math.ceil(
+                          filteredGroupsCount.value / groupListAPIParams.limit
+                      )
+                    : Math.ceil(
+                          totalGroupsCount.value / groupListAPIParams.limit
+                      ),
+                pageSize: groupListAPIParams.limit,
+                current:
+                    groupListAPIParams.offset / groupListAPIParams.limit + 1,
+                offset: groupListAPIParams.offset,
+            }))
 
             // BEGIN: GROUP PREVIEW
             const {
@@ -412,6 +425,7 @@
                 columns,
                 isGroupDrawerVisible,
                 searchText,
+                groupListAPIParams,
                 onSearch,
                 groupList,
                 pagination,

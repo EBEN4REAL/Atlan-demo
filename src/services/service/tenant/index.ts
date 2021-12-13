@@ -16,7 +16,7 @@ const UpdateTenant = (
 const UploadLogo = (body?: Ref<any>, options?: useOptions) =>
     useAPI(map.UPLOAD_LOGO, 'POST', { body }, options || {})
 
-const TestSmtpConfig = (body?: Ref<any>, options?: useOptions) =>
+const TestSmtpConfig = (body, options?: useOptions) =>
     useAPI(
         map.TEST_SMTP_CONFIG,
         'POST',

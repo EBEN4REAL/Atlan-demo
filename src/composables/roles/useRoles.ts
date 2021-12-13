@@ -7,7 +7,7 @@ const getFormattedRole = (role: any) => {
     const localRole = {
         id: role.id,
         name: role.name.substring(1), // remove $ from name
-        memberCount: parseInt(role.memberCount,10)
+        memberCount: parseInt(role.memberCount, 10)
     }
     return localRole
 }
@@ -37,8 +37,15 @@ export default function useRoles() {
 
     const { state, STATES } = swrvState(data, error, isValidating)
     const roleList = computed(() => {
+        const customSort = ['member', 'admin', 'guest']
+
+        const customSortFn = (a, b) =>
+            customSort.indexOf(a.name) < customSort.indexOf(b.name) ? -1 : 1
+
+
         if (data?.value?.records?.length) {
-            return data.value.records.map((role: any) => getFormattedRole(role))
+            const roles = data.value.records.map((role: any) => getFormattedRole(role)).sort(customSortFn)
+            return roles
         }
         return []
     })

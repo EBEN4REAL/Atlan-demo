@@ -473,8 +473,14 @@ const useGlossaryTree = ({
             if (node.key === guid || !currentPath || node.guid === guid) {
                 const updatedChildren: TreeDataItem[] = []
                 if (action === 'add') {
+                    let loadMoreNode
                     node?.children?.forEach((element) => {
-                        if (element?.typeName !== 'cta')
+                        if (element?.typeName === 'loadMore')
+                            loadMoreNode = element
+                        if (
+                            element?.typeName !== 'cta' &&
+                            element?.typeName !== 'loadMore'
+                        )
                             updatedChildren.push(element)
                     })
                     updatedChildren.push({
@@ -483,6 +489,9 @@ const useGlossaryTree = ({
                         key: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
                         isLeaf: asset.typeName === 'AtlasGlossaryTerm',
                     })
+                    if (loadMoreNode) {
+                        updatedChildren.push(loadMoreNode)
+                    }
                 }
                 if (action === 'delete') {
                     node?.children?.forEach((element) => {
@@ -495,7 +504,7 @@ const useGlossaryTree = ({
                     })
                 }
                 nodeToParentKeyMap[asset?.guid ?? asset?.value?.guid ?? ''] =
-                    node.key as string
+                    node.guid as string
 
                 return {
                     ...node,
@@ -605,8 +614,6 @@ const useGlossaryTree = ({
 
     const updateNode = (asset) => {
         const currentParents = nodeToParentKeyMap[asset?.guid]
-        console.log(asset)
-        console.log(currentParents)
         if (currentParents) {
             if (
                 currentParents === 'root' ||

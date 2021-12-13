@@ -56,7 +56,6 @@
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     import Panel from './panel.vue'
 
@@ -139,7 +138,6 @@
             const forceRender = () => {
                 componentState.value += 1
             }
-            const { getList: cmList } = useCustomMetadataFacet()
 
             const dynamicList = computed(() => {
                 const arr = filterList.value?.filter((el) => {

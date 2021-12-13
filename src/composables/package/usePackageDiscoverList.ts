@@ -18,7 +18,7 @@ interface DiscoverListParams {
     relationAttributes?: Ref<string[]>
 }
 
-export function usePackageDiscoverList({
+export default function usePackageDiscoverList({
     isCache,
     dependentKey,
     queryText,

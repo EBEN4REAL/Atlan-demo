@@ -277,6 +277,7 @@
 <style lang="less" scoped>
     .card-policy{
         margin: 1px;
+        margin-right: 2px;
     }
     .dot{
         height: 4px;

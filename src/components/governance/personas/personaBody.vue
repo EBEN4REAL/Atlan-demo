@@ -52,7 +52,7 @@
             </MinimalTab>
         </div>
 
-        <div class="overflow-y-auto" :class=" activeTabKey === 'policies' ? 'bg-white' : 'px-5'">
+        <div class="overflow-y-auto content-wrapper" :class=" activeTabKey === 'policies' ? 'bg-white' : 'px-5'">
             <div>
                 {{ selectedPersonaDirty?.datapolicies?.length }}
             </div>
@@ -420,5 +420,10 @@
             }
     
         }
+    }
+</style>
+<style scoped lang="less">
+    .content-wrapper{
+        height: inherit;
     }
 </style>

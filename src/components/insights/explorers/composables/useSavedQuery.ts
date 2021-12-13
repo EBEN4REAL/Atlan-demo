@@ -836,7 +836,7 @@ export function useSavedQuery(
                     activeInlineTabCopy.parentGuid = parentGuid
                     activeInlineTabCopy.parentQualifiedName =
                         parentQualifiedName
-                    activeInlineTabCopy.collectionQulaifiedName = collectionQualifiedName
+                    activeInlineTabCopy.collectionQualifiedName = collectionQualifiedName
 
                     const {
                         data: data2,

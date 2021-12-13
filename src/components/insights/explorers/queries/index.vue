@@ -199,6 +199,7 @@
         <CreateCollectionModal
             v-if="showCollectionModal"
             v-model:showCollectionModal="showCollectionModal"
+            :is-create="true"
         />
         <SaveQueryModal
             v-if="showSaveQueryModal"

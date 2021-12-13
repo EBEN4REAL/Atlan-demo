@@ -15,7 +15,16 @@
                             {{ t?.data?.label }}
                         </div>
                         <div
-                            class="px-1 py-0.5 ml-2 text-xs font-bold rounded flex items-center"
+                            class="
+                                px-1
+                                py-0.5
+                                ml-2
+                                text-xs
+                                font-bold
+                                rounded
+                                flex
+                                items-center
+                            "
                             v-if="t?.data?.key === 'policies'"
                             :class="
                                 activeTabKey === t?.data?.key

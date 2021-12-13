@@ -23,37 +23,50 @@ export function usePackageBody(
     base.from(offset || 0)
     base.size(limit || 0)
 
+    try {
+        const state = ref('ACTIVE')
+        // console.log(facets)
+        Object.keys(facets ?? {}).forEach((mkey) => {
+            const filterObject = facets[mkey]
+            switch (mkey) {
+                case 'name': {
+                    if (filterObject) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'term',
+                                    'metadata.name.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
+                case 'verified': {
+                    if (filterObject) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'term',
+                                    'metadata.labels.orchestration.atlan.com/verified.keyword',
+                                    true
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
     // Object.keys(facets ?? {}).forEach((mkey) => {
 
     // Only showing ACTIVE assets for a connection
-
-    const state = ref('ACTIVE')
-    // console.log(facets)
-    Object.keys(facets ?? {}).forEach((mkey) => {
-        const filterObject = facets[mkey]
-        switch (mkey) {
-            case 'name': {
-                if (filterObject) {
-                    base.query('nested', 'path', 'metadata', (q) =>
-                        q.query('term', 'metadata.name.keyword', filterObject)
-                    )
-                }
-                break
-            }
-            case 'verified': {
-                if (filterObject) {
-                    base.query('nested', 'path', 'metadata', (q) =>
-                        q.query(
-                            'term',
-                            'metadata.labels.com.atlan.orchestration/verified.keyword',
-                            true
-                        )
-                    )
-                }
-                break
-            }
-        }
-    })
 
     // //filters
     // Object.keys(facets ?? {}).forEach((mkey) => {

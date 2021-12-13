@@ -38,7 +38,7 @@ export function useConfigMapList({
                     metadata: {
                         $elemMatch: {
                             labels: {
-                                'com.atlan.orchestration/verified': 'true',
+                                'orchestration.atlan.com/verified': 'true',
                             },
                         },
                     },
@@ -53,7 +53,7 @@ export function useConfigMapList({
                         metadata: {
                             $elemMatch: {
                                 labels: {
-                                    'com.atlan.orchestration/verified': 'true',
+                                    'orchestration.atlan.com/verified': 'true',
                                 },
                             },
                         },

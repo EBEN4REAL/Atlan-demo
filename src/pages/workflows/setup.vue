@@ -7,6 +7,8 @@
                 <PackageDiscoveryList
                     :style="displayStyle"
                     @select="handleSelect"
+                    @setup="handleSetup"
+                    @sandbox="handleSandbox"
                 ></PackageDiscoveryList>
             </keep-alive>
         </div>
@@ -14,11 +16,7 @@
         <div
             class="relative hidden h-full bg-white border-l border-gray-200 asset-preview-container md:block"
         >
-            <PackagePreview
-                :selectedPackage="selectedPackage"
-                @setup="handleSetup"
-                @sandbox="handleSandbox"
-            ></PackagePreview>
+            <PackagePreview :selectedPackage="selectedPackage"></PackagePreview>
         </div>
     </div>
 </template>
@@ -51,7 +49,7 @@
                 const url = selectedPackage.value.metadata.name
 
                 router.push({
-                    path: `/packages/${url}`,
+                    path: `/workflows/setup/${url}`,
                     query: {},
                 })
             }
@@ -64,7 +62,7 @@
                 selectedPackage.value = item
                 const url = selectedPackage.value.metadata.name
                 router.push({
-                    path: `/packages/${url}`,
+                    path: `/workflows/setup/${url}`,
                     query: { sandbox: 'true' },
                 })
             }

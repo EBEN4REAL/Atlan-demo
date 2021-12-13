@@ -1,30 +1,35 @@
 <template>
     <div
-        class="flex flex-col py-4 mb-2 text-gray-500 border-b border-gray-300 rounded group hover:shadow"
+        class="
+            flex flex-col
+            py-2
+            text-gray-500
+            border-gray-300
+            cursor-pointer
+            group
+            hover:bg-primary-light
+            card-policy
+        "
+        :class="
+            selectedPolicy.id === policy.id
+                ? 'outline-primary bg-primary-light'
+                : !isLastElement
+                ? 'border-b'
+                : ''
+        "
+        @click="handleClickPlicyCard"
     >
-        <div class="flex items-center mb-4 gap-x-3">
+        <div class="flex items-center gap-x-3">
             <span
                 class="text-base font-bold text-gray"
                 data-test-id="policy-name"
                 >{{ policy.name }}</span
             >
-            <span
-                v-if="type === 'data'"
-                class="data-policy-pill"
-                data-test-id="policy-type"
-                >Data Policy</span
-            >
-            <span
-                v-else-if="type === 'meta'"
-                class="metadata-policy-pill"
-                data-test-id="policy-type"
-                >Metadata Policy</span
-            >
-            <span v-if="!policy.allow" class="denied-policy-pill">
-                {{ type === 'meta' ? 'Denied Permissions' : 'Denied Query' }}
-            </span>
-
-            <div class="flex items-center ml-auto border rounded bg-gray-light">
+            <AtlanIcon
+                icon="ShieldBlank"
+                :class="policy.allow ? 'allow-icon' : ''"
+            />
+            <!-- <div class="flex items-center border rounded bg-gray-light">
                 <img
                     :src="getImage(connectionQfName?.split('/')[1])"
                     class="w-auto h-6 p-1 bg-white rounded-tl rounded-bl"
@@ -32,15 +37,28 @@
                 <span class="px-1 text-sm text-gray-700">
                     {{ connectionQfName?.split('/')?.slice(-1)[0] }}
                 </span>
-            </div>
+            </div> -->
+            <span v-if="!policy.allow" class="denied-policy-pill">
+                {{ type === 'meta' ? 'Denied Permissions' : 'Denied Query' }}
+            </span>
+            <!-- <span
+                v-if="type === 'data'"
+                class="ml-auto data-policy-pill"
+                data-test-id="policy-type"
+                >Data Policy</span
+            > -->
+            <span
+                class="px-1 ml-auto text-xs bg-gray-200"
+                data-test-id="policy-type"
+                >{{ type === 'meta' ? 'Metadata Policy' : 'Data Policy' }}</span
+            >
         </div>
-        <div class="flex items-center mb-3 gap-x-6">
-            <span class="flex-none text-sm" v-if="policy.assets.length > 0">
+        <!-- <span class="flex-none text-sm" v-if="policy.assets.length > 0">
                 <b class="text-gray-700">{{ policy.assets.length }}</b> assets
                 selected
-            </span>
-            <span class="flex-none text-sm" v-else> No assets selected </span>
-            <div
+            </span> -->
+        <!-- <span class="flex-none text-sm" v-else> No assets selected </span> -->
+        <!-- <div
                 v-if="type === 'meta'"
                 class="flex items-center overflow-hidden gap-x-1"
             >
@@ -76,8 +94,8 @@
                         <span>{{ actions[2].action.join(', ') }}</span>
                     </div>
                 </div>
-            </div>
-            <div
+            </div> -->
+        <!-- <div
                 v-if="type === 'data' && policy.maskType !== 'null'"
                 class="flex items-center overflow-hidden gap-x-1"
             >
@@ -88,13 +106,28 @@
                 <div class="flex items-center mt-0.5">
                     <span>{{ policy.maskType }}</span>
                 </div>
-            </div>
-        </div>
+            </div> -->
         <div class="flex flex-wrap items-center gap-y-1.5">
-            <div class="flex items-center gap-y-1.5 gap-x-2 flex-1 flex-wrap">
-                <template v-for="item in splitAssets.a" :key="item.label">
+            <div class="flex items-center gap-y-1.5 gap-x-1 flex-1 flex-wrap">
+                <div class="flex items-center">
+                    <img
+                        :src="getImage(connectionQfName?.split('/')[1])"
+                        class="w-auto h-6 p-1 rounded-tl rounded-bl"
+                    />
+                    <span class="px-1 text-sm text-gray-700">
+                        {{ connectionQfName?.split('/')?.slice(-1)[0] }}
+                    </span>
+                </div>
+                <template v-if="policy.assets.length > 0">
+                    <div class="dot" />
+                    <AtlanIcon icon="Compass" />
+                    <span class="flex-none text-sm">
+                        {{ policy.assets.length }} assets
+                    </span>
+                </template>
+                <!-- <template v-for="item in splitAssets.a" :key="item.label">
                     <div
-                        class="flex items-center justify-center px-3 text-sm text-gray-700 border border-gray-300 rounded-full"
+                        class="flex items-center justify-center px-3 text-sm text-gray-700"
                         style="padding-top: 4px; padding-bottom: 4px"
                     >
                         {{ item.label }}
@@ -108,7 +141,7 @@
                     >
                         {{ item.label }}
                     </div>
-                </template>
+                </template> -->
                 <div
                     class="font-bold text-gray-500 cursor-pointer"
                     @click="
@@ -124,9 +157,18 @@
                 </div>
             </div>
             <div
-                class="flex items-stretch border border-gray-300 rounded opacity-0 group-hover:opacity-100 text-gray hover:text-primary"
+                class="
+                    flex
+                    items-stretch
+                    border border-gray-300
+                    rounded
+                    opacity-0
+                    group-hover:opacity-100
+                    text-gray
+                    hover:text-primary
+                "
             >
-                <AtlanBtn
+                <!-- <AtlanBtn
                     class="flex-none px-2 border-l border-gray-300 border-none hover:text-primary"
                     size="sm"
                     color="secondary"
@@ -139,7 +181,7 @@
                 <div
                     class="h-full bg-gray-300"
                     style="width: 1px; height: 30px !important"
-                ></div>
+                ></div> -->
 
                 <a-popconfirm
                     placement="leftTop"
@@ -151,7 +193,12 @@
                     @confirm="removePolicy"
                 >
                     <AtlanBtn
-                        class="flex-none px-2 border-r border-gray-300 border-none hover:text-red-500"
+                        class="
+                            flex-none
+                            px-2
+                            border-r border-gray-300 border-none
+                            hover:text-red-500
+                        "
                         size="sm"
                         color="secondary"
                         data-test-id="policy-delete"
@@ -193,10 +240,18 @@
                 type: String as PropType<'meta' | 'data'>,
                 required: true,
             },
+            selectedPolicy: {
+                type: Object as PropType<DataPolicies & MetadataPolicies>,
+                required: true,
+            },
+            isLastElement: {
+                type: Boolean,
+                required: false,
+            },
         },
-        emits: ['edit', 'cancel', 'delete'],
+        emits: ['edit', 'cancel', 'delete', 'clickCard'],
         setup(props, { emit }) {
-            const { policy, type } = toRefs(props)
+            const { policy, type, isLastElement } = toRefs(props)
             const { findActions } = useScopeService()
             const { getAssetIcon } = useUtils()
             const showAll = ref(false)
@@ -236,7 +291,9 @@
             const getPopoverContent = (policy: any) => {
                 return `Are you sure you want to delete ${policy?.name}?`
             }
-
+            const handleClickPlicyCard = () => {
+                emit('clickCard', policy.value)
+            }
             return {
                 getPopoverContent,
                 removePolicy,
@@ -247,12 +304,30 @@
                 assetsIcons,
                 showAll,
                 splitAssets,
+                handleClickPlicyCard,
             }
         },
     })
 </script>
 
+<style lang="less">
+    .allow-icon {
+        path {
+            fill: #00a680 !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
+    .card-policy {
+        margin: 1px;
+        margin-right: 2px;
+    }
+    .dot {
+        height: 4px;
+        width: 4px;
+        background-color: #e6e6eb;
+        border-radius: 50%;
+    }
     .data-policy-pill {
         @apply rounded-full text-xs px-2 py-1;
         background-color: #eeffef;

@@ -84,11 +84,11 @@
                     />
                 </div>
             </div>
-            <div class="px-4 py-2 mt-4 mb-5 bg-gray-100 rounded-lg">
-                <!-- Shared/Private selector -->
-
-                <!-- Shared access control -->
-                <div class="flex flex-col" v-if="isShareable">
+            <div
+                class="px-4 py-2 mt-4 bg-gray-100 rounded-lg"
+                v-if="isShareable"
+            >
+                <div class="flex flex-col">
                     <div>
                         <span class="font-bold">Viewers</span>
                         <UserSelectWidget
@@ -108,7 +108,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center w-full">
+            <div class="flex items-center w-full mt-5">
                 <div
                     class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer"
                 >

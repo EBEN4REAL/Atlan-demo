@@ -701,7 +701,6 @@ const useGlossaryTree = ({
         const localOffset = searchParams.from ?? 0
         const approxCount = response.approximateCount ?? 0
 
-        console.log(approxCount, localLimit)
         const numberOfLoadMore =
             approxCount - (localLimit + localOffset) < localLimit
                 ? approxCount - (localLimit + localOffset)
@@ -891,7 +890,6 @@ const useGlossaryTree = ({
             })
         }
         if (data.value) {
-            console.log('noko bruh')
             checkAndAddLoadMoreNode({
                 response: data.value,
                 parentGuid,

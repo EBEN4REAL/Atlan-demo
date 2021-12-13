@@ -64,35 +64,45 @@ const useQueryTree = ({
     savedQueryType,
     queryFolderNamespace,
     permissions,
-    collection
+    collection,
 }: useSavedQueriesTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, string> = {}
     const nodeToParentNameMap: Record<string, string> = {}
+    const isLoading = ref(false)
 
-    const treeData = ref<CustomTreeDataItem[]>([])
+    const treeData = ref<CustomTreeDataItem[]>(undefined)
 
     const isInitingTree = ref(false)
+    const errorReq = ref(undefined)
 
     const loadedKeys = ref<string[]>([])
     const selectedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
     let currentSelectedNode = ref(queryFolderNamespace.value)
-    const queryCollectionsLoading: Ref<boolean> = inject('queryCollectionsLoading')
+    const queryCollectionsLoading: Ref<boolean> = inject(
+        'queryCollectionsLoading'
+    )
 
     const selectedCacheKey = `${cacheKey ?? 'queryTree'}_selected`
     const expandedCacheKey = `${cacheKey ?? 'queryTree'}_expanded`
     const selectedCache = store.get(selectedCacheKey)
     const expandedCache = store.get(expandedCacheKey)
 
-    const queryCollectionQualifiedName = computed(() => collection?.value?.attributes.qualifiedName)
+    const queryCollectionQualifiedName = computed(
+        () => collection?.value?.attributes.qualifiedName
+    )
     const queryCollectionGuid = computed(() => collection?.value?.guid)
 
-    const immediateParentFolderQF = ref<string>(queryCollectionQualifiedName.value)
+    const immediateParentFolderQF = ref<string>(
+        queryCollectionQualifiedName.value
+    )
     const immediateParentGuid = ref<string>(queryCollectionGuid.value)
 
     const { getQueryFolders, getQueries, getSubFolders, getFolderQueries } =
-        useLoadQueryData({ collectionQualifiedName: queryCollectionQualifiedName })
+        useLoadQueryData({
+            collectionQualifiedName: queryCollectionQualifiedName,
+        })
 
     /** *
      * @param targetGuid - guid / key of the node whose path needs to be found
@@ -129,11 +139,21 @@ const useQueryTree = ({
      * @param guid - Guid of the parent Glossary
      */
     const initTreeData = async () => {
-        console.log("useQueryTree initTreeData called", { queryCollectionQualifiedName: queryCollectionQualifiedName.value })
+        isLoading.value = true
         treeData.value = []
-
-        const queries = await getQueries()
-        const folders = await getQueryFolders()
+        let queries = []
+        let folders = []
+        try {
+            queries = await getQueries()
+            folders = await getQueryFolders()
+            console.log('hello')
+        } catch (error) {
+            const er = Object.getOwnPropertyDescriptor(error, 'message')
+            errorReq.value = er.value
+            console.log(errorReq.value, 'not allowrf')
+            isInitingTree.value = false
+            isLoading.value = false
+        }
 
         console.log('permission_tree: ', permissions)
 
@@ -171,6 +191,7 @@ const useQueryTree = ({
 
         console.log('tree data init:', treeData.value)
         isInitingTree.value = false
+        isLoading.value = false
     }
 
     /**
@@ -300,28 +321,24 @@ const useQueryTree = ({
 
         // selectedNodeForFolder.value = event.node.dataRef;
 
-
         // console.log('event.node.dataRef: ', event.node.dataRef)
         // console.log('event.selected: ', selected
         // )
         // console.log('opened query: ', event.node)
-        const parentTitle = event.node.dataRef?.parentTitle;
-        currentSelectedNode.value = event.node;
-
+        const parentTitle = event.node.dataRef?.parentTitle
+        currentSelectedNode.value = event.node
 
         if (item.typeName === 'Query') {
-            immediateParentFolderQF.value =
-                item.attributes.parentQualifiedName
+            immediateParentFolderQF.value = item.attributes.parentQualifiedName
             immediateParentGuid.value = nodeToParentKeyMap[item.guid]
 
-            openSavedQueryInNewTab({...item, parentTitle})
-            
+            openSavedQueryInNewTab({ ...item, parentTitle })
+
             selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {
                 pushGuidToURL(item.guid)
             }
         } else if (item.typeName === 'QueryFolder') {
-            
             immediateParentFolderQF.value = item.attributes.qualifiedName
             immediateParentGuid.value = item.guid
 
@@ -373,7 +390,7 @@ const useQueryTree = ({
         // if the root level of the tree needs a refetch
         console.log('refetch: ', {
             guid,
-            refetchEntityType
+            refetchEntityType,
         })
         if (guid === collection?.value?.guid) {
             let folderResponse: IndexSearchResponse<Folder> | null = null
@@ -390,7 +407,7 @@ const useQueryTree = ({
             console.log('parent update final api: ', {
                 guid,
                 folderResponse,
-                queryResponse
+                queryResponse,
             })
 
             const updatedFolders = checkAndAppendNewNodes(
@@ -404,8 +421,6 @@ const useQueryTree = ({
                 true
             )
 
-            
-
             const updatedTreeData: CustomTreeDataItem[] = [
                 ...updatedFolders,
                 ...updatedQueries,
@@ -416,7 +431,7 @@ const useQueryTree = ({
             })
 
             treeData.value = updatedTreeData
-            console.log('parent update final: ', {guid, updatedTreeData})
+            console.log('parent update final: ', { guid, updatedTreeData })
         } else {
             let parentStack: string[]
 
@@ -446,7 +461,7 @@ const useQueryTree = ({
                     console.log('parent update final api: ', {
                         guid,
                         folderResponse,
-                        queryResponse
+                        queryResponse,
                     })
 
                     //correct till here
@@ -515,7 +530,7 @@ const useQueryTree = ({
                     updatedTreeData.push(node)
                 }
             }
-            console.log('parent update final: ', {guid, updatedTreeData})
+            console.log('parent update final: ', { guid, updatedTreeData })
 
             treeData.value = [...updatedTreeData]
         }
@@ -674,40 +689,36 @@ const useQueryTree = ({
     watch(collection, (newColletion) => {
         loadedKeys.value = []
         expandedKeys.value = []
-        isInitingTree.value = true
-        const newCollectionQualifiedName = newColletion?.attributes?.qualifiedName
+        const newCollectionQualifiedName =
+            newColletion?.attributes?.qualifiedName
         if (newCollectionQualifiedName) {
             immediateParentFolderQF.value = newCollectionQualifiedName
             immediateParentGuid.value = collection.value?.guid
             // currentSelectedNode.value = collection
         }
 
-        console.log('useQueryTree change queryCollectionQualifiedName: ', queryCollectionQualifiedName)
+        console.log(
+            'useQueryTree change queryCollectionQualifiedName: ',
+            queryCollectionQualifiedName
+        )
         initTreeData()
     })
     onMounted(() => {
-        console.log("useQueryTree mounted", {queryCollectionsLoading: queryCollectionsLoading.value})
+        console.log('useQueryTree mounted', {
+            queryCollectionsLoading: queryCollectionsLoading.value,
+        })
         if (!queryCollectionsLoading.value) {
-            isInitingTree.value = true
             initTreeData()
         }
         // if (queryFolderNamespace.value?.guid) initTreeData()
     })
-    watch(queryFolderNamespace, (newQueryFolderNamespace) => {
-        isInitingTree.value = true
-        if (newQueryFolderNamespace?.guid) {
-            immediateParentFolderQF.value =
-                newQueryFolderNamespace.attributes?.qualifiedName
-            immediateParentGuid.value = newQueryFolderNamespace.guid
-            currentSelectedNode.value = newQueryFolderNamespace
-            initTreeData()
-        }
-    })
 
     return {
+        errorReq,
         treeData,
         loadedKeys,
         isInitingTree,
+        isLoading,
         selectedKeys,
         expandedKeys,
         selectedCache,
@@ -722,7 +733,8 @@ const useQueryTree = ({
         expandNode,
         selectNode,
         refetchNode,
-        currentSelectedNode
+        initTreeData,
+        currentSelectedNode,
         // addInputBox,
         // removeInputBox
     }

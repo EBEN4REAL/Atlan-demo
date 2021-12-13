@@ -156,6 +156,7 @@ const useQueryCollection = () => {
     }
 
     return {
+        refetchQueryCollection: refreshBody,
         getQueryCollections,
         setCollectionsDataInInlineTab,
         createCollection,

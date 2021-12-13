@@ -12,8 +12,9 @@
             </div>
         </div>
         <p
-            class="overflow-hidden text-sm overflow-ellipsis"
+            :key="message"
             v-linkified="{ className: 'text-primary', target: '_blank' }"
+            class="overflow-hidden text-sm overflow-ellipsis"
         >
             {{ message }}
         </p>
@@ -87,10 +88,9 @@
             })
 
             const statusClass = computed(() => {
-                console.log(status.value)
                 switch (status.value) {
                     case 'VERIFIED':
-                        return 'bg-success-muted'
+                        return 'bg-verified'
                     case 'DRAFT':
                         return 'bg-warning-light'
                     case 'DEPRECATED':
@@ -105,11 +105,7 @@
             }
 
             return {
-                username,
-                status,
-                allowEdit,
-                timestamp,
-                message,
+                handleRemove,
                 capitalizeFirstLetter,
                 icon,
                 statusClass,
@@ -118,4 +114,8 @@
     }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+    .bg-verified {
+        background-color: #eeffef;
+    }
+</style>

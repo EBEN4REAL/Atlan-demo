@@ -153,7 +153,7 @@
                         return
                     }
 
-                    if (matches?.length >= 0) {
+                    if (matches && matches?.length >= 0) {
                         createDebounce()(() => {
                             const resultsLeft = matches.filter(
                                 (match) =>
@@ -312,7 +312,7 @@
                         activeInlineTab.value.playground.editor.text
                     ) ?? []
 
-                if (matches.length > 0)
+                if (matches && matches?.length > 0)
                     setMoustacheTemplateColor(editor, monaco, matches)
                 /* ----------------------------------- */
                 console.log(lastLineLength)

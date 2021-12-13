@@ -105,7 +105,7 @@ export default function useProject() {
         /* Checking If any text is selected */
 
         let semiColonMatchs = toRaw(editorInstance.value)?.getModel()?.findMatches(';');
-        if(semiColonMatchs.length===0) {
+        if(semiColonMatchs?.length===0) {
             queryText = activeInlineTab.value.playground.editor.text
 
         } else if (selectedText && selectedText !== '') {

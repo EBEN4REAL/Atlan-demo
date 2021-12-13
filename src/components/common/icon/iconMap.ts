@@ -261,6 +261,7 @@ import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
 import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
 import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
+import GlossaryGettingStarted from '~/assets/images/icons/glossary-getting-started.svg'
 import BulkUpload from '~/assets/images/icons/bulk-upload.svg'
 import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
@@ -582,6 +583,7 @@ export default {
     FolderNav24,
     FolderNav24Active,
     BulkUpload,
+    GlossaryGettingStarted,
     Verified,
     ShieldBlank,
     Compass,

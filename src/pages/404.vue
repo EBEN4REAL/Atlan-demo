@@ -6,6 +6,7 @@
             <!--p class="mt-2 text-gray-600">Please check the URL in the adress bar and try again.</p-->
         </div>
 </div>
+{{list}}
     </div>
 </template>
 
@@ -13,7 +14,7 @@
 
     import { defineComponent, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
-      import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
     export default defineComponent({
 
         setup(props, { emit }) {
@@ -24,14 +25,18 @@
                 verified: true,
             })
             const dependentKey = ref('DEFAULT_PACKAGES')
-                    const { isLoading, list, error } = usePackageDiscoverList({
+                const { isLoading, list, error } = usePackageDiscoverList({
                 isCache: true,
                 dependentKey,
                 facets,
                 limit,
                 offset,
             })
+                    return {
+            list
         }
+        }
+
 
 
     });

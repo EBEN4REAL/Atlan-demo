@@ -1,7 +1,7 @@
 <template>
     <div class="w-full" data-test-id="terms-facet">
         <div class="w-full mt-1 overflow-y-auto" :style="{ height: height }">
-            <GlossaryTree v-model:checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
+            <GlossaryTree v-model:checkedGuids="checkedKeys" :checkable="true" @check="onCheck" />
         </div>
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
@@ -57,6 +57,7 @@
             const { showNone } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid))
 
             const onCheck = (checkedNodes) => {
                 localValue.value.terms = checkedNodes.map((term) => ({
@@ -64,13 +65,13 @@
                     qualifiedName: term.attributes.qualifiedName
                 }))
             }
+
             const checkNoTerms = (t) => {
                 if(!localValue.value?.terms?.length) {
                     localValue.value.terms = []
                 }
                 localValue.value.empty = t.target.checked
             }
-            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid))
 
             watch(
                 () => localValue.value.terms,

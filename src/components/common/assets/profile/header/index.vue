@@ -42,7 +42,16 @@
                 </div>
                 <div class="flex items-center mt-1 gap-x-3">
                     <div class="flex items-center">
-                        <a-tooltip placement="left">
+                        <a-tooltip
+                            v-if="
+                                ![
+                                    'AtlasGlossary',
+                                    'AtlasGlossaryTerm',
+                                    'AtlasGlossaryCategory',
+                                ].includes(item?.typeName)
+                            "
+                            placement="left"
+                        >
                             <template #title>
                                 <span>{{
                                     `${connectorName(item)}/${connectionName(
@@ -57,9 +66,22 @@
                         </a-tooltip>
 
                         <div
+                            v-if="
+                                ![
+                                    'AtlasGlossary',
+                                    'AtlasGlossaryTerm',
+                                    'AtlasGlossaryCategory',
+                                ].includes(item?.typeName)
+                            "
                             class="text-sm tracking-wider text-gray-500 uppercase"
                         >
                             {{ item.typeName }}
+                        </div>
+                        <div
+                            v-else
+                            class="text-sm tracking-wider text-gray-500 uppercase"
+                        >
+                            {{ assetTypeLabel[item?.typeName] }}
                         </div>
                     </div>
 
@@ -258,6 +280,7 @@
     import AssetMenu from './assetMenu.vue'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel.ts'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -359,6 +382,7 @@
                 back,
                 goToInsights,
                 isScrubbed,
+                assetTypeLabel,
             }
         },
     })

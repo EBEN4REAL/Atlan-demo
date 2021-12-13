@@ -69,7 +69,7 @@
     import { defineComponent, ref, computed } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
-    // import PackageList from '@/packages/list/index.vue'
+    import PackageList from '@/packages/list/index.vue'
     import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
@@ -78,7 +78,7 @@
         name: 'PackageDiscovery',
         components: {
             PackageFilters,
-            // PackageList,
+            PackageList,
             EmptyView,
             // PackageFilters,
             ErrorView,

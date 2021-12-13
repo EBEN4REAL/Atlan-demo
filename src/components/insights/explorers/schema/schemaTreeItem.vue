@@ -1235,8 +1235,15 @@
                                 {
                                     order: 1,
                                     id: 'columns',
-                                    hide: false,
-                                    columns: [],
+                                    hide: true,
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                            columnsData: [],
+                                        },
+                                    ],
                                 },
                             ],
                         },

@@ -1,4 +1,22 @@
 export const operators = {
+    array: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        },
+        {
+            id: 'isNull',
+            label: 'Is Null',
+        },
+        {
+            id: 'isNotNull',
+            label: 'Is Not Null',
+        },
+    ],
     string: [
         {
             id: 'equals',

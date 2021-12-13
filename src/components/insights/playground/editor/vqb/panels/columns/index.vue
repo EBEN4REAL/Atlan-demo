@@ -27,16 +27,7 @@
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
-                            class="
-                                flex
-                                items-center
-                                justify-center
-                                mr-2
-                                bg-gray-100
-                                border border-gray-300
-                                rounded-full
-                                p-1.5
-                            "
+                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
                             :class="
                                 !expand
                                     ? [
@@ -48,12 +39,26 @@
                             "
                             style="z-index: 2"
                         >
-                            <AtlanIcon icon="Columns" class="w-4 h-4" />
+                            <AtlanIcon
+                                icon="Columns"
+                                class="w-4 h-4"
+                                :class="[
+                                    expand ? 'text-primary' : 'text-gray-500',
+                                ]"
+                            />
                         </div>
                         <div class="">
-                            <p class="text-sm font-bold text-gray">Columns</p>
+                            <p class="text-sm font-bold capitalize text-gray">
+                                {{ panel.id }}
+                            </p>
                             <p class="text-xs text-gray-500" v-if="!expand">
-                                from Instacart_beverages_master
+                                {{
+                                    getTableNamesStringFromQualfieidNames(
+                                        panel.subpanels.map(
+                                            (e) => e.tableQualfiedName
+                                        )
+                                    )
+                                }}
                             </p>
                         </div>
                     </div>
@@ -65,21 +70,7 @@
                         ]"
                     >
                         <div
-                            class="
-                                px-3
-                                py-1.5
-                                border-gray-300
-                                flex
-                                items-center
-                                justify-center
-                                border-r
-                            "
-                            @click.stop="() => {}"
-                        >
-                            <a-checkbox v-model:checked="checkbox"></a-checkbox>
-                        </div>
-                        <div
-                            class="border-r border-gray-300"
+                            class="border-gray-300"
                             v-if="
                                 activeInlineTab.playground.vqb.panels.length -
                                     1 !==
@@ -88,33 +79,14 @@
                         >
                             <!-- Show dropdown except the last panel -->
                             <Actions
-                                @add="(type) => handleAdd(index, type)"
+                                @add="
+                                    (type, panel) =>
+                                        handleAddPanel(index, type, panel)
+                                "
                                 v-model:submenuHovered="submenuHovered"
                                 v-model:containerHovered="containerHovered"
                             />
                             <!-- ------------------------------ -->
-                        </div>
-                        <div class="border-r border-gray-300">
-                            <AtlanBtn
-                                @click.stop="() => handleDelete(index)"
-                                :disabled="Number(index) === 0"
-                                class="
-                                    flex-none
-                                    border-none
-                                    px-3.5
-                                    py-1
-                                    text-gray
-                                    hover:text-red-500
-                                "
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                            >
-                                <AtlanIcon
-                                    icon="Delete"
-                                    class="-mx-1"
-                                ></AtlanIcon>
-                            </AtlanBtn>
                         </div>
                     </div>
                 </div>
@@ -132,9 +104,15 @@
                 ></div>
             </div>
             <!-- Show on expand -->
-            <ColumnSubPanel :expand="expand" />
+            <ColumnSubPanel
+                v-model:subpanels="
+                    activeInlineTab.playground.vqb.panels[index].subpanels
+                "
+                :expand="expand"
+                v-if="expand"
+            />
             <FooterActions
-                @add="(type) => handleAdd(index, type)"
+                @add="(type, panel) => handleAddPanel(index, type, panel)"
                 v-if="
                     expand &&
                     activeInlineTab.playground.vqb.panels.length - 1 ===
@@ -175,6 +153,7 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import ColumnSubPanel from './subpanel/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Columns',
@@ -195,10 +174,10 @@
             },
         },
         setup(props, { emit }) {
+            const { getTableNamesStringFromQualfieidNames } = useUtils()
             const { index, panel } = toRefs(props)
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
-            const expand = ref(false)
             const actionPanel = ref(false)
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -209,8 +188,18 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const getInitialExpandValue = () => {
+                if (
+                    Number(index.value) == 0 &&
+                    activeInlineTab.value.playground.vqb?.panels?.length == 1
+                )
+                    return true
+                return false
+            }
+            const expand = ref(getInitialExpandValue())
+
             const checkbox = ref(true)
-            const { addPanelsInVQB, deletePanelsInVQB } = useVQB()
+            const { deletePanelsInVQB, handleAdd } = useVQB()
 
             const findTimeLineHeight = (index) => {
                 if (
@@ -228,19 +217,17 @@
                     return 'height:55%;bottom:50%'
                 else return 'height:104%;;bottom:0'
             }
-            const handleAdd = (index, type) => {
-                const panelCopy = Object.assign({}, { ...toRaw(panel.value) })
-                panelCopy.id = type
-                panelCopy.order =
-                    Number(activeInlineTab.value.playground.vqb.panels.length) +
-                    1
-                addPanelsInVQB(
-                    Number(index),
-                    panelCopy,
+            const handleAddPanel = (index, type, panel) => {
+                handleAdd(
+                    index,
+                    type,
+                    panel,
+                    activeInlineTab,
                     activeInlineTabKey,
                     inlineTabs
                 )
             }
+
             const handleDelete = (index) => {
                 deletePanelsInVQB(Number(index), activeInlineTabKey, inlineTabs)
             }
@@ -258,8 +245,13 @@
             const handleMouseOver = () => {
                 if (!containerHovered.value) containerHovered.value = true
             }
+            console.log(
+                activeInlineTab.value.playground.vqb.panels[index.value],
+                index.value
+            )
 
             return {
+                getTableNamesStringFromQualfieidNames,
                 submenuHovered,
                 handleMouseOver,
                 handleMouseOut,
@@ -273,7 +265,7 @@
                 checkbox,
                 panel,
                 handleDelete,
-                handleAdd,
+                handleAddPanel,
                 findTimeLineHeight,
             }
         },

@@ -20,12 +20,16 @@
                     >
                         Cancel
                     </div>
-                    <div
-                        class="text-sm font-bold cursor-pointer text-primary"
+                    <AtlanButton
+                        :disabled="!isEdit"
+                        size="sm"
+                        color="minimal"
+                        paddi="compact"
+                        class="w-5 h-5 pl-5 pr-0 mr-2 text-sm font-bold cursor-pointer text-primary"
                         @click="handleUpdate"
                     >
                         Update
-                    </div>
+                    </AtlanButton>
                 </div>
             </div>
         </div>
@@ -82,11 +86,14 @@
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import AtlanButton from '@/UI/button.vue'
+
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
             EditState: defineAsyncComponent(() => import('./editState.vue')),
+            AtlanButton,
         },
         props: {
             selectedAsset: {
@@ -155,8 +162,9 @@
                                     applicableList.value[attrIndex]?.options
 
                                 if (attrIndex > -1) {
-                                    if (options?.multiValueSelect === 'true')
-                                        value = JSON.parse(value)
+                                    if (options?.multiValueSelect === 'true') {
+                                        // value = JSON.parse(value)
+                                    }
 
                                     applicableList.value[attrIndex].value =
                                         value
@@ -262,7 +270,9 @@
 
                 readOnly.value = true
             }
+            const isEdit = ref(false)
             const handleChange = (index, value) => {
+                isEdit.value = true
                 applicableList.value[index].value = value
             }
 
@@ -290,6 +300,7 @@
             setAttributesList()
 
             return {
+                isEdit,
                 getDatatypeOfAttribute,
                 isLink,
                 formatDisplayValue,

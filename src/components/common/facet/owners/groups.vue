@@ -17,8 +17,7 @@
                             (checked) =>
                                 handleChange(checked, item[selectGroupKey])
                         "
-                        :class="$style.atlanReverse"
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
+                        class="atlanReverse inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
                     >
                         <div class="flex items-center">
                             <div class="flex flex-col">
@@ -123,15 +122,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

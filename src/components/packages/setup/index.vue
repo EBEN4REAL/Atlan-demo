@@ -29,8 +29,7 @@
             </div>
 
             <div
-                class="flex px-6 py-3 border-t"
-                :class="currentStep !== 0 ? 'justify-between' : 'justify-end'"
+                class="flex justify-between px-6 py-3 border-t"
                 v-if="currentStep < steps.length"
             >
                 <a-button
@@ -41,6 +40,10 @@
                     <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
                     >Back</a-button
                 >
+
+                <a-button v-if="currentStep == 0" @click="handleExit">
+                    <AtlanIcon icon="ChevronLeft"></AtlanIcon> All Packages
+                </a-button>
                 <a-button
                     @click="handleNext"
                     class="text-primary"
@@ -116,21 +119,21 @@
                     <a-button v-if="status === 'success'">
                         <router-link to="/assets"> Back to Assets</router-link>
                     </a-button>
-                </template>
 
-                <div
-                    class="flex flex-col items-center justify-center gap-y-2"
-                    v-if="errorMesssage"
-                >
-                    <span>{{ errorMesssage }}</span>
-                    <a-button
-                        v-if="status === 'error'"
-                        @click="handleBackToSetup"
+                    <div
+                        class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
+                        v-if="errorMesssage"
                     >
-                        <AtlanIcon icon="ChevronLeft"></AtlanIcon>
-                        Back to setup
-                    </a-button>
-                </div>
+                        <span>{{ errorMesssage }}</span>
+                        <a-button
+                            v-if="status === 'error'"
+                            @click="handleBackToSetup"
+                        >
+                            <AtlanIcon icon="ChevronLeft"></AtlanIcon>
+                            Back to setup
+                        </a-button>
+                    </div>
+                </template>
             </a-result>
         </div>
     </div>
@@ -161,6 +164,7 @@
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
     import { useRunList } from '~/composables/package/useRunList'
+    import { useRouter } from 'vue-router'
 
     // Composables
 
@@ -242,7 +246,7 @@
             const { isLoading, isReady, execute, error, data, workflow } =
                 createWorkflow(body)
 
-            const dependentKey = ref('dependencies')
+            const dependentKey = ref(workflow)
             const {} = useRunList({}, dependentKey)
 
             const status = ref(null)
@@ -295,15 +299,19 @@
                 )
 
                 let connectionQualifiedName = ''
+                const credentialParam = 'credentialGuid'
                 // iterate and set the object
                 connectionBody.forEach((i) => {
+                    const temp = i.body
+                    temp.attributes.defaultCredentialGuid = `{{${credentialParam}}}`
+
                     modelValue.value[i.parameter] = i.body
-                    connectionQualifiedName = i.body.attributes.qualifiedName
-                    let connectionName = i.body.attributes.name
+                    connectionQualifiedName =
+                        i.body.attributes.qualifiedName?.replaceAll('/', '-')
                     // add qualifiedname to label
                     if (connectionQualifiedName) {
                         body.value.metadata.labels[
-                            `com.atlan.orchestration/${connectionName}`
+                            `com.atlan.orchestration/${connectionQualifiedName}`
                         ] = 'true'
                     }
                 })
@@ -315,13 +323,17 @@
                 } else {
                     workflowName = `${workflowName}-${seconds.toString()}`
                 }
-                body.value.metadata.name = workflowName.replaceAll("/", "-")
-                body.value.metadata.namespace = "default"  // FIXME: change this to tenant name
+
+                body.value.metadata.name = workflowName
+                body.value.metadata.namespace = 'default'
+                body.value.metadata.name = workflowName.replaceAll('/', '-')
+                body.value.metadata.namespace = 'default' // FIXME: change this to tenant name
 
                 const credentialBody = getCredentialBody(
                     configMap.value,
                     modelValue.value,
-                    connectionQualifiedName || workflowName
+                    connectionQualifiedName || workflowName,
+                    credentialParam
                 )
 
                 const parameters = []
@@ -329,10 +341,21 @@
                     workflowTemplate.value.spec.templates[0].inputs.parameters.forEach(
                         (p) => {
                             if (modelValue.value[p.name]) {
-                                parameters.push({
-                                    name: p.name,
-                                    value: JSON.stringify(modelValue.value[p.name])
-                                })
+                                if (
+                                    typeof modelValue.value[p.name] === 'object'
+                                ) {
+                                    parameters.push({
+                                        name: p.name,
+                                        value: JSON.stringify(
+                                            modelValue.value[p.name]
+                                        ),
+                                    })
+                                } else {
+                                    parameters.push({
+                                        name: p.name,
+                                        value: modelValue.value[p.name],
+                                    })
+                                }
                             }
                         }
                     )
@@ -340,7 +363,8 @@
                     message.error('Something went wrong. Package is not valid.')
                 }
 
-                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] = 'true'
+                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] =
+                    'true'
                 body.value.spec = {
                     templates: [
                         {
@@ -369,12 +393,15 @@
 
                 status.value = 'loading'
                 errorMesssage.value = ''
-
                 execute(true)
             }
 
             const handleBackToSetup = () => {
                 status.value = null
+            }
+            const router = useRouter()
+            const handleExit = (key) => {
+                router.replace(`/packages`)
             }
 
             return {
@@ -404,6 +431,7 @@
                 handleRetry,
                 errorMesssage,
                 handleBackToSetup,
+                handleExit,
             }
         },
     })

@@ -29,7 +29,21 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         },
         playground: {
             vqb: {
-                panels: [{ order: 1, id: 'columns', hide: false, columns: [] }],
+                panels: [
+                    {
+                        order: 1,
+                        id: 'columns',
+                        hide: true,
+                        subpanels: [
+                            {
+                                id: '1',
+                                tableQualifiedName: undefined,
+                                columns: [],
+                                columnsData: [],
+                            },
+                        ],
+                    },
+                ],
             },
             editor: {
                 text: '',

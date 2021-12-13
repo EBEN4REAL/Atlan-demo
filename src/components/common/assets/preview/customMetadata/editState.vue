@@ -10,18 +10,17 @@
                     'url',
                     'string',
                     'text',
-                ].includes(getDatatypeOfAttribute(attribute).toLowerCase()) &&
-                isMultivalued
+                ].includes(typeName.toLowerCase()) && isMultivalued
             "
             v-model="localValue"
             class="flex-grow shadow-none"
             placeholder="Press Enter to add"
-            :data-type="getDatatypeOfAttribute(attribute)"
+            :data-type="typeName"
             @change="handleChange"
         />
 
         <a-input
-            v-else-if="getDatatypeOfAttribute(attribute) === 'number'"
+            v-else-if="typeName === 'number'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -30,7 +29,7 @@
             @change="handleChange"
         />
         <a-input
-            v-else-if="getDatatypeOfAttribute(attribute) === 'float'"
+            v-else-if="typeName === 'float'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -42,7 +41,7 @@
             @change="handleChange"
         />
         <a-input
-            v-else-if="getDatatypeOfAttribute(attribute) === 'url'"
+            v-else-if="typeName === 'url'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -51,7 +50,7 @@
             @change="handleChange"
         />
         <a-radio-group
-            v-else-if="getDatatypeOfAttribute(attribute) === 'boolean'"
+            v-else-if="typeName === 'boolean'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow"
@@ -61,7 +60,7 @@
             <a-radio :value="false">No</a-radio>
         </a-radio-group>
         <a-date-picker
-            v-else-if="getDatatypeOfAttribute(attribute) === 'date'"
+            v-else-if="typeName === 'date'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow w-100"
@@ -69,7 +68,7 @@
             @change="handleChange"
         />
         <a-textarea
-            v-else-if="getDatatypeOfAttribute(attribute) === 'text'"
+            v-else-if="typeName === 'text'"
             v-model:value="localValue"
             :allow-clear="true"
             :auto-size="true"
@@ -81,7 +80,7 @@
             @change="handleChange"
         />
         <a-select
-            v-else-if="getDatatypeOfAttribute(attribute) === 'users'"
+            v-else-if="typeName === 'users'"
             v-model:value="localValue"
             class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
@@ -109,7 +108,7 @@
             </a-select-option>
         </a-select>
         <a-select
-            v-else-if="getDatatypeOfAttribute(attribute) === 'groups'"
+            v-else-if="typeName === 'groups'"
             v-model:value="localValue"
             class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
@@ -137,7 +136,7 @@
             </a-select-option>
         </a-select>
         <a-select
-            v-else-if="getDatatypeOfAttribute(attribute) === 'enum'"
+            v-else-if="typeName === 'enum'"
             v-model:value="localValue"
             class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
@@ -145,7 +144,7 @@
             :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
-            :options="getEnumOptions(attribute.typeName)"
+            :options="getEnumOptions(attribute.options.enumType)"
             @change="handleChange"
         >
             <template #suffixIcon>
@@ -156,13 +155,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
 
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import MultiInput from '@/common/input/customizedTagInput.vue'
+    import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
@@ -184,14 +184,20 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const localValue: any = ref(modelValue.value)
-
             const {
                 getDatatypeOfAttribute,
                 isLink,
                 formatDisplayValue,
                 getEnumOptions,
             } = useCustomMetadataHelpers()
+            const typeName = computed(() =>
+                getDatatypeOfAttribute(props.attribute as CMA)
+            )
+
+            const localValue: any = ref(modelValue.value)
+
+            if (typeName.value === 'date' && localValue.value)
+                localValue.value = localValue.value.toString()
 
             const {
                 list: userList,
@@ -231,6 +237,7 @@
             }
 
             return {
+                typeName,
                 isMultivalued,
                 getDatatypeOfAttribute,
                 isLink,

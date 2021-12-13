@@ -1,17 +1,13 @@
 /* eslint-disable import/prefer-default-export */
 import { useAuthStore } from '~/store/auth'
 import { isString } from '../checkType'
+import { storeToRefs } from 'pinia'
 
 // auth directive use it as v-auth
 export function authDirective(app: any) {
     app.directive('auth', {
         beforeMount(el, binding, vnode) {
-            const authStore = useAuthStore()
-            let time = 0
-            if(authStore.permissions.length === 0){
-               time = 3000
-            }
-            setTimeout(() => {
+            const authStore = storeToRefs(useAuthStore())
                 if (!binding.value) {
                     return
                 }
@@ -19,20 +15,19 @@ export function authDirective(app: any) {
                 if (Array.isArray(binding.value)) {
                     if (
                         binding.value?.every(
-                            (elem) => authStore.permissions.indexOf(elem) > -1
+                            (elem) => authStore.permissions.value.indexOf(elem) > -1
                         )
                     ) {
                         return
                     }
                 }
                 if (isString(binding.value)) {
-                    if (authStore.permissions.indexOf(binding.value) > -1) {
+                    if (authStore.permissions.value.indexOf(binding.value) > -1) {
                         return
                     }
                 }
     
                 el.style.setProperty('display', 'none', 'important');
-            }, time);
         },
     })
 }

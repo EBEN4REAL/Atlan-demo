@@ -4,6 +4,7 @@ import {
     ArchivedRunsResponse,
     LiveRunsResponse,
 } from '~/types/workflow/runs.interface'
+import { useOptions } from '~/services/api/common'
 
 export const URL = {
     WorkflowList: '/workflows/default',
@@ -25,6 +26,17 @@ const getWorkflows = ({ immediate, options, params }) =>
             params,
         },
         { options, asyncOptions: { immediate } }
+    )
+
+const worfklowPackageIndex = (pathVariables?, body?, options?: useOptions) =>
+    useAPI(
+        map.WORKFLOW_TEMPLATE_INDEX,
+        'POST',
+        {
+            pathVariables,
+            body,
+        },
+        options || {}
     )
 
 const getWorkflowPackages = ({ pathVariables, options, params }) =>
@@ -267,4 +279,5 @@ export const Workflows = {
     getArtifacts,
     createWorkflowPackage,
     getWorkflowPackagesConfigMapByName,
+    worfklowPackageIndex,
 }

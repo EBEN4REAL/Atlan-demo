@@ -3,18 +3,7 @@
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
-                class="
-                    flex
-                    cursor-pointer
-                    h-6
-                    items-center
-                    justify-center
-                    py-0.5
-                    -mr-2
-                    px-1
-                    border-white
-                    text-gray-500
-                "
+                class="flex cursor-pointer h-6 items-center justify-center py-0.5 -mr-2 px-1 border-white text-gray-500"
             >
                 <AtlanIcon class icon="KebabMenu" />
             </div>
@@ -30,10 +19,10 @@
                     <a-sub-menu key="themes">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 "
+                                class="flex items-center justify-between w-full mr-2"
                             >
                                 <div
-                                    class="flex items-center justify-between w-full text-gray-500 "
+                                    class="flex items-center justify-between w-full text-gray-500"
                                 >
                                     <span class="text-gray-700">Themes</span>
                                     <span>
@@ -76,7 +65,7 @@
                                     "
                                 >
                                     <div
-                                        class="flex items-center justify-between "
+                                        class="flex items-center justify-between"
                                     >
                                         <span>{{ themeObj.label }}</span>
                                         <AtlanIcon
@@ -98,10 +87,10 @@
                     <a-sub-menu key="Tab Spacing" style="min-width: 200px">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 "
+                                class="flex items-center justify-between w-full mr-2"
                             >
                                 <div
-                                    class="flex items-center justify-between w-full text-gray-500 "
+                                    class="flex items-center justify-between w-full text-gray-500"
                                 >
                                     <span class="text-gray-700"
                                         >Tab Spacing</span
@@ -192,10 +181,10 @@
                     <a-sub-menu key="fontsize" class="text-gray-500">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 text-gray-500 "
+                                class="flex items-center justify-between w-full mr-2 text-gray-500"
                             >
                                 <div
-                                    class="flex items-center justify-between w-full "
+                                    class="flex items-center justify-between w-full"
                                 >
                                     <span class="text-gray-700">Font size</span>
                                     <span>{{ editorConfig.fontSize }}</span>
@@ -309,10 +298,10 @@
                     <a-sub-menu key="cursorStyle" class="text-gray-500">
                         <template #title>
                             <div
-                                class="flex items-center justify-between w-full mr-2 text-gray-500 "
+                                class="flex items-center justify-between w-full mr-2 text-gray-500"
                             >
                                 <div
-                                    class="flex items-center justify-between w-full "
+                                    class="flex items-center justify-between w-full"
                                 >
                                     <span class="text-gray-700">Cursor</span>
                                     <span>{{
@@ -442,10 +431,10 @@
                         <a-sub-menu key="shareQuery" style="min-width: 200px">
                             <template #title>
                                 <div
-                                    class="flex items-center justify-between w-full mr-2 "
+                                    class="flex items-center justify-between w-full mr-2"
                                 >
                                     <div
-                                        class="flex items-center justify-between w-full text-gray-500 "
+                                        class="flex items-center justify-between w-full text-gray-500"
                                     >
                                         <span class="text-gray-700"
                                             >Share query</span
@@ -465,7 +454,7 @@
                                     @click="copyURL"
                                 >
                                     <div
-                                        class="flex items-center justify-between "
+                                        class="flex items-center justify-between"
                                     >
                                         <span>Copy Link</span>
                                     </div>
@@ -503,223 +492,241 @@
 </template>
 
 <script lang="ts">
-import {
-    defineComponent,
-    ref,
-    toRefs,
-    ComputedRef,
-    computed,
-    inject,
-    Ref,
-    toRaw,
-} from 'vue'
-import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
-import { useEditorPreference } from '~/components/insights/common/composables/useEditorPreference'
-import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
-import { useRouter, useRoute } from 'vue-router'
-import { themes } from '~/components/insights/playground/editor/monaco/themeLoader'
-import { capitalizeFirstLetter } from '~/utils/string'
-import { useVModels } from '@vueuse/core'
-import { copyToClipboard } from '~/utils/clipboard'
-import { message } from 'ant-design-vue'
-import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        ComputedRef,
+        computed,
+        inject,
+        Ref,
+        toRaw,
+    } from 'vue'
+    import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
+    import { useEditorPreference } from '~/components/insights/common/composables/useEditorPreference'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
+    import { useRouter, useRoute } from 'vue-router'
+    import { themes } from '~/components/insights/playground/editor/monaco/themeLoader'
+    import { capitalizeFirstLetter } from '~/utils/string'
+    import { useVModels } from '@vueuse/core'
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { message } from 'ant-design-vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-export default defineComponent({
-    components: {},
-    props: {},
-    emits: ['toggleVQB'],
-    setup(props, { emit }) {
-        const showVQB = ref(false)
-        const router = useRouter()
-        const {
-            setEditorTheme,
-            setTabSpaces,
-            setFontSizes,
-            setCursorStyle,
-            getThemeLabelFromName,
-        } = useEditorPreference()
+    export default defineComponent({
+        components: {},
+        props: {},
+        emits: ['toggleVQB'],
+        setup(props, { emit }) {
+            const showVQB = ref(false)
+            const router = useRouter()
+            const {
+                setEditorTheme,
+                setTabSpaces,
+                setFontSizes,
+                setCursorStyle,
+                getThemeLabelFromName,
+            } = useEditorPreference()
 
-        const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
-        const { inlineTabAdd } = useInlineTab()
+            const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
+            const { inlineTabAdd } = useInlineTab()
 
-        themes.sort(function (a: object, b: object) {
-            return a.label - b.label
-        })
-
-        const isThisThemeActive = (editorConfig, theme: string) => {
-            return editorConfig.theme === theme
-        }
-        const isThisTabActive = (editorConfig: any, tabSpace: number) => {
-            return editorConfig.tabSpace === tabSpace
-        }
-        const isThisFontSizeActive = (editorConfig: any, fontSize: number) => {
-            return editorConfig.fontSize === fontSize
-        }
-
-        const isThisCursorActive = (editorConfig: any, cursorStyle: string) => {
-            return editorConfig.cursorStyle === cursorStyle
-        }
-
-        const editorConfig = inject(
-            'editorConfig'
-        ) as Ref<editorConfigInterface>
-
-        const editorHoverConfig = inject(
-            'editorHoverConfig'
-        ) as Ref<editorConfigInterface>
-
-        const monacoInstance = inject('monacoInstance') as Ref<any>
-        const editorInstance = inject('editorInstance') as Ref<any>
-        const route = useRoute()
-        const vqbQueryRoute = ref(route.query?.vqb)
-        const t = computed(() => {
-            console.log(vqbQueryRoute.value)
-        })
-        const activeInlineTab = inject(
-            'activeInlineTab'
-        ) as ComputedRef<activeInlineTabInterface>
-        const activeInlineTabKey = inject('activeInlineTabKey') as Ref<string>
-        const tabsArray = inject('inlineTabs') as Ref<
-            activeInlineTabInterface[]
-        >
-
-        const isActive = ref(false)
-        const toggleButtonState = () => {
-            isActive.value = !isActive.value
-        }
-        const themeChange = (themeName: string) => {
-            console.log(themeName, 'themeName')
-            setEditorTheme(toRaw(monacoInstance.value), editorConfig, themeName)
-        }
-        console.log('editor data: ', editorConfig.value)
-
-        const tabChange = (tabSpace: number) => {
-            setTabSpaces(toRaw(editorInstance.value), editorConfig, tabSpace)
-        }
-        const fontSizeChange = (fontSize: number) => {
-            setFontSizes(toRaw(editorInstance.value), editorConfig, fontSize)
-        }
-
-        const themeHoverChange = (theme: string) => {
-            setEditorTheme(
-                toRaw(monacoInstance.value),
-                editorHoverConfig,
-                theme
-            )
-        }
-
-        const tabHoverChange = (tabSpace: number) => {
-            setTabSpaces(
-                toRaw(editorInstance.value),
-                editorHoverConfig,
-                tabSpace
-            )
-        }
-        const fontSizeHoverChange = (fontSize: number) => {
-            setFontSizes(
-                toRaw(editorInstance.value),
-                editorHoverConfig,
-                fontSize
-            )
-        }
-
-        const cursorChange = (cursorStyle: string) => {
-            setCursorStyle(
-                toRaw(editorInstance.value),
-                editorConfig,
-                cursorStyle
-            )
-        }
-        const cursorHoverChange = (cursorStyle: string) => {
-            setCursorStyle(
-                toRaw(editorInstance.value),
-                editorHoverConfig,
-                cursorStyle
-            )
-        }
-
-        const duplicateQuery = () => {
-            const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
-                {},
-                activeInlineTab.value
-            )
-            const label = `Copy ${activeInlineTabCopy.label}`
-            activeInlineTabCopy.label = label
-            /* IMP TO RESET */
-            activeInlineTabCopy.key = String(new Date().getTime())
-            activeInlineTabCopy.isSaved = false
-            activeInlineTabCopy.queryId = undefined
-
-            /* CAREFUL:-------Order is important here------ */
-            inlineTabAdd(activeInlineTabCopy, tabsArray, activeInlineTabKey)
-            activeInlineTabKey.value = activeInlineTabCopy.key
-            /* ----------------------------- */
-            // syncying inline tabarray in localstorage
-            syncInlineTabsInLocalStorage(tabsArray.value)
-            const queryParams = {}
-            if (route?.query?.vqb) queryParams.vqb = true
-            router.push({ path: `insights`, query: queryParams })
-        }
-        const openCommandPallete = () => {
-            toRaw(editorInstance.value)?.focus()
-            toRaw(editorInstance.value)?.trigger(
-                'editor',
-                'editor.action.quickCommand',
-                undefined
-            )
-        }
-        const toggleVQB = () => {
-            showVQB.value = !showVQB.value
-            emit('toggleVQB', showVQB.value)
-        }
-        const copyURL = () => {
-            const URL = window.location.href
-            copyToClipboard(URL)
-            message.success({
-                content: 'Link Copied!',
+            themes.sort(function (a: object, b: object) {
+                return a.label - b.label
             })
-            useAddEvent('insights', 'query', 'link_copied', undefined)
-        }
-        return {
-            vqbQueryRoute,
-            showVQB,
-            toggleVQB,
-            getThemeLabelFromName,
-            openCommandPallete,
-            activeInlineTab,
-            duplicateQuery,
-            fontSizeChange,
-            isThisFontSizeActive,
-            isThisTabActive,
-            tabChange,
-            isThisThemeActive,
-            themeChange,
-            editorConfig,
-            toggleButtonState,
-            isActive,
-            themeHoverChange,
-            fontSizeHoverChange,
-            tabHoverChange,
-            themes,
-            cursorChange,
-            cursorHoverChange,
-            isThisCursorActive,
-            capitalizeFirstLetter,
-            copyURL,
-        }
-    },
-})
+
+            const isThisThemeActive = (editorConfig, theme: string) => {
+                return editorConfig.theme === theme
+            }
+            const isThisTabActive = (editorConfig: any, tabSpace: number) => {
+                return editorConfig.tabSpace === tabSpace
+            }
+            const isThisFontSizeActive = (
+                editorConfig: any,
+                fontSize: number
+            ) => {
+                return editorConfig.fontSize === fontSize
+            }
+
+            const isThisCursorActive = (
+                editorConfig: any,
+                cursorStyle: string
+            ) => {
+                return editorConfig.cursorStyle === cursorStyle
+            }
+
+            const editorConfig = inject(
+                'editorConfig'
+            ) as Ref<editorConfigInterface>
+
+            const editorHoverConfig = inject(
+                'editorHoverConfig'
+            ) as Ref<editorConfigInterface>
+
+            const monacoInstance = inject('monacoInstance') as Ref<any>
+            const editorInstance = inject('editorInstance') as Ref<any>
+            const route = useRoute()
+            const vqbQueryRoute = ref(route.query?.vqb)
+            const t = computed(() => {
+                console.log(vqbQueryRoute.value)
+            })
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
+            const tabsArray = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
+
+            const isActive = ref(false)
+            const toggleButtonState = () => {
+                isActive.value = !isActive.value
+            }
+            const themeChange = (themeName: string) => {
+                console.log(themeName, 'themeName')
+                setEditorTheme(
+                    toRaw(monacoInstance.value),
+                    editorConfig,
+                    themeName
+                )
+            }
+            console.log('editor data: ', editorConfig.value)
+
+            const tabChange = (tabSpace: number) => {
+                setTabSpaces(
+                    toRaw(editorInstance.value),
+                    editorConfig,
+                    tabSpace
+                )
+            }
+            const fontSizeChange = (fontSize: number) => {
+                setFontSizes(
+                    toRaw(editorInstance.value),
+                    editorConfig,
+                    fontSize
+                )
+            }
+
+            const themeHoverChange = (theme: string) => {
+                setEditorTheme(
+                    toRaw(monacoInstance.value),
+                    editorHoverConfig,
+                    theme
+                )
+            }
+
+            const tabHoverChange = (tabSpace: number) => {
+                setTabSpaces(
+                    toRaw(editorInstance.value),
+                    editorHoverConfig,
+                    tabSpace
+                )
+            }
+            const fontSizeHoverChange = (fontSize: number) => {
+                setFontSizes(
+                    toRaw(editorInstance.value),
+                    editorHoverConfig,
+                    fontSize
+                )
+            }
+
+            const cursorChange = (cursorStyle: string) => {
+                setCursorStyle(
+                    toRaw(editorInstance.value),
+                    editorConfig,
+                    cursorStyle
+                )
+            }
+            const cursorHoverChange = (cursorStyle: string) => {
+                setCursorStyle(
+                    toRaw(editorInstance.value),
+                    editorHoverConfig,
+                    cursorStyle
+                )
+            }
+
+            const duplicateQuery = () => {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                const label = `Copy ${activeInlineTabCopy.label}`
+                activeInlineTabCopy.label = label
+                /* IMP TO RESET */
+                activeInlineTabCopy.key = String(new Date().getTime())
+                activeInlineTabCopy.isSaved = false
+                activeInlineTabCopy.queryId = undefined
+
+                /* CAREFUL:-------Order is important here------ */
+                inlineTabAdd(activeInlineTabCopy, tabsArray, activeInlineTabKey)
+                activeInlineTabKey.value = activeInlineTabCopy.key
+                /* ----------------------------- */
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                router.push({ path: `insights`, query: queryParams })
+            }
+            const openCommandPallete = () => {
+                toRaw(editorInstance.value)?.focus()
+                toRaw(editorInstance.value)?.trigger(
+                    'editor',
+                    'editor.action.quickCommand',
+                    undefined
+                )
+            }
+            const toggleVQB = () => {
+                showVQB.value = !showVQB.value
+                emit('toggleVQB', showVQB.value)
+            }
+            const copyURL = () => {
+                const URL = window.location.href
+                copyToClipboard(URL)
+                message.success({
+                    content: 'Link Copied!',
+                })
+                useAddEvent('insights', 'query', 'link_copied', undefined)
+            }
+            return {
+                vqbQueryRoute,
+                showVQB,
+                toggleVQB,
+                getThemeLabelFromName,
+                openCommandPallete,
+                activeInlineTab,
+                duplicateQuery,
+                fontSizeChange,
+                isThisFontSizeActive,
+                isThisTabActive,
+                tabChange,
+                isThisThemeActive,
+                themeChange,
+                editorConfig,
+                toggleButtonState,
+                isActive,
+                themeHoverChange,
+                fontSizeHoverChange,
+                tabHoverChange,
+                themes,
+                cursorChange,
+                cursorHoverChange,
+                isThisCursorActive,
+                capitalizeFirstLetter,
+                copyURL,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
-.menu_class {
-    // font-family: 'Avenir LT Pro' !important;
-    :global(.ant-dropdown-menu-submenu-title) {
-        @apply px-4 !important;
-        @apply py-2 !important;
+    .menu_class {
+        // font-family: 'Avenir LT Pro' !important;
+        :global(.ant-dropdown-menu-submenu-title) {
+            @apply px-4 !important;
+            @apply py-2 !important;
+        }
     }
-}
 </style>
 
 <route lang="yaml">

@@ -53,7 +53,13 @@
         </div>
         <!-- Table for users-->
         <template v-else>
-            <template v-if="userList.length">
+            <div
+                v-if="isLoading"
+                class="flex items-center justify-center h-full"
+            >
+                <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+            </div>
+            <template v-else-if="userList.length && isReady">
                 <UserListTable
                     v-auth="map.LIST_USERS"
                     :user-list="userList"
@@ -179,6 +185,7 @@
                 getUserList,
                 isLoading,
                 error,
+                isReady,
                 totalUserCount,
             } = useUsers(userListAPIParams)
 
@@ -458,6 +465,7 @@
             }
 
             return {
+                isReady,
                 tenantName,
                 map,
                 resendInvite,

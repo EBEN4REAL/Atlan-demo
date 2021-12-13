@@ -45,8 +45,11 @@
             />
         </a-drawer>
 
+        <div v-if="isLoading" class="flex items-center justify-center h-full">
+            <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+        </div>
         <div
-            v-if="error"
+            v-else-if="error"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>

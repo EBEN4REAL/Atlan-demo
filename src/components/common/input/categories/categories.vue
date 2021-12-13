@@ -114,7 +114,6 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            console.log(modelValue.value)
             const checkedKeys = ref(
                 modelValue.value.map((category) => ({
                     label: category.attributes?.name,
@@ -129,14 +128,6 @@
                 return document.getElementById('categoryWidget')
             }
 
-            // Categories in modelValue and localValue
-            // ref selectedKeys guids from modelValue
-            // on change update modelValue,
-            // computed list variable
-
-            // composable
-            // take parent guid
-            // on mount or parent guid change fetch all categories and return data
             const { initCategories, treeData, onLoadData } = useCategoriesWidget({parentGlossaryQf: selectedAsset.value.attributes.anchor.uniqueAttributes.qualifiedName ?? ''})
 
             const onPopoverClose = (visible) => {

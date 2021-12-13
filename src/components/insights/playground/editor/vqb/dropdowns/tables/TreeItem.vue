@@ -775,6 +775,11 @@
                                         '/'
                                     )[1],
                             },
+                            collection: {
+                                guid: '',
+                                qualifiedName: undefined,
+                                parentQualifiedName: undefined,
+                            },
                         },
                     },
                     playground: {

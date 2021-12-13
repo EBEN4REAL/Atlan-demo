@@ -330,11 +330,15 @@
             )
 
             const selectedCollection = computed(() => {
+                // console.log(
+                //     'collections active: ',
+                //     activeInlineTab.value.explorer
+                // )
                 const collection = queryCollections.value?.find(
                     (coll) =>
                         coll.attributes.qualifiedName ===
-                        activeInlineTab.value.explorer.queries.collection
-                            .qualifiedName
+                        activeInlineTab?.value?.explorer?.queries?.collection
+                            ?.qualifiedName
                 )
                 return collection
             })

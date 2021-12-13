@@ -32,6 +32,7 @@ export interface activeInlineTabInterface {
             collection: {
                 guid: string | undefined
                 qualifiedName: string | undefined
+                parentQualifiedName: string | undefined
             }
         }
     }

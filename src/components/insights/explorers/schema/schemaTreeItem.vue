@@ -1227,6 +1227,12 @@
                                         '/'
                                     )[1],
                             },
+                            collection: {
+                                // copy from last tab
+                                guid: '',
+                                qualifiedName: undefined,
+                                parentQualifiedName: undefined,
+                            },
                         },
                     },
                     playground: {

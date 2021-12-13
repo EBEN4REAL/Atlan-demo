@@ -113,7 +113,8 @@ export function useSavedQuery(
                     collection: {
                         // copy from last tab
                         guid: activeInlineTab?.value?.explorer?.queries?.collection?.guid,
-                        qualifiedName: savedQuery.attributes.collectionQualifiedName
+                        qualifiedName: savedQuery.attributes.collectionQualifiedName,
+                        parentQualifiedName: undefined,
                     }
                 },
             },

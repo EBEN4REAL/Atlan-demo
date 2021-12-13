@@ -41,6 +41,7 @@
             const router = useRouter()
             const { getQueryCollections } = useQueryCollection()
             const savedQueryGuidFromURL = ref(route.query?.id)
+            const runQuery = ref(route.query?.runQuery)
 
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<any> = ref()
@@ -96,6 +97,7 @@
             provide('columnNameFromURL', columnNameFromURL)
 
             provide('savedQueryGuidFromURL', savedQueryGuidFromURL)
+            provide('runQuery', runQuery)
             provide('savedQueryInfo', savedQueryInfo)
             provide('queryFolderNamespace', queryFolderNamespace)
             provide('queryCollections', queryCollections)
@@ -114,6 +116,7 @@
                 const facets = ref({
                     guid: savedQueryGuidFromURL.value,
                 })
+                // console.log('run query: ', runQuery.value)
                 const { list, error, isLoading } = useAssetData({
                     facets,
                     dependentKey: ref('insights_saved_query'),

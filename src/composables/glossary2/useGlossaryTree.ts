@@ -808,6 +808,18 @@ const useGlossaryTree = ({
                                 parentGuid,
                             ]
                         }
+                        if (
+                            checkable &&
+                            checkedGuids?.includes(el.guid)
+                        ) {
+                            console.log(el.guid)
+                            const key = `${parentGlossaryQf}_${parentCategoryQf}_${el.attributes?.qualifiedName}`
+                            if (
+                                !checkedKeys.value.includes(key)
+                            ) {
+                                checkedKeys.value.push(key)
+                            }
+                        }
                     } else {
                         nodeToParentKeyMap[el.guid] =
                         parentGuid

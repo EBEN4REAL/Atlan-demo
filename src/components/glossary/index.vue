@@ -112,7 +112,16 @@
             v-else-if="list.length == 0 && !isLoading && queryText"
             class="flex-grow"
         >
+            <div
+                v-if="checkable"
+                class="flex flex-col items-center justify-center h-full my-2"
+            >
+                <div class="flex flex-col items-center">
+                    <span class="text-gray-500">No terms found</span>
+                </div>
+            </div>
             <EmptyView
+                v-else
                 empty-screen="EmptyDiscover"
                 desc="We didnt find anything that matches your search criteria"
                 button-text="Reset Filter"

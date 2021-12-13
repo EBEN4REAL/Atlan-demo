@@ -32,7 +32,7 @@
                 </div>
                 <div v-if="folderOpened" class="mt-1 ml-3">
                     <query-tree-list
-                        v-if="treeData.length"
+                        v-if="treeData?.length"
                         :tree-data="treeData"
                         :on-load-data="onLoadData"
                         :select-node="onSelect"

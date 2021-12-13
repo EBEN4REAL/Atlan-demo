@@ -806,7 +806,7 @@
 
             const changeFolder = (item: any) => {
                 let previousParentGuId = item.attributes.parent.guid
-                let selectedParentGuid = selectedFolder.value.guid
+                let selectedParentGuid = selectedFolder?.value?.guid
 
                 // console.log('entity item parent: ', previousParentGuId)
                 // console.log('entity selected folder: ', selectedParentGuid)

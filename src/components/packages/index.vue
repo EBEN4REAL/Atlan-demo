@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-1">
         component
-        <div class="flex flex-col h-full">
+        <!--     <div class="flex flex-col h-full">
             <div
                 class="flex items-center px-5 py-3 text-base font-bold border-b border-gray-200 overflow-ellipsis"
             >
@@ -72,7 +72,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 
@@ -88,10 +88,10 @@
     export default defineComponent({
         name: 'PackageDiscovery',
         components: {
-            PackageList,
-            EmptyView,
-            PackageFilters,
-            ErrorView,
+            // PackageList,
+            // EmptyView,
+            // PackageFilters,
+            // ErrorView,
         },
         props: {
             showFilters: {

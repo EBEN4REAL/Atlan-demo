@@ -7,6 +7,8 @@
                 <PackageDiscoveryList
                     :style="displayStyle"
                     @select="handleSelect"
+                    @setup="handleSetup"
+                    @sandbox="handleSandbox"
                 ></PackageDiscoveryList>
             </keep-alive>
         </div>
@@ -14,11 +16,7 @@
         <div
             class="relative hidden h-full bg-white border-l border-gray-200 asset-preview-container md:block"
         >
-            <PackagePreview
-                :selectedPackage="selectedPackage"
-                @setup="handleSetup"
-                @sandbox="handleSandbox"
-            ></PackagePreview>
+            <PackagePreview :selectedPackage="selectedPackage"></PackagePreview>
         </div>
     </div>
 </template>
@@ -49,8 +47,6 @@
             const handleSetup = (item: any) => {
                 selectedPackage.value = item
                 const url = selectedPackage.value.metadata.name
-
-                console.log('handle Setup')
 
                 router.push({
                     path: `/workflows/setup/${url}`,

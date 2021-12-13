@@ -130,19 +130,6 @@
                 >
             </div>
         </div>
-        <div class="flex-grow mt-3">
-            <a-button
-                >Readme <AtlanIcon icon="External" class="ml-2"></AtlanIcon
-            ></a-button>
-        </div>
-
-        <a-button
-            type="primary"
-            v-if="!isItem"
-            @click.shift.exact="handleSetupSandbox"
-            @click.exact="handleSetup"
-            >Setup</a-button
-        >
     </div>
     <EmptyView
         v-else
@@ -172,13 +159,6 @@
         setup(props, { emit }) {
             const { selectedPackage } = toRefs(props)
 
-            const handleSetup = (item) => {
-                emit('setup', selectedPackage.value)
-            }
-            const handleSetupSandbox = (item) => {
-                emit('sandbox', selectedPackage.value)
-            }
-
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
 
@@ -189,8 +169,6 @@
 
             return {
                 selectedPackage,
-                handleSetup,
-                handleSetupSandbox,
                 marketplaceLink,
                 isItem,
             }

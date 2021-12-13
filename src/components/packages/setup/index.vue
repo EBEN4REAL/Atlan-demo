@@ -41,8 +41,12 @@
                     >Back</a-button
                 >
 
-                <a-button v-if="currentStep == 0" @click="handleExit">
-                    <AtlanIcon icon="ChevronLeft"></AtlanIcon> All Packages
+                <a-button
+                    v-if="currentStep == 0"
+                    @click="handleExit"
+                    class="font-bold text-red-500"
+                >
+                    Exit
                 </a-button>
                 <a-button
                     @click="handleNext"
@@ -401,7 +405,7 @@
             }
             const router = useRouter()
             const handleExit = (key) => {
-                router.replace(`/packages`)
+                router.replace(`/workflows/setup`)
             }
 
             return {

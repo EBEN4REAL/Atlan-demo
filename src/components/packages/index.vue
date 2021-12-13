@@ -1,15 +1,6 @@
 <template>
     <div class="flex flex-1">
         <div class="flex flex-col w-full h-full">
-            <div
-                class="flex items-center px-5 py-3 text-base font-bold border-b border-gray-200 overflow-ellipsis"
-            >
-                <a-button class="mr-3"
-                    ><AtlanIcon icon="ChevronLeft"></AtlanIcon
-                ></a-button>
-                Select a package
-            </div>
-
             <div class="flex flex-1 w-full overflow-y-auto">
                 <div
                     class="flex flex-col bg-gray-100 border-r border-gray-300 filters"
@@ -19,12 +10,11 @@
                     ></PackageFilters>
                 </div>
 
-                <div class="flex flex-col flex-1 h-full py-4">
+                <div class="flex flex-col flex-1 h-full">
                     <div
                         class="flex flex-col px-6 py-3 pb-4 font-extrabold focus-within:text-2xl"
                     >
                         <a-input
-                            class="w-1/2"
                             size="large"
                             placeholder="Search Packages"
                         ></a-input>
@@ -36,6 +26,17 @@
                             class="px-6"
                             @select="handleSelect"
                         ></PackageList>
+                    </div>
+                    <div
+                        class="flex items-center p-3 text-base font-bold border-t border-gray-200 overflow-ellipsis"
+                    >
+                        <a-button
+                            type="primary"
+                            block
+                            @click.shift.exact="handleSetupSandbox"
+                            @click.exact="handleSetup"
+                            >Setup</a-button
+                        >
                     </div>
                 </div>
             </div>
@@ -89,6 +90,13 @@
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
+            const handleSetup = (item) => {
+                emit('setup', selectedPackage.value)
+            }
+            const handleSetupSandbox = (item) => {
+                emit('sandbox', selectedPackage.value)
+            }
+
             // const { refresh, isLoading, list, error } = usePackageList({
             //     isCache: true,
             //     dependentKey,
@@ -130,6 +138,8 @@
                 error,
                 packageFilters,
                 facets,
+                handleSetupSandbox,
+                handleSetup,
             }
         },
     })

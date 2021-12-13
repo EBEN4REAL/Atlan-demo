@@ -39,8 +39,10 @@
                     </a-menu></template
                 >
 
-                <a-button size="small"
-                    ><AtlanIcon icon="Add" class="text-primary"></AtlanIcon>
+                <a-button
+                    size="small"
+                    class="text-white bg-green-500 border-green-500"
+                    ><AtlanIcon icon="Add" class="text-white"></AtlanIcon> New
                     <AtlanIcon icon="ChevronDown" class="h-3 ml-1"></AtlanIcon>
                 </a-button>
             </a-dropdown>

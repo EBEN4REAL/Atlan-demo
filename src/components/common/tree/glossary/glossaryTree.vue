@@ -188,17 +188,12 @@
             }
             const onCheck = (e, { checkedNodes, checked, node }) => {
                 if (checkedKeys) {
-                    console.log(node)
                     if(checked) {
                         checkedKeys.value.push(node.key)
                         checkedGuids?.value?.push(node.guid)
-                        console.log('checked', node.guid)
-                        console.log('checkedGuids', checkedGuids.value)
                     } else {
                         checkedKeys.value = checkedKeys.value.filter((key) => key !== node.key)
                         checkedGuids.value = checkedGuids?.value?.filter((guid) => guid !== node.guid)
-                        console.log('unchecked', node.guid)
-                        console.log('checkedGuids', checkedGuids.value)
                     }
                     // checkedKeys.value = checkedNodes.map((node) => node.key)
                 }

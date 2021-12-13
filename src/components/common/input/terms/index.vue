@@ -146,11 +146,8 @@
                     if(!localValue.value.find((localTerm) => ((localTerm.guid ?? localTerm.termGuid) === term.guid)))
                         localValue.value.push(term)
                 })
-                console.log(checkedGuids.value)
-                console.log(localValue.value)
                 localValue.value = localValue.value.filter((term) => checkedGuids.value.includes(term.termGuid ?? term.guid))
                 hasBeenEdited.value = true
-                console.log('after', localValue.value)
 
             }
 

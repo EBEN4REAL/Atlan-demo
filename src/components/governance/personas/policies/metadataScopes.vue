@@ -65,15 +65,14 @@
             const { scopeList } = useScopeService().listScopes(type.value)
             const collapseRef = ref()
 
-            const groupedActions = computed(() => {
+            const groupedActions = computed(() =>
                 scopeList.map((scp) => ({
                     type: scp.type,
                     scopes: actions.value.filter((ac) =>
                         scp.scopes.find((e) => e.value === ac)
                     ),
                 }))
-                return scopeList
-            })
+            )
 
             const defaultExpandedState = ref(scopeList.map((scp) => scp.type))
 

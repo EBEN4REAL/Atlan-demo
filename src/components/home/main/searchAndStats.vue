@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch } from 'vue'
+    import { defineComponent, ref, computed, watch, inject } from 'vue'
     import defaultLogo from '~/assets/images/your_company.png'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     // import CmndK from '~/components/common/commandK/cmndK.vue'
@@ -44,9 +44,11 @@
             SearchAndFilter,
         },
         setup() {
-            const isCmndKVisible = ref<boolean>(false)
-            const showModal = () => {
-                isCmndKVisible.value = true
+            const toggleCMDK: Function = inject('togglecmdK')
+
+            const showModal = (e) => {
+                e.preventDefault()
+                toggleCMDK()
             }
 
             const logoUrl = computed(
@@ -106,7 +108,7 @@
                 })
             })
 
-            return { logoUrl, metadata, showModal, isCmndKVisible, defaultLogo }
+            return { logoUrl, metadata, showModal, defaultLogo }
         },
     })
 </script>

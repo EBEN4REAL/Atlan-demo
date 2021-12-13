@@ -41,15 +41,12 @@
 
                 <template #overlay>
                     <a-menu mode="vertical">
-                        <a-menu-item key="edit">
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Edit" class="h-4 mr-2" />
-                                Edit
-                            </div>
-                        </a-menu-item>
-                        <a-menu-item key="edit">
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Delete" class="h-4 mr-2" />
+                        <a-menu-item key="delete" @click="handleDelete">
+                            <div class="flex items-center text-red-500">
+                                <AtlanIcon
+                                    icon="Delete"
+                                    class="h-4 mb-0.5 mr-1"
+                                />
                                 Delete
                             </div>
                         </a-menu-item>
@@ -62,9 +59,10 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import deleteAsset from '~/composables/discovery/deleteAsset'
 
     export default defineComponent({
         props: {
@@ -73,7 +71,9 @@
                 required: true,
             },
         },
-        setup() {
+        setup(props) {
+            const { item } = toRefs(props)
+
             function openLink(url) {
                 if (!url) {
                     return
@@ -88,8 +88,13 @@
                 title,
                 link,
             } = useAssetInfo()
+
+            const handleDelete = () => {
+                deleteAsset(item.value?.guid)
+            }
             return {
                 createdBy,
+                handleDelete,
                 modifiedBy,
                 createdAt,
                 modifiedAt,

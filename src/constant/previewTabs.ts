@@ -6,6 +6,7 @@ export const previewTabs = [
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
         scrubbed: false,
+        requiredInProfile: true,
     },
     {
         name: 'Columns',
@@ -14,14 +15,8 @@ export const previewTabs = [
         icon: 'Columns',
         tooltip: 'Columns',
         scrubbed: false,
+        requiredInProfile: false,
     },
-    // {
-    //     name: 'Custom Metadata',
-    //     component: 'businessMetadataTab',
-    //     exclude: ['Query'],
-    //     icon: 'Metadata',
-    //     tooltip: 'Custom metadata',
-    // },
     {
         name: 'Lineage',
         component: 'lineage',
@@ -38,6 +33,7 @@ export const previewTabs = [
         icon: 'Lineage',
         tooltip: 'Lineage',
         scrubbed: true,
+        requiredInProfile: false,
     },
     {
         name: 'Activity',
@@ -46,6 +42,7 @@ export const previewTabs = [
         icon: 'ActivityLogs',
         tooltip: 'Activity',
         scrubbed: true,
+        requiredInProfile: true,
     },
     {
         name: 'Relations',
@@ -65,6 +62,7 @@ export const previewTabs = [
         icon: 'Relation',
         tooltip: 'Relationships',
         scrubbed: false,
+        requiredInProfile: false,
     },
     {
         name: 'Resources',
@@ -73,6 +71,7 @@ export const previewTabs = [
         activeIcon: 'Link',
         tooltip: 'Resources',
         scrubbed: true,
+        requiredInProfile: true,
     },
     {
         name: 'Property',
@@ -81,5 +80,6 @@ export const previewTabs = [
         activeIcon: 'PropertyActive',
         tooltip: 'Property',
         scrubbed: false,
+        requiredInProfile: true,
     },
 ]

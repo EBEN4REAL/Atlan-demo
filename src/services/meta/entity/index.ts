@@ -17,6 +17,18 @@ const EntityUpdate = <T>(
     options?: useOptions
 ) => useAPI<T>(map.ENTITY_UPDATE, 'POST', { body }, options || {})
 
+const DeleteEntity = <T>(guid: string) =>
+    useAPI<T>(
+        map.DELETE_ENTITY,
+        'DELETE',
+        {
+            pathVariables: {
+                guid,
+            },
+        },
+        {}
+    )
+
 const fetchMoreAudits = <T>(fetchmoreParams: any, guid: string) =>
     useAPI<T>(
         map.GET_ASSET_AUDIT,
@@ -83,4 +95,5 @@ export const Entity = {
     fetchRelatedAssets,
     GetEntity,
     AuditSearch,
+    DeleteEntity,
 }

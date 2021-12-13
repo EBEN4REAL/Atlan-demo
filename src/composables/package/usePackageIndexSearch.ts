@@ -46,8 +46,6 @@ export default function usePackageIndexSearch(
         options.cacheKey = dependentKey
     }
 
-    console.log(body)
-
     const { data, mutate, error, isLoading, isValidating, isReady } =
         Workflows.worfklowPackageIndex({}, body, options)
 

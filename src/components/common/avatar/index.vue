@@ -27,7 +27,8 @@
                     :key="uploadKey"
                     :shape="avatarShape"
                     :size="avatarSize"
-                    class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
+                    class="hidden ant-tag-blue text-primary sm:block"
+                    :class="avatarBgClass"
                     :src="updatedImageUrl"
                     >{{
                         getNameInitials(getNameInTitleCase(avatarName))
@@ -40,7 +41,8 @@
                 :key="uploadKey"
                 :shape="avatarShape"
                 :size="avatarSize"
-                class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
+                class="hidden ant-tag-blue text-primary sm:block"
+                :class="avatarBgClass"
                 :src="updatedImageUrl"
                 >{{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar
             >
@@ -75,6 +77,10 @@
             avatarSize: {
                 type: String as PropType<Number | String>,
                 default: 56,
+            },
+            avatarBgClass: {
+                type: String,
+                default: 'bg-primary-light',
             },
         },
         setup(props, context) {

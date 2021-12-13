@@ -1,73 +1,42 @@
 <template>
     <div class="flex flex-1">
-        <div class="flex flex-col h-full">
-            <div
-                class="flex items-center px-5 py-3 text-base font-bold border-b border-gray-200 overflow-ellipsis"
-            >
-                <a-button class="mr-3"
-                    ><AtlanIcon icon="ChevronLeft"></AtlanIcon
-                ></a-button>
-                Select a package
-            </div>
-
-            <div class="flex flex-1 overflow-y-auto">
+        <div class="flex flex-col w-full h-full">
+            <div class="flex flex-1 w-full overflow-y-auto">
                 <div
-                    v-if="showFilters"
-                    class="flex flex-col bg-gray-100 border-r border-gray-300 facets"
+                    class="flex flex-col bg-gray-100 border-r border-gray-300 filters"
                 >
                     <PackageFilters
                         :filter-list="packageFilters"
                     ></PackageFilters>
                 </div>
 
-                <div class="flex flex-col flex-1 h-full py-4">
+                <div class="flex flex-col flex-1 h-full">
                     <div
-                        class="flex flex-col px-6 pb-4 font-extrabold py-4text-2xl"
+                        class="flex flex-col px-6 py-3 pb-4 font-extrabold focus-within:text-2xl"
                     >
                         <a-input
-                            class="w-1/2"
+                            size="large"
                             placeholder="Search Packages"
                         ></a-input>
                     </div>
 
-                    <div
-                        class="flex flex-col px-6 py-4"
-                        v-if="list.length == 0"
-                    >
-                        <div
-                            v-if="isLoading"
-                            class="flex items-center justify-center flex-grow"
-                        >
-                            <AtlanIcon
-                                icon="Loader"
-                                class="w-auto h-10 animate-spin"
-                            ></AtlanIcon>
-                        </div>
-                        <div
-                            v-if="!isLoading && error"
-                            class="flex items-center justify-center flex-grow"
-                        >
-                            <ErrorView></ErrorView>
-                        </div>
-                        <div
-                            v-else-if="list.length === 0 && !isLoading"
-                            class="flex-grow"
-                        >
-                            <EmptyView
-                                empty-screen="EmptyDiscover"
-                                desc="
-                           No packages were found
-                        "
-                                class="mb-10"
-                            ></EmptyView>
-                        </div>
-                    </div>
                     <div class="flex flex-1 overflow-y-auto">
                         <PackageList
                             :list="list"
                             class="px-6"
                             @select="handleSelect"
                         ></PackageList>
+                    </div>
+                    <div
+                        class="flex items-center p-3 text-base font-bold border-t border-gray-200 overflow-ellipsis"
+                    >
+                        <a-button
+                            type="primary"
+                            block
+                            @click.shift.exact="handleSetupSandbox"
+                            @click.exact="handleSetup"
+                            >Setup</a-button
+                        >
                     </div>
                 </div>
             </div>
@@ -76,40 +45,26 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, Ref, computed } from 'vue'
+    import { defineComponent, ref, computed } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
-
     import PackageList from '@/packages/list/index.vue'
-    import PackageFilters from './filters/index.vue'
+    import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
-
-    import Editor from '@/common/editor/index.vue'
-
-    import { usePackageList } from '~/composables/package/usePackageList'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
-    import AtlanIcon from '../common/icon/atlanIcon.vue'
 
     export default defineComponent({
-        name: 'AssetDiscovery',
+        name: 'PackageDiscovery',
         components: {
-            Editor,
-            PackageList,
-            EmptyView,
             PackageFilters,
+            PackageList,
             ErrorView,
-            AtlanIcon,
+            EmptyView,
         },
         props: {
-            showFilters: {
-                type: Boolean,
-                required: false,
-                default: true,
-            },
             initialFilters: {
                 type: Object,
                 required: false,
-                default: {},
             },
             showAggrs: {
                 type: Boolean,
@@ -135,6 +90,13 @@
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
+            const handleSetup = (item) => {
+                emit('setup', selectedPackage.value)
+            }
+            const handleSetupSandbox = (item) => {
+                emit('sandbox', selectedPackage.value)
+            }
+
             // const { refresh, isLoading, list, error } = usePackageList({
             //     isCache: true,
             //     dependentKey,
@@ -150,6 +112,9 @@
                 facets,
                 limit,
                 offset,
+                source: ref({
+                    excludes: ['spec'],
+                }),
             })
 
             const placeholder = computed(() => 'Search all packages')
@@ -161,13 +126,6 @@
                 emit('select', item)
             }
 
-            const handleSetup = (item) => {
-                emit('setup', selectedPackage.value)
-            }
-            const handleSetupSandbox = (item) => {
-                emit('sandbox', selectedPackage.value)
-            }
-
             return {
                 placeholder,
                 dirtyTimestamp,
@@ -176,34 +134,20 @@
                 list,
                 handleSelect,
                 selectedPackage,
-                handleSetup,
+
                 error,
-                handleSetupSandbox,
                 packageFilters,
-                list,
                 facets,
+                handleSetupSandbox,
+                handleSetup,
             }
         },
     })
 </script>
 
 <style lang="less">
-    .facets {
+    .filters {
         max-width: 264px;
         width: 25%;
-    }
-</style>
-
-<style lang="less" module>
-    .filterPopover {
-        max-width: 200px;
-        min-width: 200px;
-    }
-</style>
-
-<style scoped>
-    .asset-preview-container {
-        min-width: 360px !important;
-        max-width: 360px !important;
     }
 </style>

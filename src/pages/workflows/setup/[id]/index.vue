@@ -51,6 +51,7 @@
                 required: false,
             },
         },
+        emits: ['select'],
         setup(props, { emit }) {
             const route = useRoute()
             const id = computed(() => route?.params?.id || '')
@@ -78,6 +79,7 @@
 
             watch(workflowPackage, () => {
                 localSelected.value = workflowPackage.value
+                emit('select', workflowPackage.value)
             })
 
             watch(data, () => {

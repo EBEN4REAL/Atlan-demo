@@ -10,9 +10,34 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+
+    import { defineComponent, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
+    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
     export default defineComponent({
+
+        setup(props, { emit }) {
+                        const limit = ref(20)
+            const offset = ref(0)
+            const queryText = ref('')
+            const facets = ref({
+                verified: true,
+            })
+            const dependentKey = ref('DEFAULT_PACKAGES')
+                const { isLoading, list, error } = usePackageDiscoverList({
+                isCache: true,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+            })
+                    return {
+            list
+        }
+        }
+
+
+
     });
 </script>
 

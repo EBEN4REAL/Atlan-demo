@@ -16,9 +16,7 @@
     } from 'vue'
     import { useHead } from '@vueuse/head'
     import InsightsComponent from '~/components/insights/index.vue'
-    // import AssetDiscovery from '@/assets/index.vue'
     import { useRoute, useRouter } from 'vue-router'
-    import { Insights as InsightsAPI } from '~/services/meta/insights'
     import { message } from 'ant-design-vue'
     import {
         SavedQuery,
@@ -31,7 +29,6 @@
     } from '~/constant/projection'
     import { useDiscoverList as useAssetData } from '~/composables/discovery/useDiscoverList'
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
-    // import { QueryFolderNamespace as QueryFolderNamespaceInterface } from '~/types/insights/savedQuery.interface'
     export default defineComponent({
         name: 'Insights Page',
         components: { InsightsComponent },

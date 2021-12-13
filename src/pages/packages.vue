@@ -1,14 +1,11 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex flex-1 h-full">
-            {{ isItem }}
-
-            testing text
             <router-view v-if="isItem" @select="handleSelect"></router-view>
 
             <keep-alive>
                 <PackageDiscovery
-                    :style="isItem ? 'display: none !important;' : ''"
+                    :style="displayStyle"
                     @select="handleSelect"
                 ></PackageDiscovery>
             </keep-alive>
@@ -32,7 +29,6 @@
 
     import PackageDiscovery from '@/packages/index.vue'
     import PackagePreview from '@/packages/preview/index.vue'
-    import { useMagicKeys } from '@vueuse/core'
 
     export default defineComponent({
         name: 'WorkflowSetupPage',
@@ -69,12 +65,22 @@
                 })
             }
 
+            const displayStyle = computed(() => {
+                if (isItem.value) {
+                    return {
+                        display: 'none !important',
+                    }
+                }
+                return {}
+            })
+
             return {
                 handleSetup,
                 handleSandbox,
                 selectedPackage,
                 isItem,
                 handleSelect,
+                displayStyle,
             }
         },
     })

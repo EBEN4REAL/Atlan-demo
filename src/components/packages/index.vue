@@ -103,7 +103,6 @@
             initialFilters: {
                 type: Object,
                 required: false,
-                default: {},
             },
             showAggrs: {
                 type: Boolean,

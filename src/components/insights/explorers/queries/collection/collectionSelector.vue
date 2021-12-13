@@ -25,29 +25,25 @@
                     </a-input>
                 </div>
                 <!-- FIXME: These should be using a same component -->
-                <div class="px-3 pt-3">
-                    <span class="text-xs font-bold text-gray-500">{{
+                <div class="pt-3">
+                    <span class="px-3 text-xs font-bold text-gray-500">{{
                         `Shared (${sharedCollections?.length ?? 0})`
                     }}</span>
 
-                    <div class="mb-3 overflow-x-hidden overflow-y-auto h-44">
+                    <div
+                        class="px-3 mb-3 overflow-x-hidden overflow-y-auto h-44"
+                        v-if="sharedCollections?.length !== 0"
+                    >
                         <div
                             v-if="sharedCollections?.length !== 0"
                             v-for="collection in sharedCollections"
                             :key="collection.guid"
-                            class="flex items-center p-1 cursor-pointer hover:bg-primary-light"
-                            @click="handleChange(collection.guid)"
                         >
-                            <AtlanIcon
-                                icon="Group"
-                                class="self-center w-4 h-4 pr-1"
-                            ></AtlanIcon>
-
-                            <div
-                                class="overflow-ellipsis group-hover:text-primary"
-                            >
-                                {{ collection.attributes.name }}
-                            </div>
+                            <CollectionItem
+                                :item="collection"
+                                :index="index"
+                                :handle-change="handleChange"
+                            />
                         </div>
                         <div
                             v-else
@@ -63,27 +59,21 @@
                         </div>
                     </div>
 
-                    <span class="text-xs font-bold text-gray-500">{{
+                    <span class="px-3 text-xs font-bold text-gray-500">{{
                         `Private (${privateCollections?.length ?? 0})`
                     }}</span>
 
-                    <div class="overflow-x-hidden overflow-y-auto h-44">
+                    <div class="px-3 overflow-x-hidden overflow-y-auto h-44">
                         <div
                             v-if="privateCollections?.length !== 0"
                             v-for="collection in privateCollections"
                             :key="collection.guid"
-                            class="flex items-center p-1 cursor-pointer hover:bg-primary-light"
-                            @click="handleChange(collection.guid)"
                         >
-                            <AtlanIcon
-                                icon="User"
-                                class="self-center w-4 h-4 pr-1"
-                            ></AtlanIcon>
-                            <div
-                                class="overflow-ellipsis group-hover:text-primary"
-                            >
-                                {{ collection.attributes.name }}
-                            </div>
+                            <CollectionItem
+                                :item="collection"
+                                :index="index"
+                                :handle-change="handleChange"
+                            />
                         </div>
                         <div
                             v-else
@@ -112,19 +102,6 @@
             ></AtlanIcon>
         </div>
     </a-popover>
-    <!-- <a-select
-        style="width: 200px"
-        @change="handleChange"
-        v-model:value="selectedValue"
-    >
-        <a-select-option
-            v-for="collection in queryCollections"
-            :key="collection?.guid"
-            :value="collection?.guid"
-        >
-            {{ collection.attributes.name }}
-        </a-select-option>
-    </a-select> -->
 </template>
 
 <script lang="ts">
@@ -132,6 +109,7 @@
         nextTick,
         computed,
         defineComponent,
+        defineAsyncComponent,
         ref,
         Ref,
         toRefs,
@@ -142,7 +120,6 @@
         watch,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import { useTimeoutFn } from '@vueuse/core'
     import {
         SavedQuery,
         QueryCollection,
@@ -151,11 +128,12 @@
     import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { useAuthStore } from '~/store/auth'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import CollectionItem from './collectionItem.vue'
 
     export default defineComponent({
         name: 'CollectionSelector',
         emits: ['update:data'],
-        components: { AtlanIcon, SearchAndFilter },
+        components: { AtlanIcon, SearchAndFilter, CollectionItem },
         setup(props, { emit }) {
             // store
             const authStore = useAuthStore()

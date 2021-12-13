@@ -2,7 +2,7 @@
     <ExplorerLayout
         title="Persona"
         sub-title=""
-        :sidebarVisibility="Boolean(selectedPersonaId)"
+        :sidebar-visibility="Boolean(selectedPersonaId)"
     >
         <template #action>
             <AtlanBtn
@@ -31,8 +31,8 @@
             </div>
 
             <ExplorerList
-                type="personas"
                 v-model:selected="selectedPersonaId"
+                type="personas"
                 :disabled="isEditing"
                 :list="filteredPersonas"
                 data-key="id"
@@ -53,7 +53,7 @@
                         >
                             {{ item.displayName }}
                         </span>
-                        <div class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'active' : 'inActive'"/>
+                        <!-- <div class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'active' : 'inActive'"/> -->
                     </div>
                 </template>
             </ExplorerList>
@@ -65,7 +65,7 @@
             <div class="bg-white">
                 <PersonaHeader :persona="selectedPersona" />
             </div>
-            <PersonaBody v-model:persona="selectedPersona" />
+            <PersonaBody v-model:persona="selectedPersona" @selectPolicy="handleSelectPolicy" />
         </template>
         <div
             v-else-if="
@@ -91,7 +91,6 @@
                 Add new persona
             </AtlanBtn>
         </div>
-
         <ErrorView v-else :error="isPersonaError">
             <div class="mt-3">
                 <a-button
@@ -109,11 +108,20 @@
                 </a-button>
             </div>
         </ErrorView>
+         <a-drawer
+            placement="right"
+            :closable="false"
+            :visible="modalDetailPolicyVisible"
+            @close="handleCloseModalDetailPolicy"
+        >
+            <DetailPolicy :selected-policy="selectedPolicy"/>
+        </a-drawer>
     </ExplorerLayout>
 </template>
 
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
+    import ErrorView from '@common/error/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -131,8 +139,8 @@
         isPersonaError,
     } from './composables/usePersonaList'
     import { isEditing } from './composables/useEditPersona'
-    import ErrorView from '@common/error/index.vue'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
+    import DetailPolicy from './overview/detailPolicy.vue'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -145,13 +153,22 @@
             ExplorerLayout,
             ExplorerList,
             AddPersona,
+            DetailPolicy
         },
         setup() {
             const modalVisible = ref(false)
+            const modalDetailPolicyVisible = ref(false)
+            const selectedPolicy = ref({})
             watch(searchTerm, () => {
                 console.log(searchTerm.value, 'searched')
             })
-
+            const handleCloseModalDetailPolicy = () => {
+                modalDetailPolicyVisible.value = false
+            }
+            const handleSelectPolicy = (policy) => {
+                selectedPolicy.value = policy
+                modalDetailPolicyVisible.value = true
+            }
             return {
                 reFetchList,
                 filteredPersonas,
@@ -164,6 +181,10 @@
                 isPersonaError,
                 isEditing,
                 AddPersonaIllustration,
+                modalDetailPolicyVisible,
+                handleCloseModalDetailPolicy,
+                handleSelectPolicy,
+                selectedPolicy
             }
         },
     })

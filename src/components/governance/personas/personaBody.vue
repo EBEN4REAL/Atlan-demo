@@ -284,7 +284,8 @@
                 required: true,
             },
         },
-        setup() {
+        emits: ['selectPolicy'],
+        setup(prop, {emit}) {
             const searchPersona = ref('')
             const activeTabFilter = ref('')
             const selectedPolicy = ref({})
@@ -424,6 +425,7 @@
             })
             const handleSelectPolicy = (policy) => {
                 selectedPolicy.value = policy
+                emit('selectPolicy', policy)
             }
             const totalPolicy = computed(
                 () =>

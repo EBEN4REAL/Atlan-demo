@@ -294,6 +294,7 @@ import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
 import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
 import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
 import Compass from '~/assets/images/icons/Compass.svg'
+import Policies from '~/assets/images/icons/Policies.svg'
 
 export default {
     BuilderGroup,
@@ -581,5 +582,6 @@ export default {
     FolderNav24Active,
     BulkUpload,
     ShieldBlank,
-    Compass
+    Compass,
+    Policies
 }

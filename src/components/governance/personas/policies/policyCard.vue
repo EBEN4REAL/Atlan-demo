@@ -262,7 +262,7 @@
             const getPopoverContent = (policy: any) =>
                 `Are you sure you want to delete ${policy?.name}?`
             const handleClickPlicyCard = () => {
-                emit('clickCard', policy.value)
+                emit('clickCard', {...policy.value, type: type.value})
             }
             return {
                 getPopoverContent,

@@ -21,7 +21,30 @@
                     </div>
 
                     <div class="flex flex-1 overflow-y-auto">
+                        <div
+                            class="flex items-center justify-center w-full"
+                            v-if="isLoading"
+                        >
+                            <a-spin></a-spin>
+                        </div>
+                        <div
+                            class="flex items-center justify-center w-full"
+                            v-if="error && !isLoading"
+                        >
+                            <ErrorView></ErrorView>
+                        </div>
+                        <div
+                            class="flex items-center justify-center w-full"
+                            v-if="!error && !isLoading && list.length === 0"
+                        >
+                            <EmptyView
+                                desc="No packages found"
+                                empty-screen="WFEmptyTab"
+                            ></EmptyView>
+                        </div>
+
                         <PackageList
+                            v-else
                             :list="list"
                             class="px-6"
                             @select="handleSelect"
@@ -29,6 +52,7 @@
                     </div>
                     <div
                         class="flex items-center p-3 text-base font-bold border-t border-gray-200 overflow-ellipsis"
+                        v-if="selectedPackage"
                     >
                         <a-button
                             type="primary"

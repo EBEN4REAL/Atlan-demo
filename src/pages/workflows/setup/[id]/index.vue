@@ -73,7 +73,7 @@
             } = usePackageByName(id, fetch.value)
 
             const { data, isLoading: isLoadingConfigMap } = useConfigMapByName(
-                `${id.value}-config`,
+                `${id.value}`,
                 true
             )
 

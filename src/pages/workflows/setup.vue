@@ -37,7 +37,7 @@
         },
         setup(props, { emit }) {
             useHead({
-                title: 'Packages',
+                title: 'Worfklow Setup',
             })
             const selectedPackage = ref(null)
             const route = useRoute()

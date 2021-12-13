@@ -3,11 +3,11 @@
         <div class="flex flex-col w-full h-full" v-if="!status">
             <a-steps
                 v-if="steps.length > 0"
-                v-model:current="currentStep"
+                :current="currentStep"
                 class="px-6 py-3 border-b border-gray-200"
             >
-                <template v-for="step in steps" :key="step.id">
-                    <a-step>
+                <template v-for="(step, index) in steps" :key="step.id">
+                    <a-step @click="handleStepClick(index)">
                         <template #title>{{ step.title }}</template>
                     </a-step>
                 </template>
@@ -408,6 +408,12 @@
                 router.replace(`/workflows/setup`)
             }
 
+            const handleStepClick = (step) => {
+                if (step < currentStep.value) {
+                    currentStep.value = step
+                }
+            }
+
             return {
                 emit,
 
@@ -436,6 +442,7 @@
                 errorMesssage,
                 handleBackToSetup,
                 handleExit,
+                handleStepClick,
             }
         },
     })

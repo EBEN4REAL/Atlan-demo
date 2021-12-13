@@ -1,7 +1,13 @@
 <template>
     <div
-        class="flex flex-col py-2 text-gray-500 border-b border-gray-300 rounded cursor-pointer group hover:bg-primary-light card-policy"
-        :class="selectedPolicy.id === policy.id ?  'outline-primary bg-primary-light' : ''"
+        class="flex flex-col py-2 text-gray-500 border-gray-300 cursor-pointer  group hover:bg-primary-light card-policy"
+        :class="
+            selectedPolicy.id === policy.id
+                ? 'outline-primary bg-primary-light'
+                : !isLastElement
+                ? 'border-b'
+                : ''
+        "
         @click="handleClickPlicyCard"
     >
         <div class="flex items-center gap-x-3">
@@ -10,8 +16,11 @@
                 data-test-id="policy-name"
                 >{{ policy.name }}</span
             >
-             <AtlanIcon icon="ShieldBlank" :class="policy.allow ? 'allow-icon' : ''" />
-           <!-- <div class="flex items-center border rounded bg-gray-light">
+            <AtlanIcon
+                icon="ShieldBlank"
+                :class="policy.allow ? 'allow-icon' : ''"
+            />
+            <!-- <div class="flex items-center border rounded bg-gray-light">
                 <img
                     :src="getImage(connectionQfName?.split('/')[1])"
                     class="w-auto h-6 p-1 bg-white rounded-tl rounded-bl"
@@ -32,15 +41,15 @@
             <span
                 class="px-1 ml-auto text-xs bg-gray-200"
                 data-test-id="policy-type"
-                >{{type === 'meta' ? 'Metadata Policy' : 'Data Policy'}}</span
+                >{{ type === 'meta' ? 'Metadata Policy' : 'Data Policy' }}</span
             >
         </div>
-            <!-- <span class="flex-none text-sm" v-if="policy.assets.length > 0">
+        <!-- <span class="flex-none text-sm" v-if="policy.assets.length > 0">
                 <b class="text-gray-700">{{ policy.assets.length }}</b> assets
                 selected
             </span> -->
-            <!-- <span class="flex-none text-sm" v-else> No assets selected </span> -->
-            <!-- <div
+        <!-- <span class="flex-none text-sm" v-else> No assets selected </span> -->
+        <!-- <div
                 v-if="type === 'meta'"
                 class="flex items-center overflow-hidden gap-x-1"
             >
@@ -77,7 +86,7 @@
                     </div>
                 </div>
             </div> -->
-            <!-- <div
+        <!-- <div
                 v-if="type === 'data' && policy.maskType !== 'null'"
                 class="flex items-center overflow-hidden gap-x-1"
             >
@@ -101,9 +110,9 @@
                     </span>
                 </div>
                 <template v-if="policy.assets.length > 0">
-                    <div class="dot"/>
+                    <div class="dot" />
                     <AtlanIcon icon="Compass" />
-                    <span class="flex-none text-sm" >
+                    <span class="flex-none text-sm">
                         {{ policy.assets.length }} assets
                     </span>
                 </template>
@@ -139,7 +148,7 @@
                 </div>
             </div>
             <div
-                class="flex items-stretch border border-gray-300 rounded opacity-0 group-hover:opacity-100 text-gray hover:text-primary"
+                class="flex items-stretch border border-gray-300 rounded opacity-0  group-hover:opacity-100 text-gray hover:text-primary"
             >
                 <!-- <AtlanBtn
                     class="flex-none px-2 border-l border-gray-300 border-none hover:text-primary"
@@ -166,7 +175,7 @@
                     @confirm="removePolicy"
                 >
                     <AtlanBtn
-                        class="flex-none px-2 border-r border-gray-300 border-none hover:text-red-500"
+                        class="flex-none px-2 border-r border-gray-300 border-none  hover:text-red-500"
                         size="sm"
                         color="secondary"
                         data-test-id="policy-delete"
@@ -211,11 +220,15 @@
             selectedPolicy: {
                 type: Object as PropType<DataPolicies & MetadataPolicies>,
                 required: true,
-            }
+            },
+            isLastElement: {
+                type: Boolean,
+                required: false,
+            },
         },
         emits: ['edit', 'cancel', 'delete', 'clickCard'],
         setup(props, { emit }) {
-            const { policy, type } = toRefs(props)
+            const { policy, type, isLastElement } = toRefs(props)
             const { findActions } = useScopeService()
             const { getAssetIcon } = useUtils()
             const showAll = ref(false)
@@ -268,29 +281,29 @@
                 assetsIcons,
                 showAll,
                 splitAssets,
-                handleClickPlicyCard
+                handleClickPlicyCard,
             }
         },
     })
 </script>
 
 <style lang="less">
-    .allow-icon{
+    .allow-icon {
         path {
-            fill: #00a680!important;
+            fill: #00a680 !important;
         }
     }
 </style>
 <style lang="less" scoped>
-    .card-policy{
+    .card-policy {
         margin: 1px;
         margin-right: 2px;
     }
-    .dot{
+    .dot {
         height: 4px;
         width: 4px;
-        background-color: #E6E6EB;
-        border-radius: 50%
+        background-color: #e6e6eb;
+        border-radius: 50%;
     }
     .data-policy-pill {
         @apply rounded-full text-xs px-2 py-1;

@@ -15,7 +15,16 @@
                             {{ t?.data?.label }}
                         </div>
                         <div
-                            class="px-1 py-0.5 ml-2 text-xs font-bold rounded flex items-center"
+                            class="
+                                px-1
+                                py-0.5
+                                ml-2
+                                text-xs
+                                font-bold
+                                rounded
+                                flex
+                                items-center
+                            "
                             v-if="t?.data?.key === 'policies'"
                             :class="
                                 activeTabKey === t?.data?.key
@@ -32,7 +41,16 @@
                             </div>
                         </div>
                         <div
-                            class="px-1 py-0.5 ml-2 text-xs font-bold rounded flex items-center"
+                            class="
+                                px-1
+                                py-0.5
+                                ml-2
+                                text-xs
+                                font-bold
+                                rounded
+                                flex
+                                items-center
+                            "
                             v-if="t?.data?.key === 'users'"
                             :class="
                                 activeTabKey === t?.data?.key
@@ -52,7 +70,14 @@
             </MinimalTab>
         </div>
 
-        <div class="overflow-y-auto content-wrapper" :class=" activeTabKey === 'policies' ? 'bg-white' : 'px-5'">
+        <div
+            class="overflow-y-auto content-wrapper"
+            :class="
+                activeTabKey === 'policies'
+                    ? 'bg-white pt-0 pb-0 pr-3 pl-3'
+                    : 'px-5'
+            "
+        >
             <div>
                 {{ selectedPersonaDirty?.datapolicies?.length }}
             </div>
@@ -67,10 +92,10 @@
                         <SearchAndFilter
                             v-model:value="searchPersona"
                             :placeholder="`Search from ${
-                                (
-                                    (selectedPersonaDirty?.metadataPolicies?.length || 0) + 
-                                    (selectedPersonaDirty?.dataPolicies?.length || 0) 
-                                ) ?? 0
+                                (selectedPersonaDirty?.metadataPolicies
+                                    ?.length || 0) +
+                                    (selectedPersonaDirty?.dataPolicies
+                                        ?.length || 0) ?? 0
                             } personas`"
                             class="bg-white"
                             :autofocus="true"
@@ -89,10 +114,13 @@
                                 </template>
                                 Add new policy
                                 <template #suffix>
-                                    <AtlanIcon icon="ChevronDown" class="text-white" />
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="text-white"
+                                    />
                                 </template>
                             </AtlanBtn>
-    
+
                             <template #overlay>
                                 <a-menu>
                                     <a-menu-item
@@ -118,18 +146,13 @@
                         </a-dropdown>
                     </div>
                     <div class="px-3 py-4 container-tabs">
-                        <AggregationTabs 
+                        <AggregationTabs
                             v-model="activeTabFilter"
                             :list="tabFilterList"
                         />
                     </div>
                 </div>
-                <template
-                    v-for="(
-                        policy, idx
-                    ) in medatDataComputed"
-                    :key="idx"
-                >
+                <template v-for="(policy, idx) in metaDataComputed" :key="idx">
                     <!-- Render it if the policy is being edited -->
                     <!-- <MetadataPolicy
                         v-if="policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
@@ -141,7 +164,7 @@
                     /> -->
 
                     <PolicyCard
-                        class="px-5 bg-white"
+                        class="px-3 bg-white"
                         :policy="policy"
                         type="meta"
                         @edit="setEditFlag('meta', policy.id!)"
@@ -166,7 +189,8 @@
                     /> -->
                     <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
                     <PolicyCard
-                        class="px-5 bg-white"
+                        :isLastElement="idx === dataPolicyComputed?.length - 1"
+                        class="px-3 bg-white"
                         :policy="policy"
                         type="data"
                         @edit="setEditFlag('data', policy.id!)"
@@ -272,7 +296,7 @@
             PersonaMeta,
             PersonaUsersGroups,
             SearchAndFilter,
-            AggregationTabs
+            AggregationTabs,
         },
         props: {
             persona: {
@@ -355,32 +379,58 @@
                 return [
                     {
                         id: 'allPersona',
-                        label: "All ",
-                        count: (selectedPersonaDirty?.value?.metadataPolicies?.length || 0) + (selectedPersonaDirty?.value?.dataPolicies?.length || 0)
+                        label: 'All ',
+                        count:
+                            (selectedPersonaDirty?.value?.metadataPolicies
+                                ?.length || 0) +
+                            (selectedPersonaDirty?.value?.dataPolicies
+                                ?.length || 0),
                     },
                     {
                         id: 'metaData',
-                        label: "MetaData",
-                        count: selectedPersonaDirty?.value?.metadataPolicies?.length || 0
+                        label: 'MetaData',
+                        count:
+                            selectedPersonaDirty?.value?.metadataPolicies
+                                ?.length || 0,
                     },
                     {
                         id: 'data',
-                        label: "Data",
-                        count: selectedPersonaDirty?.value?.dataPolicies?.length || 0
-                    }
+                        label: 'Data',
+                        count:
+                            selectedPersonaDirty?.value?.dataPolicies?.length ||
+                            0,
+                    },
                 ]
             })
-            const medatDataComputed = computed(() => {
-                if(!activeTabFilter.value || activeTabFilter.value === 'allPersona' || activeTabFilter.value === 'metaData'){
-                    const deteMeta = selectedPersonaDirty?.value?.metadataPolicies || []
-                    return filterMethod(deteMeta, searchPersona.value || "", 'name')
+            const metaDataComputed = computed(() => {
+                if (
+                    !activeTabFilter.value ||
+                    activeTabFilter.value === 'allPersona' ||
+                    activeTabFilter.value === 'metaData'
+                ) {
+                    const deteMeta =
+                        selectedPersonaDirty?.value?.metadataPolicies || []
+                    return filterMethod(
+                        deteMeta,
+                        searchPersona.value || '',
+                        'name'
+                    )
                 }
                 return []
             })
             const dataPolicyComputed = computed(() => {
-                if(!activeTabFilter.value || activeTabFilter.value === 'allPersona' || activeTabFilter.value === 'data'){
-                    const dataPolicy = selectedPersonaDirty?.value?.dataPolicies || []
-                    return filterMethod(dataPolicy, searchPersona.value || "", 'name')
+                if (
+                    !activeTabFilter.value ||
+                    activeTabFilter.value === 'allPersona' ||
+                    activeTabFilter.value === 'data'
+                ) {
+                    const dataPolicy =
+                        selectedPersonaDirty?.value?.dataPolicies || []
+                    return filterMethod(
+                        dataPolicy,
+                        searchPersona.value || '',
+                        'name'
+                    )
                 }
                 return []
             })
@@ -403,27 +453,26 @@
                 searchPersona,
                 tabFilterList,
                 activeTabFilter,
-                medatDataComputed,
+                metaDataComputed,
                 dataPolicyComputed,
                 handleSelectPolicy,
-                selectedPolicy
+                selectedPolicy,
             }
         },
     })
 </script>
 
 <style lang="less" module>
-    .container-tabs{
+    .container-tabs {
         .assetbar {
             :global(.ant-tabs-tab:first-child) {
                 border-top-left-radius: 24px !important;
             }
-    
         }
     }
 </style>
 <style scoped lang="less">
-    .content-wrapper{
+    .content-wrapper {
         height: inherit;
     }
 </style>

@@ -248,12 +248,6 @@
                 })
                 const { data, error, isLoading } =
                     InsightsAPI.GetSavedQueryIndex(queryBody, {})
-
-                // const { data, error, isLoading } =
-                //     InsightsAPI.GetSavedQuery(
-                //         savedQueryGuidFromURL.value as string,
-                //         {}
-                //     )
                 watch([data, error, isLoading], () => {
                     if (isLoading.value == false) {
                         isSavedQueryInfoLoaded.value = false
@@ -273,26 +267,6 @@
                         } else {
                             message.error({
                                 content: `Error in loading this query!`,
-                            })
-                        }
-                    }
-                })
-            }
-            const fetchQueryFolderNamespace = () => {
-                const { data, error, isLoading } = getQueryFolderNamespace()
-                watch([data, error, isLoading], () => {
-                    if (isLoading.value == false) {
-                        if (error.value === undefined) {
-                            if (
-                                data.value?.entities &&
-                                data.value?.entities?.length > 0
-                            ) {
-                                queryFolderNamespace.value =
-                                    data.value.entities[0]
-                            }
-                        } else {
-                            message.error({
-                                content: `Error in fetching root Info`,
                             })
                         }
                     }
@@ -327,7 +301,6 @@
 
             onMounted(() => {
                 fetchQueryCollections()
-                fetchQueryFolderNamespace()
 
                 if (savedQueryGuidFromURL.value) {
                     fetchAndPassSavedQueryInfo()

@@ -156,7 +156,6 @@
             }
 
             const fetchMore = () => {
-                debugger
                 fetchMoreAuditParams.startKey = audits?.value[
                     audits.value?.length - 1
                 ].eventKey as string

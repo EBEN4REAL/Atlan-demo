@@ -6,7 +6,6 @@
             <!--p class="mt-2 text-gray-600">Please check the URL in the adress bar and try again.</p-->
         </div>
 </div>
-{{list}}
     </div>
 </template>
 

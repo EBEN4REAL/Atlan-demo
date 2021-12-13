@@ -506,7 +506,7 @@ const useGlossaryTree = ({
         }
     }
     const addNode = (asset, entity): TreeDataItem => {
-        if (entity && entity !== {}) {
+        if (entity) {
             recursivelyAddOrDeleteNode(
                 asset,
                 entity?.value?.guid || entity?.guid,

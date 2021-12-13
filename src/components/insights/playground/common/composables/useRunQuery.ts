@@ -103,8 +103,12 @@ export default function useProject() {
 
         // console.log('selected text: ', selectedText)
         /* Checking If any text is selected */
-        
-        if (selectedText && selectedText !== '') {
+
+        let semiColonMatchs = toRaw(editorInstance.value)?.getModel()?.findMatches(';');
+        if(semiColonMatchs.length===0) {
+            queryText = activeInlineTab.value.playground.editor.text
+
+        } else if (selectedText && selectedText !== '') {
             queryText = getParsedQuery(
                 activeInlineTab.value.playground.editor.variables,
                 selectedText

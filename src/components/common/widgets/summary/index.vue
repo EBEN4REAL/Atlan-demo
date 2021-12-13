@@ -42,7 +42,7 @@
                         />
                     </div>
 
-                    <div v-if="asset.guid" class="flex flex-col">
+                    <div v-if="asset.guid" class="flex flex-col max-w-sm">
                         <p class="mb-1 text-sm text-gray-500">Owners</p>
                         <Owners
                             v-model="localOwners"

@@ -85,7 +85,7 @@
             >
                 <Pagination
                     :current="pagination.current"
-                    :total="pagination.total"
+                    :totalPages="pagination.total"
                     :loading="isLoading"
                     :pageSize="size"
                     :offset="from"
@@ -193,7 +193,7 @@
             )
             const lt = ref(dayjs().format())
             const from = ref(0)
-            const size = ref(6)
+            const size = ref(20)
             const {
                 getDatabaseName,
                 getSchemaName,

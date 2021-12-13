@@ -81,9 +81,9 @@
                 >
                     <Pagination
                         :current="pagination.current"
-                        :total="pagination.total"
+                        :total-pages="pagination.total"
                         :loading="isLoading"
-                        :pageSize="pagination.pageSize"
+                        :page-size="pagination.pageSize"
                         :offset="pagination.offset"
                         @change="handlePagination"
                     />
@@ -193,7 +193,7 @@
             const selectedInvite = ref({})
 
             const pagination = computed(() => ({
-                total: filteredUserCount.value,
+                total: filteredUserCount.value / userListAPIParams.limit,
                 pageSize: userListAPIParams.limit,
                 current: userListAPIParams.offset / userListAPIParams.limit + 1,
                 offset: userListAPIParams.offset,

@@ -120,7 +120,7 @@
             <div class="flex justify-end max-w-full mt-4">
                 <Pagination
                     :current="pagination.current"
-                    :total="pagination.total"
+                    :totalPages="pagination.total"
                     :pageSize="pagination.pageSize"
                     :loading="isLoading"
                     :offset="pagination.offset"
@@ -179,21 +179,11 @@
 
             const selectedGroupId = ref('')
             const groupListAPIParams = reactive({
-                limit: 15,
+                limit: 50,
                 offset: 0,
                 filter: {},
                 sort: '-createdAt',
             })
-            const pagination = computed(() => ({
-                total: Object.keys(groupListAPIParams.filter).length
-                    ? filteredGroupsCount.value
-                    : totalGroupsCount.value,
-                pageSize: groupListAPIParams.limit,
-                current:
-                    groupListAPIParams.offset / groupListAPIParams.limit + 1,
-                offset: groupListAPIParams.offset,
-            }))
-
             const {
                 groupList,
                 totalGroupsCount,
@@ -202,6 +192,20 @@
                 error,
                 isLoading,
             } = useGroups(groupListAPIParams)
+
+            const pagination = computed(() => ({
+                total: Object.keys(groupListAPIParams.filter).length
+                    ? Math.ceil(
+                          filteredGroupsCount.value / groupListAPIParams.limit
+                      )
+                    : Math.ceil(
+                          totalGroupsCount.value / groupListAPIParams.limit
+                      ),
+                pageSize: groupListAPIParams.limit,
+                current:
+                    groupListAPIParams.offset / groupListAPIParams.limit + 1,
+                offset: groupListAPIParams.offset,
+            }))
 
             // BEGIN: GROUP PREVIEW
             const {

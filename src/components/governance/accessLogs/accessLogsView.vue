@@ -86,7 +86,7 @@
             >
                 <Pagination
                     :current="pagination.current"
-                    :total="pagination.total"
+                    :totalPages="pagination.total"
                     :loading="isLoading"
                     :pageSize="size"
                     :offset="from"
@@ -178,6 +178,7 @@
             const timezone = ref(dayjs().format('Z'))
             const from = ref(0)
             const size = ref(20)
+
             const {
                 getDatabaseName,
                 getSchemaName,
@@ -193,7 +194,11 @@
                 assetListLoading,
             } = useAccessLogs(gte, lt, from, size)
 
-            // since we always get filtered total count in response, storing the total count when we get the logs first time, i.e. when no filters are applied to find the total number of logs to decide if we want to render empty state or logs table.
+            // since we always get filtered total count in response,
+            //  storing the total count when we get the logs first time,
+            //  i.e. when no filters are applied to find the total number of logs to
+            //  decide if we want to render empty state or logs table.
+
             const totalLogsCount = ref(0)
             const stopWatcher = watch(filteredLogsCount, () => {
                 totalLogsCount.value = filteredLogsCount.value

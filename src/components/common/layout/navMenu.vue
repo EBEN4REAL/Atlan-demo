@@ -9,16 +9,21 @@
                 @click="$emit('toggleNavbar')"
             />
 
-            <router-link to="/">
+            <router-link v-if="logoUrl && !logoNotFound" to="/">
                 <img
-                    v-if="logoUrl"
                     :src="logoUrl"
                     class="w-auto h-8 cursor-pointer select-none"
                     :alt="defaultLogo"
-                    @error="(e: any) => e.target.src = defaultLogo"
+                    @error="onLogoNotFound"
                 />
-                <p class="font-bold text-md" v-else>{{ logoName }}</p>
             </router-link>
+            <p
+                v-else
+                class="mt-1 text-lg font-bold text-gray-600 bg-white cursor-pointer hover:text-primary"
+                style="margin-top: 3px"
+            >
+                {{ logoName }}
+            </p>
         </div>
         <div class="flex items-center h-full cursor-pointer justify-self-end">
             <a-dropdown placement="bottomRight">
@@ -57,7 +62,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, ref } from 'vue'
 
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import { useTenantStore } from '~/store/tenant'
@@ -82,6 +87,7 @@
             const { page } = useVModels(props, emit)
             const tenantStore = useTenantStore()
             const currentRoute = useRoute()
+            const logoNotFound = ref(false)
 
             const isHome = computed(() => {
                 if (currentRoute.name === 'index') {
@@ -92,6 +98,7 @@
 
             const logoUrl = computed(() => {
                 if (tenantStore.displayNameHtml) {
+                    return 'please change this, only for testing'
                     return `${window.location.origin}/api/service/avatars/_logo_`
                 }
                 return ''
@@ -104,6 +111,10 @@
                 router.push('/packages')
             }
 
+            const onLogoNotFound = () => {
+                logoNotFound.value = true
+            }
+
             return {
                 page,
                 isHome,
@@ -112,6 +123,8 @@
                 currentRoute,
                 defaultLogo,
                 handleNewPackage,
+                onLogoNotFound,
+                logoNotFound,
             }
         },
     })

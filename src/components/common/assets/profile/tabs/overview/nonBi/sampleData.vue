@@ -166,11 +166,7 @@
                     })
                 }
             })
-            watch([error], () => {
-                if (error.value) {
-                    console.log(error.value.errorMessage)
-                }
-            })
+
             return {
                 tableColumns,
                 results,

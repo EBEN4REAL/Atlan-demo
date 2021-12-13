@@ -97,13 +97,18 @@
                 required: false,
                 default: false,
             },
+            inProfile: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, inProfile } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -135,7 +140,7 @@
                         'true'
             )
             const { c, Escape, v, enter, shift } = useMagicKeys()
-            whenever(and(c, notUsingInput), () => {
+            whenever(and(c, notUsingInput, !inProfile.value), () => {
                 if (!isEdit.value) {
                     isEdit.value = true
                 }

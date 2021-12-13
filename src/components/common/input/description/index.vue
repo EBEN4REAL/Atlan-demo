@@ -70,11 +70,16 @@
                 required: false,
                 default: () => {},
             },
+            inProfile: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, selectedAsset } = toRefs(props)
+            const { readOnly, selectedAsset, inProfile } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
@@ -112,8 +117,7 @@
 
             const { d, enter, shift } = useMagicKeys()
 
-            whenever(and(d, notUsingInput), () => {
-                console.log(activeElement.value)
+            whenever(and(d, notUsingInput, !inProfile.value), () => {
                 handleEdit()
             })
 

@@ -60,7 +60,7 @@
     import Panel from './panel.vue'
 
     export default defineComponent({
-        name: 'CommonFilter',
+        name: 'PackageFilter',
         components: {
             Panel,
         },
@@ -161,9 +161,6 @@
                     }
                     return true
                 })
-                if (allowCustomFilters.value) {
-                    return [...arr]
-                }
                 return [...arr]
             })
 

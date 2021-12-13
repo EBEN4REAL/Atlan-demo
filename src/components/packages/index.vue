@@ -1,6 +1,5 @@
 <template>
     <div class="flex flex-1">
-        component
         <div class="flex flex-col h-full">
             <div
                 class="flex items-center px-5 py-3 text-base font-bold border-b border-gray-200 overflow-ellipsis"
@@ -21,7 +20,7 @@
                     ></PackageFilters>
                 </div>
 
-                <!--     <div class="flex flex-col flex-1 h-full py-4">
+                <div class="flex flex-col flex-1 h-full py-4">
                     <div
                         class="flex flex-col px-6 pb-4 font-extrabold py-4text-2xl"
                     >
@@ -63,14 +62,14 @@
                             ></EmptyView>
                         </div>
                     </div>
-                    <div class="flex flex-1 overflow-y-auto">
+                    <!--     <div class="flex flex-1 overflow-y-auto">
                         <PackageList
                             :list="list"
                             class="px-6"
                             @select="handleSelect"
                         ></PackageList>
-                    </div>
-                </div> -->
+                    </div>-->
+                </div>
             </div>
         </div>
     </div>

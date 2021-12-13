@@ -1,7 +1,14 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex flex-1 h-full">
-            <PackageDiscoveryList></PackageDiscoveryList>
+            <router-view v-if="isItem" @select="handleSelect"></router-view>
+
+            <keep-alive>
+                <PackageDiscoveryList
+                    :style="displayStyle"
+                    @select="handleSelect"
+                ></PackageDiscoveryList>
+            </keep-alive>
         </div>
 
         <div

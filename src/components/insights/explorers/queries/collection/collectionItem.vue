@@ -21,7 +21,7 @@
         </div>
         <div>
             <a-dropdown :trigger="['click']" @click.stop="() => {}">
-                <div class="pl-5">
+                <div class="pl-5" v-if="username === item?.createdBy">
                     <AtlanIcon
                         icon="KebabMenu"
                         class="w-4 h-4 my-auto"
@@ -69,6 +69,7 @@
         defineAsyncComponent,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         components: {
@@ -105,6 +106,7 @@
 
             const showShareQueryModal = ref(false)
             const toggleShareQueryModal = () => {
+                console.log('collection item: ', item.value)
                 showShareQueryModal.value = !showShareQueryModal.value
             }
 
@@ -112,6 +114,8 @@
             const toggleShowCollectionModal = () => {
                 showCollectionModal.value = !showCollectionModal.value
             }
+
+            const { username } = whoami()
 
             return {
                 item,
@@ -121,6 +125,7 @@
                 toggleShareQueryModal,
                 showCollectionModal,
                 toggleShowCollectionModal,
+                username,
             }
         },
     })

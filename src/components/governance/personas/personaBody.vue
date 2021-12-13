@@ -91,7 +91,7 @@
                     <div class="flex items-center pt-3 pr-4">
                         <SearchAndFilter
                             v-model:value="searchPersona"
-                            :placeholder="`Search from ${totalPolicy} personas`"
+                            :placeholder="`Search from ${totalPolicy} policies`"
                             class="bg-white"
                             :autofocus="true"
                             size="minimal"
@@ -140,7 +140,10 @@
                             </template>
                         </a-dropdown>
                     </div>
-                    <div v-if="totalPolicy !== 0" class="px-3 py-4 container-tabs">
+                    <div
+                        v-if="totalPolicy !== 0"
+                        class="px-3 py-4 container-tabs"
+                    >
                         <AggregationTabs
                             v-model="activeTabFilter"
                             :list="tabFilterList"
@@ -316,7 +319,7 @@
                     handleClick: () => addPolicy('data'),
                 },
             ]
-            
+
             watch(selectedPersonaDirty, () => {
                 activeTabFilter.value = ''
             })
@@ -380,24 +383,28 @@
                         id: 'all Persona',
                         label: 'All ',
                         count:
-                           ( selectedPersonaDirty?.value?.metadataPolicies
-                                ?.length || 0) + (selectedPersonaDirty?.value?.dataPolicies?.length || 0)
-                    }
+                            (selectedPersonaDirty?.value?.metadataPolicies
+                                ?.length || 0) +
+                            (selectedPersonaDirty?.value?.dataPolicies
+                                ?.length || 0),
+                    },
                 ]
-                const lengthMetaData = selectedPersonaDirty?.value?.metadataPolicies?.length || 0
-                const lengthDataPolicy = selectedPersonaDirty?.value?.dataPolicies?.length || 0
-                if(lengthMetaData > 0){
+                const lengthMetaData =
+                    selectedPersonaDirty?.value?.metadataPolicies?.length || 0
+                const lengthDataPolicy =
+                    selectedPersonaDirty?.value?.dataPolicies?.length || 0
+                if (lengthMetaData > 0) {
                     listFilter.push({
                         id: 'metaData',
                         label: 'MetaData',
-                        count: lengthMetaData
+                        count: lengthMetaData,
                     })
                 }
-                if(lengthDataPolicy > 0){
+                if (lengthDataPolicy > 0) {
                     listFilter.push({
                         id: 'data',
                         label: 'data',
-                        count: lengthDataPolicy
+                        count: lengthDataPolicy,
                     })
                 }
                 return listFilter
@@ -438,7 +445,12 @@
                 selectedPolicy.value = policy
             }
             const totalPolicy = computed(() => {
-                return (selectedPersonaDirty.value?.metadataPolicies?.length || 0) + (selectedPersonaDirty.value?.dataPolicies?.length || 0) ?? 0
+                return (
+                    (selectedPersonaDirty.value?.metadataPolicies?.length ||
+                        0) +
+                        (selectedPersonaDirty.value?.dataPolicies?.length ||
+                            0) ?? 0
+                )
             })
             return {
                 newIdTag,
@@ -460,7 +472,7 @@
                 dataPolicyComputed,
                 handleSelectPolicy,
                 selectedPolicy,
-                totalPolicy
+                totalPolicy,
             }
         },
     })

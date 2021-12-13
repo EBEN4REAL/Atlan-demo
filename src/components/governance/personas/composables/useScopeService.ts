@@ -43,14 +43,14 @@ const purposeScopeList = [
                 label: 'update: Classifications',
             },
 
-            {
-                value: 'add-terms',
-                label: 'Add: Terms',
-            },
-            {
-                value: 'remove-terms',
-                label: 'Remove: Terms',
-            },
+            // {
+            //     value: 'add-terms',
+            //     label: 'Add: Terms',
+            // },
+            // {
+            //     value: 'remove-terms',
+            //     label: 'Remove: Terms',
+            // },
         ],
         type: 'Governance',
         label: 'Governance',

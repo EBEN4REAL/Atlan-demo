@@ -12,7 +12,6 @@
 
             <div class="flex flex-1 overflow-y-auto">
                 <div
-                    v-if="showFilters"
                     class="flex flex-col bg-gray-100 border-r border-gray-300 filters"
                 >
                     <PackageFilters
@@ -30,34 +29,12 @@
                         ></a-input>
                     </div>
 
-                    <div
-                        class="flex flex-col px-6 py-4"
-                        v-if="list?.length == 0"
-                    >
-                        <div
-                            v-if="isLoading"
-                            class="flex items-center justify-center flex-grow"
-                        >
-                            <AtlanIcon
-                                icon="Loader"
-                                class="w-auto h-10 animate-spin"
-                            ></AtlanIcon>
-                        </div>
-                        <div
-                            v-if="!isLoading && error"
-                            class="flex items-center justify-center flex-grow"
-                        ></div>
-                        <div
-                            v-else-if="list?.length === 0 && !isLoading"
-                            class="flex-grow"
-                        ></div>
-                    </div>
                     <div class="flex flex-1 overflow-y-auto">
-                        <PackageList
+                        <!-- <PackageList
                             :list="list"
                             class="px-6"
                             @select="handleSelect"
-                        ></PackageList>
+                        ></PackageList> -->
                     </div>
                 </div>
             </div>
@@ -67,28 +44,19 @@
 
 <script lang="ts">
     import { defineComponent, ref, computed } from 'vue'
-    import EmptyView from '@common/empty/index.vue'
-    import ErrorView from '@common/error/discover.vue'
-    import PackageList from '@/packages/list/index.vue'
+    // import EmptyView from '@common/empty/index.vue'
+    // import ErrorView from '@common/error/discover.vue'
+    // import PackageList from '@/packages/list/index.vue'
     import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
-    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    // import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'PackageDiscovery',
         components: {
             PackageFilters,
-            PackageList,
-            EmptyView,
-            // PackageFilters,
-            ErrorView,
         },
         props: {
-            showFilters: {
-                type: Boolean,
-                required: false,
-                default: true,
-            },
             initialFilters: {
                 type: Object,
                 required: false,
@@ -126,13 +94,13 @@
             //     offset,
             // })
 
-            const { isLoading, list, error } = usePackageDiscoverList({
-                isCache: true,
-                dependentKey,
-                facets,
-                limit,
-                offset,
-            })
+            // const { isLoading, list, error } = usePackageDiscoverList({
+            //     isCache: true,
+            //     dependentKey,
+            //     facets,
+            //     limit,
+            //     offset,
+            // })
 
             const placeholder = computed(() => 'Search all packages')
 
@@ -143,24 +111,16 @@
                 emit('select', item)
             }
 
-            const handleSetup = (item) => {
-                emit('setup', selectedPackage.value)
-            }
-            const handleSetupSandbox = (item) => {
-                emit('sandbox', selectedPackage.value)
-            }
-
             return {
                 placeholder,
                 dirtyTimestamp,
                 searchDirtyTimestamp,
-                isLoading,
-                list,
+                // isLoading,
+                // list,
                 handleSelect,
                 selectedPackage,
-                handleSetup,
-                error,
-                handleSetupSandbox,
+
+                // error,
                 packageFilters,
                 facets,
             }

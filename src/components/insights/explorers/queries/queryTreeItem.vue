@@ -553,16 +553,24 @@
                             watch(
                                 error,
                                 () => {
-                                    console.log('rename erro: ', error)
+                                    console.log('rename error: ', error)
                                     if (error.value == undefined) {
                                         message.success({
-                                            content: `Folder renamed successfully`,
+                                            content: `${
+                                                item.value.typeName === 'Query'
+                                                    ? 'Query'
+                                                    : 'Folder'
+                                            } renamed successfully`,
                                         })
                                     } else {
                                         item.value.attributes.name = orignalName
 
-                                        message.success({
-                                            content: `Folder rename failed`,
+                                        message.error({
+                                            content: `${
+                                                item.value.typeName === 'Query'
+                                                    ? 'Query'
+                                                    : 'Folder'
+                                            } rename failed`,
                                         })
                                     }
                                 },
@@ -577,16 +585,45 @@
                     }
                 })
                 input.addEventListener('blur', (e) => {
-                    if (input.value) {
+                    if (input.value && input.value !== orignalName) {
                         item.value.attributes.name = input.value
-                        const { data, error } = Insights.CreateSavedQuery({
-                            entiy: item.value.entity,
-                        })
-                        watch(error, (newError) => {
-                            if (newError) {
-                                item.value.attributes.name = orignalName
-                            }
-                        })
+                        const { data, error } = Insights.CreateQueryFolder(
+                            {
+                                entiy: item.value.entity,
+                            },
+                            {}
+                        )
+                        // watch(error, (newError) => {
+                        //     if (newError) {
+                        //         item.value.attributes.name = orignalName
+                        //     }
+                        // })
+                        watch(
+                            error,
+                            () => {
+                                console.log('rename erro: ', error)
+                                if (error.value == undefined) {
+                                    message.success({
+                                        content: `${
+                                            item.value.typeName === 'Query'
+                                                ? 'Query'
+                                                : 'Folder'
+                                        } renamed successfully`,
+                                    })
+                                } else {
+                                    item.value.attributes.name = orignalName
+
+                                    message.error({
+                                        content: `${
+                                            item.value.typeName === 'Query'
+                                                ? 'Query'
+                                                : 'Folder'
+                                        } rename failed`,
+                                    })
+                                }
+                            },
+                            { immediate: true }
+                        )
                     }
                     try {
                         parentNode?.removeChild(div)

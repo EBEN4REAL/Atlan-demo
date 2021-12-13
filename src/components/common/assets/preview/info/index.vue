@@ -316,7 +316,7 @@
                 :selected-asset="selectedAsset"
                 class="px-5"
                 :read-only="readOnly"
-                @change="handleMeaningsUpdate"
+                @change="handleCategoriesUpdate"
             >
             </Categories>
         </div>
@@ -436,6 +436,7 @@
                 localClassifications,
                 localMeanings,
                 localCategories,
+                handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
                 handleChangeDescription,
@@ -506,6 +507,7 @@
                 showSampleDataModal,
                 localMeanings,
                 handleMeaningsUpdate,
+                handleCategoriesUpdate,
                 isUserDescription,
                 localCategories,
             }

@@ -114,9 +114,10 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            console.log(modelValue.value)
             const checkedKeys = ref(
                 modelValue.value.map((category) => ({
-                    label: category.attributes.name,
+                    label: category.attributes?.name,
                     value: category.guid
                 }))
             )
@@ -139,8 +140,15 @@
             const { initCategories, treeData, onLoadData } = useCategoriesWidget({parentGlossaryQf: selectedAsset.value.attributes.anchor.uniqueAttributes.qualifiedName ?? ''})
 
             const onPopoverClose = (visible) => {
-                if (!visible && hasBeenEdited.value) {
-                    modelValue.value = localValue.value
+                console.log(visible , localValue.value, checkedKeys.value)
+                if (!visible) {
+                    modelValue.value = checkedKeys.value.map((cat) => ({
+                        guid: cat.value,
+                        typeName: 'AtlasGlossaryCategory',
+                        attributes: {
+                            name: cat.label
+                        }
+                    }))
                     emit('change', localValue.value)
                     hasBeenEdited.value = false
                 }

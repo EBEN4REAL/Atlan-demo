@@ -23,6 +23,7 @@
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
                         :item="item"
+                        :selected-asset="selectedAsset"
                         class=""
                     />
                 </div>

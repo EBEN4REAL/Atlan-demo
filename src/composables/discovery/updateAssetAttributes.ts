@@ -7,6 +7,7 @@ import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import confetti from '~/utils/confetti'
 import { generateUUID } from '~/utils/helper/generator'
+import { Entity } from '~/services/meta/entity/index'
 
 export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const {
@@ -228,6 +229,24 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate()
     }
 
+    // Resource Deletion
+    const handleResourceDelete = (guidToDelete: string) => {
+        const { error, isLoading, isReady } = Entity.DeleteEntity(guidToDelete)
+        whenever(error, () => {
+            message.error(
+                `${error.value?.response?.data?.errorCode} ${
+                    error.value?.response?.data?.errorMessage.split(':')[0]
+                }` ?? 'Something went wrong'
+            )
+        })
+        whenever(isReady, () => {
+            message.success(`Resource "${title(selectedAsset.value)}" deleted`)
+            guid.value = selectedAsset.value.guid
+
+            mutateUpdate()
+        })
+    }
+
     // Readme Update
     const handleUpdateReadme = () => {
         const readmeEntity = ref<any>({
@@ -295,10 +314,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
 
         message.error(
-            error.value?.response?.data?.errorCode +
-                ' ' +
-                error.value?.response?.data?.errorMessage.split(':')[0] ??
-                'Something went wrong'
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
+            }` ?? 'Something went wrong'
         )
     })
 
@@ -373,10 +391,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(isErrorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
         message.error(
-            error.value?.response?.data?.errorCode +
-                ' ' +
-                error.value?.response?.data?.errorMessage.split(':')[0] ??
-                'Something went wrong'
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
+            }` ?? 'Something went wrong'
         )
     })
 
@@ -402,6 +419,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         animationPoint,
         handleAddResource,
         localResource,
+        handleResourceDelete,
         handleUpdateReadme,
         localReadmeContent,
         handleMeaningsUpdate,

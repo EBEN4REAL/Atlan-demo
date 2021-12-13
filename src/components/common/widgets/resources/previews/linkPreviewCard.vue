@@ -41,7 +41,10 @@
 
                 <template #overlay>
                     <a-menu mode="vertical">
-                        <a-menu-item key="delete" @click="handleDelete">
+                        <a-menu-item
+                            key="delete"
+                            @click="handleResourceDelete(item.guid)"
+                        >
                             <div class="flex items-center text-red-500">
                                 <AtlanIcon
                                     icon="Delete"
@@ -59,10 +62,10 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, PropType, toRefs, ref, inject } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import deleteAsset from '~/composables/discovery/deleteAsset'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
         props: {
@@ -70,9 +73,14 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
         },
         setup(props) {
-            const { item } = toRefs(props)
+            const { selectedAsset } = toRefs(props)
 
             function openLink(url) {
                 if (!url) {
@@ -89,12 +97,12 @@
                 link,
             } = useAssetInfo()
 
-            const handleDelete = () => {
-                deleteAsset(item.value?.guid)
-            }
+            const { handleResourceDelete } =
+                updateAssetAttributes(selectedAsset)
+
             return {
                 createdBy,
-                handleDelete,
+                handleResourceDelete,
                 modifiedBy,
                 createdAt,
                 modifiedAt,

@@ -64,22 +64,24 @@
                     class="flex gap-x-2"
                     v-if="currentStep == steps.length - 1"
                 >
-                    <a-button type="primary" class="px-6" @click="handleSubmit"
-                        >Run</a-button
-                    >
+                    <a-button class="px-6" @click="handleSubmit">Run</a-button>
                     <a-popconfirm
                         ok-text="Confirm"
                         :overlay-class-name="$style.popConfirm"
                         cancel-text="Cancel"
                         placement="topRight"
+                        :ok-button-props="{
+                            size: 'default',
+                        }"
+                        :cancel-button-props="{
+                            size: 'default',
+                        }"
                     >
                         <template #icon> </template>
                         <template #title>
-                            <Schedule class="mb-3"></Schedule>
+                            <Schedule class="mb-3" v-model="cron"></Schedule>
                         </template>
-                        <a-button
-                            type="primary"
-                            class="px-6 bg-green-500 border-green-500"
+                        <a-button type="primary" class="px-6"
                             >Schedule & Run
                             <AtlanIcon
                                 icon="ChevronRight"
@@ -205,6 +207,16 @@
 
             provide('workflowTemplate', workflowTemplate)
             provide('configMap', configMap)
+
+            const cron = ref({
+                cron: workflowTemplate.value.metadata?.annotations[
+                    'orchestration.atlan.com/schedule'
+                ],
+                timezone:
+                    workflowTemplate?.metadata?.annotations[
+                        'orchestration.atlan.com/timezone'
+                    ],
+            })
 
             const modelValue = ref({})
 
@@ -443,6 +455,7 @@
                 handleBackToSetup,
                 handleExit,
                 handleStepClick,
+                cron,
             }
         },
     })

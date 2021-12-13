@@ -732,6 +732,7 @@
                 saveQueryData: any
                 assetTerms: any
             }) => {
+                console.log('saving query: ', savedQueryType.value)
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
                     saveQueryData,
                     editorInstance,
@@ -740,7 +741,7 @@
                     saveModalRef,
                     router,
                     route,
-                    savedQueryType.value.name,
+                    '',
                     saveQueryData.parentQF ??
                         getRelevantTreeData().parentQualifiedName.value,
                     saveQueryData.parentGuid ??

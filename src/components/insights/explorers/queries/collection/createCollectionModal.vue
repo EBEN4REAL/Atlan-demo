@@ -2,25 +2,38 @@
     <a-modal
         :visible="showCollectionModal"
         :closable="false"
-        :class="$style.input"
         :footer="null"
+        width="584px"
+        bodyStyle="{
+            height: 450px 
+        }"
         :destroyOnClose="true"
     >
         <template #title>
-            <div class="flex items-center text-gray-500 flex-nowrap">
+            <div
+                class="flex items-center justify-between text-gray-500 flex-nowrap"
+            >
                 <span class="flex-none font-bold text text-gray"
-                    >New Collection</span
+                    >Create Collection</span
                 >
-            </div></template
-        >
+                <div class="flex items-center text-gray-700">
+                    <span class="mr-2 text-sm">Share with others</span>
+                    <a-switch
+                        :id="shareCollection"
+                        v-model:checked="isPrivate"
+                        size="small"
+                    />
+                </div>
+            </div>
+        </template>
         <div class="w-full px-4 pb-5 text-gray-500 bg-white rounded">
             <div class="">
                 <div>
-                    <span class="font-bold">Name</span>
                     <a-input
                         :ref="titleBarRef"
                         v-model:value="title"
-                        class="border"
+                        class="w-full border-gray-300 rounded-lg focus:border-primary-focus focus:border-2 focus:outline-none"
+                        placeholder="Collection name"
                     >
                         <template #prefix>
                             <!-- <span v-show="imageNotFound" class="mr-2">
@@ -48,7 +61,7 @@
                                     placement="bottomLeft"
                                     destroy-on-close
                                     :on-visible-change="toggleEmojiPicker"
-                                    class="mt-3 -ml-6"
+                                    class="w-full mt-3 -ml-6 border-gray-300 rounded-lg box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
                                 >
                                     <template #content>
                                         <Picker
@@ -68,14 +81,10 @@
                     </a-input>
                 </div>
                 <div class="mt-4">
-                    <span class="font-bold">Description</span>
                     <a-textarea
                         v-model:value="description"
-                        placeholder="What is this collection for?"
-                        class="text-sm"
-                        :rows="2"
-                        :show-count="false"
-                        :maxlength="140"
+                        placeholder="Describe your collection"
+                        class="h-20 text-sm"
                     />
                 </div>
             </div>
@@ -99,7 +108,7 @@
                         <UserSelectWidget
                             class="mt-1"
                             :read-only="false"
-                            :model-value="editors"
+                            :model-value="viewers"
                             placementPos="bottomLeft"
                         />
                     </div>
@@ -108,7 +117,7 @@
                         <UserSelectWidget
                             class="mt-1"
                             :read-only="false"
-                            :model-value="viewers"
+                            :model-value="editors"
                             placementPos="bottomLeft"
                         />
                     </div>
@@ -133,11 +142,11 @@
                         color="primary"
                         padding="compact"
                         class="flex items-center justify-between h-6 py-1 ml-2 border-none"
-                        @click="createSaveQuery"
+                        @click="saveNewCollection"
                     >
                         <div class="flex items-center text-white rounded">
                             <AtlanIcon
-                                v-if="saveQueryLoading"
+                                v-if="isCollectionSaving"
                                 icon="CircleLoader"
                                 style="margin-right: 4px"
                                 class="w-4 h-4 text-white animate-spin"
@@ -161,12 +170,16 @@
         onMounted,
         nextTick,
         PropType,
+        watch,
     } from 'vue'
     import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
     import AtlanBtn from '~/components/UI/button.vue'
     import UserSelectWidget from '~/components/common/input/owner/index.vue'
     import 'emoji-mart-vue-fast/css/emoji-mart.css'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
+    import { EditorState } from 'prosemirror-state'
+    import { message } from 'ant-design-vue'
 
     const emojiIndex = new EmojiIndex(emojiData)
 
@@ -200,6 +213,8 @@
                 emit('update:showCollectionModal', false)
             }
 
+            const { createCollection } = useQueryCollection()
+
             const createSaveQuery = () => {}
 
             const onChangePrivate = () => {}
@@ -208,10 +223,6 @@
                 selectedEmoji.value = emoji.native
                 toggleEmojiPicker()
                 console.log('emoji data', emoji)
-                // form.value.logoType = 'emoji'
-                // form.value.emoji = native
-                // form.value.imageId = null
-                // popOverVisible.value = false
             }
 
             const toggleEmojiPicker = () => {
@@ -222,6 +233,53 @@
                 await nextTick()
                 titleBarRef.value?.focus()
             })
+
+            let isCollectionSaving = ref(false)
+
+            const saveNewCollection = () => {
+                if (title?.value?.length === 0) {
+                    message.error({
+                        content: `Please add a collection name`,
+                    })
+                    return
+                }
+
+                const { data, error, isLoading } = createCollection({
+                    name: title.value,
+                    description: description.value,
+                    ownerUsers: editors.value.ownerUsers
+                        ? editors.value.ownerUsers
+                        : [],
+                    ownerGroups: editors.value.ownerGroups
+                        ? editors.value.ownerGroups
+                        : [],
+                    viewerUsers: viewers.value.ownerUsers
+                        ? viewers.value.ownerUsers
+                        : [],
+                    viewerGroups: viewers.value.ownerGroups
+                        ? viewers.value.ownerGroups
+                        : [],
+                    icon: selectedEmoji.value,
+                    iconType: selectedEmoji.value ? 'emoji' : undefined,
+                })
+
+                watch(
+                    [isLoading, error],
+                    () => {
+                        console.log('collection error: ', error.value)
+                        isCollectionSaving.value = isLoading?.value
+                        if (
+                            isLoading?.value === false &&
+                            error.value === undefined
+                        ) {
+                            closeModal()
+                        }
+                    },
+                    {
+                        immediate: true,
+                    }
+                )
+            }
 
             return {
                 closeModal,
@@ -239,6 +297,8 @@
                 popOverVisible,
                 toggleEmojiPicker,
                 selectedEmoji,
+                saveNewCollection,
+                isCollectionSaving,
             }
         },
     })
@@ -263,6 +323,9 @@
         height: 22 px !important;
         box-sizing: border-box !important;
         border-radius: 4 px !important;
+    }
+
+    .input {
     }
 </style>
 

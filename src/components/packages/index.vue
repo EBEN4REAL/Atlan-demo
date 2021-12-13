@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-1">
-        <div class="flex flex-col h-full">
+        <div class="flex flex-col w-full h-full">
             <div
                 class="flex items-center px-5 py-3 text-base font-bold border-b border-gray-200 overflow-ellipsis"
             >
@@ -10,7 +10,7 @@
                 Select a package
             </div>
 
-            <div class="flex flex-1 overflow-y-auto">
+            <div class="flex flex-1 w-full overflow-y-auto">
                 <div
                     class="flex flex-col bg-gray-100 border-r border-gray-300 filters"
                 >
@@ -21,10 +21,11 @@
 
                 <div class="flex flex-col flex-1 h-full py-4">
                     <div
-                        class="flex flex-col px-6 py-4 pb-4 font-extrabold focus-within:text-2xl"
+                        class="flex flex-col px-6 py-3 pb-4 font-extrabold focus-within:text-2xl"
                     >
                         <a-input
                             class="w-1/2"
+                            size="large"
                             placeholder="Search Packages"
                         ></a-input>
                     </div>
@@ -103,6 +104,9 @@
                 facets,
                 limit,
                 offset,
+                source: ref({
+                    excludes: ['spec'],
+                }),
             })
 
             const placeholder = computed(() => 'Search all packages')

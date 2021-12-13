@@ -10,13 +10,13 @@
             <img
                 v-if="
                     workflowTemplate?.metadata.annotations[
-                        'com.atlan.orchestration/icon'
+                        'orchestration.atlan.com/icon'
                     ]
                 "
                 class="self-center w-5 h-auto mr-2"
                 :src="
                     workflowTemplate?.metadata.annotations[
-                        'com.atlan.orchestration/icon'
+                        'orchestration.atlan.com/icon'
                     ]
                 "
             />
@@ -45,7 +45,7 @@
             <div class="text-sm truncate overflow-ellipsis">
                 {{
                     workflowTemplate?.metadata.annotations[
-                        'com.atlan.orchestration/packageName'
+                        'orchestration.atlan.com/packageName'
                     ]
                 }}
             </div>

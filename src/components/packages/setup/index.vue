@@ -311,7 +311,7 @@
                     // add qualifiedname to label
                     if (connectionQualifiedName) {
                         body.value.metadata.labels[
-                            `com.atlan.orchestration/${connectionQualifiedName}`
+                            `orchestration.atlan.com/${connectionQualifiedName}`
                         ] = 'true'
                     }
                 })
@@ -363,7 +363,7 @@
                     message.error('Something went wrong. Package is not valid.')
                 }
 
-                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] =
+                body.value.metadata.labels['orchestration.atlan.com/atlan-ui'] =
                     'true'
                 body.value.spec = {
                     templates: [

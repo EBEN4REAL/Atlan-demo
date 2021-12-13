@@ -1,57 +1,66 @@
 <template>
     <div class="flex flex-col h-full p-6 bg-white" v-if="selectedPackage">
         <div
-            class="flex items-center"
-            v-if="selectedPackage?.metadata?.annotations"
+            class="flex mb-2 selectedPackages-center"
+            v-if="selectedPackage.metadata.annotations"
         >
             <div class="p-2 mr-2 bg-white border border-gray-200 rounded-full">
                 <img
                     v-if="
-                        selectedPackage?.metadata?.annotations[
-                            'com.atlan.orchestration/icon'
+                        selectedPackage.metadata.annotations[
+                            'orchestration.atlan.com/icon'
                         ]
                     "
-                    class="self-center h-auto"
-                    style="width: 30px"
+                    class="self-center w-6 h-6"
                     :src="
-                        selectedPackage?.metadata?.annotations[
-                            'com.atlan.orchestration/icon'
+                        selectedPackage.metadata.annotations[
+                            'orchestration.atlan.com/icon'
                         ]
                     "
                 />
+                <span
+                    v-else-if="
+                        selectedPackage.metadata.annotations[
+                            'orchestration.atlan.com/emoji'
+                        ]
+                    "
+                    class="self-center w-6 h-6"
+                >
+                    {{
+                        selectedPackage.metadata.annotations[
+                            'orchestration.atlan.com/emoji'
+                        ]
+                    }}</span
+                >
+                <span v-else class="self-center w-6 h-6">
+                    {{ '\ud83d\udce6' }}</span
+                >
             </div>
             <div class="flex flex-col">
-                <div class="text-base font-bold truncate overflow-ellipsis">
+                <div class="text-sm font-bold truncate overflow-ellipsis">
                     {{
-                        selectedPackage?.metadata?.annotations[
-                            'workflows.argoproj.io/name'
+                        selectedPackage.metadata.annotations[
+                            'orchestration.atlan.com/name'
                         ]
                     }}
+                    <AtlanIcon icon="Verified"></AtlanIcon>
                 </div>
-                <div class="flex">
-                    <div class="text-sm truncate overflow-ellipsis">
-                        {{
-                            selectedPackage?.metadata?.annotations[
-                                'com.atlan.orchestration/packageName'
-                            ]
-                        }}
-                    </div>
-                    <div class="text-sm truncate overflow-ellipsis">
-                        (v{{
-                            selectedPackage?.metadata?.labels[
-                                'org.argopm.package.version'
-                            ]
-                        }})
-                    </div>
+                <div class="text-sm truncate overflow-ellipsis">
+                    By
+                    {{
+                        selectedPackage.metadata.annotations[
+                            'package.argoproj.io/author'
+                        ]
+                    }}
                 </div>
             </div>
         </div>
 
-        <div class="mt-3 text-sm line-clamp-5">
-            <span v-if="selectedPackage?.metadata?.annotations">
+        <div class="text-sm line-clamp-3">
+            <span>
                 {{
-                    selectedPackage?.metadata?.annotations[
-                        'workflows.argoproj.io/description'
+                    selectedPackage.metadata.annotations[
+                        'package.argoproj.io/description'
                     ]
                 }}</span
             >

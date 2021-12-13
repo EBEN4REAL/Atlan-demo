@@ -14,6 +14,7 @@ interface DiscoverListParams {
     limit?: Ref<Number>
     offset?: Ref<Number>
     preference?: Ref<any>
+    source?: Ref<any>
     attributes?: Ref<string[]>
     relationAttributes?: Ref<string[]>
 }
@@ -27,6 +28,7 @@ export function usePackageDiscoverList({
     aggregations,
     preference,
     limit,
+    source,
     offset = ref(0),
 }: DiscoverListParams) {
     const defaultBody = ref({})
@@ -43,6 +45,7 @@ export function usePackageDiscoverList({
         )
         defaultBody.value = {
             ...dsl,
+            _source: source?.value,
         }
     }
 

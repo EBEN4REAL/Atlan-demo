@@ -51,7 +51,7 @@ export function usePackageBody(
                             ...bodybuilder()
                                 .query(
                                     'term',
-                                    'metadata.labels.com.atlan.orchestration/verified.keyword',
+                                    'metadata.labels.orchestration.atlan.com/verified.keyword',
                                     true
                                 )
                                 .build(),

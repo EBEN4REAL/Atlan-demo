@@ -115,6 +115,37 @@ const useQueryCollection = () => {
         return { data, error, isLoading }
     }
 
+    const updateCollection = (entity) => {
+
+        const body = ref<Record<string, any>>({
+            entity: {
+                ...entity,
+            }
+        })
+
+        const { data, error, isLoading } = Insights.CreateQueryCollection(
+            body.value,
+            {}
+        )
+
+        watch([data, error, isLoading], () => {
+            if (isLoading.value == false) {
+                if (error.value === undefined) {
+                    message.success({
+                        content: `Collection updated`,
+                    })
+                } else {
+                    // console.log(error.value.toString())
+                    message.error({
+                        content: `Error in updating collection!`,
+                    })
+                }
+            }
+        })
+
+        return { data, error, isLoading }
+    }
+
     const setCollectionsDataInInlineTab = (
         activeInlineTab: Ref<activeInlineTabInterface>,
         tabs: Ref<activeInlineTabInterface[]>,
@@ -143,6 +174,7 @@ const useQueryCollection = () => {
         getQueryCollections,
         setCollectionsDataInInlineTab,
         createCollection,
+        updateCollection
     }
 }
 

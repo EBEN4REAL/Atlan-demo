@@ -46,7 +46,6 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
 
     keywords: [
         '*',
-        'ABS',
         'AS',
         'ASC',
         'AT',

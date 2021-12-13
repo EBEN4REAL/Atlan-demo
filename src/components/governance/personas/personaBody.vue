@@ -52,7 +52,7 @@
             </MinimalTab>
         </div>
 
-        <div class="px-5 overflow-y-auto">
+        <div class="overflow-y-auto" :class=" activeTabKey === 'policies' ? 'bg-white' : 'px-5'">
             <div>
                 {{ selectedPersonaDirty?.datapolicies?.length }}
             </div>
@@ -61,7 +61,66 @@
                 class="pt-3 pb-0"
                 :persona="persona"
             />
-            <div v-else-if="activeTabKey === 'policies'" class="my-5">
+            <div v-else-if="activeTabKey === 'policies'">
+                <div class="sticky top-0 bg-white">
+                    <div class="flex items-center pt-3 pr-4">
+                        <SearchAndFilter
+                            v-model:value="searchPersona"
+                            :placeholder="`Search from ${
+                                (
+                                    (selectedPersonaDirty?.metadataPolicies?.length || 0) + 
+                                    (selectedPersonaDirty?.dataPolicies?.length || 0) 
+                                ) ?? 0
+                            } personas`"
+                            class="bg-white"
+                            :autofocus="true"
+                            size="minimal"
+                        />
+                        <a-dropdown trigger="click">
+                            <AtlanBtn
+                                class="flex-none mx-auto ml-5"
+                                color="primary"
+                                padding="compact"
+                                size="sm"
+                                @click.prevent
+                            >
+                                <template #prefix>
+                                    <AtlanIcon icon="Add" />
+                                </template>
+                                Add new policy
+                                <template #suffix>
+                                    <AtlanIcon icon="ChevronDown" class="text-white" />
+                                </template>
+                            </AtlanBtn>
+    
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item
+                                        v-for="(
+                                            option, index
+                                        ) in addPolicyDropdownConfig"
+                                        :key="index"
+                                        @click="option.handleClick()"
+                                    >
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                v-if="option.icon"
+                                                class="w-4 h-4 text-gray-600"
+                                                :icon="option.icon"
+                                            />
+                                            <span class="pl-2 text-sm">{{
+                                                option.title
+                                            }}</span>
+                                        </div>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
+                    </div>
+                    <div class="px-3 py-4 container-tabs">
+                        <AggregationTabs :list="tabFilterList"/>
+                    </div>
+                </div>
                 <template
                     v-for="(
                         policy, idx
@@ -158,46 +217,6 @@
                         Create Policies</span
                     >
                 </div>
-                <a-dropdown trigger="click">
-                    <AtlanBtn
-                        class="flex-none mx-auto mt-6"
-                        color="primary"
-                        padding="compact"
-                        size="sm"
-                        @click.prevent
-                    >
-                        <template #prefix>
-                            <AtlanIcon icon="Add" />
-                        </template>
-                        Add new policy
-                        <template #suffix>
-                            <AtlanIcon icon="ChevronDown" class="text-white" />
-                        </template>
-                    </AtlanBtn>
-
-                    <template #overlay>
-                        <a-menu>
-                            <a-menu-item
-                                v-for="(
-                                    option, index
-                                ) in addPolicyDropdownConfig"
-                                :key="index"
-                                @click="option.handleClick()"
-                            >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        v-if="option.icon"
-                                        class="w-4 h-4 text-gray-600"
-                                        :icon="option.icon"
-                                    />
-                                    <span class="pl-2 text-sm">{{
-                                        option.title
-                                    }}</span>
-                                </div>
-                            </a-menu-item>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
             </div>
             <PersonaUsersGroups
                 v-else-if="activeTabKey === 'users'"
@@ -209,7 +228,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref, computed } from 'vue'
     import { message } from 'ant-design-vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -219,8 +238,9 @@
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './overview/personaMeta.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
-
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
@@ -247,6 +267,8 @@
             AtlanBtn,
             PersonaMeta,
             PersonaUsersGroups,
+            SearchAndFilter,
+            AggregationTabs
         },
         props: {
             persona: {
@@ -255,6 +277,7 @@
             },
         },
         setup() {
+            const searchPersona = ref('')
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
@@ -322,7 +345,25 @@
                     })
                 }
             }
-
+            const tabFilterList = computed(() => {
+                return [
+                    {
+                        id: 'allPersona',
+                        label: "All ",
+                        count: (selectedPersonaDirty?.value?.metadataPolicies?.length || 0) + (selectedPersonaDirty?.value?.dataPolicies?.length || 0)
+                    },
+                    {
+                        id: 'metaData',
+                        label: "MetaData",
+                        count: selectedPersonaDirty?.value?.metadataPolicies?.length || 0
+                    },
+                    {
+                        id: 'data',
+                        label: "Data",
+                        count: selectedPersonaDirty?.value?.dataPolicies?.length || 0
+                    }
+                ]
+            })
             return {
                 newIdTag,
                 activeTabKey,
@@ -336,7 +377,20 @@
                 deletePolicyUI,
                 discardPolicy,
                 NewPolicyIllustration,
+                searchPersona,
+                tabFilterList
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .container-tabs{
+        .assetbar {
+            :global(.ant-tabs-tab:first-child) {
+                border-top-left-radius: 24px !important;
+            }
+    
+        }
+    }
+</style>

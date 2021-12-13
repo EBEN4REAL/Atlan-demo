@@ -11,8 +11,6 @@ export interface CUSTOM_METADATA_ATTRIBUTE {
         applicableEntityTypes: string,
         customApplicableEntityTypes: string | string[],
         maxStrLength: string,
-        isBadge: string | boolean,
-        isFacet: string | boolean,
         isEnum: string | boolean,
         enumType: string,
         multiValueSelect: string | boolean,

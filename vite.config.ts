@@ -45,11 +45,11 @@ export default defineConfig(({ mode }) => {
             },
         },
         build: {
-            sourcemap: false,
+            sourcemap: true,
             commonjsOptions: {
                 //transformMixedEsModules: true,
                 //defaultIsModuleExports: true
-            }
+            },
         },
         plugins: [
             visualizer(),

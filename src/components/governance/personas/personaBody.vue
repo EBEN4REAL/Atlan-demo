@@ -118,67 +118,71 @@
                         </a-dropdown>
                     </div>
                     <div class="px-3 py-4 container-tabs">
-                        <AggregationTabs :list="tabFilterList"/>
+                        <AggregationTabs 
+                            v-model="activeTabFilter"
+                            :list="tabFilterList"
+                        />
                     </div>
                 </div>
                 <template
                     v-for="(
                         policy, idx
-                    ) in selectedPersonaDirty.metadataPolicies"
+                    ) in medatDataComputed"
                     :key="idx"
                 >
                     <!-- Render it if the policy is being edited -->
-                    <MetadataPolicy
+                    <!-- <MetadataPolicy
                         v-if="policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
                         :policy="policy"
                         @save="savePolicyUI('meta', policy.id!)"
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
-                    />
+                    /> -->
 
                     <PolicyCard
-                        v-else-if="!policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
                         :policy="policy"
                         type="meta"
                         @edit="setEditFlag('meta', policy.id!)"
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
+                        @clickCard="handleSelectPolicy"
+                        :selectedPolicy="selectedPolicy"
                     />
                 </template>
                 <template
-                    v-for="(policy, idx) in selectedPersonaDirty.dataPolicies"
+                    v-for="(policy, idx) in dataPolicyComputed"
                     :key="idx"
                 >
                     <!-- Render it if the policy is being edited -->
-                    <DataPolicy
+                    <!-- <DataPolicy
                         v-if="policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
                         :policy="policy"
                         @delete="deletePolicyUI('data', policy.id!)"
                         @save="savePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
-                    />
+                    /> -->
                     <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
                     <PolicyCard
-                        v-else-if="!policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
                         :policy="policy"
                         type="data"
                         @edit="setEditFlag('data', policy.id!)"
                         @delete="deletePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
+                        @clickCard="handleSelectPolicy"
+                        :selectedPolicy="selectedPolicy"
                     />
                 </template>
                 <!-- For pusing the new edit policy to bottom -->
-                <template
+                <!-- <template
                     v-for="(
                         policy, idx
                     ) in selectedPersonaDirty.metadataPolicies"
                     :key="idx"
                 >
-                    <!-- Render it if the new policy is being edited -->
                     <MetadataPolicy
                         v-if="policyEditMap.metadataPolicies[policy.id!] && policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
@@ -187,13 +191,12 @@
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                     />
-                </template>
+                </template> -->
 
-                <template
+                <!-- <template
                     v-for="(policy, idx) in selectedPersonaDirty.dataPolicies"
                     :key="idx"
                 >
-                    <!-- Render it if the new data policy is being edited -->
                     <DataPolicy
                         v-if="policyEditMap.dataPolicies[policy.id!] &&  policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
@@ -202,7 +205,7 @@
                         @save="savePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                     />
-                </template>
+                </template> -->
 
                 <!-- ------------------ -->
                 <div
@@ -241,6 +244,7 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+    import { filterMethod } from '~/utils/helper/search'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
@@ -278,6 +282,8 @@
         },
         setup() {
             const searchPersona = ref('')
+            const activeTabFilter = ref('')
+            const selectedPolicy = ref({})
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
@@ -364,6 +370,23 @@
                     }
                 ]
             })
+            const medatDataComputed = computed(() => {
+                if(!activeTabFilter.value || activeTabFilter.value === 'allPersona' || activeTabFilter.value === 'metaData'){
+                    const deteMeta = selectedPersonaDirty?.value?.metadataPolicies || []
+                    return filterMethod(deteMeta, searchPersona.value || "", 'name')
+                }
+                return []
+            })
+            const dataPolicyComputed = computed(() => {
+                if(!activeTabFilter.value || activeTabFilter.value === 'allPersona' || activeTabFilter.value === 'data'){
+                    const dataPolicy = selectedPersonaDirty?.value?.dataPolicies || []
+                    return filterMethod(dataPolicy, searchPersona.value || "", 'name')
+                }
+                return []
+            })
+            const handleSelectPolicy = (policy) => {
+                selectedPolicy.value = policy
+            }
             return {
                 newIdTag,
                 activeTabKey,
@@ -378,7 +401,12 @@
                 discardPolicy,
                 NewPolicyIllustration,
                 searchPersona,
-                tabFilterList
+                tabFilterList,
+                activeTabFilter,
+                medatDataComputed,
+                dataPolicyComputed,
+                handleSelectPolicy,
+                selectedPolicy
             }
         },
     })

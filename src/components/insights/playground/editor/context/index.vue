@@ -129,6 +129,33 @@
                             class="w-4 h-4 mx-1 connector_icon"
                         />
                         <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
+
+                        <div v-if="connectionName">
+                            <div
+                                class="flex items-center"
+                                v-if="
+                                    activeInlineTab?.explorer?.schema
+                                        ?.connectors?.attributeValue !==
+                                    activeInlineTab?.playground?.editor?.context
+                                        ?.attributeValue
+                                "
+                            >
+                                <div class="text-gray-700">
+                                    {{ connectionName }}
+                                </div>
+                                <div
+                                    :class="
+                                        schemaName
+                                            ? `text-gray-700`
+                                            : `text-gray-500`
+                                    "
+                                    class="text-base font-bold"
+                                >
+                                    .
+                                </div>
+                            </div>
+                        </div>
+
                         <span v-else class="text-gray-500"
                             >Select Connector</span
                         >

@@ -79,10 +79,10 @@
                     v-auth="map.LIST_USERS"
                     class="flex justify-end max-w-full mt-4"
                 >
-                    <a-pagination
-                        :total="pagination.total"
+                    <Pagination
                         :current="pagination.current"
-                        :page-size="pagination.pageSize"
+                        :total="pagination.total"
+                        :loading="isLoading"
                         @change="handlePagination"
                     />
                 </div>
@@ -132,10 +132,12 @@
     import { Users } from '~/services/service/users/index'
     import map from '~/constant/accessControl/map'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import Pagination from '@/common/list/pagination.vue'
 
     export default defineComponent({
         name: 'UsersView',
         components: {
+            Pagination,
             SearchAndFilter,
             UserListTable,
             AtlanButton,

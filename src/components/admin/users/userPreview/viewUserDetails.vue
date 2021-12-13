@@ -25,7 +25,7 @@
         <div class="mb-6">
             <div class="flex-1 mr-4">
                 <p class="mb-0 text-gray-500">Designation</p>
-                <div class="text-gray">{{ selectedUser?.attributes?.designation[0] ?? "-" }}</div>
+                <div class="text-gray">{{ selectedUser?.attributes?.designation?.length > 0 ? selectedUser?.attributes?.designation[0] : "-" }}</div>
             </div>
         </div>
         <div class="mb-3">
@@ -37,9 +37,9 @@
             />
         </div>
     </div>
-    <div class="py-6 border-solid border-b border-gray-200">
-        <OwnershipDetails :selected-user="selectedUser" />
-    </div>
+<!--    <div class="py-6 border-solid border-b border-gray-200">-->
+<!--        <OwnershipDetails :selected-user="selectedUser" />-->
+<!--    </div>-->
     <div class="py-6 border-solid border-b border-gray-200">
         <div class="mb-6">
             <ViewGroups :user="selectedUser" />

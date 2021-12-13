@@ -53,38 +53,6 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                 : []
         )
 
-        const query = bodybuilder()
-            .filter('term', 'ownerUsers', selectedUser)
-            .aggregation('terms', '__typeName.keyword', {}, 'group_by_typeName')
-            .size(10)
-            .build()
-        const { data } = Search.IndexSearch({ dsl: query }, {})
-        const businessCount = computed(() => {
-            const terms = [
-                'atlasglossary',
-                'atlasglossarycategory',
-                'atlasglossaryterm',
-            ]
-            const aggs =
-                data?.value?.aggregations?.group_by_typeName?.buckets || []
-            let count = 0
-            aggs.forEach((el) => {
-                if (terms.includes(el.key.toLowerCase())) {
-                    count += el.doc_count
-                }
-            })
-            return count
-        })
-        const assetCount = computed(() => {
-            const aggs =
-                data?.value?.aggregations?.group_by_typeName?.buckets || []
-            let count = 0
-            aggs.forEach((el) => {
-                count += el.doc_count
-            })
-            return count
-        })
-
         // Obtaining logged in user.
         const currentUser = whoami()
 

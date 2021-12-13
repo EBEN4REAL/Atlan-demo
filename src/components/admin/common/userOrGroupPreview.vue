@@ -56,6 +56,15 @@
                         <div class="ml-auto">
                             <a-button-group>
                                 <a-button
+                                    v-if="isValidUser"
+                                    class="border border-solid border-gray-300"
+                                    html-type="a"
+                                    :href="`https://teams.microsoft.com/l/chat/0/0?users=${selectedUser.email}`"
+                                    target="_blank"
+                                >
+                                    <AtlanIcon icon="Teams" />
+                                </a-button>
+                                <a-button
                                     v-if="slackEnabled"
                                     class="border border-solid border-gray-300"
                                     html-type="a"
@@ -63,8 +72,8 @@
                                 >
                                     <AtlanIcon icon="Slack" />
                                 </a-button>
-                                <a-button class="border border-solid border-gray-300">
-                                    <AtlanIcon icon="KebabMenu" />
+                                <a-button class="border border-solid border-gray-300" @click="$emit('close')">
+                                    <AtlanIcon icon="Cross" />
                                 </a-button>
                             </a-button-group>
                         </div>
@@ -228,7 +237,12 @@
                 }
                 return ''
             })
-            const userProfiles = computed(() => selectedUser.value?.attributes?.profiles)
+            const userProfiles = computed(() => {
+                if (isValidUser.value) {
+                    return selectedUser.value?.attributes?.profiles
+                }
+                return []
+            })
             const slackProfile = computed(() => {
                 if (userProfiles.value?.length > 0) {
                     const firstProfile = JSON.parse(userProfiles.value[0])

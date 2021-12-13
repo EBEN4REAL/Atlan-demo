@@ -82,20 +82,20 @@
                 </template>
             </a-input>
         </div>
-        <div class="mt-6">
-            <div class="text-gray-500 text-sm">Teams</div>
-            <a-input
-                v-model:value="formData.slack"
-                class="mt-2"
-                :loading="isRequestLoading"
-            >
-                <template #prefix>
-                    <span class="border-solid border-gray-300 pr-2 border-r">
-                        <AtlanIcon icon="Teams" />
-                    </span>
-                </template>
-            </a-input>
-        </div>
+<!--        <div class="mt-6">-->
+<!--            <div class="text-gray-500 text-sm">Teams</div>-->
+<!--            <a-input-->
+<!--                v-model:value="formData.teams"-->
+<!--                class="mt-2"-->
+<!--                :loading="isRequestLoading"-->
+<!--            >-->
+<!--                <template #prefix>-->
+<!--                    <span class="border-solid border-gray-300 pr-2 border-r">-->
+<!--                        <AtlanIcon icon="Teams" />-->
+<!--                    </span>-->
+<!--                </template>-->
+<!--            </a-input>-->
+<!--        </div>-->
     </div>
 </template>
 
@@ -105,6 +105,7 @@
     import { Users } from '~/services/service/users'
     import useRoles from '~/composables/roles/useRoles'
     import Avatar from '@common/avatar/avatar.vue'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'EditUser',
@@ -127,17 +128,21 @@
             const isRequestLoading = ref(false)
             const updateError = ref("")
             const formRef = ref(null)
+
+            watch(isRequestLoading, (n) => {
+                emit('changedLoading', n)
+            })
             
             const { selectedUser } = toRefs(props)
             const { roleList } = useRoles()
+            const selectedRole = computed(() => roleList.value?.filter((role) => role.name.localeCompare(selectedUser.value.role_object.name.toLowerCase()) === 0))
 
             const formData = ref({
                 firstName: selectedUser.value.firstName,
                 lastName: selectedUser.value.lastName,
-                role: selectedUser.value.role_object.name,
-                designation: selectedUser.value?.attributes?.designation[0] ?? "",
-                slack: "",
-                teams: ""
+                role: selectedRole.value[0].id ?? "",
+                designation: selectedUser.value?.attributes?.designation?.length > 0 ? selectedUser.value?.attributes?.designation[0] : "",
+                slack: ""
             })
 
             const rules = {
@@ -157,10 +162,8 @@
                     message: "Please enter a designation."
                 }],
                 slack: [{
-                    message: "Please enter your Slack User ID."
-                }],
-                teams: [{
-                    message: "Please enter your Teams user ID."
+                    message: "Please enter your Slack User ID.",
+                    pattern: /^.+(slack.com).+/g
                 }]
             }
 
@@ -168,19 +171,23 @@
             const requestPayload = ref()
             const onSubmit = async () => {
                 await formRef.value?.validate()
-                const attributes = {
-                    designation: [formData.value.designation],
+                const attributes = {}
+                if (formData.value.designation.length > 0) {
+                    attributes.designation = [formData.value.designation]
                 }
-                // if (formData.value.slack.length > 0) {
-                //     attributes.slack = "{}"
-                // }
+                if (formData.value.slack.length > 0) {
+                    attributes.profiles = [`[{"slack": "${formData.value.slack}"}]`]
+                }
                 requestPayload.value = {
                     firstName: formData.value.firstName,
                     lastName: formData.value.lastName,
                     roleId: formData.value.role,
-                    attributes: {
-                        designation: [formData.value.designation],
-                    },
+                }
+                if (Object.keys(attributes).length > 0) {
+                    requestPayload.value = {
+                        ...requestPayload.value,
+                        attributes
+                    }
                 }
                 const { data, isReady, error, isLoading } = Users.UpdateUser(
                     selectedUser.value.id,
@@ -198,9 +205,13 @@
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
+                            message.success('The details have been updated')
+                            emit('success')
                         } else if (error && error.value) {
                             updateError.value =
                                 'Unable to update user details. Please try again.'
+                            message.error('Failed to update details.')
+                            formRef.value.resetFields()
                         }
                     },
                     { immediate: true }

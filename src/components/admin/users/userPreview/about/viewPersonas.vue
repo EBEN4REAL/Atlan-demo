@@ -4,7 +4,7 @@
         <span
             v-for="(persona, index) in personas"
             :key="index"
-            class="rounded-3xl border border-gray-300 py-1 px-3 mt-1 font-normal text-sm w-28 truncate text-center"
+            class="rounded-3xl border border-gray-300 py-1 px-3 mt-1 font-normal text-sm w-20 truncate text-center"
             :class="index > 0 ? 'ml-1' : ''"
             :title="persona"
         >

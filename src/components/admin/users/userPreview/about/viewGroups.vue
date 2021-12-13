@@ -2,7 +2,7 @@
     <span class="text-gray-500 text-sm">Groups</span>
     <div v-if="!error && !isLoading" class="flex flex-wrap mt-1">
         <div v-if="filteredGroupCount > 0">
-            <div
+            <span
                 v-for="(group, index) in groupList.slice(0, 2)"
                 :key="index"
                 class="rounded-3xl border border-gray-300 py-1 px-3 font-normal text-center text-sm"
@@ -10,13 +10,13 @@
             >
                 <AtlanIcon icon="Group" class="w-4 h-4 text-primary" />
                 {{ group.alias }}
-            </div>
-            <div
+            </span>
+            <span
                 v-if="filteredGroupCount < 2"
                 class="rounded-3xl ml-1 mt-1 bg-gray-300 border border-gray-200 py-1 px-3 text-center font-normal text-sm"
             >
                 <a href="#">+ {{ filteredGroupCount - 2 }} more</a>
-            </div>
+            </span>
         </div>
         <div v-else>
             <span class="font-bold">{{ user.firstName }}</span> is not a part of any group.

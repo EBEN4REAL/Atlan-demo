@@ -2,7 +2,7 @@
     <div
         class="flex justify-between p-2 border rounded cursor-pointer hover:bg-gray-100"
     >
-        <div class="flex flex-1" @click="openLink(link(item))">
+        <div class="flex items-center flex-1" @click="openLink(link(item))">
             <div class="mr-2 min-w-link-left-col">
                 <img
                     :src="`https://www.google.com/s2/favicons?domain=${link(

@@ -3,12 +3,7 @@
         <div>
             <div class="flex flex-row items-center cursor-pointer group">
                 <p class="mb-0 text-gray-500">
-                    First Name
-                    <AtlanIcon
-                        v-if="updateSuccess"
-                        icon="Approve"
-                        class="inline-block h-3 mb-1 ml-1 text-success"
-                    />
+                    First Name <span class="text-red-600">*</span>
                 </p>
                 <p
                     v-if="!isUpdate && allowUpdate"

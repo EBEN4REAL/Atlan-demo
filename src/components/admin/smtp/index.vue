@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout title="Configure SMTP">
-        <div class="w-2/3 text-gray-600 bg-white rounded smtpForm">
+        <div class="w-2/3 mt-5 text-gray-600 bg-white rounded smtpForm">
             <a-form
                 ref="formRef"
                 label-align="left"
@@ -239,6 +239,9 @@
 <style lang="less" module>
     :global(.smtpForm .ant-form-item) {
         @apply flex items-center flex-row;
+    }
+    :global(.smtpForm .ant-form-item-label > label::after) {
+        @apply hidden;
     }
 
     :global(.smtpForm .test-config-button) {

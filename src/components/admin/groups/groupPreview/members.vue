@@ -51,7 +51,10 @@
                     </div>
                 </ErrorView>
             </div>
-            <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
+            <div
+                v-else-if="searchText && !filteredMembersCount"
+                class="flex items-center justify-center h-64"
+            >
                 {{ `No member with name ${searchText} found.` }}
             </div>
             <div

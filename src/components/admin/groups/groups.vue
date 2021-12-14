@@ -344,14 +344,17 @@
                                                 { class: ['text-error'] },
                                                 ['Warning']
                                             ),
-                                            ' : Deleting the group will also remove it from',
+                                            ' : Deleting a group will also remove it from',
                                         ]
                                     ),
                                     h('ol', { class: ['text-sm'] }, [
-                                        h('li', '1. Existing personas'),
                                         h(
                                             'li',
-                                            '2. It will get removed from policies inside purposes'
+                                            '1. Personas which this group is a part of'
+                                        ),
+                                        h(
+                                            'li',
+                                            '2. Policies inside purposes which include this group'
                                         ),
                                     ]),
                                 ]

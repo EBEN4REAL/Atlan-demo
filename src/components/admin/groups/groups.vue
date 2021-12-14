@@ -122,15 +122,14 @@
             </a-table>
             <div
                 class="flex justify-end max-w-full mt-4"
-                v-if="pagination.total > 1"
+                v-if="pagination.total > 1 || isLoading"
             >
                 <Pagination
-                    :current="pagination.current"
+                    v-model:offset="groupListAPIParams.offset"
                     :totalPages="pagination.total"
-                    :pageSize="pagination.pageSize"
                     :loading="isLoading"
-                    :offset="pagination.offset"
-                    @change="handlePagination"
+                    :pageSize="pagination.pageSize"
+                    @mutate="getGroupList"
                 />
             </div>
         </template>
@@ -210,7 +209,6 @@
                 pageSize: groupListAPIParams.limit,
                 current:
                     groupListAPIParams.offset / groupListAPIParams.limit + 1,
-                offset: groupListAPIParams.offset,
             }))
 
             // BEGIN: GROUP PREVIEW
@@ -267,13 +265,6 @@
             const clearFilter = () => {
                 groupListAPIParams.filter = {}
                 searchText.value = ''
-                getGroupList()
-            }
-
-            const handlePagination = (page: number) => {
-                // modify offset
-                const offset = (page - 1) * groupListAPIParams.limit
-                groupListAPIParams.offset = offset
                 getGroupList()
             }
 
@@ -447,7 +438,6 @@
                 deleteGroupLoading,
                 showActionsDropdown,
                 map,
-                handlePagination,
             }
         },
     })

@@ -5,9 +5,12 @@
         style="height: max-content"
         :class="{
             'border-l-4 border-success':
-                workflowPhase === 'Succeeded' && !errorCount,
-            'border-l-4 border-red-500':
-                workflowPhase === 'Succeeded' && errorCount,
+                workflowPhase === 'Succeeded' &&
+                !errorCount &&
+                !categoryErrorCount,
+            'border-l-4 border-alert':
+                (workflowPhase === 'Succeeded' && errorCount) ||
+                (workflowPhase === 'Succeeded' && categoryErrorCount),
             'border-l-4 border-error':
                 workflowPhase === 'Failed' || workflowPhase === 'Error',
             hidden: !isVisible,
@@ -96,13 +99,20 @@
         <!-- upload failed state ends here-->
 
         <div v-else class="px-0 bg-gray-100 border-b border-r border-gray-200">
-            <a-divider v-if="totalCount !== -1" class="my-0" />
+            <a-divider
+                v-if="totalCount !== -1 || categoryCount !== -1"
+                class="my-0"
+            />
             <div
                 v-if="totalCount !== -1"
                 class="flex items-center px-4 py-4 space-x-2"
+                :class="{ 'pb-3': categoryCount !== -1 }"
             >
                 <div class="flex items-center">
-                    <AtlanIcon icon="RunSuccess" class="w-auto h-3 mr-2" />
+                    <AtlanIcon
+                        :icon="errorCount ? 'Warning' : 'RunSuccess'"
+                        class="w-auto h-3.5 mr-2"
+                    />
                     <span
                         class="font-bold text-gray-500 border-0 shadow-none"
                         size="small"
@@ -111,7 +121,7 @@
                     </span>
                 </div>
                 <span
-                    v-if="createdCount || updatedCount"
+                    v-if="createdCount || updatedCount || errorCount"
                     class="text-gray-400 mb-0.5 font-bold"
                     >-</span
                 >
@@ -138,15 +148,75 @@
                         {{ createdCount > 1 ? 'terms' : 'term' }} created
                     </span>
                 </div>
+                <span
+                    v-if="errorCount && (createdCount || updatedCount)"
+                    class="px-1 text-gray-400 mb-0.5 text-lg"
+                    >|</span
+                >
+                <div v-if="errorCount" class="flex items-center">
+                    <span
+                        class="text-gray-500 border-0 shadow-none text-error"
+                        size="small"
+                    >
+                        {{ errorCount }} Failed
+                    </span>
+                </div>
             </div>
-            <a-divider class="mt-5 mb-5" v-if="errorCount" />
-            <span class="px-3 text-gray-500" v-if="errorCount"
+
+            <!-- category info row -->
+            <div
+                v-if="categoryCount > 0"
+                class="flex items-center px-4 pb-4 space-x-2"
+            >
+                <div class="flex items-center">
+                    <AtlanIcon
+                        :icon="categoryErrorCount ? 'Warning' : 'RunSuccess'"
+                        class="w-auto h-3.5 mr-2"
+                    />
+                    <span
+                        class="font-bold text-gray-500 border-0 shadow-none"
+                        size="small"
+                    >
+                        {{ categoryCount }} new categories detected
+                    </span>
+                </div>
+                <span
+                    v-if="categoryCreatedCount || categoryErrorCount"
+                    class="text-gray-400 mb-0.5 font-bold"
+                    >-</span
+                >
+                <div v-if="categoryCreatedCount" class="flex items-center">
+                    <span
+                        class="text-gray-500 border-0 shadow-none"
+                        size="small"
+                    >
+                        {{ categoryCreatedCount }} created
+                    </span>
+                </div>
+                <span
+                    v-if="categoryErrorCount && createdCount"
+                    class="px-1 text-gray-400 mb-0.5 text-lg"
+                    >|</span
+                >
+                <div v-if="categoryErrorCount" class="flex items-center">
+                    <span
+                        class="text-gray-500 border-0 shadow-none text-error"
+                        size="small"
+                    >
+                        {{ categoryErrorCount }} Failed
+                    </span>
+                </div>
+            </div>
+
+            <span
+                class="px-3 text-gray-500"
+                v-if="errorCount || categoryErrorCount"
                 >Follow the links below to download CSV file containing errors,
                 then re-upload once you’re done.</span
             >
             <div
                 class="flex items-center px-3 pb-4 mt-4 space-x-3"
-                v-if="errorCount"
+                v-if="errorCount || categoryErrorCount"
             >
                 <a-button type="primary" class="px-4 py-1" @click="getArtifacts"
                     >Download CSV</a-button
@@ -193,9 +263,10 @@
             // data to display after upload complete
             // default to -1 as they can be 0 as well
             const totalCount = ref(-1)
-            const createdCount = ref(-1)
             const updatedCount = ref(-1)
             const errorCount = ref(-1)
+            const createdCount = ref(-1)
+            const categoryCount = ref(-1)
             const categoryCreatedCount=ref(-1)
             const categoryErrorCount=ref(-1)
             // helpers
@@ -236,8 +307,9 @@
                 totalCount.value = statusJson?.total_count
                 errorCount.value = statusJson?.error_count
                 updatedCount.value = statusJson?.updated_count
-                createdCount.value = statusJson?.created_count
+                createdCount.value= statusJson?.created_count
                 // for categories
+                categoryCount.value =categoryStatusJson?.total_count
                 categoryCreatedCount.value=categoryStatusJson?.created_count
                 categoryErrorCount.value=categoryStatusJson?.error_count
                 nodeName.value = data.nodes[createFinalCsvNode].name
@@ -323,15 +395,16 @@
                     })
             })
             return {
-                percentage:100,
-                totalCount:2,
-                createdCount:1,
-                errorCount:0,
-                categoryCreatedCount:0,
-                updatedCount:1,
+                percentage,
+                totalCount,
+                createdCount,
+                errorCount,
+                updatedCount,
+                categoryCreatedCount,
+                categoryCount ,
                 categoryErrorCount,
-                isVisible:true,
-                workflowPhase:'Succeeded',
+                isVisible,
+                workflowPhase,
                 isWorkflowRunning,
                 getArtifacts,
                 reInitTree

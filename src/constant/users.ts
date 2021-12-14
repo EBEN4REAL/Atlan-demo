@@ -39,15 +39,15 @@ export const allTabs = [
         tooltip: 'Sessions',
         activeIcon: 'HourglassActive',
     },
-    {
-        name: 'Access Logs',
-        iconClass: '',
-        component: 'AccessLogs',
-        key: 'accessLogs',
-        icon: 'AccessLogs',
-        tooltip: 'Access Logs',
-        activeIcon: 'AccessLogsActive',
-    },
+    // {
+    //     name: 'Access Logs',
+    //     iconClass: '',
+    //     component: 'AccessLogs',
+    //     key: 'accessLogs',
+    //     icon: 'AccessLogs',
+    //     tooltip: 'Access Logs',
+    //     activeIcon: 'AccessLogsActive',
+    // },
 ]
 
 export const userColumns = [

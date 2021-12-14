@@ -14,10 +14,15 @@ export default function useGroupsMembers(memberListParams: {
         error,
         mutate: getGroupMembersList,
         isValidating,
-    } = Groups.getGroupMembers(memberListParams.groupId, memberListParams.params, {
-        revalidateOnFocus: false,
-        dedupingInterval: 1,
-    });
+        isLoading,
+    } = Groups.getGroupMembers(
+        memberListParams.groupId,
+        memberListParams.params,
+        {
+            revalidateOnFocus: false,
+            dedupingInterval: 1,
+        }
+    )
 
     watch(data, () => {
         if (memberListParams.params.offset > 0) {
@@ -43,5 +48,7 @@ export default function useGroupsMembers(memberListParams: {
         getGroupMembersList,
         state,
         STATES,
+        isLoading,
+        error,
     }
 }

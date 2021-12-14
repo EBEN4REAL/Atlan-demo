@@ -3,12 +3,16 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { Groups } from '~/services/service/groups'
 import { groupInterface } from '~/types/groups/group.interface'
 
-export default function useFacetGroups(sort: string, columns: string[], immediate = true) {
+export default function useFacetGroups(
+    sort: string,
+    columns: string[],
+    immediate = true
+) {
     const params = ref(new URLSearchParams())
     params.value.set('sort', sort ?? 'name')
     if (columns?.length) {
         params.value.set('sort', sort ?? columns[0])
-        columns.forEach(c => {
+        columns.forEach((c) => {
             params.value.append('columns', c)
         })
     }
@@ -48,7 +52,6 @@ export default function useFacetGroups(sort: string, columns: string[], immediat
         }
         clearTimeout(debounce)
         debounce = setTimeout(() => {
-            if (value)
                 params.value.set(
                     'filter',
                     JSON.stringify({
@@ -77,6 +80,6 @@ export default function useFacetGroups(sort: string, columns: string[], immediat
         handleSearch,
         setLimit,
         filterTotal,
-        isLoading
+        isLoading,
     }
 }

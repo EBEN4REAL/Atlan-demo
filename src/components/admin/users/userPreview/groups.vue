@@ -1,14 +1,52 @@
 <template>
-    <div class="px-4 py-2 mb-3">
-        <div class="flex items-center justify-between mb-4">
-            <div class="text-lg font-bold">Groups</div>
+    <div class="h-full px-4 py-2 mb-3">
+        <div class="flex items-center justify-between mb-3">
+            <div class="text-base font-bold text-gray-500">Groups</div>
             <div v-if="showUserGroups" v-auth="map.ADD_USER_GROUP">
-                <a-button @click="handleAddToGroup">
-                    <div class="flex items-center">
-                        <AtlanIcon icon="Add" class="mr-2"></AtlanIcon>
-                        <span>Add to group</span>
-                    </div>
-                </a-button>
+                <a-popover
+                    v-model:visible="showGroupsPopover"
+                    placement="bottom"
+                    :trigger="['click']"
+                    :destroy-tooltip-on-hide="true"
+                    :overlay-class-name="$style.ownerPopover"
+                >
+                    <template #content>
+                        <div class="">
+                            <OwnerFacets
+                                v-model:modelValue="selectedGroupIds"
+                                :show-none="false"
+                                :enableTabs="['groups']"
+                                :hideDisabledTabs="true"
+                                selectGroupKey="id"
+                            ></OwnerFacets>
+                        </div>
+                        <div class="flex justify-end mr-3">
+                            <AtlanButton
+                                :is-loading="addToGroupLoading"
+                                type="primary"
+                                size="sm"
+                                padding="compact"
+                                :disabled="addToGroupLoading"
+                                @click="addUserToGroups"
+                            >
+                                <div class="flex items-center">
+                                    <div v-if="!addToGroupLoading">Save</div>
+                                    <div v-else>Saving</div>
+                                </div>
+                            </AtlanButton>
+                        </div>
+                    </template>
+                    <AtlanButton
+                        size="sm"
+                        padding="compact"
+                        class="text-gray-500 bg-transparent border-gray-300  hover:bg-transparent hover:text-primary hover:border-primary"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
+                            <div>Add to groups</div>
+                        </div></AtlanButton
+                    >
+                </a-popover>
             </div>
             <div v-else>
                 <a-button
@@ -23,8 +61,11 @@
                 </a-button>
             </div>
         </div>
-        <div v-if="showUserGroups" v-auth="map.LIST_GROUPS">
-            <div v-if="groupList?.length" class="flex flex-row justify-between">
+        <div v-auth="map.LIST_GROUPS" class="overflow-y-auto group-list">
+            <div
+                v-if="totalGroupCount || isLoading"
+                class="flex flex-row justify-between"
+            >
                 <div class="w-full">
                     <SearchAndFilter
                         v-model:value="searchText"
@@ -38,31 +79,19 @@
                 </div>
             </div>
             <div
-                v-if="!groupList?.length"
-                class="flex flex-col items-center justify-center"
+                v-if="!totalGroupCount && !isLoading"
+                class="flex flex-col items-center justify-center  empty-state-wrapper"
             >
-                <div
-                    class="
-                        flex
-                        items-center
-                        justify-center
-                        w-full
-                        componentHeight
-                    "
-                >
-                    <EmptyState desc="This user is not part of any group." />
+                <div class="flex items-center justify-center w-full">
+                    <EmptyState
+                        empty-screen="CreateGroups"
+                        :desc="`${selectedUser.name} is not part of any group.`"
+                    />
                 </div>
             </div>
             <div
                 v-if="error"
-                class="
-                    flex flex-col
-                    items-center
-                    justify-center
-                    h-full
-                    mt-3
-                    bg-white
-                "
+                class="flex flex-col items-center justify-center mt-3 bg-white  empty-state-wrapper"
             >
                 <ErrorView>
                     <div class="mt-3">
@@ -76,26 +105,31 @@
                                 }
                             "
                         >
-                            <AtlanIcon icon="Refresh" class="mr-2" />Try again
+                            <AtlanIcon icon="Reload" class="mr-2" />Try again
                         </a-button>
                     </div>
                 </ErrorView>
             </div>
-            <div v-else-if="searchText && !filteredGroupCount" class="mt-2">
-                {{ `No group with name ${searchText} found.` }}
+            <div
+                v-else-if="searchText && !filteredGroupCount && !isLoading"
+                class="empty-state-wrapper"
+            >
+                <EmptyState
+                    empty-screen="NoGroups"
+                    :desc="`No group with name ${searchText} found.`"
+                    button-text="Clear search"
+                    @event="
+                        () => {
+                            searchText = ''
+                            handleSearch()
+                        }
+                    "
+                />
             </div>
-            <div v-else class="mt-4">
-                <div v-for="group in groupList" :key="group.id" class="">
+            <div v-else class="mt-4 mb-2">
+                <div v-for="group in groupList" :key="group.id">
                     <div
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            px-3
-                            py-2
-                            group
-                            hover:bg-gray-100
-                        "
+                        class="flex items-center justify-between px-3 py-2  group hover:bg-gray-100"
                     >
                         <div class="flex items-center">
                             <div class="">
@@ -116,12 +150,7 @@
                         <div
                             v-if="!removeFromGroupLoading[group.id]"
                             v-auth="map.REMOVE_USER_GROUP"
-                            class="
-                                opacity-0
-                                cursor-pointer
-                                text-error
-                                group-hover:opacity-100
-                            "
+                            class="opacity-0 cursor-pointer  text-error group-hover:opacity-100"
                             @click="() => removeUserFromGroup(group)"
                         >
                             Remove
@@ -143,7 +172,7 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="!showUserGroups" v-auth="map.LIST_GROUPS">
+        <!-- <div v-else-if="!showUserGroups" v-auth="map.LIST_GROUPS">
             <GroupList
                 :add-to-group-loading="addToGroupLoading"
                 :show-back-button="false"
@@ -152,7 +181,7 @@
                 @showUserGroups="handleShowUserGroups"
                 @addUserToGroups="addUserToGroups"
             />
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -172,7 +201,8 @@ import { getIsLoadMore } from '~/utils/isLoadMore'
 import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 import EmptyState from '@/common/empty/index.vue'
 import map from '~/constant/accessControl/map'
-import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+import OwnerFacets from '@/common/facet/owners/index.vue'
+import AtlanButton from '@/UI/button.vue'
 
 export default defineComponent({
     name: 'UserPreviewGroups',
@@ -181,7 +211,8 @@ export default defineComponent({
         GroupList,
         EmptyState,
         SearchAndFilter,
-        AtlanIcon,
+        OwnerFacets,
+        AtlanButton,
     },
     props: {
         selectedUser: {
@@ -191,11 +222,12 @@ export default defineComponent({
     },
     setup(props, context) {
         const showUserGroups = ref(true)
+        const showGroupsPopover = ref(false)
         const searchText = ref('')
         const showAddToGroupModal = ref(false)
         const addToGroupLoading = ref(false)
         const removeFromGroupLoading = ref({})
-        const selectedGroupIds = ref([])
+        const selectedGroupIds = ref({ ownerGroups: [] })
         const groupListAPIParams = reactive({
             userId: props.selectedUser.id,
             params: {
@@ -243,7 +275,7 @@ export default defineComponent({
             )
         )
         const addUserToGroups = async () => {
-            const groupIds = [...selectedGroupIds.value]
+            const groupIds = [...selectedGroupIds.value.ownerGroups]
             if (groupIds && groupIds.length) {
                 const requestPayload = ref({
                     groups: groupIds,
@@ -262,7 +294,8 @@ export default defineComponent({
                             groupListAPIParams.params.offset = 0
                             getUserGroupList()
                             message.success('User added to groups')
-                            showUserGroups.value = true
+                            showGroupsPopover.value = false
+                            selectedGroupIds.value.ownerGroups = []
                         } else if (addError && addError.value) {
                             message.error(
                                 'Unable to add user to groups, please try again.'
@@ -272,7 +305,7 @@ export default defineComponent({
                     { immediate: true }
                 )
             }
-            showUserGroups.value = true
+            showGroupsPopover.value = false
         }
 
         const removeUserFromGroup = (group: any) => {
@@ -353,7 +386,8 @@ export default defineComponent({
         }
         const handleAddToGroup = () => {
             // showAddToGroupModal.value = true;
-            showUserGroups.value = false
+            // showUserGroups.value = false
+            showGroupsPopover.value = true
         }
         const handleShowUserGroups = () => {
             // showAddToGroupModal.value = false;
@@ -362,6 +396,7 @@ export default defineComponent({
         const updateSelectedGroups = (groupList) => {
             selectedGroupIds.value = [...groupList]
         }
+        // const showGroupsPopover = computed(() => !showUserGroups.value)
 
         return {
             groupList,
@@ -385,20 +420,32 @@ export default defineComponent({
             showUserGroups,
             handleShowUserGroups,
             selectedGroupIds,
+            showGroupsPopover,
         }
     },
 })
 </script>
 
 <style lang="less" scoped>
-.componentHeight {
-    height: calc(100vh - 12rem);
+.group-list {
+    max-height: calc(100vh - 15rem) !important;
+}
+.empty-state-wrapper {
+    height: calc(100vh - 10rem) !important;
 }
 </style>
 <style lang="less">
 .remove-from-group-modal {
     .ant-modal-confirm-body-wrapper {
         @apply p-5;
+    }
+}
+</style>
+<style lang="less" module>
+.ownerPopover {
+    :global(.ant-popover-inner-content) {
+        @apply px-0 py-3 !important;
+        width: 250px !important;
     }
 }
 </style>

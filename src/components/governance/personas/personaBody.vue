@@ -234,11 +234,11 @@
         placement="right"
         :closable="false"
         :visible="addpolicyVisible"
-        :width="450"
+        :width="width"
         :mask="false"
         @close="handleCloseAddPolicy"
     >
-        <Addpolicy :type="typeAddPolicy" :show-drawer="addpolicyVisible" />
+        <Addpolicy :type="typeAddPolicy" :show-drawer="addpolicyVisible" @changeWidth="handleChangeWidth" />
     </a-drawer>
 </template>
 
@@ -298,6 +298,7 @@
             const activeTabFilter = ref('')
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
+            const width = ref(450)
             const typeAddPolicy = ref('')
             const handleAddPolicy = (type) => {
                 typeAddPolicy.value = type
@@ -450,6 +451,9 @@
             const handleCloseAddPolicy = () => {
                 addpolicyVisible.value = false
             }
+            const handleChangeWidth = (prop) => {
+                width.value = prop
+            }
             return {
                 newIdTag,
                 activeTabKey,
@@ -474,6 +478,8 @@
                 addpolicyVisible,
                 handleCloseAddPolicy,
                 typeAddPolicy,
+                width,
+                handleChangeWidth
             }
         },
     })

@@ -226,6 +226,10 @@
                 required: false,
                 default: () => {},
             },
+            width: {
+                type: Number,
+                required: false,
+            }
         },
         emits: [],
         setup(props, { emit }) {
@@ -233,9 +237,16 @@
             const isShow = ref(false)
             const policyNameRef = ref()
             const connectorComponentRef = ref()
-            const { showDrawer, type } = toRefs(props)
+            const { showDrawer, type, width } = toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
+            watch(isShow, () => {
+                if(isShow.value){
+                    emit('changeWidth', 200)
+                }else {
+                    emit('changeWidth', 450)
+                }
+            })
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',

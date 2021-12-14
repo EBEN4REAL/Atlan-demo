@@ -232,7 +232,7 @@
         },
         emits: ['edit', 'cancel', 'delete', 'clickCard'],
         setup(props, { emit }) {
-            const { policy, type } = toRefs(props)
+            const { policy, type, width } = toRefs(props)
             const { findActions } = useScopeService()
             const { getAssetIcon } = useUtils()
             const showAll = ref(false)

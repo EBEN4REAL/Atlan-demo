@@ -22,11 +22,11 @@
     export default defineComponent({
         name: 'Relevant',
         components: {
-            // AssetList: defineAsyncComponent(
-            //     () => import('~/components/home/recentlyViewedAssets.vue')
-            // ),
             AssetList: defineAsyncComponent(
                 () => import('~/components/home/assetList.vue')
+            ),
+            recentlyViewedAssets: defineAsyncComponent(
+                () => import('~/components/home/recentlyViewedAssets.vue')
             ),
         },
         setup() {
@@ -45,20 +45,20 @@
                 }, */
                 {
                     id: 1,
+                    name: 'Recently visited',
+                    component: 'recentlyViewedAssets',
+                    typeName: ['Table'],
+                    icon: 'NoRelevantAsset',
+                    emptyText: 'All your assets will appear here.',
+                },
+                {
+                    id: 2,
                     name: 'My Assets',
                     component: 'AssetList',
                     typeName: ['Table'],
                     icon: 'NoRelevantAsset',
                     emptyText: 'All your assets will appear here.',
                 },
-                // {
-                //     id: 2,
-                //     name: 'Assets Owned',
-                //     component: 'AssetList',
-                //     typeName: ['Table'],
-                //     icon: 'NoRelevantAsset',
-                //     emptyText: 'All your assets will appear here.',
-                // },
                 /*{
                     id: 2,
                     name: 'Your terms',

@@ -20,7 +20,8 @@
             </p>
         </div>
 
-        <div class="flex justify-end p-3 border-t border-gray-200">
+        <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
+            <a-button @click="handleCancel">Cancel</a-button>
             <a-button type="danger" @click="handleDelete" :loading="isLoading"
                 >Delete</a-button
             >
@@ -111,6 +112,10 @@
                         return 'Glossary'
                 }
             })
+
+            const handleCancel = () => {
+                visible.value = false
+            }
             const handleDelete = () => {
                 const {
                     data,
@@ -169,6 +174,7 @@
                 typeNameTitle,
                 isLoading,
                 handleDelete,
+                handleCancel,
             }
         },
     })

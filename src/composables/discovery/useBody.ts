@@ -234,7 +234,9 @@ export function useBody(
                             q.orFilter(
                                 'terms',
                                 '__meanings',
-                                filterObject.terms.map((term) => term.qualifiedName)
+                                filterObject.terms.map(
+                                    (term) => term.qualifiedName
+                                )
                             )
 
                         if (filterObject.empty === true) {

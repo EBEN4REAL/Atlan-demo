@@ -1,16 +1,7 @@
 <template>
     <div class="flex flex-1">
-        <div class="flex flex-col h-full">
-            <div
-                class="flex items-center px-5 py-3 text-base font-bold border-b border-gray-200 overflow-ellipsis"
-            >
-                <a-button class="mr-3"
-                    ><AtlanIcon icon="ChevronLeft"></AtlanIcon
-                ></a-button>
-                Select a package
-            </div>
-
-            <div class="flex flex-1 overflow-y-auto">
+        <div class="flex flex-col w-full h-full">
+            <div class="flex flex-1 w-full overflow-y-auto">
                 <div
                     class="flex flex-col bg-gray-100 border-r border-gray-300 filters"
                 >
@@ -19,22 +10,57 @@
                     ></PackageFilters>
                 </div>
 
-                <div class="flex flex-col flex-1 h-full py-4">
+                <div class="flex flex-col flex-1 h-full">
                     <div
-                        class="flex flex-col px-6 py-4 pb-4 font-extrabold focus-within:text-2xl"
+                        class="flex flex-col px-6 py-3 pb-4 font-extrabold focus-within:text-2xl"
                     >
                         <a-input
-                            class="w-1/2"
+                            size="large"
                             placeholder="Search Packages"
                         ></a-input>
                     </div>
 
                     <div class="flex flex-1 overflow-y-auto">
+                        <div
+                            class="flex items-center justify-center w-full"
+                            v-if="isLoading"
+                        >
+                            <a-spin></a-spin>
+                        </div>
+                        <div
+                            class="flex items-center justify-center w-full"
+                            v-if="error && !isLoading"
+                        >
+                            <ErrorView></ErrorView>
+                        </div>
+                        <div
+                            class="flex items-center justify-center w-full"
+                            v-if="!error && !isLoading && list.length === 0"
+                        >
+                            <EmptyView
+                                desc="No packages found"
+                                empty-screen="WFEmptyTab"
+                            ></EmptyView>
+                        </div>
+
                         <PackageList
+                            v-else
                             :list="list"
                             class="px-6"
                             @select="handleSelect"
                         ></PackageList>
+                    </div>
+                    <div
+                        class="flex items-center p-3 text-base font-bold border-t border-gray-200 overflow-ellipsis"
+                        v-if="selectedPackage"
+                    >
+                        <a-button
+                            type="primary"
+                            block
+                            @click.shift.exact="handleSetupSandbox"
+                            @click.exact="handleSetup"
+                            >Setup</a-button
+                        >
                     </div>
                 </div>
             </div>
@@ -88,6 +114,13 @@
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
+            const handleSetup = (item) => {
+                emit('setup', selectedPackage.value)
+            }
+            const handleSetupSandbox = (item) => {
+                emit('sandbox', selectedPackage.value)
+            }
+
             // const { refresh, isLoading, list, error } = usePackageList({
             //     isCache: true,
             //     dependentKey,
@@ -103,6 +136,9 @@
                 facets,
                 limit,
                 offset,
+                source: ref({
+                    excludes: ['spec'],
+                }),
             })
 
             const placeholder = computed(() => 'Search all packages')
@@ -126,6 +162,8 @@
                 error,
                 packageFilters,
                 facets,
+                handleSetupSandbox,
+                handleSetup,
             }
         },
     })

@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
             },
         },
         build: {
-            sourcemap: true,
+            sourcemap: false,
             commonjsOptions: {
                 //transformMixedEsModules: true,
                 //defaultIsModuleExports: true
@@ -70,7 +70,7 @@ export default defineConfig(({ mode }) => {
             svgLoader(),
             {
                 ...strip({ include: '**/*.+(vue|js|ts)' }),
-                apply: 'build'
+                apply: 'build',
             },
             // Components(),
         ],

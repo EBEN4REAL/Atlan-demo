@@ -3,11 +3,11 @@
         <div class="flex flex-col w-full h-full" v-if="!status">
             <a-steps
                 v-if="steps.length > 0"
-                v-model:current="currentStep"
+                :current="currentStep"
                 class="px-6 py-3 border-b border-gray-200"
             >
-                <template v-for="step in steps" :key="step.id">
-                    <a-step>
+                <template v-for="(step, index) in steps" :key="step.id">
+                    <a-step @click="handleStepClick(index)">
                         <template #title>{{ step.title }}</template>
                     </a-step>
                 </template>
@@ -20,7 +20,7 @@
                 <DynamicForm
                     :key="`form_${currentStep}`"
                     ref="stepForm"
-                    :config="configMapDerived"
+                    :config="localConfigMap"
                     :currentStep="currentStepConfig"
                     :workflowTemplate="workflowTemplate"
                     v-model="modelValue"
@@ -40,10 +40,21 @@
                     <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
                     >Back</a-button
                 >
-
-                <a-button v-if="currentStep == 0" @click="handleExit">
-                    <AtlanIcon icon="ChevronLeft"></AtlanIcon> All Packages
-                </a-button>
+                <div v-if="currentStep == 0">
+                    <a-button
+                        @click="handleExit"
+                        class="font-bold text-red-500"
+                    >
+                        Exit
+                    </a-button>
+                    <a-button
+                        v-if="isSandbox"
+                        @click="toggleSandbox"
+                        class="ml-1"
+                    >
+                        View Template
+                    </a-button>
+                </div>
                 <a-button
                     @click="handleNext"
                     class="text-primary"
@@ -60,22 +71,24 @@
                     class="flex gap-x-2"
                     v-if="currentStep == steps.length - 1"
                 >
-                    <a-button type="primary" class="px-6" @click="handleSubmit"
-                        >Run</a-button
-                    >
+                    <a-button class="px-6" @click="handleSubmit">Run</a-button>
                     <a-popconfirm
                         ok-text="Confirm"
                         :overlay-class-name="$style.popConfirm"
                         cancel-text="Cancel"
                         placement="topRight"
+                        :ok-button-props="{
+                            size: 'default',
+                        }"
+                        :cancel-button-props="{
+                            size: 'default',
+                        }"
                     >
                         <template #icon> </template>
                         <template #title>
-                            <Schedule class="mb-3"></Schedule>
+                            <Schedule class="mb-3" v-model="cron"></Schedule>
                         </template>
-                        <a-button
-                            type="primary"
-                            class="px-6 bg-green-500 border-green-500"
+                        <a-button type="primary" class="px-6"
                             >Schedule & Run
                             <AtlanIcon
                                 icon="ChevronRight"
@@ -136,6 +149,21 @@
                 </template>
             </a-result>
         </div>
+        <a-drawer
+            v-if="isSandbox"
+            title="Sandbox Mode"
+            placement="right"
+            :closable="true"
+            :visible="sandboxVisible"
+            @close="toggleSandbox"
+            :mask="false"
+        >
+            <Sandbox
+                v-model:workflowTemplate="localTemplate"
+                v-model:configMap="localConfigMap"
+                @change="handleRefresh"
+            ></Sandbox>
+        </a-drawer>
     </div>
 </template>
 
@@ -159,12 +187,12 @@
     import SetupGraph from './setupGraph.vue'
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
-    import Sandbox from './sandbox.vue'
+    import Sandbox from '../preview/sandbox.vue'
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
     import { useRunList } from '~/composables/package/useRunList'
-    import { useRouter } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
 
     // Composables
 
@@ -199,14 +227,34 @@
             const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
 
-            provide('workflowTemplate', workflowTemplate)
-            provide('configMap', configMap)
+            const localTemplate = ref(workflowTemplate.value)
+            const localConfigMap = ref(configMap.value)
+
+            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+
+            provide('workflowTemplate', localTemplate)
+            provide('configMap', localConfigMap)
+
+            const route = useRoute()
+            const sandboxVisible = ref(false)
+            const toggleSandbox = () => {
+                sandboxVisible.value = !sandboxVisible.value
+            }
+            const isSandbox = computed(() => route?.query?.sandbox || '')
+
+            const cron = ref({
+                cron: workflowTemplate.value.metadata?.annotations[
+                    'orchestration.atlan.com/schedule'
+                ],
+                timezone:
+                    workflowTemplate?.metadata?.annotations[
+                        'orchestration.atlan.com/timezone'
+                    ],
+            })
 
             const modelValue = ref({})
 
-            const steps = computed(() => configMapDerived?.value?.steps || [])
-
-            const configMapDerived = computed(() => configMap.value)
+            const steps = computed(() => localConfigMap?.value?.steps || [])
 
             const currentStepConfig = computed(() => {
                 if (steps.value) {
@@ -311,7 +359,7 @@
                     // add qualifiedname to label
                     if (connectionQualifiedName) {
                         body.value.metadata.labels[
-                            `com.atlan.orchestration/${connectionQualifiedName}`
+                            `orchestration.atlan.com/${connectionQualifiedName}`
                         ] = 'true'
                     }
                 })
@@ -363,7 +411,7 @@
                     message.error('Something went wrong. Package is not valid.')
                 }
 
-                body.value.metadata.labels['com.atlan.orchestration/atlan-ui'] =
+                body.value.metadata.labels['orchestration.atlan.com/atlan-ui'] =
                     'true'
                 body.value.spec = {
                     templates: [
@@ -401,7 +449,17 @@
             }
             const router = useRouter()
             const handleExit = (key) => {
-                router.replace(`/packages`)
+                router.replace(`/workflows/setup`)
+            }
+
+            const handleStepClick = (step) => {
+                if (step < currentStep.value) {
+                    currentStep.value = step
+                }
+            }
+
+            const handleRefresh = () => {
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
             return {
@@ -409,7 +467,7 @@
 
                 workflowTemplate,
                 handleChange,
-                configMapDerived,
+
                 modelValue,
                 selectedStep,
                 currentStep,
@@ -432,6 +490,15 @@
                 errorMesssage,
                 handleBackToSetup,
                 handleExit,
+                handleStepClick,
+                cron,
+                isSandbox,
+                sandboxVisible,
+                toggleSandbox,
+                handleRefresh,
+                dirtyTimestamp,
+                localTemplate,
+                localConfigMap,
             }
         },
     })

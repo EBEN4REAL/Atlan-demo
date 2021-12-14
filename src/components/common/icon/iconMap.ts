@@ -32,6 +32,8 @@ import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
+import EmptySampleData from '~/assets/images/illustrations/empty_sample_data.svg'
+import ErrorSampleData from '~/assets/images/illustrations/error_sample_data.svg'
 import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
@@ -162,6 +164,7 @@ import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import Teams from '~/assets/images/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
@@ -260,6 +263,7 @@ import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
 import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
 import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
+import GlossaryGettingStarted from '~/assets/images/icons/glossary-getting-started.svg'
 import BulkUpload from '~/assets/images/icons/bulk-upload.svg'
 import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
@@ -292,6 +296,9 @@ import CustomVariable from '~/assets/images/icons/customVariable.svg'
 import FolderSearch from '~/assets/images/icons/folder-search.svg'
 import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
 import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
+import Verified from '~/assets/images/status/verified.svg'
+import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
+import Compass from '~/assets/images/icons/Compass.svg'
 
 export default {
     BuilderGroup,
@@ -340,6 +347,8 @@ export default {
     Relation,
     MorningIcon,
     AfternoonIcon,
+    EmptySampleData,
+    ErrorSampleData,
     Resources,
     FAQS,
     TableSummary,
@@ -578,4 +587,9 @@ export default {
     FolderNav24,
     FolderNav24Active,
     BulkUpload,
+    GlossaryGettingStarted,
+    Verified,
+    ShieldBlank,
+    Compass,
+    Teams,
 }

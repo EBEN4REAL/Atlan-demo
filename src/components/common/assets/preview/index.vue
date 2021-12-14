@@ -156,7 +156,7 @@
             :destroy-inactive-tab-pane="true"
         >
             <a-tab-pane
-                v-for="(tab, index) in getPreviewTabs(selectedAsset)"
+                v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
                 :key="index"
                 class="overflow-y-auto"
                 :destroy-inactive-tab-pane="true"
@@ -181,6 +181,7 @@
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
                     :read-only="isScrubbed(selectedAsset)"
+                    :in-profile="isProfile"
                     :data="tab.data"
                 ></component>
             </a-tab-pane>

@@ -81,6 +81,7 @@
         watch,
         reactive,
         onMounted,
+        inject,
     } from 'vue'
     import parser from 'cron-parser'
     import Timezone from '~/components/common/select/timezone.vue'
@@ -88,15 +89,81 @@
     import Day from '~/components/common/select/day.vue'
     import Date from '~/components/common/select/date.vue'
     import cronstrue from 'cronstrue'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
         components: { Timezone, Frequency, Day, Date },
-        props: {},
-
+        props: {
+            modelValue: {
+                type: Object,
+                default: () => ({
+                    cron: '',
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                }),
+            },
+        },
+        emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const schedule = reactive({})
-            const cron = ref('')
+            const { modelValue } = useVModels(props, emit)
+            const workflowTemplate = inject('workflowTemplate')
+
+            let frequency = ''
+            let time = ''
+            let dayOfWeek = ''
+            let date = ''
+            if (modelValue.value.cron) {
+                frequency = getCronFrequency(modelValue.value.cron)
+                const interval = parser.parseExpression(modelValue.value.cron)
+                time = `${interval.fields.hour[0].toString()}:${interval.fields.minute[0].toString()}`
+                if (interval.fields.dayOfWeek.length === 1) {
+                    dayOfWeek = interval.fields.dayOfWeek[0].toString()
+                }
+                if (interval.fields.dayOfMonth.length === 1) {
+                    date = interval.fields.dayOfMonth[0].toString()
+                }
+            }
+
+            const schedule = reactive({
+                frequency,
+                time,
+                date,
+                dayOfWeek,
+            })
+
+            const getCronFrequency = (cronString) => {
+                const interval = parser.parseExpression(cronString)
+                if (
+                    interval.fields.dayOfMonth.length === 31 &&
+                    interval.fields.dayOfWeek.length === 8 &&
+                    interval.fields.month.length === 12
+                ) {
+                    return 'daily'
+                }
+                if (
+                    interval.fields.dayOfMonth.length === 31 &&
+                    interval.fields.dayOfWeek.join(',') ===
+                        [1, 2, 3, 4, 5].join(',') &&
+                    interval.fields.month.length === 12
+                ) {
+                    return 'weekdays'
+                }
+                if (
+                    interval.fields.dayOfMonth.length === 31 &&
+                    interval.fields.dayOfWeek.join(',') === [0, 6].join(',') &&
+                    interval.fields.month.length === 12
+                ) {
+                    return 'weekend'
+                }
+                if (
+                    interval.fields.dayOfMonth.length === 1 &&
+                    interval.fields.dayOfWeek.length === 8 &&
+                    interval.fields.month.length === 12
+                ) {
+                    return 'monthly'
+                }
+                return ''
+            }
 
             const cronString = ref('')
             // const graphRef = inject('graphRef')
@@ -163,24 +230,20 @@
                         fields.minute = [0]
                     }
                 }
-
                 let modifiedInterval = parser.fieldsToExpression(fields)
                 cron.value = modifiedInterval.stringify()
                 cronString.value = cronstrue.toString(cron.value)
             }
 
-            const setDefault = () => {
-                // schedule.time = '00:00'
-                // schedule.dayOfWeek = [1]
-                // schedule.date = [1]
-            }
-
-            onMounted(() => {
-                setDefault()
-            })
+            buildCron()
 
             watch(schedule, () => {
                 buildCron()
+                modelValue.value = {
+                    timezone: schedule.timezone,
+                    cron: cron.value,
+                }
+                emit('change')
             })
 
             return {
@@ -188,7 +251,7 @@
                 cron,
                 buildCron,
                 cronString,
-                setDefault,
+                getCronFrequency,
             }
         },
     })

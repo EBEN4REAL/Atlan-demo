@@ -41,7 +41,7 @@ export function usePackageList({
                     metadata: {
                         $elemMatch: {
                             labels: {
-                                'com.atlan.orchestration/verified': 'true',
+                                'orchestration.atlan.com/verified': 'true',
                             },
                         },
                     },
@@ -56,7 +56,7 @@ export function usePackageList({
                         metadata: {
                             $elemMatch: {
                                 labels: {
-                                    'com.atlan.orchestration/verified': 'true',
+                                    'orchestration.atlan.com/verified': 'true',
                                 },
                             },
                         },

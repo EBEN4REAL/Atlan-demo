@@ -57,7 +57,12 @@
                         </template>
                     </AddGtcModal>
                 </a-menu-item>
-                <a-menu-divider></a-menu-divider>
+                <a-menu-divider
+                    v-if="
+                        showGtcCrud && entity?.typeName !== 'AtlasGlossaryTerm'
+                    "
+                    class="p-0 m-0"
+                ></a-menu-divider>
                 <a-menu-item
                     v-if="showGtcCrud"
                     key="archive"

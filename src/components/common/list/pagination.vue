@@ -16,7 +16,7 @@
         padding="compact"
     >
         {{ current }} of
-        <span v-if="Math.ceil(total)">{{ Math.ceil(total) }}</span>
+        <span v-if="Math.ceil(totalPages)">{{ Math.ceil(totalPages) }}</span>
 
         <div v-else-if="loading" class="flex items-center justify-center">
             <AtlanIcon icon="CircleLoader" class="animate-spin" />
@@ -28,7 +28,7 @@
         size="sm"
         color="secondary"
         padding="compact"
-        :disabled="current === Math.ceil(total)"
+        :disabled="current >= Math.ceil(totalPages)"
         @click="$emit('change', current + 1)"
     >
         <AtlanIcon icon="CaretRight" />
@@ -36,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+    import { computed, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
 
     const props = defineProps({
@@ -43,7 +44,15 @@
             type: Number,
             required: true,
         },
-        total: {
+        pageSize: {
+            type: Number,
+            required: true,
+        },
+        offset: {
+            type: Number,
+            required: true,
+        },
+        totalPages: {
             type: Number,
             required: true,
         },
@@ -53,6 +62,21 @@
         },
     })
     const emit = defineEmits(['handlePagination', 'change'])
+
+    const { current, pageSize, totalPages, offset } = toRefs(props)
+
+    const upperOffset = computed(
+        () => (current.value - 1 || 1) * pageSize.value + offset.value
+    )
+    const currentView = computed(() => {
+        const string = `${(current.value - 1) * pageSize.value + 1} - ${
+            totalPages.value < upperOffset.value
+                ? totalPages.value
+                : upperOffset.value
+        }`
+
+        return string
+    })
 </script>
 
 <style scoped></style>

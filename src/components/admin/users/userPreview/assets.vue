@@ -9,7 +9,15 @@
                 :show-aggrs="false"
                 class="asset-list"
                 page="admin"
-                :emptyViewText="`Seems like ${selectedUser.name} doesn't own any assets.`"
+                :emptyViewText="
+                    selectedUser || selectedGroup
+                        ? `Seems like ${
+                              selectedUser
+                                  ? selectedUser.name
+                                  : selectedGroup.name
+                          } doesn't own any assets.`
+                        : ''
+                "
             />
         </div>
     </div>

@@ -7,7 +7,7 @@
             >
         </section>
         <main
-            class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-14"
+            class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-6"
         >
             <section class="">
                 <SearchAndStats />

@@ -61,7 +61,7 @@
                             role === 'Admin') ||
                         (nav.isActive && nav.path !== '/platform')
                     "
-                    v-auth="nav.auth"
+                    v-auth.or="nav.auth"
                     :to="nav.path"
                     class="w-full mx-0 menu-item"
                     :class="{ active: nav.path === page }"

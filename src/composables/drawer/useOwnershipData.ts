@@ -19,44 +19,6 @@ export function useOwnershipData(user) {
         return entities
     })
 
-    // [
-    // {
-    //     "key": "column",
-    // },
-    //     {
-    //         "key": "table",
-    //     },
-    //     {
-    //         "key": "columnprocess",
-    //     },
-    //     {
-    //         "key": "view",
-    //     },
-    //     {
-    //         "key": "process",
-    //     },
-    //     {
-    //         "key": "atlasglossaryterm",
-    //         "doc_count": 593
-    //     },
-    //     {
-    //         "key": "schema",
-    //         "doc_count": 369
-    //     },
-    //     {
-    //         "key": "atlasglossarycategory",
-    //         "doc_count": 204
-    //     },
-    //     {
-    //         "key": "database",
-    //         "doc_count": 172
-    //     },
-    //     {
-    //         "key": "__atlasauditentry",
-    //         "doc_count": 134
-    //     }
-    // ]
-
     return {
         ownedEntitiesCount,
     }

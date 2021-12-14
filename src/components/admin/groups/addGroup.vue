@@ -13,7 +13,12 @@
             </div>
         </div>
         <div class="flex flex-col px-4 py-3">
-            <a-form layout="vertical" :model="group" :rules="validations">
+            <a-form
+                class="form"
+                layout="vertical"
+                :model="group"
+                :rules="validations"
+            >
                 <a-form-item label="Name" name="name">
                     <a-input
                         v-model:value="group.name"
@@ -33,7 +38,7 @@
 
                 <div v-auth="map.LIST_USERS">
                     <div class="mb-2">
-                        <span class="mr-2">Members</span>
+                        <span class="mr-2 font-bold">Members</span>
                     </div>
                     <UserList
                         user-list-header-class="min-w-full"
@@ -54,9 +59,10 @@
                 size="sm"
                 html-type="submit"
                 :disabled="isSubmitDisabled"
-                :loading="createGroupLoading"
+                :isLoading="createGroupLoading"
                 @click="handleSubmit"
-                >Create Group
+            >
+                Create Group
             </AtlanButton>
         </div>
     </div>
@@ -92,7 +98,7 @@
         emits: ['refresh', 'closeDrawer'],
         setup(props, { emit }) {
             const router = useRouter()
-            const createGroupLoading = ref(false)
+            let createGroupLoading = ref(false)
             const isDefault = ref(false)
 
             const listPermission = true
@@ -133,7 +139,6 @@
                 userIds.value = list
             }
             const handleSubmit = () => {
-                emit('closeDrawer')
                 const currentDate = new Date().toISOString()
                 const createdBy = username.value
                 // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
@@ -157,6 +162,7 @@
                             message.success('Group added')
                             router.push(`/admin/groups`)
                             emit('refresh')
+                            emit('closeDrawer')
                         } else if (error && error.value) {
                             message.error(
                                 'Unable to create group, please try again.'
@@ -190,26 +196,8 @@
     })
 </script>
 
-<style lang="less" module>
-    .formWrapper {
-        height: calc(100vh - 8rem);
-        :global(.ant-form-item-label) {
-            @apply flex;
-        }
-        :global(.ant-form-item-required) {
-            @apply flex flex-row-reverse;
-        }
-
-        // Aesterik in right side
-        :global(.ant-form-item-label
-                > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
-            display: inline-block;
-            margin-left: 4px;
-            color: #ff4d4f;
-            font-size: 14px;
-            font-family: SimSun, sans-serif;
-            line-height: 1;
-            content: '*';
-        }
+<style lang="less" scoped>
+    .form:deep(.ant-form-item-label) {
+        @apply font-bold;
     }
 </style>

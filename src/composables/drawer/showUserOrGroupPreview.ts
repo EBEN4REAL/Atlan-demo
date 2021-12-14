@@ -65,7 +65,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
         )
         const imageUrl = computed(() => {
             if (selectedUser.value && selectedUser.value.username)
-                return `${window.location.origin}/api/service/avatars/${selectedUser.value.id}`
+                return `${window.location.origin}/api/service/avatars/${selectedUser.value.username}`
             return ''
         })
 

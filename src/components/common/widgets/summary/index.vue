@@ -25,6 +25,7 @@
                             v-model="localDescription"
                             :selected-asset="asset"
                             :read-only="readOnly"
+                            :in-profile="true"
                             class="-ml-1"
                             @change="handleChangeDescription"
                         />
@@ -38,6 +39,7 @@
                             v-model="localCertificate"
                             :selected-asset="asset"
                             :read-only="readOnly"
+                            :in-profile="true"
                             @change="handleChangeCertificate"
                         />
                     </div>
@@ -48,6 +50,7 @@
                             v-model="localOwners"
                             :selected-asset="asset"
                             :read-only="readOnly"
+                            :in-profile="true"
                             @change="handleOwnersChange"
                         />
                     </div>

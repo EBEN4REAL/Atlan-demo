@@ -230,7 +230,7 @@ export default function useAssetInfo() {
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
-            return `/insights?id=${asset.guid}`
+            return `/insights?id=${asset.guid}&runQuery=true`
         }
         return `/assets/${asset?.guid}`
     }

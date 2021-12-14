@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 transition-all duration-300 hover:bg-primary-light"
+        class="my-1 transition-all duration-300 rounded hover:bg-primary-light"
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
         @click="handlePreview(item)"
     >
@@ -38,24 +38,6 @@
                                 class="h-4 mb-1 text-gray-500"
                             />
                         </div>
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossarycategory'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Category"
-                            class="h-4 mb-0.5 mr-1"
-                        ></AtlanIcon>
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossaryterm'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Term"
-                            class="h-4 mb-0.5 mr-1"
-                        ></AtlanIcon>
 
                         <router-link
                             :to="getProfilePath(item)"

@@ -77,18 +77,18 @@
                     </div>
                 </template>
             </SearchAndFilter>
-            <RequestTypeTabs v-model:tab="filters.request_type" />
+            <div class="flex">
+                <RequestTypeTabs v-model:tab="filters.request_type" />
+                <Pagination
+                    v-model:offset="pagination.offset"
+                    :totalPages="pagination.totalPages"
+                    :loading="listLoading"
+                    :pageSize="pagination.limit"
+                    @mutate="mutate"
+                />
+            </div>
         </template>
 
-        <div class="flex justify-end max-w-full mt-4">
-            <Pagination
-                v-model:offset="pagination.offset"
-                :totalPages="pagination.totalPages"
-                :loading="listLoading"
-                :pageSize="pagination.limit"
-                @mutate="mutate"
-            />
-        </div>
         <div v-if="listLoading" class="flex items-center justify-center h-64">
             <AtlanIcon icon="Loader" class="h-10 animate-spin" />
         </div>

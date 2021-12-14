@@ -38,24 +38,6 @@
                                 class="h-4 mb-1 text-gray-500"
                             />
                         </div>
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossarycategory'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Category"
-                            class="h-4 mb-0.5 mr-1"
-                        ></AtlanIcon>
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossaryterm'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Term"
-                            class="h-4 mb-0.5 mr-1"
-                        ></AtlanIcon>
 
                         <router-link
                             :to="getProfilePath(item)"

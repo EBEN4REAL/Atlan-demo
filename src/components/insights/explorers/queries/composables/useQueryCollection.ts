@@ -20,7 +20,7 @@ import useBody from './useBody'
 
 const useQueryCollection = () => {
     const { modifyActiveInlineTab } = useInlineTab()
-    const { username } = whoami()
+    const { username, groups } = whoami()
     const tenantStore = useTenantStore()
     const uuidv4 = generateUUID()
 
@@ -43,7 +43,10 @@ const useQueryCollection = () => {
 
     const refreshBody = () => {
         body.value = {
-            dsl: useBody({}),
+            dsl: useBody({
+                createdBy: username.value,
+                groups: groups.value,
+            }),
             attributes,
         }
     }
@@ -116,11 +119,10 @@ const useQueryCollection = () => {
     }
 
     const updateCollection = (entity) => {
-
         const body = ref<Record<string, any>>({
             entity: {
                 ...entity,
-            }
+            },
         })
 
         const { data, error, isLoading } = Insights.CreateQueryCollection(
@@ -174,7 +176,7 @@ const useQueryCollection = () => {
         getQueryCollections,
         setCollectionsDataInInlineTab,
         createCollection,
-        updateCollection
+        updateCollection,
     }
 }
 

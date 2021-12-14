@@ -69,14 +69,18 @@
 
                 <div
                     class="flex gap-x-2"
-                    v-if="currentStep == steps.length - 1"
+                    v-if="currentStep === steps.length - 1"
                 >
-                    <a-button class="px-6" @click="handleSubmit">Run</a-button>
+                    <a-button class="px-6" @click="handleSubmit(false)"
+                        >Run</a-button
+                    >
                     <a-popconfirm
+                        v-if="allowSchedule"
                         ok-text="Confirm"
                         :overlay-class-name="$style.popConfirm"
                         cancel-text="Cancel"
                         placement="topRight"
+                        @confirm="handleSubmit(true)"
                         :ok-button-props="{
                             size: 'default',
                         }"
@@ -252,6 +256,21 @@
                     ],
             })
 
+            const allowSchedule = computed(() => {
+                if (
+                    workflowTemplate?.metadata?.annotations[
+                        'orchestration.atlan.com/allowSchedule '
+                    ]
+                ) {
+                    return (
+                        workflowTemplate?.metadata?.annotations[
+                            'orchestration.atlan.com/allowSchedule '
+                        ] === 'true'
+                    )
+                }
+                return true
+            })
+
             const modelValue = ref({})
 
             const steps = computed(() => localConfigMap?.value?.steps || [])
@@ -333,12 +352,21 @@
                 execute(true)
             }
 
-            const handleSubmit = () => {
+            const handleSubmit = (isCron) => {
                 // Copy labels and annotations of the worfklow template
                 body.value.metadata.labels =
                     workflowTemplate.value.metadata.labels
                 body.value.metadata.annotations =
                     workflowTemplate.value.metadata.annotations
+
+                if (cron.value && isCron) {
+                    body.value.metadata.annotations[
+                        'orchestration.atlan.com/schedule'
+                    ] = cron.value.cron
+                    body.value.metadata.annotations[
+                        'orchestration.atlan.com/timezone'
+                    ] = cron.value.timezone
+                }
 
                 // find if there is a connection in the form
                 const connectionBody = getConnectionBody(
@@ -499,6 +527,7 @@
                 dirtyTimestamp,
                 localTemplate,
                 localConfigMap,
+                allowSchedule,
             }
         },
     })

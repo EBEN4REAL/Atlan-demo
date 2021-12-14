@@ -10,7 +10,36 @@
                 :data-test-id="'output-table'"
                 :class="$style.tableStyle"
             >
-                <slot name="header" />
+                <thead>
+                    <tr>
+                        <th
+                            class="truncate bg-gray-100 border border-gray-light"
+                        >
+                            #
+                            <!-- <span class="resize-handle"></span> -->
+                        </th>
+                        <th
+                            v-for="(col, index) in columns"
+                            :key="index"
+                            class="bg-gray-100 border border-gray-light"
+                        >
+                            <div class="flex items-center">
+                                <a-tooltip>
+                                    <template #title>{{
+                                        col.data_type
+                                    }}</template>
+                                    <component
+                                        :is="images[getDataType(col.data_type)]"
+                                        class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
+                                    ></component>
+                                </a-tooltip>
+
+                                <Tooltip :tooltip-text="`${col.title}`" />
+                            </div>
+                            <!-- <span class="resize-handle"></span> -->
+                        </th>
+                    </tr>
+                </thead>
 
                 <tbody id="contentArea" class="clusterize-content">
                     <tr v-for="(row, index) in dataList" :key="index">
@@ -27,12 +56,13 @@
                         <td
                             v-for="(rowData, key) in row"
                             :key="key"
-                            class="bg-white border border-gray-light"
+                            class="truncate bg-white border border-gray-light"
                         >
-                            <Tooltip
+                            <!-- <Tooltip
                                 :tooltip-text="`${rowData}`"
                                 classes="cursor-pointer"
-                            />
+                            /> -->
+                            {{ rowData }}
                         </td>
                     </tr>
                 </tbody>
@@ -45,12 +75,17 @@
     import { defineComponent, PropType, toRefs, watch, ref } from 'vue'
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
+    import { images, dataTypeCategoryList } from '~/constant/dataType'
 
     export default defineComponent({
         name: 'AtlanTable',
         components: { Tooltip },
         props: {
             dataList: {
+                type: Array as PropType<any[]>,
+                required: true,
+            },
+            columns: {
                 type: Array as PropType<any[]>,
                 required: true,
             },
@@ -69,6 +104,14 @@
             const { dataList } = toRefs(props)
             const tableRef = ref(null)
 
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeCategoryList.forEach((i) => {
+                    if (i.type.includes(type.toUpperCase())) label = i.label
+                })
+                return label
+            }
+
             watch([tableRef, dataList], () => {
                 // if (isQueryRunning === 'success') {
                 if (tableRef.value) {
@@ -81,6 +124,8 @@
 
             return {
                 tableRef,
+                images,
+                getDataType,
             }
         },
     })
@@ -92,6 +137,8 @@
         td,
         th {
             width: 200px;
+            max-width: 250px !important;
+            min-width: 150px !important;
             text-align: left !important;
             height: 32px !important;
             padding: 0px 16px !important;

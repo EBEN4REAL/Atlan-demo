@@ -2,7 +2,7 @@
     <div class="px-4 py-2 mb-3 component-height">
         <div
             v-if="error"
-            class="flex flex-col items-center align-middle bg-white  component-height"
+            class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
                 <div class="mt-3">
@@ -16,7 +16,7 @@
                             }
                         "
                     >
-                        <AtlanIcon icon="Refresh" class="mr-2" />
+                        <AtlanIcon icon="Reload" class="mr-2" />
                         Try again
                     </a-button>
                 </div>
@@ -24,7 +24,7 @@
         </div>
         <div
             v-else-if="isLoading"
-            class="flex items-center justify-center w-full"
+            class="flex items-center justify-center w-full h-full"
         >
             <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
         </div>

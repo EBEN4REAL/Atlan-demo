@@ -138,6 +138,7 @@
                     size="sm"
                     color="minimal"
                     padding="compact"
+                    @click="handleToggleManage"
                 >
                     <span class="text-primary"> Manage </span>
                     <AtlanIcon icon="ArrowRight" class="ml-1 text-primary" />
@@ -159,6 +160,23 @@
             class="drawerAddAsset"
             :get-container="'body'"
         />
+
+        <a-drawer
+            placement="right"
+            :closable="false"
+            :visible="isShow"
+            :width="450"
+            :mask="false"
+            @close="handleToggleManage"
+        >
+            <MetadataPolicy
+                class="px-5 bg-white"
+                :policy="policy"
+                @save="savePolicyUI"
+                @delete="deletePolicyUI"
+                @cancel="discardPolicy"
+            />
+        </a-drawer>
     </div>
 </template>
 
@@ -176,6 +194,8 @@
     import { selectedPersonaDirty } from './composables/useEditPersona'
     import { useConnectionStore } from '~/store/connection'
     import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
+    import MetadataPolicy from './policies/metadataPolicyItem.vue'
+    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -183,6 +203,7 @@
             AtlanBtn,
             Connector,
             AssetSelectorDrawer,
+            MetadataPolicy,
         },
         props: {
             type: {
@@ -193,10 +214,26 @@
                 type: Boolean,
                 required: true,
             },
+            savePolicyUI: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            deletePolicyUI: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            discardPolicy: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
         },
         emits: [],
         setup(props, { emit }) {
             const assetSelectorVisible = ref(false)
+            const isShow = ref(false)
             const policyNameRef = ref()
             const connectorComponentRef = ref()
             const { showDrawer, type } = toRefs(props)
@@ -274,6 +311,9 @@
             const handleAddAsset = () => {
                 assetSelectorVisible.value = true
             }
+            const handleToggleManage = () => {
+                isShow.value = true
+            }
             return {
                 selectedPersonaDirty,
                 rules,
@@ -284,6 +324,8 @@
                 handleConnectorChange,
                 assetSelectorVisible,
                 handleAddAsset,
+                isShow,
+                handleToggleManage,
             }
         },
     })

@@ -97,9 +97,18 @@
                     />
                 </div>
             </template>
+            <div class="w-full px-4">
+                <AggregationTabs
+                    v-model="postFacets.typeName"
+                    class="mt-3"
+                    :list="assetTypeAggregationList"
+                    @change="handleAssetTypeChange"
+                >
+                </AggregationTabs>
+            </div>
             <!-- body starts here -->
             <div v-if="!assetCategoryFilter.length" class="flex flex-col">
-                <span class="px-4 pt-4 pb-2 text-xs text-gray-500"
+                <span class="px-4 pb-2 text-xs text-gray-500"
                     >I’m trying to find...</span
                 >
                 <!-- TODO: Uncomment when bringing category filter in  -->
@@ -190,13 +199,14 @@
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import AssetCard from '@/common/commandk/assetCard.vue'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     // import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'
 
     export default defineComponent({
         name: 'CommandK',
-        components: { AssetCard, GtcCard },
+        components: { AssetCard, GtcCard, AggregationTabs },
         props: {
             isCmndKVisible: {
                 type: Boolean,
@@ -220,7 +230,9 @@
             const inputBox: Ref<null | HTMLInputElement> = ref(null)
             const dependentKey: Ref<undefined | String> = ref('DEFAULT_CMD_KEY') // 'DEFAULT_CMD_KEY'
             const aggregations = ref(['typeName'])
-            const postFacets = ref({})
+            const postFacets = ref({
+                typeName: '__all',
+            })
 
             const defaultAttributes = ref([
                 ...InternalAttributes,
@@ -234,18 +246,19 @@
             )
 
             const assetCategoryFilter = ref([])
-            const { list, quickChange } = useDiscoverList({
-                isCache: true,
-                dependentKey,
-                queryText,
-                facets,
-                postFacets,
-                aggregations,
-                limit,
-                offset,
-                attributes: defaultAttributes,
-                relationAttributes,
-            })
+            const { list, assetTypeAggregationList, quickChange } =
+                useDiscoverList({
+                    isCache: true,
+                    dependentKey,
+                    queryText,
+                    facets,
+                    postFacets,
+                    aggregations,
+                    limit,
+                    offset,
+                    attributes: defaultAttributes,
+                    relationAttributes,
+                })
 
             const handleSearchChange = useDebounceFn(() => {
                 isLoading.value = true
@@ -285,6 +298,14 @@
                 },
                 { deep: true }
             )
+
+            const handleAssetTypeChange = () => {
+                isLoading.value = true
+                offset.value = 0
+                quickChange()
+                // discoveryStore.setActivePostFacet(postFacets.value)
+            }
+
             return {
                 isVisible,
                 list,
@@ -296,6 +317,9 @@
                 assetCategoryList,
                 facets,
                 isLoading,
+                assetTypeAggregationList,
+                handleAssetTypeChange,
+                postFacets,
             }
         },
     })

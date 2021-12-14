@@ -1,11 +1,11 @@
 <template>
-    <div class="h-full px-4 py-2 my-3">
+    <div class="h-full px-4 py-2">
         <template v-if="showGroupMembers">
             <div
                 v-auth="map.ADD_USER_GROUP"
                 class="flex items-center justify-between mb-3"
             >
-                <div class="text-lg font-bold">Members</div>
+                <div class="text-base font-bold text-gray-500">Members</div>
                 <a-popover
                     v-model:visible="showUsersPopover"
                     placement="bottom"

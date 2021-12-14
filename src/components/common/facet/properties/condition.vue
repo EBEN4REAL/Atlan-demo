@@ -37,8 +37,8 @@
                 :data-type="
                     attribute?.options?.customType ||
                     attribute?.subTypeName ||
-                    attribute?.typeName ||
-                    attribute?.options?.primitiveType
+                    attribute?.options?.primitiveType ||
+                    attribute?.typeName
                 "
                 :multiple="
                     attribute?.options?.multiValueSelect === 'true' && false

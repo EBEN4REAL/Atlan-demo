@@ -114,12 +114,13 @@
                         padding="compact"
                         @click="handleAddAsset"
                     >
-                        <span class="text-primary"> Select All</span>
+                        <span class="text-primary"> Select</span>
                         <AtlanIcon icon="Add" class="ml-1 text-primary" />
                     </AtlanBtn>
                 </div>
             </div>
             <div
+                v-if="policy.assets?.length === 0"
                 class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300"
             >
                 <span class="p-2 text-xs text-gray-500">
@@ -171,7 +172,9 @@
         >
             <ManagePermission
                 v-model:actions="policy.actions"
+                :visible-drawer="isShow"
                 @close="() => (isShow = false)"
+                @save="handleSavePermission"
             />
         </a-drawer>
     </div>
@@ -322,6 +325,9 @@
             const handleToggleManage = () => {
                 isShow.value = true
             }
+            const handleSavePermission = (prop) => {
+                policy.value.actions = prop
+            }
             return {
                 selectedPersonaDirty,
                 rules,
@@ -334,6 +340,7 @@
                 handleAddAsset,
                 isShow,
                 handleToggleManage,
+                handleSavePermission
             }
         },
     })

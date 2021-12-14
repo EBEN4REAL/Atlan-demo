@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, ref } from 'vue'
+    import { defineComponent, toRefs, ref, watch } from 'vue'
     import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import AtlanBtn from '@/UI/button.vue'
 
@@ -68,18 +68,28 @@
                 type: Array,
                 required: true,
             },
+            visibleDrawer: {
+                type: Boolean,
+                required: true,
+            },
         },
-        emits: ['close'],
+        emits: ['close', 'save'],
         setup(props, { emit }) {
-            const {actions} = toRefs(props)
+            const { actions, visibleDrawer} = toRefs(props)
             const actionsLocal = ref(actions.value)
             const handleClose = () => {
                 emit('close')
             }
             const handleSave = () => {
+                actions.value = actionsLocal.value
                 emit('save', actionsLocal.value)
                 handleClose()
             }
+            watch(visibleDrawer, () => {
+                if(visibleDrawer.value){
+                    actionsLocal.value = actions.value
+                }
+            })
             return {
                 handleClose,
                 handleSave,

@@ -12,7 +12,7 @@
         <div class="flex flex-col h-full">
             <div class="flex items-center px-4 pt-4">
                 <AtlanBtn
-                    class="border-none"
+                    class="border-none btn-add-assets"
                     size="sm"
                     padding="compact"
                     data-test-id="cross"
@@ -95,7 +95,7 @@
 
             <a-divider />
             <div class="flex items-center justify-end m-2 gap-x-2">
-                <span class="text-base font-bold text-gray-500"
+                <span class="mr-auto text-gray-500"
                     >{{ selectedAssetCount || 'No' }} items selected</span
                 >
                 <AtlanBtn
@@ -349,5 +349,8 @@
     }
     .btn-asset{
         min-width: 80px;
+    }
+    .btn-add-assets{
+        transform: rotate(180deg);
     }
 </style>

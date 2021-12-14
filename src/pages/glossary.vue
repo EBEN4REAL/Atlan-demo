@@ -130,26 +130,30 @@
                     `/glossary/${getGlossaryByQF(getFirstGlossaryQF())?.guid}`
                 )
             }
-            onMounted(() => {
-                if (selectedGlossary.value?.guid) {
+            // re-route on no id present in params
+            const reRoute = () => {
+                if (selectedGlossaryQf.value?.length) {
                     router.push(
-                        `/glossary/${selectedGlossary.value?.guid}/overview`
+                        `/glossary/${
+                            getGlossaryByQF(selectedGlossaryQf.value)?.guid
+                        }/overview`
                     )
-                }
+                } else if (getFirstGlossaryQF()) {
+                    router.push(
+                        `/glossary/${
+                            getGlossaryByQF(getFirstGlossaryQF())?.guid
+                        }/overview`
+                    )
+                } else router.push('/glossary')
+            }
+            onMounted(() => {
                 if (!id.value) {
-                    if (selectedGlossaryQf.value?.length) {
-                        router.push(
-                            `/glossary/${
-                                getGlossaryByQF(selectedGlossaryQf.value)?.guid
-                            }/overview`
-                        )
-                    } else if (getFirstGlossaryQF()) {
-                        router.push(
-                            `/glossary/${
-                                getGlossaryByQF(getFirstGlossaryQF())?.guid
-                            }/overview`
-                        )
-                    } else router.push('/glossary')
+                    reRoute()
+                }
+            })
+            watch(id, () => {
+                if (!id.value && route.path === '/glossary') {
+                    reRoute()
                 }
             })
 

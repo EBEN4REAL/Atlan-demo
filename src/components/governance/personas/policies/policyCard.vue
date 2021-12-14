@@ -309,6 +309,7 @@
         &:hover {
             .button-hide {
                 opacity: 1;
+                background-color: transparent !important;
             }
         }
     }

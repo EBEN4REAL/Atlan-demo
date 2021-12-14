@@ -434,6 +434,8 @@
                 //         activeInlineTab.value.explorer.queries.collection
                 //             .qualifiedName
                 // )
+
+                // console.log('selected collection:', selectedCollection)
                 console.log('useQueryTree updateCollection', { qname, guid })
                 setCollectionsDataInInlineTab(
                     activeInlineTab,
@@ -755,11 +757,7 @@
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =
-                useSearchQueries(
-                    searchQuery,
-                    ref(savedQueryType?.value?.name),
-                    facets
-                )
+                useSearchQueries(searchQuery, selectedCollection, facets)
 
             const getRelevantTreeData = () => {
                 return {
@@ -902,6 +900,10 @@
             watch(
                 [searchResults, searchLoading],
                 () => {
+                    console.log(
+                        'selected collection: ',
+                        selectedCollection.value
+                    )
                     console.log('queries: ', searchResults.value)
                     console.log('queries loading: ', searchLoading.value)
                     searchTreeData.value = []

@@ -53,14 +53,22 @@
         </div>
         <!-- Table for users-->
         <template v-else>
-            <div
-                v-if="isLoading"
-                class="flex items-center justify-center h-full"
-            >
-                <AtlanIcon icon="Loader" class="h-7 animate-spin" />
-            </div>
-            <template v-else-if="userList.length && isReady">
+            <EmptyView
+                v-if="isReady && !userList.length"
+                empty-screen="NoUsers"
+                desc="Oops… we didn’t find any users that match this search"
+                button-text="Clear search"
+                @event="clearFilter"
+            />
+            <template v-else>
+                <div
+                    v-if="isLoading"
+                    class="flex items-center justify-center h-full"
+                >
+                    <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+                </div>
                 <UserListTable
+                    v-else
                     v-auth="map.LIST_USERS"
                     :user-list="userList"
                     :loading="isLoading"
@@ -80,29 +88,20 @@
                     @closeChangeRolePopover="closeChangeRolePopover"
                     @resendInvite="resendInvite"
                 />
-
                 <div
                     v-auth="map.LIST_USERS"
                     class="flex justify-end max-w-full mt-4"
-                    v-if="pagination.total > 1"
+                    v-if="pagination.total > 1 || isLoading"
                 >
                     <Pagination
-                        :current="pagination.current"
                         :total-pages="pagination.total"
                         :loading="isLoading"
                         :page-size="pagination.pageSize"
-                        :offset="pagination.offset"
-                        @change="handlePagination"
+                        v-model:offset="userListAPIParams.offset"
+                        @mutate="getUserList"
                     />
                 </div>
             </template>
-            <EmptyView
-                v-else
-                empty-screen="NoUsers"
-                desc="Oops… we didn’t find any users that match this search"
-                button-text="Clear search"
-                @event="clearFilter"
-            />
         </template>
 
         <a-modal
@@ -173,7 +172,7 @@
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
-                limit: 50,
+                limit: 4,
                 offset: 0,
                 sort: 'firstName',
                 filter: { $and: [] },
@@ -206,7 +205,6 @@
                 ),
                 pageSize: userListAPIParams.limit,
                 current: userListAPIParams.offset / userListAPIParams.limit + 1,
-                offset: userListAPIParams.offset,
             }))
 
             const updateFilters = () => {
@@ -361,13 +359,6 @@
                 closeInviteUserModal()
             }
 
-            const handlePagination = (page: number) => {
-                // modify offset
-                const offset = (page - 1) * userListAPIParams.limit
-                userListAPIParams.offset = offset
-                getUserList()
-            }
-
             const handleRevokeInvite = (id) => {
                 if (id) selectedUserId.value = id
                 showRevokeInvitePopover.value = !showRevokeInvitePopover.value
@@ -495,7 +486,7 @@
                 handleInviteUsers,
                 handleInviteSent,
                 reloadTable,
-                handlePagination,
+
                 filteredUserCount,
                 showPreview,
                 handleRevokeInvite,

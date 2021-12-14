@@ -36,15 +36,11 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, toRefs } from 'vue'
+    import { ref, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
 
     const props = defineProps({
-        current: {
-            type: Number,
-            required: true,
-        },
         pageSize: {
             type: Number,
             required: true,
@@ -63,8 +59,10 @@
         },
     })
     const emit = defineEmits(['mutate'])
-    const { current, offset } = useVModels(props, emit)
+    const { offset } = useVModels(props, emit)
     const { pageSize } = toRefs(props)
+
+    const current = ref(1)
 
     // const upperOffset = computed(
     //     () => (current.value - 1 || 1) * pageSize.value + offset.value

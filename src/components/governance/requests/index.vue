@@ -80,10 +80,19 @@
             <RequestTypeTabs v-model:tab="filters.request_type" />
         </template>
 
-        <div v-if="listLoading" class="flex items-center justify-center h-64">
-            <a-spin size="large" />
+        <div class="flex justify-end max-w-full mt-4">
+            <Pagination
+                v-model:offset="pagination.offset"
+                :totalPages="pagination.totalPages"
+                :loading="listLoading"
+                :pageSize="pagination.limit"
+                @mutate="mutate"
+            />
         </div>
-        <template v-else-if="requestList.length && !listLoading">
+        <div v-if="listLoading" class="flex items-center justify-center h-64">
+            <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+        </div>
+        <template v-else-if="requestList.length">
             <RequestModal
                 v-if="requestList[selectedIndex]"
                 v-model:visible="isDetailsVisible"
@@ -103,19 +112,6 @@
                     />
                 </template>
             </VirtualList>
-            <div
-                class="flex justify-end max-w-full mt-4"
-                v-if="pagination.totalPages > 1"
-            >
-                <Pagination
-                    v-model:current="pagination.current"
-                    v-model:offset="pagination.offset"
-                    :totalPages="pagination.totalPages"
-                    :loading="listLoading"
-                    :pageSize="pagination.limit"
-                    @mutate="mutate"
-                />
-            </div>
         </template>
         <div v-else class="flex items-center justify-center h-full">
             <div
@@ -218,7 +214,6 @@
                 limit: 20,
                 offset: 0,
                 totalPages: 1,
-                current: 1,
             })
             const {
                 response,

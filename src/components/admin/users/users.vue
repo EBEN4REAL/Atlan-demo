@@ -172,7 +172,7 @@
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
-                limit: 4,
+                limit: 50,
                 offset: 0,
                 sort: 'firstName',
                 filter: { $and: [] },

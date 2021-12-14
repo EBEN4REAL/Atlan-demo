@@ -289,11 +289,6 @@
                 from.value = 0
                 refreshList()
             }
-            // const handlePagination = (page) => {
-            //     const offset = (page - 1) * size.value
-            //     from.value = offset
-            //     refreshList()
-            // }
 
             const handleRangePickerChange = (e) => {
                 gte.value = e[0]
@@ -330,7 +325,7 @@
                 facets,
                 pagination,
                 filteredLogsCount,
-                // handlePagination,
+
                 savedQueryMetaMap,
                 totalLogsCount,
                 EmptyLogsIllustration,

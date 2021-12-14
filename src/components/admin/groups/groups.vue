@@ -268,13 +268,6 @@
                 getGroupList()
             }
 
-            // const handlePagination = (page: number) => {
-            //     // modify offset
-            //     const offset = (page - 1) * groupListAPIParams.limit
-            //     groupListAPIParams.offset = offset
-            //     getGroupList()
-            // }
-
             const handleTableChange = (
                 pagination: any,
                 filters: any,

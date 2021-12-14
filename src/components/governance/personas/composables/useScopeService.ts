@@ -43,14 +43,14 @@ const purposeScopeList = [
                 label: 'update: Classifications',
             },
 
-            {
-                value: 'add-terms',
-                label: 'Add: Terms',
-            },
-            {
-                value: 'remove-terms',
-                label: 'Remove: Terms',
-            },
+            // {
+            //     value: 'add-terms',
+            //     label: 'Add: Terms',
+            // },
+            // {
+            //     value: 'remove-terms',
+            //     label: 'Remove: Terms',
+            // },
         ],
         type: 'Governance',
         label: 'Governance',
@@ -170,14 +170,14 @@ export default function scopeService() {
             return {
                 scopeList: personaScopeList,
             }
-        else if (type === 'purpose')
+        if (type === 'purpose')
             return {
                 scopeList: purposeScopeList,
             }
     }
     function findActions(actions: string[], type: string) {
-        let scopeList = type === 'persona' ? personaScopeList : purposeScopeList
-        let res = [
+        const scopeList = type === 'persona' ? personaScopeList : purposeScopeList
+        const res = [
             { label: 'Asset', action: [] },
             { label: 'Classifications', action: [] },
             { label: 'Metadata', action: [] },

@@ -238,11 +238,7 @@
         :mask="false"
         @close="handleCloseAddPolicy"
     >
-        <Addpolicy
-            :type="typeAddPolicy"
-            :show-drawer="addpolicyVisible"
-            @changeWidth="handleChangeWidth"
-        />
+        <Addpolicy :type="typeAddPolicy" :show-drawer="addpolicyVisible" @close="handleCloseAdd" @changeWidth="handleChangeWidth" />
     </a-drawer>
 </template>
 
@@ -458,6 +454,9 @@
             const handleChangeWidth = (prop) => {
                 width.value = prop
             }
+            const handleCloseAdd = () => {
+                addpolicyVisible.value = false
+            }
             return {
                 newIdTag,
                 activeTabKey,
@@ -484,6 +483,7 @@
                 typeAddPolicy,
                 width,
                 handleChangeWidth,
+                handleCloseAdd
             }
         },
     })

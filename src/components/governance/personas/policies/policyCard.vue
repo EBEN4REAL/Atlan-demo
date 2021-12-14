@@ -1,7 +1,9 @@
 <template>
-    <div class="relative container-policy-card">
+    <div
+        class="relative border-b border-gray-300 container-policy-card last:border-0"
+    >
         <div
-            class="flex flex-col p-2 pr-2 text-gray-500 border-b border-gray-300 cursor-pointer group hover:bg-primary-light card-policy last:border-0"
+            class="flex flex-col p-2 pr-2 text-gray-500 cursor-pointer group hover:bg-primary-light card-policy"
             :class="
                 selectedPolicy.id === policy.id
                     ? 'outline-primary bg-primary-light'
@@ -29,7 +31,9 @@
                     </span>
                 </div> -->
                 <span v-if="!policy.allow" class="denied-policy-pill">
-                    {{ type === 'meta' ? 'Denied Permissions' : 'Denied Query' }}
+                    {{
+                        type === 'meta' ? 'Denied Permissions' : 'Denied Query'
+                    }}
                 </span>
                 <!-- <span
                     v-if="type === 'data'"
@@ -40,7 +44,9 @@
                 <span
                     class="px-1 ml-auto text-xs bg-gray-200"
                     data-test-id="policy-type"
-                    >{{ type === 'meta' ? 'Metadata Policy' : 'Data Policy' }}</span
+                    >{{
+                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
+                    }}</span
                 >
             </div>
             <!-- <span class="flex-none text-sm" v-if="policy.assets.length > 0">
@@ -98,7 +104,9 @@
                     </div>
                 </div> -->
             <div class="flex flex-wrap items-center gap-y-1.5">
-                <div class="flex items-center gap-y-1.5 gap-x-1 flex-1 flex-wrap">
+                <div
+                    class="flex items-center gap-y-1.5 gap-x-1 flex-1 flex-wrap"
+                >
                     <div class="flex items-center">
                         <img
                             :src="getImage(connectionQfName?.split('/')[1])"
@@ -201,7 +209,6 @@
     import { useUtils } from '../assets/useUtils'
     import useScopeService from '../composables/useScopeService'
     import { splitArray } from '~/utils/string'
-    
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -265,7 +272,7 @@
             const getPopoverContent = (policy: any) =>
                 `Are you sure you want to delete ${policy?.name}?`
             const handleClickPlicyCard = () => {
-                emit('clickCard', {...policy.value, type: type.value})
+                emit('clickCard', { ...policy.value, type: type.value })
             }
             return {
                 getPopoverContent,
@@ -294,13 +301,13 @@
     .card-policy {
         min-height: 70px;
     }
-    .container-policy-card{
-        .button-hide{
+    .container-policy-card {
+        .button-hide {
             opacity: 0;
-            transition: all ease .3s;
+            transition: all ease 0.3s;
         }
-        &:hover{
-            .button-hide{
+        &:hover {
+            .button-hide {
                 opacity: 1;
             }
         }

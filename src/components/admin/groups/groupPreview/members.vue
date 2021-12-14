@@ -163,7 +163,7 @@
             <div class="mb-3 text-lg font-bold">Members</div>
 
             <UserList
-                :userListStyle="'max-height: calc(100vh - 17rem);'"
+                :userListStyle="{ 'max-height': 'calc(100vh - 17rem)' }"
                 :add-member-loading="addMemberLoading"
                 :show-header-buttons="true"
                 :minimal="true"
@@ -319,6 +319,7 @@ export default defineComponent({
                 { immediate: true }
             )
         }
+
         const removeUserFromGroup = async (user: any) => {
             Modal.confirm({
                 title: `Remove member`,

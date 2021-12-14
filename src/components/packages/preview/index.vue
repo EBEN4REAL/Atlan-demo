@@ -155,7 +155,6 @@
                 type: Object,
             },
         },
-        emits: ['setup', 'sandbox'],
         setup(props, { emit }) {
             const { selectedPackage } = toRefs(props)
 

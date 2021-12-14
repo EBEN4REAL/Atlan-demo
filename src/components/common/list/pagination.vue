@@ -5,7 +5,7 @@
         color="secondary"
         padding="compact"
         :disabled="current === 1"
-        @click="$emit('change', current - 1)"
+        @click="handlePagination(current - 1)"
     >
         <AtlanIcon icon="CaretLeft" />
     </AtlanBtn>
@@ -29,21 +29,18 @@
         color="secondary"
         padding="compact"
         :disabled="current >= Math.ceil(totalPages)"
-        @click="$emit('change', current + 1)"
+        @click="handlePagination(current + 1)"
     >
         <AtlanIcon icon="CaretRight" />
     </AtlanBtn>
 </template>
 
 <script setup lang="ts">
-    import { computed, toRefs } from 'vue'
+    import { ref, toRefs } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
+    import { useVModels } from '@vueuse/core'
 
     const props = defineProps({
-        current: {
-            type: Number,
-            required: true,
-        },
         pageSize: {
             type: Number,
             required: true,
@@ -61,22 +58,30 @@
             required: true,
         },
     })
-    const emit = defineEmits(['handlePagination', 'change'])
+    const emit = defineEmits(['mutate'])
+    const { offset } = useVModels(props, emit)
+    const { pageSize } = toRefs(props)
 
-    const { current, pageSize, totalPages, offset } = toRefs(props)
+    const current = ref(1)
 
-    const upperOffset = computed(
-        () => (current.value - 1 || 1) * pageSize.value + offset.value
-    )
-    const currentView = computed(() => {
-        const string = `${(current.value - 1) * pageSize.value + 1} - ${
-            totalPages.value < upperOffset.value
-                ? totalPages.value
-                : upperOffset.value
-        }`
+    // const upperOffset = computed(
+    //     () => (current.value - 1 || 1) * pageSize.value + offset.value
+    // )
+    // const currentView = computed(() => {
+    //     const string = `${(current.value - 1) * pageSize.value + 1} - ${
+    //         totalPages.value < upperOffset.value
+    //             ? totalPages.value
+    //             : upperOffset.value
+    //     }`
 
-        return string
-    })
+    //     return string
+    // })
+
+    const handlePagination = (navigateTo: number) => {
+        current.value = navigateTo
+        offset.value = pageSize.value * (navigateTo - 1)
+        emit('mutate')
+    }
 </script>
 
 <style scoped></style>

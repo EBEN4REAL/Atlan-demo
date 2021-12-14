@@ -80,19 +80,15 @@
             />
 
             <div
-                v-if="
-                    pagination.total > 1 &&
-                    ((queryList && queryList.length) || isLoading)
-                "
+                v-if="pagination.total > 1 || isLoading"
                 class="flex flex-row items-center justify-end w-full mt-4"
             >
                 <Pagination
-                    :current="pagination.current"
                     :totalPages="pagination.total"
                     :loading="isLoading"
                     :pageSize="size"
-                    :offset="from"
-                    @change="handlePagination"
+                    v-model:offset="from"
+                    @mutate="refreshList"
                 />
             </div>
         </DefaultLayout>
@@ -293,11 +289,6 @@
                 from.value = 0
                 refreshList()
             }
-            const handlePagination = (page) => {
-                const offset = (page - 1) * size.value
-                from.value = offset
-                refreshList()
-            }
 
             const handleRangePickerChange = (e) => {
                 gte.value = e[0]
@@ -334,11 +325,12 @@
                 facets,
                 pagination,
                 filteredLogsCount,
-                handlePagination,
+
                 savedQueryMetaMap,
                 totalLogsCount,
                 EmptyLogsIllustration,
                 refetchList,
+                refreshList,
             }
         },
     })

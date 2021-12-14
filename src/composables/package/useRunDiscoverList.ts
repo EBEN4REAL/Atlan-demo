@@ -1,8 +1,8 @@
-import { ref, Ref, watch } from 'vue'
+import { ref, Ref, watch, computed } from 'vue'
 
-import { usePackageBody } from './usePackageBody'
+import { useRunBody } from './useRunBody'
 
-import usePackageIndexSearch from './usePackageIndexSearch'
+import useRunIndexSearch from './useRunIndexSearch'
 
 interface DiscoverListParams {
     isCache?: boolean | false
@@ -15,11 +15,10 @@ interface DiscoverListParams {
     offset?: Ref<Number>
     preference?: Ref<any>
     source?: Ref<any>
-    attributes?: Ref<string[]>
-    relationAttributes?: Ref<string[]>
+    refreshInterval?: number | 0
 }
 
-export function usePackageDiscoverList({
+export function useRunDiscoverList({
     isCache,
     dependentKey,
     queryText,
@@ -30,11 +29,12 @@ export function usePackageDiscoverList({
     limit,
     source,
     offset = ref(0),
+    refreshInterval = 0,
 }: DiscoverListParams) {
     const defaultBody = ref({})
 
     const generateBody = () => {
-        const dsl = usePackageBody(
+        const dsl = useRunBody(
             queryText?.value,
             offset?.value,
             limit?.value,
@@ -50,19 +50,27 @@ export function usePackageDiscoverList({
     }
 
     const localKey = ref(dependentKey?.value)
+
     generateBody()
 
     const { data, refresh, isLoading, isValidating, cancelRequest, error } =
-        usePackageIndexSearch(defaultBody, localKey, isCache, false, 1)
-
+        useRunIndexSearch(
+            defaultBody,
+            localKey,
+            isCache,
+            false,
+            1,
+            refreshInterval
+        )
     const list = ref([])
 
     watch(data, () => {
+        console.log('changed data')
         if (offset?.value > 0) {
-            data.value?.hits.hits.forEach((item) => {
+            data.value?.hits?.hits?.forEach((item) => {
                 list.value.push(item._source)
             })
-        } else if (data.value?.hits.hits) {
+        } else if (data.value?.hits?.hits) {
             const temp = []
             data.value?.hits.hits.forEach((item) => {
                 temp.push(item._source)
@@ -71,7 +79,23 @@ export function usePackageDiscoverList({
         } else {
             list.value = []
         }
+        console.log(list.value)
     })
+
+    const quickChange = () => {
+        generateBody()
+
+        if (!localKey.value) {
+            localKey.value = `dirty_${Date.now().toString()}`
+        } else {
+            refresh()
+        }
+    }
+
+    const killRefresh = () => {
+        cancelRequest()
+        localKey.value = null
+    }
 
     const fetch = () => {
         generateBody()
@@ -83,12 +107,18 @@ export function usePackageDiscoverList({
         limit,
         offset,
         postFacets,
+
         isValidating,
         isLoading,
         list,
+
         data,
         fetch,
+        quickChange,
         cancelRequest,
+
+        killRefresh,
+        refresh,
         error,
     }
 }

@@ -69,7 +69,7 @@
 
                 <div
                     class="flex gap-x-2"
-                    v-if="currentStep === steps.length - 1"
+                    v-if="currentStep !== steps.length - 1"
                 >
                     <a-button class="px-6" @click="handleSubmit(false)"
                         >Run</a-button
@@ -107,7 +107,10 @@
             class="flex flex-col items-center justify-center w-full h-full"
             v-if="status"
         >
-            <div class="flex flex-col justify-center" v-if="isLoading">
+            <div
+                class="flex flex-col justify-center"
+                v-if="isLoading || (!run.status && !errorMesssage)"
+            >
                 <a-spin size="large" />
                 <div>Setting up Workflow</div>
             </div>
@@ -117,25 +120,21 @@
                 :sub-title="subTitle"
                 v-else
             >
-                <template #extra v-if="status === 'success'">
-                    <a-progress
-                        :percent="100"
-                        :showInfo="false"
-                        status="active"
-                        :stroke-color="{
-                            '0%': '#108ee9',
-                            '100%': '#87d068',
-                        }"
-                        class="mb-3"
-                    />
-                    <a-button v-if="status === 'success'">
-                        <router-link to="/workflows">
-                            Track Progress</router-link
-                        >
-                    </a-button>
-                    <a-button v-if="status === 'success'">
-                        <router-link to="/assets"> Back to Assets</router-link>
-                    </a-button>
+                <template #extra>
+                    <div v-if="run">
+                        <Run
+                            :run="run"
+                            :isLoading="runLoading"
+                            v-if="run"
+                            class="mb-3"
+                        ></Run>
+
+                        <a-button v-if="status === 'success'">
+                            <router-link to="/assets">
+                                Back to Assets</router-link
+                            >
+                        </a-button>
+                    </div>
 
                     <div
                         class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
@@ -192,17 +191,21 @@
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
     import Sandbox from '../preview/sandbox.vue'
+    import Run from './run.vue'
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
-    import { useRunList } from '~/composables/package/useRunList'
+
     import { useRoute, useRouter } from 'vue-router'
+    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import { useIntervalFn } from '@vueuse/core'
 
     // Composables
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
         components: {
+            Run,
             SetupGraph,
             EmptyView,
             DynamicForm,
@@ -227,24 +230,15 @@
             // const graphRef = inject('graphRef')
 
             const stepForm = ref()
-
             const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
-
             const localTemplate = ref(workflowTemplate.value)
             const localConfigMap = ref(configMap.value)
-
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-
-            provide('workflowTemplate', localTemplate)
-            provide('configMap', localConfigMap)
-
             const route = useRoute()
             const sandboxVisible = ref(false)
-            const toggleSandbox = () => {
-                sandboxVisible.value = !sandboxVisible.value
-            }
-            const isSandbox = computed(() => route?.query?.sandbox || '')
+            const modelValue = ref({})
+            const selectedStep = ref('')
 
             const cron = ref({
                 cron: workflowTemplate.value.metadata?.annotations[
@@ -255,6 +249,14 @@
                         'orchestration.atlan.com/timezone'
                     ],
             })
+
+            provide('workflowTemplate', localTemplate)
+            provide('configMap', localConfigMap)
+
+            const toggleSandbox = () => {
+                sandboxVisible.value = !sandboxVisible.value
+            }
+            const isSandbox = computed(() => route?.query?.sandbox || '')
 
             const allowSchedule = computed(() => {
                 if (
@@ -271,8 +273,6 @@
                 return true
             })
 
-            const modelValue = ref({})
-
             const steps = computed(() => localConfigMap?.value?.steps || [])
 
             const currentStepConfig = computed(() => {
@@ -282,7 +282,6 @@
                 return {}
             })
 
-            const selectedStep = ref('')
             const handleChange = (event) => {
                 selectedStep.value = event
             }
@@ -310,13 +309,49 @@
                 payload: [],
             })
 
-            const { isLoading, isReady, execute, error, data, workflow } =
+            const { isLoading, execute, error, data, workflow } =
                 createWorkflow(body)
 
-            const dependentKey = ref(workflow)
-            const {} = useRunList({}, dependentKey)
+            const limit = ref(1)
+            const offset = ref(0)
+            const facets = ref({
+                templateName: '',
+            })
+            const {
+                list: runList,
+                fetch: fetchRun,
+                isLoading: isRunLoading,
+            } = useRunDiscoverList({
+                isCache: false,
+                facets,
+                limit,
+                offset,
+                source: ref({}),
+                refreshInterval: 5000,
+            })
 
-            const status = ref(null)
+            const { pause, resume } = useIntervalFn(
+                () => {
+                    fetchRun()
+                },
+                5000,
+                { immediate: false }
+            )
+
+            const run = ref({})
+
+            const runLoading = computed(() => isRunLoading.value)
+
+            watch(runList, () => {
+                if (runList.value?.length > 0) {
+                    run.value = runList.value[0]
+                    if (run.value.status?.phase !== 'Running') {
+                        pause()
+                    }
+                }
+            })
+
+            const status = ref('')
             const title = ref('Setting up a workflow')
             const subTitle = ref(
                 'Saving & validating your inputs and credentials'
@@ -328,6 +363,11 @@
                 subTitle.value =
                     'You can also track the progress of workflows in the Workflow Center'
                 status.value = 'success'
+                facets.value = {
+                    templateName: data.value.metadata.name,
+                }
+                fetchRun()
+                resume()
             })
 
             watch(error, () => {
@@ -336,7 +376,6 @@
                     title.value = 'Workflow setup has failed'
                     subTitle.value =
                         'Something went wrong during setup process. Reach out to support@atlan.com for any help.'
-
                     errorMesssage.value = error.value?.response?.data?.message
                 }
             })
@@ -345,7 +384,6 @@
                 getCredentialPropertyList,
                 getCredentialBody,
                 getConnectionBody,
-                getConnectionPropertyList,
             } = useWorkflowHelper()
 
             const handleRetry = () => {
@@ -528,6 +566,13 @@
                 localTemplate,
                 localConfigMap,
                 allowSchedule,
+                fetchRun,
+                runList,
+                isRunLoading,
+                runLoading,
+                run,
+                pause,
+                resume,
             }
         },
     })

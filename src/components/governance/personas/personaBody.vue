@@ -145,7 +145,6 @@
                     /> -->
 
                     <PolicyCard
-                        class="px-3 bg-white"
                         :policy="policy"
                         type="meta"
                         :selected-policy="selectedPolicy"
@@ -170,7 +169,6 @@
                     /> -->
                     <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
                     <PolicyCard
-                        class="px-3 bg-white"
                         :policy="policy"
                         type="data"
                         :selected-policy="selectedPolicy"

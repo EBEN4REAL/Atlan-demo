@@ -54,9 +54,10 @@
                 size="sm"
                 html-type="submit"
                 :disabled="isSubmitDisabled"
-                :loading="createGroupLoading"
+                :isLoading="createGroupLoading"
                 @click="handleSubmit"
-                >Create Group
+            >
+                Create Group
             </AtlanButton>
         </div>
     </div>
@@ -92,7 +93,7 @@
         emits: ['refresh', 'closeDrawer'],
         setup(props, { emit }) {
             const router = useRouter()
-            const createGroupLoading = ref(false)
+            let createGroupLoading = ref(false)
             const isDefault = ref(false)
 
             const listPermission = true
@@ -133,7 +134,6 @@
                 userIds.value = list
             }
             const handleSubmit = () => {
-                emit('closeDrawer')
                 const currentDate = new Date().toISOString()
                 const createdBy = username.value
                 // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
@@ -157,6 +157,7 @@
                             message.success('Group added')
                             router.push(`/admin/groups`)
                             emit('refresh')
+                            emit('closeDrawer')
                         } else if (error && error.value) {
                             message.error(
                                 'Unable to create group, please try again.'

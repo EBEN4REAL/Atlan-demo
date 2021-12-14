@@ -23,7 +23,6 @@
             expand-icon-position="right"
             :bordered="false"
             class="relative bg-transparent"
-            :class="$style.filter"
         >
             <a-collapse-panel
                 v-for="item in filtersList"
@@ -277,26 +276,6 @@
     })
 </script>
 
-<style lang="less" module>
-    .filter {
-        :global(.ant-collapse-item) {
-            @apply border-none;
-        }
-
-        :global(.ant-collapse-header) {
-            @apply px-4 !important;
-            @apply py-3 !important;
-            @apply border-none;
-        }
-
-        :global(.ant-collapse-content-box) {
-            padding-right: 0px;
-            padding-left: 0px;
-            padding-top: 0px !important;
-            padding-bottom: 0px;
-        }
-    }
-</style>
 <style lang="less">
     .carrot-top {
         top: 1.33rem;

@@ -140,6 +140,8 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { generateUUID } from '~/utils/helper/generator'
+    import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {
@@ -156,10 +158,10 @@
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
             >
-            const queryCollections = inject('queryCollections') as Ref<
-                QueryCollection[]
-            >
             const runQuery = inject('runQuery')
+            const refetchQueryCollection = inject(
+                'refetchQueryCollection'
+            ) as Ref<Function>
 
             const {
                 explorerPaneSize,
@@ -174,6 +176,12 @@
                 resultsPaneSizeToggle,
                 assetSidebarToggle,
             } = useHotKeys()
+            const {
+                getQueryCollections,
+                queryCollections,
+                queryCollectionsLoading,
+                selectFirstCollectionByDefault,
+            } = useQueryCollection()
             const { editorConfig, editorHoverConfig } = useEditorPreference()
             const { fullSreenState } = useFullScreen()
             const savedQueryGuidFromURL = ref(route.query?.id)
@@ -203,11 +211,7 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(
-                undefined,
-                !savedQueryGuidFromURL.value,
-                queryCollections
-            )
+            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -252,6 +256,8 @@
             */
             const provideData: provideDataInterface = {
                 activeInlineTab,
+                queryCollections,
+                queryCollectionsLoading,
                 activeInlineTabKey,
                 inlineTabs: tabsArray,
                 editorInstance,
@@ -498,7 +504,39 @@
                 )
             }
 
+            const fetchQueryCollections = () => {
+                const { data, error, isLoading, mutate } = getQueryCollections()
+                refetchQueryCollection.value = mutate
+                queryCollectionsLoading.value = true
+                watch([data, error, isLoading], () => {
+                    queryCollectionsLoading.value = true
+                    if (isLoading.value === false) {
+                        queryCollectionsLoading.value = false
+                        if (error.value === undefined) {
+                            if (
+                                data.value?.entities &&
+                                data.value?.entities?.length > 0
+                            ) {
+                                queryCollections.value =
+                                    data.value.entities ?? []
+                                selectFirstCollectionByDefault(
+                                    queryCollections.value,
+                                    activeInlineTab,
+                                    tabsArray
+                                )
+                            }
+                        } else {
+                            queryCollectionsLoading.value = false
+                            message.error({
+                                content: `Error fetching collections`,
+                            })
+                        }
+                    }
+                })
+            }
+
             onMounted(() => {
+                fetchQueryCollections()
                 window.addEventListener('keydown', _keyListener)
 
                 if (
@@ -666,54 +704,6 @@
             }
         }
     }
-    // :global(.splitpanes--horizontal > .splitpanes__splitter) {
-    //     position: relative;
-    //     margin-top: -1px;
-    //     box-sizing: border-box;
-    //     position: relative;
-    //     touch-action: none;
-    //     border-width: 1.5px !important;
-    //     @apply border-t !important;
-    //     &:hover {
-    //         // @apply border-primary;
-    //         // border-width: 2px !important;
-    //     }
-    // }
-
-    // :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-    //     content: '';
-    //     position: absolute;
-    //     top: 50%;
-    //     left: 50%;
-    //     background-color: rgba(0, 0, 0, 0.15);
-    //     -webkit-transition: background-color 0.3s;
-    //     transition: background-color 0.3s;
-    //     margin-top: -2px;
-    //     transform: translateX(-50%);
-    //     width: 30px;
-    //     height: 1px;
-    // }
-    // :global(.splitpanes--horizontal > .splitpanes__splitter):after {
-    //     // content: '';
-    //     position: absolute;
-    //     top: 50%;
-    //     left: 50%;
-    //     background-color: rgba(0, 0, 0, 0.15);
-    //     -webkit-transition: background-color 0.3s;
-    //     transition: background-color 0.3s;
-
-    //     transform: translateX(-50%);
-    //     width: 30px;
-    //     height: 1px;
-
-    //     margin-top: 1px;
-    // }
-    // :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
-    //     @apply bg-primary !important;
-    // }
-    // :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
-    //     @apply bg-primary !important;
-    // }
 </style>
 <style lang="less" scoped>
     .placeholder {
@@ -732,9 +722,6 @@
         width: 20.75rem;
         background-color: white;
     }
-    // .sidebar-nav-icon:first-child {
-    //     @apply pt-2 !important;
-    // }
     .sidebar-nav-icon {
         padding-top: 16px;
         padding-bottom: 16px;

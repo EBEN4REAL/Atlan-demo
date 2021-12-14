@@ -277,7 +277,8 @@
                                         .connectors.connector,
                             },
                             collection: {
-                                guid: '',
+                                guid: activeInlineTab.value?.explorer?.queries
+                                    ?.collection?.guid,
                                 qualifiedName:
                                     activeInlineTab.value?.explorer?.queries
                                         ?.collection?.qualifiedName,

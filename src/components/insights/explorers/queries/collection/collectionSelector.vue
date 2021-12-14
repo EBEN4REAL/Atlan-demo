@@ -138,7 +138,7 @@
             const authStore = useAuthStore()
             const inputRef = ref()
             // variables
-            const selectedValue = ref()
+
             const isVisible = ref(false)
             const queryText = ref('')
             const queryCollections = inject('queryCollections') as ComputedRef<
@@ -152,6 +152,21 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const selectedValue = ref(
+                activeInlineTab.value.explorer.queries.collection.guid
+            )
+            console.log(
+                activeInlineTab.value.explorer.queries.collection.guid,
+                queryCollections,
+                'selectCollections'
+            )
+            watch(
+                () => activeInlineTab.value.explorer.queries.collection.guid,
+                () => {
+                    selectedValue.value =
+                        activeInlineTab.value.explorer.queries.collection.guid
+                }
+            )
 
             // computed
             const selectedCollection = computed(() => {

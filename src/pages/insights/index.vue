@@ -17,17 +17,13 @@
     import InsightsComponent from '~/components/insights/index.vue'
     import { useRoute, useRouter } from 'vue-router'
     import { message } from 'ant-design-vue'
-    import {
-        SavedQuery,
-        QueryCollection,
-    } from '~/types/insights/savedQuery.interface'
+    import { SavedQuery } from '~/types/insights/savedQuery.interface'
     import {
         AssetAttributes,
         SavedQueryAttributes,
         InternalAttributes,
     } from '~/constant/projection'
     import { useDiscoverList as useAssetData } from '~/composables/discovery/useDiscoverList'
-    import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     export default defineComponent({
         name: 'Insights Page',
         components: { InsightsComponent },
@@ -38,15 +34,12 @@
             })
             const route = useRoute()
             const router = useRouter()
-            const { getQueryCollections } = useQueryCollection()
             const savedQueryGuidFromURL = ref(route.query?.id)
             const runQuery = ref(route.query?.runQuery)
 
             let refetchQueryCollection = ref() as Ref<Function>
             const isSavedQueryInfoLoaded = ref(true)
             const queryFolderNamespace: Ref<any> = ref()
-            const queryCollectionsLoading = ref(true)
-            const queryCollections: Ref<QueryCollection[] | undefined> = ref()
             const savedQueryInfo = ref(undefined) as unknown as Ref<
                 SavedQuery | undefined
             >
@@ -100,8 +93,6 @@
             provide('runQuery', runQuery)
             provide('savedQueryInfo', savedQueryInfo)
             provide('queryFolderNamespace', queryFolderNamespace)
-            provide('queryCollections', queryCollections)
-            provide('queryCollectionsLoading', queryCollectionsLoading)
             provide('refetchQueryCollection', refetchQueryCollection)
             provide('permissions', permissions)
             /* --------------------- */
@@ -148,39 +139,8 @@
                     }
                 })
             }
-            const fetchQueryCollections = () => {
-                const { data, error, isLoading, mutate } = getQueryCollections()
-                refetchQueryCollection.value = mutate
-                queryCollectionsLoading.value = true
-                watch([data, error, isLoading], () => {
-                    queryCollectionsLoading.value = true
-                    if (isLoading.value === false) {
-                        queryCollectionsLoading.value = false
-                        if (error.value === undefined) {
-                            if (
-                                data.value?.entities &&
-                                data.value?.entities?.length > 0
-                            ) {
-                                queryCollections.value =
-                                    data.value.entities ?? []
-                                console.log(
-                                    'fetchQueryCollections',
-                                    data.value.entities
-                                )
-                            }
-                        } else {
-                            queryCollectionsLoading.value = false
-                            message.error({
-                                content: `Error fetching collections`,
-                            })
-                        }
-                    }
-                })
-            }
 
             onMounted(() => {
-                fetchQueryCollections()
-
                 if (savedQueryGuidFromURL.value) {
                     fetchAndPassSavedQueryInfo()
                 }

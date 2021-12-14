@@ -22,6 +22,8 @@ const useQueryCollection = () => {
     const { username, groups } = whoami()
     const tenantStore = useTenantStore()
     const uuidv4 = generateUUID()
+    const queryCollectionsLoading = ref(true)
+    const queryCollections: Ref<QueryCollection[] | undefined> = ref()
 
     const attributes = [
         'name',
@@ -168,20 +170,29 @@ const useQueryCollection = () => {
 
     const selectFirstCollectionByDefault = (
         collection: QueryCollection[],
-        activeInlineTab: activeInlineTabInterface
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        tabs: Ref<activeInlineTabInterface[]>
     ) => {
         if (collection?.length > 0) {
             const col = collection[0]
-            if (activeInlineTab?.key) {
-                activeInlineTab.explorer.queries.collection.guid = col.guid
-                activeInlineTab.explorer.queries.collection.qualifiedName =
+            if (activeInlineTab.value?.key) {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.explorer.queries.collection.guid = col.guid
+                activeInlineTabCopy.explorer.queries.collection.qualifiedName =
                     col?.attributes?.qualifiedName
+                modifyActiveInlineTab(
+                    activeInlineTabCopy,
+                    tabs,
+                    activeInlineTabCopy.isSaved
+                )
             }
         }
-        return activeInlineTab
     }
 
     return {
+        queryCollections,
+        queryCollectionsLoading,
         selectFirstCollectionByDefault,
         refetchQueryCollection: refreshBody,
         getQueryCollections,

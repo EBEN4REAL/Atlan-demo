@@ -87,8 +87,9 @@
         :footer="null"
         :afterClose="() => (selectedData = '')"
         centered
-        width="800px"
         :destroyOnClose="true"
+        :class="$style.variant_modal"
+        width="800px"
     >
         <template #title>
             <div class="flex items-center text-gray-700 gap-x-1.5">
@@ -100,9 +101,13 @@
             </div>
         </template>
         <div
-            class="flex items-center justify-center p-4 m-4 overflow-auto border rounded border-gray-light variant_modal"
+            class="p-4 overflow-auto border rounded border-gray-light variant_body"
         >
-            {{ selectedData }}
+            <pre>
+                <code>
+                    {{selectedData}}
+                </code>
+            </pre>
         </div>
     </a-modal>
 </template>
@@ -248,6 +253,11 @@
             @apply text-gray-500;
         }
     }
+    .variant_modal {
+        :global(.ant-modal-body) {
+            padding: 1rem !important;
+        }
+    }
 </style>
 
 <style lang="less" scoped>
@@ -261,9 +271,7 @@
         font-family: Hack;
         src: url('~/assets/fonts/hack/Hack-Regular.ttf');
     }
-
-    .variant_modal {
-        max-height: 400px;
-        max-width: 600px;
+    .variant_body {
+        max-height: 600px;
     }
 </style>

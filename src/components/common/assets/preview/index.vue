@@ -181,7 +181,6 @@
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
                     :read-only="isScrubbed(selectedAsset)"
-                    :in-profile="isProfile"
                     :data="tab.data"
                 ></component>
             </a-tab-pane>

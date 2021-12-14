@@ -5,7 +5,7 @@
     >
         <a-popover
             v-model:visible="isEdit"
-            placement="leftBottom"
+            placement="leftTop"
             :overlay-class-name="$style.classificationPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"

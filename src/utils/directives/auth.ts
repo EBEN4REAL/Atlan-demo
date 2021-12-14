@@ -14,7 +14,7 @@ export function authDirective(app: any) {
                 return
             }
             watch(
-                () => permissions,
+                permissions,
                 () => {
                     if (Array.isArray(binding.value)) {
                         if (

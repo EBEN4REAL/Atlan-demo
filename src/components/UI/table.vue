@@ -39,7 +39,11 @@
                     </tr>
                 </thead>
 
-                <tbody id="contentArea" class="clusterize-content">
+                <tbody
+                    v-if="columns.length > 0"
+                    id="contentArea"
+                    class="clusterize-content"
+                >
                     <tr v-for="(row, index) in dataList" :key="index">
                         <td
                             :class="
@@ -56,24 +60,51 @@
                             :key="key"
                             class="truncate bg-white border border-gray-light"
                         >
-                            {{ rowData === null ? '-' : rowData }}
+                            <div
+                                v-if="variantTypeIndexes.indexOf(0) !== -1"
+                                @click="handleOpenModal(rowData)"
+                            >
+                                {{ variantTypeIndexes }}
+                            </div>
+                            <div v-else>
+                                {{ rowData === null ? '-' : rowData }}
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+    <a-modal
+        v-model:visible="modalVisible"
+        width="1000px"
+        title="Basic Modal"
+        :footer="null"
+        :key="selectedData"
+        centered
+    >
+        {{ selectedData }}
+    </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, watch, ref } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        watch,
+        ref,
+        defineAsyncComponent,
+    } from 'vue'
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
 
     export default defineComponent({
         name: 'AtlanTable',
-        components: { Tooltip },
+        components: {
+            Tooltip,
+        },
         props: {
             dataList: {
                 type: Array as PropType<any[]>,
@@ -97,6 +128,9 @@
         setup(props) {
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
+            const variantTypeIndexes = ref<Number[]>([0])
+            const selectedData = ref('')
+            const modalVisible = ref<boolean>(false)
 
             const getDataType = (type: string) => {
                 let label = ''
@@ -117,6 +151,16 @@
 
             watch([tableRef, columns], () => {
                 if (tableRef.value) {
+                    columns.value.forEach((col, index) => {
+                        if (
+                            col.data_type.toLowerCase() === 'any' ||
+                            col.data_type.toLowerCase() === 'variant'
+                        ) {
+                            variantTypeIndexes.value.push(index)
+                        }
+                    })
+                    console.log(variantTypeIndexes.value)
+
                     new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'headerArea',
@@ -124,10 +168,19 @@
                 }
             })
 
+            const handleOpenModal = (data) => {
+                modalVisible.value = true
+                selectedData.value = data
+            }
+
             return {
                 tableRef,
                 images,
                 getDataType,
+                variantTypeIndexes,
+                selectedData,
+                handleOpenModal,
+                modalVisible,
             }
         },
     })

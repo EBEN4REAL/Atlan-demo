@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-wrap items-center gap-1 text-sm text-gray-500">
         <a-popover
-            placement="leftBottom"
+            placement="leftTop"
             :overlay-class-name="$style.termPopover"
             :trigger="['click']"
             @visibleChange="onPopoverClose"
@@ -133,7 +133,7 @@
             // even if it is in checkedKeys
 
             //  CHECK EVENT
-            //   
+            //
             //  just append to loaclValue
             //
 
@@ -141,14 +141,21 @@
             //
             //
 
-            const onCheck = (checkedNodes, { checkedKeys, checked}) => {
+            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
                 checkedNodes.forEach((term) => {
-                    if(!localValue.value.find((localTerm) => ((localTerm.guid ?? localTerm.termGuid) === term.guid)))
+                    if (
+                        !localValue.value.find(
+                            (localTerm) =>
+                                (localTerm.guid ?? localTerm.termGuid) ===
+                                term.guid
+                        )
+                    )
                         localValue.value.push(term)
                 })
-                localValue.value = localValue.value.filter((term) => checkedGuids.value.includes(term.termGuid ?? term.guid))
+                localValue.value = localValue.value.filter((term) =>
+                    checkedGuids.value.includes(term.termGuid ?? term.guid)
+                )
                 hasBeenEdited.value = true
-
             }
 
             /* Adding this when parent data change, sync it with local */

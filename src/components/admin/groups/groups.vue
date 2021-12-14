@@ -330,7 +330,7 @@
                             h(
                                 'div',
                                 {
-                                    class: ['text-red-500', 'my-3'],
+                                    class: ['my-4'],
                                 },
                                 [
                                     h(
@@ -339,10 +339,15 @@
                                             class: ['font-bold'],
                                         },
                                         [
-                                            'Deleting the group will also remove it from',
+                                            h(
+                                                'span',
+                                                { class: ['text-error'] },
+                                                ['Warning']
+                                            ),
+                                            ' : Deleting the group will also remove it from',
                                         ]
                                     ),
-                                    h('ol', [
+                                    h('ol', { class: ['text-sm'] }, [
                                         h('li', '1. Existing personas'),
                                         h(
                                             'li',

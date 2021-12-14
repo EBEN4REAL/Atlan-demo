@@ -360,24 +360,29 @@
                                 attributeValue: undefined,
                             },
                         },
-                        playground: {
-                            vqb: {
-                                panels: [
-                                    {
-                                        order: 1,
-                                        id: 'columns',
-                                        hide: false,
-                                        subpanels: [
-                                            {
-                                                id: '1',
-                                                tableQualifiedName: undefined,
-                                                columns: [],
-                                                columnsData: [],
-                                            },
-                                        ],
-                                    },
-                                ],
+                        queries: {
+                            connectors: {
+                                connector: undefined,
                             },
+                        },
+                    },
+                    playground: {
+                        vqb: {
+                            panels: [
+                                {
+                                    order: 1,
+                                    id: 'columns',
+                                    hide: false,
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                            columnsData: [],
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                         editor: {
                             text: '',

@@ -54,7 +54,7 @@
                             <p class="text-xs text-gray-500" v-if="!expand">
                                 {{
                                     getTableNamesStringFromQualfieidNames(
-                                        panel.subpanels.map(
+                                        panel?.subpanels?.map(
                                             (e) => e.tableQualfiedName
                                         )
                                     )

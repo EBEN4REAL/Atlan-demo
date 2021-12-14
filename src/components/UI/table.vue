@@ -39,11 +39,7 @@
                     </tr>
                 </thead>
 
-                <tbody
-                    v-if="columns.length > 0"
-                    id="contentArea"
-                    class="clusterize-content"
-                >
+                <tbody id="contentArea" class="clusterize-content">
                     <tr v-for="(row, index) in dataList" :key="index">
                         <td
                             :class="
@@ -58,23 +54,23 @@
                         <td
                             v-for="(rowData, key) in row"
                             :key="key"
-                            class="truncate bg-white border border-gray-light"
+                            class="bg-white border border-gray-light"
                             :class="{
                                 'hover:bg-primary-light cursor-pointer':
-                                    variantTypeIndexes.indexOf(0) !== -1,
+                                    variantTypeIndexes.indexOf(key) !== -1,
                                 'outline-primary bg-primary-light ':
                                     selectedData === rowData,
                             }"
                         >
                             <div
-                                v-if="variantTypeIndexes.indexOf(0) !== -1"
+                                v-if="variantTypeIndexes.indexOf(key) !== -1"
                                 @click="handleOpenModal(rowData)"
                                 class=""
                             >
-                                {{ variantTypeIndexes }}
+                                {{ rowData }}
                             </div>
                             <div v-else>
-                                {{ rowData === null ? '-' : rowData }}
+                                {{ rowData }}
                             </div>
                         </td>
                     </tr>
@@ -148,10 +144,10 @@
         setup(props) {
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
-            const variantTypeIndexes = ref<Number[]>([0])
+            const variantTypeIndexes = ref<Number[]>([])
             const selectedData = ref('')
             const modalVisible = ref<boolean>(false)
-
+            const loading = ref(true)
             const getDataType = (type: string) => {
                 let label = ''
                 dataTypeCategoryList.forEach((i) => {
@@ -160,12 +156,14 @@
                 return label
             }
 
-            watch([tableRef, dataList], () => {
-                if (tableRef.value) {
+            watch([tableRef, dataList, loading], () => {
+                if (tableRef.value && !loading.value) {
                     new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
                     })
+
+                    console.log(variantTypeIndexes.value)
                 }
             })
 
@@ -179,12 +177,13 @@
                             variantTypeIndexes.value.push(index)
                         }
                     })
-                    console.log(variantTypeIndexes.value)
 
                     new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'headerArea',
                     })
+
+                    loading.value = false
                 }
             })
 
@@ -201,6 +200,7 @@
                 selectedData,
                 handleOpenModal,
                 modalVisible,
+                loading,
             }
         },
     })
@@ -215,6 +215,9 @@
             width: 200px;
             max-width: 250px !important;
             min-width: 150px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
             text-align: left !important;
             height: 32px !important;
             padding: 0px 16px !important;

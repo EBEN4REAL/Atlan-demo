@@ -70,7 +70,7 @@ export default function useProject() {
                     ...tmp,
                     ...{
                         // key: rowindex,
-                        [columns[rowindex].dataIndex]: row,
+                        [columns[rowindex].dataIndex]: row || '---',
                         // key: rowindex,
                     },
                 }

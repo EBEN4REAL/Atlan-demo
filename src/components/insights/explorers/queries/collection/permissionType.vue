@@ -1,0 +1,97 @@
+<template>
+    <a-menu style="width: 217px" :selectedKeys="[selectedType]">
+        <a-menu-item
+            key="view"
+            class="hover:bg-primary-light"
+            @click="handleChange('view')"
+        >
+            <div class="flex items-center justify-between">
+                <div>
+                    <div>
+                        <span class="text-sm text-gray-700">can view</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500"
+                            >Can view and run all <br />the queries, but not
+                            edit</span
+                        >
+                    </div>
+                </div>
+                <AtlanIcon icon="Check" class="text-primary" />
+            </div>
+        </a-menu-item>
+        <a-menu-item
+            key="edit"
+            class="hover:bg-primary-light"
+            @click="handleChange('edit')"
+        >
+            <div class="flex items-center justify-between">
+                <div>
+                    <div>
+                        <span class="text-sm text-gray-700">can edit</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500"
+                            >Can view, run and edit all <br />
+                            queries</span
+                        >
+                    </div>
+                </div>
+                <AtlanIcon icon="Check" class="text-primary" />
+            </div>
+        </a-menu-item>
+        <a-menu-item
+            key="remove"
+            class="hover:bg-primary-light"
+            v-if="showRemove"
+            @click="handleChange('remove')"
+        >
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-sm" style="color: #d21919">Remove</span>
+                </div>
+            </div>
+        </a-menu-item>
+    </a-menu>
+</template>
+
+<script lang="ts">
+    import { defineComponent } from 'vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+
+    export default defineComponent({
+        name: 'CreateCollectionModal',
+        components: {
+            AtlanIcon,
+        },
+        props: {
+            showRemove: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+            handleChange: {
+                type: Function,
+                required: true,
+            },
+            selectedType: {
+                type: String,
+                required: true,
+            },
+        },
+        setup(props, { emit }) {
+            return {}
+        },
+    })
+</script>
+<style lang="less" scoped></style>
+
+<style lang="less"></style>
+
+<style lang="less" module></style>
+
+<route lang="yaml">
+meta:
+    layout: default
+    requiresAuth: true
+</route>

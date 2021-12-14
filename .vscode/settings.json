@@ -6,5 +6,8 @@
     "css.validate": false, // Disable css built-in lint
     "less.validate": false,
     "stylelint.enable": true, // Enable sytlelint
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

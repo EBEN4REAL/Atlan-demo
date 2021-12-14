@@ -31,7 +31,7 @@ const useQueryFolderNamespace = () => {
         'connectorName',
         'connectionId',
         'connectionQualifiedName',
-        'parentFolderQualifiedName',
+        'parentQualifiedName',
         'defaultSchemaQualifiedName',
         'parentFolder',
         'columns', //TODO: queries

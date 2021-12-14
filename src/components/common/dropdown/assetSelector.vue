@@ -77,6 +77,7 @@
 <script lang="ts">
     import { defineComponent, watch, toRefs, computed } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -117,10 +118,17 @@
                 dsl: filters.value,
                 attributes: ['name', 'displayName'],
             }
-            const { list, replaceBody, data, isLoading } = useAssetListing(
-                '',
-                false
-            )
+            const { list, replaceBody, data, isLoading, error } =
+                useAssetListing('', false)
+            watch(error, () => {
+                if (error.value) {
+                    console.log(typeName.value)
+                    message.error({
+                        content: `Failed to fetch ${typeName.value}s!`,
+                        duration: 3,
+                    })
+                }
+            })
             const totalCount = computed(() => data.value?.approximateCount || 0)
             watch(
                 [disabled, filters],

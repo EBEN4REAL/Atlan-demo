@@ -25,6 +25,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                 connectors: {
                     connector: undefined,
                 },
+                collection: { guid: '', qualifiedName: undefined, parentQualifiedName: undefined, },
             },
         },
         playground: {

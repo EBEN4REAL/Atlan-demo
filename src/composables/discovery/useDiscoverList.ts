@@ -15,7 +15,7 @@ const glossaryAggregationName = 'group_by_glossary'
 
 interface DiscoverListParams {
     isCache?: boolean | false
-    dependentKey?: Ref<any>
+    dependentKey: Ref<any>
     queryText?: Ref<any>
     facets?: Ref<any>
     postFacets?: Ref<any>

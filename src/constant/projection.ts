@@ -11,6 +11,8 @@ export const SavedQueryAttributes = [
     'isPrivate',
     'variablesSchemaBase64',
     'isSnippet',
+    'parentQualifiedName',
+    'collectionQualifiedName'
 ]
 
 export const InternalAttributes = [
@@ -69,6 +71,9 @@ export const AssetAttributes = [
     'queryConfig',
     'allowQuery',
     'allowQueryPreview',
+    'parentQualifiedName',
+    'collectionQualifiedName',
+    'parent'
 ]
 
 export const SQLAttributes = [

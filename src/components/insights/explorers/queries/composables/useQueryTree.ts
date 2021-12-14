@@ -593,11 +593,13 @@ const useQueryTree = ({
             parentStack = recursivelyFindPath(qualifiedName)
             const parent = parentStack.pop()
 
-            treeData.value = treeData.value?.map((node: CustomTreeDataItem) => {
-                if (node.key === parent)
-                    return updateNodeNested(node, parentStack)
-                return node
-            })
+            treeData.value = treeData?.value?.map(
+                (node: CustomTreeDataItem) => {
+                    if (node.key === parent)
+                        return updateNodeNested(node, parentStack)
+                    return node
+                }
+            )
         }
     }
 

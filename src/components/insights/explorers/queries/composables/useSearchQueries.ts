@@ -1,26 +1,15 @@
 import { ref, Ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
-
-// import { useAPIAsyncState } from '~/services/api/useAPI'
-
 import { useAPI } from '~/services/api/useAPI'
-import {
-    SavedQueryResponse,
-    SavedQuery,
-} from '~/types/insights/savedQuery.interface'
+
 import {map} from '~/services/meta/search/key'
-
-import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
-
-// import { map } from '~/services/meta/insights/key'
 import { InternalAttributes, SavedQueryAttributes, BasicSearchAttributes } from '~/constant/projection'
-import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 import whoami from '~/composables/user/whoami'
 import bodybuilder from 'bodybuilder'
 
 const searchQueries = (
     query: Ref<string>,
-    classification: Ref<string>,
+    collection: Ref<Object>,
     facets: Ref<object>,
     offset?: Ref<number>,
     limit?: Ref<number>
@@ -71,18 +60,6 @@ const searchQueries = (
             '__state',
             'ACTIVE'
         )
-        // if (classification?.value && classification?.value.length) {
-        //     base.orFilter(
-        //         'term',
-        //         '__traitNames',
-        //         classification.value
-        //     )
-        //     base.orFilter(
-        //         'term',
-        //         '__propagatedTraitNames',
-        //         classification.value
-        //     )
-        // } 
 
         if(facets.value && Object.keys(facets.value).length>0) {
             Object.keys(facets.value ?? {}).forEach((mkey) => {
@@ -217,6 +194,12 @@ const searchQueries = (
             '__typeName.keyword',
             "Query"
         )
+        base.filter(
+            'term',
+            'collectionQualifiedName',
+            collection?.value?.attributes?.qualifiedName
+        )
+        // console.log('parentQualifiedName: ', collection)
         let body = base.build()
         // console.log('query filter facet')
         const {isLoading, data, error} =  await useAPI(
@@ -249,9 +232,10 @@ const searchQueries = (
         if (query.length || (facets && Object.keys(facets).length>0)) fetchQueries()
     })
 
-    watch([query, classification, facets], ([newQuery]) => {
+    watch([query, collection, facets], ([newQuery]) => {
         isLoading1.value = true
         console.log('queryFacets: ', facets.value)
+        console.log('collection filter: ', collection)
 
         onQueryChange(newQuery, facets.value)
     })

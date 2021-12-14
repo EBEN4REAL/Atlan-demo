@@ -272,7 +272,10 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName,
                     defaultDatabaseQualifiedName,
-                    certificateStatus,
+                    certificateStatus:
+                        certificateStatus === 'is_null'
+                            ? undefined
+                            : certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionId: connectionQualifiedName,
                     connectionQualifiedName,
@@ -353,6 +356,8 @@ export function useSavedQuery(
         activeInlineTabCopy.label = saveQueryData.title
         activeInlineTabCopy.status = saveQueryData.certificateStatus
 
+        // {{collectionQname}}/query/{username}/random-uuid
+
         const uuidv4 = generateUUID()
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
@@ -364,12 +369,16 @@ export function useSavedQuery(
         const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
         const rawQuery = activeInlineTab.playground.editor.text
-        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
+        // const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
+
+        const collectionQualifiedName =
+            activeInlineTab.explorer.queries.collection.qualifiedName
+        const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
             entity: {
@@ -381,7 +390,10 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName:
                         defaultSchemaQualifiedName ?? '',
-                    certificateStatus,
+                    certificateStatus:
+                        certificateStatus === 'is_null'
+                            ? undefined
+                            : certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName: connectionQualifiedName ?? '',
                     description,
@@ -391,6 +403,7 @@ export function useSavedQuery(
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
+                    collectionQualifiedName,
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -487,6 +500,7 @@ export function useSavedQuery(
         activeInlineTabCopy.status = saveQueryData.certificateStatus
         // /* Editor text */
         // activeInlineTabCopy.playground.editor.text = ''
+        const uuidv4 = generateUUID()
 
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
@@ -497,7 +511,6 @@ export function useSavedQuery(
         const { certificateStatus } = saveQueryData
         const { isSQLSnippet } = saveQueryData
         const rawQuery = editorInstanceRaw?.getValue()
-        const qualifiedName = '1'
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const defaultDatabaseQualifiedName =
@@ -505,8 +518,10 @@ export function useSavedQuery(
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab.value.playground.editor.variables
         )
+        // const uuidv4 = generateUUID()
         const collectionQualifiedName =
-            activeInlineTab.value.explorer.queries.collection.qualifiedName
+            activeInlineTabCopy.explorer.queries.collection.qualifiedName
+        const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
         // const variablesSchemaBase64 = []
 
         const body = ref<Record<string, any>>({
@@ -518,7 +533,10 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    certificateStatus,
+                    certificateStatus:
+                        certificateStatus === 'is_null'
+                            ? undefined
+                            : certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
                     defaultDatabaseQualifiedName,
@@ -617,7 +635,8 @@ export function useSavedQuery(
 
         const name = folderName
 
-        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${collectionQualifiedName}/folder/${username.value}/${uuidv4}`
+
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
 
@@ -711,6 +730,8 @@ export function useSavedQuery(
         activeInlineTabCopy.label = saveQueryData.title
         activeInlineTabCopy.status = saveQueryData.certificateStatus
 
+        const uuidv4 = generateUUID()
+
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
@@ -721,7 +742,7 @@ export function useSavedQuery(
         const { certificateStatus } = saveQueryData
         const { isSQLSnippet } = saveQueryData
         const rawQuery = activeInlineTab.playground.editor.text
-        const qualifiedName = '1'
+
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
         const defaultDatabaseQualifiedName =
@@ -733,6 +754,7 @@ export function useSavedQuery(
 
         const collectionQualifiedName =
             activeInlineTab.explorer.queries.collection.qualifiedName
+        const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
             entity: {
@@ -744,7 +766,10 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName:
                         defaultSchemaQualifiedName ?? '',
-                    certificateStatus,
+                    certificateStatus:
+                        certificateStatus === 'is_null'
+                            ? undefined
+                            : certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName: connectionQualifiedName ?? '',
                     defaultDatabaseQualifiedName,

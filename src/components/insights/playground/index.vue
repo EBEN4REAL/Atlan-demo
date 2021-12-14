@@ -46,6 +46,12 @@
                             >
                                 <div
                                     class="flex items-center inline_tab"
+                                    :style="{
+                                        width:
+                                            tabs.length == 1 ? '65px' : '49px',
+                                        'max-width':
+                                            tabs.length == 1 ? '65px' : '49px',
+                                    }"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
                                 >
@@ -624,9 +630,9 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 49px !important;
-        width: 49px !important;
-        min-width: 49px !important;
+        max-width: 49px;
+        width: 49px;
+        min-width: 49px;
         overflow: hidden;
         height: 28px !important;
         // min-width: 3rem
@@ -638,7 +644,7 @@
         // border-radius: 2px;
     }
     .inline_tab_label {
-        max-width: 53px !important;
+        max-width: 53px;
         // overflow: hidden;
     }
     .playground-height {

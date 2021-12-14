@@ -71,6 +71,9 @@ export const AssetAttributes = [
     'queryConfig',
     'allowQuery',
     'allowQueryPreview',
+    'parentQualifiedName',
+    'collectionQualifiedName',
+    'parent'
 ]
 
 export const SQLAttributes = [

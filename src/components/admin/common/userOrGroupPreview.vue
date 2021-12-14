@@ -97,7 +97,7 @@
                     </template>
                     <component
                         :is="tab.component"
-                        class="pt-3"
+                        class="pt-3 h-full"
                         :is-current-user="isValidUser ? isCurrentUser : null"
                         :selected-user="isValidUser ? selectedUser : null"
                         :selected-group="isValidGroup ? selectedGroup : null"

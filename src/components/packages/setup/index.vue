@@ -151,7 +151,7 @@
         </div>
         <a-drawer
             v-if="isSandbox"
-            title="Basic Drawer"
+            title="Sandbox Mode"
             placement="right"
             :closable="true"
             :visible="sandboxVisible"

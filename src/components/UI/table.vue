@@ -10,18 +10,17 @@
                 :data-test-id="'output-table'"
                 :class="$style.tableStyle"
             >
-                <thead>
+                <thead id="headerArea" class="clusterize-content">
                     <tr>
                         <th
                             class="truncate bg-gray-100 border border-gray-light"
                         >
                             #
-                            <!-- <span class="resize-handle"></span> -->
                         </th>
                         <th
                             v-for="(col, index) in columns"
                             :key="index"
-                            class="bg-gray-100 border border-gray-light"
+                            class="truncate bg-gray-100 border border-gray-light"
                         >
                             <div class="flex items-center">
                                 <a-tooltip>
@@ -34,9 +33,8 @@
                                     ></component>
                                 </a-tooltip>
 
-                                <Tooltip :tooltip-text="`${col.title}`" />
+                                {{ col.title }}
                             </div>
-                            <!-- <span class="resize-handle"></span> -->
                         </th>
                     </tr>
                 </thead>
@@ -58,11 +56,7 @@
                             :key="key"
                             class="truncate bg-white border border-gray-light"
                         >
-                            <!-- <Tooltip
-                                :tooltip-text="`${rowData}`"
-                                classes="cursor-pointer"
-                            /> -->
-                            {{ rowData }}
+                            {{ rowData === null ? '-' : rowData }}
                         </td>
                     </tr>
                 </tbody>
@@ -101,7 +95,7 @@
             },
         },
         setup(props) {
-            const { dataList } = toRefs(props)
+            const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
 
             const getDataType = (type: string) => {
@@ -113,11 +107,19 @@
             }
 
             watch([tableRef, dataList], () => {
-                // if (isQueryRunning === 'success') {
                 if (tableRef.value) {
                     new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
+                    })
+                }
+            })
+
+            watch([tableRef, columns], () => {
+                if (tableRef.value) {
+                    new Clusterize({
+                        scrollId: 'scrollArea',
+                        contentId: 'headerArea',
                     })
                 }
             })
@@ -134,6 +136,7 @@
 <style lang="less" module>
     .tableStyle {
         border-radius: 10px !important;
+
         td,
         th {
             width: 200px;
@@ -181,12 +184,7 @@
 
 <style lang="less" scoped>
     @import url('clusterize.js/clusterize.css');
-    .button-shadow {
-        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);
-    }
-    .placeholder {
-        background-color: #f4f4f4;
-    }
+
     .table_height {
         height: 100% !important;
     }

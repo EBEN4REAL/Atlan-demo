@@ -127,7 +127,6 @@
                 <Pagination
                     :current="pagination.current"
                     :totalPages="pagination.total"
-                    :pageSize="pagination.pageSize"
                     :loading="isLoading"
                     :offset="pagination.offset"
                     @change="handlePagination"

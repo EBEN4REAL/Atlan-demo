@@ -8,12 +8,14 @@
     >
         <div class="h-full pt-8 pb-10 overflow-scroll bg-gray-50">
             <div
-                :class="`close-icon ${!drawerFilter && 'closed'} border border-solid order-gray-300`"
+                :class="`close-icon ${
+                    !drawerFilter && 'closed'
+                } border border-solid order-gray-300`"
                 @click="handleClickFilter"
             >
                 <AtlanIcon icon="ChevronRight" />
             </div>
-            
+
             <div class="px-2 filter-container">
                 <AssetFilters
                     v-model="facets"
@@ -101,6 +103,19 @@
                     />
                 </template>
             </VirtualList>
+            <div
+                class="flex justify-end max-w-full mt-4"
+                v-if="pagination.totalPages > 1"
+            >
+                <Pagination
+                    v-model:current="pagination.current"
+                    v-model:offset="pagination.offset"
+                    :totalPages="pagination.totalPages"
+                    :loading="listLoading"
+                    :pageSize="pagination.limit"
+                    @mutate="mutate"
+                />
+            </div>
         </template>
         <div v-else class="flex items-center justify-center h-full">
             <div
@@ -139,7 +154,7 @@
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
-     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     import DefaultLayout from '@/admin/layout.vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
@@ -159,10 +174,12 @@
     //     approveRequest,
     //     declineRequest,
     // } from '~/composables/requests/useRequests'
+    import Pagination from '@/common/list/pagination.vue'
 
     export default defineComponent({
         name: 'RequestList',
         components: {
+            Pagination,
             VirtualList,
             RequestListItem,
             SearchAndFilter,
@@ -171,7 +188,7 @@
             RequestTypeTabs,
             DefaultLayout,
             AssetFilters,
-            Connector
+            Connector,
             // NoAcces
         },
         setup(props, { emit }) {
@@ -179,12 +196,10 @@
             // const listPermission = computed(() => accessStore.checkPermission('LIST_REQUEST'))
             // keyboard navigation stuff
 
-            const connectorsData = ref(
-                {
-                    attributeName: undefined,
-                    attributeValue: undefined,
-                }
-            )
+            const connectorsData = ref({
+                attributeName: undefined,
+                attributeValue: undefined,
+            })
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
@@ -198,16 +213,29 @@
                 request_type: [],
             })
             const requestList = ref([])
+
+            const pagination = ref({
+                limit: 20,
+                offset: 0,
+                totalPages: 1,
+                current: 1,
+            })
             const {
                 response,
                 isLoading: listLoading,
                 error: listError,
-            } = useRequestList(searchTerm, filters)
+                mutate,
+            } = useRequestList(searchTerm, filters, pagination)
+
             watch(response, () => {
                 requestList.value =
-                    response.value?.records?.filter(
-                        (req) => Array.isArray(filters.value.status) ? filters.value.status.includes(req.status) : req.status === filters.value.status
+                    response.value?.records?.filter((req) =>
+                        Array.isArray(filters.value.status)
+                            ? filters.value.status.includes(req.status)
+                            : req.status === filters.value.status
                     ) || []
+                pagination.value.totalPages =
+                    response.value.filter_record / pagination.value.limit
             })
             function isSelected(guid: string): boolean {
                 // TODO: change this when adding bulk support
@@ -288,12 +316,14 @@
             )
             const handleFilterChange = () => {
                 const facetsValue = facets.value
-                const status = facetsValue.statusRequest ? Object.values(facetsValue.statusRequest) : []
+                const status = facetsValue.statusRequest
+                    ? Object.values(facetsValue.statusRequest)
+                    : []
                 const createdBy = facetsValue?.requestor?.ownerUsers || []
                 const filterMerge = {
                     ...filters.value,
-                    status: status.length > 0 ? status : "active",
-                    createdBy
+                    status: status.length > 0 ? status : 'active',
+                    createdBy,
                 }
                 filters.value = filterMerge
             }
@@ -311,14 +341,16 @@
             const handleChangeConnector = () => {
                 const filterMerge = {
                     ...filters.value,
-                    destinationQualifiedName: connectorsData.value.attributeValue
+                    destinationQualifiedName:
+                        connectorsData.value.attributeValue,
                 }
                 filters.value = filterMerge
             }
-            const setConnector = () => {
-            }
-       
+            const setConnector = () => {}
+
             return {
+                mutate,
+                pagination,
                 requestList,
                 isSelected,
                 selectRequest,
@@ -349,16 +381,16 @@
 </script>
 
 <style lang="less">
-    .wrapper-filter{
-        .ant-select-selector{
-            background: white!important;
-        }   
+    .wrapper-filter {
+        .ant-select-selector {
+            background: white !important;
+        }
     }
-    .filter-container{
-        .filter-head{
-            background-color: transparent!important;
+    .filter-container {
+        .filter-head {
+            background-color: transparent !important;
             background: none;
-            box-shadow: none!important;
+            box-shadow: none !important;
         }
     }
 </style>

@@ -59,10 +59,17 @@
                             v-for="(rowData, key) in row"
                             :key="key"
                             class="truncate bg-white border border-gray-light"
+                            :class="{
+                                'hover:bg-primary-light cursor-pointer':
+                                    variantTypeIndexes.indexOf(0) !== -1,
+                                'outline-primary bg-primary-light ':
+                                    selectedData === rowData,
+                            }"
                         >
                             <div
                                 v-if="variantTypeIndexes.indexOf(0) !== -1"
                                 @click="handleOpenModal(rowData)"
+                                class=""
                             >
                                 {{ variantTypeIndexes }}
                             </div>
@@ -77,33 +84,41 @@
     </div>
     <a-modal
         v-model:visible="modalVisible"
-        width="1000px"
-        title="Basic Modal"
         :footer="null"
-        :key="selectedData"
+        :afterClose="() => (selectedData = '')"
         centered
+        width="800px"
+        :destroyOnClose="true"
     >
-        {{ selectedData }}
+        <template #title>
+            <div class="flex items-center text-gray-700 gap-x-1.5">
+                <AtlanIcon
+                    icon="Variant"
+                    class="w-auto h-4 text-gray-500 mb-0.5"
+                />
+                Response Type
+            </div>
+        </template>
+        <div
+            class="flex items-center justify-center p-4 m-4 overflow-auto border rounded border-gray-light variant_modal"
+        >
+            {{ selectedData }}
+        </div>
     </a-modal>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        toRefs,
-        watch,
-        ref,
-        defineAsyncComponent,
-    } from 'vue'
+    import { defineComponent, PropType, toRefs, watch, ref } from 'vue'
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
+    import AtlanIcon from '../common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AtlanTable',
         components: {
             Tooltip,
+            AtlanIcon,
         },
         props: {
             dataList: {
@@ -245,5 +260,10 @@
     @font-face {
         font-family: Hack;
         src: url('~/assets/fonts/hack/Hack-Regular.ttf');
+    }
+
+    .variant_modal {
+        max-height: 400px;
+        max-width: 600px;
     }
 </style>

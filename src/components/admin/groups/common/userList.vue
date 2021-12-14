@@ -71,13 +71,6 @@
                 </div>
             </div>
             <div v-if="showLoadMore" class="flex justify-center w-full mt-3">
-                <!-- <AtlanButton
-                    color="secondary"
-                    padding="compact"
-                    size="sm"
-                    @click="handleLoadMore"
-                    >load more
-                </AtlanButton> -->
                 <button
                     :disabled="isLoading"
                     class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"

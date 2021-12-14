@@ -234,9 +234,11 @@
         placement="right"
         :closable="false"
         :visible="addpolicyVisible"
+        :width="450"
+        :mask="false"
         @close="handleCloseAddPolicy"
     >
-        <Addpolicy :type="typeAddPolicy" :visible="addpolicyVisible"/>
+        <Addpolicy :type="typeAddPolicy" :show-drawer="addpolicyVisible"/>
     </a-drawer>
 </template>
 

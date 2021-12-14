@@ -1,7 +1,7 @@
 <template>
     <div class="relative container-policy-card">
         <div
-            class="flex flex-col py-2 pr-2 text-gray-500 border-b border-gray-300 cursor-pointer group hover:bg-primary-light card-policy last:border-0"
+            class="flex flex-col p-2 pr-2 text-gray-500 border-b border-gray-300 cursor-pointer group hover:bg-primary-light card-policy last:border-0"
             :class="
                 selectedPolicy.id === policy.id
                     ? 'outline-primary bg-primary-light'
@@ -201,6 +201,7 @@
     import { useUtils } from '../assets/useUtils'
     import useScopeService from '../composables/useScopeService'
     import { splitArray } from '~/utils/string'
+    
 
     export default defineComponent({
         name: 'DataPolicy',

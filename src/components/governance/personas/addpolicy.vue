@@ -31,7 +31,7 @@
             <div class="relative mb-2 text-sm text-gray-500 required">
                 Policy name
             </div>
-            <div style="width: 320px">
+            <div>
                 <a-input
                     :ref="
                         (el) => {
@@ -57,7 +57,7 @@
                 {{ rules.policyName.text }}
             </div>
         </div>
-        <div class="relative mt-4">
+        <div class="relative mt-6">
             <div class="mb-2 text-sm text-gray-500 required">Connection</div>
             <Connector
                 :ref="
@@ -66,7 +66,7 @@
                     }
                 "
                 v-model:data="connectorData"
-                class="max-w-xs mb-6"
+                class="mb-6"
                 :disabled="!policy?.isNew"
                 @change="handleConnectorChange"
                 @blur="
@@ -83,6 +83,28 @@
                 data-test-id="policy-validation-connector"
             >
                 {{ rules.connection.text }}
+            </div>
+        </div>
+        <div class="mt-4">
+            <div class="flex justify-between">
+                <div class="text-gray-500">Asset</div>
+                <AtlanBtn
+                    class="flex-none"
+                    size="sm"
+                    color="minimal"
+                    padding="compact"
+                    @click="handleAddAsset"
+                >
+                    <span class="text-primary">
+                        Select
+                    </span>
+                    <AtlanIcon icon="Add" class="ml-1 text-primary"/>
+                </AtlanBtn>
+            </div>
+            <div class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300">
+                <span class="px-1 text-sm text-gray-500">
+                    Select from set of permissions for your policy
+                </span>
             </div>
         </div>
         <div class="mt-4">
@@ -106,6 +128,14 @@
                 </span>
             </div>
         </div>
+        <AssetSelectorDrawer
+            v-if="connectorData.attributeValue"
+            v-model:visible="assetSelectorVisible"
+            v-model:assets="policy.assets"
+            :connection-qf-name="connectorData.attributeValue"
+            class="drawerAddAsset"
+            :get-container="'body'"
+        />
     </div>
 </template>
 
@@ -117,28 +147,31 @@
         selectedPersonaDirty,
     } from './composables/useEditPersona'
     import { useConnectionStore } from '~/store/connection'
+    import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
 
     export default defineComponent({
         name: 'AddPolicy',
         components: {
             AtlanBtn,
-            Connector
+            Connector,
+            AssetSelectorDrawer
         },
         props: {
             type: {
                 type: String as PropType<'meta' | 'data'>,
                 required: true,
             },
-            visible: {
+            showDrawer: {
                 type: Boolean,
                 required: true,
             },
         },
         emits: [],
         setup(props, { emit }) {
+            const assetSelectorVisible = ref(false)
             const policyNameRef = ref()
             const connectorComponentRef = ref()
-            const { visible, type } = toRefs(props)
+            const { showDrawer, type } = toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
             const rules = ref({
@@ -178,34 +211,41 @@
             const handleConnectorChange = () => {
                 policy.value.assets = []
             }
-            watch(visible, () => {
-                if(visible.value){
-                    if (type.value === 'meta') {
-                        policy.value = {
-                            actions: [],
-                            assets: [],
-                            connectionId: '',
-                            allow: true,
-                            name: '',
-                            description: '',
-                            isNew: true,
-                        }
-                    }
-                    if (type.value === 'data') {
-                        policy.value = {
-                            actions: ['select'],
-                            assets: [],
-                            connectionName: '',
-                            connectionId: '',
-                            maskType: 'null',
-                            allow: true,
-                            name: '',
-                            description: '',
-                            isNew: true,
-                        }
+            const initPolicy = () => {
+                if (type.value === 'meta') {
+                    policy.value = {
+                        actions: [],
+                        assets: [],
+                        connectionId: '',
+                        allow: true,
+                        name: '',
+                        description: '',
+                        isNew: true,
                     }
                 }
+                if (type.value === 'data') {
+                    policy.value = {
+                        actions: ['select'],
+                        assets: [],
+                        connectionName: '',
+                        connectionId: '',
+                        maskType: 'null',
+                        allow: true,
+                        name: '',
+                        description: '',
+                        isNew: true,
+                    }
+                }
+            }
+            initPolicy()
+            watch(showDrawer, () => {
+                if(showDrawer.value){
+                    initPolicy()
+                }
             })
+            const handleAddAsset = () => {
+                assetSelectorVisible.value = true
+            }
             return {
                 selectedPersonaDirty,
                 rules,
@@ -213,7 +253,9 @@
                 policyNameRef,
                 connectorData,
                 connectorComponentRef,
-                handleConnectorChange
+                handleConnectorChange,
+                assetSelectorVisible,
+                handleAddAsset
             }
         },
     })

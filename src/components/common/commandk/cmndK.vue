@@ -159,13 +159,14 @@
             <!-- body ends here  -->
             <!-- footer starts here -->
             <template #footer>
-                <div class="flex items-center px-4 py-2 text-xs bg-gray-100">
+                <div></div>
+                <!-- <div class="flex items-center px-4 py-2 text-xs bg-gray-100">
                     <span>
                         💡 Protip: Add
                         <span class="text-primary">description:</span>
                         to search for just within description
                     </span>
-                </div>
+                </div> -->
             </template>
         </a-modal>
     </div>

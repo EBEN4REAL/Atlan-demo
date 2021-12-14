@@ -20,7 +20,7 @@
                 <DynamicForm
                     :key="`form_${currentStep}`"
                     ref="stepForm"
-                    :config="configMapDerived"
+                    :config="localConfigMap"
                     :currentStep="currentStepConfig"
                     :workflowTemplate="workflowTemplate"
                     v-model="modelValue"
@@ -40,14 +40,21 @@
                     <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
                     >Back</a-button
                 >
-
-                <a-button
-                    v-if="currentStep == 0"
-                    @click="handleExit"
-                    class="font-bold text-red-500"
-                >
-                    Exit
-                </a-button>
+                <div v-if="currentStep == 0">
+                    <a-button
+                        @click="handleExit"
+                        class="font-bold text-red-500"
+                    >
+                        Exit
+                    </a-button>
+                    <a-button
+                        v-if="isSandbox"
+                        @click="toggleSandbox"
+                        class="ml-1"
+                    >
+                        View Template
+                    </a-button>
+                </div>
                 <a-button
                     @click="handleNext"
                     class="text-primary"
@@ -142,6 +149,21 @@
                 </template>
             </a-result>
         </div>
+        <a-drawer
+            v-if="isSandbox"
+            title="Basic Drawer"
+            placement="right"
+            :closable="true"
+            :visible="sandboxVisible"
+            @close="toggleSandbox"
+            :mask="false"
+        >
+            <Sandbox
+                v-model:workflowTemplate="localTemplate"
+                v-model:configMap="localConfigMap"
+                @change="handleRefresh"
+            ></Sandbox>
+        </a-drawer>
     </div>
 </template>
 
@@ -165,12 +187,12 @@
     import SetupGraph from './setupGraph.vue'
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
-    import Sandbox from './sandbox.vue'
+    import Sandbox from '../preview/sandbox.vue'
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
     import { useRunList } from '~/composables/package/useRunList'
-    import { useRouter } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
 
     // Composables
 
@@ -205,8 +227,20 @@
             const currentStep = ref(0)
             const { workflowTemplate, configMap } = toRefs(props)
 
-            provide('workflowTemplate', workflowTemplate)
-            provide('configMap', configMap)
+            const localTemplate = ref(workflowTemplate.value)
+            const localConfigMap = ref(configMap.value)
+
+            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+
+            provide('workflowTemplate', localTemplate)
+            provide('configMap', localConfigMap)
+
+            const route = useRoute()
+            const sandboxVisible = ref(false)
+            const toggleSandbox = () => {
+                sandboxVisible.value = !sandboxVisible.value
+            }
+            const isSandbox = computed(() => route?.query?.sandbox || '')
 
             const cron = ref({
                 cron: workflowTemplate.value.metadata?.annotations[
@@ -220,9 +254,7 @@
 
             const modelValue = ref({})
 
-            const steps = computed(() => configMapDerived?.value?.steps || [])
-
-            const configMapDerived = computed(() => configMap.value)
+            const steps = computed(() => localConfigMap?.value?.steps || [])
 
             const currentStepConfig = computed(() => {
                 if (steps.value) {
@@ -426,12 +458,16 @@
                 }
             }
 
+            const handleRefresh = () => {
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+            }
+
             return {
                 emit,
 
                 workflowTemplate,
                 handleChange,
-                configMapDerived,
+
                 modelValue,
                 selectedStep,
                 currentStep,
@@ -456,6 +492,13 @@
                 handleExit,
                 handleStepClick,
                 cron,
+                isSandbox,
+                sandboxVisible,
+                toggleSandbox,
+                handleRefresh,
+                dirtyTimestamp,
+                localTemplate,
+                localConfigMap,
             }
         },
     })

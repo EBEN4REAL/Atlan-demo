@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 border-b border-bottom border-slate-300">
+    <div class="p-5 border-b border-bottom border-slate-300">
         <div class="flex justify-between">
             <div class="text-lg font-bold">
                 {{ selectedPersonaDirty?.name }} policy
@@ -25,9 +25,9 @@
             </span>
         </div>
     </div>
-    <div class="p-4">
+    <div class="p-5">
         <div class="font-bold base text-neutral-500">Detailed Info</div>
-        <div class="relative mt-4">
+        <div class="relative mt-8">
             <div class="relative mb-2 text-sm text-gray-500 required">
                 Policy name <span class="text-red-500">*</span>
             </div>
@@ -57,7 +57,7 @@
                 {{ rules.policyName.text }}
             </div>
         </div>
-        <div class="relative mt-6">
+        <div class="relative mt-7">
             <div class="mb-2 text-sm text-gray-500 required">
                 Connection <span class="text-red-500">*</span>
             </div>
@@ -87,7 +87,7 @@
                 {{ rules.connection.text }}
             </div>
         </div>
-        <div class="mt-4">
+        <div class="mt-7">
             <div class="flex justify-between">
                 <div class="text-gray-500">
                     Asset <span class="text-red-500">*</span>
@@ -122,12 +122,13 @@
             <div
                 class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300"
             >
-                <span class="px-1 text-sm text-gray-500">
-                    Select from set of permissions for your policy
+                <span class="p-2 text-xs text-gray-500">
+                    Select the assets your policy should apply to, or
+                    <strong>Add All</strong> to apply the policy to all assets
                 </span>
             </div>
         </div>
-        <div class="mt-4">
+        <div class="mt-7">
             <div class="flex justify-between">
                 <div class="text-gray-500">
                     Permissions <span class="text-red-500">*</span>
@@ -145,7 +146,7 @@
             <div
                 class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300"
             >
-                <span class="px-1 text-sm text-gray-500">
+                <span class="p-2 text-xs text-gray-500">
                     Select from set of permissions for your policy
                 </span>
             </div>

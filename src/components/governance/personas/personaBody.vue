@@ -238,7 +238,7 @@
         :mask="false"
         @close="handleCloseAddPolicy"
     >
-        <Addpolicy :type="typeAddPolicy" :show-drawer="addpolicyVisible"/>
+        <Addpolicy :type="typeAddPolicy" :show-drawer="addpolicyVisible" />
     </a-drawer>
 </template>
 
@@ -286,7 +286,7 @@
             PersonaUsersGroups,
             SearchAndFilter,
             AggregationTabs,
-            Addpolicy
+            Addpolicy,
         },
         props: {
             persona: {
@@ -295,7 +295,7 @@
             },
         },
         emits: ['selectPolicy'],
-        setup(prop, {emit}) {
+        setup(prop, { emit }) {
             const searchPersona = ref('')
             const activeTabFilter = ref('')
             const selectedPolicy = ref({})
@@ -475,7 +475,7 @@
                 totalPolicy,
                 addpolicyVisible,
                 handleCloseAddPolicy,
-                typeAddPolicy
+                typeAddPolicy,
             }
         },
     })

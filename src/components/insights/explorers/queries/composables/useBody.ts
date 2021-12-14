@@ -25,6 +25,8 @@ export default function useBody({
             },
         },
     ])
+    base.filter('term', '__typeName.keyword', 'QueryCollection')
+    base.filter('term', '__state', 'ACTIVE')
     if (searchText)
         base.query('wildcard', 'name.keyword', {
             value: `*${searchText}*`,
@@ -39,8 +41,6 @@ export default function useBody({
         base.orFilter('terms', 'viewerGroups', groups)
     }
     base.filterMinimumShouldMatch(1)
-    base.filter('term', '__typeName.keyword', 'QueryCollection')
-    base.filter('term', '__state', 'ACTIVE')
 
     return base.build()
 }

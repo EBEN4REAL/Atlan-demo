@@ -599,7 +599,6 @@
     import AtlanBtn from '@/UI/button.vue'
     import { useRouter } from 'vue-router'
     import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
-    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
     import { generateUUID } from '~/utils/helper/generator'
     import {
         useMapping,
@@ -1196,7 +1195,6 @@
             // const router = useRouter()
             // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs')
-            let demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
 
             const handleAddNewTab = async (query, context, previewItem) => {
                 const key = generateUUID()

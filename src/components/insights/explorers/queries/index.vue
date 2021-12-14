@@ -169,7 +169,7 @@
             </div>
         </div>
         <div
-            v-else-if="!queryCollections && queryCollectionsLoading"
+            v-else-if="queryCollectionsLoading"
             class="flex items-center justify-center h-full"
         >
             <Loader></Loader>

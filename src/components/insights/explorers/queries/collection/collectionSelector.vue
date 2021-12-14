@@ -32,7 +32,6 @@
 
                     <div
                         class="px-3 mb-3 overflow-x-hidden overflow-y-auto h-44"
-                        v-if="sharedCollections?.length !== 0"
                     >
                         <div
                             v-if="sharedCollections?.length !== 0"
@@ -84,7 +83,7 @@
                                 class="h-24 mr-8 -mt-4 no-svaved-query-icon text-primary"
                             />
                             <span class="mt-3 text-gray-500"
-                                >No prive collection found</span
+                                >No private collection found</span
                             >
                         </div>
                     </div>
@@ -219,6 +218,11 @@
                 if (!newLoading) {
                     selectDefaultValue()
                 }
+            })
+            watch(isVisible, () => {
+                setTimeout(() => {
+                    if (!isVisible.value) queryText.value = ''
+                }, 0)
             })
 
             onMounted(async () => {

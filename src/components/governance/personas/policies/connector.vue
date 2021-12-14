@@ -22,7 +22,15 @@
             "
         >
             <template #title="node">
-                <div class="flex items-center truncate" @click="toggleVisibilityOfChildren(node.title)">
+                <div
+                    class="flex items-center truncate"
+                    :class="
+                        node?.selectable === false
+                            ? 'cursor-not-allowed bg-white hover:bg-white'
+                            : ''
+                    "
+                    @click="toggleVisibilityOfChildren(node.title)"
+                >
                     <AtlanIcon
                         :icon="iconName(node)"
                         class="h-4 -ml-0.5 mr-1"
@@ -182,7 +190,9 @@
                 return tree
             }
 
-            const treeData = computed(() => transformConnectorToTree(filteredList.value))
+            const treeData = computed(() =>
+                transformConnectorToTree(filteredList.value)
+            )
 
             watch([connector, connection], () => emitChangedFilters())
 
@@ -273,8 +283,7 @@
                 // If the element is found, remove it from the array.
                 if (indexOfElement > -1) {
                     expandedKeys.value.splice(indexOfElement, 1)
-                }
-                else {
+                } else {
                     // If it is not found, add it.
                     expandedKeys.value.push(name)
                 }
@@ -337,7 +346,7 @@
                 connector,
                 connection,
                 onBlur,
-                toggleVisibilityOfChildren
+                toggleVisibilityOfChildren,
             }
         },
     })

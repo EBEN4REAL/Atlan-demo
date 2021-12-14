@@ -2,11 +2,11 @@
     <div
         :key="item.guid"
         :class="[
-            'flex items-center justify-between p-1 cursor-pointer hover:bg-primary-light group',
+            'flex items-center justify-between p-1 cursor-pointer hover:bg-primary-light group relative overflow-x-hidden',
         ]"
         @click="handleChange(item.guid)"
     >
-        <div class="flex items-center">
+        <div class="flex items-center overflow-x-hidden">
             <AtlanIcon
                 v-if="index === 0"
                 icon="Group"
@@ -17,11 +17,13 @@
                 icon="User"
                 class="self-center w-4 h-4 pr-1"
             ></AtlanIcon>
-            <div class="overflow-ellipsis group-hover:text-primary">
-                {{ item.attributes.name }}
+            <div class="truncate group-hover:text-primary" style="width: 90%">
+                <span class="truncate">{{ item.attributes.name }}</span>
             </div>
         </div>
-        <div>
+        <div
+            class="absolute opacity-0 group-hover:opacity-100 right-1 y-center"
+        >
             <a-dropdown :trigger="['click']" @click.stop="() => {}">
                 <div class="pl-5" v-if="username === item?.createdBy">
                     <AtlanIcon
@@ -132,5 +134,10 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .y-center {
+        transform: translateY(-50%);
+        top: 48%;
+    }
+</style>
 <style lang="less" module></style>

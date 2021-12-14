@@ -1,4 +1,3 @@
-// FIXME: CHANGE BASIC -> INDEX
 import { Ref, ref, watch } from 'vue'
 
 // import { QueryFolderNamespace } from '~/types/insights/savedQuery.interface'
@@ -95,10 +94,8 @@ const useQueryCollection = () => {
             },
         })
 
-        const { data, error, isLoading } = Insights.CreateQueryCollection(
-            body.value,
-            {}
-        )
+        const { data, error, isLoading, isReady, mutate } =
+            Insights.CreateQueryCollection(body.value, {})
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -115,7 +112,7 @@ const useQueryCollection = () => {
             }
         })
 
-        return { data, error, isLoading }
+        return { data, error, isLoading, isReady, mutate }
     }
 
     const updateCollection = (entity) => {
@@ -125,10 +122,8 @@ const useQueryCollection = () => {
             },
         })
 
-        const { data, error, isLoading } = Insights.CreateQueryCollection(
-            body.value,
-            {}
-        )
+        const { data, error, isLoading, isReady } =
+            Insights.CreateQueryCollection(body.value, {})
 
         watch([data, error, isLoading], () => {
             if (isLoading.value == false) {
@@ -145,7 +140,7 @@ const useQueryCollection = () => {
             }
         })
 
-        return { data, error, isLoading }
+        return { data, error, isLoading, isReady }
     }
 
     const setCollectionsDataInInlineTab = (
@@ -171,7 +166,23 @@ const useQueryCollection = () => {
         )
     }
 
+    const selectFirstCollectionByDefault = (
+        collection: QueryCollection[],
+        activeInlineTab: activeInlineTabInterface
+    ) => {
+        if (collection?.length > 0) {
+            const col = collection[0]
+            if (activeInlineTab?.key) {
+                activeInlineTab.explorer.queries.collection.guid = col.guid
+                activeInlineTab.explorer.queries.collection.qualifiedName =
+                    col?.attributes?.qualifiedName
+            }
+        }
+        return activeInlineTab
+    }
+
     return {
+        selectFirstCollectionByDefault,
         refetchQueryCollection: refreshBody,
         getQueryCollections,
         setCollectionsDataInInlineTab,

@@ -210,6 +210,9 @@
             const refetchQueryCollection = inject(
                 'refetchQueryCollection'
             ) as Ref<Function>
+            const queryCollectionsLoading = inject(
+                'queryCollectionsLoading'
+            ) as Ref<Boolean>
             const selectedEmoji = ref(
                 isCreate.value ? null : item?.value?.attributes?.icon
             )
@@ -275,37 +278,40 @@
                     return
                 }
 
-                const { data, error, isLoading } = createCollection({
-                    name: title.value,
-                    description: description.value,
-                    ownerUsers: editors.value.ownerUsers
-                        ? editors.value.ownerUsers
-                        : [],
-                    ownerGroups: editors.value.ownerGroups
-                        ? editors.value.ownerGroups
-                        : [],
-                    viewerUsers: viewers.value.ownerUsers
-                        ? viewers.value.ownerUsers
-                        : [],
-                    viewerGroups: viewers.value.ownerGroups
-                        ? viewers.value.ownerGroups
-                        : [],
-                    icon: selectedEmoji.value,
-                    iconType: selectedEmojiType.value,
-                })
+                const { data, error, isLoading, isReady, mutate } =
+                    createCollection({
+                        name: title.value,
+                        description: description.value,
+                        ownerUsers: editors.value.ownerUsers
+                            ? editors.value.ownerUsers
+                            : [],
+                        ownerGroups: editors.value.ownerGroups
+                            ? editors.value.ownerGroups
+                            : [],
+                        viewerUsers: viewers.value.ownerUsers
+                            ? viewers.value.ownerUsers
+                            : [],
+                        viewerGroups: viewers.value.ownerGroups
+                            ? viewers.value.ownerGroups
+                            : [],
+                        icon: selectedEmoji.value,
+                        iconType: selectedEmojiType.value,
+                    })
 
                 watch(
-                    [isLoading, error],
-                    () => {
+                    [isLoading, error, data, isReady],
+                    async () => {
                         console.log('collection error: ', error.value)
                         isCollectionSaving.value = isLoading?.value
                         if (
                             isLoading?.value === false &&
-                            error.value === undefined
+                            error.value === undefined &&
+                            data.value !== undefined
                         ) {
                             closeModal()
-                            /* Fetch fresh collections */
-                            refetchQueryCollection.value()
+                            if (isReady && !error.value && !isLoading.value) {
+                                refetchQueryCollection.value()
+                            }
                         }
                     },
                     {
@@ -338,18 +344,22 @@
                         ...ownersData,
                     },
                 }
-                const { data, error, isLoading } = updateCollection(entity)
+                const { data, error, isLoading, isReady } =
+                    updateCollection(entity)
                 watch(
-                    [isLoading, error],
+                    [isLoading, error, data, isReady],
                     () => {
                         console.log('collection error: ', error.value)
                         isCollectionSaving.value = isLoading?.value
                         if (
                             isLoading?.value === false &&
-                            error.value === undefined
+                            error.value === undefined &&
+                            data.value !== undefined
                         ) {
                             closeModal()
-                            refetchQueryCollection.value()
+                            if (isReady && !error.value && !isLoading.value) {
+                                refetchQueryCollection.value()
+                            }
                         }
                     },
                     {

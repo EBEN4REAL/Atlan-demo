@@ -136,9 +136,9 @@
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
+    import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
-    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
     import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({
@@ -155,6 +155,9 @@
         setup(props) {
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
+            >
+            const queryCollections = inject('queryCollections') as Ref<
+                QueryCollection[]
             >
             const runQuery = inject('runQuery')
 
@@ -200,7 +203,11 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
+            } = useInlineTab(
+                undefined,
+                !savedQueryGuidFromURL.value,
+                queryCollections
+            )
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -353,8 +360,6 @@
                 checked: true,
                 rowsCount: 100,
             })
-
-            const demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
 
             const detectQuery = () => {
                 const queryTab: activeInlineTabInterface = {

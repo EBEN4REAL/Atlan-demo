@@ -166,7 +166,6 @@
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
-    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
     import { useRouter, useRoute } from 'vue-router'
     import { generateUUID } from '~/utils/helper/generator'
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'

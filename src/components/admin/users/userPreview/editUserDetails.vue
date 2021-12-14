@@ -105,14 +105,16 @@
     <!--            </a-input>-->
     <!--        </div>-->
         </div>
-        <a-button-group class="w-full pb-6">
-            <a-button block type="minimal" :disabled="isRequestLoading" @click="onCancel">
-                Cancel
-            </a-button>
-            <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
-                Done
-            </a-button>
-        </a-button-group>
+        <div class="w-full sticky bottom-0 pb-6">
+            <a-button-group class="w-full">
+                <a-button block type="minimal" :disabled="isRequestLoading" @click="onCancel">
+                    Cancel
+                </a-button>
+                <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
+                    Done
+                </a-button>
+            </a-button-group>
+        </div>
     </a-form>
 </template>
 
@@ -159,7 +161,7 @@
             const formData = ref({
                 firstName: selectedUser.value.firstName,
                 lastName: selectedUser.value.lastName,
-                role: selectedRole.value[0].id ?? "",
+                role: selectedRole.value.length > 0 ? selectedRole.value[0].id : "",
                 designation: selectedUser.value?.attributes?.designation?.length > 0 ? selectedUser.value?.attributes?.designation[0] : "",
                 slack: ""
             })
@@ -258,7 +260,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>

@@ -17,15 +17,17 @@
                 />
             </div>
             <template v-if="showHeaderButtons">
-                <a-button
-                    type="primary"
+                <AtlanButton
+                    color="secondary"
+                    size="sm"
+                    padding="compact"
                     :loading="addMemberLoading"
                     :disabled="addMemberLoading || !selectedIds.length"
                     class="flex items-center text-sm"
                     @click="$emit('addMembersToGroup')"
                 >
                     Done
-                </a-button>
+                </AtlanButton>
             </template>
         </div>
         <div
@@ -48,9 +50,15 @@
                 </div>
             </ErrorView>
         </div>
+        <div
+            v-else-if="searchText && !userList?.length"
+            class="flex items-center justify-center h-64"
+        >
+            <EmptyView desc="No Results found." />
+        </div>
         <template v-else>
             <div class="pl-4 mt-2 overflow-auto">
-                <a-checkbox-group class="w-full">
+                <a-checkbox-group v-if="userList?.length" class="w-full">
                     <div class="flex flex-col w-full" :style="userListStyle">
                         <template v-for="user in userList" :key="user.id">
                             <a-checkbox
@@ -63,6 +71,7 @@
                         </template>
                     </div>
                 </a-checkbox-group>
+
                 <div
                     v-if="isLoading && !userList.length"
                     class="flex justify-center mt-3"
@@ -104,11 +113,13 @@
     import AtlanButton from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import UserCard from './userCard.vue'
+    import EmptyView from '@/common/empty/index.vue'
 
     export default defineComponent({
         name: 'UsersList',
         components: {
             UserCard,
+            EmptyView,
             ErrorView,
             AtlanButton,
             SearchAndFilter,

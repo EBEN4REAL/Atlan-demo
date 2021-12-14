@@ -9,12 +9,13 @@
                 :disabled="isEditing"
                 class="flex-none"
                 size="sm"
-                color="secondary"
+                color="primary"
                 padding="compact"
                 data-test-id="add-persona"
                 @click="() => (modalVisible = true)"
             >
-                <AtlanIcon icon="Add" class="-mx-1 text-black"></AtlanIcon>
+                <AtlanIcon icon="Add" class="mr-1 -mx-1 text-white"></AtlanIcon>
+                New
             </AtlanBtn>
         </template>
         <template #sidebar>
@@ -53,7 +54,10 @@
                         >
                             {{ item.displayName }}
                         </span>
-                        <div class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'active' : 'inActive'"/>
+                        <div
+                            class="w-1.5 h-1.5 rounded-full"
+                            :class="item.isActive ? 'active' : 'inActive'"
+                        />
                     </div>
                 </template>
             </ExplorerList>
@@ -173,6 +177,6 @@
         background: #00a680;
     }
     .inActive {
-        background: #CF592E;
+        background: #cf592e;
     }
 </style>

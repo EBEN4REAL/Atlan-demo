@@ -158,11 +158,11 @@ export const useUsers = (userListAPIParams, immediate = true) => {
     watch(data, () => {
         console.log('changed')
 
-        if (data.value.records) {
+        if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                      getFormattedUser(user)
-                  )
+                    getFormattedUser(user)
+                )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 
@@ -178,6 +178,7 @@ export const useUsers = (userListAPIParams, immediate = true) => {
             }
         } else {
             userList.value = []
+            localUsersList.value = []
         }
     })
 

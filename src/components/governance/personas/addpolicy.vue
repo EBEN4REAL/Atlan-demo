@@ -1,7 +1,9 @@
 <template>
     <div class="p-4 border-b border-bottom border-slate-300">
         <div class="flex justify-between">
-            <div class="text-lg font-bold">{{selectedPersonaDirty?.name}} policy </div>
+            <div class="text-lg font-bold">
+                {{ selectedPersonaDirty?.name }} policy
+            </div>
             <div class="flex">
                 <AtlanBtn
                     class="flex-none"
@@ -9,27 +11,25 @@
                     color="secondary"
                     padding="compact"
                 >
-                    <AtlanIcon icon="Delete" class="-mx-1 text-black"/>
+                    <AtlanIcon icon="Delete" class="-mx-1 text-black" />
                 </AtlanBtn>
-                <AtlanBtn
-                    class="ml-2"
-                    size="sm"
-                    padding="compact"
-                >
+                <AtlanBtn class="ml-2" size="sm" padding="compact">
                     Save
                 </AtlanBtn>
             </div>
         </div>
         <div class="flex items-center">
-            <AtlanIcon icon="Policies" class="mr-1"/>
-            <span class="text-neutral-600">{{type === 'meta' ? 'Metadata Policy' : 'Data Policy'}} </span>
+            <AtlanIcon icon="Policies" class="mr-1" />
+            <span class="text-neutral-600"
+                >{{ type === 'meta' ? 'Metadata Policy' : 'Data Policy' }}
+            </span>
         </div>
     </div>
     <div class="p-4">
-        <div class="font-bold base text-neutral-500"> Detail Info</div>
+        <div class="font-bold base text-neutral-500">Detailed Info</div>
         <div class="relative mt-4">
             <div class="relative mb-2 text-sm text-gray-500 required">
-                Policy name
+                Policy name <span class="text-red-500">*</span>
             </div>
             <div>
                 <a-input
@@ -58,7 +58,9 @@
             </div>
         </div>
         <div class="relative mt-6">
-            <div class="mb-2 text-sm text-gray-500 required">Connection</div>
+            <div class="mb-2 text-sm text-gray-500 required">
+                Connection <span class="text-red-500">*</span>
+            </div>
             <Connector
                 :ref="
                     (el) => {
@@ -87,21 +89,39 @@
         </div>
         <div class="mt-4">
             <div class="flex justify-between">
-                <div class="text-gray-500">Asset</div>
-                <AtlanBtn
-                    class="flex-none"
-                    size="sm"
-                    color="minimal"
-                    padding="compact"
-                    @click="handleAddAsset"
-                >
-                    <span class="text-primary">
-                        Select
-                    </span>
-                    <AtlanIcon icon="Add" class="ml-1 text-primary"/>
-                </AtlanBtn>
+                <div class="text-gray-500">
+                    Asset <span class="text-red-500">*</span>
+                </div>
+                <div class="flex">
+                    <AtlanBtn
+                        class="flex-none"
+                        size="sm"
+                        color="minimal"
+                        padding="compact"
+                        @click="handleAddAsset"
+                    >
+                        <span class="text-primary"> Add All </span>
+                        <AtlanIcon icon="Add" class="ml-1 text-primary" />
+                    </AtlanBtn>
+                    <span
+                        class="pt-2 pl-1 pr-1 text-xs text-gray-500 bg-gray-100"
+                        >OR</span
+                    >
+                    <AtlanBtn
+                        class="flex-none"
+                        size="sm"
+                        color="minimal"
+                        padding="compact"
+                        @click="handleAddAsset"
+                    >
+                        <span class="text-primary"> Select All</span>
+                        <AtlanIcon icon="Add" class="ml-1 text-primary" />
+                    </AtlanBtn>
+                </div>
             </div>
-            <div class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300">
+            <div
+                class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300"
+            >
                 <span class="px-1 text-sm text-gray-500">
                     Select from set of permissions for your policy
                 </span>
@@ -109,20 +129,22 @@
         </div>
         <div class="mt-4">
             <div class="flex justify-between">
-                <div class="text-gray-500">Permissions</div>
+                <div class="text-gray-500">
+                    Permissions <span class="text-red-500">*</span>
+                </div>
                 <AtlanBtn
                     class="flex-none"
                     size="sm"
                     color="minimal"
                     padding="compact"
                 >
-                    <span class="text-primary">
-                        Manage
-                    </span>
-                    <AtlanIcon icon="ArrowRight" class="ml-1 text-primary"/>
+                    <span class="text-primary"> Manage </span>
+                    <AtlanIcon icon="ArrowRight" class="ml-1 text-primary" />
                 </AtlanBtn>
             </div>
-            <div class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300">
+            <div
+                class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300"
+            >
                 <span class="px-1 text-sm text-gray-500">
                     Select from set of permissions for your policy
                 </span>
@@ -140,12 +162,17 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, watch, toRefs, computed } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        watch,
+        toRefs,
+        computed,
+    } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
     import Connector from './policies/connector.vue'
-    import {
-        selectedPersonaDirty,
-    } from './composables/useEditPersona'
+    import { selectedPersonaDirty } from './composables/useEditPersona'
     import { useConnectionStore } from '~/store/connection'
     import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
 
@@ -154,7 +181,7 @@
         components: {
             AtlanBtn,
             Connector,
-            AssetSelectorDrawer
+            AssetSelectorDrawer,
         },
         props: {
             type: {
@@ -239,7 +266,7 @@
             }
             initPolicy()
             watch(showDrawer, () => {
-                if(showDrawer.value){
+                if (showDrawer.value) {
                     initPolicy()
                 }
             })
@@ -255,7 +282,7 @@
                 connectorComponentRef,
                 handleConnectorChange,
                 assetSelectorVisible,
-                handleAddAsset
+                handleAddAsset,
             }
         },
     })

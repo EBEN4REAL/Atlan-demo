@@ -169,7 +169,10 @@
             :mask="false"
             @close="handleToggleManage"
         >
-            <ManagePermitionVue v-model:actions="policy.actions" @close="() => isShow = false"/>
+            <ManagePermission
+                v-model:actions="policy.actions"
+                @close="() => (isShow = false)"
+            />
         </a-drawer>
     </div>
 </template>
@@ -189,7 +192,7 @@
     import { useConnectionStore } from '~/store/connection'
     import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
-    import ManagePermitionVue from './policies/managePermition.vue'
+    import ManagePermission from './policies/managePermission.vue'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -197,7 +200,7 @@
             AtlanBtn,
             Connector,
             AssetSelectorDrawer,
-            ManagePermitionVue
+            ManagePermission,
         },
         props: {
             type: {

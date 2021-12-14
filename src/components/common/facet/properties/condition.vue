@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-col gap-y-1">
         <div
-            class="flex items-center gap-x-1"
             v-if="attribute.typeName !== 'boolean'"
+            class="flex items-center gap-x-1"
         >
             <a-select
                 v-model:value="localCondition.operator"
@@ -32,13 +32,13 @@
 
         <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
             <DynamicInput2
-                class="w-full"
                 v-model="localCondition.value"
+                class="w-full"
                 :data-type="
                     attribute?.options?.customType ||
                     attribute?.subTypeName ||
-                    attribute?.typeName ||
-                    attribute?.options?.primitiveType
+                    attribute?.options?.primitiveType ||
+                    attribute?.typeName
                 "
                 :multiple="
                     attribute?.options?.multiValueSelect === 'true' && false
@@ -57,7 +57,7 @@
     import { operators } from '~/constant/filters/operators'
 
     export default defineComponent({
-        name: 'Condition',
+        name: 'PropertyCondition',
         components: { DynamicInput2 },
         props: {
             attribute: {

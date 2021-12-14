@@ -250,9 +250,9 @@
                             ],
                         },
                     },
-                    allowPreview: {
+                    allowQueryPreview: {
                         type: 'boolean',
-                        default: true,
+                        default: false,
                         ui: {
                             label: 'Allow Data Preview',
                             help: 'Users will be view sample preview of the assets',
@@ -323,7 +323,11 @@
                                 const: 'warehouse',
                             },
                         },
-                        required: ['allowQuery', 'allowPreview', 'rowLimit'],
+                        required: [
+                            'allowQuery',
+                            'allowQueryPreview',
+                            'rowLimit',
+                        ],
                     },
                     {
                         properties: {
@@ -331,7 +335,11 @@
                                 const: 'rdbms',
                             },
                         },
-                        required: ['allowQuery', 'allowPreview', 'rowLimit'],
+                        required: [
+                            'allowQuery',
+                            'allowQueryPreview',
+                            'rowLimit',
+                        ],
                     },
                     {
                         properties: {
@@ -339,7 +347,11 @@
                                 const: 'queryengine',
                             },
                         },
-                        required: ['allowQuery', 'allowPreview', 'rowLimit'],
+                        required: [
+                            'allowQuery',
+                            'allowQueryPreview',
+                            'rowLimit',
+                        ],
                     },
                     {
                         properties: {
@@ -347,7 +359,11 @@
                                 const: 'lake',
                             },
                         },
-                        required: ['allowQuery', 'allowPreview', 'rowLimit'],
+                        required: [
+                            'allowQuery',
+                            'allowQueryPreview',
+                            'rowLimit',
+                        ],
                     },
                 ],
             })

@@ -97,16 +97,42 @@
         props: {
             modelValue: {
                 type: Object,
-                default: () => ({ cron: '', timezone: '' }),
+                default: () => ({
+                    cron: '',
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                }),
             },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-
             const workflowTemplate = inject('workflowTemplate')
 
-            const decodeCron = (interval) => {
+            let frequency = ''
+            let time = ''
+            let dayOfWeek = ''
+            let date = ''
+            if (modelValue.value.cron) {
+                frequency = getCronFrequency(modelValue.value.cron)
+                const interval = parser.parseExpression(modelValue.value.cron)
+                time = `${interval.fields.hour[0].toString()}:${interval.fields.minute[0].toString()}`
+                if (interval.fields.dayOfWeek.length === 1) {
+                    dayOfWeek = interval.fields.dayOfWeek[0].toString()
+                }
+                if (interval.fields.dayOfMonth.length === 1) {
+                    date = interval.fields.dayOfMonth[0].toString()
+                }
+            }
+
+            const schedule = reactive({
+                frequency,
+                time,
+                date,
+                dayOfWeek,
+            })
+
+            const getCronFrequency = (cronString) => {
+                const interval = parser.parseExpression(cronString)
                 if (
                     interval.fields.dayOfMonth.length === 31 &&
                     interval.fields.dayOfWeek.length === 8 &&
@@ -136,43 +162,8 @@
                 ) {
                     return 'monthly'
                 }
+                return ''
             }
-
-            const cron = ref('')
-            let frequency = 'daily'
-            let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-            const time = '00:30'
-
-            if (
-                workflowTemplate.metadata?.annotations[
-                    'orchestration.atlan.com/schedule'
-                ]
-            ) {
-                cron.value =
-                    workflowTemplate.metadata?.annotations[
-                        'orchestration.atlan.com/schedule'
-                    ]
-                const interval = parser.parseExpression(cron.value)
-                frequency = decodeCron(interval)
-                time = `${interval.fields.hour[0].toString()}:${interval.fields.minute[0].toString()}`
-            }
-
-            if (
-                workflowTemplate?.metadata?.annotations[
-                    'orchestration.atlan.com/timezone'
-                ]
-            ) {
-                timezone =
-                    workflowTemplate?.metadata?.annotations[
-                        'orchestration.atlan.com/timezone'
-                    ]
-            }
-
-            const schedule = reactive({
-                frequency,
-                timezone,
-                time,
-            })
 
             const cronString = ref('')
             // const graphRef = inject('graphRef')
@@ -260,6 +251,7 @@
                 cron,
                 buildCron,
                 cronString,
+                getCronFrequency,
             }
         },
     })

@@ -28,26 +28,29 @@
 
     import PackageDiscoveryList from '@/packages/index.vue'
     import PackagePreview from '@/packages/preview/index.vue'
+    import Sandbox from '@/packages/preview/sandbox.vue'
 
     export default defineComponent({
         name: 'PackageSetupPage',
         components: {
             PackageDiscoveryList,
             PackagePreview,
+            Sandbox,
         },
         setup(props, { emit }) {
             useHead({
                 title: 'Worfklow Setup',
             })
             const selectedPackage = ref(null)
+
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
+
             const router = useRouter()
 
             const handleSetup = (item: any) => {
                 selectedPackage.value = item
                 const url = selectedPackage.value.metadata.name
-
                 router.push({
                     path: `/workflows/setup/${url}`,
                     query: {},

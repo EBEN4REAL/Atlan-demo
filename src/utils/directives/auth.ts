@@ -18,9 +18,15 @@ export function authDirective(app: any) {
                 () => {
                     if (Array.isArray(binding.value)) {
                         if (
-                            binding.value?.every(
-                                (elem) => permissions.value.indexOf(elem) > -1
-                            )
+                            binding.modifiers.or
+                                ? binding.value?.some(
+                                      (elem) =>
+                                          permissions.value.indexOf(elem) > -1
+                                  )
+                                : binding.value?.every(
+                                      (elem) =>
+                                          permissions.value.indexOf(elem) > -1
+                                  )
                         ) {
                             return
                         }

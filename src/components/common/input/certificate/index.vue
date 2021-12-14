@@ -3,7 +3,7 @@
         <a-popover
             v-if="!readOnly"
             v-model:visible="isEdit"
-            placement="leftBottom"
+            placement="leftTop"
             :overlay-class-name="$style.certificatePopover"
             :trigger="['click']"
             @visibleChange="handleVisibleChange"

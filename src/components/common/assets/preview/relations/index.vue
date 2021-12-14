@@ -32,7 +32,6 @@
             expand-icon-position="right"
             :accordion="true"
             class="m-0 bg-transparent"
-            :class="$style.filter"
         >
             <template #expandIcon="{ isActive }">
                 <div class="">
@@ -171,20 +170,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .filter {
-        :global(.ant-collapse-content-box) {
-            padding-right: 0px !important;
-            padding-left: 0px !important;
-            padding-top: 0px !important;
-            padding-bottom: 0px !important;
-        }
-        :global(.ant-collapse-header) {
-            padding-right: 0px !important;
-            padding-left: 0px !important;
-            padding-top: 0px !important;
-            padding-bottom: 0px !important;
-        }
-    }
-</style>

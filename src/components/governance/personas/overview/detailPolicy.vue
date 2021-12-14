@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 border-b border-bottom border-slate-300">
+    <div class="p-5 border-b border-bottom border-slate-300">
         <div class="flex justify-between">
             <div class="text-lg font-bold">{{ selectedPolicy.name }}</div>
             <AtlanBtn
@@ -16,7 +16,7 @@
             <span class="text-neutral-600">{{ selectedPolicy.type }} </span>
         </div>
     </div>
-    <div class="p-4">
+    <div class="p-5">
         <div class="font-bold base text-neutral-500">Detailed Info</div>
         <div class="mt-4">
             <div class="text-gray-500">Name</div>

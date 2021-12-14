@@ -65,7 +65,10 @@
             <div class="bg-white">
                 <PersonaHeader :persona="selectedPersona" />
             </div>
-            <PersonaBody v-model:persona="selectedPersona" @selectPolicy="handleSelectPolicy" />
+            <PersonaBody
+                v-model:persona="selectedPersona"
+                @selectPolicy="handleSelectPolicy"
+            />
         </template>
         <div
             v-else-if="
@@ -108,13 +111,14 @@
                 </a-button>
             </div>
         </ErrorView>
-         <a-drawer
+        <a-drawer
             placement="right"
             :closable="false"
             :visible="modalDetailPolicyVisible"
+            :width="450"
             @close="handleCloseModalDetailPolicy"
         >
-            <DetailPolicy :selected-policy="selectedPolicy"/>
+            <DetailPolicy :selected-policy="selectedPolicy" />
         </a-drawer>
     </ExplorerLayout>
 </template>
@@ -153,7 +157,7 @@
             ExplorerLayout,
             ExplorerList,
             AddPersona,
-            DetailPolicy
+            DetailPolicy,
         },
         setup() {
             const modalVisible = ref(false)
@@ -184,7 +188,7 @@
                 modalDetailPolicyVisible,
                 handleCloseModalDetailPolicy,
                 handleSelectPolicy,
-                selectedPolicy
+                selectedPolicy,
             }
         },
     })
@@ -194,6 +198,6 @@
         background: #00a680;
     }
     .inActive {
-        background: #CF592E;
+        background: #cf592e;
     }
 </style>

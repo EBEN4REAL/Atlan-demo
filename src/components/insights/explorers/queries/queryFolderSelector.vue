@@ -13,11 +13,7 @@
         >
             <AtlanIcon icon="FolderClosed"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
-                {{
-                    selectedFolder
-                        ? selectedFolder
-                        : selectedCollection?.attributes.name || 'Folder'
-                }}
+                {{ selectedFolder ? selectedFolder : 'Folder' }}
             </span>
         </AtlanBtn>
 
@@ -228,6 +224,7 @@
 
             const onSelect = (selected: any, event: any) => {
                 if (event === 'root') {
+                    console.log('selected folder: ', selectedCollection.value)
                     const rootData = selectedCollection.value
 
                     const data = {
@@ -237,6 +234,7 @@
                     }
 
                     selectedKey.value = [selectedCollection?.value?.guid]
+                    selectedFolder.value = selectedCollection.value?.displayText
                     dropdownVisible.value = false
                     // selectedFolderContext.value = data
                     selectedFolderContext.value = {

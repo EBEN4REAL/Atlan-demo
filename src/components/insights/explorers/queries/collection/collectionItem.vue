@@ -23,7 +23,7 @@
         </div>
         <div>
             <a-dropdown :trigger="['click']" @click.stop="() => {}">
-                <div class="pl-5">
+                <div class="pl-5" v-if="username === item?.createdBy">
                     <AtlanIcon
                         icon="KebabMenu"
                         class="w-4 h-4 my-auto"
@@ -33,15 +33,25 @@
                     <a-menu>
                         <!-- RENAME FOLDER PERMISSIONS -->
                         <a-menu-item key="share" @click="toggleShareQueryModal"
-                            >Share collection</a-menu-item
+                            >Invite</a-menu-item
                         >
-                        <a-menu-item key="edit">Edit collection</a-menu-item>
+                        <a-menu-item
+                            key="edit"
+                            @click="toggleShowCollectionModal"
+                            >Edit collection</a-menu-item
+                        >
                     </a-menu>
                 </template>
             </a-dropdown>
         </div>
         <ShareCollectionModal
             v-model:showShareModal="showShareQueryModal"
+            :item="item"
+        />
+        <CreateCollectionModal
+            v-if="showCollectionModal"
+            v-model:showCollectionModal="showCollectionModal"
+            :is-create="false"
             :item="item"
         />
     </div>
@@ -61,6 +71,7 @@
         defineAsyncComponent,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         components: {
@@ -69,6 +80,12 @@
                 () =>
                     import(
                         '~/components/insights/explorers/queries/collection/shareCollectionModal.vue'
+                    )
+            ),
+            CreateCollectionModal: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/insights/explorers/queries/collection/createCollectionModal.vue'
                     )
             ),
         },
@@ -91,8 +108,16 @@
 
             const showShareQueryModal = ref(false)
             const toggleShareQueryModal = () => {
+                console.log('collection item: ', item.value)
                 showShareQueryModal.value = !showShareQueryModal.value
             }
+
+            const showCollectionModal = ref(false)
+            const toggleShowCollectionModal = () => {
+                showCollectionModal.value = !showCollectionModal.value
+            }
+
+            const { username } = whoami()
 
             return {
                 item,
@@ -100,6 +125,9 @@
                 handleChange,
                 showShareQueryModal,
                 toggleShareQueryModal,
+                showCollectionModal,
+                toggleShowCollectionModal,
+                username,
             }
         },
     })

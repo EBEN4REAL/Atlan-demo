@@ -13,8 +13,17 @@
             <div
                 class="flex items-center justify-between text-gray-500 flex-nowrap"
             >
-                <span class="flex-none font-bold text text-gray"
+                <span v-if="isCreate" class="flex-none font-bold text text-gray"
                     >Create Collection</span
+                >
+                <span
+                    v-if="!isCreate"
+                    class="flex-none font-bold text text-gray"
+                    >Edit
+                    <span
+                        class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg"
+                        >{{ item?.attributes?.name }}</span
+                    ></span
                 >
                 <div class="flex items-center text-gray-700">
                     <span class="mr-2 text-sm">Share with others</span>
@@ -127,7 +136,7 @@
                         color="primary"
                         padding="compact"
                         class="flex items-center justify-between h-6 py-1 ml-2 border-none"
-                        @click="saveNewCollection"
+                        @click="saveOrUpdateCollection"
                     >
                         <div class="flex items-center text-white rounded">
                             <AtlanIcon
@@ -137,7 +146,7 @@
                                 class="w-4 h-4 text-white animate-spin"
                             ></AtlanIcon>
 
-                            <span>Create</span>
+                            <span>{{ isCreate ? 'Create' : 'Update' }}</span>
                         </div>
                     </AtlanBtn>
                 </div>
@@ -155,6 +164,7 @@
         ref,
         onMounted,
         nextTick,
+        toRefs,
         PropType,
         watch,
     } from 'vue'
@@ -177,36 +187,60 @@
                 type: Boolean as PropType<boolean>,
                 required: true,
             },
+            item: {
+                type: Object,
+                required: false,
+            },
+            isCreate: {
+                type: Boolean,
+                required: true,
+            },
         },
-        emits: ['update:showCollectionModal', 'onSaveQuery'],
+        emits: ['update:showCollectionModal'],
         setup(props, { emit }) {
-            const title: Ref<string> = ref('')
-            const description: Ref<string | undefined> = ref('')
+            let { isCreate, item } = toRefs(props)
+
+            const title: Ref<string> = ref(
+                isCreate.value ? '' : item?.value?.attributes.name
+            )
+            const description: Ref<string | undefined> = ref(
+                isCreate.value ? '' : item?.value?.attributes.description
+            )
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
             const refetchQueryCollection = inject(
                 'refetchQueryCollection'
             ) as Ref<Function>
-            const saveQueryLoading = ref(false)
-            const selectedEmoji = ref()
+            const selectedEmoji = ref(
+                isCreate.value ? null : item?.value?.attributes?.icon
+            )
+            const selectedEmojiType = ref(
+                isCreate.value ? null : item?.value?.attributes?.iconType
+            )
+
             const isShareable = ref(true)
             const popOverVisible = ref(false)
             const editors = ref({
-                ownerGroups: [],
-                ownerUsers: [],
+                ownerGroups: isCreate.value
+                    ? []
+                    : item?.value?.attributes?.ownerGroups,
+                ownerUsers: isCreate.value
+                    ? []
+                    : item?.value?.attributes?.ownerUsers,
             })
             const viewers = ref({
-                ownerGroups: [],
-                ownerUsers: [],
+                ownerGroups: isCreate.value
+                    ? []
+                    : item?.value?.attributes?.viewerGroups,
+                ownerUsers: isCreate.value
+                    ? []
+                    : item?.value?.attributes?.viewerUsers,
             })
+
             const closeModal = () => {
                 emit('update:showCollectionModal', false)
             }
 
-            const { createCollection } = useQueryCollection()
-
-            const createSaveQuery = () => {}
-
-            const onChangePrivate = () => {}
+            const { createCollection, updateCollection } = useQueryCollection()
 
             const handleEmojiSelect = (emoji) => {
                 selectedEmoji.value = emoji.native
@@ -224,6 +258,14 @@
             })
 
             let isCollectionSaving = ref(false)
+
+            const saveOrUpdateCollection = () => {
+                if (isCreate.value) {
+                    saveNewCollection()
+                } else {
+                    updateCollectionData()
+                }
+            }
 
             const saveNewCollection = () => {
                 if (title?.value?.length === 0) {
@@ -249,7 +291,7 @@
                         ? viewers.value.ownerGroups
                         : [],
                     icon: selectedEmoji.value,
-                    iconType: selectedEmoji.value ? 'emoji' : undefined,
+                    iconType: selectedEmojiType.value,
                 })
 
                 watch(
@@ -272,15 +314,56 @@
                 )
             }
 
+            const updateCollectionData = () => {
+                console.log('item: ', item.value)
+
+                let ownersData = isShareable.value
+                    ? {
+                          ownerUsers: editors.value.ownerUsers,
+                          ownerGroups: editors.value.ownerGroups,
+                          viewerUsers: viewers.value.ownerUsers,
+                          viewerGroups: viewers.value.ownerGroups,
+                      }
+                    : {
+                          ownerUsers: [],
+                          ownerGroups: [],
+                          viewerUsers: [],
+                          viewerGroups: [],
+                      }
+
+                const entity = {
+                    typeName: 'QueryCollection',
+                    attributes: {
+                        ...item?.value?.attributes,
+                        ...ownersData,
+                    },
+                }
+                const { data, error, isLoading } = updateCollection(entity)
+                watch(
+                    [isLoading, error],
+                    () => {
+                        console.log('collection error: ', error.value)
+                        isCollectionSaving.value = isLoading?.value
+                        if (
+                            isLoading?.value === false &&
+                            error.value === undefined
+                        ) {
+                            closeModal()
+                            refetchQueryCollection.value()
+                        }
+                    },
+                    {
+                        immediate: true,
+                    }
+                )
+            }
+
             return {
                 closeModal,
-                createSaveQuery,
-                saveQueryLoading,
                 titleBarRef,
                 title,
                 description,
                 isShareable,
-                onChangePrivate,
                 editors,
                 viewers,
                 emojiIndex,
@@ -288,8 +371,10 @@
                 popOverVisible,
                 toggleEmojiPicker,
                 selectedEmoji,
-                saveNewCollection,
                 isCollectionSaving,
+                saveOrUpdateCollection,
+                isCreate,
+                item,
             }
         },
     })

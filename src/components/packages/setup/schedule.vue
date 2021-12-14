@@ -131,7 +131,7 @@
                     Intl.DateTimeFormat().resolvedOptions().timeZone
             }
             if (!localModel.cron) {
-                localModel.cron = '0 * * * *'
+                localModel.cron = '0 0 * * *'
             }
 
             const getCronFrequency = (cronString) => {

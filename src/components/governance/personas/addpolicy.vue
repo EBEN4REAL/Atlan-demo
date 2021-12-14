@@ -169,13 +169,7 @@
             :mask="false"
             @close="handleToggleManage"
         >
-            <MetadataPolicy
-                class="px-5 bg-white"
-                :policy="policy"
-                @save="savePolicyUI"
-                @delete="deletePolicyUI"
-                @cancel="discardPolicy"
-            />
+            <ManagePermitionVue v-model:actions="policy.actions" @close="() => isShow = false"/>
         </a-drawer>
     </div>
 </template>
@@ -194,8 +188,8 @@
     import { selectedPersonaDirty } from './composables/useEditPersona'
     import { useConnectionStore } from '~/store/connection'
     import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
-    import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
+    import ManagePermitionVue from './policies/managePermition.vue'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -203,7 +197,7 @@
             AtlanBtn,
             Connector,
             AssetSelectorDrawer,
-            MetadataPolicy,
+            ManagePermitionVue
         },
         props: {
             type: {

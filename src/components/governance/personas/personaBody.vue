@@ -249,7 +249,6 @@
     import AtlanBtn from '@/UI/button.vue'
     import PolicyCard from './policies/policyCard.vue'
     import PersonaUsersGroups from './users/personaUsersGroups.vue'
-    import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './overview/personaMeta.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
@@ -279,7 +278,6 @@
         components: {
             MinimalTab,
             PolicyCard,
-            MetadataPolicy,
             DataPolicy,
             AtlanBtn,
             PersonaMeta,

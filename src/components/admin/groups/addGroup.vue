@@ -1,5 +1,5 @@
 <template>
-    <div class="py-5 drawer-container" v-auth="map.CREATE_GROUP">
+    <div class="flex flex-col py-5" v-auth="map.CREATE_GROUP">
         <div
             class="relative flex items-center justify-between px-4 pb-5 border-b"
         >
@@ -12,7 +12,7 @@
                 />
             </div>
         </div>
-        <div class="px-4 py-3 overflow-y-auto formWrapper">
+        <div class="flex flex-col px-4 py-3">
             <a-form layout="vertical" :model="group" :rules="validations">
                 <a-form-item label="Name" name="name">
                     <a-input
@@ -31,14 +31,14 @@
                     <a-textarea v-model:value="group.description" :rows="2" />
                 </a-form-item>
 
-                <div v-auth="map.LIST_USERS" class="">
+                <div v-auth="map.LIST_USERS">
                     <div class="mb-2">
                         <span class="mr-2">Members</span>
                     </div>
                     <UserList
                         user-list-header-class="min-w-full"
                         :user-list-style="{
-                            maxHeight: 'calc(100vh - 30rem)',
+                            maxHeight: 'calc(100vh - 33.5rem)',
                         }"
                         :minimal="true"
                         @updateSelectedUsers="updateUserList"
@@ -46,21 +46,9 @@
                 </div>
             </a-form>
         </div>
-        <div class="flex items-center justify-end px-4 mt-1 border-t">
-            <!-- <div class="flex items-center mt-3 gap-x-1">
-                <a-checkbox v-model:checked="isDefault" />
-                <span class="">Mark as default</span>
-                <a-tooltip
-                    :title="'New users will be automatically added to default groups'"
-                    placement="right"
-                    ><span class="ml-1">
-                        <AtlanIcon
-                            icon="Info"
-                            class="text-gray-500 pushtop"
-                        ></AtlanIcon>
-                    </span>
-                </a-tooltip>
-            </div> -->
+        <div
+            class="absolute bottom-0 flex justify-end w-full px-4 mt-1 mb-3 border-t"
+        >
             <AtlanButton
                 class="mt-3"
                 size="sm"

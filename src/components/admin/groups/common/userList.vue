@@ -63,18 +63,41 @@
                         </template>
                     </div>
                 </a-checkbox-group>
-                <div v-if="isLoading" class="flex justify-center mt-3">
+                <div
+                    v-if="isLoading && !userList.length"
+                    class="flex justify-center mt-3"
+                >
                     <AtlanIcon icon="Loader" class="h-10 animate-spin" />
                 </div>
             </div>
             <div v-if="showLoadMore" class="flex justify-center w-full mt-3">
-                <AtlanButton
+                <!-- <AtlanButton
                     color="secondary"
                     padding="compact"
                     size="sm"
                     @click="handleLoadMore"
                     >load more
-                </AtlanButton>
+                </AtlanButton> -->
+                <button
+                    :disabled="isLoading"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                    :class="isLoading ? 'px-2 w-9' : ''"
+                    @click="handleLoadMore"
+                >
+                    <template v-if="!isLoading">
+                        <p
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                        >
+                            Load more
+                        </p>
+                        <AtlanIcon icon="ArrowDown" />
+                    </template>
+                    <AtlanIcon
+                        icon="Loader"
+                        v-else
+                        class="w-auto h-10 animate-spin"
+                    ></AtlanIcon>
+                </button>
             </div>
         </template>
     </div>
@@ -141,7 +164,7 @@
                 getUserList,
                 isLoading,
                 error,
-            } = useUsers(userListAPIParams, 'LIST_ALL_USERS')
+            } = useUsers(userListAPIParams, true)
 
             const handleSearch = useDebounceFn(() => {
                 userListAPIParams.filter = {
@@ -172,7 +195,6 @@
                 userListAPIParams.offset = 0
                 getUserList()
             }, 200)
-
             const handleLoadMore = () => {
                 userListAPIParams.offset += userListAPIParams.limit
                 getUserList()

@@ -11,7 +11,7 @@
             />
             <div class="ml-2">
                 <div class="text-gray">
-                    <div class="mr-2 font-bold">
+                    <div class="mr-2" :class="{ 'font-bold': !minimal }">
                         {{ user.name }}
                     </div>
                     <div v-if="!minimal" class="mr-2 text-gray">

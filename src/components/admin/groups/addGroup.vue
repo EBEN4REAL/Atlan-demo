@@ -1,7 +1,7 @@
 <template>
     <div class="py-5 drawer-container" v-auth="map.CREATE_GROUP">
         <div
-            class="relative flex items-center justify-between px-4 pb-5 border-b "
+            class="relative flex items-center justify-between px-4 pb-5 border-b"
         >
             <div class="text-lg font-bold">Create Group</div>
             <div class="top-0 p-1 rounded cursor-pointer right-2">
@@ -33,7 +33,7 @@
 
                 <div v-auth="map.LIST_USERS" class="">
                     <div class="mb-2">
-                        <span class="mr-2">Users</span>
+                        <span class="mr-2">Members</span>
                     </div>
                     <UserList
                         user-list-header-class="min-w-full"
@@ -155,8 +155,6 @@
                         attributes: {
                             description: [group.description],
                             alias: [group.name],
-                           
-                           
                         },
                     },
                     users: userIds.value,
@@ -204,7 +202,7 @@
     })
 </script>
 
-<style lang="less" scoped>
+<style lang="less" module>
     .formWrapper {
         height: calc(100vh - 8rem);
         :global(.ant-form-item-label) {
@@ -212,6 +210,18 @@
         }
         :global(.ant-form-item-required) {
             @apply flex flex-row-reverse;
+        }
+
+        // Aesterik in right side
+        :global(.ant-form-item-label
+                > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
+            display: inline-block;
+            margin-left: 4px;
+            color: #ff4d4f;
+            font-size: 14px;
+            font-family: SimSun, sans-serif;
+            line-height: 1;
+            content: '*';
         }
     }
 </style>

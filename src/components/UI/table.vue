@@ -12,7 +12,30 @@
             >
                 <slot name="header" />
 
-                <tbody id="contentArea" class="clusterize-content"></tbody>
+                <tbody id="contentArea" class="clusterize-content">
+                    <tr v-for="(row, index) in dataList" :key="index">
+                        <td
+                            :class="
+                                rowClassNames !== ''
+                                    ? rowClassNames
+                                    : 'truncate bg-gray-100 border border-gray-light'
+                            "
+                        >
+                            {{ index + 1 }}
+                        </td>
+
+                        <td
+                            v-for="(rowData, key) in row"
+                            :key="key"
+                            class="bg-white border border-gray-light"
+                        >
+                            <Tooltip
+                                :tooltip-text="`${rowData}`"
+                                classes="cursor-pointer"
+                            />
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -21,10 +44,11 @@
 <script lang="ts">
     import { defineComponent, PropType, toRefs, watch, ref } from 'vue'
     import Clusterize from 'clusterize.js'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'AtlanTable',
-        components: {},
+        components: { Tooltip },
         props: {
             dataList: {
                 type: Array as PropType<any[]>,
@@ -42,31 +66,13 @@
             },
         },
         setup(props) {
-            const { showLoading, dataList, rowClassNames } = toRefs(props)
-            let tableRef = ref(null)
-            const defaultRowClassNames =
-                'truncate bg-gray-100 border border-gray-light'
+            const { dataList } = toRefs(props)
+            const tableRef = ref(null)
 
             watch([tableRef, dataList], () => {
                 // if (isQueryRunning === 'success') {
                 if (tableRef.value) {
-                    const data_here = dataList.value.map((row, index) => {
-                        let rows = `<td class="${
-                            rowClassNames.value !== ''
-                                ? rowClassNames.value
-                                : defaultRowClassNames
-                        }">${index + 1}</td>`
-                        for (const [key, value] of Object.entries(row)) {
-                            rows += `<td class="truncate bg-white border border-gray-light">${
-                                value == null ? '-' : value
-                            }</td>`
-                        }
-                        const res = '<tr>' + rows + '</tr>'
-                        return res
-                    })
-
                     new Clusterize({
-                        rows: data_here,
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
                     })
@@ -85,12 +91,7 @@
         border-radius: 10px !important;
         td,
         th {
-            max-width: 250px !important;
-            min-width: 150px !important;
             width: 200px;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
             text-align: left !important;
             height: 32px !important;
             padding: 0px 16px !important;
@@ -111,8 +112,8 @@
         }
         td:first-child {
             max-width: 100px !important;
-            min-width: 40px !important;
-            width: 40px;
+            min-width: 30px !important;
+            width: 30px;
             left: 0;
             position: sticky;
             z-index: 4;
@@ -122,8 +123,8 @@
 
         th:first-child {
             max-width: 100px !important;
-            min-width: 40px !important;
-            width: 40px;
+            min-width: 30px !important;
+            width: 30px;
             left: 0;
             z-index: 10;
             @apply text-gray-500;

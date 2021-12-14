@@ -4,7 +4,7 @@
             <div>
                 <AtlanIcon
                     icon="ChevronDown"
-                    class="ml-3 text-gray-500 transition-transform duration-300 transform"
+                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
             </div>

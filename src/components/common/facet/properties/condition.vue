@@ -35,9 +35,10 @@
                 class="w-full"
                 v-model="localCondition.value"
                 :data-type="
-                    attribute.options?.customType ||
-                    attribute.subTypeName ||
-                    attribute.options.primitiveType
+                    attribute?.options?.customType ||
+                    attribute?.subTypeName ||
+                    attribute?.typeName ||
+                    attribute?.options?.primitiveType
                 "
                 :multiple="
                     attribute?.options?.multiValueSelect === 'true' && false

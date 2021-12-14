@@ -39,7 +39,7 @@
         :loadedKeys="loadedKeys"
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
-        v-model:checked-keys="checkedKeys"
+        :checked-keys="checkedKeys"
         :class="$style.glossaryTree"
         :checkable="checkable"
         :checkStrictly="false"
@@ -115,17 +115,17 @@
                 required: false,
                 default: false,
             },
-            checkedKeys: {
+            checkedGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
             },
         },
-        emits: ['select', 'check', 'update:checkedKeys'],
+        emits: ['select', 'check', 'update:checkedGuids'],
         setup(props, { emit }) {
             const router = useRouter()
 
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
-            const { checkedKeys } = useVModels(props, emit)
+            const { checkedGuids } = useVModels(props, emit)
 
             const glossaryStore = useGlossaryStore()
             const parentGlossaryGuid = computed(() => {
@@ -151,11 +151,13 @@
                 isReady,
                 collapseAll,
                 updateNode,
+                checkedKeys
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
                 checkable: props.checkable,
+                checkedGuids: checkedGuids.value
             })
 
             const addGlossary = (asset) => {
@@ -184,11 +186,18 @@
             const reInitTree = () => {
                 initTreeData(defaultGlossary.value)
             }
-            const onCheck = (e, { checkedNodes }) => {
+            const onCheck = (e, { checkedNodes, checked, node }) => {
                 if (checkedKeys) {
-                    checkedKeys.value = checkedNodes.map((term) => term.guid)
+                    if(checked) {
+                        checkedKeys.value.push(node.key)
+                        checkedGuids?.value?.push(node.guid)
+                    } else {
+                        checkedKeys.value = checkedKeys.value.filter((key) => key !== node.key)
+                        checkedGuids.value = checkedGuids?.value?.filter((guid) => guid !== node.guid)
+                    }
+                    // checkedKeys.value = checkedNodes.map((node) => node.key)
                 }
-                emit('check', checkedNodes)
+                emit('check', checkedNodes, { checkedKeys: e, checked})
             }
             const updateTreeNode = (asset) => {
                 updateNode(asset)
@@ -196,9 +205,9 @@
             onMounted(() => {
                 reInitTree()
             })
-            watch(defaultGlossary, () => {
-                reInitTree()
-            })
+            // watch(defaultGlossary, () => {
+            //     reInitTree()
+            // })
 
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)

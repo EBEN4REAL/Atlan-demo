@@ -65,6 +65,6 @@ export const map = {
     [WORKFLOW_TEMPLATE_INDEX]: () =>
         getAPIPath(
             BASE_PATH,
-            '/es-atlas/tenants/default/atlan_argo_cluster_workflow_templates/_search'
+            `/es-atlas/tenants/default/atlan_argo_cluster_workflow_templates/_search`
         ),
 }

@@ -57,6 +57,7 @@
         computed,
         ref,
         toRefs,
+        watchEffect,
     } from 'vue'
     import {
         and,
@@ -96,13 +97,18 @@
                 required: false,
                 default: false,
             },
+            inProfile: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, inProfile } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -133,15 +139,14 @@
                     activeElement.value?.attributes?.contenteditable?.value !==
                         'true'
             )
-            const { c, Escape, v } = useMagicKeys()
-            whenever(and(c, notUsingInput), () => {
+            const { c, Escape, v, enter, shift } = useMagicKeys()
+            whenever(and(c, notUsingInput, !inProfile.value), () => {
                 if (!isEdit.value) {
                     isEdit.value = true
                 }
             })
 
             whenever(and(v, notUsingInput), () => {
-                console.log('dd')
                 if (isEdit.value) {
                     localValue.value.certificateStatus = 'VERIFIED'
                     handleChange()
@@ -150,6 +155,14 @@
 
             whenever(and(Escape), () => {
                 if (isEdit.value) {
+                    handleChange()
+                    isEdit.value = false
+                }
+            })
+
+            watchEffect(() => {
+                if (enter.value && !shift.value && isEdit.value) {
+                    localValue.value.certificateUpdatedBy = username.value
                     handleChange()
                     isEdit.value = false
                 }

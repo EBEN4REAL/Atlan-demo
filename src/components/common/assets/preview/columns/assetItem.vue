@@ -65,6 +65,7 @@
                     ref="descriptionRef"
                     v-model="localDescription"
                     :selected-asset="item"
+                    :read-only="isScrubbed(item)"
                     @change="handleChangeDescription"
                 />
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">

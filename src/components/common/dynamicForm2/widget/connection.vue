@@ -82,18 +82,18 @@
 
             const connector = computed(() => {
                 return workflowTemplate.value?.metadata.labels[
-                    'com.atlan.orchestration/source'
+                    'orchestration.atlan.com/source'
                 ]
             })
             const connectorImage = computed(() => {
                 return workflowTemplate.value?.metadata.annotations[
-                    'com.atlan.orchestration/icon'
+                    'orchestration.atlan.com/icon'
                 ]
             })
 
             const sourceCategory = computed(() => {
                 return workflowTemplate.value?.metadata.labels[
-                    'com.atlan.orchestration/sourceCategory'
+                    'orchestration.atlan.com/sourceCategory'
                 ]
             })
 

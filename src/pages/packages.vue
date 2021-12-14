@@ -1,14 +1,13 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
         <div class="flex flex-1 h-full">
-            <router-view v-if="isItem"></router-view>
+            <router-view v-if="isItem" @select="handleSelect"></router-view>
 
             <keep-alive>
-                <PackageDiscovery
-                    :style="isItem ? 'display: none !important;' : ''"
-                    ref="assetdiscovery"
+                <PackageDiscoveryList
+                    :style="displayStyle"
                     @select="handleSelect"
-                ></PackageDiscovery>
+                ></PackageDiscoveryList>
             </keep-alive>
         </div>
 
@@ -26,19 +25,22 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
+    import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
 
-    import PackageDiscovery from '@/packages/index.vue'
+    import PackageDiscoveryList from '@/packages/index.vue'
     import PackagePreview from '@/packages/preview/index.vue'
-    import { useMagicKeys } from '@vueuse/core'
 
     export default defineComponent({
-        name: 'WorkflowSetupPage',
+        name: 'PackageSetupPage',
         components: {
-            PackageDiscovery,
+            PackageDiscoveryList,
             PackagePreview,
         },
         setup(props, { emit }) {
+            useHead({
+                title: 'Packages',
+            })
             const selectedPackage = ref(null)
             const route = useRoute()
             const isItem = computed(() => !!route.params.id)
@@ -67,12 +69,22 @@
                 })
             }
 
+            const displayStyle = computed(() => {
+                if (isItem.value) {
+                    return {
+                        display: 'none !important',
+                    }
+                }
+                return {}
+            })
+
             return {
                 handleSetup,
                 handleSandbox,
                 selectedPackage,
                 isItem,
                 handleSelect,
+                displayStyle,
             }
         },
     })

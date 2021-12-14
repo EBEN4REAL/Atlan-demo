@@ -192,6 +192,7 @@
                 v-model="localDescription"
                 class="mx-4"
                 :selected-asset="selectedAsset"
+                :in-profile="inProfile"
                 :read-only="readOnly"
                 @change="handleChangeDescription"
             />
@@ -216,6 +217,7 @@
                 class="px-5"
                 :selected-asset="selectedAsset"
                 :read-only="readOnly"
+                :in-profile="inProfile"
                 @change="handleOwnersChange"
             />
         </div>
@@ -295,6 +297,7 @@
                 v-model="localCertificate"
                 class="px-5"
                 :selected-asset="selectedAsset"
+                :in-profile="inProfile"
                 :read-only="readOnly"
                 @change="handleChangeCertificate"
             />
@@ -365,6 +368,11 @@
                 default: false,
             },
             readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            inProfile: {
                 type: Boolean,
                 required: false,
                 default: false,

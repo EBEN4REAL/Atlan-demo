@@ -2,22 +2,22 @@
 <template>
     <div class="flex flex-col">
         <div
-            class="flex items-start flex-1 px-3 py-1 transition-all duration-300 "
+            class="flex items-start flex-1 px-3 py-1 transition-all duration-300"
         >
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden gap-y-1"
             >
                 <div
-                    class="flex items-center justify-between mb-0 overflow-hidden "
+                    class="flex items-center justify-between mb-0 overflow-hidden"
                 >
-                    <div class="flex">
+                    <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 mr-1 mt-0.5 text-gray-500"
                         />
                         <span
+                            class="flex-shrink overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                             @click="showColumnDrawer = true"
-                            class="flex-shrink mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                         >
                             {{ title(item) }}
                         </span>
@@ -26,8 +26,16 @@
                             :status="certificateStatus(item)"
                             :username="certificateUpdatedBy(item)"
                             :timestamp="certificateUpdatedAt(item)"
-                            class="mb-0.5"
+                            class="mb-0.5 ml-1"
                         ></CertificateBadge>
+                        <a-tooltip placement="right"
+                            ><template #title>Limited Access</template>
+                            <AtlanIcon
+                                v-if="isScrubbed(item)"
+                                icon="Lock"
+                                class="h-3.5 ml-1 mb-0.5"
+                            ></AtlanIcon
+                        ></a-tooltip>
                     </div>
                     <div class="flex gap-x-2">
                         <div
@@ -56,8 +64,9 @@
                 <Description
                     ref="descriptionRef"
                     v-model="localDescription"
-                    @change="handleChangeDescription"
                     :selected-asset="item"
+                    :read-only="isScrubbed(item)"
+                    @change="handleChangeDescription"
                 />
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">
                     <template
@@ -79,7 +88,7 @@
         </div>
         <AssetDrawer
             :data="item"
-            :showDrawer="showColumnDrawer"
+            :show-drawer="showColumnDrawer"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
         />
@@ -136,6 +145,7 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
+                isScrubbed,
             } = useAssetInfo()
 
             const { item } = toRefs(props)
@@ -206,6 +216,7 @@
                 handleChangeDescription,
                 descriptionRef,
                 isPropagated,
+                isScrubbed,
                 list,
             }
         },

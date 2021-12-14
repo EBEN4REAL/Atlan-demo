@@ -1,4 +1,3 @@
-<!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div class="flex items-center w-full px-8 pt-3">
         <a-button class="px-1" @click="back">
@@ -20,30 +19,39 @@
                         />
                     </div>
                     <div
-                        class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer  text-mdoverflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate cursor-pointer text-mdoverflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </div>
 
                     <CertificateBadge
-                        v-if="certificateStatus(item) && !isScrubbed(item)"
+                        v-if="certificateStatus(item)"
                         :status="certificateStatus(item)"
                         :username="certificateUpdatedBy(item)"
                         :timestamp="certificateUpdatedAt(item)"
-                        class="mb-0.5"
+                        class="mb-1 ml-1"
                     ></CertificateBadge>
                     <a-tooltip placement="right"
                         ><template #title>Limited Access</template>
                         <AtlanIcon
                             v-if="isScrubbed(item)"
                             icon="Lock"
-                            class="h-4 mb-1"
+                            class="h-4 mb-1 ml-1"
                         ></AtlanIcon
                     ></a-tooltip>
                 </div>
                 <div class="flex items-center mt-1 gap-x-3">
                     <div class="flex items-center">
-                        <a-tooltip placement="left">
+                        <a-tooltip
+                            v-if="
+                                ![
+                                    'AtlasGlossary',
+                                    'AtlasGlossaryTerm',
+                                    'AtlasGlossaryCategory',
+                                ].includes(item?.typeName)
+                            "
+                            placement="left"
+                        >
                             <template #title>
                                 <span>{{
                                     `${connectorName(item)}/${connectionName(
@@ -58,9 +66,22 @@
                         </a-tooltip>
 
                         <div
-                            class="text-sm tracking-wider text-gray-500 uppercase "
+                            v-if="
+                                ![
+                                    'AtlasGlossary',
+                                    'AtlasGlossaryTerm',
+                                    'AtlasGlossaryCategory',
+                                ].includes(item?.typeName)
+                            "
+                            class="text-sm tracking-wider text-gray-500 uppercase"
                         >
                             {{ item.typeName }}
+                        </div>
+                        <div
+                            v-else
+                            class="text-sm tracking-wider text-gray-500 uppercase"
+                        >
+                            {{ assetTypeLabel[item?.typeName] }}
                         </div>
                     </div>
 
@@ -225,9 +246,9 @@
                     title="Query"
                 >
                     <a-button
-                        @click="goToInsights(item)"
                         block
                         class="flex items-center justify-center"
+                        @click="goToInsights(item)"
                     >
                         <AtlanIcon
                             icon="Query"
@@ -239,7 +260,7 @@
                         <AtlanIcon icon="Share" class="mb-0.5" />
                     </a-button>
                 </ShareMenu>
-                <AssetMenu :asset="item" :readOnly="isScrubbed(item)">
+                <AssetMenu :asset="item" :read-only="isScrubbed(item)">
                     <a-button block class="flex items-center justify-center">
                         <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
                     </a-button>
@@ -250,14 +271,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, PropType, watch } from 'vue'
-    import { useMagicKeys } from '@vueuse/core'
+    import { defineComponent, PropType, computed } from 'vue'
+    import { useMagicKeys, useActiveElement, whenever, and } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AssetMenu from './assetMenu.vue'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel.ts'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -268,60 +291,14 @@
             AssetMenu,
         },
         props: {
-            score: {
-                type: Number,
+            item: {
+                type: Object as PropType<assetInterface>,
                 required: false,
                 default() {
-                    return 0
+                    return {}
                 },
-            },
-            projection: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
-            },
-            isSelected: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            isChecked: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            cssClasses: {
-                type: String,
-                required: false,
-                default: () => '',
-            },
-            showAssetTypeIcon: {
-                type: Boolean,
-                required: false,
-                default: () => true,
-            },
-            // If the list items are selectable or not
-            showCheckBox: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            // This is different than showCheckBox prop. List items are selectable but the check box should be visible only when atleast one item is selected/ on hover
-            bulkSelectMode: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            // for unlinking asset in glossary
-            showThreeDotMenu: {
-                type: Boolean,
-                required: false,
-                default: false,
             },
         },
-        emits: ['listItem:check', 'unlinkAsset'],
         setup() {
             const {
                 title,
@@ -350,8 +327,6 @@
                 isScrubbed,
             } = useAssetInfo()
 
-            const item = inject('selectedAsset')
-
             const router = useRouter()
 
             const goToInsights = (asset) => {
@@ -360,9 +335,14 @@
 
             const { Escape /* keys you want to monitor */ } = useMagicKeys()
 
-            watch(Escape, (v) => {
-                if (v) back()
-            })
+            const activeElement = useActiveElement()
+            const notUsingInput = computed(
+                () =>
+                    activeElement.value?.tagName !== 'INPUT' &&
+                    activeElement.value?.tagName !== 'TEXTAREA' &&
+                    activeElement.value?.attributes?.contenteditable?.value !==
+                        'true'
+            )
 
             const back = () => {
                 if (window.history.length <= 1) {
@@ -372,9 +352,12 @@
                 router.back()
             }
 
+            whenever(and(Escape, notUsingInput), (v) => {
+                if (v) back()
+            })
+
             return {
                 title,
-                item,
                 getConnectorImage,
                 assetType,
                 dataType,
@@ -399,6 +382,7 @@
                 back,
                 goToInsights,
                 isScrubbed,
+                assetTypeLabel,
             }
         },
     })

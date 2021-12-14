@@ -1,5 +1,5 @@
 <template>
-    <h2 class="mb-3 text-xl font-bold">Relevant for you</h2>
+    <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
     <a-tabs v-model:activeKey="relevantTab" @change="selectRelevantTab($event)">
         <a-tab-pane v-for="t in relevantTabList" :key="t.id" :tab="t.name"
             ><component
@@ -25,6 +25,9 @@
             AssetList: defineAsyncComponent(
                 () => import('~/components/home/assetList.vue')
             ),
+            recentlyViewedAssets: defineAsyncComponent(
+                () => import('~/components/home/recentlyViewedAssets.vue')
+            ),
         },
         setup() {
             const relevantTab = ref(1)
@@ -42,13 +45,21 @@
                 }, */
                 {
                     id: 1,
-                    name: 'Your assets',
-                    component: 'AssetList',
+                    name: 'Recently visited',
+                    component: 'recentlyViewedAssets',
                     typeName: ['Table'],
                     icon: 'NoRelevantAsset',
                     emptyText: 'All your assets will appear here.',
                 },
                 {
+                    id: 2,
+                    name: 'My Assets',
+                    component: 'AssetList',
+                    typeName: ['Table'],
+                    icon: 'NoRelevantAsset',
+                    emptyText: 'All your assets will appear here.',
+                },
+                /*{
                     id: 2,
                     name: 'Your terms',
                     component: 'AssetList',
@@ -64,7 +75,7 @@
                     icon: 'NoRelevantAsset',
                     emptyText: 'All your saved queries will appear here.',
                 },
-                /* {
+                {
                     id: 4,
                     name: 'Subscribed',
                     component: 'Subscribed',

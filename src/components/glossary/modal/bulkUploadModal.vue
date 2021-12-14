@@ -10,23 +10,24 @@
         <!-- modal title -->
         <template #title>
             <span class="text-base font-bold text-gray-700"
-                >Bulk Upload Terms from CSV</span
+                >Bulk Upload Terms</span
             >
         </template>
         <!-- Modal body -->
 
-        <div class="flex px-4 space-x-32">
+        <div class="flex flex-col items-center px-4 mx-4 bg-gray-100">
+            <atlan-icon icon="BulkUpload" class="h-40" />
             <FormGen :config="formConfig" @vchange="handleFormChange" />
-            <span class="ml-12 text-gray-500"
-                >Click the button on the left to upload a valid CSV file
-                containing data.</span
-            >
         </div>
         <!-- Modal footer -->
         <template #footer>
-            <div class="flex items-center">
-                <a-button class="px-2" @click="handleDownload"
-                    >Download sample CSV template</a-button
+            <div class="flex items-center justify-center py-3">
+                <span
+                    class="px-2 border-0 shadow-none outline-none cursor-pointer hover:text-primary"
+                    @click="handleDownload"
+                >
+                    <atlan-icon icon="Download" class="mr-1" />
+                    Click here to download Sample CSV template</span
                 >
                 <!-- TODO: Uncomment when doc for bulk is ready -->
                 <!-- <span class="text-primary ml-7">Learn more</span> -->
@@ -41,6 +42,8 @@
     import useBulkUpload from `@/glossary/modal/useBulkUpload.ts`
     import { isWorkflowRunning } from `@/glossary/modal/useBulkUpload.ts`
     import { message } from 'ant-design-vue'
+    import CSVData from '~/assets/samples/terms-template.json'
+    import { downloadFile } from '~/utils/library/download'
 
     export default defineComponent({
         components: { FormGen },
@@ -69,12 +72,15 @@
                     id: 'test',
                     label: '',
                     isVisible: true,
+                    accept:'.csv',
                     requestConfig: {
                         url: getBasePath(),
                         formDataFormat: {
                             name: 'name',
                             file: '{{file}}',
-                            prefix: 'prefix',
+                            prefix: 'glossary_bulk_upload',
+                            force:false,
+                            excludePrefix:false
                         },
                     },
                 },
@@ -102,6 +108,7 @@
                     const { startUpload } = useBulkUpload({
                         guid: props?.entity?.guid,
                         fileS3Key,
+                        glossaryName:props?.entity?.displayText
                     })
                     startUpload()
                     visible.value = false // close modal on hit submit
@@ -109,15 +116,20 @@
             }
 
             // handles download of sample file
-            const handleDownload = () => {
-                const link = window.document.createElement('a')
-                link.setAttribute(
-                    'href',
-                    '/src/assets/samples/terms-template.csv'
-                )
-                link.setAttribute('download', 'sample.csv')
-                link.click()
+            const handleDownload=()=>{
+                const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+                const header = Object.keys(CSVData[0])
+                const csv = [
+                      header.join(','), // header row first
+                  ...CSVData.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+                ].join('\r\n')
+
+                console.log(csv)
+                const fileName='Sample'
+
+                downloadFile(csv, fileName)
             }
+
             return {
                 handleCancel,
                 showModal,

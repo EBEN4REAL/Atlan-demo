@@ -4,11 +4,34 @@ import {
     ArchivedRunsResponse,
     LiveRunsResponse,
 } from '~/types/workflow/runs.interface'
+import { useOptions } from '~/services/api/common'
 
 export const URL = {
     WorkflowList: '/workflows/default',
     ArchiveList: '/archived-workflows',
 }
+
+const worfklowPackageIndex = (pathVariables?, body?, options?: useOptions) =>
+    useAPI(
+        map.WORKFLOW_TEMPLATE_INDEX,
+        'POST',
+        {
+            pathVariables,
+            body,
+        },
+        options || {}
+    )
+
+const worfklowRunIndex = (pathVariables?, body?, options?: useOptions) =>
+    useAPI(
+        map.WORKFLOW_RUN_INDEX,
+        'POST',
+        {
+            pathVariables,
+            body,
+        },
+        options || {}
+    )
 
 // const List = (params?: any, options?: AxiosRequestConfig) =>
 //     getAxiosClient().get(getAPIPath(serviceAlias, URL.WorkflowList), {
@@ -267,4 +290,6 @@ export const Workflows = {
     getArtifacts,
     createWorkflowPackage,
     getWorkflowPackagesConfigMapByName,
+    worfklowPackageIndex,
+    worfklowRunIndex,
 }

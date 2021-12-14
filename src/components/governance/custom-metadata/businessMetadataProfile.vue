@@ -62,7 +62,7 @@
                     <a-button
                         class=""
                         type="primary"
-                        @click="addPropertyDrawer.open(undefinded, false)"
+                        @click="addPropertyDrawer.open(null, false)"
                     >
                         Add property
                     </a-button>

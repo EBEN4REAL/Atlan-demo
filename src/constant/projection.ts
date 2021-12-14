@@ -116,6 +116,7 @@ export const AssetRelationAttributes = [
     'dataflow',
     'report',
     'page',
+    '__state',
     '__timestamp',
     '__modificationTimestamp',
     '__modifiedBy',

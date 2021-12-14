@@ -12,8 +12,32 @@
             @cancel="$emit('closeModal')"
         >
             <template #title>
-                <div class="flex items-center px-4">
-                    <atlan-icon icon="Search" class="w-auto h-5 mr-1.5" />
+                <div class="flex items-center px-1">
+                    <svg
+                        v-if="isLoading"
+                        class="w-5 h-5 mr-1.5 text-primary animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
+                    <atlan-icon
+                        v-else
+                        icon="Search"
+                        class="w-auto h-5 mr-1.5"
+                    />
                     <!-- TODO: Uncomment when bringing category filter in  -->
                     <!-- <AssetCategoryFilter
                         v-if="assetCategoryFilter.length"
@@ -46,21 +70,23 @@
                     <a-input
                         ref="inputBox"
                         v-model:value="queryText"
-                        class="pl-1 pr-4 text-base text-gray-500 border-0 shadow-none outline-none "
+                        class="pl-1 pr-4 text-base text-gray-500 border-0 shadow-none outline-none focus:border-0 force-hide-focus-outline"
                         :class="$style.modalStyles"
                         :placeholder="dynamicSearchPlaceholder"
                         @change="handleSearchChange"
                     >
-                        <template v-if="queryText.length" #addonAfter>
+                        <template #addonAfter>
                             <div
-                                class="flex items-center space-x-4 text-gray-500 "
+                                class="flex items-center space-x-4 text-gray-500"
                             >
-                                <span
-                                    @click="queryText = ''"
-                                    class="text-xs text-gray-500 cursor-pointer"
-                                    >CLEAR</span
-                                >
-                                <span class="mb-1">|</span>
+                                <div v-if="queryText.length">
+                                    <span
+                                        @click="queryText = ''"
+                                        class="text-xs text-gray-500 cursor-pointer"
+                                        >CLEAR</span
+                                    >
+                                    <span class="mb-1">|</span>
+                                </div>
                             </div>
                         </template>
                     </a-input>
@@ -71,9 +97,18 @@
                     />
                 </div>
             </template>
+            <div class="w-full px-4">
+                <AggregationTabs
+                    v-model="postFacets.typeName"
+                    class="mt-3"
+                    :list="assetTypeAggregationList"
+                    @change="handleAssetTypeChange"
+                >
+                </AggregationTabs>
+            </div>
             <!-- body starts here -->
             <div v-if="!assetCategoryFilter.length" class="flex flex-col">
-                <span class="px-4 pt-4 pb-2 text-xs text-gray-500"
+                <span class="px-4 pb-2 text-xs text-gray-500"
                     >I’m trying to find...</span
                 >
                 <!-- TODO: Uncomment when bringing category filter in  -->
@@ -95,7 +130,7 @@
             <div class="flex flex-col pt-2 overflow-y-auto max-h-80">
                 <div
                     v-if="!list?.length && queryText.length"
-                    class="flex flex-col items-center justify-center pt-12 pb-20 "
+                    class="flex flex-col items-center justify-center pt-12 pb-20"
                 >
                     <atlan-icon icon="NoResultsFound" class="w-auto h-40" />
                     <span class="flex items-center">
@@ -133,13 +168,14 @@
             <!-- body ends here  -->
             <!-- footer starts here -->
             <template #footer>
-                <div class="flex items-center px-4 py-2 text-xs bg-gray-100">
+                <div></div>
+                <!-- <div class="flex items-center px-4 py-2 text-xs bg-gray-100">
                     <span>
                         💡 Protip: Add
                         <span class="text-primary">description:</span>
                         to search for just within description
                     </span>
-                </div>
+                </div> -->
             </template>
         </a-modal>
     </div>
@@ -163,13 +199,14 @@
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import AssetCard from '@/common/commandk/assetCard.vue'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     // import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'
 
     export default defineComponent({
         name: 'CommandK',
-        components: { AssetCard, GtcCard },
+        components: { AssetCard, GtcCard, AggregationTabs },
         props: {
             isCmndKVisible: {
                 type: Boolean,
@@ -183,6 +220,7 @@
             // command k behaviour
             const { isCmndKVisible } = toRefs(props)
             const isVisible = computed(() => isCmndKVisible.value)
+            const isLoading = ref(false)
 
             // asset listing
             const queryText = ref('')
@@ -190,9 +228,11 @@
             const offset = ref(0)
             const facets = ref({})
             const inputBox: Ref<null | HTMLInputElement> = ref(null)
-            const dependentKey: Ref<undefined | String> = ref(undefined) // 'DEFAULT_CMD_KEY'
+            const dependentKey: Ref<undefined | String> = ref('DEFAULT_CMD_KEY') // 'DEFAULT_CMD_KEY'
             const aggregations = ref(['typeName'])
-            const postFacets = ref({})
+            const postFacets = ref({
+                typeName: '__all',
+            })
 
             const defaultAttributes = ref([
                 ...InternalAttributes,
@@ -206,24 +246,26 @@
             )
 
             const assetCategoryFilter = ref([])
-            const { list, quickChange } = useDiscoverList({
-                isCache: true,
-                dependentKey,
-                queryText,
-                facets,
-                postFacets,
-                aggregations,
-                limit,
-                offset,
-                attributes: defaultAttributes,
-                relationAttributes,
-            })
+            const { list, assetTypeAggregationList, quickChange } =
+                useDiscoverList({
+                    isCache: true,
+                    dependentKey,
+                    queryText,
+                    facets,
+                    postFacets,
+                    aggregations,
+                    limit,
+                    offset,
+                    attributes: defaultAttributes,
+                    relationAttributes,
+                })
 
             const handleSearchChange = useDebounceFn(() => {
+                isLoading.value = true
                 offset.value = 0
                 quickChange()
-                handleFocusOnInput()
-            }, 150)
+                // handleFocusOnInput()
+            }, 750)
 
             // TODO: Uncomment when bringing category filters
             // function handleCategoryChange() {
@@ -247,6 +289,23 @@
                     dependentKey.value = 'DEFAULT_CMD_KEY'
                 }
             })
+
+            // TODO This is a manual isLoading hack, not sure why one from composable not working
+            watch(
+                list,
+                () => {
+                    isLoading.value = false
+                },
+                { deep: true }
+            )
+
+            const handleAssetTypeChange = () => {
+                isLoading.value = true
+                offset.value = 0
+                quickChange()
+                // discoveryStore.setActivePostFacet(postFacets.value)
+            }
+
             return {
                 isVisible,
                 list,
@@ -257,6 +316,10 @@
                 inputBox,
                 assetCategoryList,
                 facets,
+                isLoading,
+                assetTypeAggregationList,
+                handleAssetTypeChange,
+                postFacets,
             }
         },
     })
@@ -289,6 +352,18 @@
     .titleInput {
         :global(.ant-input::-webkit-input-placeholder) {
             @apply font-bold text-gray-500 !important;
+        }
+    }
+</style>
+
+<style lang="less">
+    .force-hide-focus-outline {
+        border-radius: 0px;
+        &:focus {
+            border: none !important;
+        }
+        .ant-input:focus {
+            border: none !important;
         }
     }
 </style>

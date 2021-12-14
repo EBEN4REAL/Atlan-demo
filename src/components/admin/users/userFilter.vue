@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, watch } from 'vue'
     import { userStatusOptions } from '~/constant/users'
 
     export default defineComponent({
@@ -54,6 +54,12 @@
                 emit('update:modelValue', valueToUpdate)
                 emit('change', valueToUpdate)
             }
+            watch(
+                () => props.modelValue,
+                () => {
+                    if (!props.modelValue?.length) statusFilter.value = []
+                }
+            )
 
             return {
                 userStatusOptions,

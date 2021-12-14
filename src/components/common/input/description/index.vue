@@ -1,12 +1,15 @@
 <template>
     <div
-        class="flex flex-col px-1 rounded hover:bg-primary-light"
-        :class="isEdit ? 'bg-primary-light' : ''"
+        class="flex flex-col px-1 rounded"
+        :class="{
+            'bg-primary-light': isEdit,
+            'hover:bg-primary-light': !readOnly,
+        }"
     >
         <div
             class="text-sm text-gray-700"
-            @click="handleEdit"
             :class="$style.editable"
+            @click="handleEdit"
         >
             <span v-if="!isEdit && description(selectedAsset)">{{
                 description(selectedAsset)
@@ -17,12 +20,12 @@
                 >No description available</span
             >
             <a-textarea
-                ref="descriptionRef"
-                tabindex="0"
-                v-model:value="localValue"
                 v-else
-                @blur="handleBlur"
+                ref="descriptionRef"
+                v-model:value="localValue"
+                tabindex="0"
                 :rows="4"
+                @blur="handleBlur"
             ></a-textarea>
         </div>
     </div>
@@ -67,11 +70,16 @@
                 required: false,
                 default: () => {},
             },
+            inProfile: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, selectedAsset } = toRefs(props)
+            const { readOnly, selectedAsset, inProfile } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
@@ -109,8 +117,7 @@
 
             const { d, enter, shift } = useMagicKeys()
 
-            whenever(and(d, notUsingInput), () => {
-                console.log(activeElement.value)
+            whenever(and(d, notUsingInput, !inProfile.value), () => {
                 handleEdit()
             })
 

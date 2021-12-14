@@ -75,12 +75,7 @@
             v-else-if="getDatatypeOfAttribute(attribute) === 'users'"
             class="flex flex-wrap gap-1"
         >
-            <template
-                v-if="
-                    attribute.options.multiValueSelect === 'false' &&
-                    attribute.value
-                "
-            >
+            <template v-if="!isMultivalued && attribute.value">
                 <PopOverUser :item="attribute.value">
                     <UserPill
                         :username="attribute.value"
@@ -88,7 +83,7 @@
                     ></UserPill>
                 </PopOverUser>
             </template>
-            <template v-else-if="isMultivalued && attribute.value"
+            <template v-else-if="isMultivalued && attribute.value?.length"
                 ><div v-for="username in attribute.value" :key="username">
                     <PopOverUser :item="username">
                         <UserPill
@@ -104,12 +99,7 @@
             v-else-if="getDatatypeOfAttribute(attribute) === 'groups'"
             class="flex flex-wrap gap-1"
         >
-            <template
-                v-if="
-                    attribute.options.multiValueSelect === 'false' &&
-                    attribute.value
-                "
-            >
+            <template v-if="!isMultivalued && attribute.value">
                 <PopOverGroup :item="attribute.value">
                     <GroupPill
                         :name="attribute.value"
@@ -117,7 +107,7 @@
                     ></GroupPill>
                 </PopOverGroup>
             </template>
-            <template v-else-if="isMultivalued && attribute.value">
+            <template v-else-if="isMultivalued && attribute.value?.length">
                 <div v-for="name in attribute.value" :key="name">
                     <PopOverGroup :item="name">
                         <GroupPill
@@ -133,15 +123,10 @@
             v-else-if="getDatatypeOfAttribute(attribute) === 'enum'"
             class="flex flex-wrap gap-1"
         >
-            <template
-                v-if="
-                    attribute.options.multiValueSelect === 'false' &&
-                    attribute.value
-                "
-            >
+            <template v-if="!isMultivalued && attribute.value">
                 <EnumPill :label="attribute.value" />
             </template>
-            <template v-else-if="isMultivalued && attribute.value">
+            <template v-else-if="isMultivalued && attribute.value?.length">
                 <div v-for="e in attribute.value" :key="e">
                     <EnumPill :label="e" />
                 </div>
@@ -161,7 +146,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, PropType, Ref } from 'vue'
 
     // Components
     import UserPill from '@/common/pills/user.vue'
@@ -174,6 +159,7 @@
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
+    import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 
     export default defineComponent({
         name: 'CustomMetadataReadOnly',

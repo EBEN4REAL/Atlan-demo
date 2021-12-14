@@ -23,35 +23,35 @@
                         <Description
                             ref="descriptionRef"
                             v-model="localDescription"
-                            @change="handleChangeDescription"
                             :selected-asset="asset"
-                            :readOnly="readOnly"
+                            :read-only="readOnly"
+                            :in-profile="true"
+                            class="-ml-1"
+                            @change="handleChangeDescription"
                         />
                     </div>
                 </div>
                 <div class="flex gap-x-32">
-                    <div
-                        ref="animationPoint"
-                        v-if="!readOnly"
-                        class="flex flex-col"
-                    >
+                    <div ref="animationPoint" class="flex flex-col">
                         <p class="mb-1 text-sm text-gray-500">Certificate</p>
 
                         <Certificate
                             v-model="localCertificate"
                             :selected-asset="asset"
+                            :read-only="readOnly"
+                            :in-profile="true"
                             @change="handleChangeCertificate"
                         />
                     </div>
 
-                    <div v-if="asset.guid" class="flex flex-col">
+                    <div v-if="asset.guid" class="flex flex-col max-w-sm">
                         <p class="mb-1 text-sm text-gray-500">Owners</p>
                         <Owners
                             v-model="localOwners"
-                            :used-for-assets="true"
-                            @change="handleOwnersChange"
                             :selected-asset="asset"
-                            :readOnly="readOnly"
+                            :read-only="readOnly"
+                            :in-profile="true"
+                            @change="handleOwnersChange"
                         />
                     </div>
                 </div>

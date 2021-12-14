@@ -7,7 +7,7 @@
             >
         </section>
         <main
-            class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-14"
+            class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-6"
         >
             <section class="">
                 <SearchAndStats />
@@ -18,9 +18,9 @@
             <section>
                 <Relevant />
             </section>
-            <section>
+            <!--section>
                 <YourOrgs />
-            </section>
+            </section-->
         </main>
         <aside class="flex flex-col w-64 mb-24 ml-8 gap-y-12">
             <section>
@@ -39,7 +39,8 @@
             <section>
                 <YourWorkspace />
             </section>
-            <section>
+            <!-- TODO: Hidden for paytm rollout, will enable it back -->
+            <!--section>
                 <h2 class="mb-3 text-xl font-bold">Helpful links</h2>
                 <router-link to="//notion.so" target="_blank" replace>
                     <div
@@ -71,7 +72,7 @@
                         </span>
                     </div>
                 </router-link>
-            </section>
+            </section-->
         </aside>
     </div>
 </template>

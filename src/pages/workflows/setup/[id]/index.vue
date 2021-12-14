@@ -12,17 +12,6 @@
             :workflowTemplate="localSelected"
             :configMap="localConfig"
         ></PackagesSetup>
-        <div class="flex flex-col" style="width: 33%; min-width: 33%">
-            <Preview
-                v-if="!sandbox && localConfig"
-                :workflowTemplate="localSelected"
-            ></Preview>
-            <Sandbox
-                v-if="sandbox && localConfig"
-                v-model:configMap="localConfig"
-                v-model:workflowTemplate="localSelected"
-            ></Sandbox>
-        </div>
     </div>
 </template>
 
@@ -40,8 +29,7 @@
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@common/error/discover.vue'
     import PackagesSetup from '@/packages/setup/index.vue'
-    import Preview from '@/packages/setup/preview.vue'
-    import Sandbox from '@/packages/setup/sandbox.vue'
+
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'
     import { useRoute } from 'vue-router'
@@ -53,8 +41,6 @@
             PackagesSetup,
             Loader,
             ErrorView,
-            Sandbox,
-            Preview,
         },
         props: {
             selectedPackage: {
@@ -62,12 +48,12 @@
                 required: false,
             },
         },
+        emits: ['select', 'selectedconfig'],
         setup(props, { emit }) {
-            const route = useRoute()
-            const id = computed(() => route?.params?.id || '')
             const { getTemplateName } = usePackageInfo()
             const fetch = ref(true)
-
+            const route = useRoute()
+            const id = computed(() => route?.params?.id || '')
             const sandbox = computed(() => route?.query?.sandbox || '')
 
             if (getTemplateName(props.selectedPackage)) {
@@ -83,12 +69,13 @@
             } = usePackageByName(id, fetch.value)
 
             const { data, isLoading: isLoadingConfigMap } = useConfigMapByName(
-                `${id.value}-config`,
+                `${id.value}`,
                 true
             )
 
             watch(workflowPackage, () => {
                 localSelected.value = workflowPackage.value
+                emit('select', workflowPackage.value)
             })
 
             watch(data, () => {
@@ -96,7 +83,7 @@
                     try {
                         console.log(data.value.data.config)
                         localConfig.value = JSON.parse(data.value.data.config)
-
+                        emit('selectedconfig', localConfig)
                         // Add Schedule
                     } catch (e) {
                         console.log(e)

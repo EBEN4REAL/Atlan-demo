@@ -19,18 +19,31 @@
                 ></Component>
 
                 <a-form-item
-                    :label="property.ui?.label"
                     :name="property.name"
-                    :help="property.ui?.help"
                     :required="property.required"
                     :rules="property.ui.rules"
                     v-else
                 >
+                    <template #label>
+                        {{ property.ui?.label }}
+
+                        <a-tooltip
+                            tabindex="-1"
+                            :title="property.ui.help"
+                            v-if="property.ui.help"
+                            placement="topRight"
+                        >
+                            <span
+                                ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                            ></span>
+                        </a-tooltip>
+                    </template>
                     <Component
                         :is="componentName(property)"
                         v-model="formState[property.id]"
                         :baseKey="baseKey"
                         :property="property"
+                        :configMap="configMap"
                     ></Component>
                 </a-form-item>
             </div>
@@ -70,6 +83,7 @@
     import GroupMultiple from './widget/groupMultiple.vue'
     import Schedule from './widget/schedule.vue'
     import Alias from './widget/alias.vue'
+    import AtlanIcon from '../icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'DynamicForm',
@@ -91,6 +105,7 @@
             GroupMultiple,
             Schedule,
             Alias,
+            AtlanIcon,
         },
         props: {
             configMap: {
@@ -146,10 +161,20 @@
                     Object.keys(configMap?.value?.properties).forEach((key) => {
                         if (formState) {
                             if (!formState[getName(key)]) {
-                                formState[getName(key)] =
-                                    configMap?.value?.properties[
-                                        key
-                                    ]?.default?.toString()
+                                if (
+                                    configMap?.value?.properties[key].type ===
+                                    'boolean'
+                                ) {
+                                    formState[getName(key)] =
+                                        configMap?.value?.properties[
+                                            key
+                                        ]?.default
+                                } else {
+                                    formState[getName(key)] =
+                                        configMap?.value?.properties[
+                                            key
+                                        ]?.default?.toString()
+                                }
                             }
                         }
                     })

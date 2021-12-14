@@ -24,7 +24,8 @@ export const getUserName = (user: any) => {
 const getWorkspaceRole = (user: any) => {
     const { roles, defaultRoles } = user
 
-    const filterHelper = (a) => a?.filter((role: string) => role.startsWith('$'))??[]
+    const filterHelper = (a) =>
+        a?.filter((role: string) => role.startsWith('$')) ?? []
     const atlanRoles = [
         ...new Set([...filterHelper(roles), ...filterHelper(defaultRoles)]),
     ]
@@ -37,7 +38,7 @@ const getWorkspaceRole = (user: any) => {
     if (atlanRoles.includes('$guest')) {
         return 'Guest'
     }
-     return ''
+    return ''
 }
 
 const getUserPersona = (user: any) => {
@@ -47,7 +48,8 @@ const getUserPersona = (user: any) => {
         (role: string) =>
             role !== 'default-roles-default' &&
             !role.startsWith('$') &&
-            !role.startsWith('connection_admins_')
+            !role.startsWith('connection_admins_') &&
+            !role.startsWith('collection_')
     )
 
     return roleFilter
@@ -58,7 +60,8 @@ const getUserRole = (user: any) => {
     let atlanRoles: string[] = []
     const atlanRole = { name: '', code: '' }
 
-    const filterHelper = (a) => a?.filter((role: string) => role.startsWith('$'))??[]
+    const filterHelper = (a) =>
+        a?.filter((role: string) => role.startsWith('$')) ?? []
 
     const roleFilter = roles?.filter(
         (role: string) => role !== 'default-roles-default'
@@ -145,10 +148,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         immediate,
     })
 
-    const { data, mutate, isLoading, isValidating, error } = Users.List(
-        userListAPIParams,
-        options
-    )
+    const { data, mutate, isLoading, isValidating, error, isReady } =
+        Users.List(userListAPIParams, options)
 
     const localUsersList: Ref<any[]> = ref([])
 
@@ -157,11 +158,11 @@ export const useUsers = (userListAPIParams, immediate = true) => {
     watch(data, () => {
         console.log('changed')
 
-        if (data.value.records) {
+        if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                      getFormattedUser(user)
-                  )
+                    getFormattedUser(user)
+                )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 
@@ -177,6 +178,7 @@ export const useUsers = (userListAPIParams, immediate = true) => {
             }
         } else {
             userList.value = []
+            localUsersList.value = []
         }
     })
 
@@ -215,6 +217,7 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         STATES,
         usersListConcatenated,
         userList,
+        isReady,
         totalUserCount,
         filteredUserCount,
         getUserList,

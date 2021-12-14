@@ -1,46 +1,80 @@
 <template>
-    <div class="px-4 py-2 my-3">
+    <div class="h-full px-4 py-2">
         <template v-if="showGroupMembers">
             <div
                 v-auth="map.ADD_USER_GROUP"
                 class="flex items-center justify-between mb-3"
             >
-                <div class="text-lg font-bold">Members</div>
-                <a-button type="primary" ghost @click="handleAddMember">
-                    <AtlanIcon icon="Add" class="inline-block mr-2" />Add Member
-                </a-button>
+                <div class="text-base font-bold text-gray-500">Members</div>
+                <a-popover
+                    v-model:visible="showUsersPopover"
+                    placement="bottom"
+                    :trigger="['click']"
+                    :destroy-tooltip-on-hide="true"
+                    :overlay-class-name="$style.ownerPopover"
+                >
+                    <template #content>
+                        <div class="">
+                            <OwnerFacets
+                                v-model:modelValue="selectedUserIds"
+                                :show-none="false"
+                                :enableTabs="['users']"
+                                :hideDisabledTabs="true"
+                                selectUserKey="id"
+                            ></OwnerFacets>
+                        </div>
+                        <div class="flex justify-end mr-3">
+                            <AtlanButton
+                                :is-loading="addMemberLoading"
+                                type="primary"
+                                size="sm"
+                                padding="compact"
+                                :disabled="addMemberLoading"
+                                @click="addMembersToGroup"
+                            >
+                                <div class="flex items-center">
+                                    <div v-if="!addMemberLoading">Save</div>
+                                    <div v-else>Saving</div>
+                                </div>
+                            </AtlanButton>
+                        </div>
+                    </template>
+                    <AtlanButton
+                        size="sm"
+                        padding="compact"
+                        class="text-gray-500 bg-transparent border-gray-300  hover:bg-transparent hover:text-primary hover:border-primary"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
+                            <div>Add Member</div>
+                        </div></AtlanButton
+                    >
+                </a-popover>
             </div>
             <div class="flex flex-row items-center justify-between gap-x-1">
                 <SearchAndFilter
+                    v-if="totalMembersCount || isLoading"
                     v-model:value="searchText"
-                    placeholder="Search Members"
+                    :placeholder="`Search ${totalMembersCount ?? 0} members`"
                     class="mr-2"
                     size="minimal"
                     @change="handleSearch"
                 />
             </div>
             <div
-                v-if="!selectedGroup.memberCount"
-                class="
-                    flex flex-col
-                    items-center
-                    justify-center
-                    member-list-height
-                "
+                v-if="!totalMembersCount && !isLoading"
+                class="flex flex-col items-center justify-center  empty-state-wrapper"
             >
-                <div class="mt-6 text-center">
-                    <p class="text-lg">No members are present in the group.</p>
+                <div class="flex items-center justify-center w-full">
+                    <EmptyState
+                        empty-screen="CreateGroups"
+                        :desc="`${selectedGroup.name} has no members.`"
+                    />
                 </div>
             </div>
             <div
-                v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-                class="
-                    flex flex-col
-                    items-center
-                    justify-center
-                    h-full
-                    bg-white
-                "
+                v-if="error"
+                class="flex flex-col items-center justify-center mt-3 bg-white  empty-state-wrapper"
             >
                 <ErrorView>
                     <div class="mt-3">
@@ -55,90 +89,81 @@
                             "
                         >
                             <AtlanIcon
-                                icon="Refresh"
+                                icon="Reload"
                                 class="inline-block mb-1 mr-1"
                             />Try again
                         </a-button>
                     </div>
                 </ErrorView>
             </div>
-            <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
-                {{ `No member with name ${searchText} found.` }}
-            </div>
             <div
-                v-else-if="memberList?.length"
-                class="mt-4 overflow-y-auto member-list-height"
+                v-else-if="searchText && !filteredMembersCount && !isLoading"
+                class="empty-state-wrapper"
             >
-                <div
-                    v-for="user in memberList"
-                    :key="user.id"
-                    class="relative py-2 border-b border-gray-100 group"
-                >
-                    <UserCard
-                        :user="{ user, name: getUserName(user) }"
-                        :minimal="true"
-                    />
-
+                <EmptyState
+                    empty-screen="NoGroups"
+                    :desc="`No member with name ${searchText} found.`"
+                    button-text="Clear search"
+                    @event="
+                        () => {
+                            searchText = ''
+                            handleSearch()
+                        }
+                    "
+                />
+            </div>
+            <div v-else class="mt-4">
+                <div class="overflow-y-auto member-list-height">
                     <div
-                        class="
-                            absolute
-                            right-0
-                            flex
-                            justify-between
-                            cursor-pointer
-                            top-3
-                        "
+                        v-for="user in memberList"
+                        :key="user.id"
+                        class="relative py-2 border-gray-100  group hover:bg-gray-100"
                     >
-                        <div class="font-bold">
-                            <div
-                                v-if="removeMemberLoading[user.id]"
-                                class="flex cursor-default text-error-muted"
-                            >
-                                <AtlanIcon
-                                    style="vertical-align: middle"
-                                    icon="CircleLoader"
-                                    class="mr-1 animate-spin"
-                                />
-                                <div>Removing...</div>
-                            </div>
-                            <div
-                                v-else
-                                v-auth="map.REMOVE_USER_GROUP"
-                                class="
-                                    hidden
-                                    text-sm
-                                    font-normal
-                                    cursor-pointer
-                                    text-error
-                                    group-hover:block
-                                "
-                                @click="() => removeUserFromGroup(user)"
-                            >
-                                Remove
+                        <UserCard
+                            :user="{ user, name: getUserName(user) }"
+                            :minimal="true"
+                        />
+
+                        <div
+                            class="absolute right-0 flex justify-between mr-2 cursor-pointer  top-3"
+                        >
+                            <div class="font-bold">
+                                <div
+                                    v-if="removeMemberLoading[user.id]"
+                                    class="flex cursor-default text-error-muted"
+                                >
+                                    <AtlanIcon
+                                        style="vertical-align: middle"
+                                        icon="CircleLoader"
+                                        class="mr-1 animate-spin"
+                                    />
+                                    <div>Removing...</div>
+                                </div>
+                                <div
+                                    v-else
+                                    v-auth="map.REMOVE_USER_GROUP"
+                                    class="hidden text-sm font-normal cursor-pointer  text-error group-hover:block"
+                                    @click="() => removeUserFromGroup(user)"
+                                >
+                                    Remove
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div
-                    v-if="
-                        selectedGroup.memberCount &&
-                        ([STATES.PENDING].includes(state) ||
-                            [STATES.VALIDATING].includes(state))
-                    "
-                    class="flex justify-center mt-3"
-                >
-                    <a-spin></a-spin>
+                <div v-if="isLoading" class="flex justify-center mt-3">
+                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
                     <a-button @click="handleLoadMore">load more</a-button>
                 </div>
             </div>
         </template>
-        <template v-else-if="!showGroupMembers">
+        <!-- <template v-else-if="!showGroupMembers">
             <div class="mb-3 text-lg font-bold">Members</div>
 
             <UserList
-                :userListStyle="'max-height: calc(100vh - 17rem);'"
+                :userListStyle="{ 'max-height': 'calc(100vh - 17rem)' }"
                 :add-member-loading="addMemberLoading"
                 :show-header-buttons="true"
                 :minimal="true"
@@ -146,7 +171,7 @@
                 @showGroupMembers="handleShowGroupMembers"
                 @addMembersToGroup="addMembersToGroup"
             />
-        </template>
+        </template> -->
     </div>
 </template>
 
@@ -170,6 +195,9 @@ import map from '~/constant/accessControl/map'
 import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 import UserCard from '@/admin/groups/common/userCard.vue'
 import { Modal } from 'ant-design-vue'
+import OwnerFacets from '@/common/facet/owners/index.vue'
+import AtlanButton from '@/UI/button.vue'
+import EmptyState from '@/common/empty/index.vue'
 
 export default defineComponent({
     name: 'GroupMembers',
@@ -178,6 +206,9 @@ export default defineComponent({
         UserCard,
         ErrorView,
         UserList,
+        OwnerFacets,
+        AtlanButton,
+        EmptyState,
     },
     props: {
         selectedGroup: {
@@ -188,11 +219,12 @@ export default defineComponent({
     emits: ['refreshTable'],
     setup(props, context) {
         const showGroupMembers = ref(true)
+        const showUsersPopover = ref(false)
         const searchText = ref('')
         const showAddMemberModal = ref(false)
         const addMemberLoading = ref(false)
         const removeMemberLoading = ref({})
-        const selectedUserIds = ref([])
+        const selectedUserIds = ref({ ownerUsers: [] })
         const memberListParams = reactive({
             groupId: props.selectedGroup.id,
             params: {
@@ -209,6 +241,8 @@ export default defineComponent({
             getGroupMembersList,
             state,
             STATES,
+            isLoading,
+            error,
         } = useGroupMembers(memberListParams)
 
         const handleSearch = useDebounceFn(() => {
@@ -249,7 +283,7 @@ export default defineComponent({
             )
         )
         const addMembersToGroup = () => {
-            const userIds = [...selectedUserIds.value]
+            const userIds = [...selectedUserIds.value.ownerUsers]
             const requestPayload = ref()
             requestPayload.value = {
                 users: userIds,
@@ -273,11 +307,13 @@ export default defineComponent({
                                 false
                             )} added`
                         )
-                        showGroupMembers.value = true
+                        showUsersPopover.value = false
+                        selectedUserIds.value.ownerUsers = []
                     } else if (error && error.value) {
                         message.error(
                             'Unable to add members, please try again.'
                         )
+                        showUsersPopover.value = false
                     }
                 },
                 { immediate: true }
@@ -427,6 +463,10 @@ export default defineComponent({
             handleShowGroupMembers,
             updateSelectedUsers,
             removeMemberLoading,
+            selectedUserIds,
+            showUsersPopover,
+            isLoading,
+            error,
         }
     },
 })
@@ -434,13 +474,24 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .member-list-height {
-    height: 68vh;
+    max-height: calc(100vh - 15rem) !important;
+}
+.empty-state-wrapper {
+    height: calc(100vh - 10rem) !important;
 }
 </style>
 <style lang="less">
 .remove-member-modal {
     .ant-modal-confirm-body-wrapper {
         @apply p-5;
+    }
+}
+</style>
+<style lang="less" module>
+.ownerPopover {
+    :global(.ant-popover-inner-content) {
+        @apply px-0 py-3 !important;
+        width: 250px !important;
     }
 }
 </style>

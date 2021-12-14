@@ -21,17 +21,23 @@
                         class="flex items-center justify-center w-full h-full"
                     ></a-spin>
                 </div>
-                <a-avatar
-                    v-else
-                    :key="uploadKey"
-                    :shape="avatarShape"
-                    :size="avatarSize"
-                    class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
-                    :src="updatedImageUrl"
-                    >{{
-                        getNameInitials(getNameInTitleCase(avatarName))
-                    }}</a-avatar
-                >
+                <div v-else class="relative group">
+                    <a-avatar
+                        :key="uploadKey"
+                        :shape="avatarShape"
+                        :size="avatarSize"
+                        class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
+                        :src="updatedImageUrl"
+                    >
+                        {{ getNameInitials(getNameInTitleCase(avatarName)) }}
+                    </a-avatar>
+                    <div
+                        class="absolute top-0 flex items-center justify-center w-full h-full transition-opacity bg-gray-700 rounded-full opacity-0  bg-opacity-70 group-hover:opacity-100"
+                    >
+                        <span class="font-bold text-white">Change avatar</span>
+                    </div>
+                </div>
+
             </a-upload>
         </div>
         <div v-else>
@@ -97,6 +103,7 @@
             }
             watch(uploadKey, () => {
                 context.emit('imageUpdated', updatedImageUrl)
+                console.log(updatedImageUrl)
             })
             return {
                 handleUploadAvatar,

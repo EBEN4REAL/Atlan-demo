@@ -1,20 +1,24 @@
 <template>
     <div class="flex flex-wrap items-center gap-1 text-sm text-gray-500">
         <a-popover
-            placement="leftBottom"
+            placement="leftTop"
             :overlay-class-name="$style.termPopover"
             :trigger="['click']"
-            @visibleChange="handleChange"
+            @visibleChange="onPopoverClose"
         >
             <template #content>
-                <GlossaryTree v-model:checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
+                <GlossaryTree
+                    v-model:checkedGuids="checkedGuids"
+                    :checkable="true"
+                    @check="onCheck"
+                />
             </template>
             <a-button
                 v-if="!readOnly"
                 shape="circle"
                 :disabled="disabled"
                 size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
@@ -22,11 +26,11 @@
         <div class="flex flex-wrap gap-1 text-sm">
             <template v-for="term in list" :key="term.guid">
                 <div
-                    class="flex items-center py-1 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                    class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                 >
                     <AtlanIcon
                         :icon="icon(term)"
-                        class="group-hover:text-white text-purple"
+                        class="group-hover:text-white text-purple mb-0.5"
                     ></AtlanIcon>
 
                     <div class="ml-1 group-hover:text-white">
@@ -35,8 +39,8 @@
                 </div>
             </template>
             <span
-                class="-ml-1 text-gray-500"
                 v-if="readOnly && list?.length < 1"
+                class="-ml-1 text-gray-500"
                 >No linked terms</span
             >
         </div>
@@ -56,6 +60,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     import GlossaryTree from '~/components/glossary/index.vue'
+
     export default defineComponent({
         name: 'TermsWidget',
         components: { GlossaryTree },
@@ -88,14 +93,14 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const checkedKeys = ref(modelValue.value.map((term) => term.termGuid))
-            const hasBeenEdited = ref(false);
+            const checkedGuids = ref(
+                modelValue.value.map((term) => term.termGuid)
+            )
+            const hasBeenEdited = ref(false)
 
-            const list = computed(() => {
-                return localValue.value
-            })
+            const list = computed(() => localValue.value)
 
-            const handleChange = (visible) => {
+            const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
                     emit('change', localValue.value)
@@ -124,28 +129,50 @@
                 }
                 return 'Term'
             }
+            // if node has not been loaded, it will not be in checked node
+            // even if it is in checkedKeys
 
-            const onCheck = (checkedNodes) => {
-                localValue.value = []
+            //  CHECK EVENT
+            //
+            //  just append to loaclValue
+            //
+
+            // UNCHECK EVENT
+            //
+            //
+
+            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
                 checkedNodes.forEach((term) => {
-                    localValue.value.push(term)
+                    if (
+                        !localValue.value.find(
+                            (localTerm) =>
+                                (localTerm.guid ?? localTerm.termGuid) ===
+                                term.guid
+                        )
+                    )
+                        localValue.value.push(term)
                 })
+                localValue.value = localValue.value.filter((term) =>
+                    checkedGuids.value.includes(term.termGuid ?? term.guid)
+                )
                 hasBeenEdited.value = true
             }
 
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
-                checkedKeys.value = modelValue.value.map((term) => term.termGuid ?? term.guid)
+                checkedGuids.value = modelValue.value.map(
+                    (term) => term.termGuid ?? term.guid
+                )
             })
 
             return {
                 list,
                 icon,
                 onCheck,
-                handleChange,
+                onPopoverClose,
                 localValue,
-                checkedKeys
+                checkedGuids,
             }
         },
     })

@@ -417,7 +417,6 @@
                                 },
                             ],
                         },
-
                         editor: {
                             text: '',
                             context: {

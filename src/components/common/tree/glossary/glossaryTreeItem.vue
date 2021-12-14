@@ -32,26 +32,41 @@
                 </template>
             </AddGtcModal>
         </div>
+
+        <div
+            v-else-if="item?.typeName === 'loadMore'"
+            class="flex items-center justify-between w-full py-0 m-0 group"
+            @click="item.click"
+        >
+            <div class="text-primary">{{ item.title }}</div>
+            <div v-if="item.isLoading">
+                <a-spin
+                    size="small"
+                    icon="Loader"
+                    class="w-auto h-4 mr-1 animate-spin"
+                ></a-spin>
+            </div>
+            <div v-else-if="!item.isLoading && item.isError">
+                <AtlanIcon icon="Error"></AtlanIcon>
+            </div>
+        </div>
         <div
             v-else
             class="flex items-center justify-between w-full py-0 m-0 group"
         >
-            <div class="flex items-center w-2/3 py-1 pr-2">
-                <AtlanIcon
-                    :icon="
-                        getEntityStatusIcon(
-                            item.typeName,
-                            certificateStatus(item)
-                        )
-                    "
-                    :style="iconSize"
-                    class="self-center"
-                />
-
-                <!-- <span class="ml-1 text-sm" :class="textClass">{{
-                    title(item)
-                }}</span> -->
-
+            <div class="flex items-center w-10/12 py-1 pr-2">
+                <div class="w-4 mr-1">
+                    <AtlanIcon
+                        :icon="
+                            getEntityStatusIcon(
+                                item.typeName,
+                                certificateStatus(item)
+                            )
+                        "
+                        :style="iconSize"
+                        class="self-center"
+                    />
+                </div>
                 <Tooltip
                     :tooltip-text="`${title(item)}`"
                     :classes="'w-full '"

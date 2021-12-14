@@ -9,18 +9,22 @@
                 @change="handleSearchChange"
             >
                 <template #postFilter>
-                    <Preferences
-                        assetType="Column"
-                        v-model="preference"
-                        @change="handleChangePreference"
-                    />
+                    <div class="flex items-center justify-between py-1 rounded">
+                        <p class="mr-4 text-sm text-gray-500">Sort By</p>
+
+                        <Sorting
+                            v-model="preference.sort"
+                            asset-type="Column"
+                            @change="handleChangeSort"
+                        ></Sorting>
+                    </div>
                 </template>
             </SearchAdvanced>
         </div>
 
         <AggregationTabs
-            class="px-3 mb-1"
             v-model="postFacets.dataType"
+            class="px-3 mb-1"
             :list="columnDataTypeAggregationList"
             @change="handleDataTypeChange"
         ></AggregationTabs>
@@ -51,11 +55,11 @@
             v-else
             ref="assetlistRef"
             :list="list"
-            :isLoadMore="isLoadMore"
-            :isLoading="isValidating"
+            :is-load-more="isLoadMore"
+            :is-loading="isValidating"
             @loadMore="handleLoadMore"
         >
-            <template v-slot:default="{ item }">
+            <template #default="{ item }">
                 <ColumnItem
                     :item="item"
                     class="m-1"
@@ -70,11 +74,11 @@
     import { computed, defineComponent, ref, toRefs } from 'vue'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 
-    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import Preferences from '@/assets/preference/index.vue'
-
-    import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
+    import EmptyView from '@common/empty/index.vue'
+
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import Sorting from '@/common/select/sorting.vue'
 
     import AssetList from '@/common/assets/list/index.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
@@ -92,10 +96,10 @@
         name: 'ColumnWidget',
         components: {
             SearchAdvanced,
-            Preferences,
             AggregationTabs,
             AssetList,
             ColumnItem,
+            Sorting,
             EmptyView,
             ErrorView,
         },
@@ -221,7 +225,7 @@
                 quickChange()
             }, 150)
 
-            const handleChangePreference = () => {
+            const handleChangeSort = () => {
                 quickChange()
             }
 
@@ -241,7 +245,7 @@
                 handleDataTypeChange,
                 handleSearchChange,
                 preference,
-                handleChangePreference,
+                handleChangeSort,
                 handleLoadMore,
                 error,
                 isValidating,

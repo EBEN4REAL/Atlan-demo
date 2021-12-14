@@ -20,7 +20,7 @@ export const getters: GettersTree<State> & Getters = {
             i.attributes?.connectorName?.toLowerCase()
         )
 
-        let countMap = duplicateList.reduce((prev, cur) => {
+        let countMap = (duplicateList || []).reduce((prev, cur) => {
             prev[cur] = (prev[cur] || 0) + 1
             return prev
         }, {})

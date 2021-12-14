@@ -110,7 +110,7 @@ export default defineComponent({
     @apply text-gray-500 !important;
 }
 </style>
-<style lang="less">
+<style lang="less" scoped>
 .provider-wrapper {
     width: 546px;
 }

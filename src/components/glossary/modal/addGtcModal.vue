@@ -6,14 +6,14 @@
     <a-modal
         v-model:visible="visible"
         :class="$style.input"
-        width="50%"
+        width="40%"
         :destroy-on-close="true"
         :closable="true"
         okText="Save"
         cancelText=""
         :footer="null"
     >
-        <div class="p-3">
+        <div class="px-5 py-3">
             <div class="flex items-center mb-1">
                 <div
                     v-if="!glossaryQualifiedName"
@@ -48,16 +48,6 @@
                     ></AtlanIcon>
                     {{ categoryName }}
                 </div>
-
-                <!-- <GlossaryPopoverSelect
-                    v-else-if="
-                        !localQualifiedName &&
-                        (localEntityType === 'AtlasGlossaryTerm' ||
-                            localEntityType === 'AtlasGlossaryCategory')
-                    "
-                    class="p-1 bg-gray-100 rounded"
-                    v-model="localQualifiedName"
-                ></GlossaryPopoverSelect> -->
             </div>
 
             <a-input
@@ -82,8 +72,12 @@
                 <p class="p-0 m-0">Create more</p>
             </div>
 
-            <a-button type="primary" @click="handleSave" :loading="isLoading"
-                >Save</a-button
+            <a-button
+                type="primary"
+                @click="handleSave"
+                :loading="isLoading"
+                class="bg-primary"
+                >Create</a-button
             >
         </div>
     </a-modal>
@@ -313,7 +307,10 @@
                 if (error.value) {
                     console.error(error.value)
                 } else {
-                    if (!isCreateMore.value) visible.value = false
+                    if (!isCreateMore.value) {
+                        visible.value = false
+                    }
+                    resetInput()
                     message.success(`${typeNameTitle.value} created`)
 
                     if (guidCreatedMaps.value?.length > 0) {

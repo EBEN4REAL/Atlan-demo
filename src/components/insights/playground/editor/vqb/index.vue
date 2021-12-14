@@ -45,24 +45,21 @@
                 () => import('./panels/group/index.vue')
             ),
             sort: defineAsyncComponent(() => import('./panels/sort/index.vue')),
+            join: defineAsyncComponent(() => import('./panels/join/index.vue')),
         },
         setup(props, { emit }) {
-            const vqb = ref({
-                panels: [
-                    {
-                        id: 'columns',
-                        hide: false,
-                    },
-                    {
-                        id: 'aggregate',
-                        hide: false,
-                    },
-                    {
-                        id: 'columns',
-                        hide: false,
-                    },
-                ],
-            })
+            // const vqb = ref({
+            //     panels: [
+            //         {
+            //             id: 'columns',
+            //             hide: false,
+            //         },
+            //         {
+            //             id: 'aggregate',
+            //             hide: false,
+            //         },
+            //     ],
+            // })
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -78,7 +75,7 @@
             /*-------------------------------------*/
 
             return {
-                vqb,
+                // vqb,
                 activeInlineTab,
             }
         },

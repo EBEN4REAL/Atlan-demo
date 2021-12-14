@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-col gap-y-1">
         <div
-            class="flex items-center gap-x-1"
             v-if="attribute.typeName !== 'boolean'"
+            class="flex items-center gap-x-1"
         >
             <a-select
                 v-model:value="localCondition.operator"
@@ -33,12 +33,16 @@
         <div v-if="!['isNull', 'isNotNull'].includes(localCondition.operator)">
             <DynamicInput2
                 v-model="localCondition.value"
+                class="w-full"
                 :data-type="
-                    attribute.options?.customType ||
-                    attribute.subTypeName ||
-                    attribute.typeName
+                    attribute?.options?.customType ||
+                    attribute?.subTypeName ||
+                    attribute?.options?.primitiveType ||
+                    attribute?.typeName
                 "
-                :multiple="attribute?.options?.multiValueSelect === 'true'"
+                :multiple="
+                    attribute?.options?.multiValueSelect === 'true' && false
+                "
                 @change="handleValueChange"
             />
         </div>
@@ -53,7 +57,7 @@
     import { operators } from '~/constant/filters/operators'
 
     export default defineComponent({
-        name: 'TermPopover',
+        name: 'PropertyCondition',
         components: { DynamicInput2 },
         props: {
             attribute: {
@@ -80,7 +84,9 @@
             const { attribute } = toRefs(props)
 
             const operatorDataType = computed(() => {
-                let keys = []
+                if (attribute.value?.options?.primitiveType)
+                    return attribute.value.options.primitiveType
+                const keys: string[] = []
                 keys.push(attribute.value?.typeName)
 
                 if (attribute.value?.subTypeName) {

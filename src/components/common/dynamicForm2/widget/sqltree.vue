@@ -4,12 +4,20 @@
         :query="property.ui.sql"
         :include="property.ui.schemaIncludePattern"
         :exclude="property.ui.schemaExcludePattern"
-        :connectorConfigName="property.ui.connectorConfigName"
+        v-model="localValue"
+        @change="handleChange"
     ></SQLTreeSelect>
 </template>
 
 <script>
-    import { defineComponent, toRefs, computed, ref, inject } from 'vue'
+    import {
+        defineComponent,
+        toRefs,
+        computed,
+        ref,
+        inject,
+        reactive,
+    } from 'vue'
 
     import SQLTreeSelect from '@common/treeselect/sql/index.vue'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
@@ -29,22 +37,72 @@
             modelValue: {
                 required: false,
             },
+            configMap: {
+                required: false,
+                type: Object,
+                default: () => {},
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { property, baseKey } = toRefs(props)
+            const { property, baseKey, configMap } = toRefs(props)
             const formState = inject('formState')
             const componentProps = computed(() => property.value.ui)
 
+            const { modelValue } = useVModels(props, emit)
+
+            const tempArray = []
+
+            if (modelValue.value) {
+                console.log(modelValue.value)
+
+                Object.keys(modelValue.value).forEach((key) => {
+                    if (modelValue.value[key].length > 0) {
+                        modelValue.value[key].forEach((item) => {
+                            tempArray.push(`${key}:${item}`)
+                        })
+                    } else {
+                        tempArray.push(key)
+                    }
+                })
+            }
+
+            const localValue = ref(tempArray)
+
+            const handleChange = () => {
+                console.log(localValue.value)
+                const map = {}
+
+                localValue.value.forEach((item) => {
+                    if (item.includes(':')) {
+                        const first = item.split(':')[0]
+                        map[first] = []
+                    } else {
+                        map[item] = []
+                    }
+                })
+                localValue.value.forEach((item) => {
+                    if (item.includes(':')) {
+                        const first = item.split(':')[0]
+                        const second = item.split(':')[1]
+                        map[first].push(second)
+                    }
+                })
+                modelValue.value = map
+                emit('change', map)
+            }
+
             const { buildCredentialBody } = useWorkflowHelper()
 
-            const credentialBody = computed(() =>
-                buildCredentialBody(
+            const credentialBody = computed(() => {
+                const found =
+                    configMap.value.properties[property.value.ui.credential]
+                return buildCredentialBody(
                     formState,
-                    'credential-guid',
-                    property.value.ui.connectorConfigName
+                    property.value.ui.credential,
+                    found?.ui.credentialType
                 )
-            )
+            })
 
             return {
                 property,
@@ -52,6 +110,10 @@
                 formState,
                 credentialBody,
                 baseKey,
+                configMap,
+                localValue,
+                modelValue,
+                handleChange,
             }
         },
     })

@@ -2,17 +2,29 @@
     <div>
         <!-- Search and Filter -->
         <div class="w-1/2 mb-3">
-            <SearchAndFilter
+            <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
                 :placeholder="`Search ${totalCount} columns`"
-                @change="handleSearchChange"
                 size="minimal"
-            />
+                @change="handleSearchChange"
+            >
+                <template #postFilter>
+                    <div class="flex items-center justify-between py-1 rounded">
+                        <p class="mr-4 text-sm text-gray-500">Sort By</p>
+
+                        <Sorting
+                            v-model="preference.sort"
+                            asset-type="Column"
+                            @change="handleChangeSort"
+                        ></Sorting>
+                    </div>
+                </template>
+            </SearchAdvanced>
         </div>
         <!-- Table -->
         <div
-            class="flex items-center justify-center w-full border rounded  border-gray-light h-96"
+            class="flex items-center justify-center w-full border rounded border-gray-light h-96"
         >
             <div
                 v-if="isLoading"
@@ -54,7 +66,7 @@
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">
                         <div
-                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-r  border-gray-light"
+                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-r border-gray-light"
                         >
                             {{ text }}
                         </div>
@@ -75,7 +87,7 @@
 
                                 <Tooltip
                                     :tooltip-text="text"
-                                    classes="hover:text-primary mr-1"
+                                    classes="hover:text-primary"
                                 />
 
                                 <CertificateBadge
@@ -87,8 +99,16 @@
                                     :timestamp="
                                         certificateUpdatedAt(record.item)
                                     "
-                                    class="mb-0.5"
+                                    class="mb-0.5 ml-1"
                                 ></CertificateBadge>
+                                <a-tooltip placement="right"
+                                    ><template #title>Limited Access</template>
+                                    <AtlanIcon
+                                        v-if="isScrubbed(record.item)"
+                                        icon="Lock"
+                                        class="h-3.5 mb-0.5 ml-1"
+                                    ></AtlanIcon
+                                ></a-tooltip>
                             </div>
                             <div v-if="record.is_primary">
                                 <AtlanIcon icon="PrimaryKey" />
@@ -121,7 +141,7 @@
                 <AtlanIcon icon="CaretLeft" />
             </AtlanBtn>
             <AtlanBtn
-                class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default "
+                class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default"
                 size="sm"
                 color="secondary"
                 padding="compact"
@@ -153,7 +173,7 @@
 
         <AssetDrawer
             :data="selectedRowData"
-            :showDrawer="showColumnSidebar"
+            :show-drawer="showColumnSidebar"
             @closeDrawer="handleCloseColumnSidebar"
             @update="handleListUpdate"
         />
@@ -168,10 +188,12 @@
     import { useRoute } from 'vue-router'
 
     // Components
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import AssetDrawer from '@/common/assets/preview/drawer.vue'
-    import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
+    import EmptyView from '@common/empty/index.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import Sorting from '@/common/select/sorting.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -192,13 +214,14 @@
 
     export default defineComponent({
         components: {
-            SearchAndFilter,
+            SearchAdvanced,
             AssetDrawer,
             EmptyView,
             ErrorView,
             Tooltip,
             CertificateBadge,
             AtlanBtn,
+            Sorting,
         },
         setup() {
             /** DATA */
@@ -219,6 +242,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 dataTypeCategoryImage,
+                isScrubbed,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -367,6 +391,10 @@
                 quickChange()
             }, 150)
 
+            const handleChangeSort = () => {
+                quickChange()
+            }
+
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
@@ -455,9 +483,11 @@
                 handleSearchChange,
                 handleListUpdate,
                 handleCloseColumnSidebar,
+                isScrubbed,
                 isLoading,
                 columnsList,
                 totalCount,
+                preference,
                 error,
                 isValidating,
                 certificateStatus,
@@ -469,6 +499,7 @@
                 columnsData,
                 queryText,
                 handlePagination,
+                handleChangeSort,
                 showColumnSidebar,
                 pagination,
                 selectedRowData,

@@ -147,6 +147,10 @@ export default function useProject() {
             //     activeInlineTab.value.playground.editor.text
             // )
             // console.log('query: ', queryText)
+
+            // no semicolon support
+            
+            
             let queryData = getParsedQueryCursor(
                 activeInlineTab.value.playground.editor.variables,
                 activeInlineTab.value.playground.editor.text,

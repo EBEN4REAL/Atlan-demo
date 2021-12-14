@@ -1,7 +1,7 @@
 <template>
     <!--  <div v-html="displayQuery" class="break-words"></div> -->
     <SQLFormatter
-        :text="compiledQuery(selectedAsset)"
+        :text="rawQuery(selectedAsset)"
         background="bg-primary-light"
     />
 </template>
@@ -21,10 +21,10 @@
             },
         },
         setup() {
-            const { compiledQuery } = useAssetInfo()
+            const { rawQuery } = useAssetInfo()
 
             return {
-                compiledQuery,
+                rawQuery,
             }
         },
     })

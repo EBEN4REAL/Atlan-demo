@@ -1,5 +1,9 @@
 <template>
-    <a-input v-bind="componentProps" :value="formState[property.id]">
+    <a-input
+        v-bind="componentProps"
+        :value="formState[property.id]"
+        @input="formState[property.id] = handleInput($event)"
+    >
         <template
             #prefix
             v-if="componentProps.prefixText || componentProps.prefixImage"
@@ -56,17 +60,34 @@
 
             const cleanInput = (str) => {
                 let temp = str.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '-')
-                temp = temp?.toLowerCase().replace(/[^a-zA-Z0-9-]/g, '')
-
+                temp = temp?.toLowerCase().replace(/[^a-z0-9-]/g, '')
                 return temp
             }
 
+            const handleInput = (e) => {
+                if (property.value.ui.linkedProperty) {
+                    const temp = `${cleanInput(e.target.value)}-${Math.round(
+                        new Date().getTime() / 1000
+                    )}`
+                    formState[property.value.ui.linkedProperty] = temp
+                }
+                return cleanInput(e.target.value)
+            }
+
+            // watch(formState[property.value?.ui?.linkedProperty], () => {
+            //     if (property.value.ui.linkedProperty) {
+            //         formState[property.id] = cleanInput(
+            //             formState[property.value.ui.linkedProperty]
+            //         )
+            //     }
+            // })
 
             return {
                 property,
                 componentProps,
                 formState,
                 cleanInput,
+                handleInput,
             }
         },
     })

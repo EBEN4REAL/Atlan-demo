@@ -302,8 +302,14 @@
                                     order: 1,
                                     id: 'columns',
                                     hide: true,
-                                    columns: [],
-                                    columnsData: [],
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                            columnsData: [],
+                                        },
+                                    ],
                                 },
                             ],
                         },

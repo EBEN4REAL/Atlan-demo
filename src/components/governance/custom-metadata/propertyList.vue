@@ -57,11 +57,19 @@
                         <div class="capitalize" style="width: 248px">
                             <AtlanIcon
                                 v-if="
-                                    mapTypeToIcon(property.typeName, property)
+                                    mapTypeToIcon(
+                                        property.options.primitiveType ??
+                                            property.typeName,
+                                        property
+                                    )
                                 "
                                 class="inline h-4 mr-2"
                                 :icon="
-                                    mapTypeToIcon(property.typeName, property)
+                                    mapTypeToIcon(
+                                        property.options.primitiveType ??
+                                            property.typeName,
+                                        property
+                                    )
                                 "
                             />
                             {{ resolveType(property) }}
@@ -191,16 +199,20 @@
                         x.id ===
                         (property.options?.customType
                             ? property.options?.customType
-                            : property.typeName) // if has customType property, use it instead of id to search for icon
+                            : property.options.primitiveType ??
+                              property.typeName) // if has customType property, use it instead of id to search for icon
                 )?.label
-                return label || property.typeName
+                return (
+                    (label || property.options.primitiveType) ??
+                    property.typeName
+                )
             }
 
             const copyAPI = (text: string, theMessage: String) => {
                 copyToClipboard(text)
                 message.success({
                     content: theMessage,
-                })
+                } as any)
             }
 
             const handleRemoveProperty = (index, property) => {
@@ -256,6 +268,7 @@
             }
 
             const enableDragItem = (item) => {
+                if (!item) return
                 item.setAttribute('draggable', true)
                 // remove event handler first
                 item.removeEventListener('ondrag', handleDrag)

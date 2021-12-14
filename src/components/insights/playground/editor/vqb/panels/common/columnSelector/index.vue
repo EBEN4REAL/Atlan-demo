@@ -459,15 +459,6 @@
     }
 </style>
 <style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
     .custom_input {
         background-color: #fbfbfb !important;
     }

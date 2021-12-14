@@ -10,9 +10,6 @@
     >
         <template #title>
             <div class="flex items-center text-gray-500 flex-nowrap">
-                <!--  <span class="flex-none text-lg text-gray"
-                    >Add New Resource</span
-                > -->
                 <span class="overflow-hidden text-sm overflow-ellipsis">{{
                     title(asset)
                 }}</span>
@@ -106,7 +103,6 @@
         Ref,
         computed,
     } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -223,7 +219,7 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     .emoji-mart {
         border: unset;
 

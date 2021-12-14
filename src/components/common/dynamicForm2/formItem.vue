@@ -161,10 +161,20 @@
                     Object.keys(configMap?.value?.properties).forEach((key) => {
                         if (formState) {
                             if (!formState[getName(key)]) {
-                                formState[getName(key)] =
-                                    configMap?.value?.properties[
-                                        key
-                                    ]?.default?.toString()
+                                if (
+                                    configMap?.value?.properties[key].type ===
+                                    'boolean'
+                                ) {
+                                    formState[getName(key)] =
+                                        configMap?.value?.properties[
+                                            key
+                                        ]?.default
+                                } else {
+                                    formState[getName(key)] =
+                                        configMap?.value?.properties[
+                                            key
+                                        ]?.default?.toString()
+                                }
                             }
                         }
                     })

@@ -32,11 +32,7 @@
                 class="flex justify-between px-6 py-3 border-t"
                 v-if="currentStep < steps.length"
             >
-                <a-button
-                    type=""
-                    @click="handlePrevious"
-                    v-if="currentStep !== 0"
-                >
+                <a-button @click="handlePrevious" v-if="currentStep !== 0">
                     <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
                     >Back</a-button
                 >
@@ -69,7 +65,7 @@
 
                 <div
                     class="flex gap-x-2"
-                    v-if="currentStep !== steps.length - 1"
+                    v-if="currentStep === steps.length - 1"
                 >
                     <a-button class="px-6" @click="handleSubmit(false)"
                         >Run</a-button

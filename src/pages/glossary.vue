@@ -132,20 +132,22 @@
             }
             onMounted(() => {
                 if (selectedGlossary.value?.guid) {
-                    router.push(`/glossary/${selectedGlossary.value?.guid}`)
+                    router.push(
+                        `/glossary/${selectedGlossary.value?.guid}/overview`
+                    )
                 }
                 if (!id.value) {
                     if (selectedGlossaryQf.value?.length) {
                         router.push(
                             `/glossary/${
                                 getGlossaryByQF(selectedGlossaryQf.value)?.guid
-                            }`
+                            }/overview`
                         )
                     } else if (getFirstGlossaryQF()) {
                         router.push(
                             `/glossary/${
                                 getGlossaryByQF(getFirstGlossaryQF())?.guid
-                            }`
+                            }/overview`
                         )
                     } else router.push('/glossary')
                 }

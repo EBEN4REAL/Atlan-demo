@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full px-4 py-2 mb-3 component-height">
+    <div class="h-full px-4 py-2 mb-3">
         <div class="flex items-center justify-between mb-3">
             <div class="text-base font-bold text-gray-500">Groups</div>
             <div v-if="showUserGroups" v-auth="map.ADD_USER_GROUP">
@@ -7,13 +7,12 @@
                     v-model:visible="showGroupsPopover"
                     placement="bottom"
                     :trigger="['click']"
-                    :destroy-tooltip-on-hide="destroyTooltipOnHide"
+                    :destroy-tooltip-on-hide="true"
                     :overlay-class-name="$style.ownerPopover"
                 >
                     <template #content>
                         <div class="">
                             <OwnerFacets
-                                ref="ownerInputRef"
                                 v-model:modelValue="selectedGroupIds"
                                 :show-none="false"
                                 :enableTabs="['groups']"
@@ -38,7 +37,6 @@
                         </div>
                     </template>
                     <AtlanButton
-                        v-if="!readOnly"
                         size="sm"
                         padding="compact"
                         class="text-gray-500 bg-transparent border-gray-300  hover:bg-transparent hover:text-primary hover:border-primary"
@@ -82,7 +80,7 @@
             </div>
             <div
                 v-if="!totalGroupCount && !isLoading"
-                class="flex flex-col items-center justify-center h-2/3"
+                class="flex flex-col items-center justify-center  empty-state-wrapper"
             >
                 <div class="flex items-center justify-center w-full">
                     <EmptyState
@@ -93,7 +91,7 @@
             </div>
             <div
                 v-if="error"
-                class="flex flex-col items-center justify-center mt-3 bg-white  h-2/3"
+                class="flex flex-col items-center justify-center mt-3 bg-white  empty-state-wrapper"
             >
                 <ErrorView>
                     <div class="mt-3">
@@ -107,14 +105,14 @@
                                 }
                             "
                         >
-                            <AtlanIcon icon="Refresh" class="mr-2" />Try again
+                            <AtlanIcon icon="Reload" class="mr-2" />Try again
                         </a-button>
                     </div>
                 </ErrorView>
             </div>
             <div
                 v-else-if="searchText && !filteredGroupCount && !isLoading"
-                class="h-2/3"
+                class="empty-state-wrapper"
             >
                 <EmptyState
                     empty-screen="NoGroups"
@@ -203,7 +201,6 @@ import { getIsLoadMore } from '~/utils/isLoadMore'
 import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 import EmptyState from '@/common/empty/index.vue'
 import map from '~/constant/accessControl/map'
-import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 import OwnerFacets from '@/common/facet/owners/index.vue'
 import AtlanButton from '@/UI/button.vue'
 
@@ -214,7 +211,6 @@ export default defineComponent({
         GroupList,
         EmptyState,
         SearchAndFilter,
-        AtlanIcon,
         OwnerFacets,
         AtlanButton,
     },
@@ -299,6 +295,7 @@ export default defineComponent({
                             getUserGroupList()
                             message.success('User added to groups')
                             showGroupsPopover.value = false
+                            selectedGroupIds.value.ownerGroups = []
                         } else if (addError && addError.value) {
                             message.error(
                                 'Unable to add user to groups, please try again.'
@@ -430,14 +427,11 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.componentHeight {
-    height: calc(100vh - 13rem);
-}
 .group-list {
-    height: calc(100vh - 8rem) !important;
+    max-height: calc(100vh - 15rem) !important;
 }
-.component-height {
-    height: calc(100vh - 5rem) !important;
+.empty-state-wrapper {
+    height: calc(100vh - 10rem) !important;
 }
 </style>
 <style lang="less">

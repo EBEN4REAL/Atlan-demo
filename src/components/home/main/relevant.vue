@@ -22,6 +22,9 @@
     export default defineComponent({
         name: 'Relevant',
         components: {
+            // AssetList: defineAsyncComponent(
+            //     () => import('~/components/home/recentlyViewedAssets.vue')
+            // ),
             AssetList: defineAsyncComponent(
                 () => import('~/components/home/assetList.vue')
             ),

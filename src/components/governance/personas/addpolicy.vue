@@ -232,7 +232,7 @@
             width: {
                 type: Number,
                 required: false,
-            }
+            },
         },
         emits: [],
         setup(props, { emit }) {
@@ -243,13 +243,7 @@
             const { showDrawer, type, width } = toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
-            watch(isShow, () => {
-                if(isShow.value){
-                    emit('changeWidth', 200)
-                }else {
-                    emit('changeWidth', 450)
-                }
-            })
+
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -320,7 +314,12 @@
                 }
             })
             const handleAddAsset = () => {
-                assetSelectorVisible.value = true
+                if (connectorData.value?.attributeValue) {
+                    assetSelectorVisible.value = !assetSelectorVisible.value
+                    rules.value.connection.show = false
+                } else {
+                    rules.value.connection.show = true
+                }
             }
             const handleToggleManage = () => {
                 isShow.value = true
@@ -328,6 +327,28 @@
             const handleSavePermission = (prop) => {
                 policy.value.actions = prop
             }
+            watch(isShow, () => {
+                if (isShow.value) {
+                    setTimeout(() => {
+                        emit('changeWidth', 200)
+                    }, 100)
+                } else {
+                    setTimeout(() => {
+                        emit('changeWidth', 450)
+                    }, 100)
+                }
+            })
+            watch(assetSelectorVisible, () => {
+                if (assetSelectorVisible.value) {
+                    setTimeout(() => {
+                        emit('changeWidth', 200)
+                    }, 100)
+                } else {
+                    setTimeout(() => {
+                        emit('changeWidth', 450)
+                    }, 100)
+                }
+            })
             return {
                 selectedPersonaDirty,
                 rules,

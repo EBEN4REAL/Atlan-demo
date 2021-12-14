@@ -238,7 +238,11 @@
         :mask="false"
         @close="handleCloseAddPolicy"
     >
-        <Addpolicy :type="typeAddPolicy" :show-drawer="addpolicyVisible" @changeWidth="handleChangeWidth" />
+        <Addpolicy
+            :type="typeAddPolicy"
+            :show-drawer="addpolicyVisible"
+            @changeWidth="handleChangeWidth"
+        />
     </a-drawer>
 </template>
 
@@ -479,7 +483,7 @@
                 handleCloseAddPolicy,
                 typeAddPolicy,
                 width,
-                handleChangeWidth
+                handleChangeWidth,
             }
         },
     })

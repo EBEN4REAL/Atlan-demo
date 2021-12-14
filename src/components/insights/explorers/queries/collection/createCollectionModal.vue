@@ -260,6 +260,7 @@
             let isCollectionSaving = ref(false)
 
             const saveOrUpdateCollection = () => {
+                // console.log('isCreate:', typeof isCreate.value)
                 if (isCreate.value) {
                     saveNewCollection()
                 } else {
@@ -336,6 +337,10 @@
                     attributes: {
                         ...item?.value?.attributes,
                         ...ownersData,
+                        name: title.value,
+                        description: description.value,
+                        icon: selectedEmoji.value,
+                        iconType: selectedEmojiType.value,
                     },
                 }
                 const { data, error, isLoading } = updateCollection(entity)

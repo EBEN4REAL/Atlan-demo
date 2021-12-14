@@ -327,6 +327,30 @@
                                 [`${group.name}`]
                             ),
                             h('span', '?'),
+                            h(
+                                'div',
+                                {
+                                    class: ['text-red-500', 'my-3'],
+                                },
+                                [
+                                    h(
+                                        'div',
+                                        {
+                                            class: ['font-bold'],
+                                        },
+                                        [
+                                            'Deleting the group will also remove it from',
+                                        ]
+                                    ),
+                                    h('ol', [
+                                        h('li', '1. Existing personas'),
+                                        h(
+                                            'li',
+                                            '2. It will get removed from policies inside purposes'
+                                        ),
+                                    ]),
+                                ]
+                            ),
                         ])
                     },
                     okType: 'danger',
@@ -350,7 +374,7 @@
                                         content: `Group Removed`,
                                         duration: 1.5,
                                         key: messageKey,
-                                    })
+                                    } as any)
                                 } else if (
                                     error &&
                                     error.value &&
@@ -360,13 +384,13 @@
                                         content: `Failed to remove group`,
                                         duration: 1.5,
                                         key: messageKey,
-                                    })
+                                    } as any)
                                 } else
                                     message.loading({
                                         content: `Removing group`,
                                         duration: 0,
                                         key: messageKey,
-                                    })
+                                    } as any)
                             },
                             { immediate: true }
                         )

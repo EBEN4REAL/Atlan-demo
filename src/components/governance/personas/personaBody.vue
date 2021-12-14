@@ -230,6 +230,14 @@
             />
         </div>
     </template>
+    <a-drawer
+        placement="right"
+        :closable="false"
+        :visible="addpolicyVisible"
+        @close="handleCloseAddPolicy"
+    >
+        <Addpolicy :type="typeAddPolicy" :visible="addpolicyVisible"/>
+    </a-drawer>
 </template>
 
 <script lang="ts">
@@ -247,6 +255,7 @@
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { filterMethod } from '~/utils/helper/search'
+    import Addpolicy from './addpolicy.vue'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
@@ -275,6 +284,7 @@
             PersonaUsersGroups,
             SearchAndFilter,
             AggregationTabs,
+            Addpolicy
         },
         props: {
             persona: {
@@ -287,16 +297,22 @@
             const searchPersona = ref('')
             const activeTabFilter = ref('')
             const selectedPolicy = ref({})
+            const addpolicyVisible = ref(false)
+            const typeAddPolicy = ref('')
+            const handleAddPolicy = (type) => {
+                typeAddPolicy.value = type
+                addpolicyVisible.value = true
+            }
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
                     icon: 'Settings',
-                    handleClick: () => addPolicy('meta'),
+                    handleClick: () => handleAddPolicy('meta'),
                 },
                 {
                     title: 'Data Policy',
                     icon: 'Query',
-                    handleClick: () => addPolicy('data'),
+                    handleClick: () => handleAddPolicy('data'),
                 },
             ]
 
@@ -325,7 +341,6 @@
                         key: messageKey,
                     })
                 } catch (error: any) {
-                    console.log(error?.response?.data, 'error')
                     message.error({
                         content: error?.response?.data?.message,
                         duration: 1.5,
@@ -432,6 +447,9 @@
                         (selectedPersonaDirty.value?.dataPolicies?.length ||
                             0) ?? 0
             )
+            const handleCloseAddPolicy = () => {
+                addpolicyVisible.value = false
+            }
             return {
                 newIdTag,
                 activeTabKey,
@@ -453,6 +471,9 @@
                 handleSelectPolicy,
                 selectedPolicy,
                 totalPolicy,
+                addpolicyVisible,
+                handleCloseAddPolicy,
+                typeAddPolicy
             }
         },
     })

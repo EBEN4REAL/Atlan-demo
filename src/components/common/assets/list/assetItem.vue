@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 transition-all duration-300 hover:bg-primary-light"
+        class="my-1 transition-all duration-300 rounded hover:bg-primary-light"
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
         @click="handlePreview(item)"
     >

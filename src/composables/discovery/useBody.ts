@@ -51,6 +51,10 @@ export function useBody(
         base.orQuery('match', 'userDescription', {
             query: queryText,
         })
+        base.orQuery('match', '__meaningsText', {
+            query: queryText,
+            boost: 20,
+        })
 
         base.orQuery('match', 'name.stemmed', { query: queryText })
         base.queryMinimumShouldMatch(1)

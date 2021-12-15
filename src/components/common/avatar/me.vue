@@ -7,7 +7,7 @@
         <div v-else class="flex items-center justify-between w-full">
             <div class="flex">
                 <avatar
-                    :image-url="avatar"
+                    :image-url="avatarUrl"
                     :allow-upload="false"
                     :avatar-name="username"
                     avatar-size="small"
@@ -53,47 +53,47 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue'
-import { useUserPreview } from '~/composables/user/showUserPreview'
-// import whoami from '~/composables/user/whoami'
-import useUserData from '~/composables/user/useUserData'
-import Avatar from '~/components/common/avatar/index.vue'
+    import { defineComponent, inject } from 'vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    // import whoami from '~/composables/user/whoami'
+    import useUserData from '~/composables/user/useUserData'
+    import Avatar from '~/components/common/avatar/index.vue'
 
-export default defineComponent({
-    name: 'UserPersonalAvatar',
-    components: {
-        Avatar,
-    },
-    props: {},
-    setup() {
-        const keycloak = inject('$keycloak')
-        const handleLogout = () => {
-            window.localStorage.clear()
-            keycloak.logout({
-                redirectUri: window.location.origin,
-            })
-        }
+    export default defineComponent({
+        name: 'UserPersonalAvatar',
+        components: {
+            Avatar,
+        },
+        props: {},
+        setup() {
+            const keycloak = inject('$keycloak')
+            const handleLogout = () => {
+                window.localStorage.clear()
+                keycloak.logout({
+                    redirectUri: window.location.origin,
+                })
+            }
 
-        const { name, username, avatar } = useUserData()
-        // user preview drawer
-        const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-        const handleClickUser = (username: string) => {
-            setUserUniqueAttribute(username, 'username')
-            showUserPreview()
-        }
+            const { name, username, avatar: avatarUrl } = useUserData()
+            // user preview drawer
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview()
+            }
 
-        return {
-            handleLogout,
-            handleClickUser,
-            username,
-            name,
-            avatar,
-        }
-    },
-    data() {
-        return {}
-    },
-})
+            return {
+                handleLogout,
+                handleClickUser,
+                username,
+                name,
+                avatarUrl,
+            }
+        },
+        data() {
+            return {}
+        },
+    })
 </script>
 
 <style lang="less" module></style>

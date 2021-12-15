@@ -49,7 +49,13 @@
             </div>
         </div>
 
-        <div v-if="!isGTC(selectedAsset)" class="flex flex-col text-sm">
+        <div
+            v-if="
+                !isGTC(selectedAsset) &&
+                !['Connection'].includes(selectedAsset.typeName)
+            "
+            class="flex flex-col text-sm"
+        >
             <span class="mb-1 text-gray-500">Connection</span>
             <div class="flex items-center">
                 <img :src="getConnectorImage(selectedAsset)" class="h-4 mr-1" />
@@ -173,8 +179,6 @@
                 getAnchorName,
             } = useAssetInfo()
 
-            const { getConnection } = useConnectionData()
-
             return {
                 connectorName,
                 connectionName,
@@ -189,7 +193,7 @@
                 getAnchorName,
                 getConnectorImage,
                 createdBy,
-                getConnection,
+
                 connectionQualifiedName,
                 ownerUsers,
                 capitalizeFirstLetter,

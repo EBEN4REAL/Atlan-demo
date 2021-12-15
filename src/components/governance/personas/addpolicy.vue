@@ -89,7 +89,7 @@
                         {{ rules.connection.text }}
                     </div>
                 </div>
-                <div class="mt-7">
+                <div class="mt-5">
                     <div class="flex justify-between">
                         <div class="text-gray-500">
                             Asset <span class="text-red-500">*</span>
@@ -100,26 +100,28 @@
                                 size="sm"
                                 color="minimal"
                                 padding="compact"
-                                @click="addConnectionAsset"
+                                @click="handleAddAsset"
                             >
-                                <span class="text-primary"> Add All </span>
+                                <span class="text-primary"> Custom select</span>
                                 <AtlanIcon
                                     icon="Add"
                                     class="ml-1 text-primary"
                                 />
                             </AtlanBtn>
                             <span
+                                v-if="policy.assets.length === 0"
                                 class="pt-2 pl-1 pr-1 text-xs text-gray-500 bg-gray-100"
                                 >OR</span
                             >
                             <AtlanBtn
+                                v-if="policy.assets.length === 0"
                                 class="flex-none"
                                 size="sm"
                                 color="minimal"
                                 padding="compact"
-                                @click="handleAddAsset"
+                                @click="addConnectionAsset"
                             >
-                                <span class="text-primary"> Select</span>
+                                <span class="text-primary"> Add All </span>
                                 <AtlanIcon
                                     icon="Add"
                                     class="ml-1 text-primary"
@@ -280,7 +282,7 @@
                     placement="right"
                     :closable="false"
                     :visible="isShow"
-                    :width="450"
+                    :width="480"
                     :mask="false"
                     @close="handleToggleManage"
                 >
@@ -493,6 +495,9 @@
                 if (showDrawer.value) {
                     initPolicy()
                 }
+            })
+            watch(selectedPolicy, () => {
+                initPolicy()
             })
             const handleAddAsset = () => {
                 if (connectorData.value?.attributeValue) {

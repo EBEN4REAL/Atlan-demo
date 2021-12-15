@@ -132,7 +132,7 @@ const personaScopeList = [
                 desc: 'Permission to link assets like readme, resources to this asset'
             },
         ],
-        type: 'Asset',
+        type: 'Assets',
         label: 'Assets',
     },
     {

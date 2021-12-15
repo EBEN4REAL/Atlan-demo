@@ -86,8 +86,17 @@
 
             const operatorDataType = computed(() => {
                 if (attribute.value?.options?.primitiveType) {
+                    if (
+                        attribute.value?.options?.customType &&
+                        ['url', 'users', 'groups'].includes(
+                            attribute.value?.options?.primitiveType
+                        )
+                    ) {
+                        return 'string'
+                    }
                     return attribute.value.options.primitiveType
                 }
+
                 const keys: string[] = []
                 keys.push(attribute.value?.typeName)
 

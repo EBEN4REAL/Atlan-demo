@@ -15,12 +15,7 @@
                 Saving</span
             >
         </div>
-        <div v-if="selectedAsset" class="flex flex-col px-5">
-            <span class="text-gray-500">Name</span>
-            <span class="text-gray-500 truncate">{{
-                selectedAsset.displayText || selectedAsset.attributes.name
-            }}</span>
-        </div>
+
         <AnnouncementWidget
             class="mx-5"
             :selected-asset="selectedAsset"
@@ -32,7 +27,12 @@
             "
             class="flex flex-col"
         >
-            <Shortcut shortcut-key="n" action="set name" placement="left">
+            <Shortcut
+                shortcut-key="n"
+                action="set name"
+                placement="left"
+                :read-only="readOnly"
+            >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -83,6 +83,14 @@
                     <span class="mb-2 text-sm text-gray-500">Definition</span>
                     <span class="text-primary">SQL</span>
                 </div>
+                <template #action>
+                    <a-button
+                        size="small"
+                        block
+                        @click="switchTab(selectedAsset, 'Lineage')"
+                        >View Lineage</a-button
+                    >
+                </template>
             </SQL>
             <!-- <RowInfoHoverCard
                 v-if="
@@ -182,6 +190,7 @@
                 shortcut-key="d"
                 action="set description"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -213,7 +222,12 @@
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
             class="flex flex-col"
         >
-            <Shortcut shortcut-key="o" action="set owners" placement="left">
+            <Shortcut
+                shortcut-key="o"
+                action="set owners"
+                placement="left"
+                :read-only="readOnly"
+            >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -244,6 +258,7 @@
                 shortcut-key="t"
                 action="set classification"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -293,6 +308,7 @@
                 shortcut-key="c"
                 action="set certificate"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"

@@ -179,7 +179,7 @@
             }
         }
         :global(.ant-tabs-nav) {
-            @apply mb-0;
+            @apply mb-0 !important;
         }
 
         :global(.ant-tabs-tab:first-child) {

@@ -20,7 +20,8 @@
                         </p>
                     </div>
                 </a-menu-item>
-                <a-menu-item
+                <!-- Bulk upload hidden for GA  -->
+                <!-- <a-menu-item
                     key="bulk"
                     class="flex items-center"
                     @click="closeMenu"
@@ -38,7 +39,7 @@
                             </div>
                         </template>
                     </BulkUploadModal>
-                </a-menu-item>
+                </a-menu-item> -->
                 <a-menu-divider></a-menu-divider>
                 <!-- Archive -->
                 <a-menu-item

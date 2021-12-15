@@ -4,7 +4,6 @@
         v-else
         :asset="localSelected"
         :key="localSelected.guid"
-        @preview="emit('preview', $event)"
     ></AssetProfile>
 </template>
 

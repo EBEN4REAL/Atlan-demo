@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div class="pt-6 details-section">
+        <PersonaSummary :persona="persona" @setActiveTab="setActiveTab" />
+        <!-- <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             <div v-if="persona.createdBy" class="flex items-center text-sm">
                 <PopOverUser :item="persona.createdBy">
@@ -112,7 +113,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -126,17 +127,16 @@
         toRefs,
     } from 'vue'
     import { IPersona } from '~/types/accessPolicies/personas'
-    import { enablePersona } from '../composables/useEditPersona'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
-    import { useUsers } from '~/composables/user/useUsers'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
+    import PersonaSummary from './personaSummary.vue'
 
     export default defineComponent({
         name: 'PersonaMeta',
-        components: { PopOverUser, UserPill },
+        components: { PopOverUser, UserPill, PersonaSummary },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
@@ -146,17 +146,6 @@
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
             const { persona } = toRefs(props)
-            // Params for obtaining that one user.
-            const params = computed(() => ({
-                limit: 1,
-                offset: 0,
-                filter: {
-                    $and: [
-                        { email_verified: true },
-                        { id: persona.value.createdBy },
-                    ],
-                },
-            }))
 
             const timeStamp = (time, raw: boolean = false) => {
                 if (time) {
@@ -166,13 +155,7 @@
                 }
                 return ''
             }
-
-            const enablePersonaCheck = ref(true)
-            const formatDate = (val) => {}
             return {
-                formatDate,
-                enablePersonaCheck,
-                enablePersona,
                 setActiveTab,
                 timeStamp,
             }

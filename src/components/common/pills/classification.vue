@@ -3,8 +3,8 @@
         :class="`
             flex
             items-center
-            py-0.5
-            pl-1
+            py-1
+            pl-2
             pr-2
             ${bgHover}
             text-sm text-gray-700
@@ -13,6 +13,7 @@
             rounded-full
             cursor-pointer
             hover:text-white
+            group
             `"
         :data-test-id="displayName"
     >
@@ -89,13 +90,13 @@
                 const bgColor = color.value?.toLowerCase()
                 switch (bgColor) {
                     case 'red':
-                        return 'hover:bg-red-400'
+                        return 'hover:bg-red-400 text-white'
                     case 'green':
                         return 'hover:bg-green-400'
                     case 'yellow':
                         return 'hover:bg-yellow-400'
                     default:
-                        return 'hover:bg-primary'
+                        return 'hover:bg-primary text-white'
                 }
             })
 

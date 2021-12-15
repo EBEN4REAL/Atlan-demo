@@ -124,7 +124,7 @@
                     </div>
                     <div
                         v-if="totalPolicy !== 0"
-                        class="px-3 py-4 container-tabs"
+                        class="px-3 py-4 bg-white container-tabs"
                     >
                         <AggregationTabs
                             v-model="activeTabFilter"
@@ -238,7 +238,13 @@
         :mask="false"
         @close="handleCloseAddPolicy"
     >
-        <Addpolicy :type="typeAddPolicy" :show-drawer="addpolicyVisible" @close="handleCloseAdd" @changeWidth="handleChangeWidth" />
+        <Addpolicy
+            :type="typeAddPolicy"
+            :show-drawer="addpolicyVisible"
+            @save="savePolicyUI"
+            @close="handleCloseAdd"
+            @changeWidth="handleChangeWidth"
+        />
     </a-drawer>
 </template>
 
@@ -320,7 +326,7 @@
             watch(selectedPersonaDirty, () => {
                 activeTabFilter.value = ''
             })
-            async function savePolicyUI(type: PolicyType, id: string) {
+            async function savePolicyUI(type: PolicyType, dataPolicy: Object) {
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Saving policy',
@@ -328,13 +334,9 @@
                     key: messageKey,
                 })
                 try {
-                    await savePolicy(type, id)
-                    if (type === 'meta')
-                        policyEditMap.value.metadataPolicies[id] = false
-                    else if (type === 'data')
-                        policyEditMap.value.dataPolicies[id] = false
+                    await savePolicy(type, dataPolicy)
                     updateSelectedPersona()
-
+                    addpolicyVisible.value = false
                     // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
@@ -451,8 +453,8 @@
             const handleCloseAddPolicy = () => {
                 addpolicyVisible.value = false
             }
-            const handleChangeWidth = (prop) => {
-                width.value = prop
+            const handleChangeWidth = (widthUpdated) => {
+                width.value = widthUpdated
             }
             const handleCloseAdd = () => {
                 addpolicyVisible.value = false
@@ -483,7 +485,7 @@
                 typeAddPolicy,
                 width,
                 handleChangeWidth,
-                handleCloseAdd
+                handleCloseAdd,
             }
         },
     })

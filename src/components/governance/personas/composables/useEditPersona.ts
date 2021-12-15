@@ -128,59 +128,19 @@ export async function deletePolicy(type: PolicyType, id: string) {
     }
 }
 
-export function savePolicy(type: PolicyType, id: string) {
+export function savePolicy(type: PolicyType, dataPolicy: string) {
     const tempPersona = {
         ...JSON.parse(JSON.stringify(toRaw(selectedPersona.value))),
     }
-    if (type === 'meta') {
-        const dirtyPolicyIndex =
-            selectedPersonaDirty.value?.metadataPolicies?.findIndex(
-                (pol) => pol.id === id
-            ) ?? -1
-
-        if (dirtyPolicyIndex > -1) {
-            const policy = {
-                ...toRaw(selectedPersonaDirty.value)?.metadataPolicies?.[
-                    dirtyPolicyIndex
-                ],
-            }
-            if (policy?.isNew) {
-                delete policy?.isNew
-                delete policy?.id
-                tempPersona?.metadataPolicies?.push(policy!)
-            } else {
-                const policyIndex =
-                    selectedPersona.value?.metadataPolicies?.findIndex(
-                        (pol) => pol.id === id
-                    )
-                tempPersona.metadataPolicies![policyIndex!] = policy
-            }
-        }
+    if (dataPolicy?.isNew) {
+        delete dataPolicy?.isNew
+        delete dataPolicy?.id
     }
-
+    if (type === 'meta') {
+        tempPersona.metadataPolicies.push(dataPolicy)
+    }
     if (type === 'data') {
-        const dirtyPolicyIndex =
-            selectedPersonaDirty.value?.dataPolicies?.findIndex(
-                (pol) => pol.id === id
-            ) ?? -1
-
-        if (dirtyPolicyIndex > -1) {
-            const policy = {
-                ...selectedPersonaDirty.value?.dataPolicies?.[dirtyPolicyIndex],
-            }
-
-            if (policy?.isNew) {
-                delete policy?.isNew
-                delete policy?.id
-                tempPersona?.dataPolicies?.push(policy!)
-            } else {
-                const policyIndex =
-                    selectedPersona.value?.dataPolicies?.findIndex(
-                        (pol) => pol.id === id
-                    )
-                tempPersona.dataPolicies![policyIndex!] = policy
-            }
-        }
+        tempPersona.dataPolicies.push(dataPolicy)
     }
     return savePersona(tempPersona)
 }

@@ -280,7 +280,7 @@
     import AssetMenu from './assetMenu.vue'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import assetTypeLabel from '@/glossary/constants/assetTypeLabel.ts'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         name: 'AssetHeader',

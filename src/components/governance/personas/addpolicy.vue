@@ -146,7 +146,7 @@
                 </div>
             </div>
         </div>
-        <div class="mt-7">
+        <div v-if="policyType === 'meta'" class="mt-7">
             <div class="flex justify-between">
                 <div class="text-gray-500">
                     Permissions <span class="text-red-500">*</span>
@@ -182,6 +182,25 @@
                 </div>
             </div>
         </div>
+        <div v-else>
+            <div class="flex items-center mt-7 gap-x-1">
+                <AtlanIcon class="text-gray-500" icon="Lock" />
+                <span class="text-sm text-gray-500">Query permissions</span>
+                <AtlanIcon class="h-3 ml-2 text-gray-500" icon="RunSuccess" />
+                <span class="text-sm text-gray-500"
+                    >Query access allowed by default</span
+                >
+            </div>
+            <div class="flex items-center mb-2 gap-x-1 mt-7">
+                <span class="text-sm text-gray-500">Masking</span>
+            </div>
+
+            <DataMaskingSelector
+                v-model:maskType="policy.maskType"
+                class="mb-6 w-80"
+            />
+        </div>
+
         <div class="flex items-center justify-between">
             <div class="mt-4">
                 <span>Deny Permissions</span>
@@ -257,6 +276,7 @@
     import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import ManagePermission from './policies/managePermission.vue'
+    import DataMaskingSelector from './policies/dataMaskingSelector.vue'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -265,6 +285,7 @@
             Connector,
             AssetSelectorDrawer,
             ManagePermission,
+            DataMaskingSelector,
         },
         props: {
             type: {
@@ -306,8 +327,7 @@
             const isShow = ref(false)
             const policyNameRef = ref()
             const connectorComponentRef = ref()
-            const { showDrawer, type, width, isEdit, selectedPolicy } =
-                toRefs(props)
+            const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
             const isAddAll = ref(false)
@@ -367,7 +387,11 @@
             const initPolicy = () => {
                 isAddAll.value = false
                 if (isEdit.value) {
-                    policy.value = selectedPolicy.value
+                    const newArray = []
+                    selectedPolicy.value.assets.forEach((el) =>
+                        newArray.push(el)
+                    )
+                    policy.value = { ...selectedPolicy.value, assets: newArray }
                     policyType.value = selectedPolicy.value.type
                 } else {
                     policyType.value = type.value
@@ -450,10 +474,13 @@
                     rules.value.connection.show = true
                 } else if (policy.value.assets.length < 1) {
                     rules.value.assets.show = true
-                } else if (policy.value.actions.length === 0) {
+                } else if (
+                    policy.value.actions.length === 0 &&
+                    policyType.value === 'meta'
+                ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', type.value, policy.value)
+                    emit('save', policyType.value, policy.value)
                 }
             }
             const selectedPermition = computed(() => {

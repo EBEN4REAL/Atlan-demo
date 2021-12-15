@@ -111,6 +111,7 @@
         .ant-collapse-content-box {
             padding: 0.75em;
             padding-left: 0.75em !important;
+            padding-top: 0.75em !important;
         }
     }
     .wrapper-manage-permition {

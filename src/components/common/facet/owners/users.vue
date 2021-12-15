@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full overflow-y-auto h-44">
+    <div class="w-full h-44">
         <div
             v-if="userList.length < 1"
             class="flex flex-col items-center justify-center h-full"
@@ -8,12 +8,12 @@
                 <span class="text-gray-500">No users found</span>
             </div>
         </div>
-        <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full h-40 overflow-y-auto">
             <div class="w-full px-3">
                 <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
                         :checked="map[item[selectUserKey]]"
-                        class="atlanReverse inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
+                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
                         @change="
                             (checked) =>
                                 handleChange(checked, item[selectUserKey])
@@ -30,11 +30,27 @@
                         </div>
                     </a-checkbox>
                 </template>
+
+                <template v-if="userList?.length < filterTotal">
+                    <div class="flex justify-center">
+                        <AtlanIcon
+                            icon="Loader"
+                            v-if="isLoading"
+                            class="animate-spin"
+                        />
+                    </div>
+                    <div
+                        class="flex justify-end cursor-pointer text-primary hover:underline"
+                        @click="loadMore"
+                    >
+                        load more
+                    </div>
+                </template>
             </div>
-            <p class="px-4 mt-1 text-xs text-gray-500">
-                showing {{ userList.length }} of {{ total }} users
-            </p>
         </div>
+        <p class="px-4 mt-1 text-xs text-gray-500">
+            showing {{ userList.length }} of {{ total }} users
+        </p>
     </div>
 </template>
 
@@ -43,6 +59,7 @@
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useUserData from '~/composables/user/useUserData'
+    import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'UsersFilter',
@@ -74,7 +91,6 @@
             const { selectUserKey } = toRefs(props)
             const localValue = ref(modelValue.value)
             const map = ref({})
-
             const updateMap = (localValue: Ref<any>) => {
                 map.value = {}
                 localValue.value.map((id) => {
@@ -82,16 +98,21 @@
                 })
             }
             updateMap(localValue)
-            const { list, handleSearch, total, filterTotal } = useFacetUsers()
+            const {
+                list,
+                handleSearch,
+                total,
+                filterTotal,
+                loadMore,
+                isLoading,
+            } = useFacetUsers()
             const { username, firstName, lastName, id } = useUserData()
-
             watch(
                 () => props.queryText,
                 () => {
                     handleSearch(props.queryText)
                 }
             )
-
             const userList = computed(() => {
                 if (props.queryText !== '') {
                     return [...list.value]
@@ -109,14 +130,12 @@
                     ...tempList,
                 ]
             })
-
             const fullName = (item) => {
                 if (item.firstName) {
                     return `${item.firstName} ${item.lastName || ''}`
                 }
                 return `${item.username}`
             }
-
             const handleChange = (checked, id) => {
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -126,10 +145,10 @@
                 modelValue.value = [...Object.keys(map.value)]
                 emit('change')
             }
-
             return {
+                loadMore,
+                isLoading,
                 map,
-                selectUserKey,
                 userList,
                 fullName,
                 username,
@@ -142,4 +161,3 @@
         },
     })
 </script>
-

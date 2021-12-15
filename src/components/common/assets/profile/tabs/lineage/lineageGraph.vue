@@ -146,7 +146,7 @@
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (item, highlight = false) => {
-                // preview(item)
+                preview(item, false)
                 control('selectedAsset', item)
                 control('selectedAssetGuid', item.guid)
                 if (highlight) assetGuidToHighlight.value = item.guid

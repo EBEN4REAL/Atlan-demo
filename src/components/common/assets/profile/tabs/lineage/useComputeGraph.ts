@@ -5,7 +5,8 @@ import useTransformGraph from './useTransformGraph'
 export default async function useComputeGraph(
     graph,
     graphLayout,
-    lineageData,
+    lineage,
+    lineageWithProcess,
     searchItems,
     currZoom,
     isComputeDone,
@@ -18,8 +19,9 @@ export default async function useComputeGraph(
     const edges = ref([])
     const nodes = ref([])
 
-    const { relations, baseEntityGuid } = lineageData.value
-    const guidEntityMap = Object.values(lineageData.value.guidEntityMap)
+    const { relations, baseEntityGuid } = lineage.value
+    const { relations: relationsWithProcess } = lineageWithProcess.value
+    const guidEntityMap = Object.values(lineage.value.guidEntityMap)
 
     searchItems.value = []
     model.value = null
@@ -43,8 +45,15 @@ export default async function useComputeGraph(
 
     /* Edges */
     relations.forEach((relation) => {
-        const { edgeData } = createEdgeData(relation)
-        edges.value.push(edgeData)
+        const { toEntityId } = relation
+        const process = relationsWithProcess.find(
+            (x) => x.toEntityId === toEntityId
+        ).fromEntityId
+
+        if (process) {
+            const { edgeData } = createEdgeData(relation, process)
+            edges.value.push(edgeData)
+        }
     })
 
     /* Render */

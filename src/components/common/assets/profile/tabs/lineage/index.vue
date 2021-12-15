@@ -19,7 +19,10 @@
 
         <div v-if="isReady" class="absolute w-full h-full">
             <div
-                v-if="!Object.keys(lineage.guidEntityMap).length"
+                v-if="
+                    !Object.keys(lineage.guidEntityMap).length ||
+                    !lineageWithProcess.baseEntityGuid
+                "
                 class="relative bg-white"
             >
                 <div
@@ -30,8 +33,12 @@
                 </div>
             </div>
             <LineageGraph
-                v-if="Object.keys(lineage.guidEntityMap).length"
+                v-if="
+                    Object.keys(lineage.guidEntityMap).length &&
+                    lineageWithProcess.baseEntityGuid
+                "
                 :lineage="lineage"
+                :lineage-with-process="lineageWithProcess"
                 @preview="emit('preview', $event)"
             />
         </div>
@@ -73,13 +80,15 @@
 
             /** DATA */
             const lineage = ref({})
+            const lineageWithProcess = ref({})
             const depth = ref(1)
             const baseEntity = ref({})
             const guid = computed(() => route.params?.id || '')
             const direction = ref('BOTH')
             const selectedAssetGuid = ref('')
             const selectedAsset = ref({})
-            const showProcess = ref(false)
+            // const showProcess = ref(false)
+            const hideProcess = ref(true)
             const loaderText = ref('Fetching Data...')
             const isFirstLoad = ref(true)
             const lineageDepths = [
@@ -98,7 +107,7 @@
                 depth: depth.value,
                 guid: guid.value,
                 direction: direction.value,
-                hideProcess: true,
+                hideProcess: hideProcess.value,
             }))
 
             /** METHODS */
@@ -117,31 +126,42 @@
             const { data, isLoading, isReady, mutate, error } =
                 useFetchLineage(config)
 
-            watch(isReady, async () => {
-                lineage.value = {}
+            watch(data, async () => {
+                if (hideProcess.value) {
+                    lineageWithProcess.value = {}
+                    lineage.value = {}
 
-                if (!data.value.relations.length) {
-                    lineage.value = { ...data.value }
+                    if (!data.value.relations.length) {
+                        lineage.value = { ...data.value }
+                        lineage.value.guidEntityMap = {
+                            [lineage.value.baseEntityGuid]: baseEntity.value,
+                        }
+                    } else lineage.value = data.value
 
                     baseEntity.value = await getEntity(
                         lineage.value.baseEntityGuid
                     )
 
-                    lineage.value.guidEntityMap = {
-                        [lineage.value.baseEntityGuid]: baseEntity.value,
-                    }
-                } else lineage.value = data.value
-
-                if (
-                    selectedAssetGuid.value &&
-                    data.value.guidEntityMap[selectedAssetGuid.value]
-                )
-                    selectedAsset.value =
+                    if (
+                        selectedAssetGuid.value &&
                         data.value.guidEntityMap[selectedAssetGuid.value]
-                else selectedAsset.value = baseEntity.value
+                    )
+                        selectedAsset.value = await getEntity(
+                            selectedAssetGuid.value
+                        )
+                    else selectedAsset.value = baseEntity.value
 
-                if (isFirstLoad.value) loaderText.value = 'Fetching Data...'
-                isFirstLoad.value = false
+                    if (isFirstLoad.value) loaderText.value = 'Fetching Data...'
+                    isFirstLoad.value = false
+                } else {
+                    lineageWithProcess.value = data.value
+                    hideProcess.value = true
+                }
+
+                if (!Object.keys(lineageWithProcess.value).length) {
+                    hideProcess.value = false
+                    mutate()
+                }
             })
 
             // updateRouterQuery
@@ -150,7 +170,7 @@
                     query: {
                         depth: depth.value,
                         direction: direction.value,
-                        showProcess: showProcess.value,
+                        // showProcess: showProcess.value,
                         select: selectedAssetGuid.value,
                     },
                 })
@@ -158,9 +178,6 @@
 
             // Control
             const control = (type, item = null) => {
-                if (['depth', 'direction', 'showProcess'].includes(type))
-                    mutate()
-
                 if (type === 'depth') {
                     loaderText.value = `Changing lineage to ${
                         lineageDepths.find((x) => x.id === item)?.label
@@ -173,14 +190,15 @@
                     }...`
                     direction.value = item
                 }
-                if (type === 'showProcess') {
-                    loaderText.value = showProcess.value
-                        ? 'Adding process nodes...'
-                        : 'Removing process nodes...'
-                    showProcess.value = item
-                }
+                // if (type === 'showProcess') {
+                //     loaderText.value = showProcess.value
+                //         ? 'Adding process nodes...'
+                //         : 'Removing process nodes...'
+                //     showProcess.value = item
+                // }
                 if (type === 'selectedAsset') selectedAsset.value = item
                 if (type === 'selectedAssetGuid') selectedAssetGuid.value = item
+                if (['depth', 'direction'].includes(type)) mutate()
 
                 updateRouterQuery()
             }
@@ -204,15 +222,16 @@
                         ? di
                         : direction.value
                 if (se) selectedAssetGuid.value = se
-                if (sp) showProcess.value = sp === 'true'
+                // if (sp) showProcess.value = sp === 'true'
                 updateRouterQuery()
+                mutate()
             })
 
             /** PROVIDERS */
             provide('baseEntity', baseEntity)
             provide('selectedAssetGuid', selectedAssetGuid)
             provide('selectedAsset', selectedAsset)
-            provide('showProcess', showProcess)
+            // provide('showProcess', showProcess)
             provide('depth', depth)
             provide('direction', direction)
             provide('lineageDepths', lineageDepths)
@@ -228,6 +247,7 @@
 
             return {
                 lineage,
+                lineageWithProcess,
                 data,
                 loaderText,
                 isLoading,

@@ -108,20 +108,26 @@
                 type: Object,
                 required: true,
             },
+            lineageWithProcess: {
+                type: Object,
+                required: true,
+            },
         },
         emits: ['preview'],
         setup(props, { emit }) {
             /** INJECTIONS */
             const control = inject('control')
-            const showProcess = inject('showProcess')
+            // const showProcess = inject('showProcess')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
+            const preview = inject('preview')
+            // provide('preview', handlePreview)
 
             /** DATA */
-            const { lineage } = toRefs(props)
+            const { lineage, lineageWithProcess } = toRefs(props)
             const graphHeight = ref(0)
             const graphWidth = ref(0)
-            const removedNodes = ref([])
+            // const removedNodes = ref([])
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref(null)
@@ -140,6 +146,7 @@
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (item, highlight = false) => {
+                preview(item)
                 control('selectedAsset', item)
                 control('selectedAssetGuid', item.guid)
                 if (highlight) assetGuidToHighlight.value = item.guid
@@ -162,6 +169,7 @@
                     graph,
                     graphLayout,
                     lineage,
+                    lineageWithProcess,
                     searchItems,
                     currZoom,
                     isComputeDone,
@@ -172,7 +180,8 @@
                 useEventGraph(
                     graph,
                     baseEntity,
-                    showProcess,
+                    lineageWithProcess,
+                    // showProcess,
                     assetGuidToHighlight,
                     highlightedNode,
                     loaderCords,
@@ -211,7 +220,7 @@
 
             onUnmounted(() => {
                 isComputeDone.value = false
-                removedNodes.value = {}
+                // removedNodes.value = {}
                 if (graph.value) graph.value.dispose()
             })
 
@@ -219,7 +228,7 @@
                 selectedAsset,
                 baseEntity,
                 graph,
-                showProcess,
+                // showProcess,
                 showMinimap,
                 showImpactedAssets,
                 showAddLineage,
@@ -246,6 +255,11 @@
 </style>
 
 <style lang="less">
+    @keyframes ant-line {
+        to {
+            stroke-dashoffset: -1000;
+        }
+    }
     .hide-scrollbar {
         /* Hide scrollbar for IE, Edge and Firefox */
         -ms-overflow-style: none; /* IE and Edge */

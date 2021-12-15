@@ -171,7 +171,7 @@ export default function useGraph() {
                 },
                 items: [
                     {
-                        id: `${guid}-port-0`,
+                        id: `${guid}/index`,
                         group: 'columnList',
                         zIndex: 0,
                     },
@@ -223,17 +223,17 @@ export default function useGraph() {
         }
     }
 
-    const createEdgeData = (relation) => {
+    const createEdgeData = (relation, process) => {
         const stroke = '#C7C7C7'
         const edgeData = {
-            id: `${relation.fromEntityId}@${relation.toEntityId}`,
+            id: `${process}/${relation.fromEntityId}@${relation.toEntityId}`,
             source: {
                 cell: relation.fromEntityId,
-                port: `${relation.fromEntityId}-port-0`, // TODO: use dynamic relations
+                port: `${relation.fromEntityId}/index`, // TODO: use dynamic relations
             },
             target: {
                 cell: relation.toEntityId,
-                port: `${relation.toEntityId}-port-0`, // TODO: use dynamic relations
+                port: `${relation.toEntityId}/index`, // TODO: use dynamic relations
             },
             router: {
                 name: 'metro',

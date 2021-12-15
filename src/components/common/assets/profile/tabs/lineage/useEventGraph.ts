@@ -15,13 +15,16 @@ const { highlightNodes, highlightEdges } = useUpdateGraph()
 export default function useEventGraph(
     graph,
     baseEntity,
-    showProcess,
+    lineageWithProcess,
+    // showProcess,
     assetGuidToHighlight,
     highlightedNode,
     loaderCords,
     currZoom,
     onSelectAsset
 ) {
+    const edgesHighlighted = ref([])
+
     const getHighlights = (guid) => {
         let nodesToHighlight = []
         if (guid.value) {
@@ -34,12 +37,16 @@ export default function useEventGraph(
         }
     }
 
-    const highlight = (guid) => {
+    const highlight = (guid, styleHighlightedNode = true) => {
         highlightedNode.value =
             guid && guid !== highlightedNode.value ? guid : ''
         const { nodesToHighlight } = getHighlights(highlightedNode)
-        highlightEdges(graph, nodesToHighlight)
-        highlightNodes(graph, highlightedNode, nodesToHighlight)
+        highlightEdges(graph, nodesToHighlight, edgesHighlighted)
+        highlightNodes(
+            graph,
+            styleHighlightedNode ? highlightedNode : '',
+            nodesToHighlight
+        )
         assetGuidToHighlight.value = ''
         loaderCords.value = {}
     }
@@ -49,10 +56,10 @@ export default function useEventGraph(
         highlight(newVal)
     })
 
-    watch(showProcess, () => {
-        onSelectAsset(baseEntity.value)
-        highlight(null)
-    })
+    // watch(showProcess, () => {
+    //     onSelectAsset(baseEntity.value)
+    //     highlight(null)
+    // })
 
     const columns = ref({})
     const nodesWithPorts = ref({})
@@ -65,11 +72,11 @@ export default function useEventGraph(
                     x.displayText.charAt(0).toUpperCase() +
                     x.displayText.slice(1).toLowerCase()
                 const dataType = dataTypeCategoryList.find((d) =>
-                    d.type.includes(x.attributes.dataType)
+                    d.type.includes(x.attributes.dataType.toUpperCase())
                 )?.imageText
 
                 return {
-                    id: `${node.id}-port-${x.guid}`,
+                    id: x.guid,
                     group: 'columnList',
                     attrs: {
                         portBody: {},
@@ -86,42 +93,23 @@ export default function useEventGraph(
             })
             node.addPorts(ports)
 
-            const nodesToTranslate = []
-            const target = graph.value
-                .getOutgoingEdges(node.id)?.[0]
-                .id.split('@')[1]
-            const source = graph.value
-                .getIncomingEdges(node.id)?.[0]
-                .id.split('@')[0]
+            const { x, y } = node.position()
+            const nodesToTranslate = graph.value.getNodes().filter((n) => {
+                const { x: x2 } = n.position()
+                if (x === x2 && n.id !== node.id) return n
+                return false
+            })
 
-            if (target) {
-                const incomingEdges = graph.value.getIncomingEdges(target)
-                incomingEdges.forEach((x) => {
-                    const s = x.id.split('@')[0]
-                    if (s !== node.id) nodesToTranslate.push(s)
-                })
-            } else if (source) {
-                const outgoingEdges = graph.value.getOutgoingEdges(source)
-                outgoingEdges.forEach((x) => {
-                    const t = x.id.split('@')[1]
-                    if (t !== node.id) nodesToTranslate.push(t)
-                })
-            }
-
-            nodesToTranslate.forEach((nodeId) => {
-                const nodeOrderNo = node.store.data._order
-                const nodeToTranslate = graph.value
-                    .getNodes()
-                    .find((n) => n.id === nodeId)
-                if (nodeOrderNo < nodeToTranslate.store.data._order) {
-                    const { x, y } = nodeToTranslate.position()
-                    const cell = graph.value.getCellById(nodeId)
-                    cell.setData({ prevY: y })
-                    const newY = y + ports.length * 40
-                    nodeToTranslate.position(x, newY)
+            nodesToTranslate.forEach((nodeToTranslate) => {
+                const { x: x2, y: y2 } = nodeToTranslate.position()
+                if (y2 > y) {
+                    const cell = graph.value.getCellById(nodeToTranslate.id)
+                    cell.setData({ prevY: y2 })
+                    const newY = y2 + ports.length * 40
+                    nodeToTranslate.position(x2, newY)
                     if (nodesTranslated.value[node.id])
-                        nodesTranslated.value[node.id].push(nodeToTranslate.id)
-                    else nodesTranslated.value[node.id] = [nodeToTranslate.id]
+                        nodesTranslated.value[node.id].push(nodeToTranslate)
+                    else nodesTranslated.value[node.id] = [nodeToTranslate]
                 }
             })
             nodesWithPorts.value[node.id] = true
@@ -130,13 +118,10 @@ export default function useEventGraph(
             ports.shift()
             node.removePorts(ports)
             const nodesToTranslate = nodesTranslated.value?.[node.id] || []
-            nodesToTranslate.forEach((nodeId) => {
-                const nodeToTranslate = graph.value
-                    .getNodes()
-                    .find((n) => n.id === nodeId)
-                const { x } = nodeToTranslate.position()
+            nodesToTranslate.forEach((nodeToTranslate) => {
+                const { x: x1 } = nodeToTranslate.position()
                 const data = nodeToTranslate.getData()
-                nodeToTranslate.position(x, data.prevY)
+                nodeToTranslate.position(x1, data.prevY)
                 nodesTranslated.value[node.id] = []
             })
             nodesWithPorts.value[node.id] = false
@@ -186,26 +171,6 @@ export default function useEventGraph(
         })
     }
 
-    const isNodeClicked = ref(false)
-    graph.value.on('node:mouseup', ({ e, node }) => {
-        loaderCords.value = { x: e.clientX, y: e.clientY }
-        isNodeClicked.value = true
-        const nodeClickAction = () => {
-            if (!isNodeClicked.value) return
-            onSelectAsset(node.store.data.entity)
-            highlight(node?.id)
-        }
-        setTimeout(nodeClickAction, 300)
-    })
-    graph.value.on('node:dblclick', ({ node }) => {
-        isNodeClicked.value = false
-        getColumnsList(node, node.store.data.entity)
-    })
-    graph.value.on('blank:click', () => {
-        onSelectAsset(baseEntity.value)
-        highlight(null)
-    })
-
     const chp = ref({}) // chp -> currentHilightedPort
     graph.value.on('port:click', ({ e, node }) => {
         e.stopPropagation()
@@ -222,6 +187,79 @@ export default function useEventGraph(
         if (chp.value[node.id])
             chp.value[node.id] = chp.value[node.id] !== portId ? portId : ''
         else chp.value = { ...chp.value, ...{ [node.id]: portId } }
+    })
+
+    const che = ref('') // che -> currentHilightedEdge
+    const controlEdgeHighlight = (cell, reset, animate = false) => {
+        if (!cell) return
+        cell.attr('line/stroke', reset ? '#c7c7c7' : '#5277d7')
+        cell.attr('line/strokeWidth', reset ? 1.6 : 2)
+        cell.attr('line/strokeDasharray', reset ? 0 : 5)
+        cell.attr('line/targetMarker/stroke', reset ? '#c7c7c7' : '#5277d7')
+        cell.toFront()
+        if (animate)
+            cell.attr('line/style/animation', 'ant-line 30s infinite linear')
+        else cell.attr('line/style/animation', 'unset')
+    }
+    const cheCell = graph.value.getCellById(che.value)
+    graph.value.on('edge:click', ({ edge, cell }) => {
+        if (che.value === edge.id) {
+            che.value = ''
+            controlEdgeHighlight(cheCell, true)
+            highlight(null)
+            return
+        }
+        if (che.value) {
+            controlEdgeHighlight(cheCell, true)
+            highlight(null)
+        }
+        che.value = edge.id
+        controlEdgeHighlight(cell, false)
+        const processId = edge.id.split('/')[0]
+        const processEntity = lineageWithProcess.value.guidEntityMap[processId]
+        onSelectAsset(processEntity)
+        const target = edge.id.split('/')[1].split('@')[1]
+        highlight(target, false)
+    })
+    graph.value.on('edge:mouseenter', ({ cell, edge }) => {
+        if (che.value === edge.id) return
+        if (!edgesHighlighted.value.includes(edge.id))
+            controlEdgeHighlight(cell, false, true)
+        edgesHighlighted.value.forEach((id) => {
+            const edgeCell = graph.value.getCellById(id)
+            edgeCell.toFront()
+        })
+    })
+    graph.value.on('edge:mouseleave', ({ cell, edge }) => {
+        if (che.value === edge.id) return
+        if (!edgesHighlighted.value.includes(edge.id))
+            controlEdgeHighlight(cell, true)
+        edgesHighlighted.value.forEach((id) => {
+            const edgeCell = graph.value.getCellById(id)
+            edgeCell.toFront()
+        })
+    })
+
+    const isNodeClicked = ref(false)
+    graph.value.on('node:mouseup', ({ e, node }) => {
+        loaderCords.value = { x: e.clientX, y: e.clientY }
+        isNodeClicked.value = true
+        const nodeClickAction = () => {
+            if (!isNodeClicked.value) return
+            onSelectAsset(node.store.data.entity)
+            highlight(node?.id)
+            che.value = ''
+        }
+        setTimeout(nodeClickAction, 300)
+    })
+    graph.value.on('node:dblclick', ({ node }) => {
+        isNodeClicked.value = false
+        getColumnsList(node, node.store.data.entity)
+    })
+    graph.value.on('blank:click', () => {
+        onSelectAsset(baseEntity.value)
+        che.value = ''
+        highlight(null)
     })
 
     graph.value.on('blank:mousewheel', () => {

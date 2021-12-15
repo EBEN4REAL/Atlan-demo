@@ -9,30 +9,39 @@ export default function useUpdateGraph() {
 
         graphNodes.forEach((x) => {
             const itExists = nodesToHighlight.includes(x.id)
-            const isHN = highlightedNode.value === x.id
+            const isHN = highlightedNode?.value === x.id
             x.updateData({
                 isHighlightedNode: itExists ? (isHN ? x.id : null) : null,
                 isHighlightedNodePath: itExists ? x.id : null,
-                isGrayed: !highlightedNode.value ? false : !itExists,
+                isGrayed: !highlightedNode?.value ? false : !itExists,
             })
         })
     }
 
-    const highlightEdges = (graph, nodesToHighlight) => {
+    const highlightEdges = (graph, nodesToHighlight, edgesHighlighted) => {
+        edgesHighlighted.value = []
         const graphEdges = graph.value.getEdges()
         const gray = nodesToHighlight.length ? '#d9d9d9' : '#c7c7c7'
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
-            const [source, target] = x.id.split('@')
+            const [source, target] = x.id.split('/')[1].split('@')
             const itExists =
                 nodesToHighlight.includes(source) &&
                 nodesToHighlight.includes(target)
+            if (itExists) {
+                edgesHighlighted.value.push(x.id)
+            }
             x.attr('line/stroke', itExists ? '#5277d7' : gray)
+            if (!itExists) {
+                cell.attr('line/strokeWidth', 1.6)
+                cell.attr('line/strokeDasharray', 0)
+            }
             x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
             if (itExists) cell.toFront()
         })
     }
 
+    // TODO: Redundant - To Remove Later on
     const updateProcessNodesPosition = async (graph, num) => {
         await graph.value.model.nodes
         const graphNodes = graph.value.getNodes()
@@ -44,7 +53,8 @@ export default function useUpdateGraph() {
         })
     }
 
-    const toggleProcessNodes = async (graph, showProcess, removedNodes) => {
+    // TODO: Redundant - To Remove Later on
+    const toggleProcessNodes = async (graph, removedNodes, showProcess) => {
         if (showProcess.value) {
             if (!removedNodes.value?.isProcess?.length) return
             await Promise.all(

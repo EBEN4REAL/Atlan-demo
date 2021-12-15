@@ -266,7 +266,7 @@
                 required: true,
             },
         },
-        emits: ['updateSelectedUsers'],
+
         setup(props, context) {
             const {
                 selectedUsers,
@@ -459,7 +459,6 @@
                     selectedGroupsData.value = [...groups]
                 }
 
-                // context.emit('updateSelectedUsers', selectedIds.value)
                 console.log('data: ', {
                     users: selectedUsers.value,
                     grps: selectedGroups.value,

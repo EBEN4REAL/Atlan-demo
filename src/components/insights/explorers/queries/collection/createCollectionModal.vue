@@ -31,7 +31,7 @@
                     <a-switch v-model:checked="isShareable" size="small" />
                 </div>
             </div>
-            <div>
+            <div class="mb-6">
                 <a-input
                     :ref="titleBarRef"
                     v-model:value="title"
@@ -86,7 +86,7 @@
                     />
                 </div>
             </div>
-            <div class="mt-6">
+            <div class="" v-if="isShareable">
                 <span class="text-sm text-gray-700"
                     >Add members and groups</span
                 >
@@ -98,7 +98,6 @@
                             maxHeight: '250px',
                         }"
                         :minimal="true"
-                        @updateSelectedUsers="updateUserList"
                         :showHeaderButtons="true"
                         class="w-full"
                         v-model:selectedUsers="
@@ -142,8 +141,8 @@
                     </a-dropdown>
                 </div>
             </div>
-            <div class="px-4 py-2 mt-4" v-if="isShareable">
-                <!-- <div class="flex flex-col">
+            <!-- <div class="px-4 py-2 mt-4" v-if="isShareable"> -->
+            <!-- <div class="flex flex-col">
                     <div>
                         <span class="font-bold">Viewers</span>
                         <UserSelectWidget
@@ -162,7 +161,7 @@
                         />
                     </div>
                 </div> -->
-            </div>
+            <!-- </div> -->
             <div class="flex items-center w-full mt-5">
                 <div
                     class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer"
@@ -468,15 +467,15 @@
                 console.log('users: ', list)
             }
 
-            const selectedType = ref(['view'])
+            const selectedType = ref('view')
 
             const handleChange = (item) => {
                 if (item !== 'remove') {
                     selectedType.value = item
-                    console.log('users: ', {
-                        userData: userData.value,
-                        userDataDetail: userData.value,
-                    })
+                    // console.log('users: ', {
+                    //     userData: userData.value,
+                    //     userDataDetail: userDataDetail.value,
+                    // })
                 } else {
                 }
             }

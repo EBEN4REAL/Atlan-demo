@@ -2,7 +2,7 @@
     <a-menu style="width: 217px" :selectedKeys="[selectedType]">
         <a-menu-item
             key="view"
-            class="hover:bg-primary-light"
+            class="rounded hover:bg-primary-light"
             @click="handleChange('view')"
         >
             <div class="flex items-center justify-between">
@@ -17,12 +17,16 @@
                         >
                     </div>
                 </div>
-                <AtlanIcon icon="Check" class="text-primary" />
+                <AtlanIcon
+                    v-if="selectedType === 'view'"
+                    icon="Check"
+                    class="text-primary"
+                />
             </div>
         </a-menu-item>
         <a-menu-item
             key="edit"
-            class="hover:bg-primary-light"
+            class="rounded hover:bg-primary-light"
             @click="handleChange('edit')"
         >
             <div class="flex items-center justify-between">
@@ -37,12 +41,16 @@
                         >
                     </div>
                 </div>
-                <AtlanIcon icon="Check" class="text-primary" />
+                <AtlanIcon
+                    v-if="selectedType === 'edit'"
+                    icon="Check"
+                    class="text-primary"
+                />
             </div>
         </a-menu-item>
         <a-menu-item
             key="remove"
-            class="hover:bg-primary-light"
+            class="rounded hover:bg-primary-light"
             v-if="showRemove"
             @click="handleChange('remove')"
         >

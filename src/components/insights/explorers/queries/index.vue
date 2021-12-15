@@ -2,8 +2,13 @@
     <div
         class="flex flex-col items-center w-full h-full bg-white query-explorer"
     >
+        {{ queryCollectionsError }}
         <div
-            v-if="isValid(queryCollections) && !queryCollectionsLoading"
+            v-if="
+                isValid(queryCollections) &&
+                !queryCollectionsError &&
+                !queryCollectionsLoading
+            "
             class="w-full"
         >
             <div class="w-full p-4 pb-0 rounded">
@@ -190,7 +195,7 @@
             <Loader></Loader>
         </div>
         <div
-            v-else-if="!isValid(isValid) && !queryCollectionsLoading"
+            v-else-if="queryCollectionsError && !queryCollectionsLoading"
             class="flex items-center justify-center h-full"
         >
             <ErrorView :error="errorObjectForCollection">
@@ -382,6 +387,9 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
+            const queryCollectionsError = inject(
+                'queryCollectionsError'
+            ) as Ref<any>
             const queryCollectionsLoading = inject(
                 'queryCollectionsLoading'
             ) as Ref<Boolean>
@@ -968,6 +976,7 @@
                     }, 750)
                 }
             })
+            console.log(queryCollectionsError.value, 'queryCollectionsError')
 
             return {
                 isValid,
@@ -975,6 +984,7 @@
                 isQueriesLoading,
                 QueriesFetchError,
                 errorObjectForCollection,
+                queryCollectionsError,
                 searchTreeData,
                 onFilterChange,
                 resolvePublicFolderCreationPermission,

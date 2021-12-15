@@ -242,7 +242,7 @@
                             </template>
                         </a-tooltip>
                         <a-switch
-                            :class="policy.allow ? `` : 'checked'"
+                            :class="policy.allow ? `` : 'bg-red-700'"
                             data-test-id="toggle-switch"
                             class="ml-3"
                             :checked="!policy.allow"

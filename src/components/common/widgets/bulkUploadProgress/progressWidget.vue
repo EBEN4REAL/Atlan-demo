@@ -13,12 +13,17 @@
                 (workflowPhase === 'Succeeded' && categoryErrorCount),
             'border-l-4 border-error':
                 workflowPhase === 'Failed' || workflowPhase === 'Error',
+            'border border-gray-200': workflowPhase === 'Running',
             hidden: !isVisible,
         }"
     >
         <!-- header  -->
         <div
-            class="flex items-center justify-between px-4 py-2 border-t border-r border-gray-200"
+            class="flex items-center justify-between px-4 py-2"
+            :class="{
+                'border-t border-r border-gray-200':
+                    workflowPhase !== 'Running',
+            }"
         >
             <span v-if="workflowPhase === 'Running'" class="font-bold">
                 Upload progress</span
@@ -74,7 +79,7 @@
             "
             :percent="percentage"
             status="active"
-            class="p-2"
+            class="p-2 pt-1 pb-3"
         />
         <!-- WF running state end here-->
         <!-- upload failed state -->
@@ -84,13 +89,13 @@
         >
             <a-divider class="mt-2 mb-5" />
             <span class="text-gray-500"
-                >Your upload could not be completed due to an error.
+                >Sorry, your upload wasn’t completed successfully.
             </span>
             <div class="flex items-center mt-4 space-x-2">
                 <BulkModal :entity="entity">
                     <template #trigger>
                         <a-button type="primary" class="px-4 py-1">
-                            Upload CSV
+                            Retry
                         </a-button>
                     </template>
                 </BulkModal>
@@ -314,7 +319,19 @@
                 categoryErrorCount.value=categoryStatusJson?.error_count
                 nodeName.value = data.nodes[createFinalCsvNode].name
             }
+            const resetHelper=()=>{
+              totalCount.value = -1
+                errorCount.value = -1
+                updatedCount.value =-1
+                createdCount.value=-1
+                // for categories
+                categoryCount.value =-1
+                categoryCreatedCount.value= -1
+                categoryErrorCount.value=-1
+                nodeName.value = ''
+                percentage.value=20
 
+            }
             // gets realtime progress of the upload
             const getProgress = () => {
                 const { liveList } = getRunList(workflowName.value, false)
@@ -372,7 +389,9 @@
             // starts the tracking process
             watch(isWorkflowRunning, () => {
                  if (isWorkflowRunning.value === true) {
+                    resetHelper()
                     triggerUpload()
+                    console.log("triggering")
                 }
             })
            onMounted(()=>{
@@ -391,7 +410,7 @@
                             isWorkflowRunning.value='Running'
                             }
                         }
-                    getFinalStatus(liveList.value?.items[0].status)
+                    // getFinalStatus(liveList.value?.items[0].status)
                     })
             })
             return {

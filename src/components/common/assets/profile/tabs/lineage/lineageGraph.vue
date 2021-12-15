@@ -201,7 +201,8 @@
                     loaderCords,
                     currZoom,
                     onSelectAsset,
-                    resetSelections
+                    resetSelections,
+                    onCloseDrawer
                 )
             }
 

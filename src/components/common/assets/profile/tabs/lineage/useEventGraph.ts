@@ -21,7 +21,8 @@ export default function useEventGraph(
     loaderCords,
     currZoom,
     onSelectAsset,
-    resetSelections
+    resetSelections,
+    onCloseDrawer
 ) {
     const edgesHighlighted = ref([])
 
@@ -38,6 +39,8 @@ export default function useEventGraph(
     }
 
     const highlight = (guid, styleHighlightedNode = true) => {
+        if (guid === highlightedNode.value) onCloseDrawer()
+
         highlightedNode.value =
             guid && guid !== highlightedNode.value ? guid : ''
         const { nodesToHighlight } = getHighlights(highlightedNode)

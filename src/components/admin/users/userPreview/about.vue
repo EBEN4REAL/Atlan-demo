@@ -6,12 +6,14 @@
                 :selected-user="selectedUser"
                 :is-current-user="isCurrentUser"
                 @toggle-edit="toggleEdit"
+                @success="$emit('success')"
             />
             <ViewUser
                 v-else
                 :selected-user="selectedUser"
                 :is-current-user="isCurrentUser"
                 @toggle-edit="toggleEdit"
+                @success="$emit('success')"
             />
         </div>
     </div>
@@ -38,7 +40,7 @@
                 default: false,
             },
         },
-        emits: ['updatedUser'],
+        emits: ['updatedUser', 'success'],
         setup(props) {
             const { selectedUser, isCurrentUser } = toRefs(props)
             const isEditing = ref(false)

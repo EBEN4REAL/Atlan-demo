@@ -234,7 +234,7 @@
         placement="right"
         :closable="false"
         :visible="addpolicyVisible"
-        :width="width"
+        :width="450"
         :mask="false"
         @close="handleCloseAddPolicy"
     >
@@ -245,7 +245,6 @@
             :is-edit="isEdit"
             @save="savePolicyUI"
             @close="handleCloseAdd"
-            @changeWidth="handleChangeWidth"
         />
     </a-drawer>
 </template>
@@ -307,7 +306,6 @@
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
             const isEdit = ref(false)
-            const width = ref(450)
             const typeAddPolicy = ref('')
             const handleAddPolicy = (type) => {
                 typeAddPolicy.value = type
@@ -459,9 +457,7 @@
             const handleCloseAddPolicy = () => {
                 addpolicyVisible.value = false
             }
-            const handleChangeWidth = (widthUpdated) => {
-                width.value = widthUpdated
-            }
+
             const handleCloseAdd = () => {
                 addpolicyVisible.value = false
             }
@@ -489,8 +485,6 @@
                 addpolicyVisible,
                 handleCloseAddPolicy,
                 typeAddPolicy,
-                width,
-                handleChangeWidth,
                 handleCloseAdd,
                 isEdit,
             }

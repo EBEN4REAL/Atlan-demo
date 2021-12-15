@@ -91,7 +91,7 @@
                         icon="ImpactedAssets"
                         class="ml-3 outline-none"
                         :class="
-                            isLeafNode
+                            isLeafNode || !highlightedNode
                                 ? 'text-gray-500 cursor-not-allowed'
                                 : 'text-primary'
                         "
@@ -153,6 +153,7 @@
             /** METHODS */
             // onShowImpactedAssets
             const onShowImpactedAssets = () => {
+                if (!highlightedNode.value) return
                 if (isLeafNode.value) return
                 emit('show-impacted-assets')
             }

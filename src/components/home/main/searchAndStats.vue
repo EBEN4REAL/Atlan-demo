@@ -110,7 +110,7 @@
                             }
                         })
                     } else if (
-                        agg.key === 'atlasglossarycategory' ||
+                        // agg.key === 'atlasglossarycategory' ||
                         agg.key === 'atlasglossaryterm'
                     ) {
                         metadata.value.map((obj) => {

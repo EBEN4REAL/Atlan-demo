@@ -104,7 +104,7 @@ export const assetTypeList: {
         orderWeight: 70,
         count: 0,
     },
-    {
+    /*   {
         id: 'QueryFolder',
         label: 'QueryFolder',
         qualifiedNameAttribute: 'parentQualifiedName',
@@ -113,7 +113,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         orderWeight: 60,
         count: 0,
-    },
+    }, */
     {
         id: 'AtlasGlossaryTerm',
         label: 'Term',

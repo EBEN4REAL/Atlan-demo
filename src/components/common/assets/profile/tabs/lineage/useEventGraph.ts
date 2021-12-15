@@ -20,7 +20,9 @@ export default function useEventGraph(
     highlightedNode,
     loaderCords,
     currZoom,
-    onSelectAsset
+    onSelectAsset,
+    resetSelections,
+    onCloseDrawer
 ) {
     const edgesHighlighted = ref([])
 
@@ -37,6 +39,8 @@ export default function useEventGraph(
     }
 
     const highlight = (guid, styleHighlightedNode = true) => {
+        if (guid === highlightedNode.value) onCloseDrawer()
+
         highlightedNode.value =
             guid && guid !== highlightedNode.value ? guid : ''
         const { nodesToHighlight } = getHighlights(highlightedNode)
@@ -51,8 +55,17 @@ export default function useEventGraph(
     }
 
     watch(assetGuidToHighlight, (newVal) => {
-        if (!newVal) return
-        highlight(newVal)
+        if (!newVal) highlight(null)
+        else highlight(newVal)
+    })
+
+    watch(resetSelections, (newVal) => {
+        if (newVal) {
+            onSelectAsset(baseEntity.value, false, false)
+            che.value = ''
+            highlight(null)
+            resetSelections.value = false
+        }
     })
 
     const columns = ref({})
@@ -199,6 +212,7 @@ export default function useEventGraph(
     graph.value.on('edge:click', ({ edge, cell }) => {
         if (che.value === edge.id) {
             che.value = ''
+            onCloseDrawer()
             controlEdgeHighlight(cheCell, true)
             highlight(null)
             return
@@ -252,6 +266,7 @@ export default function useEventGraph(
     })
     graph.value.on('blank:click', () => {
         onSelectAsset(baseEntity.value)
+        onCloseDrawer()
         che.value = ''
         highlight(null)
     })

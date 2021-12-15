@@ -38,7 +38,9 @@
                     :name="classification.name"
                     :display-name="classification?.displayName"
                     :is-propagated="isPropagated(classification)"
-                    :allow-delete="!readOnly"
+                    :allow-delete="
+                        allowDelete === null ? !readOnly : allowDelete
+                    "
                     :color="classification.options?.color"
                     @delete="handleDeleteClassification"
                 />
@@ -100,6 +102,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            allowDelete: {
+                type: Boolean,
+                required: false,
+                default: null,
             },
         },
         emits: ['change', 'update:modelValue'],

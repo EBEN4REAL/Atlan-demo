@@ -23,7 +23,7 @@
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"
-                type="purpose"
+                type="persona"
             />
             <div
                 class="flex items-center justify-end p-3 mt-auto border border-solid gap-x-2 border-slate-300"

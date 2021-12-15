@@ -109,53 +109,62 @@ const personaScopeList = [
             {
                 value: 'entity-read',
                 label: 'read',
+                desc: 'Read access to private attributes'
             },
             {
                 value: 'entity-update',
                 label: 'update',
-            },
-            {
-                value: 'link-assets',
-                label: 'update: Linked assets',
+                desc: 'Access to update asset metadata'
             },
             {
                 value: 'entity-create',
                 label: 'create',
+                desc: 'Create entities within selected assets'
             },
             {
                 value: 'entity-delete',
                 label: 'delete',
+                desc: 'Permission to delete selected assets'
+            },
+            {
+                value: 'link-assets',
+                label: 'update: Linked assets',
+                desc: 'Permission to link assets like readme, resources to this asset'
             },
         ],
         type: 'Asset',
-        label: 'Asset',
+        label: 'Assets',
     },
     {
         scopes: [
             {
                 value: 'entity-update-business-metadata',
                 label: 'update: Custom Metadata',
+                desc: 'Update classifications for selected assets'
             },
-            {
-                value: 'entity-add-classification',
-                label: 'add: Classifications',
-            },
-            {
-                value: 'entity-remove-classification',
-                label: 'remove: Classifications',
-            },
+            // {
+            //     value: 'entity-add-classification',
+            //     label: 'add: Classifications',
+            // },
+            // {
+            //     value: 'entity-remove-classification',
+            //     label: 'remove: Classifications',
+            // },
             {
                 value: 'entity-update-classification',
                 label: 'update: Classifications',
+                desc: 'Update values for BM attributes for selected assets'
             },
 
             {
                 value: 'add-terms',
                 label: 'Add: Terms',
+                desc: 'Permission to link terms from aselected assets'
             },
             {
                 value: 'remove-terms',
                 label: 'Remove: Terms',
+                desc: 'Permission to unlink terms from aselected assets'
             },
         ],
         type: 'Governance',

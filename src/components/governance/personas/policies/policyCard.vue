@@ -3,7 +3,7 @@
         class="relative border-b border-gray-300 container-policy-card last:border-0"
     >
         <div
-            class="flex flex-col p-2 pr-2 text-gray-500 cursor-pointer group hover:bg-primary-light card-policy"
+            class="flex flex-col p-2 pr-2 text-gray-500 rounded cursor-pointer group hover:bg-primary-light card-policy"
             :class="
                 selectedPolicy.id === policy.id
                     ? 'outline-primary bg-primary-light'

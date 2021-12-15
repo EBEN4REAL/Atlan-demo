@@ -458,7 +458,7 @@
                     }
                     if (type.value === 'data') {
                         policy.value = {
-                            actions: [],
+                            actions: ['SELECT'],
                             assets: [],
                             connectionName: '',
                             connectionId: '',

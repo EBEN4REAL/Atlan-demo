@@ -5,11 +5,11 @@
             placement="right"
             :get-container="false"
             :class="$style.drawerStyles"
-            :closable="false"
-            :mask-closable="true"
+            :closable="!showMask"
+            :mask-closable="showMask"
             :style="{ position: 'absolute' }"
             :content-wrapper-style="{ width: '420px' }"
-            :mask="true"
+            :mask="showMask"
             :key="data.guid"
             @close="$emit('closeDrawer')"
         >
@@ -43,6 +43,11 @@
                 default() {
                     return {}
                 },
+            },
+            showMask: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['closeDrawer', 'update'],

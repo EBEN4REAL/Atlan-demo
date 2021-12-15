@@ -36,8 +36,7 @@
                     :class="['capitalize', $style.checkbox_custom]"
                     class="wrapper-checkbox"
                     @update:value="updateSelection(scope.type, $event)"
-                    >sjdhgshdgjshdgjsgd</a-checkbox-group
-                >
+                ></a-checkbox-group>
                 <div class="wrapper-desc">
                     <div
                         v-for="(item, i) in scope.scopes"

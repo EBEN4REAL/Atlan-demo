@@ -148,7 +148,10 @@
                 <GlossaryItem
                     :item="item"
                     :selectedGuid="selectedGlossary?.guid"
+                    :checkable="checkable"
+                    :checked="checkedGuids?.includes(item.guid)"
                     @preview="handlePreview"
+                    @check="onSearchItemCheck"
                 ></GlossaryItem>
             </template>
         </AssetList>
@@ -239,7 +242,7 @@
                 required: false,
             },
         },
-        emits: ['check', 'update:checkedGuids'],
+        emits: ['check', 'update:checkedGuids', 'searchItemCheck'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
             const { checkedGuids } = useVModels(props, emit)
@@ -257,6 +260,7 @@
             const selectedGlosaryName = computed(
                 () => selectedGlossary?.value?.attributes?.name
             )
+
 
             // List Options
             const limit = ref(20)
@@ -440,6 +444,12 @@
             const onCheck = (checkedNodes, { checkedKeys, checked }) => {
                 emit('check', checkedNodes, { checkedKeys, checked })
             }
+            const onSearchItemCheck = (checkedNode, checked) => {
+                if(!checkedGuids.value.includes(checkedNode.guid)) {
+                    checkedGuids.value.push(checkedNode.guid)
+                }
+                emit('searchItemCheck', checkedNode, checked)
+            }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
             return {
@@ -484,6 +494,7 @@
                 checkedGuids,
                 updateTreeNode,
                 searchBar,
+                onSearchItemCheck
             }
         },
     })
@@ -497,10 +508,9 @@
     .checkableTree {
         max-height: 364px;
         :global(.ant-tree-checkbox) {
-            @apply my-auto mr-2;
+            @apply my-auto mr-2 mt-3;
             position: absolute;
             right: 1.5rem;
-            margin-top: 0.5rem;
             z-index: 99;
         }
     }

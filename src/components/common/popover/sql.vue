@@ -1,12 +1,9 @@
 <template>
-    <a-popover
-        placement="left"
-        :visible="isVisible"
-        @mouseenter="handleHover"
-        @mouseleave="handleHover"
-    >
+    <a-popover placement="left">
         <template #content>
-            <pre>{{ displaySQL }}</pre>
+            <div class="p-4">
+                <pre>{{ displaySQL }}</pre>
+            </div>
         </template>
         <slot></slot>
     </a-popover>
@@ -33,14 +30,14 @@
             })
             const isVisible = ref(false)
 
-            const handleHover = () => {
-                if (!displaySQL.value) return
-                isVisible.value = !isVisible.value
-            }
+            // const handleHover = () => {
+            //     if (!displaySQL.value) return
+            //     isVisible.value = !isVisible.value
+            // }
 
             return {
                 displaySQL,
-                handleHover,
+
                 isVisible,
             }
         },

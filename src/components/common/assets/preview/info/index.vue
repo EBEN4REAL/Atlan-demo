@@ -18,7 +18,8 @@
         <div v-if="selectedAsset" class="flex flex-col px-5">
             <span class="text-gray-500">Name</span>
             <span class="text-gray-500 truncate">{{
-                selectedAsset.displayText || selectedAsset.attributes.name
+                selectedAsset.attributes.name ||
+                selectedAsset.attributes.displayName
             }}</span>
         </div>
         <AnnouncementWidget

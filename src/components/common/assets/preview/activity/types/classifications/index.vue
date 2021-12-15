@@ -38,8 +38,6 @@
                         classificationValue.value = classification
                     }
                 })
-
-                console.log(classificationValue.value)
             })
 
             return { classificationValue }

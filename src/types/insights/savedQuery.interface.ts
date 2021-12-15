@@ -12,6 +12,8 @@ export type Attributes = {
     certificateUpdatedBy?: string
     ownerUsers?: string
     ownerGroups?: string
+    viewerUsers?: string
+    viewerGroups?: string
     certificateUpdatedAt?: number
     dataType?: string
     description?: string
@@ -24,7 +26,6 @@ export type Attributes = {
     connectionQualifiedName: string
     connectionId: string
     defaultSchemaQualifiedName: string
-    parentFolderQualifiedName: string
     variablesSchemaBase64: string // base64 string
     owner?: string
     __createdBy: string
@@ -39,13 +40,21 @@ export type Attributes = {
 export type QueryFolderAttributes = Attributes & {
     parentFolder?: Components.Schemas.AtlasObjectId
     columns?: Components.Schemas.AtlasObjectId[]
+    collectionQualifiedName: string
+    parentQualifiedName: string
+    parentQualifiedName: string
 }
 
 export type SavedQueryAttributes = Attributes & {
     folder?: Components.Schemas.AtlasObjectId
     compiledQuery: string
     rawQuery: string
+    collectionQualifiedName: string
+    parentQualifiedName: string
+    parentQualifiedName: string
 }
+
+export type QueryCollectionAttributes = Attributes
 
 export type Folder = Omit<
     Components.Schemas.AtlasEntityHeader,
@@ -62,6 +71,15 @@ export type SavedQuery = Omit<
 > & {
     typeName: 'Query'
     attributes: SavedQueryAttributes
+    guid: string
+}
+
+export type QueryCollection = Omit<
+    Components.Schemas.AtlasEntityHeader,
+    'attributes' | 'typeName' | 'guid'
+> & {
+    typeName: 'QueryCollection'
+    attributes: QueryCollectionAttributes
     guid: string
 }
 

@@ -2,21 +2,15 @@
     <span class="text-gray-500 text-sm">Groups</span>
     <div v-if="!error && !isLoading" class="flex flex-wrap mt-1">
         <div v-if="filteredGroupCount > 0">
-            <span
-                v-for="(group, index) in groupList.slice(0, 2)"
-                :key="index"
-                class="rounded-3xl border border-gray-300 py-1 px-3 font-normal text-center text-sm"
-                :class="index > 0 ? 'ml-1' : ''"
+            <Tags
+                :allow-update="false"
+                :tags="groups"
+                icon="Group"
             >
-                <AtlanIcon icon="Group" class="w-4 h-4 text-primary" />
-                {{ group.alias }}
-            </span>
-            <span
-                v-if="filteredGroupCount < 2"
-                class="rounded-3xl ml-1 mt-1 bg-gray-300 border border-gray-200 py-1 px-3 text-center font-normal text-sm"
-            >
-                <a href="#">+ {{ filteredGroupCount - 2 }} more</a>
-            </span>
+                <template #label="{ tag }">
+                    <AtlanIcon icon="Group" class="text-primary mr-1"/> {{ tag }}
+                </template>
+            </Tags>
         </div>
         <div v-else>
             <span class="font-bold">{{ user.firstName }}</span> is not a part of any group.
@@ -25,8 +19,9 @@
 </template>
 
 <script setup lang="ts">
-    import { toRefs, defineProps, reactive } from 'vue'
+    import { toRefs, defineProps, reactive, computed } from 'vue'
     import getUserGroups from '~/composables/user/getUserGroups'
+    import Tags from "~/components/common/badge/tags/index.vue"
 
     const props = defineProps({
         user: {
@@ -52,6 +47,7 @@
         error,
         isLoading,
     } = getUserGroups(groupListAPIParams)
+    const groups = computed(() => groupList.value.map((group) => group.name))
 </script>
 
 <script lang="ts">

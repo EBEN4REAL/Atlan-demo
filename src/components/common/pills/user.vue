@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center py-0.5 pl-1 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer"
+        class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer"
         :data-test-id="username"
         :class="
             enableHover
@@ -11,7 +11,7 @@
     >
         <UserAvatar
             :username="username"
-            style-class="mr-1 border-none bg-primary-light "
+            style-class="border border-primary bg-primary-light "
         ></UserAvatar>
         <div class="">
             {{ username }}

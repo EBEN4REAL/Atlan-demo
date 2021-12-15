@@ -49,10 +49,21 @@
                 </div>
 
                 <div class="w-full overflow-y-auto">
-                    <CmndK
-                        :is-cmnd-k-visible="isCmndKVisible"
-                        @closeModal="isCmndKVisible = false"
-                    />
+                    <a-modal
+                        v-model:visible="isCmndKVisible"
+                        width="800px"
+                        class="rounded-md"
+                        :destroy-on-close="true"
+                        wrap-class-name="rounded-md"
+                        :class="$style.modalStyles"
+                        :closable="false"
+                        :footer="null"
+                        :mask="false"
+                    >
+                        <CmndK
+                            :is-cmnd-k-visible="isCmndKVisible"
+                            @closeModal="isCmndKVisible = false"
+                    /></a-modal>
 
                     <router-view />
                 </div>

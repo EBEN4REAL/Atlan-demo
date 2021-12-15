@@ -74,13 +74,13 @@
                 return cleanInput(e.target.value)
             }
 
-            watch(formState[property.value?.ui?.linkedProperty], () => {
-                if (property.value.ui.linkedProperty) {
-                    formState[property.id] = cleanInput(
-                        formState[property.value.ui.linkedProperty]
-                    )
-                }
-            })
+            // watch(formState[property.value?.ui?.linkedProperty], () => {
+            //     if (property.value.ui.linkedProperty) {
+            //         formState[property.id] = cleanInput(
+            //             formState[property.value.ui.linkedProperty]
+            //         )
+            //     }
+            // })
 
             return {
                 property,

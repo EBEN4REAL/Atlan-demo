@@ -58,13 +58,13 @@ const UpdateGroup = (
         options || {}
     )
 
-const getGroupMembers = (id, params, options) =>
+const getGroupMembers = (pathVariables, params, options) =>
     useAPI(
         map.LIST_MEMBERS,
         'GET',
         {
             params,
-            pathVariables: { id },
+            pathVariables,
         },
         options || {}
     )

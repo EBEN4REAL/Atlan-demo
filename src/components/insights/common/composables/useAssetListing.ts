@@ -35,6 +35,7 @@ export function useAssetListing(
     })
 
     return {
+        error,
         data,
         list,
         isLoading,

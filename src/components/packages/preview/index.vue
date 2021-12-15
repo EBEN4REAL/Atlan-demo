@@ -9,27 +9,27 @@
             >
                 <img
                     v-if="
-                        selectedPackage.metadata.annotations[
+                        selectedPackage.metadata?.annotations[
                             'orchestration.atlan.com/icon'
                         ]
                     "
                     class="self-center w-6 h-6"
                     :src="
-                        selectedPackage.metadata.annotations[
+                        selectedPackage.metadata?.annotations[
                             'orchestration.atlan.com/icon'
                         ]
                     "
                 />
                 <span
                     v-else-if="
-                        selectedPackage.metadata.annotations[
+                        selectedPackage.metadata?.annotations[
                             'orchestration.atlan.com/emoji'
                         ]
                     "
                     class="self-center w-6 h-6"
                 >
                     {{
-                        selectedPackage.metadata.annotations[
+                        selectedPackage.metadata?.annotations[
                             'orchestration.atlan.com/emoji'
                         ]
                     }}</span
@@ -37,7 +37,14 @@
                 <span v-else class="self-center w-6 h-6">
                     {{ '\ud83d\udce6' }}</span
                 >
-                <div class="absolute -right-1 -top-2">
+                <div
+                    v-if="
+                        selectedPackage.metadata?.labels[
+                            'orchestration.atlan.com/certified'
+                        ] === 'true'
+                    "
+                    class="absolute -right-1 -top-2"
+                >
                     <a-tooltip title="Certified" placement="left">
                         <AtlanIcon icon="Verified" class="ml-1"></AtlanIcon>
                     </a-tooltip>
@@ -155,7 +162,6 @@
                 type: Object,
             },
         },
-        emits: ['setup', 'sandbox'],
         setup(props, { emit }) {
             const { selectedPackage } = toRefs(props)
 

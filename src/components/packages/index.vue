@@ -7,6 +7,10 @@
                 >
                     <PackageFilters
                         :filter-list="packageFilters"
+                        v-model="facets"
+                        v-model:activeKey="activeKey"
+                        @change="handleFilterChange"
+                        @reset="handleResetEvent"
                     ></PackageFilters>
                 </div>
 
@@ -16,11 +20,13 @@
                     >
                         <a-input
                             size="large"
+                            v-model:value="queryText"
                             placeholder="Search Packages"
+                            @change="handleSearchChange"
                         ></a-input>
                     </div>
 
-                    <div class="flex flex-1 overflow-y-auto">
+                    <div class="flex h-full overflow-y-auto">
                         <div
                             class="flex items-center justify-center w-full"
                             v-if="isLoading"
@@ -76,6 +82,7 @@
     import PackageFilters from '@/packages/filters/index.vue'
     import { packageFilters } from '~/constant/filters/packageFilters'
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    import { useDebounceFn } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PackageDiscovery',
@@ -109,6 +116,9 @@
             const facets = ref({
                 verified: true,
             })
+
+            const activeKey = ref(['sourceCategory_0'])
+
             const dependentKey = ref('DEFAULT_PACKAGES')
 
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
@@ -130,16 +140,24 @@
             //     offset,
             // })
 
-            const { isLoading, list, error } = usePackageDiscoverList({
-                isCache: true,
-                dependentKey,
-                facets,
-                limit,
-                offset,
-                source: ref({
-                    excludes: ['spec'],
-                }),
-            })
+            const { isLoading, list, error, quickChange } =
+                usePackageDiscoverList({
+                    isCache: true,
+                    dependentKey,
+                    facets,
+                    limit,
+                    offset,
+                    queryText,
+                    source: ref({
+                        excludes: ['spec'],
+                    }),
+                })
+
+            const handleFilterChange = () => {
+                console.log('change facets', facets)
+                offset.value = 0
+                quickChange()
+            }
 
             const placeholder = computed(() => 'Search all packages')
 
@@ -150,6 +168,21 @@
                 emit('select', item)
             }
 
+            const handleSearchChange = useDebounceFn(() => {
+                offset.value = 0
+                quickChange()
+            }, 150)
+
+            const handleResetEvent = () => {
+                facets.value = {
+                    verified: true,
+                }
+                queryText.value = ''
+                handleFilterChange()
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
+            }
+
             return {
                 placeholder,
                 dirtyTimestamp,
@@ -158,12 +191,16 @@
                 list,
                 handleSelect,
                 selectedPackage,
-
+                queryText,
                 error,
                 packageFilters,
                 facets,
                 handleSetupSandbox,
                 handleSetup,
+                handleFilterChange,
+                handleSearchChange,
+                activeKey,
+                handleResetEvent,
             }
         },
     })

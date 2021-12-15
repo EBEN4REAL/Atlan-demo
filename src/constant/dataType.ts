@@ -41,6 +41,7 @@ export const dataTypeCategoryList = [
             'INT2',
         ],
         image: number,
+        imageText: 'number',
     },
     {
         id: 'decimal',
@@ -57,6 +58,7 @@ export const dataTypeCategoryList = [
             'PRIMITIVE_DOUBLE',
         ],
         image: float1,
+        imageText: 'float1',
     },
     {
         id: 'text',
@@ -72,12 +74,14 @@ export const dataTypeCategoryList = [
             'VARCHAR',
         ],
         image: string,
+        imageText: 'string',
     },
     {
         id: 'boolean',
         label: 'Boolean',
         type: ['BOOLEAN'],
         image: boolean,
+        imageText: 'boolean',
     },
     {
         id: 'dateTime',
@@ -94,12 +98,14 @@ export const dataTypeCategoryList = [
             'TIMESTAMPTZ',
         ],
         image: date,
+        imageText: 'date',
     },
     {
         id: 'array',
         label: 'Array',
         type: ['ARRAY'],
         image: array,
+        imageText: 'array',
     },
     {
         id: 'variant',
@@ -112,11 +118,13 @@ export const dataTypeCategoryList = [
         label: 'Object',
         type: ['OBJECT'],
         image: struct,
+        imageText: 'struct',
     },
     {
         id: 'geography',
         label: 'Geography',
         type: ['GEOGRAPHY', 'OBJECT'],
         image: geography,
+        imageText: 'geography',
     },
 ]

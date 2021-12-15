@@ -15,17 +15,8 @@
                             {{ t?.data?.label }}
                         </div>
                         <div
-                            class="
-                                px-1
-                                py-0.5
-                                ml-2
-                                text-xs
-                                font-bold
-                                rounded
-                                flex
-                                items-center
-                            "
                             v-if="t?.data?.key === 'policies'"
+                            class="px-1 py-0.5 ml-2 text-xs font-bold rounded flex items-center"
                             :class="
                                 activeTabKey === t?.data?.key
                                     ? 'text-primary bg-primary-light'
@@ -41,17 +32,8 @@
                             </div>
                         </div>
                         <div
-                            class="
-                                px-1
-                                py-0.5
-                                ml-2
-                                text-xs
-                                font-bold
-                                rounded
-                                flex
-                                items-center
-                            "
                             v-if="t?.data?.key === 'users'"
+                            class="px-1 py-0.5 ml-2 text-xs font-bold rounded flex items-center"
                             :class="
                                 activeTabKey === t?.data?.key
                                     ? 'text-primary bg-primary-light'
@@ -87,11 +69,11 @@
                 :persona="persona"
             />
             <div v-else-if="activeTabKey === 'policies'">
-                <div class="sticky top-0 bg-white">
+                <div class="bg-white">
                     <div class="flex items-center pt-3 pr-4">
                         <SearchAndFilter
                             v-model:value="searchPersona"
-                            :placeholder="`Search from ${totalPolicy} personas`"
+                            :placeholder="`Search from ${totalPolicy} policies`"
                             class="bg-white"
                             :autofocus="true"
                             size="minimal"
@@ -140,11 +122,14 @@
                             </template>
                         </a-dropdown>
                     </div>
-                    <div v-if="totalPolicy !== 0" class="px-3 py-4 container-tabs">
+                    <div
+                        v-if="totalPolicy !== 0"
+                        class="px-3 py-4 bg-white container-tabs"
+                    >
                         <AggregationTabs
                             v-model="activeTabFilter"
                             :list="tabFilterList"
-                            :noAll="true"
+                            :no-all="true"
                         />
                     </div>
                 </div>
@@ -160,14 +145,13 @@
                     /> -->
 
                     <PolicyCard
-                        class="px-3 bg-white"
                         :policy="policy"
                         type="meta"
+                        :selected-policy="selectedPolicy"
                         @edit="setEditFlag('meta', policy.id!)"
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                         @clickCard="handleSelectPolicy"
-                        :selectedPolicy="selectedPolicy"
                     />
                 </template>
                 <template
@@ -185,15 +169,13 @@
                     /> -->
                     <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
                     <PolicyCard
-                        :isLastElement="idx === dataPolicyComputed?.length - 1"
-                        class="px-3 bg-white"
                         :policy="policy"
                         type="data"
+                        :selected-policy="selectedPolicy"
                         @edit="setEditFlag('data', policy.id!)"
                         @delete="deletePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                         @clickCard="handleSelectPolicy"
-                        :selectedPolicy="selectedPolicy"
                     />
                 </template>
                 <!-- For pusing the new edit policy to bottom -->
@@ -243,11 +225,30 @@
             </div>
             <PersonaUsersGroups
                 v-else-if="activeTabKey === 'users'"
-                class="pt-6 pb-2"
                 v-model:persona="persona"
+                class="pt-6 pb-2"
             />
         </div>
     </template>
+    <a-drawer
+        placement="right"
+        :closable="false"
+        :visible="addpolicyVisible"
+        :width="450"
+        :mask="false"
+        @close="handleCloseAddPolicy"
+    >
+        <Addpolicy
+            :type="typeAddPolicy"
+            :show-drawer="addpolicyVisible"
+            :selected-policy="selectedPolicy"
+            :is-edit="isEdit"
+            :is-loading="loadingPolicy"
+            :persona="persona"
+            @save="savePolicyUI"
+            @close="handleCloseAdd"
+        />
+    </a-drawer>
 </template>
 
 <script lang="ts">
@@ -257,7 +258,6 @@
     import AtlanBtn from '@/UI/button.vue'
     import PolicyCard from './policies/policyCard.vue'
     import PersonaUsersGroups from './users/personaUsersGroups.vue'
-    import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './overview/personaMeta.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
@@ -265,6 +265,7 @@
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { filterMethod } from '~/utils/helper/search'
+    import Addpolicy from './addpolicy.vue'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
@@ -286,13 +287,13 @@
         components: {
             MinimalTab,
             PolicyCard,
-            MetadataPolicy,
             DataPolicy,
             AtlanBtn,
             PersonaMeta,
             PersonaUsersGroups,
             SearchAndFilter,
             AggregationTabs,
+            Addpolicy,
         },
         props: {
             persona: {
@@ -300,54 +301,63 @@
                 required: true,
             },
         },
-        setup() {
+        emits: ['selectPolicy'],
+        setup(prop, { emit }) {
             const searchPersona = ref('')
             const activeTabFilter = ref('')
             const selectedPolicy = ref({})
+            const addpolicyVisible = ref(false)
+            const isEdit = ref(false)
+            const typeAddPolicy = ref('')
+            const loadingPolicy = ref(false)
+            const handleAddPolicy = (type) => {
+                typeAddPolicy.value = type
+                addpolicyVisible.value = true
+                isEdit.value = false
+            }
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
                     icon: 'Settings',
-                    handleClick: () => addPolicy('meta'),
+                    handleClick: () => handleAddPolicy('meta'),
                 },
                 {
                     title: 'Data Policy',
                     icon: 'Query',
-                    handleClick: () => addPolicy('data'),
+                    handleClick: () => handleAddPolicy('data'),
                 },
             ]
-            
+
             watch(selectedPersonaDirty, () => {
                 activeTabFilter.value = ''
+                addpolicyVisible.value = false
             })
-            async function savePolicyUI(type: PolicyType, id: string) {
+            async function savePolicyUI(type: PolicyType, dataPolicy: Object) {
                 const messageKey = Date.now()
+                loadingPolicy.value = true
                 message.loading({
                     content: 'Saving policy',
                     duration: 0,
                     key: messageKey,
                 })
                 try {
-                    await savePolicy(type, id)
-                    if (type === 'meta')
-                        policyEditMap.value.metadataPolicies[id] = false
-                    else if (type === 'data')
-                        policyEditMap.value.dataPolicies[id] = false
+                    await savePolicy(type, dataPolicy)
                     updateSelectedPersona()
-
+                    addpolicyVisible.value = false
                     // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
                         duration: 1.5,
                         key: messageKey,
                     })
+                    loadingPolicy.value = false
                 } catch (error: any) {
-                    console.log(error?.response?.data, 'error')
                     message.error({
                         content: error?.response?.data?.message,
                         duration: 1.5,
                         key: messageKey,
                     })
+                    loadingPolicy.value = false
                 }
             }
 
@@ -380,24 +390,28 @@
                         id: 'all Persona',
                         label: 'All ',
                         count:
-                           ( selectedPersonaDirty?.value?.metadataPolicies
-                                ?.length || 0) + (selectedPersonaDirty?.value?.dataPolicies?.length || 0)
-                    }
+                            (selectedPersonaDirty?.value?.metadataPolicies
+                                ?.length || 0) +
+                            (selectedPersonaDirty?.value?.dataPolicies
+                                ?.length || 0),
+                    },
                 ]
-                const lengthMetaData = selectedPersonaDirty?.value?.metadataPolicies?.length || 0
-                const lengthDataPolicy = selectedPersonaDirty?.value?.dataPolicies?.length || 0
-                if(lengthMetaData > 0){
+                const lengthMetaData =
+                    selectedPersonaDirty?.value?.metadataPolicies?.length || 0
+                const lengthDataPolicy =
+                    selectedPersonaDirty?.value?.dataPolicies?.length || 0
+                if (lengthMetaData > 0) {
                     listFilter.push({
                         id: 'metaData',
                         label: 'MetaData',
-                        count: lengthMetaData
+                        count: lengthMetaData,
                     })
                 }
-                if(lengthDataPolicy > 0){
+                if (lengthDataPolicy > 0) {
                     listFilter.push({
                         id: 'data',
                         label: 'data',
-                        count: lengthDataPolicy
+                        count: lengthDataPolicy,
                     })
                 }
                 return listFilter
@@ -436,10 +450,24 @@
             })
             const handleSelectPolicy = (policy) => {
                 selectedPolicy.value = policy
+                isEdit.value = true
+                addpolicyVisible.value = true
+                // emit('selectPolicy', policy)
             }
-            const totalPolicy = computed(() => {
-                return (selectedPersonaDirty.value?.metadataPolicies?.length || 0) + (selectedPersonaDirty.value?.dataPolicies?.length || 0) ?? 0
-            })
+            const totalPolicy = computed(
+                () =>
+                    (selectedPersonaDirty.value?.metadataPolicies?.length ||
+                        0) +
+                        (selectedPersonaDirty.value?.dataPolicies?.length ||
+                            0) ?? 0
+            )
+            const handleCloseAddPolicy = () => {
+                addpolicyVisible.value = false
+            }
+
+            const handleCloseAdd = () => {
+                addpolicyVisible.value = false
+            }
             return {
                 newIdTag,
                 activeTabKey,
@@ -460,7 +488,13 @@
                 dataPolicyComputed,
                 handleSelectPolicy,
                 selectedPolicy,
-                totalPolicy
+                totalPolicy,
+                addpolicyVisible,
+                handleCloseAddPolicy,
+                typeAddPolicy,
+                handleCloseAdd,
+                isEdit,
+                loadingPolicy,
             }
         },
     })

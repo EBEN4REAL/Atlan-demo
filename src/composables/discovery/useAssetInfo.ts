@@ -19,12 +19,15 @@ import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
 import useGlossaryStore from '~/store/glossary'
 import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
+import useConnectionData from '../connection/useConnectionData'
 
 // import { formatDateTime } from '~/utils/date'
 
 // import { getCountString, getSizeString } from '~/composables/asset/useFormat'
 
 export default function useAssetInfo() {
+    const { getConnection } = useConnectionData()
+
     const connectionStore = useConnectionStore()
 
     const attributes = (asset: assetInterface) => asset?.attributes
@@ -51,8 +54,20 @@ export default function useAssetInfo() {
         return connectionStore.getConnectorImageMapping
     })
 
-    const connectionName = (asset: assetInterface) =>
-        attributes(asset)?.connectionName ?? ''
+    // const connectionName = (asset: assetInterface) => {}
+    //     attributes(asset)?.connectionName ?? ''
+
+    const connectionName = (asset: assetInterface) => {
+        // console.log('get asset conenction', asset.attributes.qualifiedName)
+
+        const connection = getConnection(
+            asset.attributes.connectionQualifiedName
+        )
+        if (connection) {
+            return connection.attributes.name
+        }
+        return ''
+    }
 
     const connectionQualifiedName = (asset: assetInterface) =>
         attributes(asset)?.connectionQualifiedName ?? ''
@@ -152,6 +167,8 @@ export default function useAssetInfo() {
                     emoji: i.options?.emoji,
                     name: i.label,
                     tooltip: i.label,
+                    scrubbed: true,
+                    requiredInProfile: true,
                     data: i,
                     exclude: ['Query'],
                 }
@@ -340,10 +357,7 @@ export default function useAssetInfo() {
         return connectorsName
     }
     const getConnectorName = (attributes: any) => {
-        return (
-            attributes?.connectorName ??
-            getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
-        )
+        return getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
     }
 
     const rowCount = (asset: assetInterface, raw: boolean = false) =>

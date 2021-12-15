@@ -204,9 +204,7 @@ import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
-import LeftJoin from '~/assets/images/icons/left-join.svg'
 import Trigger from '~/assets/images/icons/trigger.svg'
-import RightJoin from '~/assets/images/icons/right-join.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
@@ -274,6 +272,7 @@ import FormatText from '~/assets/images/icons/formatText.svg'
 import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
+import EmptyCollections from '~/assets/images/illustrations/empty-collections.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
@@ -300,12 +299,24 @@ import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
 import Verified from '~/assets/images/status/verified.svg'
 import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
 import Compass from '~/assets/images/icons/Compass.svg'
+import Policies from '~/assets/images/icons/Policies.svg'
+
+import InnerJoin from '~/assets/images/icons/InnerJoin.svg'
+import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
+import RightJoin from '~/assets/images/icons/RightJoin.svg'
+import TableSwap from '~/assets/images/icons/swapTable.svg'
+import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
+import PublicCollection from '~/assets/images/icons/publicCollection.svg'
+import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 
 export default {
     BuilderGroup,
     Trigger,
     LeftJoin,
     RightJoin,
+    InnerJoin,
+    TableSwap,
+    JoinHeader,
     Sort,
     Union,
     ShieldCheck,
@@ -341,6 +352,7 @@ export default {
     NoDataInsights,
     SomethingWrong,
     NoSavedQueriesPersonal,
+    EmptyCollections,
     AddQuery,
     RunHistory,
     RunSuccess,
@@ -594,4 +606,7 @@ export default {
     ShieldBlank,
     Compass,
     Teams,
+    Policies,
+    PublicCollection,
+    PrivateCollection
 }

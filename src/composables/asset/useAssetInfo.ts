@@ -8,8 +8,11 @@ import { dataTypeCategoryList } from '~/constant/dataType'
 import { formatDateTime } from '~/utils/date'
 
 import { getCountString, getSizeString } from './useFormat'
+import useConnectionData from '../connection/useConnectionData'
 
 export default function useAssetInfo() {
+    const { getConnection } = useConnectionData()
+
     const attributes = (asset: assetInterface) => asset?.attributes
     const title = (asset: assetInterface) => attributes(asset)?.name ?? ''
     const status = (asset: assetInterface) =>

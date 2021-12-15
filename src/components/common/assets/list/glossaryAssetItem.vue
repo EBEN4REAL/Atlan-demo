@@ -3,10 +3,10 @@
     <div
         class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
-        @click="handlePreview(item)"
+        @click="onListItemClick(item)"
     >
         <div class="flex flex-col">
-            <div class="flex items-start flex-1 px-3 py-3">
+            <div class="flex items-start flex-1 px-3 py-3" :class="checkable ? 'justify-between items-center' : '' ">
                 <div
                     class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
                 >
@@ -33,20 +33,25 @@
 
                             <router-link
                                 :to="assetURL(item)"
-                                class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                :class="checkable ? 'text-sm' : 'text-base'"
                             >
                                 {{ title(item) }}
                             </router-link>
                         </div>
                         <div class="flex mt-0" v-if="description(item)">
-                            <span class="text-sm text-gray-700">{{
+                            <span class="text-gray-700"
+                                :class="checkable ? 'text-xs' : 'text-sm '"
+                        
+                            >{{
                                 description(item)
                             }}</span>
                         </div>
 
                         <div class="flex items-center mt-1">
                             <div
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-gray-500  gap-x-1"
+                                :class="checkable ? 'text-xs' : 'text-sm'"
                                 v-if="categories(item)?.length > 0"
                             >
                                 in
@@ -85,7 +90,8 @@
                                 </div>
                             </div>
                             <div
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-gray-500  gap-x-1"
+                                :class="checkable ? 'text-xs' : 'text-sm'"
                                 v-if="parentCategory(item)"
                             >
                                 in
@@ -106,7 +112,8 @@
                                 </div>
                             </div>
                             <div
-                                class="flex items-center text-sm text-gray-500"
+                                class="flex items-center text-gray-500"
+                                :class="checkable ? 'text-xs' : 'text-sm'"
                             >
                                 <AtlanIcon
                                     icon="Glossary"
@@ -117,13 +124,14 @@
                         </div>
                     </div>
                 </div>
+                <a-checkbox v-if="checkable" :checked="isChecked" />
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed } from 'vue'
+    import { defineComponent, PropType, toRefs, computed, ref } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
 
@@ -159,13 +167,32 @@
                 required: false,
                 default: false,
             },
+            checkable: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            checked: {
+                type: Boolean,
+                required: false,
+                default: false,
+            }
         },
-        emits: ['listItem:check', 'unlinkAsset', 'preview'],
+        emits: ['listItem:check', 'unlinkAsset', 'preview', 'check'],
         setup(props, { emit }) {
-            const { preference, selectedGuid, item } = toRefs(props)
+            const { preference, selectedGuid, item, checkable } = toRefs(props)
+            const isChecked = ref(props.checked)
 
             const handlePreview = (item: any) => {
                 emit('preview', item)
+            }
+
+            const onListItemClick = (item) => {
+                if(checkable) {
+                    isChecked.value = !isChecked.value
+                    emit('check', item, isChecked.value)
+                } 
+                handlePreview(item)
             }
 
             const isSelected = computed(() => {
@@ -210,6 +237,8 @@
                 description,
                 categories,
                 parentCategory,
+                onListItemClick,
+                isChecked
             }
         },
     })

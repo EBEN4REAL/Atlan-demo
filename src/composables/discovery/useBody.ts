@@ -51,6 +51,11 @@ export function useBody(
         base.orQuery('match', 'userDescription', {
             query: queryText,
         })
+        base.orQuery('match', '__meaningsText', {
+            query: queryText,
+            boost: 20,
+        })
+
         base.orQuery('match', 'name.stemmed', { query: queryText })
         base.queryMinimumShouldMatch(1)
     }
@@ -75,11 +80,26 @@ export function useBody(
                     )
                 }
                 if (filterObject.connectionQualifiedName) {
-                    base.filter(
-                        'term',
-                        'connectionQualifiedName',
-                        filterObject.connectionQualifiedName
-                    )
+                    base.filter('bool', (q) => {
+                        q.orFilter(
+                            'term',
+                            'connectionQualifiedName',
+                            filterObject.connectionQualifiedName
+                        )
+
+                        q.orFilter(
+                            'term',
+                            'qualifiedName',
+                            filterObject.connectionQualifiedName
+                        )
+
+                        return q
+                    })
+                    // base.filter(
+                    //     'term',
+                    //     'connectionQualifiedName',
+                    //     filterObject.connectionQualifiedName
+                    // )
                 }
                 break
             }

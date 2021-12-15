@@ -46,6 +46,12 @@
                             >
                                 <div
                                     class="flex items-center inline_tab"
+                                    :style="{
+                                        width:
+                                            tabs.length == 1 ? '65px' : '49px',
+                                        'max-width':
+                                            tabs.length == 1 ? '65px' : '49px',
+                                    }"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
                                 >
@@ -93,6 +99,7 @@
 
                         <template #closeIcon>
                             <AtlanIcon
+                                v-if="tabs.length >= 2"
                                 icon="Close"
                                 class="w-4 h-4 rounded-sm cross-hover"
                                 :style="{
@@ -165,7 +172,6 @@
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
-    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
     import { useRouter, useRoute } from 'vue-router'
     import { generateUUID } from '~/utils/helper/generator'
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
@@ -258,6 +264,7 @@
                     parentQualifiedName: '',
                     isSQLSnippet: false,
                     savedQueryParentFolderTitle: undefined,
+                    collectionQulaifiedName: '',
                     explorer: {
                         schema: {
                             connectors: {
@@ -275,6 +282,16 @@
                                     activeInlineTab.value?.explorer?.queries
                                         .connectors.connector,
                             },
+                            collection: {
+                                guid: activeInlineTab.value?.explorer?.queries
+                                    ?.collection?.guid,
+                                qualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.qualifiedName,
+                                parentQualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.guid,
+                            },
                         },
                     },
 
@@ -285,8 +302,14 @@
                                     order: 1,
                                     id: 'columns',
                                     hide: true,
-                                    columns: [],
-                                    columnsData: [],
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                            columnsData: [],
+                                        },
+                                    ],
                                 },
                             ],
                         },
@@ -344,206 +367,6 @@
                     },
                 }
 
-                // const inlineTabData: activeInlineTabInterface =
-                //     inlineTabsDemoData[0]
-                // ;(inlineTabData.label = `Untitled ${getLastUntitledNumber()}`),
-                //     (inlineTabData.key = key),
-                //     (inlineTabData.favico = 'https://atlan.com/favicon.ico'),
-                //     (inlineTabData.isSaved = false),
-                //     (inlineTabData.queryId = undefined),
-                //     (inlineTabData.status = 'DRAFT'),
-                //     (inlineTabData.connectionId = ''),
-                //     (inlineTabData.description = ''),
-                //     (inlineTabData.qualifiedName = ''),
-                //     (inlineTabData.parentGuid = ''),
-                //     (inlineTabData.parentQualifiedName = ''),
-                //     (inlineTabData.isSQLSnippet = false),
-                //     (inlineTabData.savedQueryParentFolderTitle = undefined),
-                //     (inlineTabData.explorer = {
-                //         schema: {
-                //             connectors: {
-                //                 attributeName:
-                //                     activeInlineTab.value?.explorer?.schema
-                //                         ?.connectors?.attributeName,
-                //                 attributeValue:
-                //                     activeInlineTab.value?.explorer?.schema
-                //                         ?.connectors?.attributeValue,
-                //             },
-                //         },
-                //         queries: {
-                //             connectors: {
-                //                 connector:
-                //                     activeInlineTab.value?.explorer?.queries
-                //                         ?.connectors?.connector,
-                //             },
-                //         },
-                //     })
-
-                // inlineTabData.playground.editor = {
-                //     context: {
-                //         attributeName:
-                //             activeInlineTab.value?.playground?.editor?.context
-                //                 ?.attributeName,
-                //         attributeValue:
-                //             activeInlineTab.value?.playground?.editor?.context
-                //                 ?.attributeValue,
-                //     },
-                //     text: '',
-                //     dataList: [],
-                //     columnList: [],
-                //     variables: [],
-                //     savedVariables: [],
-                //     limitRows: {
-                //         checked: false,
-                //         rowsCount: -1,
-                //     },
-                // }
-                // inlineTabData.playground.resultsPane = {
-                //     activeTab:
-                //         activeInlineTab.value?.playground?.resultsPane
-                //             ?.activeTab ?? 0,
-                //     result: {
-                //         title: `${key} Result`,
-                //         runQueryId: undefined,
-                //         isQueryRunning: '',
-                //         queryErrorObj: {},
-                //         totalRowsCount: -1,
-                //         executionTime: -1,
-                //         errorDecorations: [],
-                //         eventSourceInstance: undefined,
-                //         buttonDisable: false,
-                //         isQueryAborted: false,
-                //     },
-                //     metadata: {},
-                //     queries: {},
-                //     joins: {},
-                //     filters: {},
-                //     impersonation: {},
-                //     downstream: {},
-                //     sqlHelp: {},
-                // }
-
-                // inlineTabData.assetSidebar = {
-                //     // for taking the previous state from active tab
-                //     openingPos: undefined,
-                //     isVisible:
-                //         activeInlineTab.value?.assetSidebar?.isVisible ?? false,
-                //     assetInfo: {},
-                //     title: activeInlineTab.value?.assetSidebar.title ?? '',
-                //     id: activeInlineTab.value?.assetSidebar.id ?? '',
-                // }
-
-                // const inlineTabData: activeInlineTabInterface = {
-                //     label: `Untitled ${getLastUntitledNumber()}`,
-                //     key,
-                //     favico: 'https://atlan.com/favicon.ico',
-                //     isSaved: false,
-                //     queryId: undefined,
-                //     status: 'DRAFT',
-                //     connectionId: '',
-                //     description: '',
-                //     qualifiedName: '',
-                //     parentGuid: '',
-                //     parentQualifiedName: '',
-                //     isSQLSnippet: false,
-                //     savedQueryParentFolderTitle: undefined,
-                //     explorer: {
-                //         schema: {
-                //             connectors: {
-                //                 attributeName:
-                //                     activeInlineTab.value?.explorer?.schema
-                //                         ?.connectors?.attributeName,
-                //                 attributeValue:
-                //                     activeInlineTab.value?.explorer?.schema
-                //                         ?.connectors?.attributeValue,
-                //             },
-                //         },
-                //         queries: {
-                //             connectors: {
-                //                 connector:
-                //                     activeInlineTab.value?.explorer?.queries
-                //                         .connectors.connector,
-                //             },
-                //         },
-                //     },
-
-                //     playground: {
-                //         vqb: {
-                //             panels: [
-                //                 {
-                //                     order: 1,
-                //                     id: 'columns',
-                //                     hide: false,
-                //                     columns: [],
-                //                 },
-                //             ],
-                //         },
-                //         editor: {
-                //             context: {
-                //                 attributeName:
-                //                     activeInlineTab.value?.playground?.editor
-                //                         ?.context?.attributeName,
-                //                 attributeValue:
-                //                     activeInlineTab.value?.playground?.editor
-                //                         ?.context?.attributeValue,
-                //             },
-                //             text: '',
-                //             dataList: [],
-                //             columnList: [],
-                //             variables: [],
-                //             savedVariables: [],
-                //             limitRows: {
-                //                 checked: false,
-                //                 rowsCount: -1,
-                //             },
-                //         },
-                //         resultsPane: {
-                //             activeTab:
-                //                 activeInlineTab.value?.playground?.resultsPane
-                //                     ?.activeTab ?? 0,
-                //             result: {
-                //                 title: `${key} Result`,
-                //                 runQueryId: undefined,
-                //                 isQueryRunning: '',
-                //                 queryErrorObj: {},
-                //                 totalRowsCount: -1,
-                //                 executionTime: -1,
-                //                 errorDecorations: [],
-                //                 eventSourceInstance: undefined,
-                //                 buttonDisable: false,
-                //                 isQueryAborted: false,
-                //             },
-                //             metadata: {},
-                //             queries: {},
-                //             joins: {},
-                //             filters: {},
-                //             impersonation: {},
-                //             downstream: {},
-                //             sqlHelp: {},
-                //         },
-                //     },
-                //     assetSidebar: {
-                //         // for taking the previous state from active tab
-                //         openingPos: undefined,
-                //         isVisible:
-                //             activeInlineTab.value?.assetSidebar?.isVisible ??
-                //             false,
-                //         assetInfo: {},
-                //         title: activeInlineTab.value?.assetSidebar.title ?? '',
-                //         id: activeInlineTab.value?.assetSidebar.id ?? '',
-                //     },
-                // }
-
-                // if (checkIfItsAFirstTab()) {
-                //     const firstConnection = getFirstQueryConnection()
-                //     /* For intiial selection of connections */
-                //     if (firstConnection && firstConnection?.attributes?.name) {
-                //         inlineTabData.explorer.schema.connectors.attributeName =
-                //             'connectionQualifiedName'
-                //         inlineTabData.explorer.schema.connectors.attributeValue =
-                //             firstConnection?.attributes?.qualifiedName
-                //     }
-                // }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 const queryParams = {}
                 if (route?.query?.vqb) queryParams.vqb = true
@@ -813,9 +636,9 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 49px !important;
-        width: 49px !important;
-        min-width: 49px !important;
+        max-width: 49px;
+        width: 49px;
+        min-width: 49px;
         overflow: hidden;
         height: 28px !important;
         // min-width: 3rem
@@ -827,7 +650,7 @@
         // border-radius: 2px;
     }
     .inline_tab_label {
-        max-width: 53px !important;
+        max-width: 53px;
         // overflow: hidden;
     }
     .playground-height {

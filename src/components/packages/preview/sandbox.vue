@@ -11,8 +11,6 @@
 
                 <a-radio-button value="text">Raw</a-radio-button>
             </a-radio-group>
-
-            <a-button>Refresh UI</a-button>
         </div>
 
         <Vue3JsonEditor
@@ -41,7 +39,7 @@
 <script lang="ts">
     // Vue
     import { useDebounceFn, useVModels } from '@vueuse/core'
-    import { defineComponent, inject, ref } from 'vue'
+    import { defineComponent, inject, ref, reactive } from 'vue'
     import { Vue3JsonEditor } from 'vue3-json-editor'
 
     export default defineComponent({
@@ -70,23 +68,22 @@
 
             const { workflowTemplate, configMap } = useVModels(props, emit)
 
-            const localConfigMap = ref(configMap.value)
-            const localTemplate = ref(workflowTemplate.value)
+            const localConfigMap = reactive(configMap.value)
+            const localTemplate = reactive(workflowTemplate.value)
 
-            const handleConfigInput = useDebounceFn((e) => {
-                localConfigMap.value = e
-                configMap.value = e
+            const handleConfigInput = useDebounceFn((value) => {
+                configMap.value = value
+                emit('change')
             }, 500)
 
-            const handleWorkflowChange = useDebounceFn((e) => {
-                localTemplate.value = e
-                workflowTemplate.value = e
+            const handleWorkflowChange = useDebounceFn((value) => {
+                workflowTemplate.value = value
+                emit('change')
             }, 500)
 
             return {
                 activeKey,
-                workflowTemplate,
-                configMap,
+
                 handleConfigInput,
                 mode,
                 handleWorkflowChange,

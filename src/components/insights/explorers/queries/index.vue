@@ -2,181 +2,232 @@
     <div
         class="flex flex-col items-center w-full h-full bg-white query-explorer"
     >
-        <div class="w-full p-4 pb-0 rounded">
-            <Connector
-                :connector="connector"
-                @update:data="updateConnector"
-                :filterSourceIds="BItypes"
-            />
-            <div class="flex flex-row space-x-2">
-                <a-input
-                    v-model:value="searchQuery"
-                    class="h-8 mt-2 rounded"
-                    :class="$style.inputSearch"
-                    placeholder="Search"
-                >
-                    <template #suffix>
-                        <AtlanIcon icon="Search" color="#6F7590" />
-                    </template>
-                </a-input>
-                <a-popover trigger="click" placement="bottomLeft">
-                    <a-button
-                        class="flex items-center w-8 h-8 p-2 mt-2"
-                        :class="$style.filterButton"
+        {{ queryCollectionsError }}
+        <div
+            v-if="
+                isValid(queryCollections) &&
+                !queryCollectionsError &&
+                !queryCollectionsLoading
+            "
+            class="w-full"
+        >
+            <div class="w-full p-4 pb-0 rounded">
+                <div class="flex items-center">
+                    <CollectionSelector
+                        @update:data="updateCollection"
+                        @toggleCollectionModal="toggleCollectionModal"
+                    ></CollectionSelector>
+                    <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
+                    <a-dropdown
+                        :trigger="['click']"
+                        class="ml-auto shadow-none h-7"
+                        placement="bottomRight"
                     >
-                        <AtlanIcon icon="Filter" />
-                    </a-button>
-                    <template #content>
-                        <QueryFilter @change="onFilterChange" />
-                    </template>
-                </a-popover>
-            </div>
-        </div>
-        <!-- <div class="w-full my-4 border-b"></div> -->
-        <div class="w-full h-full mt-2">
-            <div
-                class="w-full px-4 h-9"
-                v-if="!searchQuery?.length && !totalFilteredCount"
-            >
-                <div
-                    class="flex items-center justify-between w-full text-gray-500 h-9"
-                >
-                    <div class="flex items-center justify-between w-full">
-                        <div class="w-9/12">
-                            <ClassificationDropdown
-                                :modelValue="classificationValue"
-                                @change="onClassificationChange"
-                                :connector="connector"
-                            />
+                        <div
+                            class="px-2 pt-0.5 cursor-pointer rounded-lg"
+                            :class="$style.filterButton"
+                        >
+                            <span class="text-xs text-gray-700">New</span>
                         </div>
-                        <div class="flex items-center">
-                            <div class>
-                                <a-tooltip
-                                    placement="top"
-                                    color="#363636"
-                                    v-if="permissions.public.createQuery"
-                                >
-                                    <template #title>
-                                        <span>New query</span>
-                                    </template>
-                                    <AtlanIcon
-                                        @click="
-                                            () =>
-                                                toggleCreateQueryModal(
-                                                    currentSelectedNode
-                                                )
-                                        "
-                                        icon="NewQuery"
-                                        color="#5277D7"
-                                        class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary outline-none"
-                                    />
-                                </a-tooltip>
-                                <!-- ----------- -->
-                            </div>
-                            <div class>
-                                <a-tooltip
-                                    placement="top"
-                                    color="#363636"
-                                    v-if="
-                                        resolvePublicFolderCreationPermission()
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    key="0"
+                                    @click="
+                                        () =>
+                                            toggleCreateQueryModal(
+                                                currentSelectedNode
+                                            )
                                     "
                                 >
-                                    <template #title>
-                                        <span>New folder</span>
-                                    </template>
-                                    <AtlanIcon
-                                        @click="createFolderInput"
-                                        color="#5277D7"
-                                        icon="NewFolder"
-                                        class="h-4 m-0 -mt-0.5 hover:text-primary outline-none"
-                                    />
-                                </a-tooltip>
-                                <!-- CREATE FOLDER PERMISSIONS -->
-                            </div>
-                        </div>
-                    </div>
-                    <!-- {{ savedQueryType }} -->
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="NewQuery"
+                                            color="#5277D7"
+                                            class="h-4 mr-2 outline-none hover:text-primary"
+                                        />
+                                        <span>New Query</span>
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item key="1" @click="createFolderInput">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            color="#5277D7"
+                                            icon="NewFolder"
+                                            class="h-4 mr-2 outline-none hover:text-primary"
+                                        />
+                                        <span>New Folder</span>
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item
+                                    key="1"
+                                    @click="toggleCollectionModal"
+                                >
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            color="#5277D7"
+                                            icon="Platform"
+                                            class="h-4 mr-2 outline-none hover:text-primary"
+                                        />
+                                        <span>New Collection</span>
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
+                <div class="flex flex-row space-x-2">
+                    <a-input
+                        v-model:value="searchQuery"
+                        class="h-8 mt-2 rounded"
+                        :class="$style.inputSearch"
+                        placeholder="Search Queries"
+                    >
+                        <template #suffix>
+                            <AtlanIcon icon="Search" color="#6F7590" />
+                        </template>
+                    </a-input>
+                    <a-popover trigger="click" placement="bottomLeft">
+                        <a-button
+                            class="flex items-center w-8 h-8 p-2 mt-2"
+                            :class="$style.filterButton"
+                        >
+                            <AtlanIcon icon="Filter" />
+                        </a-button>
+                        <template #content>
+                            <QueryFilter @change="onFilterChange" />
+                        </template>
+                    </a-popover>
                 </div>
             </div>
-            <div
-                v-if="!searchQuery?.length && !totalFilteredCount"
-                class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
-                :style="
-                    fullSreenState
-                        ? 'height: calc( 100vh - 140px )'
-                        : 'height: calc( 100vh - 120px )'
-                "
-            >
-                <div class="w-full h-full bg-white">
-                    <query-tree
-                        @toggleCreateQueryModal="toggleCreateQueryModal"
-                        @createFolderInput="createFolderInput"
-                        :savedQueryType="savedQueryType"
-                        :tree-data="treeData"
-                        :on-load-data="onLoadData"
-                        :select-node="selectNode"
-                        :expand-node="expandNode"
-                        :is-loading="isInitingTree"
-                        :loaded-keys="loadedKeys"
-                        :selected-keys="selectedKeys"
-                        :expanded-keys="expandedKeys"
-                        :showEmptyState="showEmptyState"
-                        :refreshQueryTree="refreshQueryTree"
-                    />
-                </div>
-                <!--explorer pane end -->
-            </div>
-            <div
-                v-else
-                class="relative w-full p-3 pt-0 pl-6 mt-2 overflow-y-auto"
-                :style="
-                    fullSreenState
-                        ? 'height: calc( 100vh- 140px )'
-                        : 'height: calc( 100vh- 120px )'
-                "
-            >
-                <div v-if="searchLoading" class="pl-6">
-                    <LoadingView />
-                </div>
-                <div v-else-if="searchResults?.entities?.length">
+            <!-- <div class="w-full my-4 border-b"></div> -->
+            <div class="w-full h-full mt-2" v-if="queryCollections?.length > 0">
+                <div
+                    v-if="!searchQuery?.length && !totalFilteredCount"
+                    class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
+                    :style="
+                        fullSreenState
+                            ? 'height: calc( 100vh - 140px )'
+                            : 'height: calc( 100vh - 120px )'
+                    "
+                >
                     <div class="w-full h-full bg-white">
                         <query-tree
+                            v-if="!queryCollectionsLoading"
                             @toggleCreateQueryModal="toggleCreateQueryModal"
                             @createFolderInput="createFolderInput"
                             :savedQueryType="savedQueryType"
-                            :tree-data="searchTreeData"
+                            :tree-data="treeData"
                             :on-load-data="onLoadData"
                             :select-node="selectNode"
                             :expand-node="expandNode"
-                            :is-loading="isInitingTree"
+                            :is-loading="isQueriesLoading"
                             :loaded-keys="loadedKeys"
                             :selected-keys="selectedKeys"
                             :expanded-keys="expandedKeys"
+                            :showEmptyState="showEmptyState"
                             :refreshQueryTree="refreshQueryTree"
+                            :QueriesFetchError="QueriesFetchError"
                         />
                     </div>
+                    <!--explorer pane end -->
                 </div>
                 <div
-                    v-else-if="!searchResults?.entities"
-                    class="flex flex-col items-center justify-center mt-14"
+                    v-else
+                    class="relative w-full p-3 pt-0 pl-6 mt-2 overflow-y-auto"
+                    :style="
+                        fullSreenState
+                            ? 'height: calc( 100vh- 140px )'
+                            : 'height: calc( 100vh- 120px )'
+                    "
                 >
-                    <AtlanIcon
-                        icon="EmptySearchQuery"
-                        class="h-32 no-svaved-query-icon text-primary"
-                    />
-                    <p
-                        class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
+                    <div v-if="searchLoading" class="pl-6">
+                        <Loader />
+                    </div>
+                    <div v-else-if="searchResults?.entities?.length">
+                        <div class="w-full h-full bg-white">
+                            <query-tree
+                                @toggleCreateQueryModal="toggleCreateQueryModal"
+                                @createFolderInput="createFolderInput"
+                                :savedQueryType="savedQueryType"
+                                :tree-data="searchTreeData"
+                                :on-load-data="onLoadData"
+                                :select-node="selectNode"
+                                :expand-node="expandNode"
+                                :is-loading="isQueriesLoading"
+                                :loaded-keys="loadedKeys"
+                                :selected-keys="selectedKeys"
+                                :expanded-keys="expandedKeys"
+                                :refreshQueryTree="refreshQueryTree"
+                            />
+                        </div>
+                    </div>
+                    <div
+                        v-else-if="!searchResults?.entities"
+                        class="flex flex-col items-center justify-center mt-14"
                     >
-                        Sorry, we couldn’t find
-                        <br />the query you were looking for
-                    </p>
+                        <AtlanIcon
+                            icon="EmptySearchQuery"
+                            class="h-32 no-svaved-query-icon text-primary"
+                        />
+                        <p
+                            class="my-2 mb-0 mb-6 text-base text-center text-gray-700 max-width-text"
+                        >
+                            Sorry, we couldn’t find
+                            <br />the query you were looking for
+                        </p>
+                    </div>
                 </div>
             </div>
+            <EmptyView
+                v-else
+                empty-screen="EmptyCollections"
+                headline="Collections"
+                desc="Organise queries relevant for your project or team into collections and  share it with others. "
+                button-text="Create Collection"
+                @event="
+                    () => {
+                        showCollectionModal = true
+                    }
+                "
+            />
         </div>
-
+        <div
+            v-else-if="queryCollectionsLoading"
+            class="flex items-center justify-center h-full"
+        >
+            <Loader></Loader>
+        </div>
+        <div
+            v-else-if="queryCollectionsError && !queryCollectionsLoading"
+            class="flex items-center justify-center h-full"
+        >
+            <ErrorView :error="errorObjectForCollection">
+                <div class="mt-3">
+                    <a-button
+                        data-test-id="try-again"
+                        size="large"
+                        type="primary"
+                        ghost
+                        @click="
+                            () => {
+                                refetchQueryCollection()
+                            }
+                        "
+                    >
+                        <fa icon="fal sync" class="mr-2"></fa>Try again
+                    </a-button>
+                </div>
+            </ErrorView>
+        </div>
+        <CreateCollectionModal
+            v-if="showCollectionModal"
+            v-model:showCollectionModal="showCollectionModal"
+            :is-create="true"
+        />
         <SaveQueryModal
-            v-model:showSaveQueryModal="showSaveQueryModal"
             v-if="showSaveQueryModal"
+            v-model:showSaveQueryModal="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"
             :ref="
                 (el) => {
@@ -211,10 +262,15 @@
     import {
         Folder,
         SavedQueryInterface,
+        QueryCollection,
     } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
+
+    import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
+    import EmptyView from '@common/empty/index.vue'
+
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import RaisedTab from '~/components/insights/common/raisedTabs/index.vue'
     import QueryTree from './queryTree.vue'
@@ -222,7 +278,7 @@
     import useQueryTree from './composables/useQueryTree'
     import useSearchQueries from './composables/useSearchQueries'
 
-    import Connector from '~/components/insights/common/connector/connectorOnly.vue'
+    import CollectionSelector from './collection/collectionSelector.vue'
     // import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import LoadingView from '@common/loaders/section.vue'
     import QueryTreeItem from './queryTreeItem.vue'
@@ -235,25 +291,37 @@
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import QueryFilter from './queryFilter.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
-
-    import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import Loader from '@common/loaders/page.vue'
+    import ErrorView from '@common/error/index.vue'
+    import { isValid } from '~/utils/isValid'
 
     export default defineComponent({
+        name: 'QueryExplorer',
         components: {
+            EmptyView,
+            Loader,
             RaisedTab,
             QueryTree,
-            Connector,
-            ClassificationDropdown,
+            ErrorView,
             // SaveQueryModal,
             QueryFilter,
             LoadingView,
             QueryTreeItem,
+            CollectionSelector,
             SaveQueryModal: defineAsyncComponent(
                 () =>
                     import(
                         '~/components/insights/playground/editor/saveQuery/index.vue'
                     )
             ),
+            CreateCollectionModal: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/insights/explorers/queries/collection/createCollectionModal.vue'
+                    )
+            ),
+            AtlanIcon,
         },
         props: {
             reset: {
@@ -268,9 +336,6 @@
             resetQueryTree: {
                 type: Function,
             },
-            refreshQueryTree: {
-                type: Function,
-            },
             resetType: {
                 type: String,
                 required: false,
@@ -278,7 +343,17 @@
         },
         setup(props, { emit }) {
             let { reset, resetParentGuid, resetType } = toRefs(props)
-            const route = useRoute()
+            const route =
+                useRoute() /* FIXME: Hardcoded error object error for collection request get's failed */
+            const errorObjectForCollection = ref({
+                response: {
+                    status: 400,
+                    data: {
+                        errorMessage:
+                            'Failed to fetch collections. Please try again',
+                    },
+                },
+            })
             const permissions = inject('permissions') as ComputedRef<any>
             const { qualifiedName } = useAssetInfo()
             const { modifyActiveInlineTab } = useInlineTab()
@@ -288,6 +363,7 @@
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const saveQueryLoading = ref(false)
+            const showCollectionModal = ref(false)
             const searchQuery = ref('')
             const raisedTabConfig = [
                 { key: 'personal', label: 'Personal' },
@@ -312,15 +388,42 @@
                 'queryFolderNamespace',
                 ref({}) as Ref<Folder>
             )
-
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
+            const queryCollectionsError = inject(
+                'queryCollectionsError'
+            ) as Ref<any>
+            const queryCollectionsLoading = inject(
+                'queryCollectionsLoading'
+            ) as Ref<Boolean>
+            const refetchQueryCollection = inject(
+                'refetchQueryCollection'
+            ) as Function
             const { setConnectorsDataInInlineTab, getConnectorName } =
                 useConnector()
+            const { setCollectionsDataInInlineTab } = useQueryCollection()
             const connector = ref(
                 getConnectorName(
                     activeInlineTab.value?.explorer?.schema?.connectors
                         ?.attributeValue
                 )
             )
+
+            const selectedCollection = computed(() => {
+                // console.log(
+                //     'collections active: ',
+                //     activeInlineTab.value.explorer
+                // )
+                const collection = queryCollections.value?.find(
+                    (coll) =>
+                        coll.attributes.qualifiedName ===
+                        activeInlineTab?.value?.explorer?.queries?.collection
+                            ?.qualifiedName
+                )
+                return collection
+            })
+
             const { focusEditor } = useEditor()
             const BItypes = getBISourceTypes()
 
@@ -330,13 +433,6 @@
                     : ''
             )
             const savedQueryType: Ref<object> = ref(classificationList.value[0])
-
-            const onClassificationChange = (value) => {
-                // emit('change', checkedValues)
-                console.log('change: ', value)
-                selectedClassification.value = value.name
-                savedQueryType.value = value
-            }
 
             const {
                 openSavedQueryInNewTab,
@@ -360,6 +456,25 @@
                     'queries'
                 )
             }
+
+            const updateCollection = ({ qname, guid }) => {
+                // selectedCollection.value = queryCollections.value?.find(
+                //     (coll) =>
+                //         coll.attributes.qualifiedName ===
+                //         activeInlineTab.value.explorer.queries.collection
+                //             .qualifiedName
+                // )
+
+                // console.log('selected collection:', selectedCollection)
+                console.log('useQueryTree updateCollection', { qname, guid })
+                setCollectionsDataInInlineTab(
+                    activeInlineTab,
+                    inlineTabs,
+                    qname,
+                    guid
+                )
+            }
+
             let selectedFolder = ref({})
 
             const toggleCreateQueryModal = (item) => {
@@ -411,7 +526,7 @@
                     // check if there are existing inputs to avoid duplication
                     if (!existingInputs.length && newFolderCreateable.value) {
                         let parentFolder
-                        if (guid === queryFolderNamespace.value.guid) {
+                        if (guid === selectedCollection?.value?.guid) {
                             parentFolder =
                                 document.querySelector(
                                     '.query-explorer  .ant-tree'
@@ -436,7 +551,7 @@
                             'h-8'
                         )
                         let childCount = 0
-                        if (guid !== queryFolderNamespace.value.guid) {
+                        if (guid !== selectedCollection?.value?.guid) {
                             console.log(
                                 'parentChild: ',
                                 parentFolder.children[0].children.length
@@ -461,7 +576,7 @@
                         let caret =
                             '<span class="mt-2 -ml-1 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
 
-                        if (guid !== queryFolderNamespace.value.guid) {
+                        if (guid !== selectedCollection?.value?.guid) {
                             caret =
                                 '<span class="mr-0.5 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
                         }
@@ -493,7 +608,8 @@
                                 saveQueryLoading,
                                 savedQueryType.value?.name,
                                 getRelevantTreeData().parentQualifiedName,
-                                getRelevantTreeData().parentGuid
+                                getRelevantTreeData().parentGuid,
+                                selectedCollection
                             )
                             watch(data, async (newData) => {
                                 if (newData) {
@@ -567,7 +683,7 @@
                         ul.appendChild(div)
                         // console.log('child: ul: ', ul)
 
-                        if (guid === queryFolderNamespace.value.guid) {
+                        if (guid === selectedCollection?.value?.guid) {
                             parentFolder.prepend(ul)
                             // console.log('input parent append')
                         } else {
@@ -597,7 +713,7 @@
                 }
                 if (
                     (loaded && expanded) ||
-                    guid === queryFolderNamespace?.value.guid
+                    guid === selectedCollection?.value?.guid
                 ) {
                     appendInput()
                 }
@@ -650,6 +766,9 @@
                 nodeToParentKeyMap: nodeToParentKeyMap,
                 updateNode: updateNode,
                 currentSelectedNode: currentSelectedNode,
+                errorReq: QueriesFetchError,
+                isLoading: isQueriesLoading,
+                initTreeData: refreshQueryTree,
                 // addInputBox,
                 // removeInputBox,
             } = useQueryTree({
@@ -664,14 +783,11 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
+                collection: selectedCollection,
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =
-                useSearchQueries(
-                    searchQuery,
-                    ref(savedQueryType?.value?.name),
-                    facets
-                )
+                useSearchQueries(searchQuery, selectedCollection, facets)
 
             const getRelevantTreeData = () => {
                 return {
@@ -697,8 +813,8 @@
             const saveQuery = async (saveQueryData: {
                 saveQueryData: any
                 assetTerms: any
-                selectedParentType
             }) => {
+                console.log('saving query: ', savedQueryType.value)
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
                     saveQueryData,
                     editorInstance,
@@ -707,7 +823,7 @@
                     saveModalRef,
                     router,
                     route,
-                    savedQueryType.value.name,
+                    '',
                     saveQueryData.parentQF ??
                         getRelevantTreeData().parentQualifiedName.value,
                     saveQueryData.parentGuid ??
@@ -748,6 +864,10 @@
                     nodeToParentKeyMap[guid] ?? queryFolderNamespace.value.guid
 
                 refetchNode(all_guid, type)
+            }
+
+            const toggleCollectionModal = () => {
+                showCollectionModal.value = !showCollectionModal.value
             }
 
             onMounted(() => {
@@ -810,6 +930,10 @@
             watch(
                 [searchResults, searchLoading],
                 () => {
+                    console.log(
+                        'selected collection: ',
+                        selectedCollection.value
+                    )
                     console.log('queries: ', searchResults.value)
                     console.log('queries loading: ', searchLoading.value)
                     searchTreeData.value = []
@@ -856,10 +980,15 @@
                     }, 750)
                 }
             })
-
-            const classificationValue = ref(savedQueryType.value)
+            console.log(queryCollectionsError.value, 'queryCollectionsError')
 
             return {
+                isValid,
+                refreshQueryTree,
+                isQueriesLoading,
+                QueriesFetchError,
+                errorObjectForCollection,
+                queryCollectionsError,
                 searchTreeData,
                 onFilterChange,
                 resolvePublicFolderCreationPermission,
@@ -896,9 +1025,14 @@
                 queryFolderNamespace,
                 BItypes,
                 currentSelectedNode,
-                classificationValue,
-                onClassificationChange,
                 totalFilteredCount,
+                updateCollection,
+                queryCollections,
+                queryCollectionsLoading,
+                refetchQueryCollection,
+                selectedCollection,
+                toggleCollectionModal,
+                showCollectionModal,
             }
         },
     })
@@ -932,7 +1066,7 @@
     }
     .filterButton {
         background: #ffffff;
-        border: 1px solid #e9ebf1;
+        border: 1px solid #e6e6eb;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
     }

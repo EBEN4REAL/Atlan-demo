@@ -11,6 +11,7 @@
                     v-model:checkedGuids="checkedGuids"
                     :checkable="true"
                     @check="onCheck"
+                    @searchItemCheck="onSearchItemCheck"
                 />
             </template>
             <a-button
@@ -26,11 +27,11 @@
         <div class="flex flex-wrap gap-1 text-sm">
             <template v-for="term in list" :key="term.guid">
                 <div
-                    class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                    class="flex items-center py-1 pl-2 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                 >
                     <AtlanIcon
                         :icon="icon(term)"
-                        class="group-hover:text-white text-purple mb-0.5"
+                        class="group-hover:text-white text-purple"
                     ></AtlanIcon>
 
                     <div class="ml-1 group-hover:text-white">
@@ -40,7 +41,7 @@
             </template>
             <span
                 v-if="readOnly && list?.length < 1"
-                class="-ml-1 text-gray-500"
+                class="-ml-1 text-gray-700"
                 >No linked terms</span
             >
         </div>
@@ -129,19 +130,8 @@
                 }
                 return 'Term'
             }
-            // if node has not been loaded, it will not be in checked node
-            // even if it is in checkedKeys
 
-            //  CHECK EVENT
-            //
-            //  just append to loaclValue
-            //
-
-            // UNCHECK EVENT
-            //
-            //
-
-            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
+            const onCheck = (checkedNodes) => {
                 checkedNodes.forEach((term) => {
                     if (
                         !localValue.value.find(
@@ -158,6 +148,15 @@
                 hasBeenEdited.value = true
             }
 
+            const onSearchItemCheck = (checkedNode, checked) => {
+                if(checked) {
+                    localValue.value.push(checkedNode)    
+                } else {
+                    localValue.value = localValue.value?.filter((localTerm) => (localTerm.guid ?? localTerm.termGuid) !== checkedNode.guid)
+                }
+                hasBeenEdited.value = true
+            }
+            
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
@@ -173,6 +172,7 @@
                 onPopoverClose,
                 localValue,
                 checkedGuids,
+                onSearchItemCheck
             }
         },
     })

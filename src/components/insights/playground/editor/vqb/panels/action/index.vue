@@ -98,6 +98,16 @@
                             filterType: 'and',
                         },
                     }
+                } else if (type === 'join') {
+                    panel = {
+                        id: uuid,
+                        columnsDataLeft: {},
+                        columnsDataRight: {},
+                        joinType: {
+                            type: 'inner_join',
+                            name: 'Inner Join',
+                        },
+                    }
                 }
                 emit('add', type, panel)
 
@@ -122,12 +132,12 @@
                     label: 'Sort',
                     class: 'mr-2',
                 },
-                // {
-                //     id: 'join',
-                //     icon: 'Union',
-                //     label: 'Join data',
-                //     class: 'mr-2',
-                // },
+                {
+                    id: 'join',
+                    icon: 'Union',
+                    label: 'Join data',
+                    class: 'mr-2',
+                },
                 {
                     id: 'group',
                     icon: 'BuilderGroup',

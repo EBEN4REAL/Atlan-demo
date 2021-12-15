@@ -2,21 +2,21 @@ export const sourceType = [
     {
         id: 'warehouse',
         label: 'Warehouse',
-        description: 'Draft',
+        description: 'Warehouse',
     },
     {
-        id: 'lake',
+        id: 'queryengine',
         label: 'Query Engine',
-        description: 'Verified',
+        description: 'Query Engine',
     },
     {
         id: 'bi',
         label: 'BI',
-        description: 'Verified',
+        description: 'Business Intelligence',
     },
     {
         id: 'rdbms',
-        label: 'RDBMS',
-        description: 'Draft',
+        label: 'Relational Database',
+        description: 'Relational Database',
     },
 ]

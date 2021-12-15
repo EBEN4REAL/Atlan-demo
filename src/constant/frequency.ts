@@ -1,5 +1,9 @@
 export const frequency = [
     {
+        value: 'hourly',
+        label: 'Hourly',
+    },
+    {
         value: 'daily',
         label: 'Daily',
     },

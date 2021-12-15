@@ -1,7 +1,7 @@
 <template>
     <div class="h-full pb-6">
         <div v-if="isLoading" class="flex items-center justify-center h-full">
-             <AtlanIcon icon="Loader" class="h-10 animate-spin" />
+            <AtlanIcon icon="Loader" class="h-10 animate-spin" />
         </div>
         <div
             v-if="error"
@@ -37,45 +37,35 @@
                     :avatar-size="46"
                     :avatar-shape="'square'"
                 />
-                <div class="ml-4 w-full">
-                    <div class="flex text-gray-500 items-center content-center">
+                <div class="w-full ml-4">
+                    <div class="flex items-center content-center text-gray-500">
                         <div class="w-4/5">
-                            <div class="text-base capitalize text-gray-700 font-bold">
-                                {{ title }}
+                            <div
+                                class="flex text-base content-center items-center capitalize text-gray-700 font-bold mb-0.5"
+                            >
+                                <span class="mr-1">{{ title }}</span>
+                                <SlackMessageCta
+                                    v-if="slackEnabled"
+                                    :link="slackUrl"
+                                />
                             </div>
-                            <span class="w-28 text-sm truncate">
+                            <span class="text-sm truncate w-28">
                                 @{{ name }}
                             </span>
                             <span
                                 v-if="details"
-                                class="ml-2 bg-gray-200 text-gray-700 content-center text-xs uppercase py-1 px-2 rounded"
+                                class="content-center px-2 py-1 ml-2 text-xs text-gray-700 uppercase bg-gray-200 rounded"
                             >
                                 {{ details }}
                             </span>
                         </div>
                         <div class="ml-auto">
-                            <a-button-group>
-                                <a-button
-                                    v-if="isValidUser"
-                                    class="border border-solid border-gray-300"
-                                    html-type="a"
-                                    :href="`https://teams.microsoft.com/l/chat/0/0?users=${selectedUser.email}`"
-                                    target="_blank"
-                                >
-                                    <AtlanIcon icon="Teams" />
-                                </a-button>
-                                <a-button
-                                    v-if="slackEnabled"
-                                    class="border border-solid border-gray-300"
-                                    html-type="a"
-                                    :href="slackUrl"
-                                >
-                                    <AtlanIcon icon="Slack" />
-                                </a-button>
-                                <a-button class="border border-solid border-gray-300" @click="$emit('close')">
-                                    <AtlanIcon icon="Cross" />
-                                </a-button>
-                            </a-button-group>
+                            <a-button
+                                class="border-0 shadow-none"
+                                @click="$emit('close')"
+                            >
+                                <AtlanIcon icon="Cross" />
+                            </a-button>
                         </div>
                     </div>
                 </div>
@@ -83,7 +73,7 @@
             <a-tabs
                 v-model:activeKey="activeKey"
                 tab-position="left"
-                class="border-t preview-tab"
+                class="h-full border-t preview-tab"
             >
                 <a-tab-pane v-for="(tab, index) in tabs" :key="tab.key">
                     <template #tab>
@@ -97,12 +87,13 @@
                     </template>
                     <component
                         :is="tab.component"
-                        class="pt-3"
+                        class="h-full pt-3"
                         :is-current-user="isValidUser ? isCurrentUser : null"
                         :selected-user="isValidUser ? selectedUser : null"
                         :selected-group="isValidGroup ? selectedGroup : null"
                         @updatedUser="handleUpdate"
                         @refreshTable="reload"
+                        @success="reload"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -122,6 +113,7 @@
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
+    import SlackMessageCta from '@common/popover/user/slackMessageCta.vue'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -154,6 +146,7 @@
             ErrorView,
             SidePanelTabHeaders,
             AtlanButton,
+            SlackMessageCta,
         },
         props: {
             previewType: {
@@ -246,15 +239,23 @@
             const slackProfile = computed(() => {
                 if (userProfiles.value?.length > 0) {
                     const firstProfile = JSON.parse(userProfiles.value[0])
-                    if (firstProfile && firstProfile.length > 0 && firstProfile[0].hasOwnProperty('slack')) {
+                    if (
+                        firstProfile &&
+                        firstProfile.length > 0 &&
+                        firstProfile[0].hasOwnProperty('slack')
+                    ) {
                         return firstProfile[0].slack
                     }
                 }
-                return ""
+                return ''
             })
 
             const slackEnabled = computed(() => slackProfile.value)
-            const slackUrl = computed(() => slackEnabled.value ? getDeepLinkFromUserDmLink(slackEnabled.value) : "#")
+            const slackUrl = computed(() =>
+                slackEnabled.value
+                    ? getDeepLinkFromUserDmLink(slackEnabled.value)
+                    : '#'
+            )
             return {
                 tabs,
                 isValidEntity,
@@ -273,7 +274,7 @@
                 activeKey,
                 imageUrl,
                 slackEnabled,
-                slackUrl
+                slackUrl,
             }
         },
     })

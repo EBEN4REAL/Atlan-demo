@@ -82,6 +82,7 @@
     import Groups from './widget/groups.vue'
     import GroupMultiple from './widget/groupMultiple.vue'
     import Schedule from './widget/schedule.vue'
+    import ConnectionSelector from './widget/connectionSelector.vue'
     import Alias from './widget/alias.vue'
     import AtlanIcon from '../icon/atlanIcon.vue'
 
@@ -106,6 +107,7 @@
             Schedule,
             Alias,
             AtlanIcon,
+            ConnectionSelector,
         },
         props: {
             configMap: {
@@ -161,10 +163,20 @@
                     Object.keys(configMap?.value?.properties).forEach((key) => {
                         if (formState) {
                             if (!formState[getName(key)]) {
-                                formState[getName(key)] =
-                                    configMap?.value?.properties[
-                                        key
-                                    ]?.default?.toString()
+                                if (
+                                    configMap?.value?.properties[key].type ===
+                                    'boolean'
+                                ) {
+                                    formState[getName(key)] =
+                                        configMap?.value?.properties[
+                                            key
+                                        ]?.default
+                                } else {
+                                    formState[getName(key)] =
+                                        configMap?.value?.properties[
+                                            key
+                                        ]?.default?.toString()
+                                }
                             }
                         }
                     })

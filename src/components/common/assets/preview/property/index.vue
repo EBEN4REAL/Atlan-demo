@@ -49,7 +49,13 @@
             </div>
         </div>
 
-        <div class="flex flex-col text-sm">
+        <div
+            v-if="
+                !isGTC(selectedAsset) &&
+                !['Connection'].includes(selectedAsset.typeName)
+            "
+            class="flex flex-col text-sm"
+        >
             <span class="mb-1 text-gray-500">Connection</span>
             <div class="flex items-center">
                 <img :src="getConnectorImage(selectedAsset)" class="h-4 mr-1" />
@@ -58,6 +64,23 @@
                         selectedAsset
                     )}`
                 }}</span>
+            </div>
+        </div>
+        <div
+            v-if="
+                isGTC(selectedAsset) &&
+                getAnchorProfile(selectedAsset)?.length &&
+                getAnchorName(selectedAsset)?.length
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-gray-500">Glossary</span>
+            <div class="flex items-center">
+                <router-link
+                    :to="getAnchorProfile(selectedAsset)"
+                    class="text-primary hover:underline"
+                    >{{ getAnchorName(selectedAsset) }}</router-link
+                >
             </div>
         </div>
 
@@ -81,7 +104,7 @@
             <span class="text-gray-700">{{ selectedAsset?.guid }}</span>
         </div>
 
-        <div class="flex flex-col text-sm">
+        <div v-if="!isGTC(selectedAsset)" class="flex flex-col text-sm">
             <span class="mb-1 text-gray-500">Qualified Name</span>
             <span class="text-gray-700 break-all">{{
                 qualifiedName(selectedAsset)
@@ -151,9 +174,10 @@
                 connectionQualifiedName,
                 getConnectorImage,
                 ownerUsers,
+                isGTC,
+                getAnchorProfile,
+                getAnchorName,
             } = useAssetInfo()
-
-            const { getConnection } = useConnectionData()
 
             return {
                 connectorName,
@@ -164,10 +188,12 @@
                 createdAt,
                 modifiedAt,
                 modifiedBy,
-
+                isGTC,
+                getAnchorProfile,
+                getAnchorName,
                 getConnectorImage,
                 createdBy,
-                getConnection,
+
                 connectionQualifiedName,
                 ownerUsers,
                 capitalizeFirstLetter,

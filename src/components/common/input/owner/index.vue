@@ -5,7 +5,7 @@
     >
         <a-popover
             v-model:visible="isEdit"
-            placement="leftTop"
+            :placement="placementPos"
             :overlay-class-name="$style.ownerPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
@@ -54,7 +54,7 @@
             </PopOverGroup>
         </template>
         <span
-            class="-ml-1 text-gray-500"
+            class="-ml-1 text-gray-700"
             v-if="
                 readOnly &&
                 localValue?.ownerGroups?.length < 1 &&
@@ -137,6 +137,10 @@
                 required: false,
                 default: () => {},
             },
+            placementPos: {
+                type: String,
+                default: 'leftBottom',
+            },
             inProfile: {
                 type: Boolean,
                 required: false,
@@ -146,7 +150,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { selectedAsset, inProfile } = toRefs(props)
+            const { selectedAsset, inProfile, readOnly } = toRefs(props)
 
             const localValue = ref(modelValue.value)
 
@@ -199,11 +203,14 @@
                         'true'
             )
             const { o, Escape } = useMagicKeys()
-            whenever(and(o, notUsingInput, !inProfile.value), () => {
-                if (!isEdit.value) {
-                    isEdit.value = true
+            whenever(
+                and(o, notUsingInput, !inProfile.value, !readOnly.value),
+                () => {
+                    if (!isEdit.value) {
+                        isEdit.value = true
+                    }
                 }
-            })
+            )
 
             whenever(and(Escape), () => {
                 if (isEdit.value) {

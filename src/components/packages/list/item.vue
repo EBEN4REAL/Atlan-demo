@@ -37,7 +37,15 @@
                 <span v-else class="self-center w-6 h-6">
                     {{ '\ud83d\udce6' }}</span
                 >
-                <div class="absolute -right-1 -top-2">
+
+                <div
+                    v-if="
+                        item.metadata.labels[
+                            'orchestration.atlan.com/certified'
+                        ] === 'true'
+                    "
+                    class="absolute -right-1 -top-2"
+                >
                     <a-tooltip title="Certified" placement="left">
                         <AtlanIcon icon="Verified" class="ml-1"></AtlanIcon>
                     </a-tooltip>

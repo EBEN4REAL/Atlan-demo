@@ -4,6 +4,11 @@
             v-model:treeExpandedKeys="expandedKeys"
             :value="selectedValue"
             style="width: 100%"
+            :ref="
+                (el) => {
+                    treeSelectRef = el
+                }
+            "
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
@@ -15,14 +20,12 @@
             @change="onChange"
             @select="selectNode"
             @blur="onBlur"
-            :ref="
-                (el) => {
-                    treeSelectRef = el
-                }
-            "
         >
             <template #title="node">
-                <div class="flex items-center truncate" @click="toggleVisibilityOfChildren(node.title)">
+                <div
+                    class="flex items-center truncate"
+                    @click="toggleVisibilityOfChildren(node.title)"
+                >
                     <AtlanIcon
                         :icon="iconName(node)"
                         class="h-4 -ml-0.5 mr-1"
@@ -120,7 +123,6 @@
             const list = computed(() => List)
             const checkedValues = ref([])
             const placeholderLabel: Ref<Record<string, string>> = ref({})
-            console.log(checkedValues.value, 'model')
 
             const transformConnectionsToTree = (connectorId: string) =>
                 store.getList
@@ -182,7 +184,9 @@
                 return tree
             }
 
-            const treeData = computed(() => transformConnectorToTree(filteredList.value))
+            const treeData = computed(() =>
+                transformConnectorToTree(filteredList.value)
+            )
 
             watch([connector, connection], () => emitChangedFilters())
 
@@ -273,8 +277,7 @@
                 // If the element is found, remove it from the array.
                 if (indexOfElement > -1) {
                     expandedKeys.value.splice(indexOfElement, 1)
-                }
-                else {
+                } else {
                     // If it is not found, add it.
                     expandedKeys.value.push(name)
                 }
@@ -298,7 +301,7 @@
                             return 'Tableau'
                     }
                 } else {
-                    let el = node?.key?.split('/')
+                    const el = node?.key?.split('/')
                     if (el && el.length) {
                         switch (el[1]) {
                             case 'snowflake':
@@ -337,7 +340,7 @@
                 connector,
                 connection,
                 onBlur,
-                toggleVisibilityOfChildren
+                toggleVisibilityOfChildren,
             }
         },
     })

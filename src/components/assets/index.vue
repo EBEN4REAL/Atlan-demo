@@ -102,7 +102,7 @@
                         empty-screen="EmptyDiscover"
                         :desc="
                             staticUse
-                                ? 'No assets found'
+                                ? emptyViewText || 'No assets found'
                                 : 'We didnt find anything that matches your search criteria'
                         "
                         :button-text="staticUse ? '' : 'Reset Filter'"
@@ -252,6 +252,10 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            emptyViewText: {
+                type: String,
+                default: '',
             },
         },
         setup(props, { emit }) {

@@ -1,49 +1,27 @@
 import { ref } from 'vue'
 import { getNodeSourceImage } from './util.js'
-import { useAPIPromise } from '~/services/api/useAPIPromise'
-import { map as entityMap } from '~/services/meta/entity/key'
-import {
-    iconVerified,
-    iconDraft,
-    iconDeprecated,
-    iconProcess,
-    iconEllipse,
-} from './icons'
+import { iconProcess, iconEllipse } from './icons'
 
 const getSource = (entity) => {
     const item = entity.attributes.qualifiedName.split('/')
     if (item[0] === 'default') return item[1]
     return item[0]
 }
-const getEntity = async (guid: string) => {
-    const { entity } = await useAPIPromise(
-        entityMap.GET_ENTITY({ guid }),
-        'GET',
-        {}
-    )
-    return entity
+const getSchema = (entity) => {
+    const item = entity.attributes.qualifiedName.split('/')
+    if (item[0] === 'default') return item[4]
+    return item[3]
 }
 
 export default function useGraph() {
     const createNodeData = async (entity, baseEntityGuid, dataObj = {}) => {
-        const { guid, typeName } = entity
-        const isProcess = ['Process', 'ColumnProcess', 'AtlanProcess'].includes(
-            typeName
-        )
-        const isBase = guid === baseEntityGuid
+        const { guid, typeName, attributes } = entity
+        let { displayText } = entity
         const source = getSource(entity)
+        const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
-
-        const enrichedEntity = !isProcess ? await getEntity(guid) : entity
-        const { attributes } = enrichedEntity
-        let { displayText } = enrichedEntity
-        const { schemaName, certificateStatus } = attributes
-
-        let certificateIcon = ''
-        if (certificateStatus === 'VERIFIED') certificateIcon = iconVerified
-        else if (certificateStatus === 'DEPRECATED')
-            certificateIcon = iconDeprecated
-        else if (certificateStatus === 'DRAFT') certificateIcon = iconDraft
+        const isBase = guid === baseEntityGuid
+        const isProcess = ['Process', 'ColumnProcess'].includes(typeName)
 
         if (!displayText) displayText = attributes.name
 
@@ -60,10 +38,10 @@ export default function useGraph() {
             typeName,
             source,
             isBase,
-            entity: enrichedEntity,
+            entity,
             isProcess,
             width: isProcess ? 60 : 270,
-            height: 60,
+            height: 70,
             shape: 'html',
             data: computedData,
             html: {
@@ -90,18 +68,18 @@ export default function useGraph() {
                                 <div>
                                     <div class="node-text group-hover:underline">
                                         <div class="truncate">${displayText}</div>
-                                         ${certificateIcon}
+                                        
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
                                         <div class="node-meta__text truncate">${typeName}</div>
                                         ${
-                                            typeName === 'AtlanTable'
+                                            ['Table', 'View'].includes(typeName)
                                                 ? iconEllipse
                                                 : ''
                                         }
                                        <div class="node-meta__text text-truncate ${
-                                           typeName === 'AtlanTable'
+                                           ['Table', 'View'].includes(typeName)
                                                ? ''
                                                : 'd-none'
                                        }">${schemaName || ''}</div>
@@ -120,13 +98,68 @@ export default function useGraph() {
                           ${data?.isGrayed ? 'isGrayed' : ''}"> ${iconProcess}
                         </div>`
                 },
-                shouldComponentUpdate(node: Cell) {
+                shouldComponentUpdate(node) {
                     return node.hasChanged('data')
                 },
             },
+            ports: {
+                groups: {
+                    columnList: {
+                        markup: [
+                            {
+                                tagName: 'rect',
+                                selector: 'portBody',
+                            },
+                            {
+                                tagName: 'text',
+                                selector: 'portNameLabel',
+                            },
+                            {
+                                tagName: 'image',
+                                selector: 'portImage',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                width: 268,
+                                height: 40,
+                                strokeWidth: 1,
+                                stroke: '#e6e6eb',
+                                fill: '#ffffff',
+                                event: 'port:click',
+                                y: -9.5,
+                            },
+                            portNameLabel: {
+                                ref: 'portBody',
+                                refX: 36,
+                                refY: 12,
+                                fontSize: 16,
+                                fill: '#3e4359',
+                                event: 'port:click',
+                            },
+                            portImage: {
+                                ref: 'portBody',
+                                refX: 12,
+                                refY: 12,
+                                event: 'port:click',
+                            },
+                        },
+                        position: 'erPortPosition',
+                    },
+                },
+                items: [
+                    {
+                        id: `${guid}/index`,
+                        group: 'columnList',
+                        zIndex: 0,
+                    },
+                ],
+            },
         }
 
-        return { nodeData, enrichedEntity, isProcess }
+        if (isProcess) delete nodeData.ports
+
+        return { nodeData, entity, isProcess }
     }
 
     const addNode = async (graph, entity, data = {}) => {
@@ -168,12 +201,18 @@ export default function useGraph() {
         }
     }
 
-    const createEdgeData = (relation) => {
+    const createEdgeData = (relation, process) => {
         const stroke = '#C7C7C7'
         const edgeData = {
-            id: `${relation.fromEntityId}@${relation.toEntityId}`,
-            source: relation.fromEntityId,
-            target: relation.toEntityId,
+            id: `${process}/${relation.fromEntityId}@${relation.toEntityId}`,
+            source: {
+                cell: relation.fromEntityId,
+                port: `${relation.fromEntityId}/index`, // TODO: use dynamic relations
+            },
+            target: {
+                cell: relation.toEntityId,
+                port: `${relation.toEntityId}/index`, // TODO: use dynamic relations
+            },
             router: {
                 name: 'metro',
             },

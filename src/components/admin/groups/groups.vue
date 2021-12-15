@@ -72,7 +72,6 @@
             <a-table
                 id="groupList"
                 class="overflow-hidden border rounded-lg"
-                :class="$style.groupTable"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 :pagination="false"
@@ -96,12 +95,12 @@
                             <div class="mr-2 truncate max-w-3/4">
                                 {{ group.name }}
                             </div>
-                            <!-- <div
+                            <div
                                 v-if="group.isDefault === 'true'"
                                 class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
                             >
                                 Default
-                            </div> -->
+                            </div>
                         </div>
                         <p class="mb-0 text-gray-500 truncate">
                             {{ group.description }}
@@ -327,6 +326,38 @@
                                 [`${group.name}`]
                             ),
                             h('span', '?'),
+                            h(
+                                'div',
+                                {
+                                    class: ['my-4'],
+                                },
+                                [
+                                    h(
+                                        'div',
+                                        {
+                                            class: ['font-bold'],
+                                        },
+                                        [
+                                            h(
+                                                'span',
+                                                { class: ['text-error'] },
+                                                ['Warning']
+                                            ),
+                                            ' : Deleting a group will also remove it from',
+                                        ]
+                                    ),
+                                    h('ol', { class: ['text-sm'] }, [
+                                        h(
+                                            'li',
+                                            '1. Personas which this group is a part of'
+                                        ),
+                                        h(
+                                            'li',
+                                            '2. Policies inside purposes which include this group'
+                                        ),
+                                    ]),
+                                ]
+                            ),
                         ])
                     },
                     okType: 'danger',
@@ -350,7 +381,7 @@
                                         content: `Group Removed`,
                                         duration: 1.5,
                                         key: messageKey,
-                                    })
+                                    } as any)
                                 } else if (
                                     error &&
                                     error.value &&
@@ -360,13 +391,13 @@
                                         content: `Failed to remove group`,
                                         duration: 1.5,
                                         key: messageKey,
-                                    })
+                                    } as any)
                                 } else
                                     message.loading({
                                         content: `Removing group`,
                                         duration: 0,
                                         key: messageKey,
-                                    })
+                                    } as any)
                             },
                             { immediate: true }
                         )
@@ -475,17 +506,6 @@
     .hide-checkbox {
         .ant-checkbox {
             display: none;
-        }
-    }
-</style>
-<style lang="less" module>
-    .group-table {
-        // extra row hide hack
-        :global(.ant-table-measure-row) {
-            @apply hidden;
-        }
-        :global(.ant-table-column-title) {
-            @apply text-left;
         }
     }
 </style>

@@ -7,13 +7,14 @@
                     <a-tag
                         :key="tag"
                         :closable="allowUpdate"
-                        class="bg-gray-100"
+                        class="flex content-center items-center bg-white border border-gray-300 py-0.5 px-2 font-normal text-center text-sm rounded-3xl"
                         :class="[
                             updatingTags ? 'text-gray pointer-events-none' : '',
                         ]"
                         @close="handleClose(tag)"
-                        >{{ `${tag.slice(0, 20)}...` }}</a-tag
-                    >
+                        >
+                        <slot name="label" :tag="tag">{{ `${tag.slice(0, 20)}...` }}</slot>
+                    </a-tag>
                 </a-tooltip>
                 <a-tag
                     v-else
@@ -21,10 +22,11 @@
                     :class="[
                         updatingTags ? 'text-gray pointer-events-none' : '',
                     ]"
-                    class="bg-gray-100"
+                    class="flex content-center items-center bg-white border border-gray-300 py-1 px-3 font-normal text-center text-sm rounded-3xl"
                     @close="handleClose(tag)"
-                    >{{ tag }}</a-tag
-                >
+                    >
+                    <slot name="label" :tag="tag">{{ tag }}</slot>
+                </a-tag>
             </div>
 
             <a-input
@@ -79,6 +81,10 @@
                 type: Boolean,
                 default: false,
             },
+            icon: {
+                type: String,
+                default: "",
+            },
         },
         setup(props, context) {
             const inputRef = ref()
@@ -88,6 +94,7 @@
                 inputVisible: false,
                 inputValue: '',
             })
+            const icon = ref(props.icon)
             const handleClose = (removedTag: string) => {
                 const tags = state.tags.filter((tag) => tag !== removedTag)
                 console.log(tags)
@@ -138,6 +145,7 @@
                 showInput,
                 handleInputConfirm,
                 inputRef,
+                icon
             }
         },
     })

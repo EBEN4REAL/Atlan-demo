@@ -62,6 +62,7 @@
         <div class="mt-1">
             <Users
                 v-if="componentType == 'users'"
+                ref="usersRef"
                 v-model="localValue.ownerUsers"
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
@@ -69,6 +70,7 @@
             ></Users>
             <Groups
                 v-if="componentType == 'groups'"
+                ref="groupRef"
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
@@ -125,15 +127,11 @@
             modelValue: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => ({}),
             },
             showNone: {
                 type: Boolean,
-                default() {
-                    return true
-                },
+                default: true,
             },
             selectUserKey: {
                 type: String,
@@ -146,8 +144,8 @@
                 default: () => 'name', // can be id/username
             },
             enableTabs: {
-                type: Object as PropType<Array<any>>,
-                default: ['users', 'groups'],
+                type: Array as PropType<Array<any>>,
+                default: () => ['users', 'groups'],
             },
             hideDisabledTabs: {
                 type: Boolean,
@@ -161,6 +159,10 @@
             const { showNone, enableTabs, selectUserKey, selectGroupKey } =
                 toRefs(props)
             const componentType = ref('users')
+
+            const usersRef = ref()
+            const groupRef = ref()
+
             if (enableTabs.value.length < 2) {
                 watch(
                     enableTabs,
@@ -187,9 +189,9 @@
 
             const placeholder = computed(() => {
                 if (componentType.value === 'groups') {
-                    return 'Search groups'
+                    return `Search ${groupRef?.value?.filterTotal ?? ''} groups`
                 }
-                return 'Search users'
+                return `Search ${usersRef?.value?.filterTotal ?? ''} users`
             })
 
             watch(localValue.value, (prev, cur) => {
@@ -226,6 +228,8 @@
                 emit('change')
             }
             return {
+                groupRef,
+                usersRef,
                 selectGroupKey,
                 selectUserKey,
                 enableTabs,
@@ -239,7 +243,7 @@
                 showNone,
                 ownerSearchRef,
                 forceFocus,
-                handleChange
+                handleChange,
             }
         },
     })

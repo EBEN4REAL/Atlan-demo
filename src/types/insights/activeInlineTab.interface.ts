@@ -20,6 +20,7 @@ export interface activeInlineTabInterface {
     parentQualifiedName: string
     isSQLSnippet: boolean
     savedQueryParentFolderTitle: string | undefined
+    collectionQulaifiedName: string
     explorer: {
         schema: {
             connectors: connectorsWidgetInterface
@@ -27,6 +28,11 @@ export interface activeInlineTabInterface {
         queries: {
             connectors: {
                 connector: string | undefined
+            }
+            collection: {
+                guid: string | undefined
+                qualifiedName: string | undefined
+                parentQualifiedName: string | undefined
             }
         }
     }

@@ -4,7 +4,6 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import axios from 'axios'
 
-import { Search } from '~/services/meta/search'
 import { useOptions } from '~/services/api/common'
 import { Workflows } from '~/services/service/workflows'
 
@@ -20,6 +19,7 @@ export default function usePackageIndexSearch(
     options.options = ref({
         cancelToken: cancel.token,
     })
+
     if (!isCache) {
         if (dependentKey) {
             if (!dependentKey.value) {

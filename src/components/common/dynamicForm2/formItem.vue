@@ -82,6 +82,7 @@
     import Groups from './widget/groups.vue'
     import GroupMultiple from './widget/groupMultiple.vue'
     import Schedule from './widget/schedule.vue'
+    import ConnectionSelector from './widget/connectionSelector.vue'
     import Alias from './widget/alias.vue'
     import AtlanIcon from '../icon/atlanIcon.vue'
 
@@ -106,6 +107,7 @@
             Schedule,
             Alias,
             AtlanIcon,
+            ConnectionSelector,
         },
         props: {
             configMap: {

@@ -71,6 +71,12 @@
             style="z-index: 600"
             @cancel="showAddLineage = false"
         />
+        <AssetDrawer
+            :data="selectedAsset"
+            :show-drawer="isDrawerVisible"
+            :show-mask="false"
+            @closeDrawer="onCloseDrawer"
+        />
     </div>
 </template>
 
@@ -90,6 +96,8 @@
     import LineageFooter from './lineageFooter.vue'
     import LineageImpactedAssets from './lineageImpactedAssets.vue'
     import LineageAdd from './lineageAdd.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
+
     /** COMPOSABLES */
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
@@ -102,6 +110,7 @@
             LineageFooter,
             LineageImpactedAssets,
             LineageAdd,
+            AssetDrawer,
         },
         props: {
             lineage: {
@@ -118,13 +127,13 @@
             const control = inject('control')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
-            const preview = inject('preview')
 
             /** DATA */
+            const isDrawerVisible = ref(false)
             const { lineage, lineageWithProcess } = toRefs(props)
             const graphHeight = ref(0)
             const graphWidth = ref(0)
-            // const removedNodes = ref([])
+            const resetSelections = ref(false)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref(null)
@@ -142,11 +151,20 @@
 
             /** METHODS */
             // onSelectAsset
-            const onSelectAsset = (item, highlight = false) => {
-                preview(item, false)
+            const onSelectAsset = (
+                item,
+                highlight = false,
+                openDrawer = true
+            ) => {
+                if (openDrawer) isDrawerVisible.value = true
                 control('selectedAsset', item)
                 control('selectedAssetGuid', item.guid)
                 if (highlight) assetGuidToHighlight.value = item.guid
+            }
+
+            const onCloseDrawer = () => {
+                isDrawerVisible.value = false
+                resetSelections.value = true
             }
 
             // initialize
@@ -182,7 +200,9 @@
                     highlightedNode,
                     loaderCords,
                     currZoom,
-                    onSelectAsset
+                    onSelectAsset,
+                    resetSelections,
+                    onCloseDrawer
                 )
             }
 
@@ -210,6 +230,7 @@
                 if (selectedAsset.value?.guid) {
                     const highlight =
                         selectedAsset.value.guid !== baseEntity.value.guid
+                    if (!highlight) return
                     onSelectAsset(selectedAsset.value, highlight)
                 }
             })
@@ -221,6 +242,7 @@
             })
 
             return {
+                isDrawerVisible,
                 selectedAsset,
                 baseEntity,
                 graph,
@@ -238,6 +260,7 @@
                 graphWidth,
                 onShowImpactedAssets,
                 onShowAddLineage,
+                onCloseDrawer,
             }
         },
     })

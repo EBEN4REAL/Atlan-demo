@@ -5,8 +5,6 @@ import whoami from '~/composables/user/whoami'
 
 import { useGroupPreview } from '~/composables/group/showGroupPreview'
 import useGroups from '~/composables/group/useGroups'
-import bodybuilder from 'bodybuilder'
-import { Search } from '~/services/meta/search'
 
 /**
  * A composable for driving the userOrGroupPreview component. Under the hood,

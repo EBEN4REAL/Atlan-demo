@@ -11,6 +11,7 @@
                     v-model:checkedGuids="checkedGuids"
                     :checkable="true"
                     @check="onCheck"
+                    @searchItemCheck="onSearchItemCheck"
                 />
             </template>
             <a-button
@@ -129,19 +130,8 @@
                 }
                 return 'Term'
             }
-            // if node has not been loaded, it will not be in checked node
-            // even if it is in checkedKeys
 
-            //  CHECK EVENT
-            //
-            //  just append to loaclValue
-            //
-
-            // UNCHECK EVENT
-            //
-            //
-
-            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
+            const onCheck = (checkedNodes) => {
                 checkedNodes.forEach((term) => {
                     if (
                         !localValue.value.find(
@@ -158,6 +148,15 @@
                 hasBeenEdited.value = true
             }
 
+            const onSearchItemCheck = (checkedNode, checked) => {
+                if(checked) {
+                    localValue.value.push(checkedNode)    
+                } else {
+                    localValue.value = localValue.value?.filter((localTerm) => (localTerm.guid ?? localTerm.termGuid) !== checkedNode.guid)
+                }
+                hasBeenEdited.value = true
+            }
+            
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
@@ -173,6 +172,7 @@
                 onPopoverClose,
                 localValue,
                 checkedGuids,
+                onSearchItemCheck
             }
         },
     })

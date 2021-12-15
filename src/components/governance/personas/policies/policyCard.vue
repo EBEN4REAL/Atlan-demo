@@ -3,7 +3,7 @@
         class="relative border-b border-gray-300 container-policy-card last:border-0"
     >
         <div
-            class="flex flex-col p-2 pr-2 text-gray-500 cursor-pointer group hover:bg-primary-light card-policy"
+            class="flex flex-col p-2 pr-2 text-gray-500 rounded cursor-pointer group hover:bg-primary-light card-policy"
             :class="
                 selectedPolicy.id === policy.id
                     ? 'outline-primary bg-primary-light'
@@ -120,7 +120,8 @@
                         <div class="dot" />
                         <AtlanIcon icon="Compass" />
                         <span class="flex-none text-sm">
-                            {{ policy.assets.length }} assets
+                            {{ policy.assets.length }}
+                            {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
                         </span>
                     </template>
                     <!-- <template v-for="item in splitAssets.a" :key="item.label">
@@ -140,7 +141,7 @@
                             {{ item.label }}
                         </div>
                     </template> -->
-                    <div
+                    <!-- <div
                         class="font-bold text-gray-500 cursor-pointer"
                         @click="
                             () => {
@@ -152,7 +153,7 @@
                             >Show {{ splitAssets.b.length }} more</span
                         >
                         <span v-else-if="showAll">Show less</span>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- <div
                     class="flex items-stretch border border-gray-300 rounded opacity-0 group-hover:opacity-100 text-gray hover:text-primary"
@@ -183,6 +184,7 @@
             overlay-class-name="popoverConfirm"
             cancel-text="Cancel"
             @confirm="removePolicy"
+            v-if="canDelete"
         >
             <AtlanBtn
                 class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
@@ -229,6 +231,10 @@
                 type: Object as PropType<DataPolicies & MetadataPolicies>,
                 required: true,
             },
+            whitelistedConnectionIds: {
+                type: Array,
+                default: () => [],
+            },
         },
         emits: ['edit', 'cancel', 'delete', 'clickCard'],
         setup(props, { emit }) {
@@ -261,19 +267,24 @@
                 emit('cancel')
             }
             const connectionQfName = computed(() => {
-                if (type.value === 'meta') {
-                    const found = connStore.getList.find(
-                        (conn) => conn.guid === policy.value.connectionId
-                    )
-                    return found?.attributes?.qualifiedName
+                if (policy.value.connectionName) {
+                    return policy.value.connectionName
                 }
-                return policy.value.connectionName
+                const found = connStore.getList.find(
+                    (conn) => conn.guid === policy.value.connectionId
+                )
+                return found?.attributes?.qualifiedName
             })
             const getPopoverContent = (policy: any) =>
                 `Are you sure you want to delete ${policy?.name}?`
             const handleClickPlicyCard = () => {
                 emit('clickCard', { ...policy.value, type: type.value })
             }
+            const canDelete = computed(() => {
+                return props.whitelistedConnectionIds.includes(
+                    policy?.value?.connectionId
+                )
+            })
             return {
                 getPopoverContent,
                 removePolicy,
@@ -285,6 +296,7 @@
                 showAll,
                 splitAssets,
                 handleClickPlicyCard,
+                canDelete,
             }
         },
     })

@@ -152,6 +152,7 @@
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                         @clickCard="handleSelectPolicy"
+                        :whitelistedConnectionIds="whitelistedConnectionIds"
                     />
                 </template>
                 <template
@@ -176,6 +177,7 @@
                         @delete="deletePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                         @clickCard="handleSelectPolicy"
+                        :whitelistedConnectionIds="whitelistedConnectionIds"
                     />
                 </template>
                 <!-- For pusing the new edit policy to bottom -->
@@ -244,8 +246,10 @@
             :selected-policy="selectedPolicy"
             :is-edit="isEdit"
             :is-loading="loadingPolicy"
+            :persona="persona"
             @save="savePolicyUI"
             @close="handleCloseAdd"
+            :whitelistedConnectionIds="whitelistedConnectionIds"
         />
     </a-drawer>
 </template>
@@ -298,6 +302,10 @@
             persona: {
                 type: Object as PropType<IPurpose>,
                 required: true,
+            },
+            whitelistedConnectionIds: {
+                type: Array,
+                default: () => [],
             },
         },
         emits: ['selectPolicy'],

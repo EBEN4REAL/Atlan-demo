@@ -319,6 +319,7 @@
     import ManagePermission from './policies/managePermission.vue'
     import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
+    import useScopeService from './composables/useScopeService'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -372,6 +373,7 @@
         },
         emits: ['close'],
         setup(props, { emit }) {
+            const { scopeList } = useScopeService().listScopes('persona')
             const policyType = ref('')
             const assetSelectorVisible = ref(false)
             const isShow = ref(false)
@@ -537,13 +539,20 @@
                 const result = []
                 const assetsPermission = []
                 const govermence = []
+                const assetsList = scopeList[0]
+                const govermanceList = scopeList[1]
                 policy.value.actions.forEach((el) => {
-                    const splited = el.split('-')
-                    const dataToShow = splited[1]
-                    if (splited.length === 2) {
-                        assetsPermission.push(dataToShow)
-                    } else {
-                        govermence.push(dataToShow)
+                    const findedAsset = assetsList.scopes.find(
+                        (elc) => elc.value === el
+                    )
+                    const findedGovrmance = govermanceList.scopes.find(
+                        (elc) => elc.value === el
+                    )
+                    if (findedAsset) {
+                        assetsPermission.push(findedAsset.label)
+                    }
+                    if (findedGovrmance) {
+                        govermence.push(findedGovrmance.label)
                     }
                 })
                 if (assetsPermission.length > 0) {

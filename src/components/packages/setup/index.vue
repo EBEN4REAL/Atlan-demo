@@ -67,7 +67,10 @@
                     class="flex gap-x-2"
                     v-if="currentStep === steps.length - 1"
                 >
-                    <a-button class="px-6" @click="handleSubmit(false)"
+                    <a-button
+                        class="px-6"
+                        @click="handleSubmit(false)"
+                        :type="allowSchedule ? 'default' : 'primary'"
                         >Run</a-button
                     >
 

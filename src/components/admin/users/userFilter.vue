@@ -1,31 +1,36 @@
 <template>
-    <a-dropdown v-model:visible="filterOpened">
-        <template #overlay>
-            <div class="bg-gray-100 rounded shadow-xl" style="width: 240px">
-                <a-collapse
-                    v-model:activeKey="activeCollapse"
-                    :bordered="false"
-                    class=""
-                >
-                    <a-collapse-panel key="1" header="USER STATUS">
-                        <a-checkbox-group
-                            v-model:value="statusFilter"
-                            class="grid gap-y-2"
-                            :options="userStatusOptions"
-                            @change="handleStatusFilterChange"
-                        ></a-checkbox-group>
-                    </a-collapse-panel>
-                </a-collapse>
-            </div>
-        </template>
-        <a-button size="default" class="px-2 text-gray-500 rounded-md">
+    <!-- <a-dropdown v-model:visible="filterOpened"> -->
+    <!-- <template #overlay> -->
+    <div
+        class="bg-gray-100 rounded shadow-xl user-filter-dd-wrapper"
+        style="width: 240px"
+    >
+        <div class="m-4">
+            <a-collapse
+                v-model:activeKey="activeCollapse"
+                :bordered="false"
+                class="bg-gray-100"
+            >
+                <a-collapse-panel key="1" header="USER STATUS">
+                    <a-checkbox-group
+                        v-model:value="statusFilter"
+                        class="grid gap-y-2"
+                        :options="userStatusOptions"
+                        @change="handleStatusFilterChange"
+                    ></a-checkbox-group>
+                </a-collapse-panel>
+            </a-collapse>
+        </div>
+    </div>
+    <!-- </template> -->
+    <!-- <a-button size="default" class="px-2 text-gray-500 rounded-md">
             <AtlanIcon icon="FilterFunnel" />
             <div
                 v-if="statusFilter?.length"
                 class="absolute w-2 h-2 bg-blue-500 rounded -top-1 -right-1"
             ></div>
-        </a-button>
-    </a-dropdown>
+        </a-button> -->
+    <!-- </a-dropdown> -->
 </template>
 
 <script lang="ts">
@@ -55,11 +60,11 @@
                 emit('change', valueToUpdate)
             }
             watch(
-            () => props.modelValue,
-            () => {
-                if (!props.modelValue.length) statusFilter.value = []
-            }
-        )
+                () => props.modelValue,
+                () => {
+                    if (!props.modelValue?.length) statusFilter.value = []
+                }
+            )
 
             return {
                 userStatusOptions,
@@ -71,3 +76,17 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .user-filter-dd-wrapper {
+        :deep(.ant-collapse-header) {
+            @apply bg-gray-100;
+        }
+        :deep(.ant-collapse-content) {
+            @apply bg-gray-100 !important;
+        }
+        :deep(.ant-collapse-content-active) {
+            @apply bg-gray-100 !important;
+        }
+    }
+</style>

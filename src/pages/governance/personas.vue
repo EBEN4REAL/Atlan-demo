@@ -1,17 +1,18 @@
 <template>
-    <PersonaView />
+    <PersonaView v-if="isAccess" />
+    <NoAccess v-else />
 </template>
 
 <script lang="ts">
     import { defineComponent } from 'vue'
     import { useHead } from '@vueuse/head'
-
+    import NoAccess from '@/common/secured/access.vue'
     import PersonaView from '@/governance/personas/personaView.vue'
-    // import useAuth from '~/services2/service/composable/useAuth'
     import useAuth from '~/composables/auth/useAuth'
     export default defineComponent({
         components: {
             PersonaView,
+            NoAccess
         },
         setup() {
             useHead({
@@ -25,6 +26,7 @@
 
 <route lang="yaml">
 meta:
-layout: default
-requiresAuth: true
+    layout: default
+    permissions: [LIST_PERSONA]
+    requiresAuth: true
 </route>

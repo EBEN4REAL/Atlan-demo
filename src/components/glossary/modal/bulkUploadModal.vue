@@ -78,7 +78,9 @@
                         formDataFormat: {
                             name: 'name',
                             file: '{{file}}',
-                            prefix: 'prefix',
+                            prefix: 'glossary_bulk_upload',
+                            force:false,
+                            excludePrefix:false
                         },
                     },
                 },

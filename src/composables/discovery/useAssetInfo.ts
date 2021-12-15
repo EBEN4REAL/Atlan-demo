@@ -19,12 +19,15 @@ import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
 import useGlossaryStore from '~/store/glossary'
 import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
+import useConnectionData from '../connection/useConnectionData'
 
 // import { formatDateTime } from '~/utils/date'
 
 // import { getCountString, getSizeString } from '~/composables/asset/useFormat'
 
 export default function useAssetInfo() {
+    const { getConnection } = useConnectionData()
+
     const connectionStore = useConnectionStore()
 
     const attributes = (asset: assetInterface) => asset?.attributes
@@ -51,8 +54,20 @@ export default function useAssetInfo() {
         return connectionStore.getConnectorImageMapping
     })
 
-    const connectionName = (asset: assetInterface) =>
-        attributes(asset)?.connectionName ?? ''
+    // const connectionName = (asset: assetInterface) => {}
+    //     attributes(asset)?.connectionName ?? ''
+
+    const connectionName = (asset: assetInterface) => {
+        // console.log('get asset conenction', asset.attributes.qualifiedName)
+
+        const connection = getConnection(
+            asset.attributes.connectionQualifiedName
+        )
+        if (connection) {
+            return connection.attributes.name
+        }
+        return ''
+    }
 
     const connectionQualifiedName = (asset: assetInterface) =>
         attributes(asset)?.connectionQualifiedName ?? ''
@@ -104,7 +119,14 @@ export default function useAssetInfo() {
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
-    const links = (asset: assetInterface) => attributes(asset)?.links
+    const links = (asset: assetInterface) => {
+        const allLinks = attributes(asset)?.links
+
+        const activeLinks = allLinks?.filter(
+            (link) => link?.attributes?.__state === 'ACTIVE'
+        )
+        return activeLinks
+    }
     const link = (asset: assetInterface) => attributes(asset)?.link
 
     const getTabs = (list, typeName: string) => {
@@ -135,7 +157,7 @@ export default function useAssetInfo() {
 
     const { getList: cmList } = useCustomMetadataFacet()
 
-    const getPreviewTabs = (asset: assetInterface) => {
+    const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         let customTabList = []
         if (cmList(assetType(asset)).length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
@@ -145,13 +167,22 @@ export default function useAssetInfo() {
                     emoji: i.options?.emoji,
                     name: i.label,
                     tooltip: i.label,
+                    scrubbed: true,
+                    requiredInProfile: true,
                     data: i,
                     exclude: ['Query'],
                 }
             })
         }
+        const allTabs = [
+            ...getTabs(previewTabs, assetType(asset)),
+            ...customTabList,
+        ]
+        if (inProfile) {
+            return allTabs.filter((tab) => tab.requiredInProfile === inProfile)
+        }
 
-        return [...getTabs(previewTabs, assetType(asset)), ...customTabList]
+        return allTabs
     }
     const getProfileTabs = (asset: assetInterface) => {
         return getTabs(profileTabs, assetType(asset))
@@ -216,7 +247,7 @@ export default function useAssetInfo() {
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
-            return `/insights?id=${asset.guid}`
+            return `/insights?id=${asset.guid}&runQuery=true`
         }
         return `/assets/${asset?.guid}`
     }
@@ -248,8 +279,7 @@ export default function useAssetInfo() {
             const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
-            // console.log('assetType: ', asset.guid)
-            queryPath = `/insights?id=${asset.guid}`
+            queryPath = `/insights?id=${asset.guid}&runQuery=true`
         } else {
             queryPath = `/insights`
         }
@@ -327,10 +357,7 @@ export default function useAssetInfo() {
         return connectorsName
     }
     const getConnectorName = (attributes: any) => {
-        return (
-            attributes?.connectorName ??
-            getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
-        )
+        return getConnectorsNameFromQualifiedName(attributes?.qualifiedName)
     }
 
     const rowCount = (asset: assetInterface, raw: boolean = false) =>
@@ -382,6 +409,12 @@ export default function useAssetInfo() {
             attributes(asset)?.compiledQuery !== ''
         ) {
             return attributes(asset)?.compiledQuery
+        }
+        return '~'
+    }
+    const rawQuery = (asset: assetInterface) => {
+        if (attributes(asset)?.rawQuery && attributes(asset)?.rawQuery !== '') {
+            return attributes(asset)?.rawQuery
         }
         return '~'
     }
@@ -883,6 +916,7 @@ export default function useAssetInfo() {
         isPartition,
         isDist,
         compiledQuery,
+        rawQuery,
         definition,
         description,
         classifications,

@@ -7,6 +7,8 @@ export interface assetInterface {
         certificateStatusMessage: string
         ownerUsers: string[]
         ownerGroups: string[]
+        viewerUsers: string[]
+        viewerGroups: string[]
         certificateUpdatedAt: number
         order: number
         columnCount: number
@@ -31,6 +33,7 @@ export interface assetInterface {
         isDist: boolean
         isForeign: boolean
         compiledQuery: string
+        rawQuery: string
         qualifiedName: string
         userDescription: string
         rowCount: number

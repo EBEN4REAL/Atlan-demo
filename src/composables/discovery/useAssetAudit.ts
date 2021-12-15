@@ -23,7 +23,10 @@ const useAssetAudit = (params: any, guid: string) => {
     }
 
     const fetchMoreAudits = (fetchmoreParams: any) => {
-        const { data, isLoading, error } = Entity.fetchMoreAudits(fetchmoreParams, guid)
+        const { data, isLoading, error } = Entity.fetchMoreAudits(
+            fetchmoreParams,
+            guid
+        )
 
         response.isFetchingMore = isLoading
 
@@ -42,12 +45,9 @@ const useAssetAudit = (params: any, guid: string) => {
     const filterClassificationTypeNameDisplayName = (parsedDetails: any) => {
         if (typeof parsedDetails === 'object')
             return parsedDetails?.typeName ?? ''
-        else if (typeof parsedDetails === 'string')
-            return parsedDetails
+        else if (typeof parsedDetails === 'string') return parsedDetails
         return ''
     }
-
-
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''
@@ -60,27 +60,35 @@ const useAssetAudit = (params: any, guid: string) => {
         }
         if ('attributes' in logs) {
             const { attributes } = logs
-            const owners = 'ownerUsers' in attributes || 'ownerGroups' in attributes
+            const owners =
+                'ownerUsers' in attributes || 'ownerGroups' in attributes
             const experts = 'expertUsers' in attributes
-            const certificate = 'certificateStatus' in attributes || 'certificateStatusMessage' in attributes
+            const certificate =
+                'certificateStatus' in attributes ||
+                'certificateStatusMessage' in attributes
             const userDescription =
                 'userDescription' in attributes ||
                 'shortDescription' in attributes
 
             if (owners) {
-
-                let users = <any>[];
-                let groups = <any>[];
+                let users = <any>[]
+                let groups = <any>[]
 
                 if (attributes.ownerUsers) {
                     users = attributes.ownerUsers
-                    users = users.map(user => ({ name: user, type: "user" }));
+                    users = users.map((user) => ({ name: user, type: 'user' }))
                 }
                 if (attributes.ownerGroups) {
                     groups = attributes.ownerGroups
-                    groups = groups.map(group => ({ name: group, type: "group" }));
+                    groups = groups.map((group) => ({
+                        name: group,
+                        type: 'group',
+                    }))
                 }
-                if (attributes.ownerUsers === '' && attributes.ownerGroups === '') {
+                if (
+                    attributes.ownerUsers === '' &&
+                    attributes.ownerGroups === ''
+                ) {
                     data.displayValue = 'owners'
                     data.component = 'Owners'
                     return data
@@ -127,7 +135,9 @@ const useAssetAudit = (params: any, guid: string) => {
         return data
     }
 
-    const getDetailsForEntityAuditEvent = (auditEvent: any): activityInterface | null => {
+    const getDetailsForEntityAuditEvent = (
+        auditEvent: any
+    ): activityInterface | null => {
         if (auditEvent.details) {
             const eventDetail = auditEvent.details.split(/:(.+)/)
             let parsedDetails: any = {}
@@ -169,15 +179,26 @@ const useAssetAudit = (params: any, guid: string) => {
                             return data
                         }
                     case 'CLASSIFICATION_DELETE':
-                        parsedDetails = eventDetail[1].trim()
-                        data.value =
-                            filterClassificationTypeNameDisplayName(
-                                parsedDetails
-                            )
-                        data.displayValue = 'removed'
-                        data.component = 'Classifications'
+                        try {
+                            parsedDetails = JSON.parse(eventDetail[1].trim())
 
-                        return data
+                            if (parsedDetails.typeName) {
+                                data.value =
+                                    filterClassificationTypeNameDisplayName(
+                                        parsedDetails
+                                    )
+                                data.displayValue = 'removed'
+                                data.component = 'Classifications'
+
+                                return data
+                            }
+                            return null
+                        } catch (error) {
+                            data.value = eventDetail[1].trim()
+                            data.displayValue = 'removed'
+                            data.component = 'Classifications'
+                            return data
+                        }
                     case 'PROPAGATED_CLASSIFICATION_ADD':
                         parsedDetails = JSON.parse(eventDetail[1].trim())
                         data.displayValue = `Classification <b>${filterClassificationTypeNameDisplayName(

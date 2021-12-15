@@ -1,5 +1,5 @@
 import { getRequests, actOnRequest } from '~/services/service/requests'
-import { Ref, computed, watch } from 'vue'
+import { Ref, computed, watch, ref } from 'vue'
 import { RequestStatus } from '~/types/atlas/requests'
 import { useDebounceFn } from '@vueuse/core'
 
@@ -7,35 +7,40 @@ export interface RequestListFilters {
     status: RequestStatus
 }
 
-function generateRequestListParams(
+function generateRequestListFilters(
     searchTerm: String,
     filters: RequestListFilters
 ) {
-    const params: Record<string, any> = {}
+    const filter: Record<string, any> = {}
     if (searchTerm) {
-        params['$or'] = [
+        filter['$or'] = [
             { destination_qualified_name: { $ilike: `%${searchTerm}%` } },
         ]
     }
     for (const [key, value] of Object.entries(filters)) {
         if (value?.length ?? value)
             // Check if the value is valid or the length in case of array
-            params[key] = Array.isArray(value) ? { $in: value } : value
+            filter[key] = Array.isArray(value) ? { $in: value } : value
     }
-    return { filter: params }
+
+    return filter
 }
 
 export function useRequestList(
     searchTerm: Ref<String>,
-    filters: Ref<RequestListFilters>
+    filters: Ref<RequestListFilters>,
+    pagination: Ref
 ) {
-    let params = computed(() =>
-        generateRequestListParams(searchTerm.value, filters.value)
+    let params = computed(() => ({
+        limit: pagination.value.limit,
+        offset: pagination.value.offset,
+        filter: generateRequestListFilters(searchTerm.value, filters.value)
+    })
+
     )
     // const { response, error, mutate, isLoading } = getRequests(params)
     const { data, mutate, error, isLoading, isValidating } =
-        getRequests<T>(params)
-    console.log(data, error)
+        getRequests(params)
 
     const debouncedMutation = useDebounceFn(() => {
         console.log(searchTerm)
@@ -47,7 +52,7 @@ export function useRequestList(
         deep: true,
     })
 
-    return { response: data, error, isLoading }
+    return { response: data, error, isLoading, mutate }
 }
 
 export function approveRequest(id: string, message?: string) {

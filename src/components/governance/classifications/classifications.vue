@@ -2,28 +2,28 @@
     <ExplorerLayout
         v-if="filteredClassificationList.length"
         title="Classification"
-        sub-title="Manage classification tags to build access policies."
     >
         <template #action>
             <AtlanBtn
                 v-auth="map.CREATE_CLASSIFICATION"
                 class="flex-none"
                 size="sm"
-                color="secondary"
+                color="primary"
                 padding="compact"
                 @click="createClassificationModalVisible = true"
             >
-                <AtlanIcon icon="Add" class="-mx-1 text-gray"></AtlanIcon>
+                <AtlanIcon icon="Add" class="mr-1 -mx-1 text-white"></AtlanIcon>
+                New
             </AtlanBtn>
         </template>
         <template #sidebar v-auth="map.LIST_CLASSIFICATION">
-            <div class="flex px-3 py-1">
+            <div class="px-4">
                 <SearchAdvanced
                     v-model:value="searchQuery"
                     placeholder="Search classifications"
                     :autofocus="true"
-                    class="mx-4 mt-6 mb-4 bg-white border-b-0"
                     size="minimal"
+                    class="px-2 my-3"
                 />
             </div>
             <ExplorerList
@@ -51,7 +51,6 @@
         </template>
 
         <router-view />
-
     </ExplorerLayout>
     <div v-else class="flex items-center justify-center h-full">
         <a-empty
@@ -61,7 +60,7 @@
         >
             <template #description>
                 <AtlanIcon icon="EmptyClassifications" class="h-32 mb-6" />
-                <p class="text-2xl font-bold mb-8">
+                <p class="mb-8 text-2xl font-bold">
                     Create a new classifiaction!
                 </p>
                 <a-button
@@ -98,7 +97,7 @@
     import NoAcces from '@/common/secured/access.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
-    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
@@ -122,7 +121,7 @@
             NoAcces,
             SearchAdvanced,
             AddClassificationModal,
-            ClassificationIcon
+            ClassificationIcon,
         },
         setup(props) {
             const router = useRouter()

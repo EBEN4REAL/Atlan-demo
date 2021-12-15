@@ -279,11 +279,11 @@
             provide('credentialBody', credentialBody)
 
             const handleTestAuthentication = async () => {
+                resetError()
                 const e = await validateForm()
 
                 if (!e) {
                     refresh()
-                    resetError()
                 } else {
                     testMessage.value = 'Please enter correct credentials'
                     testIcon.value = 'Error'
@@ -298,10 +298,12 @@
                 console.log('err')
                 console.log(errorTest.value?.response?.data.message)
 
-                if (errorTest) {
-                    errorMessage(
-                        `Not able to authenticate your credentials - ${errorTest.value?.response?.data?.message}`
-                    )
+                if (!isLoadingTest.value) {
+                    if (errorTest) {
+                        errorMessage(
+                            `Not able to authenticate your credentials - ${errorTest.value?.response?.data?.message}`
+                        )
+                    }
                 }
             })
 

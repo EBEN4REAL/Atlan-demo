@@ -6,14 +6,14 @@
     <a-modal
         v-model:visible="visible"
         :class="$style.input"
-        width="50%"
+        width="40%"
         :destroy-on-close="true"
         :closable="true"
         okText="Save"
         cancelText=""
         :footer="null"
     >
-        <div class="p-3">
+        <div class="px-5 py-3">
             <div class="flex items-center mb-1">
                 <div
                     v-if="!glossaryQualifiedName"
@@ -48,18 +48,7 @@
                     ></AtlanIcon>
                     {{ categoryName }}
                 </div>
-
-                <!-- <GlossaryPopoverSelect
-                    v-else-if="
-                        !localQualifiedName &&
-                        (localEntityType === 'AtlasGlossaryTerm' ||
-                            localEntityType === 'AtlasGlossaryCategory')
-                    "
-                    class="p-1 bg-gray-100 rounded"
-                    v-model="localQualifiedName"
-                ></GlossaryPopoverSelect> -->
             </div>
-
             <a-input
                 ref="titleBar"
                 v-model:value="entity.attributes.name"
@@ -82,8 +71,12 @@
                 <p class="p-0 m-0">Create more</p>
             </div>
 
-            <a-button type="primary" @click="handleSave" :loading="isLoading"
-                >Save</a-button
+            <a-button
+                type="primary"
+                @click="handleSave"
+                :loading="isLoading"
+                class="bg-primary"
+                >Create</a-button
             >
         </div>
     </a-modal>
@@ -111,6 +104,7 @@
     import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
     import whoami from '~/composables/user/whoami'
     import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     import { List } from '~/constant/status'
     import {
@@ -187,6 +181,9 @@
                 glossaryName,
                 categoryName,
             } = toRefs(props)
+            // shortcuts for cmnd+enter to save
+            const keys = useMagicKeys()
+            const { meta, Enter } = keys
 
             const localEntityType = ref(entityType.value)
             watch(entityType, () => {
@@ -247,6 +244,7 @@
             const defaultRetry = ref(3)
             const handleSave = () => {
                 defaultRetry.value = 2
+                console.log(entity.attributes.name)
                 if (entity.attributes.name) {
                     entity.typeName = localEntityType.value
                     if (typeNameTitle.value === 'Glossary') {
@@ -313,8 +311,11 @@
                 if (error.value) {
                     console.error(error.value)
                 } else {
-                    if (!isCreateMore.value) visible.value = false
+                    if (!isCreateMore.value) {
+                        visible.value = false
+                    }
                     message.success(`${typeNameTitle.value} created`)
+                    // resetInput()
 
                     if (guidCreatedMaps.value?.length > 0) {
                         guid.value = guidCreatedMaps.value[0]
@@ -324,7 +325,6 @@
             })
 
             whenever(error, () => {
-                console.log(error.value.response?.data?.errorMessage)
                 if (error.value) {
                     if (error.value.response?.status === 409) {
                         message.error(
@@ -344,6 +344,13 @@
                 } else if (defaultRetry.value > 0) {
                     defaultRetry.value -= 1
                     mutateUpdate()
+                }
+            })
+            whenever(Enter, () => {
+                if (meta.value && Enter.value) {
+                    Enter.value = false
+                    meta.value = false
+                    if (entity.attributes.name) handleSave()
                 }
             })
 

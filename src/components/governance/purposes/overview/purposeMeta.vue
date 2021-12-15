@@ -1,6 +1,16 @@
 <template>
-    <div>
-        <div class="pt-6 details-section">
+    <div class="pt-3 pb-0">
+        <PurposeSummary :purpose="persona" @setActiveTab="setActiveTab">
+            <template v-slot:classifications>
+                <div class="mb-1 text-gray-500">Classifications</div>
+                <Classification
+                    :allowDelete="selectedClassifications.length > 1"
+                    v-model:modelValue="selectedClassifications"
+                    @change="updateClassifications"
+                />
+            </template>
+        </PurposeSummary>
+        <!-- <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             {{ persona.createdBy }}
             <div class="flex items-center text-sm">
@@ -77,7 +87,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -107,10 +117,11 @@
     import UserPill from '@/common/pills/user.vue'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
+    import PurposeSummary from './PurposeSummary.vue'
 
     export default defineComponent({
         name: 'PurposeMeta',
-        components: { Classification, PopOverUser, UserPill },
+        components: { Classification, PopOverUser, UserPill, PurposeSummary },
         props: {
             persona: {
                 type: Object as PropType<IPurpose>,

@@ -7,7 +7,7 @@ export const workspaceCentreList = [
         icon: 'GovernanceCenter',
         label: 'Governance Center',
         isActive: true,
-        auth: page.PAGE_PLATFORM,
+        auth: page.PAGE_GOVERNANCE,
     },
     {
         path: '/admin',
@@ -16,13 +16,13 @@ export const workspaceCentreList = [
         isActive: true,
         auth: page.PAGE_ADMIN,
     },
-    {
-        path: '/platform',
-        icon: 'Platform',
-        label: 'Platform Center',
-        isActive: true,
-        auth: page.PAGE_PLATFORM,
-    },
+    // {
+    //     path: '/platform',
+    //     icon: 'Platform',
+    //     label: 'Platform Center',
+    //     isActive: true,
+    //     auth: page.PAGE_PLATFORM,
+    // },
     {
         path: '/reporting',
         icon: 'Admin',

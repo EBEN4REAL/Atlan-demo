@@ -49,7 +49,7 @@ export default defineConfig(({ mode }) => {
             commonjsOptions: {
                 //transformMixedEsModules: true,
                 //defaultIsModuleExports: true
-            }
+            },
         },
         plugins: [
             visualizer(),
@@ -70,7 +70,7 @@ export default defineConfig(({ mode }) => {
             svgLoader(),
             {
                 ...strip({ include: '**/*.+(vue|js|ts)' }),
-                apply: 'build'
+                apply: 'build',
             },
             // Components(),
         ],

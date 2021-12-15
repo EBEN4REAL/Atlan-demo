@@ -32,6 +32,8 @@ import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
+import EmptySampleData from '~/assets/images/illustrations/empty_sample_data.svg'
+import ErrorSampleData from '~/assets/images/illustrations/error_sample_data.svg'
 import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
@@ -162,6 +164,7 @@ import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import Slack from '~/assets/images/integrations/slack.svg'
+import Teams from '~/assets/images/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
@@ -200,9 +203,7 @@ import Loader from '~/assets/images/icons/loader.svg'
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
-import LeftJoin from '~/assets/images/icons/left-join.svg'
 import Trigger from '~/assets/images/icons/trigger.svg'
-import RightJoin from '~/assets/images/icons/right-join.svg'
 import QueryVerified from '~/assets/images/icons/query-verified.svg'
 import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
 import QueryDraft from '~/assets/images/icons/query-draft.svg'
@@ -260,6 +261,7 @@ import Enter from '~/assets/images/icons/enter.svg'
 import Times from '~/assets/images/icons/times.svg'
 import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
 import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
+import GlossaryGettingStarted from '~/assets/images/icons/glossary-getting-started.svg'
 import BulkUpload from '~/assets/images/icons/bulk-upload.svg'
 import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
@@ -269,6 +271,7 @@ import FormatText from '~/assets/images/icons/formatText.svg'
 import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
+import EmptyCollections from '~/assets/images/illustrations/empty-collections.svg'
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
 
@@ -292,12 +295,27 @@ import CustomVariable from '~/assets/images/icons/customVariable.svg'
 import FolderSearch from '~/assets/images/icons/folder-search.svg'
 import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
 import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
+import Verified from '~/assets/images/status/verified.svg'
+import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
+import Compass from '~/assets/images/icons/Compass.svg'
+import Policies from '~/assets/images/icons/Policies.svg'
+
+import InnerJoin from '~/assets/images/icons/InnerJoin.svg'
+import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
+import RightJoin from '~/assets/images/icons/RightJoin.svg'
+import TableSwap from '~/assets/images/icons/swapTable.svg'
+import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
+import PublicCollection from '~/assets/images/icons/publicCollection.svg'
+import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 
 export default {
     BuilderGroup,
     Trigger,
     LeftJoin,
     RightJoin,
+    InnerJoin,
+    TableSwap,
+    JoinHeader,
     Sort,
     Union,
     ShieldCheck,
@@ -332,6 +350,7 @@ export default {
     NoDataInsights,
     SomethingWrong,
     NoSavedQueriesPersonal,
+    EmptyCollections,
     AddQuery,
     RunHistory,
     RunSuccess,
@@ -340,6 +359,8 @@ export default {
     Relation,
     MorningIcon,
     AfternoonIcon,
+    EmptySampleData,
+    ErrorSampleData,
     Resources,
     FAQS,
     TableSummary,
@@ -578,4 +599,12 @@ export default {
     FolderNav24,
     FolderNav24Active,
     BulkUpload,
+    GlossaryGettingStarted,
+    Verified,
+    ShieldBlank,
+    Compass,
+    Teams,
+    Policies,
+    PublicCollection,
+    PrivateCollection
 }

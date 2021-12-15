@@ -1,14 +1,22 @@
-import { computed, ref, ComputedRef, watch } from 'vue'
+import { computed, ref, ComputedRef, watch, Ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { Groups } from '~/services/service/groups'
 import { groupInterface } from '~/types/groups/group.interface'
 
-export default function useFacetGroups(sort: string, columns: string[], immediate = true) {
+export default function useFacetGroups(
+    sort?: string,
+    columns?: string[],
+    immediate = true
+) {
     const params = ref(new URLSearchParams())
     params.value.set('sort', sort ?? 'name')
+    const limit = 20
+    let offset = 0
+    params.value.append('limit', `${limit}`)
+
     if (columns?.length) {
         params.value.set('sort', sort ?? columns[0])
-        columns.forEach(c => {
+        columns.forEach((c) => {
             params.value.append('columns', c)
         })
     }
@@ -20,13 +28,20 @@ export default function useFacetGroups(sort: string, columns: string[], immediat
         },
     })
 
+    const loadMore = () => {
+        offset += limit
+        params.value.set('offset', `${offset}`)
+        mutate()
+    }
+
     const list = ref([])
     watch(data, () => {
         if (data.value?.records) {
-            list.value = [...data?.value?.records]
-        } else {
+            if (offset > 0)
+                list.value.push(...data.value.records)
+            else list.value = [...data.value.records]
+        } else if (offset === 0)
             list.value = []
-        }
     })
 
     // const total: ComputedRef<number> = computed(() => data.value?.total_record)
@@ -34,8 +49,8 @@ export default function useFacetGroups(sort: string, columns: string[], immediat
 
     const total = computed(() => data.value?.total_record)
 
-    function setLimit(limit = 20) {
-        params.value.set('limit', `${limit}`)
+    function setLimit(l = 20) {
+        params.value.set('limit', `${l}`)
     }
 
     let debounce: any = null
@@ -48,20 +63,19 @@ export default function useFacetGroups(sort: string, columns: string[], immediat
         }
         clearTimeout(debounce)
         debounce = setTimeout(() => {
-            if (value)
-                params.value.set(
-                    'filter',
-                    JSON.stringify({
-                        $and: [
-                            {
-                                $or: [
-                                    { name: { $ilike: `%${value}%` } },
-                                    { alias: { $ilike: `%${value}%` } },
-                                ],
-                            },
-                        ],
-                    })
-                )
+            params.value.set(
+                'filter',
+                JSON.stringify({
+                    $and: [
+                        {
+                            $or: [
+                                { name: { $ilike: `%${value}%` } },
+                                { alias: { $ilike: `%${value}%` } },
+                            ],
+                        },
+                    ],
+                })
+            )
             mutate()
         }, 200)
     }
@@ -73,10 +87,11 @@ export default function useFacetGroups(sort: string, columns: string[], immediat
         mutate,
         params,
         isReady,
+        loadMore,
         error,
         handleSearch,
         setLimit,
         filterTotal,
-        isLoading
+        isLoading,
     }
 }

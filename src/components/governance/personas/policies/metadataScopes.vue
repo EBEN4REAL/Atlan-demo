@@ -1,48 +1,86 @@
 <template>
-    <a-collapse expand-icon-position="right" :activeKey="defaultExpandedState">
-        <template #expandIcon="{ isActive }">
-            <div>
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="ml-3 text-gray-500 transition-transform duration-300 transform"
-                    :class="isActive ? '-rotate-180' : 'rotate-0'"
-                />
-            </div>
-        </template>
-
-        <a-collapse-panel v-for="(scope, idx) in scopeList" :key="scope.type">
-            <template #header>
-                <a-checkbox
-                    data-test-id="checkbox"
-                    :checked="
-                        groupedActions[idx].scopes.length ===
-                        scopeList[idx].scopes.length
-                    "
-                    :indeterminate="
-                        0 < groupedActions[idx].scopes.length &&
-                        groupedActions[idx].scopes.length <
-                            scopeList[idx].scopes.length
-                    "
-                    @click.stop="toggleCheckAll(idx)"
-                >
-                    {{ scope.type }}
-                </a-checkbox>
+    <div class="meta-data-scope-container">
+        <a-collapse
+            expand-icon-position="right"
+            :active-key="defaultExpandedState"
+        >
+            <template #expandIcon="{ isActive }">
+                <div>
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform"
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
+                </div>
             </template>
-            <a-checkbox-group
-                :value="groupedActions[idx].scopes"
-                :name="scope.type"
-                :options="scope.scopes"
-                :class="['capitalize', $style.checkbox_custom]"
-                @update:value="updateSelection(scope.type, $event)"
+
+            <a-collapse-panel
+                v-for="(scope, idx) in scopeList"
+                :key="scope.type"
             >
-            </a-checkbox-group>
-        </a-collapse-panel>
-    </a-collapse>
+                <template #header>
+                    <a-checkbox
+                        data-test-id="checkbox"
+                        :checked="
+                            groupedActions[idx].scopes.length ===
+                            scopeList[idx].scopes.length
+                        "
+                        @click.stop="toggleCheckAll(idx)"
+                    >
+                        {{ scope.type }}
+                    </a-checkbox>
+                </template>
+                <div class="meta-data-scope">
+                    <a-checkbox-group
+                        :value="groupedActions[idx].scopes"
+                        :name="scope.type"
+                        :options="scope.scopes"
+                        :class="['capitalize', $style.checkbox_custom]"
+                        class="wrapper-checkbox"
+                        @update:value="updateSelection(scope.type, $event)"
+                    ></a-checkbox-group>
+                    <div class="wrapper-desc">
+                        <div
+                            v-for="(item, i) in scope.scopes"
+                            :key="i"
+                            class="desc"
+                        >
+                            {{ item.desc }}
+                            <a-tooltip
+                                v-if="item.label.toLowerCase() === 'read'"
+                                placement="right"
+                                color="white"
+                            >
+                                <span class="text-blue-600 pointer-events-auto"
+                                    >Learn more</span
+                                >
+                                <template #title>
+                                    <p class="m-3 text-gray">
+                                        Atlan opens up most non-sensitive
+                                        metadata attributes to all product users
+                                        by default <br />
+                                        Sensitive information of assets coming
+                                        in from source like source urls,
+                                        formulas in calculated fields, raw SQL
+                                        QUERY in views, queries, upstream
+                                        information around tables/datasources
+                                        and partition information are only shown
+                                        up when read access is given to the
+                                        users.
+                                    </p>
+                                </template>
+                            </a-tooltip>
+                        </div>
+                    </div>
+                </div>
+            </a-collapse-panel>
+        </a-collapse>
+    </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
-    import {} from '../composables/useEditPersona'
+    // import {} from '../composables/useEditPersona'
     import useScopeService from '../composables/useScopeService'
 
     export default defineComponent({
@@ -118,6 +156,41 @@
     .checkbox_custom {
         :global(.ant-checkbox-group-item) {
             @apply my-1  !important;
+        }
+    }
+</style>
+<style lang="less">
+    .meta-data-scope-container {
+        .ant-collapse-header {
+            background-color: #fafafa;
+        }
+    }
+    .meta-data-scope {
+        display: flex;
+        .ant-checkbox-wrapper {
+            display: flex;
+            .ant-checkbox {
+                margin-top: 5px;
+                margin-right: 7px;
+                height: fit-content;
+            }
+        }
+        .wrapper-desc {
+            flex: 1;
+        }
+        .desc {
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        .wrapper-checkbox {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: auto;
+            .ant-checkbox-wrapper {
+                height: 40px;
+            }
+            // justify-content: space-between;
         }
     }
 </style>

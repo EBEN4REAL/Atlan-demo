@@ -1,19 +1,4 @@
 <template>
-    <!-- Lineage Legend -->
-    <!-- <div class="lineage-legend">
-        <div class="lineage-legend__item">
-            <span id="upstream"></span>
-            <span>Upstream</span>
-        </div>
-        <div class="lineage-legend__item">
-            <span id="downstream"></span>
-            <span>Downstream</span>
-        </div>
-        <div class="lineage-legend__item">
-            <span id="selected"></span>
-            <span>Selected Path</span>
-        </div>
-    </div> -->
     <div class="lineage-control footer">
         <slot></slot>
 
@@ -100,9 +85,11 @@
             },
             graphHeight: {
                 type: Number,
+                required: true,
             },
             graphWidth: {
                 type: Number,
+                required: true,
             },
             lineageContainer: {
                 type: Object,
@@ -125,9 +112,11 @@
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
 
+            /** METHODS */
             // transform
             const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
 
+            // onFullscreen
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
                 if (isFullscreen.value) {

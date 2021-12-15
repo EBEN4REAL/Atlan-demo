@@ -1,8 +1,11 @@
-import { Ref, ComputedRef, ref, toRaw, watch } from 'vue'
+import { Ref, ComputedRef, ref, toRaw, watch, inject } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-import { SavedQuery } from '~/types/insights/savedQuery.interface'
+import {
+    SavedQuery,
+    QueryCollection,
+} from '~/types/insights/savedQuery.interface'
 import {
     decodeQuery as decodeBase64Data,
     serializeQuery,
@@ -17,7 +20,6 @@ import { generateUUID } from '~/utils/helper/generator'
 import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/constants'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import useLinkAssets from '~/components/composables/common/useLinkAssets'
-import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
 import { useTenantStore } from '~/store/tenant'
 
 export function useSavedQuery(
@@ -29,6 +31,9 @@ export function useSavedQuery(
     const { username } = whoami()
     const tenantStore = useTenantStore()
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
+    const queryCollections = inject('queryCollections') as ComputedRef<
+        QueryCollection[] | undefined
+    >
     const {
         getConnectorName,
         getConnectionQualifiedName,
@@ -76,81 +81,6 @@ export function useSavedQuery(
         console.log(connectors, 'connectors')
         console.log('saved query: ', savedQuery)
 
-        // const newTab: activeInlineTabInterface = inlineTabsDemoData[0]
-        // newTab.attributes = savedQuery.attributes
-        // ;(newTab.label = savedQuery.attributes.name ?? ''),
-        //     (newTab.key = savedQuery?.guid),
-        //     (newTab.favico = 'https://atlan.com/favicon.ico'),
-        //     (newTab.isSaved = true),
-        //     (newTab.queryId = savedQuery.guid),
-        //     (newTab.updateTime =
-        //         savedQuery?.updateTime ??
-        //         savedQuery.attributes.__modificationTimestamp),
-        //     (newTab.updatedBy =
-        //         savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy),
-        //     (newTab.connectionId = savedQuery.attributes.connectionId),
-        //     (newTab.description = savedQuery.attributes.description as string),
-        //     (newTab.qualifiedName = savedQuery.attributes.qualifiedName),
-        //     (newTab.parentGuid = savedQuery.attributes?.parent?.guid),
-        //     (newTab.parentQualifiedName =
-        //         savedQuery.attributes.parentFolderQualifiedName),
-        //     (newTab.isSQLSnippet = savedQuery.attributes.isSnippet as boolean),
-        //     (newTab.status = savedQuery.attributes.certificateStatus as string),
-        //     (newTab.savedQueryParentFolderTitle = savedQuery?.parentTitle),
-        //     (newTab.explorer = {
-        //         schema: {
-        //             connectors: connectors,
-        //         },
-        //     },
-
-        // newTab.playground.editor= {
-        //     text: savedQuery.attributes.rawQuery,
-        //     dataList: [],
-        //     columnList: [],
-        //     variables: decodedVariables,
-        //     savedVariables: [],
-        //     limitRows: {
-        //         checked: false,
-        //         rowsCount: -1,
-        //     },
-        //     context: {
-        //         // attributeName: 'defaultSchemaQualifiedName',
-        //         // attributeValue: defaultSchemaQualifiedName,
-        //         ...connectors
-
-        //     },
-        // }
-        // newTab.playground.resultsPane= {
-        //     activeTab:
-        //         activeInlineTab.value?.playground.resultsPane.activeTab ?? 0,
-        //     result: {
-        //         title: savedQuery.attributes.name,
-        //         isQueryRunning: '',
-        //         queryErrorObj: {},
-        //         errorDecorations: [],
-        //         totalRowsCount: -1,
-        //         executionTime: -1,
-        //         runQueryId: undefined,
-        //         buttonDisable: false,
-        //         eventSourceInstance: undefined,
-        //     },
-        //     metadata: {},
-        //     queries: {},
-        //     joins: {},
-        //     filters: {},
-        //     impersonation: {},
-        //     downstream: {},
-        //     sqlHelp: {},
-        // }
-
-        // newTab.assetSidebar = {
-        //     // for taking the previous state from active tab
-        //     isVisible: false,
-        //     assetInfo: savedQuery,
-        //     title: activeInlineTab.value?.assetSidebar.title ?? '',
-        //     id: activeInlineTab.value?.assetSidebar.id ?? '',
-        // }
-
         const newTab: activeInlineTabInterface = {
             attributes: savedQuery.attributes,
             label: savedQuery.attributes.name ?? '',
@@ -167,11 +97,12 @@ export function useSavedQuery(
             description: savedQuery.attributes.description as string,
             qualifiedName: savedQuery.attributes.qualifiedName,
             parentGuid: savedQuery.attributes?.parent?.guid,
-            parentQualifiedName:
-                savedQuery.attributes.parentFolderQualifiedName,
+            parentQualifiedName: savedQuery.attributes.parentQualifiedName,
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
             status: savedQuery.attributes.certificateStatus as string,
             savedQueryParentFolderTitle: savedQuery?.parentTitle,
+            collectionQulaifiedName:
+                savedQuery.attributes.collectionQualifiedName,
             explorer: {
                 schema: {
                     connectors: connectors,
@@ -179,6 +110,14 @@ export function useSavedQuery(
                 queries: {
                     connectors: {
                         connector: savedQuery.attributes.connectorName,
+                    },
+                    collection: {
+                        // copy from last tab
+                        guid: activeInlineTab?.value?.explorer?.queries
+                            ?.collection?.guid,
+                        qualifiedName:
+                            savedQuery.attributes.collectionQualifiedName,
+                        parentQualifiedName: undefined,
                     },
                 },
             },
@@ -269,6 +208,14 @@ export function useSavedQuery(
             activeInlineTabKey.value = key
         }
     }
+
+    const getCollectionByQualifiedName = (qualifiedName: string) => {
+        return queryCollections.value.find(
+            (collection) =>
+                collection.attributes.qualifiedName === qualifiedName
+        )
+    }
+
     /* Involved network requests */
     const updateSavedQuery = (
         editorInstance: Ref<any>,
@@ -295,13 +242,17 @@ export function useSavedQuery(
         const certificateStatus = activeInlineTab?.status
         const description = activeInlineTab?.description
         const isSQLSnippet = activeInlineTab?.isSQLSnippet
+        const collectionQualifiedName = getCollectionByQualifiedName(
+            activeInlineTab.collectionQulaifiedName
+        )?.attributes.qualifiedName
+        console.log(
+            'update saved query collectionQualifiedName',
+            collectionQualifiedName
+        )
         /* NEED TO CHECK IF qualifiedName will also change acc to connectors it has connectionQualifiedName */
         const qualifiedName = activeInlineTab?.qualifiedName
+        // const
         const rawQuery = activeInlineTab?.playground?.editor?.text
-        const compiledQuery = getParsedQuery(
-            activeInlineTab?.playground.editor.variables,
-            activeInlineTab?.playground?.editor?.text
-        )
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
 
@@ -321,22 +272,24 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName,
                     defaultDatabaseQualifiedName,
-                    certificateStatus,
+                    certificateStatus:
+                        certificateStatus === 'is_null'
+                            ? undefined
+                            : certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionId: connectionQualifiedName,
                     connectionQualifiedName,
+                    collectionQualifiedName,
                     description,
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     rawQuery,
-                    compiledQuery,
                     variablesSchemaBase64,
                     isPrivate: true,
                     parent: {
                         guid: activeInlineTab.parentGuid,
                     },
-                    parentFolderQualifiedName:
-                        activeInlineTab?.parentQualifiedName,
+                    parentQualifiedName: activeInlineTab?.parentQualifiedName,
                 },
                 guid: activeInlineTab?.queryId,
             },
@@ -403,6 +356,8 @@ export function useSavedQuery(
         activeInlineTabCopy.label = saveQueryData.title
         activeInlineTabCopy.status = saveQueryData.certificateStatus
 
+        // {{collectionQname}}/query/{username}/random-uuid
+
         const uuidv4 = generateUUID()
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
@@ -414,16 +369,16 @@ export function useSavedQuery(
         const certificateStatus = saveQueryData.certificateStatus
         const isSQLSnippet = saveQueryData.isSQLSnippet
         const rawQuery = activeInlineTab.playground.editor.text
-        const compiledQuery = getParsedQuery(
-            activeInlineTab?.playground.editor.variables,
-            rawQuery as string
-        )
-        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
+        // const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
+
+        const collectionQualifiedName =
+            activeInlineTab.explorer.queries.collection.qualifiedName
+        const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
             entity: {
@@ -435,17 +390,20 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName:
                         defaultSchemaQualifiedName ?? '',
-                    certificateStatus,
+                    certificateStatus:
+                        certificateStatus === 'is_null'
+                            ? undefined
+                            : certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName: connectionQualifiedName ?? '',
                     description,
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     rawQuery,
-                    compiledQuery,
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: true,
+                    collectionQualifiedName,
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -453,7 +411,7 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
+        body.value.entity.attributes.parentQualifiedName = parentFolderQF
         body.value.entity.attributes.parent = {
             guid: parentFolderGuid,
         }
@@ -529,10 +487,10 @@ export function useSavedQuery(
         parentFolderGuid: string
     ) => {
         const editorInstanceRaw = toRaw(editorInstance.value)
+        // eslint-disable-next-line prefer-destructuring
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
-        const attributeName =
-            activeInlineTab.value.explorer.schema.connectors.attributeName
+        // eslint-disable-next-line prefer-object-spread
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
             activeInlineTab.value
@@ -542,30 +500,28 @@ export function useSavedQuery(
         activeInlineTabCopy.status = saveQueryData.certificateStatus
         // /* Editor text */
         // activeInlineTabCopy.playground.editor.text = ''
-
         const uuidv4 = generateUUID()
+
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
-        const connectionGuid = ''
         const connectionName = getConnectorName(attributeValue)
         const name = saveQueryData.title
-        const description = saveQueryData.description
-        const certificateStatus = saveQueryData.certificateStatus
-        const isSQLSnippet = saveQueryData.isSQLSnippet
+        const { description } = saveQueryData
+        const { certificateStatus } = saveQueryData
+        const { isSQLSnippet } = saveQueryData
         const rawQuery = editorInstanceRaw?.getValue()
-        const compiledQuery = getParsedQuery(
-            activeInlineTab.value.playground.editor.variables,
-            editorInstanceRaw?.getValue() as string
-        )
-        // const rawQuery = activeInlineTabCopy.playground.editor.text
-        // const compiledQuery = activeInlineTabCopy.playground.editor.text
-        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? ''
+        const defaultDatabaseQualifiedName =
+            getDatabaseQualifiedName(attributeValue) ?? undefined
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab.value.playground.editor.variables
         )
+        // const uuidv4 = generateUUID()
+        const collectionQualifiedName =
+            activeInlineTabCopy.explorer.queries.collection.qualifiedName
+        const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
         // const variablesSchemaBase64 = []
 
         const body = ref<Record<string, any>>({
@@ -577,17 +533,20 @@ export function useSavedQuery(
                     qualifiedName,
                     connectionName,
                     defaultSchemaQualifiedName,
-                    certificateStatus,
+                    certificateStatus:
+                        certificateStatus === 'is_null'
+                            ? undefined
+                            : certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName,
+                    defaultDatabaseQualifiedName,
                     description,
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     rawQuery,
-                    compiledQuery,
                     variablesSchemaBase64,
-                    connectionId: connectionGuid,
                     isPrivate: true,
+                    collectionQualifiedName,
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -595,20 +554,17 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
-        body.value.entity.attributes.parent = {
-            guid: parentFolderGuid,
-        }
-        if (type && type.length && parentFolderQF == 'root') {
-            body.value.entity.classifications = [
-                {
-                    attributes: {},
-                    propagate: true,
-                    removePropagationsOnEntityDelete: true,
-                    typeName: type,
-                    validityPeriods: [],
-                },
-            ]
+        body.value.entity.attributes.parentQualifiedName = parentFolderQF
+        if (parentFolderQF.includes('/folder')) {
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid,
+                typeName: 'QueryFolder',
+            }
+        } else {
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid,
+                typeName: 'QueryCollection',
+            }
         }
         // chaing loading to true
         saveQueryLoading.value = true
@@ -618,28 +574,13 @@ export function useSavedQuery(
         )
 
         watch([data, error, isLoading], () => {
-            if (isLoading.value == false) {
+            if (isLoading.value === false) {
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
                     const savedQuery = data.value.mutatedEntities.CREATE[0]
-                    /* properties not coming in the response */
-                    savedQuery.attributes.defaultSchemaQualifiedName =
-                        defaultSchemaQualifiedName
-                    savedQuery.attributes.connectorName = connectorName
-                    savedQuery.attributes.connectionQualifiedName =
-                        connectionQualifiedName
-                    savedQuery.attributes.connectionGuid = connectionGuid
-                    savedQuery.attributes.connectionName = connectionName
-                    savedQuery.attributes.name = name
-                    savedQuery.attributes.description = description
-                    savedQuery.attributes.certificateStatus = certificateStatus
-                    savedQuery.attributes.isSQLSnippet = isSQLSnippet
-                    /* Initial should be empty */
-                    savedQuery.attributes.rawQuery = ''
-                    savedQuery.attributes.compiledQuery = ''
-                    savedQuery.attributes.qualifiedName = qualifiedName
                     savedQuery.attributes.variablesSchemaBase64 = []
-                    /* properties not coming in the response */
+                    /* end: properties not coming in the response */
+
                     showSaveQueryModal.value = false
                     message.success({
                         content: `${name} query saved!`,
@@ -653,6 +594,8 @@ export function useSavedQuery(
                         router.push({ path: `insights`, query: queryParams })
                     }
                     activeInlineTabCopy.queryId = guid
+                    activeInlineTabCopy.collectionQulaifiedName =
+                        collectionQualifiedName
                     openSavedQueryInNewTab(savedQuery)
                 } else {
                     console.log(error.value.toString())
@@ -671,8 +614,10 @@ export function useSavedQuery(
         saveFolderLoading: Ref<boolean>,
         type: string,
         parentFolderQF: Ref<string>,
-        parentFolderGuid: Ref<string>
+        parentFolderGuid: Ref<string>,
+        collection: ComputedRef<QueryCollection>
     ) => {
+        console.log('parentFolderQF', parentFolderQF.value)
         const attributeValue =
             activeInlineTab.value.explorer.schema.connectors.attributeValue
         const attributeName =
@@ -685,10 +630,13 @@ export function useSavedQuery(
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''
         const connectionName = getConnectorName(attributeValue)
+        const collectionQualifiedName =
+            collection.value.attributes.qualifiedName
 
         const name = folderName
 
-        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
+        const qualifiedName = `${collectionQualifiedName}/folder/${username.value}/${uuidv4}`
+
         const defaultSchemaQualifiedName =
             `${attributeName}.${attributeValue}` ?? ''
 
@@ -702,6 +650,7 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName,
                     connectionQualifiedName,
+                    collectionQualifiedName,
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     connectionId: connectionGuid,
@@ -714,21 +663,19 @@ export function useSavedQuery(
             },
         })
 
-        body.value.entity.attributes.parentFolderQualifiedName =
-            parentFolderQF.value
-        body.value.entity.attributes.parent = {
-            guid: parentFolderGuid.value,
-        }
-        if (type && type.length && parentFolderQF.value === 'root') {
-            body.value.entity.classifications = [
-                {
-                    attributes: {},
-                    propagate: true,
-                    removePropagationsOnEntityDelete: true,
-                    typeName: type,
-                    validityPeriods: [],
-                },
-            ]
+        body.value.entity.attributes.parentQualifiedName = parentFolderQF.value
+        if (parentFolderQF.value.includes('/folder')) {
+            // parent is folder
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid.value,
+                typeName: 'QueryFolder',
+            }
+        } else {
+            // parent is collection
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid.value,
+                typeName: 'QueryCollection',
+            }
         }
         // chaing loading to true
         saveFolderLoading.value = true
@@ -784,21 +731,18 @@ export function useSavedQuery(
         activeInlineTabCopy.status = saveQueryData.certificateStatus
 
         const uuidv4 = generateUUID()
+
         const connectorName = getConnectorName(attributeValue) ?? ''
         const connectionQualifiedName =
             getConnectionQualifiedName(attributeValue)
         const connectionGuid = ''
         const connectionName = getConnectorName(attributeValue)
         const name = saveQueryData.title
-        const description = saveQueryData.description
-        const certificateStatus = saveQueryData.certificateStatus
-        const isSQLSnippet = saveQueryData.isSQLSnippet
+        const { description } = saveQueryData
+        const { certificateStatus } = saveQueryData
+        const { isSQLSnippet } = saveQueryData
         const rawQuery = activeInlineTab.playground.editor.text
-        const compiledQuery = getParsedQuery(
-            activeInlineTab?.playground.editor.variables,
-            rawQuery as string
-        )
-        const qualifiedName = `${tenantStore.tenantRaw.realm}/user/${username.value}/${uuidv4}`
+
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
         const defaultDatabaseQualifiedName =
@@ -807,6 +751,10 @@ export function useSavedQuery(
         const variablesSchemaBase64 = serializeQuery(
             activeInlineTab?.playground.editor.variables
         )
+
+        const collectionQualifiedName =
+            activeInlineTab.explorer.queries.collection.qualifiedName
+        const qualifiedName = `${collectionQualifiedName}/query/${username.value}/${uuidv4}`
 
         const body = ref<Record<string, any>>({
             entity: {
@@ -818,7 +766,10 @@ export function useSavedQuery(
                     connectionName,
                     defaultSchemaQualifiedName:
                         defaultSchemaQualifiedName ?? '',
-                    certificateStatus,
+                    certificateStatus:
+                        certificateStatus === 'is_null'
+                            ? undefined
+                            : certificateStatus,
                     isSnippet: isSQLSnippet,
                     connectionQualifiedName: connectionQualifiedName ?? '',
                     defaultDatabaseQualifiedName,
@@ -826,10 +777,10 @@ export function useSavedQuery(
                     ownerUsers: [username.value],
                     tenantId: 'default',
                     rawQuery,
-                    compiledQuery,
                     variablesSchemaBase64,
                     connectionId: connectionGuid,
                     isPrivate: false,
+                    collectionQualifiedName,
                 },
                 /*TODO Created by will eventually change according to the owners*/
                 isIncomplete: false,
@@ -837,21 +788,21 @@ export function useSavedQuery(
                 createdBy: username.value,
             },
         })
-        body.value.entity.attributes.parentFolderQualifiedName = parentFolderQF
-        body.value.entity.attributes.parent = {
-            guid: parentFolderGuid,
+        body.value.entity.attributes.parentQualifiedName = parentFolderQF
+        if (parentFolderQF.includes('/folder')) {
+            // folder is parent
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid,
+                typeName: 'QueryFolder',
+            }
+        } else {
+            // collection is parent
+            body.value.entity.attributes.parent = {
+                guid: parentFolderGuid,
+                typeName: 'QueryCollection',
+            }
         }
-        if (type && type.length && parentFolderQF == 'root') {
-            body.value.entity.classifications = [
-                {
-                    attributes: {},
-                    propagate: true,
-                    removePropagationsOnEntityDelete: true,
-                    typeName: type,
-                    validityPeriods: [],
-                },
-            ]
-        }
+        console.log('hola hola hola parentFolderQF', parentFolderQF)
         // chaing loading to true
         saveQueryLoading.value = true
         const { data, error, isLoading } = Insights.CreateSavedQuery(
@@ -924,6 +875,8 @@ export function useSavedQuery(
                     activeInlineTabCopy.parentGuid = parentGuid
                     activeInlineTabCopy.parentQualifiedName =
                         parentQualifiedName
+                    activeInlineTabCopy.collectionQualifiedName =
+                        collectionQualifiedName
 
                     const {
                         data: data2,
@@ -938,7 +891,6 @@ export function useSavedQuery(
                                 activeInlineTabCopy.assetSidebar.assetInfo =
                                     data2.value?.entity
                                 // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
-                            } else {
                             }
                         }
                     })

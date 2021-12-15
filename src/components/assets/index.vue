@@ -2,7 +2,7 @@
     <div class="flex w-full h-full">
         <div
             v-if="showFilters"
-            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300  sm:block facets"
+            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
         >
             <AssetFilters
                 v-if="showFilters"
@@ -102,7 +102,7 @@
                         empty-screen="EmptyDiscover"
                         :desc="
                             staticUse
-                                ? 'No assets found'
+                                ? emptyViewText || 'No assets found'
                                 : 'We didnt find anything that matches your search criteria'
                         "
                         :button-text="staticUse ? '' : 'Reset Filter'"
@@ -252,6 +252,10 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            emptyViewText: {
+                type: String,
+                default: '',
             },
         },
         setup(props, { emit }) {

@@ -109,8 +109,7 @@
                 <a-checkbox
                     v-model:checked="selectAll"
                     @change="onSelectAll"
-                    :class="$style.atlanReverse"
-                    class="inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
+                    class="atlanReverse inline-flex flex-row-reverse items-center w-full px-4 py-1 rounded hover:bg-primary-light"
                 >
                     <div class="flex items-center">
                         <span class="mb-0 ml-1 text-sm text-gray-700">
@@ -142,8 +141,7 @@
                                 (checked) =>
                                     onCheckboxChange(checked, item.value)
                             "
-                            class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
-                            :class="$style.atlanReverse"
+                            class="atlanReverse inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
                         >
                             <div
                                 class="justify-between parent-ellipsis-container"
@@ -588,15 +586,6 @@
     }
 </style>
 <style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
     .custom_input {
         background-color: #fbfbfb !important;
     }

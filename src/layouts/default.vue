@@ -49,10 +49,21 @@
                 </div>
 
                 <div class="w-full overflow-y-auto">
-                    <CmndK
-                        :is-cmnd-k-visible="isCmndKVisible"
-                        @closeModal="isCmndKVisible = false"
-                    />
+                    <a-modal
+                        v-model:visible="isCmndKVisible"
+                        width="800px"
+                        class="rounded-md"
+                        :destroy-on-close="true"
+                        wrap-class-name="rounded-md"
+                        :class="$style.modalStyles"
+                        :closable="false"
+                        :footer="null"
+                        :mask="false"
+                    >
+                        <CmndK
+                            :is-cmnd-k-visible="isCmndKVisible"
+                            @closeModal="isCmndKVisible = false"
+                    /></a-modal>
 
                     <router-view />
                 </div>
@@ -65,7 +76,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, provide, ref, watch } from 'vue'
     import { useRouter } from 'vue-router'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import PreviewDrawer from '@/common/drawer/previewDrawer.vue'
@@ -95,6 +106,10 @@
             const showModal = () => {
                 isCmndKVisible.value = true
             }
+            provide('togglecmdK', () => {
+                isCmndKVisible.value = !isCmndKVisible.value
+            })
+
             // watch for shortcut keys for command k
             whenever(keyK, () => {
                 if (

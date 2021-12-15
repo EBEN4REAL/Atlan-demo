@@ -86,7 +86,6 @@ const userColumns = [
 
     {
         title: 'Actions',
-        width: 120,
         slots: { customRender: 'actions' },
     },
 ]

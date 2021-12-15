@@ -8,7 +8,7 @@
         @change="handleChange"
         @search="handleSearch"
     >
-        <a-select-option v-for="(item, x) in list" :key="x" :value="item.name">
+        <a-select-option v-for="(item, x) in list" :key="x" :value="item.alias">
             {{ item.alias || item.name }}
         </a-select-option>
     </a-select>
@@ -73,15 +73,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

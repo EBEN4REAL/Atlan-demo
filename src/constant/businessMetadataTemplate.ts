@@ -40,14 +40,12 @@ export const DEFAULT_ATTRIBUTE: CMA = {
         applicableEntityTypes: JSON.stringify(['Asset']),
         customApplicableEntityTypes: applicableEntityTypesOptions.reduce((acc, item) => [...acc, ...(item?.children?.map(v => v.value) ?? [])], []),
         maxStrLength: '100000000',
-        isBadge: false,
-        isFacet: true,
         isEnum: false,
         enumType: '',
         // new options
         multiValueSelect: false,
         allowFiltering: true,
-        allowSearch: false,
+        allowSearch: true,
         primitiveType: 'string'
         // customType:'url' // added on submit for user, link or group
     },
@@ -79,7 +77,7 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
         {
             required: true,
             message: 'Please provide attribute name',
-            trigger: 'change',
+            trigger: 'submit',
         },
     ],
     options: {
@@ -87,7 +85,7 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
             {
                 required: true,
                 message: 'Please select Enum type',
-                trigger: 'change',
+                trigger: 'submit',
             },
         ],
         maxStrLength: [
@@ -95,12 +93,12 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
                 required: true,
                 type: 'integer',
                 message: 'Please add attribute max length',
-                trigger: 'change',
+                trigger: 'submit',
             },
             {
                 min: 1,
                 message: 'Max String Length must be greater than 0',
-                trigger: 'change',
+                trigger: 'submit',
             },
         ],
         // customApplicableEntityTypes: [
@@ -108,7 +106,7 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
         //     required: true,
         //     type: 'array',
         //     message: "Please add applicable asset types for this attribute.",
-        //     trigger: "change"
+        //     trigger: "submit"
         //   }
         // ],
     },
@@ -116,7 +114,7 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
         {
             required: true,
             message: 'Please select attribute type',
-            trigger: 'change',
+            trigger: 'submit',
         },
     ],
 }

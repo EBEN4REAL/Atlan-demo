@@ -1,6 +1,6 @@
 <template>
-    <a-popover overlayClassName="shortcutPopover">
-        <template #content>
+    <a-popover :overlayClassName="readOnly ? '' : 'shortcutPopover'">
+        <template v-if="!readOnly" #content>
             <div class="flex items-center text-gray-3]500 gap-x-2">
                 <span class="text-sm">{{ action }}</span>
 
@@ -28,6 +28,11 @@
                 type: String,
                 required: false,
                 default: '',
+            },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         setup(props, { emit }) {

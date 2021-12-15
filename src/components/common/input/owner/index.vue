@@ -5,7 +5,7 @@
     >
         <a-popover
             v-model:visible="isEdit"
-            placement="leftBottom"
+            :placement="placementPos"
             :overlay-class-name="$style.ownerPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
@@ -24,7 +24,7 @@
                 v-if="!readOnly"
                 shape="circle"
                 size="small"
-                class="text-center shadow  hover:bg-primary-light hover:border-primary"
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
             >
                 <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
             ></a-button>
@@ -54,7 +54,7 @@
             </PopOverGroup>
         </template>
         <span
-            class="-ml-1 text-gray-500"
+            class="-ml-1 text-gray-700"
             v-if="
                 readOnly &&
                 localValue?.ownerGroups?.length < 1 &&
@@ -137,11 +137,20 @@
                 required: false,
                 default: () => {},
             },
+            placementPos: {
+                type: String,
+                default: 'leftBottom',
+            },
+            inProfile: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, inProfile, readOnly } = toRefs(props)
 
             const localValue = ref(modelValue.value)
 
@@ -194,11 +203,14 @@
                         'true'
             )
             const { o, Escape } = useMagicKeys()
-            whenever(and(o, notUsingInput), () => {
-                if (!isEdit.value) {
-                    isEdit.value = true
+            whenever(
+                and(o, notUsingInput, !inProfile.value, !readOnly.value),
+                () => {
+                    if (!isEdit.value) {
+                        isEdit.value = true
+                    }
                 }
-            })
+            )
 
             whenever(and(Escape), () => {
                 if (isEdit.value) {

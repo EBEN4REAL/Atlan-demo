@@ -2,13 +2,25 @@
     <div>
         <!-- Search and Filter -->
         <div class="w-1/2 mb-3">
-            <SearchAndFilter
+            <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
                 :placeholder="`Search ${totalCount} columns`"
                 size="minimal"
                 @change="handleSearchChange"
-            />
+            >
+                <template #postFilter>
+                    <div class="flex items-center justify-between py-1 rounded">
+                        <p class="mr-4 text-sm text-gray-500">Sort By</p>
+
+                        <Sorting
+                            v-model="preference.sort"
+                            asset-type="Column"
+                            @change="handleChangeSort"
+                        ></Sorting>
+                    </div>
+                </template>
+            </SearchAdvanced>
         </div>
         <!-- Table -->
         <div
@@ -179,6 +191,8 @@
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import Sorting from '@/common/select/sorting.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -200,13 +214,14 @@
 
     export default defineComponent({
         components: {
-            SearchAndFilter,
+            SearchAdvanced,
             AssetDrawer,
             EmptyView,
             ErrorView,
             Tooltip,
             CertificateBadge,
             AtlanBtn,
+            Sorting,
         },
         setup() {
             /** DATA */
@@ -376,6 +391,10 @@
                 quickChange()
             }, 150)
 
+            const handleChangeSort = () => {
+                quickChange()
+            }
+
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
@@ -468,6 +487,7 @@
                 isLoading,
                 columnsList,
                 totalCount,
+                preference,
                 error,
                 isValidating,
                 certificateStatus,
@@ -479,6 +499,7 @@
                 columnsData,
                 queryText,
                 handlePagination,
+                handleChangeSort,
                 showColumnSidebar,
                 pagination,
                 selectedRowData,

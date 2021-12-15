@@ -4,7 +4,7 @@
             v-if="!isProfile"
             class="flex flex-col px-4 py-3 border-b border-gray-200"
         >
-            <div class="flex items-center mb-1" style="padding-bottom: 1px">
+            <div class="flex items-center mb-2" style="padding-bottom: 1px">
                 <div
                     v-if="
                         ['column'].includes(
@@ -18,24 +18,7 @@
                         class="h-5 text-gray-500 mb-0.5"
                     />
                 </div>
-                <AtlanIcon
-                    v-if="
-                        ['atlasglossarycategory'].includes(
-                            selectedAsset.typeName?.toLowerCase()
-                        )
-                    "
-                    icon="Category"
-                    class="h-4 mb-0.5 mr-1"
-                ></AtlanIcon>
-                <AtlanIcon
-                    v-if="
-                        ['atlasglossaryterm'].includes(
-                            selectedAsset.typeName?.toLowerCase()
-                        )
-                    "
-                    icon="Term"
-                    class="h-4 mb-0.5 mr-1"
-                ></AtlanIcon>
+
                 <router-link
                     :to="getProfilePath(selectedAsset)"
                     :class="
@@ -156,7 +139,7 @@
             :destroy-inactive-tab-pane="true"
         >
             <a-tab-pane
-                v-for="(tab, index) in getPreviewTabs(selectedAsset)"
+                v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
                 :key="index"
                 class="overflow-y-auto"
                 :destroy-inactive-tab-pane="true"

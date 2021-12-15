@@ -43,6 +43,7 @@
                 v-model="queryText"
                 :connectorName="facets?.hierarchy?.connectorName"
                 :autofocus="true"
+                ref="searchBar"
                 :allowClear="true"
                 @change="handleSearchChange"
                 placeholder="Search terms & categories..."
@@ -69,13 +70,16 @@
                     </a-popover>
                 </template>
             </SearchAdvanced>
-            <atlan-icon
-                v-if="!queryText"
-                icon="TreeCollapseAll"
-                class="h-4 mt-2 ml-2 cursor-pointer"
-                @click="handleCollapse"
-            >
-            </atlan-icon>
+            <a-tooltip>
+                <template #title>Collapse all </template>
+                <atlan-icon
+                    v-if="!queryText"
+                    icon="TreeCollapseAll"
+                    class="h-4 mt-2 ml-2 cursor-pointer outline-none"
+                    @click="handleCollapse"
+                >
+                </atlan-icon>
+            </a-tooltip>
         </div>
 
         <div class="w-full px-4" v-if="queryText">
@@ -93,9 +97,9 @@
             ref="glossaryTree"
             :height="height"
             @select="handlePreview"
-            :defaultGlossary="selectedGlossaryQf"
+            :defaultGlossary="checkable ? '' : selectedGlossaryQf"
             :checkable="checkable"
-            v-model:checked-keys="checkedKeys"
+            v-model:checked-guids="checkedGuids"
             @check="onCheck"
         ></GlossaryTree>
 
@@ -112,10 +116,19 @@
             v-else-if="list.length == 0 && !isLoading && queryText"
             class="flex-grow"
         >
+            <div
+                v-if="checkable"
+                class="flex flex-col items-center justify-center h-full my-2"
+            >
+                <div class="flex flex-col items-center">
+                    <span class="text-gray-500">No terms found</span>
+                </div>
+            </div>
             <EmptyView
+                v-else
                 empty-screen="EmptyDiscover"
                 desc="We didnt find anything that matches your search criteria"
-                button-text="Reset Filter"
+                button-text="Clear search"
                 class="mb-10"
                 @event="handleResetEvent"
             ></EmptyView>
@@ -135,7 +148,10 @@
                 <GlossaryItem
                     :item="item"
                     :selectedGuid="selectedGlossary?.guid"
+                    :checkable="checkable"
+                    :checked="checkedGuids?.includes(item.guid)"
                     @preview="handlePreview"
+                    @check="onSearchItemCheck"
                 ></GlossaryItem>
             </template>
         </AssetList>
@@ -151,6 +167,7 @@
         computed,
         provide,
         PropType,
+        watch,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -221,17 +238,18 @@
                 required: false,
                 default: false,
             },
-            checkedKeys: {
+            checkedGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
             },
         },
-        emits: ['check', 'update:checkedKeys'],
+        emits: ['check', 'update:checkedGuids', 'searchItemCheck'],
         setup(props, { emit }) {
             const glossaryStore = useGlossaryStore()
-            const { checkedKeys } = useVModels(props, emit)
+            const { checkedGuids } = useVModels(props, emit)
             const router = useRouter()
             const { getGlossaryByQF } = useGlossaryData()
+            const searchBar = ref(null)
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -272,6 +290,7 @@
                 ...facets.value,
                 ...initialFilters.value,
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                glossary: selectedGlossaryQf,
             }
 
             // Virtual List Height
@@ -338,6 +357,9 @@
                 offset.value = 0
                 quickChange()
                 glossaryStore.setActiveFacet(facets.value)
+                if (searchBar.value) {
+                    searchBar.value?.clearInput()
+                }
             }
 
             const handleAssetTypeChange = () => {
@@ -420,8 +442,14 @@
             const glossaryURL = (asset) => ({
                 path: `/glossary/${asset.guid}`,
             })
-            const onCheck = (checkedNodes) => {
-                emit('check', checkedNodes)
+            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
+                emit('check', checkedNodes, { checkedKeys, checked })
+            }
+            const onSearchItemCheck = (checkedNode, checked) => {
+                if (!checkedGuids.value.includes(checkedNode.guid)) {
+                    checkedGuids.value.push(checkedNode.guid)
+                }
+                emit('searchItemCheck', checkedNode, checked)
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
@@ -464,8 +492,10 @@
                 handleCollapse,
                 onCheck,
                 reInitTree,
-                checkedKeys,
+                checkedGuids,
                 updateTreeNode,
+                searchBar,
+                onSearchItemCheck,
             }
         },
     })
@@ -479,10 +509,9 @@
     .checkableTree {
         max-height: 364px;
         :global(.ant-tree-checkbox) {
-            @apply my-auto mr-2;
+            @apply my-auto mr-2 mt-3;
             position: absolute;
             right: 1.5rem;
-            margin-top: 0.5rem;
             z-index: 99;
         }
     }

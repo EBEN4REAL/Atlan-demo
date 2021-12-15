@@ -1,7 +1,7 @@
 <template>
     <div class="w-full" data-test-id="terms-facet">
         <div class="w-full mt-1 overflow-y-auto" :style="{ height: height }">
-            <GlossaryTree v-model:checkedKeys="checkedKeys" :checkable="true" @check="onCheck" />
+            <GlossaryTree v-model:checkedGuids="checkedKeys" :checkable="true" @check="onCheck" @searchItemCheck="onSearchItemCheck" />
         </div>
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
@@ -57,20 +57,38 @@
             const { showNone } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid) ?? [])
+
+            const onSearchItemCheck = (checkedNode, checked) => {
+                if(checked) {
+                    if(!localValue.value.terms) localValue.value.terms = []
+
+                    localValue.value.terms.push({
+                        guid: checkedNode.guid,
+                        qualifiedName: checkedNode.attributes.qualifiedName
+                    })    
+                } else {
+                    localValue.value.terms = localValue.value.terms?.filter((local) => local.guid !== checkedNode.guid)
+                }
+                modelValue.value = localValue.value
+                emit('change')
+            }
 
             const onCheck = (checkedNodes) => {
                 localValue.value.terms = checkedNodes.map((term) => ({
                     guid: term.guid,
                     qualifiedName: term.attributes.qualifiedName
                 }))
+                modelValue.value = localValue.value
+                emit('change')
             }
+
             const checkNoTerms = (t) => {
                 if(!localValue.value?.terms?.length) {
                     localValue.value.terms = []
                 }
                 localValue.value.empty = t.target.checked
             }
-            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid))
 
             watch(
                 () => localValue.value.terms,
@@ -84,8 +102,8 @@
                     if (localValue.value.terms?.length === 0) {
                         delete localValue.value.terms
                     }
-                    modelValue.value = localValue.value
-                    emit('change')
+                    // modelValue.value = localValue.value
+                    // emit('change')
                 }
             )
             watch(() => localValue.value.empty, () => {
@@ -106,20 +124,9 @@
                 onCheck,
                 noStatus,
                 checkedKeys,
-                checkNoTerms
+                checkNoTerms,
+                onSearchItemCheck
             }
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

@@ -1,7 +1,6 @@
 <template>
     <div class="flex flex-col w-full h-full">
         <AssetHeader :item="asset" />
-
         <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.profiletab"
@@ -123,7 +122,7 @@ meta:
 <style lang="less" module>
     .profiletab {
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-8 !important;
+            @apply ml-8;
         }
 
         :global(.ant-tabs-tab-active) {

@@ -1,12 +1,12 @@
 <template>
     <DefaultLayout title="Configure SMTP">
-        <div class="w-2/3 text-gray-600 bg-white rounded smtpForm">
+        <div class="w-2/3 mt-5 text-gray-600 bg-white rounded smtpForm">
             <a-form
                 ref="formRef"
                 label-align="left"
                 :rules="rules"
                 :model="smtpServer"
-                :labelCol="{ span: 4 }"
+                :labelCol="{ span: 6 }"
                 :wrapper-col="{ span: 18, offset: 4 }"
             >
                 <a-form-item
@@ -84,58 +84,50 @@
                         <a-button
                             variant="sm"
                             class="mr-3 rounded-md ant-btn test-config-button"
-                            :loading="testSmtpConfigState === 'TESTING'"
-                            @click="testSmtpConfig"
+                            :loading="isLoading"
+                            @click="test"
                         >
-                            <span v-if="testSmtpConfigState === 'TESTING'"
-                                >Testing Config...</span
-                            >
+                            <span v-if="isLoading">Testing Config...</span>
                             <div v-else class="flex items-center">
-                                <fa
-                                    icon="fal plug"
-                                    class="mr-1 text-green-600"
-                                />
+                                <AtlanIcon icon="Plug" class="mr-1" />
                                 Test SMTP Config
                             </div>
                         </a-button>
                         <span
-                            v-if="testSmtpConfigState === 'INVALID'"
-                            class="flex items-center font-size-sm"
+                            v-if="error"
+                            class="flex items-center text-red-600 font-size-sm"
                         >
-                            <fa
-                                v-if="
-                                    testSmtpConfigError ===
-                                    'Please re-enter password to test'
-                                "
-                                icon="fal times"
-                                class="ml-2 mr-1 text-red-600"
+                            <AtlanIcon
+                                icon="Times"
+                                class="ml-2 mr-1 text-red-600 mb-0.5"
                             />
 
-                            {{ finalTestSmtpConfigError }}
+                            {{ 'Please check your credentials.' }}
 
-                            <a-popover trigger="hover" placement="right">
+                            <a-popover trigger="hover" placement="top">
                                 <template #content>
-                                    <div>{{ testSmtpConfigError }}</div>
+                                    <div class="p-4">
+                                        {{ testErrorMessage }}
+                                    </div>
                                 </template>
 
-                                <fa
-                                    v-if="
-                                        testSmtpConfigError !==
-                                        'Please re-enter password to test'
-                                    "
-                                    icon="fal info-circle"
+                                <AtlanIcon
+                                    icon="Info"
+                                    v-if="testErrorMessage"
                                     class="ml-2 mr-1 text-red-600"
                                 />
                             </a-popover>
                         </span>
                         <span
-                            v-else-if="testSmtpConfigState === 'VALID'"
-                            class="font-size-sm"
+                            v-else-if="isReady && !error && !isLoading"
+                            class="w-11/12 font-size-sm"
                         >
-                            <i
-                                class="ml-2 mr-1 text-green-600 fal fa-check"
-                            ></i>
-                            SMTP config is correct
+                            <AtlanIcon
+                                icon="Check"
+                                class="h-4 mb-1 text-green-600"
+                            />
+                            SMTP config is correct, <br />A test email has been
+                            sent to your email ID.
                         </span>
                     </div>
                     <div class="flex">
@@ -143,8 +135,8 @@
                             v-if="saveSmtpConfigState === 'SUCCESS'"
                             class="flex items-center justify-center px-3 py-2 mr-3 rounded bg-blue-50"
                         >
-                            <fa
-                                icon="fal check-circle"
+                            <AtlanIcon
+                                icon="Check"
                                 class="mr-2 text-green-600"
                             />
                             Config Saved
@@ -209,7 +201,22 @@
                 triggerBlur,
             } = useSmtp()
 
+            const {
+                data,
+                isLoading,
+                error,
+                isReady,
+                mutate: test,
+                testErrorMessage,
+            } = testSmtpConfig()
+
             return {
+                data,
+                testErrorMessage,
+                isLoading,
+                error,
+                isReady,
+                test,
                 formRef,
                 rules,
                 userFieldRef,
@@ -220,7 +227,6 @@
                 saveSmtpConfigError,
                 passwordReentered,
                 updateSmtpProperty,
-                testSmtpConfig,
                 saveSmtpConfig,
                 smtpServer,
                 finalTestSmtpConfigError,
@@ -233,6 +239,9 @@
 <style lang="less" module>
     :global(.smtpForm .ant-form-item) {
         @apply flex items-center flex-row;
+    }
+    :global(.smtpForm .ant-form-item-label > label::after) {
+        @apply hidden;
     }
 
     :global(.smtpForm .test-config-button) {

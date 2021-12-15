@@ -27,20 +27,20 @@
         </AddGtcModal>
     </div>
     <a-tree
+        :class="$style.glossaryTree"
         :tree-data="treeData"
-        :draggable="true"
+        :draggable="false"
         :block-node="true"
         :load-data="onLoadData"
         :treeDataSimpleMode="true"
-        @select="selectNode"
+        @select="handleSelect"
         :auto-expand-parent="false"
         @expand="expandNode"
         :height="height"
         :loadedKeys="loadedKeys"
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
-        v-model:checked-keys="checkedKeys"
-        :class="$style.glossaryTree"
+        :checked-keys="checkedKeys"
         :checkable="checkable"
         :checkStrictly="false"
         @check="onCheck"
@@ -52,8 +52,9 @@
         <template #title="entity">
             <GlossaryTreeItem
                 :item="entity"
-                :class="treeItemClass"
                 :checkable="checkable"
+                :class="treeItemClass"
+                @addSelectedKey="handleAddSelectedKey"
             />
         </template>
     </a-tree>
@@ -70,7 +71,7 @@
         provide,
         PropType,
     } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import { useVModels } from '@vueuse/core'
 
     import EmptyView from '@common/empty/index.vue'
@@ -81,6 +82,7 @@
 
     import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
     import useGlossaryStore from '~/store/glossary'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
@@ -115,25 +117,27 @@
                 required: false,
                 default: false,
             },
-            checkedKeys: {
+            checkedGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
             },
         },
-        emits: ['select', 'check', 'update:checkedKeys'],
+        emits: ['select', 'check', 'update:checkedGuids'],
         setup(props, { emit }) {
             const router = useRouter()
 
+            const route = useRoute()
+            const profileId = computed(() => route?.params?.id || null)
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
-            const { checkedKeys } = useVModels(props, emit)
-
+            const { checkedGuids } = useVModels(props, emit)
+            const { selectedGlossary } = useAssetInfo()
             const glossaryStore = useGlossaryStore()
             const parentGlossaryGuid = computed(() => {
-                const selectedGlossary = glossaryStore.list.find(
+                const selectedGtc = glossaryStore.list.find(
                     (el) =>
                         el?.attributes?.qualifiedName === defaultGlossary.value
                 )
-                return selectedGlossary?.guid
+                return selectedGtc?.guid
             })
             const {
                 onLoadData,
@@ -151,11 +155,13 @@
                 isReady,
                 collapseAll,
                 updateNode,
+                checkedKeys,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
                 checkable: props.checkable,
+                checkedGuids: checkedGuids.value,
             })
 
             const addGlossary = (asset) => {
@@ -177,18 +183,28 @@
                 else addNode(asset)
             }
             const deleteGTCNode = (asset, entity = {}) => {
-                console.log('delete node', selectedKeys.value)
                 if (entity !== {}) deleteNode(asset, entity)
                 else deleteNode(asset)
             }
             const reInitTree = () => {
                 initTreeData(defaultGlossary.value)
             }
-            const onCheck = (e, { checkedNodes }) => {
+            const onCheck = (e, { checkedNodes, checked, node }) => {
                 if (checkedKeys) {
-                    checkedKeys.value = checkedNodes.map((term) => term.guid)
+                    if (checked) {
+                        checkedKeys.value.push(node.key)
+                        checkedGuids?.value?.push(node.guid)
+                    } else {
+                        checkedKeys.value = checkedKeys.value.filter(
+                            (key) => key !== node.key
+                        )
+                        checkedGuids.value = checkedGuids?.value?.filter(
+                            (guid) => guid !== node.guid
+                        )
+                    }
+                    // checkedKeys.value = checkedNodes.map((node) => node.key)
                 }
-                emit('check', checkedNodes)
+                emit('check', checkedNodes, { checkedKeys: e, checked })
             }
             const updateTreeNode = (asset) => {
                 updateNode(asset)
@@ -196,10 +212,24 @@
             onMounted(() => {
                 reInitTree()
             })
-            watch(defaultGlossary, () => {
-                reInitTree()
-            })
-
+            const handleSelect = (selected: any, event: any) => {
+                if (
+                    props.checkable &&
+                    event?.node?.typeName === 'AtlasGlossaryTerm'
+                ) {
+                    const found = checkedKeys.value.find(
+                        (el) => el === event?.node?.key
+                    )
+                    onCheck(event, {
+                        checkedNodes: event.selectedNodes,
+                        checked: !found,
+                        node: event.node,
+                    })
+                } else selectNode(selected, event)
+            }
+            const handleAddSelectedKey = (key) => {
+                selectedKeys.value = [key]
+            }
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             return {
@@ -217,6 +247,7 @@
                 error,
                 isReady,
                 height,
+                handleSelect,
                 // addTerm,
                 // addCategory,
                 treeItemClass,
@@ -226,6 +257,9 @@
                 onCheck,
                 checkedKeys,
                 updateTreeNode,
+                profileId,
+                selectedGlossary,
+                handleAddSelectedKey,
             }
             // data
         },
@@ -253,6 +287,9 @@
 
         :global(.ant-tree-list-holder-inner) {
             @apply px-3 !important;
+        }
+        :global(.ant-tree-treenode-selected) {
+            @apply bg-primary-light !important;
         }
     }
 </style>

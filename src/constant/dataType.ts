@@ -6,6 +6,7 @@ import date from '~/assets/images/dataType/date.svg'
 import array from '~/assets/images/dataType/array.svg'
 import struct from '~/assets/images/dataType/struct.svg'
 import geography from '~/assets/images/dataType/geography.svg'
+import variant from '~/assets/images/dataType/variant.svg'
 
 export const images = {
     Number: number,
@@ -16,6 +17,7 @@ export const images = {
     Array: array,
     Object: struct,
     Geography: geography,
+    Variant: variant,
 }
 
 export const dataTypeCategoryList = [
@@ -39,6 +41,7 @@ export const dataTypeCategoryList = [
             'INT2',
         ],
         image: number,
+        imageText: 'number',
     },
     {
         id: 'decimal',
@@ -55,6 +58,7 @@ export const dataTypeCategoryList = [
             'PRIMITIVE_DOUBLE',
         ],
         image: float1,
+        imageText: 'float1',
     },
     {
         id: 'text',
@@ -71,12 +75,14 @@ export const dataTypeCategoryList = [
             'ANY',
         ],
         image: string,
+        imageText: 'string',
     },
     {
         id: 'boolean',
         label: 'Boolean',
         type: ['BOOLEAN'],
         image: boolean,
+        imageText: 'boolean',
     },
     {
         id: 'dateTime',
@@ -93,23 +99,33 @@ export const dataTypeCategoryList = [
             'TIMESTAMPTZ',
         ],
         image: date,
+        imageText: 'date',
     },
     {
         id: 'array',
         label: 'Array',
         type: ['ARRAY'],
         image: array,
+        imageText: 'array',
+    },
+    {
+        id: 'variant',
+        label: 'Variant',
+        type: ['VARIANT'],
+        image: variant,
     },
     {
         id: 'object',
         label: 'Object',
-        type: ['VARIANT', 'OBJECT'],
+        type: ['OBJECT'],
         image: struct,
+        imageText: 'struct',
     },
     {
         id: 'geography',
         label: 'Geography',
         type: ['GEOGRAPHY', 'OBJECT'],
         image: geography,
+        imageText: 'geography',
     },
 ]

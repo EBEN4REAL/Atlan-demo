@@ -16,7 +16,7 @@
             }}</span>
             <span
                 v-else-if="!isEdit && description(selectedAsset) === ''"
-                class="text-gray-500"
+                class="text-gray-700"
                 >No description available</span
             >
             <a-textarea
@@ -70,11 +70,16 @@
                 required: false,
                 default: () => {},
             },
+            inProfile: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, selectedAsset } = toRefs(props)
+            const { readOnly, selectedAsset, inProfile } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
@@ -112,10 +117,12 @@
 
             const { d, enter, shift } = useMagicKeys()
 
-            whenever(and(d, notUsingInput), () => {
-                console.log(activeElement.value)
-                handleEdit()
-            })
+            whenever(
+                and(d, notUsingInput, !inProfile.value, !readOnly.value),
+                () => {
+                    handleEdit()
+                }
+            )
 
             watchEffect(() => {
                 if (enter.value && !shift.value && isEdit.value) handleBlur()

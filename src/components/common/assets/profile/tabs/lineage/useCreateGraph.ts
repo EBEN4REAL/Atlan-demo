@@ -5,7 +5,6 @@ export default function useCreateGraph(
     graphLayout,
     graphContainer,
     minimapContainer,
-    showProcess,
     graphWidth,
     graphHeight
 ) {
@@ -47,21 +46,35 @@ export default function useCreateGraph(
                     if (cell.isNode()) return NV
                 },
                 createCellView(cell) {
-                    if (cell.isEdge()) return null
+                    if (!cell.isNode()) return null
                 },
             },
         },
     })
 
+    Graph.registerPortLayout(
+        'erPortPosition',
+        (portsPositionArgs) =>
+            portsPositionArgs.map((_, index) => ({
+                position: {
+                    x: 1,
+                    y: (index + 1) * 40,
+                },
+                angle: 0,
+            })),
+        true
+    )
+
     /* graphLayout */
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         rankdir: 'LR',
-        nodesep: 20,
         controlPoints: true,
+        nodesepFunc() {
+            return 10
+        },
         ranksepFunc() {
-            if (showProcess.value) return 80
-            return 45
+            return 120
         },
     })
 

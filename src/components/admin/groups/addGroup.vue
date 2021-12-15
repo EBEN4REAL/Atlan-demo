@@ -1,7 +1,7 @@
 <template>
-    <div class="py-5 drawer-container" v-auth="map.CREATE_GROUP">
+    <div class="flex flex-col py-5" v-auth="map.CREATE_GROUP">
         <div
-            class="relative flex items-center justify-between px-4 pb-5 border-b "
+            class="relative flex items-center justify-between px-4 pb-5 border-b"
         >
             <div class="text-lg font-bold">Create Group</div>
             <div class="top-0 p-1 rounded cursor-pointer right-2">
@@ -12,8 +12,13 @@
                 />
             </div>
         </div>
-        <div class="px-4 py-3 overflow-y-auto formWrapper">
-            <a-form layout="vertical" :model="group" :rules="validations">
+        <div class="flex flex-col px-4 py-3">
+            <a-form
+                class="form"
+                layout="vertical"
+                :model="group"
+                :rules="validations"
+            >
                 <a-form-item label="Name" name="name">
                     <a-input
                         v-model:value="group.name"
@@ -31,14 +36,14 @@
                     <a-textarea v-model:value="group.description" :rows="2" />
                 </a-form-item>
 
-                <div v-auth="map.LIST_USERS" class="">
+                <div v-auth="map.LIST_USERS">
                     <div class="mb-2">
-                        <span class="mr-2">Users</span>
+                        <span class="mr-2 font-bold">Members</span>
                     </div>
                     <UserList
                         user-list-header-class="min-w-full"
                         :user-list-style="{
-                            maxHeight: 'calc(100vh - 30rem)',
+                            maxHeight: 'calc(100vh - 33.5rem)',
                         }"
                         :minimal="true"
                         @updateSelectedUsers="updateUserList"
@@ -46,29 +51,33 @@
                 </div>
             </a-form>
         </div>
-        <div class="flex items-center justify-end px-4 mt-1 border-t">
-            <!-- <div class="flex items-center mt-3 gap-x-1">
-                <a-checkbox v-model:checked="isDefault" />
-                <span class="">Mark as default</span>
-                <a-tooltip
-                    :title="'New users will be automatically added to default groups'"
-                    placement="right"
-                    ><span class="ml-1">
-                        <AtlanIcon
-                            icon="Info"
-                            class="text-gray-500 pushtop"
-                        ></AtlanIcon>
-                    </span>
-                </a-tooltip>
-            </div> -->
+        <div
+            class="absolute bottom-0 flex items-center justify-between w-full px-4 mt-1 mb-3 border-t"
+        >
+            <div class="flex items-center mt-3 gap-x-1">
+                <a-checkbox v-model:checked="isDefault">
+                    <span class="">Mark as default</span>
+                    <a-tooltip
+                        :title="'New users will be automatically added to default groups'"
+                        placement="right"
+                        ><span class="ml-1">
+                            <AtlanIcon
+                                icon="Info"
+                                class="text-gray-500 pushtop mb-0.5"
+                            ></AtlanIcon>
+                        </span>
+                    </a-tooltip>
+                </a-checkbox>
+            </div>
             <AtlanButton
                 class="mt-3"
                 size="sm"
                 html-type="submit"
                 :disabled="isSubmitDisabled"
-                :loading="createGroupLoading"
+                :isLoading="createGroupLoading"
                 @click="handleSubmit"
-                >Create Group
+            >
+                Create Group
             </AtlanButton>
         </div>
     </div>
@@ -104,7 +113,7 @@
         emits: ['refresh', 'closeDrawer'],
         setup(props, { emit }) {
             const router = useRouter()
-            const createGroupLoading = ref(false)
+            let createGroupLoading = ref(false)
             const isDefault = ref(false)
 
             const listPermission = true
@@ -145,7 +154,6 @@
                 userIds.value = list
             }
             const handleSubmit = () => {
-                emit('closeDrawer')
                 const currentDate = new Date().toISOString()
                 const createdBy = username.value
                 // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
@@ -155,8 +163,7 @@
                         attributes: {
                             description: [group.description],
                             alias: [group.name],
-                           
-                           
+                            isDefault: [`${isDefault.value}`],
                         },
                     },
                     users: userIds.value,
@@ -171,6 +178,7 @@
                             message.success('Group added')
                             router.push(`/admin/groups`)
                             emit('refresh')
+                            emit('closeDrawer')
                         } else if (error && error.value) {
                             message.error(
                                 'Unable to create group, please try again.'
@@ -205,13 +213,7 @@
 </script>
 
 <style lang="less" scoped>
-    .formWrapper {
-        height: calc(100vh - 8rem);
-        :global(.ant-form-item-label) {
-            @apply flex;
-        }
-        :global(.ant-form-item-required) {
-            @apply flex flex-row-reverse;
-        }
+    .form:deep(.ant-form-item-label) {
+        @apply font-bold;
     }
 </style>

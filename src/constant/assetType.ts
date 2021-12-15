@@ -104,16 +104,16 @@ export const assetTypeList: {
         orderWeight: 70,
         count: 0,
     },
-    {
+    /*   {
         id: 'QueryFolder',
         label: 'QueryFolder',
-        qualifiedNameAttribute: 'parentFolderQualifiedName',
+        qualifiedNameAttribute: 'parentQualifiedName',
         parents: ['Connection', 'Database', 'Schema'],
         children: ['Query'],
         isDiscoverable: true,
         orderWeight: 60,
         count: 0,
-    },
+    }, */
     {
         id: 'AtlasGlossaryTerm',
         label: 'Term',

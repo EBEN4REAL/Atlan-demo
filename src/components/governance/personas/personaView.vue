@@ -2,7 +2,7 @@
     <ExplorerLayout
         title="Persona"
         sub-title=""
-        :sidebarVisibility="Boolean(selectedPersonaId)"
+        :sidebar-visibility="Boolean(selectedPersonaId)"
     >
         <template #action>
             <AtlanBtn
@@ -28,13 +28,12 @@
                     class="my-3 bg-white"
                     :autofocus="true"
                     size="minimal"
-                >
-                </SearchAndFilter>
+                />
             </div>
 
             <ExplorerList
-                type="personas"
                 v-model:selected="selectedPersonaId"
+                type="personas"
                 :disabled="isEditing"
                 :list="filteredPersonas"
                 data-key="id"
@@ -55,7 +54,7 @@
                         >
                             {{ item.displayName }}
                         </span>
-                        <!-- <div class="w-1.5 h-1.5 rounded-full success"></div> -->
+                        <!-- <div class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'active' : 'inActive'"/> -->
                     </div>
                 </template>
             </ExplorerList>
@@ -67,7 +66,11 @@
             <div class="bg-white">
                 <PersonaHeader :persona="selectedPersona" />
             </div>
-            <PersonaBody v-model:persona="selectedPersona" />
+            <PersonaBody
+                v-model:persona="selectedPersona"
+                @selectPolicy="handleSelectPolicy"
+                :whitelistedConnectionIds="whitelistedConnectionIds"
+            />
         </template>
         <div
             v-else-if="
@@ -93,7 +96,6 @@
                 Add new persona
             </AtlanBtn>
         </div>
-
         <ErrorView v-else :error="isPersonaError">
             <div class="mt-3">
                 <a-button
@@ -111,11 +113,21 @@
                 </a-button>
             </div>
         </ErrorView>
+        <a-drawer
+            placement="right"
+            :closable="false"
+            :visible="modalDetailPolicyVisible"
+            :width="450"
+            @close="handleCloseModalDetailPolicy"
+        >
+            <DetailPolicy :selected-policy="selectedPolicy" />
+        </a-drawer>
     </ExplorerLayout>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, computed } from 'vue'
+    import ErrorView from '@common/error/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -133,8 +145,10 @@
         isPersonaError,
     } from './composables/usePersonaList'
     import { isEditing } from './composables/useEditPersona'
-    import ErrorView from '@common/error/index.vue'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
+    import DetailPolicy from './overview/detailPolicy.vue'
+    import { useAuthStore } from '~/store/auth'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -147,12 +161,45 @@
             ExplorerLayout,
             ExplorerList,
             AddPersona,
+            DetailPolicy,
         },
         setup() {
             const modalVisible = ref(false)
+            const modalDetailPolicyVisible = ref(false)
+            const selectedPolicy = ref({})
+            const authStore = useAuthStore()
+            const { roles } = storeToRefs(authStore)
+
             watch(searchTerm, () => {
                 console.log(searchTerm.value, 'searched')
             })
+            const handleCloseModalDetailPolicy = () => {
+                modalDetailPolicyVisible.value = false
+            }
+            const handleSelectPolicy = (policy) => {
+                selectedPolicy.value = policy
+                modalDetailPolicyVisible.value = true
+            }
+            const whitelistedConnectionIds = ref([])
+            watch(
+                roles,
+                () => {
+                    const filteredRoles = (roles.value || []).filter((role) => {
+                        return role.name.startsWith('connection_admins_')
+                    })
+                    whitelistedConnectionIds.value = filteredRoles.map(
+                        (role) => {
+                            if (role && role.name)
+                                return role.name.split('_')[2]
+                            return ''
+                        }
+                    )
+                },
+                {
+                    immediate: true,
+                    deep: true,
+                }
+            )
 
             return {
                 reFetchList,
@@ -166,12 +213,21 @@
                 isPersonaError,
                 isEditing,
                 AddPersonaIllustration,
+                modalDetailPolicyVisible,
+                handleCloseModalDetailPolicy,
+                handleSelectPolicy,
+                selectedPolicy,
+                whitelistedConnectionIds,
+                roles,
             }
         },
     })
 </script>
 <style lang="less" scoped>
-    .success {
+    .active {
         background: #00a680;
+    }
+    .inActive {
+        background: #cf592e;
     }
 </style>

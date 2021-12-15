@@ -18,7 +18,14 @@
             @select="selectNode"
         >
             <template #title="node">
-                <div class="flex items-center truncate">
+                <div
+                    class="flex items-center truncate"
+                    :class="
+                        node?.selectable === false
+                            ? 'cursor-not-allowed bg-white hover:bg-white'
+                            : ''
+                    "
+                >
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
                     <span class="parent-ellipsis-container-base"
                         >{{ node?.title }}
@@ -198,6 +205,7 @@
                         connector: item.id,
                         connection: undefined,
                         children: transformConnectionsToTree(item.id),
+                        selectable: false,
                     }
                     tree.push(treeNodeObj)
                 })

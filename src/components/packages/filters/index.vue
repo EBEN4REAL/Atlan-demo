@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col">
         <div
             class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm filter-head"
         >
@@ -27,11 +27,11 @@
             </div>
         </div>
         <slot></slot>
-        <div class="h-full overflow-y-auto">
+
+        <div class="overflow-y-auto">
             <a-collapse
                 v-model:activeKey="localActiveKeyValue"
                 :accordion="isAccordion"
-                :class="$style.filter"
                 expand-icon-position="right"
                 :bordered="false"
                 @change="handleActiveKeyChange"
@@ -56,12 +56,11 @@
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     import Panel from './panel.vue'
 
     export default defineComponent({
-        name: 'CommonFilter',
+        name: 'PackageFilter',
         components: {
             Panel,
         },
@@ -139,7 +138,6 @@
             const forceRender = () => {
                 componentState.value += 1
             }
-            const { getList: cmList } = useCustomMetadataFacet()
 
             const dynamicList = computed(() => {
                 const arr = filterList.value?.filter((el) => {
@@ -163,9 +161,6 @@
                     }
                     return true
                 })
-                if (allowCustomFilters.value) {
-                    return [...arr, ...cmList(typeName.value)]
-                }
                 return [...arr]
             })
 
@@ -194,13 +189,16 @@
             }
 
             const handleResetAll = () => {
-                localValue.value = {}
+                localValue.value = {
+                    verified: true,
+                }
                 activeKey.value = []
                 emit('reset')
                 forceRender()
             }
 
             const handleActiveKeyChange = () => {
+                console.log('sddas')
                 activeKey.value = localActiveKeyValue.value
                 emit('changeActiveKey')
             }
@@ -221,43 +219,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .filter {
-        :global(.ant-collapse-item) {
-            @apply border-b border-gray-light !important;
-        }
-
-        :global(.ant-collapse-item-active) {
-            @apply bg-white;
-
-            :global(.title) {
-                @apply text-primary !important;
-            }
-        }
-
-        :global(.ant-collapse-header) {
-            @apply px-4 !important;
-            @apply py-3 !important;
-
-            &:hover {
-                @apply bg-white;
-                /* some rules */
-            }
-        }
-
-        :global(.ant-collapse-item:last-child) {
-            @apply border-gray-300;
-        }
-
-        :global(.ant-collapse-content-box) {
-            @apply pb-3;
-            padding-right: 0px;
-            padding-left: 0px;
-            padding-top: 0px !important;
-        }
-        :global(.ant-collapse-content) {
-            @apply bg-white !important;
-        }
-    }
-</style>

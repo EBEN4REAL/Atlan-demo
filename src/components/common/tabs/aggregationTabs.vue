@@ -31,15 +31,7 @@
                         </div>
                         <div
                             :class="$style.chip"
-                            class="
-                                self-center
-                                text-xs
-                                font-bold
-                                tracking-wide
-                                text-gray-400
-                                mt-0.5
-                                ml-1
-                            "
+                            class="self-center text-xs font-bold tracking-wide text-gray-400 mt-0.5 ml-1"
                         >
                             {{ getCountString(item.count) }}
                         </div>
@@ -82,10 +74,17 @@
                     return ''
                 },
             },
+            noAll: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { list, icon } = toRefs(props)
+            const { list, icon, noAll } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const selectedTab = ref(modelValue.value)
             const dataList = ref(list.value)
@@ -95,10 +94,7 @@
                 emit('change')
             }
 
-            const activeKey = ref('Column');
-
-            watch(list, (cur, prev) => {
-
+            const addAllToList = () => {
                 const initialValue = 0
                 const sum = list.value.reduce(
                     (accumulator, currentValue) =>
@@ -121,7 +117,7 @@
                         dataList.value.push(currentType)
                     }
                     if (sum !== 0) {
-                        if (dataList.value.length !== 1) {
+                        if (dataList.value.length !== 1 && !noAll.value) {
                             dataList.value.unshift({
                                 id: '__all',
                                 label: 'All',
@@ -136,6 +132,12 @@
                         count: sum,
                     })
                 }
+            }
+
+            if (list.value.length) addAllToList()
+
+            watch(list, (cur, prev) => {
+                addAllToList()
             })
 
             return {
@@ -177,7 +179,7 @@
             }
         }
         :global(.ant-tabs-nav) {
-            @apply mb-0;
+            @apply mb-0 !important;
         }
 
         :global(.ant-tabs-tab:first-child) {

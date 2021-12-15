@@ -39,7 +39,7 @@
                         :id="`email-${index}`"
                         v-model:value="email.value"
                         class="inputHeight"
-                        placeholder="email"
+                        placeholder="Email"
                         @keyup.enter="onAddNewUser"
                     >
                     </a-input>
@@ -76,7 +76,7 @@
                 <div class="relative w-100">
                     <a-input
                         class="inputHeight"
-                        placeholder="Add email"
+                        placeholder="Email"
                         @focus="onAddNewUser"
                     >
                     </a-input>

@@ -9,15 +9,22 @@ export default function useGroupsMembers(memberListParams: {
     params: { limit: number; offset: number; filter: any; sort: string }
 }) {
     const localMembersList: Ref<any[]> = ref([])
+
+    const pV = computed(() => ({ id: memberListParams.groupId }))
     const {
         data,
         error,
         mutate: getGroupMembersList,
         isValidating,
-    } = Groups.getGroupMembers(memberListParams.groupId, memberListParams.params, {
-        revalidateOnFocus: false,
-        dedupingInterval: 1,
-    });
+        isLoading,
+    } = Groups.getGroupMembers(
+        pV,
+        memberListParams.params,
+        {
+            revalidateOnFocus: false,
+            dedupingInterval: 1,
+        }
+    )
 
     watch(data, () => {
         if (memberListParams.params.offset > 0) {
@@ -43,5 +50,7 @@ export default function useGroupsMembers(memberListParams: {
         getGroupMembersList,
         state,
         STATES,
+        isLoading,
+        error,
     }
 }

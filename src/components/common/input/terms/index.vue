@@ -1,16 +1,17 @@
 <template>
     <div class="flex flex-wrap items-center gap-1 text-sm text-gray-500">
         <a-popover
-            placement="leftBottom"
+            placement="leftTop"
             :overlay-class-name="$style.termPopover"
             :trigger="['click']"
-            @visibleChange="handleChange"
+            @visibleChange="onPopoverClose"
         >
             <template #content>
                 <GlossaryTree
-                    v-model:checkedKeys="checkedKeys"
+                    v-model:checkedGuids="checkedGuids"
                     :checkable="true"
                     @check="onCheck"
+                    @searchItemCheck="onSearchItemCheck"
                 />
             </template>
             <a-button
@@ -26,11 +27,11 @@
         <div class="flex flex-wrap gap-1 text-sm">
             <template v-for="term in list" :key="term.guid">
                 <div
-                    class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                    class="flex items-center py-1 pl-2 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
                 >
                     <AtlanIcon
                         :icon="icon(term)"
-                        class="group-hover:text-white text-purple mb-0.5"
+                        class="group-hover:text-white text-purple"
                     ></AtlanIcon>
 
                     <div class="ml-1 group-hover:text-white">
@@ -40,7 +41,7 @@
             </template>
             <span
                 v-if="readOnly && list?.length < 1"
-                class="-ml-1 text-gray-500"
+                class="-ml-1 text-gray-700"
                 >No linked terms</span
             >
         </div>
@@ -93,14 +94,14 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const checkedKeys = ref(
+            const checkedGuids = ref(
                 modelValue.value.map((term) => term.termGuid)
             )
             const hasBeenEdited = ref(false)
 
             const list = computed(() => localValue.value)
 
-            const handleChange = (visible) => {
+            const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
                     emit('change', localValue.value)
@@ -131,17 +132,35 @@
             }
 
             const onCheck = (checkedNodes) => {
-                localValue.value = []
                 checkedNodes.forEach((term) => {
-                    localValue.value.push(term)
+                    if (
+                        !localValue.value.find(
+                            (localTerm) =>
+                                (localTerm.guid ?? localTerm.termGuid) ===
+                                term.guid
+                        )
+                    )
+                        localValue.value.push(term)
                 })
+                localValue.value = localValue.value.filter((term) =>
+                    checkedGuids.value.includes(term.termGuid ?? term.guid)
+                )
                 hasBeenEdited.value = true
             }
 
+            const onSearchItemCheck = (checkedNode, checked) => {
+                if(checked) {
+                    localValue.value.push(checkedNode)    
+                } else {
+                    localValue.value = localValue.value?.filter((localTerm) => (localTerm.guid ?? localTerm.termGuid) !== checkedNode.guid)
+                }
+                hasBeenEdited.value = true
+            }
+            
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
-                checkedKeys.value = modelValue.value.map(
+                checkedGuids.value = modelValue.value.map(
                     (term) => term.termGuid ?? term.guid
                 )
             })
@@ -150,9 +169,10 @@
                 list,
                 icon,
                 onCheck,
-                handleChange,
+                onPopoverClose,
                 localValue,
-                checkedKeys,
+                checkedGuids,
+                onSearchItemCheck
             }
         },
     })

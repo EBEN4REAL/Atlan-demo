@@ -9,7 +9,6 @@ overrides:
 specifiers:
   '@babel/core': ^7.16.0
   '@babel/eslint-parser': ^7.16.3
-  '@dagrejs/graphlib': ^2.1.4
   '@intlify/vite-plugin-vue-i18n': ^3.2.1
   '@rollup/plugin-strip': ^2.1.0
   '@tailwindcss/line-clamp': ^0.3.0
@@ -75,12 +74,12 @@ specifiers:
   husky: ^7.0.4
   keycloak-js: ^15.0.2
   less: ^4.1.2
-  monaco-editor: ^0.31.0
+  monaco-editor: 0.30.1
   numeral: 2.0.6
   openapi-client-axios: ^4.3.3
   openapi-client-axios-ts: ^3.9.9
   openapi-typescript-codegen: ^0.12.5
-  pinia: ^2.0.5
+  pinia: ^2.0.6
   pluralize: ^8.0.0
   pnpm: ^6.23.6
   postcss: ^8.4.4
@@ -122,7 +121,6 @@ specifiers:
   xlsx: ^0.17.4
 
 dependencies:
-  '@dagrejs/graphlib': 2.1.4
   '@tailwindcss/typography': 0.4.1_tailwindcss@2.2.19
   '@tiptap/core': 2.0.0-beta.137
   '@tiptap/extension-code': 2.0.0-beta.25_@tiptap+core@2.0.0-beta.137
@@ -167,11 +165,11 @@ dependencies:
   highlight.js: 11.3.1
   keycloak-js: 15.0.2
   less: 4.1.2
-  monaco-editor: 0.31.0
+  monaco-editor: 0.30.1
   numeral: 2.0.6
   openapi-client-axios: 4.3.3_axios@0.24.0
   openapi-client-axios-ts: 3.9.9
-  pinia: 2.0.5_typescript@4.5.3+vue@3.2.24
+  pinia: 2.0.6_typescript@4.5.3+vue@3.2.24
   pluralize: 8.0.0
   prosemirror-model: 1.14.1
   prosemirror-state: 1.3.4
@@ -1449,12 +1447,6 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /@dagrejs/graphlib/2.1.4:
-    resolution: {integrity: sha512-QCg9sL4uhjn468FDEsb/S9hS2xUZSrv/+dApb1Ze5VKO96pTXKNJZ6MGhIpgWkc1TVhbVGH9/7rq/Mf8/jWicw==}
-    dependencies:
-      lodash: 4.17.21
-    dev: false
-
   /@emmetio/abbreviation/2.2.2:
     resolution: {integrity: sha512-TtE/dBnkTCct8+LntkqVrwqQao6EnPAs1YN3cUgxOxTaBlesBCY37ROUAVZrRlG64GNnVShdl/b70RfAI3w5lw==}
     dependencies:
@@ -2537,6 +2529,12 @@ packages:
       '@vue/shared': 3.2.24
     dev: false
 
+  /@vue/reactivity/3.2.26:
+    resolution: {integrity: sha512-h38bxCZLW6oFJVDlCcAiUKFnXI8xP8d+eO0pcDxx+7dQfSPje2AO6M9S9QO6MrxQB7fGP0DH0dYQ8ksf6hrXKQ==}
+    dependencies:
+      '@vue/shared': 3.2.26
+    dev: false
+
   /@vue/reactivity/3.2.7:
     resolution: {integrity: sha512-VDeQiZs6s5m1W7hIX+vzmokDCHPEKNYrSxoHWXj4MiGamcT5XZxACj/VXOCK9c6qz36qK5EQOfDWtmVhxfI2hQ==}
     dependencies:
@@ -2559,11 +2557,26 @@ packages:
       '@vue/shared': 3.2.24
     dev: false
 
+  /@vue/runtime-core/3.2.26:
+    resolution: {integrity: sha512-BcYi7qZ9Nn+CJDJrHQ6Zsmxei2hDW0L6AB4vPvUQGBm2fZyC0GXd/4nVbyA2ubmuhctD5RbYY8L+5GUJszv9mQ==}
+    dependencies:
+      '@vue/reactivity': 3.2.26
+      '@vue/shared': 3.2.26
+    dev: false
+
   /@vue/runtime-dom/3.2.24:
     resolution: {integrity: sha512-piqsabtIEUKkMGSJlOyKUonZEDtdwOpR6teQ8EKbH8PX9sxfAt9snLnFJldUhhyYrLIyDtnjwajfJ7/XtpD4JA==}
     dependencies:
       '@vue/runtime-core': 3.2.24
       '@vue/shared': 3.2.24
+      csstype: 2.6.17
+    dev: false
+
+  /@vue/runtime-dom/3.2.26:
+    resolution: {integrity: sha512-dY56UIiZI+gjc4e8JQBwAifljyexfVCkIAu/WX8snh8vSOt/gMSEGwPRcl2UpYpBYeyExV8WCbgvwWRNt9cHhQ==}
+    dependencies:
+      '@vue/runtime-core': 3.2.26
+      '@vue/shared': 3.2.26
       csstype: 2.6.17
     dev: false
 
@@ -2578,6 +2591,10 @@ packages:
 
   /@vue/shared/3.2.24:
     resolution: {integrity: sha512-BUgRiZCkCrqDps5aQ9av05xcge3rn092ztKIh17tHkeEFgP4zfXMQWBA2zfdoCdCEdBL26xtOv+FZYiOp9RUDA==}
+
+  /@vue/shared/3.2.26:
+    resolution: {integrity: sha512-vPV6Cq+NIWbH5pZu+V+2QHE9y1qfuTq49uNWw4f7FDEeZaDU2H2cx5jcUZOAKW7qTrUS4k6qZPbMy1x4N96nbA==}
+    dev: false
 
   /@vue/shared/3.2.7:
     resolution: {integrity: sha512-YwGOcNZjOY/MmadpzFBXWyHEwZSf0lVU4XF5zpD7tXC9dmqjdo38Jkk06wATu4LYHDPW4emXKMB5YLFPWPkwFA==}
@@ -5697,8 +5714,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /monaco-editor/0.31.0:
-    resolution: {integrity: sha512-H3QmysEwxxY8oxmFhIFcY9JkuwilUDa6txdAxb797cVr7XFZX27a3SDwcGJmTlV9iGPwdh132r3KKCS5aNL4Gg==}
+  /monaco-editor/0.30.1:
+    resolution: {integrity: sha512-B/y4+b2O5G2gjuxIFtCE2EkM17R2NM7/3F8x0qcPsqy4V83bitJTIO4TIeZpYlzu/xy6INiY/+84BEm6+7Cmzg==}
     dev: false
 
   /ms/2.0.0:
@@ -6127,11 +6144,11 @@ packages:
     dev: false
     optional: true
 
-  /pinia/2.0.5_typescript@4.5.3+vue@3.2.24:
-    resolution: {integrity: sha512-RmHlvdnHdMib0RNaJ3Yiurtydk7t6eAe0+nlJuzdh+TeE7l3inLy8uw3aJM8oWMUv7ndMvoDV0LYMnfwPKOwmQ==}
+  /pinia/2.0.6_typescript@4.5.3+vue@3.2.24:
+    resolution: {integrity: sha512-01mP4+KapIcTNSYLhQESy6GW0N8vY5wX3UqOwkC87e7DPjEusNJ8bENrKqdvZaRHbB2rDMOONeAbwMa3+n1/rw==}
     peerDependencies:
       '@vue/composition-api': ^1.4.0
-      typescript: ^4.5.2
+      typescript: '>=4.4.4'
       vue: ^2.6.14 || ^3.2.0
     peerDependenciesMeta:
       '@vue/composition-api':
@@ -7952,8 +7969,8 @@ packages:
       chart.js: '=> ^3.1.0'
       vue: '>= 3'
     dependencies:
-      '@vue/runtime-core': 3.2.24
-      '@vue/runtime-dom': 3.2.24
+      '@vue/runtime-core': 3.2.26
+      '@vue/runtime-dom': 3.2.26
       chart.js: 3.6.2
       csstype: 3.0.10
       lodash: 4.17.21

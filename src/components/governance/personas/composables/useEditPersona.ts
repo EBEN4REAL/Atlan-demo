@@ -8,7 +8,8 @@ import {
     selectedPersonaId,
 } from './usePersonaList'
 
-const { updatePersona, deletePersona } = usePersonaService()
+const { updatePersona, deletePersona, enableDisablePersona } =
+    usePersonaService()
 
 export const newIdTag = 'new_'
 export type PolicyType = 'meta' | 'data'
@@ -128,58 +129,44 @@ export async function deletePolicy(type: PolicyType, id: string) {
     }
 }
 
-export function savePolicy(type: PolicyType, id: string) {
+export function savePolicy(type: PolicyType, dataPolicy: Object) {
     const tempPersona = {
         ...JSON.parse(JSON.stringify(toRaw(selectedPersona.value))),
     }
+    if (dataPolicy?.isNew) {
+        delete dataPolicy?.isNew
+        delete dataPolicy?.id
+    } else {
+        delete dataPolicy?.type
+    }
+    if(dataPolicy.actions.includes('entity-update-classification')){
+        dataPolicy.actions.push('entity-add-classification')
+        dataPolicy.actions.push('entity-remove-classification')
+    }
     if (type === 'meta') {
-        const dirtyPolicyIndex =
-            selectedPersonaDirty.value?.metadataPolicies?.findIndex(
-                (pol) => pol.id === id
-            ) ?? -1
-
-        if (dirtyPolicyIndex > -1) {
-            const policy = {
-                ...toRaw(selectedPersonaDirty.value)?.metadataPolicies?.[
-                    dirtyPolicyIndex
-                ],
-            }
-            if (policy?.isNew) {
-                delete policy?.isNew
-                delete policy?.id
-                tempPersona?.metadataPolicies?.push(policy!)
-            } else {
-                const policyIndex =
-                    selectedPersona.value?.metadataPolicies?.findIndex(
-                        (pol) => pol.id === id
-                    )
-                tempPersona.metadataPolicies![policyIndex!] = policy
-            }
+        if (dataPolicy.id) {
+            tempPersona.metadataPolicies = tempPersona.metadataPolicies.map(
+                (el) => {
+                    if (el.id === dataPolicy.id) {
+                        return dataPolicy
+                    }
+                    return el
+                }
+            )
+        } else {
+            tempPersona.metadataPolicies.push(dataPolicy)
         }
     }
-
     if (type === 'data') {
-        const dirtyPolicyIndex =
-            selectedPersonaDirty.value?.dataPolicies?.findIndex(
-                (pol) => pol.id === id
-            ) ?? -1
-
-        if (dirtyPolicyIndex > -1) {
-            const policy = {
-                ...selectedPersonaDirty.value?.dataPolicies?.[dirtyPolicyIndex],
-            }
-
-            if (policy?.isNew) {
-                delete policy?.isNew
-                delete policy?.id
-                tempPersona?.dataPolicies?.push(policy!)
-            } else {
-                const policyIndex =
-                    selectedPersona.value?.dataPolicies?.findIndex(
-                        (pol) => pol.id === id
-                    )
-                tempPersona.dataPolicies![policyIndex!] = policy
-            }
+        if(dataPolicy.id){
+            tempPersona.dataPolicies = tempPersona.dataPolicies.map((el) => {
+                if(el.id === dataPolicy.id){
+                    return dataPolicy
+                }
+                    return el
+            })
+        }else {
+            tempPersona.dataPolicies.push(dataPolicy)
         }
     }
     return savePersona(tempPersona)
@@ -275,8 +262,12 @@ export function discardPolicy(type: PolicyType, id: string) {
     }
 }
 
-export function enablePersona(isEnabled) {
+export async function enablePersona(id, isEnabled) {
     selectedPersonaDirty.value!.enabled = isEnabled
+    const payload = {
+        action: isEnabled ? 'enable' : 'disable',
+    }
+    await enableDisablePersona(id, payload)
 }
 export function isSavedPolicy() {}
 

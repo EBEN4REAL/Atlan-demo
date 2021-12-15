@@ -6,12 +6,11 @@ export interface CUSTOM_METADATA_ATTRIBUTE {
     isUnique: boolean,
     name: string,
     displayName: string,
+    enumValues?: string
     options: {
         applicableEntityTypes: string,
         customApplicableEntityTypes: string | string[],
         maxStrLength: string,
-        isBadge: string | boolean,
-        isFacet: string | boolean,
         isEnum: string | boolean,
         enumType: string,
         multiValueSelect: string | boolean,
@@ -19,6 +18,7 @@ export interface CUSTOM_METADATA_ATTRIBUTE {
         allowSearch: string | boolean,
         primitiveType: string,
         customType?: string
+        description?: string
     },
     typeName: string,
     valuesMaxCount: number,

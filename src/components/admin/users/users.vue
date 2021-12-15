@@ -11,11 +11,14 @@
                         class="mr-1"
                         size="minimal"
                         @change="handleSearch"
-                    />
-                    <UserFilter
-                        v-model="statusFilter"
-                        @change="updateFilters"
-                    />
+                    >
+                        <template #filter>
+                            <UserFilter
+                                v-model="statusFilter"
+                                @change="updateFilters"
+                            />
+                        </template>
+                    </SearchAndFilter>
                 </div>
                 <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton
@@ -53,8 +56,22 @@
         </div>
         <!-- Table for users-->
         <template v-else>
-            <template v-if="userList.length">
+            <EmptyView
+                v-if="isReady && !userList.length"
+                empty-screen="NoUsers"
+                desc="Oops… we didn’t find any users that match this search"
+                button-text="Clear search"
+                @event="clearFilter"
+            />
+            <template v-else>
+                <div
+                    v-if="isLoading"
+                    class="flex items-center justify-center h-full"
+                >
+                    <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+                </div>
                 <UserListTable
+                    v-else
                     v-auth="map.LIST_USERS"
                     :user-list="userList"
                     :loading="isLoading"
@@ -74,26 +91,20 @@
                     @closeChangeRolePopover="closeChangeRolePopover"
                     @resendInvite="resendInvite"
                 />
-
                 <div
                     v-auth="map.LIST_USERS"
                     class="flex justify-end max-w-full mt-4"
+                    v-if="pagination.total > 1 || isLoading"
                 >
-                    <a-pagination
-                        :total="pagination.total"
-                        :current="pagination.current"
+                    <Pagination
+                        :total-pages="pagination.total"
+                        :loading="isLoading"
                         :page-size="pagination.pageSize"
-                        @change="handlePagination"
+                        v-model:offset="userListAPIParams.offset"
+                        @mutate="getUserList"
                     />
                 </div>
             </template>
-            <EmptyView
-                v-else
-                empty-screen="NoUsers"
-                desc="Oops… we didn’t find any users that match this search"
-                button-text="Clear search"
-                @event="clearFilter"
-            />
         </template>
 
         <a-modal
@@ -132,10 +143,12 @@
     import { Users } from '~/services/service/users/index'
     import map from '~/constant/accessControl/map'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import Pagination from '@/common/list/pagination.vue'
 
     export default defineComponent({
         name: 'UsersView',
         components: {
+            Pagination,
             SearchAndFilter,
             UserListTable,
             AtlanButton,
@@ -162,7 +175,7 @@
 
             const invitationComponentRef = ref(null)
             const userListAPIParams: any = reactive({
-                limit: 15,
+                limit: 50,
                 offset: 0,
                 sort: 'firstName',
                 filter: { $and: [] },
@@ -174,6 +187,7 @@
                 getUserList,
                 isLoading,
                 error,
+                isReady,
                 totalUserCount,
             } = useUsers(userListAPIParams)
 
@@ -189,7 +203,9 @@
             const selectedInvite = ref({})
 
             const pagination = computed(() => ({
-                total: filteredUserCount.value,
+                total: Math.ceil(
+                    filteredUserCount.value / userListAPIParams.limit
+                ),
                 pageSize: userListAPIParams.limit,
                 current: userListAPIParams.offset / userListAPIParams.limit + 1,
             }))
@@ -346,13 +362,6 @@
                 closeInviteUserModal()
             }
 
-            const handlePagination = (page: number) => {
-                // modify offset
-                const offset = (page - 1) * userListAPIParams.limit
-                userListAPIParams.offset = offset
-                getUserList()
-            }
-
             const handleRevokeInvite = (id) => {
                 if (id) selectedUserId.value = id
                 showRevokeInvitePopover.value = !showRevokeInvitePopover.value
@@ -450,6 +459,7 @@
             }
 
             return {
+                isReady,
                 tenantName,
                 map,
                 resendInvite,
@@ -479,7 +489,7 @@
                 handleInviteUsers,
                 handleInviteSent,
                 reloadTable,
-                handlePagination,
+
                 filteredUserCount,
                 showPreview,
                 handleRevokeInvite,
@@ -489,6 +499,7 @@
                 confirmEnableDisablePopover,
                 selectedUserId,
                 totalUserCount,
+                userListAPIParams,
                 limit: userListAPIParams.limit,
                 offset: userListAPIParams.offset,
                 updateFilters,

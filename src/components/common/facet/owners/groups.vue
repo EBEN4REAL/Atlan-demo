@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full overflow-y-auto h-44">
+    <div class="w-full h-44">
         <div
             v-if="list.length < 1"
             class="flex flex-col items-center justify-center h-full"
@@ -8,7 +8,7 @@
                 <span class="text-gray-500">No groups found</span>
             </div>
         </div>
-        <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full h-40 overflow-y-auto">
             <div class="w-full px-4">
                 <template v-for="item in list" :key="item[selectGroupKey]">
                     <a-checkbox
@@ -17,8 +17,7 @@
                             (checked) =>
                                 handleChange(checked, item[selectGroupKey])
                         "
-                        :class="$style.atlanReverse"
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
+                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
                     >
                         <div class="flex items-center">
                             <div class="flex flex-col">
@@ -30,6 +29,21 @@
                             </div>
                         </div>
                     </a-checkbox>
+                </template>
+                <template v-if="list?.length < filterTotal">
+                    <div class="flex justify-center">
+                        <AtlanIcon
+                            icon="Loader"
+                            v-if="isLoading"
+                            class="animate-spin"
+                        />
+                    </div>
+                    <div
+                        class="flex justify-end cursor-pointer text-primary hover:underline"
+                        @click="loadMore"
+                    >
+                        load more
+                    </div>
                 </template>
             </div>
         </div>
@@ -93,7 +107,14 @@
                 console.log(map)
             }
             updateMap(localValue)
-            const { list, handleSearch, total, filterTotal } = useFacetGroups()
+            const {
+                list,
+                handleSearch,
+                total,
+                filterTotal,
+                isLoading,
+                loadMore,
+            } = useFacetGroups()
 
             watch(
                 () => props.queryText,
@@ -118,20 +139,9 @@
                 localValue,
                 total,
                 filterTotal,
-                selectGroupKey,
+                isLoading,
+                loadMore,
             }
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

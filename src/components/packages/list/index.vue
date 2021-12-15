@@ -1,6 +1,7 @@
 <template>
-    <div class="grid grid-flow-row grid-cols-3 gap-4">
+    <div class="grid w-full grid-cols-3 gap-4 grid-flow-cols auto-rows-min">
         <Item
+            style="height: 150px"
             v-for="item in list"
             :key="item.name"
             :item="item"

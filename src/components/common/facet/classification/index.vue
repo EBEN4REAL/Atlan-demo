@@ -30,11 +30,12 @@
                             <a-checkbox
                                 :value="item.name"
                                 :data-test-id="item.displayName"
-                                :class="$style.atlanReverse"
-                                class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded  hover:bg-primary-light"
+                                class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
                             >
                                 <div class="flex items-center">
-                                    <ClassificationIcon :color="item.options?.color" />
+                                    <ClassificationIcon
+                                        :color="item.options?.color"
+                                    />
                                     <span class="mb-0 ml-1 text-gray">
                                         {{ item.displayName }}
                                     </span>
@@ -47,8 +48,8 @@
         </div>
         <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
-                v-model:checked="localValue.empty"
-                class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
+                @change="checkNoClassifications"
+                class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
             >
                 <component
                     :is="noStatus"
@@ -75,7 +76,7 @@
     import { useTimeoutFn, useVModels } from '@vueuse/core'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
-    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue';
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
     export default defineComponent({
@@ -125,6 +126,13 @@
                 return '150px'
             })
 
+            const checkNoClassifications = (t) => {
+                if (!localValue.value?.classifications?.length) {
+                    localValue.value.classifications = []
+                }
+                localValue.value.empty = t.target.checked
+            }
+
             watch(
                 () => localValue.value.classifications,
                 (prev, cur) => {
@@ -138,6 +146,13 @@
                         delete localValue.value.classifications
                     }
                     modelValue.value = localValue.value
+                    emit('change')
+                }
+            )
+
+            watch(
+                () => localValue.value.empty,
+                () => {
                     emit('change')
                 }
             )
@@ -162,7 +177,7 @@
                 filteredList,
                 localValue,
                 noStatus,
-
+                checkNoClassifications,
                 forceFocus,
                 queryText,
                 showNone,
@@ -171,15 +186,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

@@ -46,13 +46,16 @@
             const { property } = toRefs(props)
             const componentProps = computed(() => property.value.ui)
 
-            const localValue = ref(modelValue.value)
+            const localValue = ref(modelValue.value.toString())
 
             const handleChange = () => {
-                console.log('change')
-                modelValue.value = localValue.value
-                emit('change', localValue.value)
+                if (localValue.value === 'true') modelValue.value = true
+                else {
+                    modelValue.value = false
+                }
+                emit('change', modelValue.value)
             }
+
             return { property, componentProps, list, localValue, handleChange }
         },
     })

@@ -1,69 +1,115 @@
 <template>
-    <div
-        v-if="data?.attributes?.announcementTitle"
-        class="flex justify-between px-4 py-3 border rounded bg-blue-50 border-primary"
-    >
-        <AtlanIcon icon="InformationAnnouncement" class="h-5 mr-4"></AtlanIcon>
-        <div class="flex flex-col w-full">
-            <div class="flex justify-between w-full mb-2">
-                <div class="text-base font-bold text-gray-700">
-                    {{ data?.attributes?.announcementTitle }}
-                </div>
-            </div>
-            <div class="mb-2 text-gray-500">
-                {{ data?.attributes?.announcementMessage }}
-            </div>
-            <div class="flex items-center text-gray-500 gap-x-1">
-                <div class="flex items-center text-sm">
-                    <Avatar
-                        :image-url="
-                            imageUrl(data?.attributes?.announcementUpdatedBy)
-                        "
-                        :allow-upload="false"
-                        :avatar-name="data?.attributes?.announcementUpdatedBy"
-                        :avatar-size="16"
-                        :avatar-shape="'circle'"
-                        class="mr-1 mt-0.5"
-                        avatar-bg-class="bg-blue-100"
-                    />
-                    <div class="ml-1">
-                        {{ data?.attributes?.announcementUpdatedBy }},
-                    </div>
-                </div>
-                {{ updatedDate }}
-            </div>
-        </div>
+    <div>
+        <a-modal
+            :class="$style.input"
+            width="632px"
+            :closable="false"
+            :visible="announcementModalVisible"
+            :footer="null"
+        >
+            <AddCompanyAnnouncement
+                class="p-4"
+                @updateAnnouncement="updateAnnouncement"
+                @close="announcementModalVisible = false"
+            />
+        </a-modal>
+        <CompanyAnnouncement
+            class="mt-7"
+            @editAnnouncement="editAnnouncement"
+            @deleteAnnouncement="deleteAnnouncement"
+        />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed } from 'vue'
-    import dayjs from 'dayjs'
+    import { defineComponent, ref, watch } from 'vue'
+    import useTenantData from '~/composables/tenant/useTenantData'
+    import useTenantUpdate from '~/composables/tenant/useTenantUpdate'
     import useTenant from '~/composables/tenant/useTenant'
-    import Avatar from '~/components/common/avatar/index.vue'
+    import CompanyAnnouncement from '~/components/common/widgets/announcement/companyAnnouncement.vue'
+    import AddCompanyAnnouncement from '~/components/admin/overview/addCompanyAnnouncement.vue'
+    import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
         name: 'Annoucements',
         components: {
-            Avatar,
+            CompanyAnnouncement,
+            AddCompanyAnnouncement,
         },
         setup() {
-            const { data } = useTenant()
-            const updatedDate = computed(() =>
-                dayjs(
-                    Number(data.value?.attributes?.announcementUpdatedAt) ||
-                        new Date()
-                ).format('MMM DD, YYYY')
-            )
-            const imageUrl = (username: any) =>
-                `${window.location.origin}/api/service/avatars/${username}`
+            const announcementModalVisible = ref(false)
+            const { tenantRaw } = useTenantData()
+            const updateStatus = ref('')
+            const { username } = useUserData()
+
+            const updateTenant = (payload) => {
+                try {
+                    updateStatus.value = 'loading'
+                    const { data, error, isLoading } = useTenantUpdate(payload)
+
+                    watch([data, error, isLoading], () => {
+                        if (isLoading.value === false) {
+                            if (error.value === undefined) {
+                                useTenant()
+                                updateStatus.value = 'success'
+                                announcementModalVisible.value = false
+                                setTimeout(() => {
+                                    updateStatus.value = ''
+                                }, 2500)
+                            } else {
+                                updateStatus.value = 'error'
+                                announcementModalVisible.value = false
+                                setTimeout(async () => {
+                                    updateStatus.value = ''
+                                }, 2500)
+                            }
+                        }
+                    })
+                } catch (e) {
+                    updateStatus.value = 'error'
+                    setTimeout(() => {
+                        updateStatus.value = ''
+                    }, 2500)
+                }
+            }
+
+            const updateAnnouncement = (payload) => {
+                updateTenant(payload)
+            }
+            const editAnnouncement = () => {
+                announcementModalVisible.value = true
+            }
+            const deleteAnnouncement = () => {
+                const tenantLocal = { ...tenantRaw.value }
+                tenantLocal.attributes.announcementTitle = ''
+                tenantLocal.attributes.announcementMessage = ''
+                tenantLocal.attributes.announcementType = ''
+                tenantLocal.attributes.announcementUpdatedAt =
+                    Date.now().toString()
+                tenantLocal.attributes.announcementUpdatedBy = username
+                updateTenant(tenantLocal)
+            }
+
             return {
-                data,
-                updatedDate,
-                imageUrl,
+                announcementModalVisible,
+                updateAnnouncement,
+                editAnnouncement,
+                deleteAnnouncement,
             }
         },
     })
 </script>
 
-<style scoped></style>
+<style lang="less" module>
+    .input {
+        :global(.ant-input:focus
+                .ant-input:hover
+                .ant-input::selection
+                .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none border-0 px-0 !important;
+        }
+    }
+</style>

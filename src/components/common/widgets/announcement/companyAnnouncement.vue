@@ -30,7 +30,7 @@
                 {{ announcementUpdatedAtFormatted }}
             </div>
         </div>
-        <a-dropdown :trigger="['hover', 'click']">
+        <a-dropdown :trigger="['click']" placement="bottomRight">
             <AtlanBtn
                 color="secondary"
                 padding="compact"

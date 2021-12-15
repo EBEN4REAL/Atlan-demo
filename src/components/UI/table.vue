@@ -36,22 +36,26 @@
                         </td>
 
                         <td
-                            v-for="(rowData, index) in row"
-                            :key="index"
+                            v-for="(rowData, key) in row"
+                            :key="key"
                             class="bg-white"
                             :class="{
-                                'outline-primary bg-primary-light ':
-                                    selectedData === rowData,
+                                'outline-primary bg-primary-light':
+                                    selectedData === rowData && modalVisible,
                                 'cursor-pointer hover:bg-primary-light':
-                                    variantTypeIndexes.includes(index),
+                                    variantTypeIndexes.includes(key.toString()),
                             }"
                         >
                             <div
-                                v-if="variantTypeIndexes.includes(index)"
-                                class="flex items-center justify-between overflow-ellipsis"
-                                v-on:click="handleOpenModal(rowData)"
+                                v-if="
+                                    variantTypeIndexes.includes(key.toString())
+                                "
+                                class="flex items-center justify-between"
+                                v-on:click="handleOpenModal(rowData, key)"
                             >
-                                <div style="max-width: 70%">{{ rowData }}</div>
+                                <div style="max-width: 80%" class="truncate">
+                                    {{ rowData }}
+                                </div>
                                 <AtlanIcon
                                     icon="Expand"
                                     class="h-4 w-auto mb-0.5"
@@ -140,7 +144,7 @@
         setup(props) {
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
-            const variantTypeIndexes = ref<Number[]>([])
+            const variantTypeIndexes = ref<String[]>([])
             const selectedData = ref(null)
             const modalVisible = ref<boolean>(false)
             const getDataType = (type: string) => {
@@ -169,20 +173,22 @@
                 }
             })
 
-            const handleOpenModal = (data) => {
+            const handleOpenModal = (data, index) => {
+                console.log(index)
                 modalVisible.value = true
                 selectedData.value = data
             }
 
             onMounted(() => {
-                columns.value.forEach((col, index) => {
+                columns.value.forEach((col) => {
                     if (
                         col.data_type.toLowerCase() === 'any' ||
                         col.data_type.toLowerCase() === 'variant'
                     ) {
-                        variantTypeIndexes.value.push(index)
+                        variantTypeIndexes.value.push(col.title)
                     }
                 })
+                console.log(variantTypeIndexes.value)
             })
 
             return {

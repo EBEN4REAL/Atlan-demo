@@ -212,6 +212,7 @@ export default function useEventGraph(
     graph.value.on('edge:click', ({ edge, cell }) => {
         if (che.value === edge.id) {
             che.value = ''
+            onCloseDrawer()
             controlEdgeHighlight(cheCell, true)
             highlight(null)
             return
@@ -265,6 +266,7 @@ export default function useEventGraph(
     })
     graph.value.on('blank:click', () => {
         onSelectAsset(baseEntity.value)
+        onCloseDrawer()
         che.value = ''
         highlight(null)
     })

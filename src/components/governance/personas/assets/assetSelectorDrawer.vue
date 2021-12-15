@@ -3,38 +3,36 @@
         placement="right"
         :destroy-on-close="true"
         :visible="isVisible"
-        :get-container="false"
+        :get-container="getContainer"
         :closable="false"
         :mask="false"
         :class="$style.drawerStyle"
         :width="460"
     >
         <div class="flex flex-col h-full">
-            <div class="flex items-center justify-between">
-                <span class="px-4 pt-4 text-lg font-bold text-gray-700"
-                    >Select Assets</span
-                >
+            <div class="flex items-center px-4 pt-4">
                 <AtlanBtn
-                    class="ml-auto mr-2 border-none"
+                    class="border-none btn-add-assets"
                     size="sm"
                     padding="compact"
                     data-test-id="cross"
                     color="secondary"
                     @click="() => (isVisible = false)"
                 >
-                    <AtlanIcon icon="Cross" class="-mx-1" />
+                    <AtlanIcon icon="ArrowRight" class="-rotate-180" />
                 </AtlanBtn>
+                <span class="text-lg font-bold text-gray-700">Add Assets</span>
             </div>
 
             <RaisedTab
                 v-model:active="activeTab"
-                class="mt-3 ml-4 mr-auto"
+                class="mx-4 mt-3 tab-select-asset"
                 :data="tabConfig"
             />
             <a-divider class="my-4" />
 
             <div
-                class="relative overflow-x-hidden overflow-y-hidden  drawer_height"
+                class="relative overflow-x-hidden overflow-y-hidden drawer_height"
             >
                 <div
                     class="absolute w-full h-full bg-white"
@@ -67,9 +65,9 @@
                         :show-filters="false"
                         :static-use="true"
                         :show-aggrs="true"
-                        :showCheckBox="true"
+                        :show-check-box="true"
                         :initial-filters="filterConfig"
-                        checkedCriteria="qualifiedName"
+                        checked-criteria="qualifiedName"
                         :preference="preference"
                         class="asset-list-height"
                         page="personas"
@@ -97,23 +95,26 @@
 
             <a-divider />
             <div class="flex items-center justify-end m-2 gap-x-2">
-                <span class="text-base font-bold text-gray-500"
+                <span class="mr-auto text-gray-500"
                     >{{ selectedAssetCount || 'No' }} items selected</span
                 >
                 <AtlanBtn
-                    size="sm"
                     padding="compact"
                     color="secondary"
-                    @click="closeDrawer"
                     data-test-id="cancel"
-                    >Cancel</AtlanBtn
+                    class="btn-asset"
+                    @click="closeDrawer"
                 >
+                    Cancel
+                </AtlanBtn>
                 <AtlanBtn
-                    size="sm"
                     padding="compact"
                     data-test-id="save"
+                    class="btn-asset"
                     @click="saveAssets"
-                    >Save</AtlanBtn
+                >
+                    Save
+                </AtlanBtn
                 >
             </div>
         </div>
@@ -159,6 +160,10 @@
                 type: Boolean,
                 default: () => false,
             },
+            getContainer: {
+                type: Boolean,
+                default: () => false,
+            }
         },
         emits: ['update:visible', 'update:assets'],
         setup(props, { emit }) {
@@ -202,13 +207,11 @@
             }
 
             /* Adds /* to pathname */
-            const addSufffix = (qualifiedNames: string[]) => {
-                return (
+            const addSufffix = (qualifiedNames: string[]) => (
                     qualifiedNames?.map(
                         (qualifiedName) => `${qualifiedName}/*`
                     ) ?? []
                 )
-            }
 
             function saveAssets() {
                 // TODO: Optional* Change this implementation
@@ -335,5 +338,19 @@
     }
     .drawer_height {
         height: calc(100vh - 14rem);
+    }
+</style>
+
+<style lang="less">
+    .tab-select-asset{
+        .tab-btn{
+            flex: 1;
+        }
+    }
+    .btn-asset{
+        min-width: 80px;
+    }
+    .btn-add-assets{
+        transform: rotate(180deg);
     }
 </style>

@@ -4,6 +4,11 @@
             v-model:treeExpandedKeys="expandedKeys"
             :value="selectedValue"
             style="width: 100%"
+            :ref="
+                (el) => {
+                    treeSelectRef = el
+                }
+            "
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
@@ -15,20 +20,10 @@
             @change="onChange"
             @select="selectNode"
             @blur="onBlur"
-            :ref="
-                (el) => {
-                    treeSelectRef = el
-                }
-            "
         >
             <template #title="node">
                 <div
                     class="flex items-center truncate"
-                    :class="
-                        node?.selectable === false
-                            ? 'cursor-not-allowed bg-white hover:bg-white'
-                            : ''
-                    "
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
                     <AtlanIcon
@@ -128,7 +123,6 @@
             const list = computed(() => List)
             const checkedValues = ref([])
             const placeholderLabel: Ref<Record<string, string>> = ref({})
-            console.log(checkedValues.value, 'model')
 
             const transformConnectionsToTree = (connectorId: string) =>
                 store.getList
@@ -307,7 +301,7 @@
                             return 'Tableau'
                     }
                 } else {
-                    let el = node?.key?.split('/')
+                    const el = node?.key?.split('/')
                     if (el && el.length) {
                         switch (el[1]) {
                             case 'snowflake':

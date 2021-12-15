@@ -12,12 +12,12 @@ export const actions: Actions = {
     setAssetCount(buckets) {
         this.list.forEach((element, index) => {
             const aggr = buckets.find(
-                (item) => item.key === element.attributes?.name
+                (item) => item.key === element.attributes?.qualifiedName
             )
             if (aggr) {
-                element.assetCount = aggr.doc_count
+                element.assetCount = aggr.doc_count + 1
             } else {
-                element.assetCount = 0
+                element.assetCount = 0 + 1
             }
         })
     },

@@ -1,18 +1,53 @@
 <template>
     <div class="flex items-center">
         <a-input
+            v-if="type === 'text'"
             v-model:value="firstvalue"
-            placeholder="Enter first value"
-            class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
+            placeholder="Enter  value"
+            class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
-            @change="(event) => onChange(event, 'first')"
+            @change="(event) => onChange(event, 'first', type)"
+        />
+        <a-date-picker
+            v-else-if="'date'"
+            v-model:value="firstvalue"
+            class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
+            @change="(event) => onChange(event, 'first', type)"
+            :show-time="{ format: 'HH:mm' }"
+            style="height: 32px !important"
+            place
+        />
+        <a-input-number
+            v-model:value="firstvalue"
+            v-else-if="type === 'number'"
+            placeholder="Enter numeric value"
+            class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
+            style="height: 32px !important"
+            @change="(event) => onChange(event, 'first', type)"
         />
         <a-input
+            v-if="type === 'text'"
             v-model:value="secondValue"
-            placeholder="Enter second value"
-            class="w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
+            placeholder="Enter value"
+            class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
-            @change="(event) => onChange(event, 'second')"
+            @change="(event) => onChange(event, 'second', type)"
+        />
+        <a-date-picker
+            v-else-if="'date'"
+            v-model:value="secondValue"
+            class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
+            style="height: 32px !important"
+            :show-time="{ format: 'HH:mm' }"
+            @change="(event) => onChange(event, 'second', type)"
+        />
+        <a-input-number
+            v-else-if="type === 'number'"
+            v-model:value="secondValue"
+            placeholder="Enter numeric value"
+            class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
+            style="height: 32px !important"
+            @change="(event) => onChange(event, 'second', type)"
         />
     </div>
 </template>
@@ -20,6 +55,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import dayjs, { Dayjs } from 'dayjs'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -29,20 +65,42 @@
                 type: Array,
                 required: true,
             },
+            type: {
+                type: String,
+                required: true,
+                default: 'text',
+            },
         },
 
         setup(props, { emit }) {
             const { inputValue } = useVModels(props)
+            const dateFormat = 'YYYY-MM-DD HH:mm:ss'
+            let firstvalue = ref(
+                inputValue.value ? dayjs(inputValue.value[0]) : undefined
+            )
+            let secondValue = ref(
+                inputValue.value ? dayjs(inputValue.value[1]) : undefined
+            )
 
-            let firstvalue = ref(inputValue.value ? inputValue.value[0] : null)
-            let secondValue = ref(inputValue.value ? inputValue.value[1] : null)
-
-            const onChange = (event, type) => {
-                console.log('value: ', event.target.value)
-                if (type === 'first') {
-                    inputValue.value = [event.target.value, secondValue.value]
+            const onChange = (event, _pos, type) => {
+                if (type !== 'date') {
+                    if (_pos === 'first') {
+                        inputValue.value = [
+                            event.target.value,
+                            secondValue.value,
+                        ]
+                    } else {
+                        inputValue.value = [
+                            firstvalue.value,
+                            event.target.value,
+                        ]
+                    }
                 } else {
-                    inputValue.value = [firstvalue.value, event.target.value]
+                    // event -> date in YYYY-MM-DD HH:mm:ss format in string
+                    inputValue.value = [
+                        firstvalue.value?.format(dateFormat),
+                        secondValue.value?.format(dateFormat),
+                    ]
                 }
             }
 

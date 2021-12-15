@@ -11,7 +11,10 @@
             "
             class="w-full"
         >
-            <div class="w-full p-4 pb-0 rounded">
+            <div
+                class="w-full p-4 pb-0 rounded"
+                v-if="queryCollections?.length > 0"
+            >
                 <div class="flex items-center">
                     <CollectionSelector
                         @update:data="updateCollection"
@@ -96,6 +99,7 @@
                     </a-popover>
                 </div>
             </div>
+            <div v-else style="height: 35%"></div>
             <!-- <div class="w-full my-4 border-b"></div> -->
             <div class="w-full h-full mt-2" v-if="queryCollections?.length > 0">
                 <div

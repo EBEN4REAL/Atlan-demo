@@ -22,8 +22,8 @@
 
                     <ColumnSelector
                         class="flex-1 ml-6"
-                        style="max-width: 30%"
                         v-model:selectedItem="subpanel.column"
+                        style="max-width: 30%"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
                         "
@@ -32,7 +32,7 @@
 
                     <FilterSelector
                         class="ml-6"
-                        style="width: 300px"
+                        style="min-width: 240px; max-width: 300px"
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"
                         v-model:selectedFilter="subpanel.filter"
@@ -40,28 +40,32 @@
 
                     <Input
                         v-if="subpanel?.filter?.type === 'input'"
+                        :selectedFilter="subpanel.filter"
                         class="flex-1 ml-6"
-                        style="max-width: 30%"
+                        :type="
+                            getInputTypeFromColumnType(subpanel?.column?.type)
+                        "
                         v-model:inputValue="subpanel.filter.value"
                     />
 
                     <MultiInput
                         v-if="subpanel?.filter?.type === 'multi_input'"
                         class="flex-1 ml-6"
-                        style="max-width: 30%"
                         v-model:inputValue="subpanel.filter.value"
                     />
 
                     <RangeInput
                         v-if="subpanel?.filter?.type === 'range_input'"
                         class="flex-1 ml-6"
-                        style="max-width: 30%"
+                        :type="
+                            getInputTypeFromColumnType(subpanel?.column?.type)
+                        "
                         v-model:inputValue="subpanel.filter.value"
                     />
                     <AtlanIcon
                         @click.stop="() => handleDelete(index)"
                         icon="Close"
-                        class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-auto"
+                        class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-3"
                         :class="`opacity-${
                             hoverItem === subpanel.id ? 100 : 0
                         }`"
@@ -70,14 +74,12 @@
             </template>
         </div>
 
-        <span>
-            <div
-                class="items-center mt-3 cursor-pointer text-primary"
-                @click.stop="handleAddPanel"
-            >
-                <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
-                <span>Add another</span>
-            </div>
+        <span
+            class="items-center mt-3 cursor-pointer text-primary"
+            @click.stop="handleAddPanel"
+        >
+            <AtlanIcon icon="Add" class="w-4 h-4 mr-1 -mt-0.5" />
+            <span>Add another</span>
         </span>
     </div>
 </template>
@@ -96,6 +98,8 @@
     import Input from '../filterComponents/input.vue'
     import MultiInput from '../filterComponents/multiInput.vue'
     import FilterType from '../filterComponents/filterType.vue'
+    import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
+
     import RangeInput from '../filterComponents/rangeInput.vue'
 
     export default defineComponent({
@@ -129,6 +133,7 @@
         setup(props, { emit }) {
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
+            const { getInputTypeFromColumnType } = useFilter()
 
             const { subpanels, columnSubpanels } = useVModels(props)
             const columnName = ref('Hello World')
@@ -184,6 +189,7 @@
             let hoverItem = ref(null)
 
             return {
+                getInputTypeFromColumnType,
                 selectedAggregates,
                 columnName,
                 columnType,

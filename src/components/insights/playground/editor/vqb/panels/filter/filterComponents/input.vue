@@ -1,30 +1,100 @@
 <template>
     <a-input
-        v-model:value="inputValue"
+        v-if="type === 'text'"
+        v-model:value="localeValue"
         placeholder="Enter Value"
-        class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+        class="flex-1 w-full ml-6 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         style="height: 32px !important"
+        @change="(event) => onChange(event, type)"
+    />
+    <a-input-number
+        v-else-if="type === 'number'"
+        v-model:value="localeValue"
+        placeholder="Enter Numeric Value"
+        class="flex-1 ml-6 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+        style="height: 32px !important"
+        @change="(event) => onChange(event, type)"
+    />
+
+    <a-date-picker
+        v-else-if="'date'"
+        placeholder="Select Date"
+        :show-time="{ format: 'HH:mm' }"
+        v-model:value="localeValue"
+        class="flex-1 ml-6 border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+        style="height: 32px !important"
+        @change="(event) => onChange(event, type)"
     />
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        toRefs,
+        Ref,
+        PropType,
+        computed,
+        toRaw,
+        onUnmounted,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import dayjs, { Dayjs } from 'dayjs'
 
     export default defineComponent({
         name: 'Sub panel',
         components: {},
         props: {
+            type: {
+                type: String,
+                required: true,
+                default: 'text',
+            },
             inputValue: {
                 type: String,
+                required: true,
+            },
+            selectedFilter: {
+                type: Object,
                 required: true,
             },
         },
 
         setup(props, { emit }) {
+            const { type, selectedFilter } = toRefs(props)
             const { inputValue } = useVModels(props)
+            const dateFormat = 'YYYY-MM-DD HH:mm:ss'
+            const localeValue: Ref<any> = ref(inputValue.value)
+
+            watch(
+                selectedFilter,
+                () => {
+                    localeValue.value = inputValue.value
+                    console.log(inputValue.value, 'inputValue')
+                },
+                { immediate: true }
+            )
+
+            if (type.value === 'date' && inputValue.value)
+                localeValue.value = dayjs(inputValue.value)
+
+            const onChange = (event, type) => {
+                if (type !== 'date') {
+                    inputValue.value = event.target.value
+                } else {
+                    // event -> date in YYYY-MM-DD HH:mm:ss format in string
+                    inputValue.value = localeValue.value.format(dateFormat)
+                }
+            }
+            onUnmounted(() => {
+                localeValue.value = undefined
+            })
 
             return {
+                type,
+                localeValue,
+                onChange,
                 inputValue,
             }
         },

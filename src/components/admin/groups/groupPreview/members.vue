@@ -272,6 +272,15 @@
                     memberListParams.params.limit
                 getGroupMembersList()
             }
+
+            watch(
+                () => props.selectedGroup.id,
+                (v) => {
+                    console.log(v)
+                    memberListParams.groupId = v
+                    getGroupMembersList()
+                }
+            )
             const showLoadMore = computed(() =>
                 getIsLoadMore(
                     // TODO: check if there's a better way access memberList and not use ref in a ref
@@ -320,7 +329,6 @@
                     { immediate: true }
                 )
             }
-
             const removeUserFromGroup = async (user: any) => {
                 Modal.confirm({
                     title: `Remove member`,

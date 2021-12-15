@@ -177,6 +177,7 @@
                 assetSidebarToggle,
             } = useHotKeys()
             const {
+                queryCollectionsError,
                 getQueryCollections,
                 queryCollections,
                 queryCollectionsLoading,
@@ -258,6 +259,7 @@
                 activeInlineTab,
                 queryCollections,
                 queryCollectionsLoading,
+                queryCollectionsError,
                 activeInlineTabKey,
                 inlineTabs: tabsArray,
                 editorInstance,
@@ -366,6 +368,8 @@
                 checked: true,
                 rowsCount: 100,
             })
+
+            // FIXME: refactor it
 
             const detectQuery = () => {
                 const queryTab: activeInlineTabInterface = {
@@ -516,16 +520,20 @@
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0
                             ) {
-                                queryCollections.value =
-                                    data.value.entities ?? []
-                                selectFirstCollectionByDefault(
-                                    queryCollections.value,
-                                    activeInlineTab,
-                                    tabsArray
-                                )
+                                queryCollections.value = data.value.entities
+                            } else {
+                                queryCollections.value = []
                             }
+                            selectFirstCollectionByDefault(
+                                queryCollections.value,
+                                activeInlineTab,
+                                tabsArray
+                            )
+                            queryCollectionsError.value = undefined
                         } else {
                             queryCollectionsLoading.value = false
+                            queryCollectionsError.value = error.value
+
                             message.error({
                                 content: `Error fetching collections`,
                             })

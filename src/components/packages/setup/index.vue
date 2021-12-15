@@ -367,7 +367,7 @@
                     )
                 } else {
                     window.open(
-                        `${window.location.origin}/api/orchestration/workflows/default/${run.value.metadata.name}}`,
+                        `${window.location.origin}/api/orchestration/workflows/default/${run.value.metadata.name}`,
                         '_blank'
                     )
                 }

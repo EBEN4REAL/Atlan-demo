@@ -9,6 +9,8 @@ export default function useGroupsMembers(memberListParams: {
     params: { limit: number; offset: number; filter: any; sort: string }
 }) {
     const localMembersList: Ref<any[]> = ref([])
+
+    const pV = computed(() => ({ id: memberListParams.groupId }))
     const {
         data,
         error,
@@ -16,7 +18,7 @@ export default function useGroupsMembers(memberListParams: {
         isValidating,
         isLoading,
     } = Groups.getGroupMembers(
-        memberListParams.groupId,
+        pV,
         memberListParams.params,
         {
             revalidateOnFocus: false,

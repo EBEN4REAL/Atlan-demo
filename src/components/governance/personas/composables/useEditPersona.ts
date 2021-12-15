@@ -128,16 +128,27 @@ export async function deletePolicy(type: PolicyType, id: string) {
     }
 }
 
-export function savePolicy(type: PolicyType, dataPolicy: string) {
+export function savePolicy(type: PolicyType, dataPolicy: Object) {
     const tempPersona = {
         ...JSON.parse(JSON.stringify(toRaw(selectedPersona.value))),
     }
     if (dataPolicy?.isNew) {
         delete dataPolicy?.isNew
         delete dataPolicy?.id
+    } else {
+        delete dataPolicy?.type
     }
     if (type === 'meta') {
-        tempPersona.metadataPolicies.push(dataPolicy)
+        if(dataPolicy.id){
+            tempPersona.metadataPolicies = tempPersona.metadataPolicies.map((el) => {
+                if(el.id === dataPolicy.id){
+                    return dataPolicy
+                }
+                    return el
+            })
+        }else {
+            tempPersona.metadataPolicies.push(dataPolicy)
+        }
     }
     if (type === 'data') {
         tempPersona.dataPolicies.push(dataPolicy)

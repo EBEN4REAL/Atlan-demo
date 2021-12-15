@@ -1,10 +1,10 @@
 <template>
-    <a-collapse expand-icon-position="right" :activeKey="defaultExpandedState">
+    <a-collapse expand-icon-position="right" :active-key="defaultExpandedState">
         <template #expandIcon="{ isActive }">
             <div>
                 <AtlanIcon
                     icon="ChevronDown"
-                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                    class="ml-3 text-gray-500 transition-transform duration-300 transform"
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
             </div>
@@ -28,21 +28,33 @@
                     {{ scope.type }}
                 </a-checkbox>
             </template>
-            <a-checkbox-group
-                :value="groupedActions[idx].scopes"
-                :name="scope.type"
-                :options="scope.scopes"
-                :class="['capitalize', $style.checkbox_custom]"
-                @update:value="updateSelection(scope.type, $event)"
-            >
-            </a-checkbox-group>
+            <div class="meta-data-scope">
+                <a-checkbox-group
+                    :value="groupedActions[idx].scopes"
+                    :name="scope.type"
+                    :options="scope.scopes"
+                    :class="['capitalize', $style.checkbox_custom]"
+                    class="wrapper-checkbox"
+                    @update:value="updateSelection(scope.type, $event)"
+                    >sjdhgshdgjshdgjsgd</a-checkbox-group
+                >
+                <div class="wrapper-desc">
+                    <div
+                        v-for="(item, i) in scope.scopes"
+                        :key="i"
+                        class="desc"
+                    >
+                        {{ item.desc }}
+                    </div>
+                </div>
+            </div>
         </a-collapse-panel>
     </a-collapse>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
-    import {} from '../composables/useEditPersona'
+    // import {} from '../composables/useEditPersona'
     import useScopeService from '../composables/useScopeService'
 
     export default defineComponent({
@@ -118,6 +130,28 @@
     .checkbox_custom {
         :global(.ant-checkbox-group-item) {
             @apply my-1  !important;
+        }
+    }
+</style>
+<style lang="less">
+    .meta-data-scope {
+        display: flex;
+        .wrapper-desc {
+            flex: 1;
+        }
+        .desc {
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+        .wrapper-checkbox {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: auto;
+            .ant-checkbox-wrapper {
+                height: 42px;
+            }
+            // justify-content: space-between;
         }
     }
 </style>

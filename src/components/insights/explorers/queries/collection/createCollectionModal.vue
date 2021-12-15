@@ -4,16 +4,15 @@
         :closable="false"
         :footer="null"
         width="584px"
-        bodyStyle="{
-            height: 450px 
-        }"
         :destroyOnClose="true"
     >
-        <template #title>
+        <div class="w-full p-4 text-gray-500 bg-white rounded">
             <div
-                class="flex items-center justify-between text-gray-500 flex-nowrap"
+                class="flex items-center justify-between mb-6 text-gray-500 flex-nowrap"
             >
-                <span v-if="isCreate" class="flex-none font-bold text text-gray"
+                <span
+                    v-if="isCreate"
+                    class="flex-none text-base font-bold text-gray-700"
                     >Create Collection</span
                 >
                 <span
@@ -25,96 +24,185 @@
                         >{{ item?.attributes?.name }}</span
                     ></span
                 >
-                <div class="flex items-center text-gray-700">
-                    <span class="mr-2 text-sm">Share with others</span>
+                <div class="flex items-center">
+                    <span class="mr-2 text-sm font-normal text-gray-700"
+                        >Share with others</span
+                    >
                     <a-switch v-model:checked="isShareable" size="small" />
                 </div>
             </div>
-        </template>
-        <div class="w-full px-4 pb-5 text-gray-500 bg-white rounded">
-            <div class="">
-                <div>
-                    <a-input
-                        :ref="titleBarRef"
-                        v-model:value="title"
-                        class="w-full border-gray-300 rounded-lg focus:border-primary-focus focus:border-2 focus:outline-none"
-                        placeholder="Collection name"
-                    >
-                        <template #prefix>
-                            <!-- <span v-show="imageNotFound" class="mr-2">
-                                🔗
-                            </span> -->
-                            <!-- v-show="!imageNotFound" -->
-                            <div class="relative flex w-5 h-5 pr-4">
-                                <div
-                                    @click="toggleEmojiPicker"
-                                    class="flex items-center"
-                                >
-                                    <span v-if="selectedEmoji" class="mt-1">
-                                        {{ selectedEmoji }}
-                                    </span>
-                                    <AtlanIcon
-                                        v-else
-                                        :icon="'NoAvatar'"
-                                    ></AtlanIcon>
-                                </div>
-                                <!-- <div class="absolute left-0 z-10 emoji-wrapper"> -->
-                                <a-popover
-                                    overlay-class-name="cm-avatar-update-modal"
-                                    :visible="popOverVisible"
-                                    :trigger="['click']"
-                                    placement="bottomLeft"
-                                    destroy-on-close
-                                    :on-visible-change="toggleEmojiPicker"
-                                    class="w-full mt-3 -ml-6 border-gray-300 rounded-lg box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-                                >
-                                    <template #content>
-                                        <Picker
-                                            :data="emojiIndex"
-                                            set="apple"
-                                            auto-focus
-                                            :show-preview="false"
-                                            :emoji-tooltip="false"
-                                            :infinite-scroll="true"
-                                            @select="handleEmojiSelect"
-                                        />
-                                    </template>
-                                </a-popover>
-                                <!-- </div> -->
+            <div class="mb-6">
+                <a-input
+                    :ref="titleBarRef"
+                    v-model:value="title"
+                    class="w-full text-gray-500 border-gray-300 rounded-lg placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
+                    placeholder="Collection name"
+                >
+                    <template #prefix>
+                        <div class="relative flex w-4 h-4 mr-1">
+                            <div
+                                @click="toggleEmojiPicker"
+                                class="flex items-center"
+                            >
+                                <span v-if="selectedEmoji" class="mt-1">
+                                    {{ selectedEmoji }}
+                                </span>
+                                <AtlanIcon
+                                    v-else
+                                    class="w-4 h-4"
+                                    :icon="'NoAvatar'"
+                                ></AtlanIcon>
                             </div>
-                        </template>
-                    </a-input>
-                </div>
-                <div class="mt-4">
+                            <a-popover
+                                overlay-class-name="cm-avatar-update-modal"
+                                :visible="popOverVisible"
+                                :trigger="['click']"
+                                placement="bottomLeft"
+                                destroy-on-close
+                                :on-visible-change="toggleEmojiPicker"
+                                class="w-full mt-3 -ml-6 border-gray-300 rounded-lg box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+                            >
+                                <template #content>
+                                    <Picker
+                                        :data="emojiIndex"
+                                        set="apple"
+                                        auto-focus
+                                        :show-preview="false"
+                                        :emoji-tooltip="false"
+                                        :infinite-scroll="true"
+                                        @select="handleEmojiSelect"
+                                    />
+                                </template>
+                            </a-popover>
+                        </div>
+                    </template>
+                </a-input>
+                <div class="mt-6">
                     <a-textarea
                         v-model:value="description"
                         placeholder="Describe your collection"
-                        class="w-full h-20 text-sm border-gray-300 rounded-lg focus:border-primary-focus focus:border-2 focus:outline-none"
+                        style="min-height: 82px !important"
+                        class="w-full text-sm text-gray-500 border-gray-300 rounded-lg text-area-padding placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
                     />
                 </div>
             </div>
-            <div
-                class="px-4 py-2 mt-4 bg-gray-100 rounded-lg"
-                v-if="isShareable"
-            >
-                <div class="flex flex-col">
-                    <div>
-                        <span class="font-bold">Viewers</span>
-                        <UserSelectWidget
-                            :read-only="false"
-                            :model-value="viewers"
-                            placementPos="bottomLeft"
-                        />
-                    </div>
-                    <div class="mt-3">
-                        <span class="font-bold">Editors</span>
-                        <UserSelectWidget
-                            class="mt-1"
-                            :read-only="false"
-                            :model-value="editors"
-                            placementPos="bottomLeft"
-                        />
-                    </div>
+            <div class="" v-if="isShareable">
+                <span class="text-sm text-gray-700"
+                    >Add members and groups</span
+                >
+
+                <div class="flex items-center">
+                    <UserList
+                        user-list-header-class="min-w-full"
+                        :user-list-style="{
+                            maxHeight: '250px',
+                        }"
+                        :minimal="true"
+                        :showHeaderButtons="true"
+                        class="w-full"
+                        v-model:selectedUsers="
+                            userData[selectedType].ownerUsers
+                        "
+                        v-model:selectedUsersData="
+                            userDataDetail[selectedType].ownerUsers
+                        "
+                        v-model:selectedGroups="
+                            userData[selectedType].ownerGroups
+                        "
+                        v-model:selectedGroupsData="
+                            userDataDetail[selectedType].ownerGroups
+                        "
+                    />
+                    <a-dropdown :trigger="['click']" placement="bottomRight">
+                        <div
+                            class="flex items-center justify-center h-8 pl-1 mt-2 text-gray-700 border border-l-0 border-gray-300 rounded-lg rounded-l-none cursor-pointer"
+                            style="width: 104px"
+                        >
+                            <span class="mr-1.5">
+                                {{
+                                    selectedType === 'view'
+                                        ? 'can view'
+                                        : 'can edit'
+                                }}
+                            </span>
+                            <AtlanIcon
+                                icon="CaretDown"
+                                class="w-4 h-4 text-gray-700"
+                            />
+                        </div>
+
+                        <template #overlay>
+                            <PermissionType
+                                :show-remove="false"
+                                :handle-change="handleChange"
+                                v-model:selectedType="selectedType"
+                                permissionOptions="permissionOptions"
+                            />
+                        </template>
+                    </a-dropdown>
+                </div>
+                <span class="mt-2 text-xs text-gray-500"
+                    >{{
+                        selectedType === 'view'
+                            ? 'Can view and run all the queries, but not edit'
+                            : 'Can view, run and edit all queries'
+                    }}
+                </span>
+
+                <div
+                    style="max-height: 250px"
+                    class=""
+                    v-if="
+                        [
+                            ...userData['edit'].ownerUsers,
+                            ...userData['edit'].ownerGroups,
+                            ...userData['view'].ownerUsers,
+                            ...userData['view'].ownerGroups,
+                        ].length
+                    "
+                >
+                    <a-tabs
+                        v-model:activeKey="editors"
+                        size="small"
+                        :class="$style.tabBar"
+                    >
+                        <a-tab-pane key="editors" tab="Editors">
+                            <div
+                                class="overflow-auto"
+                                style="max-height: 150px"
+                            >
+                                <template
+                                    v-for="item in [
+                                        ...userData['edit'].ownerUsers,
+                                        ...userData['edit'].ownerGroups,
+                                    ]"
+                                >
+                                    <UserItem
+                                        :user="item"
+                                        permission="Editor"
+                                    />
+                                </template>
+                            </div>
+                        </a-tab-pane>
+                        <a-tab-pane key="viewers" tab="Viewers">
+                            <div
+                                class="overflow-y-auto"
+                                style="max-height: 150px"
+                            >
+                                <template
+                                    v-for="item in [
+                                        ...userData['view'].ownerUsers,
+                                        ...userData['view'].ownerGroups,
+                                    ]"
+                                >
+                                    <UserItem
+                                        :user="item"
+                                        permission="Viewers"
+                                    />
+                                </template>
+                            </div>
+                        </a-tab-pane>
+                    </a-tabs>
                 </div>
             </div>
             <div class="flex items-center w-full mt-5">
@@ -176,12 +264,25 @@
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { EditorState } from 'prosemirror-state'
     import { message } from 'ant-design-vue'
+    import Popover from '~/components/common/facet/properties/popover.vue'
+    import UserList from './userList.vue'
+    import PermissionType from './permissionType.vue'
+    import UserItem from './userItem.vue'
 
     const emojiIndex = new EmojiIndex(emojiData)
 
     export default defineComponent({
         name: 'CreateCollectionModal',
-        components: { AtlanBtn, UserSelectWidget, Picker, AtlanIcon },
+        components: {
+            AtlanBtn,
+            UserSelectWidget,
+            Picker,
+            AtlanIcon,
+            Popover,
+            UserList,
+            PermissionType,
+            UserItem,
+        },
         props: {
             showCollectionModal: {
                 type: Boolean as PropType<boolean>,
@@ -222,6 +323,7 @@
 
             const isShareable = ref(true)
             const popOverVisible = ref(false)
+
             const editors = ref({
                 ownerGroups: isCreate.value
                     ? []
@@ -230,6 +332,7 @@
                     ? []
                     : item?.value?.attributes?.ownerUsers,
             })
+
             const viewers = ref({
                 ownerGroups: isCreate.value
                     ? []
@@ -237,6 +340,36 @@
                 ownerUsers: isCreate.value
                     ? []
                     : item?.value?.attributes?.viewerUsers,
+            })
+
+            const userData = ref({
+                edit: {
+                    ownerGroups: isCreate.value
+                        ? []
+                        : item?.value?.attributes?.ownerGroups,
+                    ownerUsers: isCreate.value
+                        ? []
+                        : item?.value?.attributes?.ownerUsers,
+                },
+                view: {
+                    ownerGroups: isCreate.value
+                        ? []
+                        : item?.value?.attributes?.viewerGroups,
+                    ownerUsers: isCreate.value
+                        ? []
+                        : item?.value?.attributes?.viewerUsers,
+                },
+            })
+
+            const userDataDetail = ref({
+                edit: {
+                    ownerGroups: [],
+                    ownerUsers: [],
+                },
+                view: {
+                    ownerGroups: [],
+                    ownerUsers: [],
+                },
             })
 
             const closeModal = () => {
@@ -263,7 +396,6 @@
             let isCollectionSaving = ref(false)
 
             const saveOrUpdateCollection = () => {
-                // console.log('isCreate:', typeof isCreate.value)
                 if (isCreate.value) {
                     saveNewCollection()
                 } else {
@@ -283,17 +415,17 @@
                     createCollection({
                         name: title.value,
                         description: description.value,
-                        ownerUsers: editors.value.ownerUsers
-                            ? editors.value.ownerUsers
+                        ownerUsers: userData.value['edit'].ownerUsers.length
+                            ? userData.value['edit'].ownerUsers
                             : [],
-                        ownerGroups: editors.value.ownerGroups
-                            ? editors.value.ownerGroups
+                        ownerGroups: userData.value['edit'].ownerGroups.length
+                            ? userData.value['edit'].ownerGroups
                             : [],
-                        viewerUsers: viewers.value.ownerUsers
-                            ? viewers.value.ownerUsers
+                        viewerUsers: userData.value['view'].ownerUsers.length
+                            ? userData.value['view'].ownerUsers
                             : [],
-                        viewerGroups: viewers.value.ownerGroups
-                            ? viewers.value.ownerGroups
+                        viewerGroups: userData.value['view'].ownerGroups.length
+                            ? userData.value['view'].ownerGroups
                             : [],
                         icon: selectedEmoji.value,
                         iconType: selectedEmojiType.value,
@@ -311,7 +443,10 @@
                         ) {
                             closeModal()
                             if (isReady && !error.value && !isLoading.value) {
-                                refetchQueryCollection.value()
+                                /* IMP: Don't remove it, otherwise update collections will appear buggy */
+                                setTimeout(() => {
+                                    refetchQueryCollection.value()
+                                }, 750)
                             }
                         }
                     },
@@ -326,10 +461,10 @@
 
                 let ownersData = isShareable.value
                     ? {
-                          ownerUsers: editors.value.ownerUsers,
-                          ownerGroups: editors.value.ownerGroups,
-                          viewerUsers: viewers.value.ownerUsers,
-                          viewerGroups: viewers.value.ownerGroups,
+                          ownerUsers: userData.value['edit'].ownerUsers,
+                          ownerGroups: userData.value['edit'].ownerGroups,
+                          viewerUsers: userData.value['view'].ownerUsers,
+                          viewerGroups: userData.value['view'].ownerGroups,
                       }
                     : {
                           ownerUsers: [],
@@ -373,6 +508,39 @@
                 )
             }
 
+            let users = ref()
+            const updateUserList = (list) => {
+                users.value = list
+                console.log('users: ', list)
+            }
+
+            const selectedType = ref('view')
+
+            const handleChange = (item) => {
+                if (item !== 'remove') {
+                    selectedType.value = item
+                    // console.log('users: ', {
+                    //     userData: userData.value,
+                    //     userDataDetail: userDataDetail.value,
+                    // })
+                } else {
+                }
+            }
+
+            const permissionOptions = ref([
+                {
+                    title: 'Can view',
+                    type: 'view',
+                    description:
+                        'Can view and run all <br />the queries, but not edit',
+                },
+                {
+                    title: 'Can edit',
+                    type: 'edit',
+                    description: 'Can view, run and edit all <br />queries',
+                },
+            ])
+
             return {
                 closeModal,
                 titleBarRef,
@@ -390,6 +558,12 @@
                 saveOrUpdateCollection,
                 isCreate,
                 item,
+                updateUserList,
+                handleChange,
+                selectedType,
+                userData,
+                userDataDetail,
+                permissionOptions,
             }
         },
     })
@@ -397,6 +571,14 @@
 <style lang="less" scoped>
     .placeholder {
         background-color: #f4f4f4;
+    }
+
+    .placeholder-color::placeholder {
+        color: #6f7590 !important;
+    }
+    .text-area-padding {
+        padding: 0px !important;
+        padding: 12px !important;
     }
     .absolute-center {
         top: 50%;

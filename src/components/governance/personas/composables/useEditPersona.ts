@@ -8,7 +8,8 @@ import {
     selectedPersonaId,
 } from './usePersonaList'
 
-const { updatePersona, deletePersona } = usePersonaService()
+const { updatePersona, deletePersona, enableDisablePersona } =
+    usePersonaService()
 
 export const newIdTag = 'new_'
 export type PolicyType = 'meta' | 'data'
@@ -139,14 +140,16 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
         delete dataPolicy?.type
     }
     if (type === 'meta') {
-        if(dataPolicy.id){
-            tempPersona.metadataPolicies = tempPersona.metadataPolicies.map((el) => {
-                if(el.id === dataPolicy.id){
-                    return dataPolicy
-                }
+        if (dataPolicy.id) {
+            tempPersona.metadataPolicies = tempPersona.metadataPolicies.map(
+                (el) => {
+                    if (el.id === dataPolicy.id) {
+                        return dataPolicy
+                    }
                     return el
-            })
-        }else {
+                }
+            )
+        } else {
             tempPersona.metadataPolicies.push(dataPolicy)
         }
     }
@@ -246,8 +249,12 @@ export function discardPolicy(type: PolicyType, id: string) {
     }
 }
 
-export function enablePersona(isEnabled) {
+export async function enablePersona(id, isEnabled) {
     selectedPersonaDirty.value!.enabled = isEnabled
+    const payload = {
+        action: isEnabled ? 'enable' : 'disable',
+    }
+    await enableDisablePersona(id, payload)
 }
 export function isSavedPolicy() {}
 

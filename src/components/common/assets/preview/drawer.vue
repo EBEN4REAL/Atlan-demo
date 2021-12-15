@@ -10,9 +10,6 @@
             :style="{ position: 'absolute' }"
             :content-wrapper-style="{ width: '420px' }"
             :mask="true"
-            :mask-style="{
-                background: 'rgba(244, 246, 253, 0.9)',
-            }"
             :key="data.guid"
             @close="$emit('closeDrawer')"
         >

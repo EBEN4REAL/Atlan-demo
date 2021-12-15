@@ -43,16 +43,6 @@
                                         }}</a-radio
                                     >
                                 </a-menu-item>
-
-                                <!-- <a-menu-divider /> -->
-
-                                <!-- <a-menu-item>
-                                    <a-checkbox
-                                        v-model:checked="showProcess"
-                                        @change="onShowProcess"
-                                        >Show Process</a-checkbox
-                                    >
-                                </a-menu-item> -->
                             </a-menu>
                         </template>
                     </a-dropdown>
@@ -143,7 +133,6 @@
         setup(props, { emit }) {
             /** INJECTIONS */
             const control = inject('control')
-            // const showProcess = inject('showProcess')
             const depth = inject('depth')
             const direction = inject('direction')
             const lineageDepths = inject('lineageDepths')
@@ -168,11 +157,6 @@
                 emit('show-impacted-assets')
             }
 
-            // onShowProcess
-            // const onShowProcess = () => {
-            //     control('showProcess', showProcess.value)
-            // }
-
             // onChangeDirection
             const onChangeDirection = (e) => {
                 control('direction', e.target.value)
@@ -191,11 +175,9 @@
                 direction,
                 control,
                 showSearch,
-                // showProcess,
                 lineageDepths,
                 lineageDirections,
                 onShowImpactedAssets,
-                // onShowProcess,
                 onChangeDirection,
                 onChangeDepth,
             }

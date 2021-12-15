@@ -40,7 +40,7 @@
             </template>
             <span
                 v-if="readOnly && list?.length < 1"
-                class="-ml-1 text-gray-500"
+                class="-ml-1 text-gray-700"
                 >No linked terms</span
             >
         </div>

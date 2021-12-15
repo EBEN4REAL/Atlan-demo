@@ -330,7 +330,7 @@
                                     />
                                 </div>
                             </a-form-item>
-                            <a-form-item class="mb-0">
+                            <!-- <a-form-item class="mb-0">
                                 <div class="flex justify-between">
                                     <label :for="`${form.name}-isBadge`">
                                         <span class="flex items-center">
@@ -347,7 +347,7 @@
                                         size="small"
                                     />
                                 </div>
-                            </a-form-item>
+                            </a-form-item> -->
                         </div>
                     </div>
                     <div

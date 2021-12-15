@@ -78,7 +78,7 @@ export default function useEventGraph(
                             text,
                         },
                         portImage: {
-                            href: `/src/assets/images/dataType/${dataType}.svg`,
+                            href: `/dataType/${dataType}.svg`,
                             width: 16,
                             height: 16,
                         },

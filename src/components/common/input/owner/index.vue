@@ -150,7 +150,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { selectedAsset, inProfile } = toRefs(props)
+            const { selectedAsset, inProfile, readOnly } = toRefs(props)
 
             const localValue = ref(modelValue.value)
 
@@ -203,11 +203,14 @@
                         'true'
             )
             const { o, Escape } = useMagicKeys()
-            whenever(and(o, notUsingInput, !inProfile.value), () => {
-                if (!isEdit.value) {
-                    isEdit.value = true
+            whenever(
+                and(o, notUsingInput, !inProfile.value, !readOnly.value),
+                () => {
+                    if (!isEdit.value) {
+                        isEdit.value = true
+                    }
                 }
-            })
+            )
 
             whenever(and(Escape), () => {
                 if (isEdit.value) {

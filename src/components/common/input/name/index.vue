@@ -92,7 +92,7 @@
 
             const { n } = useMagicKeys()
 
-            whenever(and(n, notUsingInput), () => {
+            whenever(and(n, notUsingInput, !readOnly.value), () => {
                 handleEdit()
             })
 

@@ -69,6 +69,7 @@
             <PersonaBody
                 v-model:persona="selectedPersona"
                 @selectPolicy="handleSelectPolicy"
+                :whitelistedConnectionIds="whitelistedConnectionIds"
             />
         </template>
         <div
@@ -125,7 +126,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, computed } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -146,6 +147,8 @@
     import { isEditing } from './composables/useEditPersona'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
     import DetailPolicy from './overview/detailPolicy.vue'
+    import { useAuthStore } from '~/store/auth'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -164,6 +167,9 @@
             const modalVisible = ref(false)
             const modalDetailPolicyVisible = ref(false)
             const selectedPolicy = ref({})
+            const authStore = useAuthStore()
+            const { roles } = storeToRefs(authStore)
+
             watch(searchTerm, () => {
                 console.log(searchTerm.value, 'searched')
             })
@@ -174,6 +180,27 @@
                 selectedPolicy.value = policy
                 modalDetailPolicyVisible.value = true
             }
+            const whitelistedConnectionIds = ref([])
+            watch(
+                roles,
+                () => {
+                    const filteredRoles = (roles.value || []).filter((role) => {
+                        return role.name.startsWith('connection_admins_')
+                    })
+                    whitelistedConnectionIds.value = filteredRoles.map(
+                        (role) => {
+                            if (role && role.name)
+                                return role.name.split('_')[2]
+                            return ''
+                        }
+                    )
+                },
+                {
+                    immediate: true,
+                    deep: true,
+                }
+            )
+
             return {
                 reFetchList,
                 filteredPersonas,
@@ -190,6 +217,8 @@
                 handleCloseModalDetailPolicy,
                 handleSelectPolicy,
                 selectedPolicy,
+                whitelistedConnectionIds,
+                roles,
             }
         },
     })

@@ -28,17 +28,23 @@ export function authDirective(app: any) {
                                           permissions.value.indexOf(elem) > -1
                                   )
                         ) {
+                            // Do this to revert display none if it was applied in previous evaluation
+                            if (el.style.display === 'none')
+                                el.style.removeProperty('display')
                             return
                         }
                     }
                     if (isString(binding.value)) {
                         if (permissions.value.indexOf(binding.value) > -1) {
+                            // Do this to revert display none if it was applied in previous evaluation
+                            if (el.style.display === 'none')
+                                el.style.removeProperty('display')
                             return
                         }
                     }
                     el.style.setProperty('display', 'none', 'important')
                 },
-                { deep: true }
+                { immediate: true, deep: true }
             )
         },
     })

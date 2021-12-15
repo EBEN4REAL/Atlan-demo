@@ -31,15 +31,7 @@
                         </div>
                         <div
                             :class="$style.chip"
-                            class="
-                                self-center
-                                text-xs
-                                font-bold
-                                tracking-wide
-                                text-gray-400
-                                mt-0.5
-                                ml-1
-                            "
+                            class="self-center text-xs font-bold tracking-wide text-gray-400 mt-0.5 ml-1"
                         >
                             {{ getCountString(item.count) }}
                         </div>
@@ -102,10 +94,7 @@
                 emit('change')
             }
 
-            const activeKey = ref('Column');
-
-            watch(list, (cur, prev) => {
-
+            const addAllToList = () => {
                 const initialValue = 0
                 const sum = list.value.reduce(
                     (accumulator, currentValue) =>
@@ -143,6 +132,12 @@
                         count: sum,
                     })
                 }
+            }
+
+            if (list.value.length) addAllToList()
+
+            watch(list, (cur, prev) => {
+                addAllToList()
             })
 
             return {

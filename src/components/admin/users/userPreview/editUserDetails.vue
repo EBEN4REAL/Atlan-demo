@@ -197,6 +197,15 @@
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
+                            selectedUser.value.firstName = formData.value.firstName
+                            selectedUser.value.lastName = formData.value.lastName
+                            selectedUser.value.attributes.designation = [formData.value.designation]
+                            if (formData.value.slack.length > 0) {
+                                selectedUser.value.attributes.profiles = [`[{"slack": "${formData.value.slack}"}]`]
+                            }
+                            else {
+                                selectedUser.value.attributes.profiles = []
+                            }
                             message.success('The details have been updated')
                             emit('success')
                             emit('toggleEdit')

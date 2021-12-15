@@ -705,9 +705,6 @@
 </script>
 <style lang="less" module>
     .table {
-        :global(.ant-table-measure-row) {
-            display: none;
-        }
         :global(.ant-table-pagination.ant-pagination) {
             @apply m-4 !important;
         }

@@ -135,6 +135,8 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
     if (dataPolicy?.isNew) {
         delete dataPolicy?.isNew
         delete dataPolicy?.id
+    } else {
+        delete dataPolicy?.type
     }
     if (type === 'meta') {
         if(dataPolicy.id){

@@ -443,7 +443,10 @@
                         ) {
                             closeModal()
                             if (isReady && !error.value && !isLoading.value) {
-                                refetchQueryCollection.value()
+                                /* IMP: Don't remove it, otherwise update collections will appear buggy */
+                                setTimeout(() => {
+                                    refetchQueryCollection.value()
+                                }, 750)
                             }
                         }
                     },

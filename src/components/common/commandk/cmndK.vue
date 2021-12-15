@@ -1,45 +1,29 @@
 <template>
     <div>
-        <a-modal
-            :visible="isVisible"
-            width="800px"
-            class="rounded-md"
-            :destroyOnClose="true"
-            wrapClassName="rounded-md"
-            :class="$style.modalStyles"
-            :closable="false"
-            :mask="false"
-            @cancel="$emit('closeModal')"
-        >
-            <template #title>
-                <div class="flex items-center px-1">
-                    <svg
-                        v-if="isLoading"
-                        class="w-5 h-5 mr-1.5 text-primary animate-spin"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                    >
-                        <circle
-                            class="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                        ></circle>
-                        <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                    </svg>
-                    <atlan-icon
-                        v-else
-                        icon="Search"
-                        class="w-auto h-5 mr-1.5"
-                    />
-                    <!-- TODO: Uncomment when bringing category filter in  -->
-                    <!-- <AssetCategoryFilter
+        <div class="flex items-center px-5 py-4 border-b">
+            <svg
+                v-if="isLoading"
+                class="w-5 h-5 mr-1.5 text-primary animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+            >
+                <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                ></circle>
+                <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+            </svg>
+            <atlan-icon v-else icon="Search" class="w-auto h-5 mr-1.5" />
+            <!-- TODO: Uncomment when bringing category filter in  -->
+            <!-- <AssetCategoryFilter
                         v-if="assetCategoryFilter.length"
                         v-model:checked="assetCategoryFilter"
                         @change="handleCategoryChange"
@@ -67,52 +51,53 @@
                         </template>
                     </AssetCategoryFilter> -->
 
-                    <a-input
-                        ref="inputBox"
-                        v-model:value="queryText"
-                        class="pl-1 pr-4 text-base text-gray-500 border-0 shadow-none outline-none focus:border-0 force-hide-focus-outline"
-                        :class="$style.modalStyles"
-                        :placeholder="dynamicSearchPlaceholder"
-                        @change="handleSearchChange"
-                    >
-                        <template #addonAfter>
-                            <div
-                                class="flex items-center space-x-4 text-gray-500"
+            <a-input
+                ref="inputBox"
+                v-model:value="queryText"
+                class="pl-1 pr-4 text-base text-gray-500 border-0 shadow-none outline-none focus:border-0 force-hide-focus-outline"
+                :class="$style.modalStyles"
+                :placeholder="dynamicSearchPlaceholder"
+                @change="handleSearchChange"
+            >
+                <template #addonAfter>
+                    <div class="flex items-center space-x-4 text-gray-500">
+                        <div v-if="queryText.length">
+                            <span
+                                class="text-xs text-gray-500 cursor-pointer"
+                                @click="
+                                    () => {
+                                        queryText = ''
+                                        isLoading = false
+                                        handleFocusOnInput()
+                                    }
+                                "
+                                >CLEAR</span
                             >
-                                <div v-if="queryText.length">
-                                    <span
-                                        @click="queryText = ''"
-                                        class="text-xs text-gray-500 cursor-pointer"
-                                        >CLEAR</span
-                                    >
-                                    <span class="mb-1">|</span>
-                                </div>
-                            </div>
-                        </template>
-                    </a-input>
-                    <atlan-icon
-                        icon="Cancel"
-                        class="w-auto h-5 mr-1 text-gray-500 cursor-pointer"
-                        @click="$emit('closeModal')"
-                    />
-                </div>
-            </template>
-            <div class="w-full px-4">
-                <AggregationTabs
-                    v-model="postFacets.typeName"
-                    class="mt-3"
-                    :list="assetTypeAggregationList"
-                    @change="handleAssetTypeChange"
-                >
-                </AggregationTabs>
-            </div>
-            <!-- body starts here -->
-            <div v-if="!assetCategoryFilter.length" class="flex flex-col">
-                <span class="px-4 pb-2 text-xs text-gray-500"
-                    >I’m trying to find...</span
-                >
-                <!-- TODO: Uncomment when bringing category filter in  -->
-                <!-- <div class="flex items-center px-4 pb-4 space-x-2">
+                            <span class="mb-1">|</span>
+                        </div>
+                    </div>
+                </template>
+            </a-input>
+            <atlan-icon
+                icon="Cancel"
+                class="w-auto h-5 mr-1 text-gray-500 cursor-pointer"
+                @click="$emit('closeModal')"
+            />
+        </div>
+
+        <div v-if="assetTypeAggregationList.length" class="w-full px-4">
+            <AggregationTabs
+                v-model="postFacets.typeName"
+                class="mt-3"
+                :list="assetTypeAggregationList"
+                @change="handleAssetTypeChange"
+            >
+            </AggregationTabs>
+        </div>
+        <!-- body starts here -->
+        <div v-if="!assetCategoryFilter.length" class="flex flex-col">
+            <!-- TODO: Uncomment when bringing category filter in  -->
+            <!-- <div class="flex items-center px-4 pb-4 space-x-2">
                     <template v-for="cat in assetCategoryList" :key="cat.id">
                         <div
                             @click="handleCategoryChipClicked(cat)"
@@ -126,58 +111,45 @@
                         </div>
                     </template>
                 </div> -->
+        </div>
+        <div class="flex flex-col pt-2 overflow-y-auto max-h-80">
+            <div
+                v-if="!list?.length && queryText.length"
+                class="flex flex-col items-center justify-center pt-12 pb-20"
+            >
+                <atlan-icon icon="NoResultsFound" class="w-auto h-40" />
+                <span class="flex items-center">
+                    No results found for
+                    <span class="font-bold"> "{{ queryText }}"</span>
+                </span>
             </div>
-            <div class="flex flex-col pt-2 overflow-y-auto max-h-80">
-                <div
-                    v-if="!list?.length && queryText.length"
-                    class="flex flex-col items-center justify-center pt-12 pb-20"
+            <div
+                v-else-if="!list.length && !queryText.length"
+                class="flex flex-col px-4 mb-6"
+            >
+                <!-- <span class="mb-2 text-xs text-gray-500">Recently Viewed</span> -->
+                <span class="text-xs text-gray-500 mb-"
+                    >You haven’t searched for anything just yet ...</span
                 >
-                    <atlan-icon icon="NoResultsFound" class="w-auto h-40" />
-                    <span class="flex items-center">
-                        No results found for
-                        <span class="font-bold"> "{{ queryText }}"</span>
-                    </span>
-                </div>
-                <div
-                    v-else-if="!list.length && !queryText.length"
-                    class="flex flex-col px-4 mb-6"
-                >
-                    <span class="mb-2 text-xs text-gray-500"
-                        >Recently Viewed</span
-                    >
-                    <span class="mb-2 text-xs text-gray-500"
-                        >You haven’t searched for anything just yet ...</span
-                    >
-                </div>
-                <div v-for="item in list" v-else :key="item?.guid">
-                    <div
-                        v-if="
-                            [
-                                'AtlasGlossary',
-                                'AtlasGlossaryTerm',
-                                'AtlasGlossaryCategory',
-                            ].includes(item?.typeName)
-                        "
-                        @click="$emit('closeModal')"
-                    >
-                        <GtcCard :item="item" class="px-5" />
-                    </div>
-                    <AssetCard :item="item" Modal="$emit('closeModal')" />
-                </div>
             </div>
-            <!-- body ends here  -->
-            <!-- footer starts here -->
-            <template #footer>
-                <div></div>
-                <!-- <div class="flex items-center px-4 py-2 text-xs bg-gray-100">
-                    <span>
-                        💡 Protip: Add
-                        <span class="text-primary">description:</span>
-                        to search for just within description
-                    </span>
-                </div> -->
-            </template>
-        </a-modal>
+            <div v-for="item in list" v-else :key="item?.guid">
+                <div
+                    v-if="
+                        [
+                            'AtlasGlossary',
+                            'AtlasGlossaryTerm',
+                            'AtlasGlossaryCategory',
+                        ].includes(item?.typeName)
+                    "
+                    @click="$emit('closeModal')"
+                >
+                    <GtcCard :item="item" class="px-5" />
+                </div>
+                <AssetCard v-else :item="item" Modal="$emit('closeModal')" />
+            </div>
+        </div>
+        <!-- body ends here  -->
+        <!-- footer starts here -->
     </div>
 </template>
 <script lang="ts">
@@ -228,7 +200,8 @@
             const offset = ref(0)
             const facets = ref({})
             const inputBox: Ref<null | HTMLInputElement> = ref(null)
-            const dependentKey: Ref<undefined | String> = ref('DEFAULT_CMD_KEY') // 'DEFAULT_CMD_KEY'
+            const dependentKey: Ref<undefined | String> =
+                ref('DEFAULT_ASSET_LIST') // 'DEFAULT_CMD_KEY'
             const aggregations = ref(['typeName'])
             const postFacets = ref({
                 typeName: '__all',
@@ -283,12 +256,7 @@
                 await nextTick()
                 inputBox.value?.focus()
             }
-            watch(isVisible, () => {
-                if (isVisible.value) {
-                    handleFocusOnInput()
-                    dependentKey.value = 'DEFAULT_CMD_KEY'
-                }
-            })
+            handleFocusOnInput()
 
             // TODO This is a manual isLoading hack, not sure why one from composable not working
             watch(
@@ -319,6 +287,7 @@
                 isLoading,
                 assetTypeAggregationList,
                 handleAssetTypeChange,
+                handleFocusOnInput,
                 postFacets,
             }
         },

@@ -243,6 +243,7 @@
             :show-drawer="addpolicyVisible"
             :selected-policy="selectedPolicy"
             :is-edit="isEdit"
+            :is-loading="loadingPolicy"
             @save="savePolicyUI"
             @close="handleCloseAdd"
         />
@@ -307,6 +308,7 @@
             const addpolicyVisible = ref(false)
             const isEdit = ref(false)
             const typeAddPolicy = ref('')
+            const loadingPolicy = ref(false)
             const handleAddPolicy = (type) => {
                 typeAddPolicy.value = type
                 addpolicyVisible.value = true
@@ -327,9 +329,11 @@
 
             watch(selectedPersonaDirty, () => {
                 activeTabFilter.value = ''
+                addpolicyVisible.value = false
             })
             async function savePolicyUI(type: PolicyType, dataPolicy: Object) {
                 const messageKey = Date.now()
+                loadingPolicy.value = true
                 message.loading({
                     content: 'Saving policy',
                     duration: 0,
@@ -345,12 +349,14 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+                    loadingPolicy.value = false
                 } catch (error: any) {
                     message.error({
                         content: error?.response?.data?.message,
                         duration: 1.5,
                         key: messageKey,
                     })
+                    loadingPolicy.value = false
                 }
             }
 
@@ -487,6 +493,7 @@
                 typeAddPolicy,
                 handleCloseAdd,
                 isEdit,
+                loadingPolicy,
             }
         },
     })

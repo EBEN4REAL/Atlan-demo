@@ -3,7 +3,7 @@
         <a-menu-item
             key="view"
             class="rounded hover:bg-primary-light"
-            @click="handleChange('view')"
+            @click="handleChange('view', item)"
         >
             <div class="flex items-center justify-between">
                 <div>
@@ -27,7 +27,7 @@
         <a-menu-item
             key="edit"
             class="rounded hover:bg-primary-light"
-            @click="handleChange('edit')"
+            @click="handleChange('edit', item)"
         >
             <div class="flex items-center justify-between">
                 <div>
@@ -52,7 +52,7 @@
             key="remove"
             class="rounded hover:bg-primary-light"
             v-if="showRemove"
-            @click="handleChange('remove')"
+            @click="handleChange('remove', item)"
         >
             <div class="flex items-center justify-between">
                 <div>
@@ -85,6 +85,11 @@
             selectedType: {
                 type: String,
                 required: true,
+            },
+            item: {
+                type: Object,
+                required: false,
+                default: null,
             },
         },
         setup(props, { emit }) {

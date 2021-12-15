@@ -164,6 +164,7 @@
         computed,
         provide,
         PropType,
+        watch,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -286,6 +287,7 @@
                 ...facets.value,
                 ...initialFilters.value,
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                glossary: selectedGlossaryQf,
             }
 
             // Virtual List Height
@@ -440,6 +442,10 @@
             const onCheck = (checkedNodes, { checkedKeys, checked }) => {
                 emit('check', checkedNodes, { checkedKeys, checked })
             }
+            watch(selectedGlossaryQf, () => {
+                console.log('contextChanged')
+                console.log(facets.value)
+            })
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
             return {

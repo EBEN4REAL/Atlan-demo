@@ -138,6 +138,10 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
     } else {
         delete dataPolicy?.type
     }
+    if(dataPolicy.actions.includes('entity-update-classification')){
+        dataPolicy.actions.push('entity-add-classification')
+        dataPolicy.actions.push('entity-remove-classification')
+    }
     if (type === 'meta') {
         if(dataPolicy.id){
             tempPersona.metadataPolicies = tempPersona.metadataPolicies.map((el) => {

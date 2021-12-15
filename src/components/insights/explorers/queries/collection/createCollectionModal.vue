@@ -136,32 +136,75 @@
                                 :show-remove="false"
                                 :handle-change="handleChange"
                                 v-model:selectedType="selectedType"
+                                permissionOptions="permissionOptions"
                             />
                         </template>
                     </a-dropdown>
                 </div>
+                <span class="mt-2 text-xs text-gray-500"
+                    >{{
+                        selectedType === 'view'
+                            ? 'Can view and run all the queries, but not edit'
+                            : 'Can view, run and edit all queries'
+                    }}
+                </span>
+
+                <div
+                    style="max-height: 250px"
+                    class=""
+                    v-if="
+                        [
+                            ...userData['edit'].ownerUsers,
+                            ...userData['edit'].ownerGroups,
+                            ...userData['view'].ownerUsers,
+                            ...userData['view'].ownerGroups,
+                        ].length
+                    "
+                >
+                    <a-tabs
+                        v-model:activeKey="editors"
+                        size="small"
+                        :class="$style.tabBar"
+                    >
+                        <a-tab-pane key="editors" tab="Editors">
+                            <div
+                                class="overflow-auto"
+                                style="max-height: 150px"
+                            >
+                                <template
+                                    v-for="item in [
+                                        ...userData['edit'].ownerUsers,
+                                        ...userData['edit'].ownerGroups,
+                                    ]"
+                                >
+                                    <UserItem
+                                        :user="item"
+                                        permission="Editor"
+                                    />
+                                </template>
+                            </div>
+                        </a-tab-pane>
+                        <a-tab-pane key="viewers" tab="Viewers">
+                            <div
+                                class="overflow-y-auto"
+                                style="max-height: 150px"
+                            >
+                                <template
+                                    v-for="item in [
+                                        ...userData['view'].ownerUsers,
+                                        ...userData['view'].ownerGroups,
+                                    ]"
+                                >
+                                    <UserItem
+                                        :user="item"
+                                        permission="Viewers"
+                                    />
+                                </template>
+                            </div>
+                        </a-tab-pane>
+                    </a-tabs>
+                </div>
             </div>
-            <!-- <div class="px-4 py-2 mt-4" v-if="isShareable"> -->
-            <!-- <div class="flex flex-col">
-                    <div>
-                        <span class="font-bold">Viewers</span>
-                        <UserSelectWidget
-                            :read-only="false"
-                            :model-value="viewers"
-                            placementPos="bottomLeft"
-                        />
-                    </div>
-                    <div class="mt-3">
-                        <span class="font-bold">Editors</span>
-                        <UserSelectWidget
-                            class="mt-1"
-                            :read-only="false"
-                            :model-value="editors"
-                            placementPos="bottomLeft"
-                        />
-                    </div>
-                </div> -->
-            <!-- </div> -->
             <div class="flex items-center w-full mt-5">
                 <div
                     class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer"
@@ -224,6 +267,7 @@
     import Popover from '~/components/common/facet/properties/popover.vue'
     import UserList from './userList.vue'
     import PermissionType from './permissionType.vue'
+    import UserItem from './userItem.vue'
 
     const emojiIndex = new EmojiIndex(emojiData)
 
@@ -237,6 +281,7 @@
             Popover,
             UserList,
             PermissionType,
+            UserItem,
         },
         props: {
             showCollectionModal: {
@@ -351,7 +396,6 @@
             let isCollectionSaving = ref(false)
 
             const saveOrUpdateCollection = () => {
-                // console.log('isCreate:', typeof isCreate.value)
                 if (isCreate.value) {
                     saveNewCollection()
                 } else {
@@ -371,17 +415,17 @@
                     createCollection({
                         name: title.value,
                         description: description.value,
-                        ownerUsers: editors.value.ownerUsers
-                            ? editors.value.ownerUsers
+                        ownerUsers: userData.value['edit'].ownerUsers.length
+                            ? userData.value['edit'].ownerUsers
                             : [],
-                        ownerGroups: editors.value.ownerGroups
-                            ? editors.value.ownerGroups
+                        ownerGroups: userData.value['edit'].ownerGroups.length
+                            ? userData.value['edit'].ownerGroups
                             : [],
-                        viewerUsers: viewers.value.ownerUsers
-                            ? viewers.value.ownerUsers
+                        viewerUsers: userData.value['view'].ownerUsers.length
+                            ? userData.value['view'].ownerUsers
                             : [],
-                        viewerGroups: viewers.value.ownerGroups
-                            ? viewers.value.ownerGroups
+                        viewerGroups: userData.value['view'].ownerGroups.length
+                            ? userData.value['view'].ownerGroups
                             : [],
                         icon: selectedEmoji.value,
                         iconType: selectedEmojiType.value,
@@ -414,10 +458,10 @@
 
                 let ownersData = isShareable.value
                     ? {
-                          ownerUsers: editors.value.ownerUsers,
-                          ownerGroups: editors.value.ownerGroups,
-                          viewerUsers: viewers.value.ownerUsers,
-                          viewerGroups: viewers.value.ownerGroups,
+                          ownerUsers: userData.value['edit'].ownerUsers,
+                          ownerGroups: userData.value['edit'].ownerGroups,
+                          viewerUsers: userData.value['view'].ownerUsers,
+                          viewerGroups: userData.value['view'].ownerGroups,
                       }
                     : {
                           ownerUsers: [],
@@ -480,6 +524,20 @@
                 }
             }
 
+            const permissionOptions = ref([
+                {
+                    title: 'Can view',
+                    type: 'view',
+                    description:
+                        'Can view and run all <br />the queries, but not edit',
+                },
+                {
+                    title: 'Can edit',
+                    type: 'edit',
+                    description: 'Can view, run and edit all <br />queries',
+                },
+            ])
+
             return {
                 closeModal,
                 titleBarRef,
@@ -502,6 +560,7 @@
                 selectedType,
                 userData,
                 userDataDetail,
+                permissionOptions,
             }
         },
     })

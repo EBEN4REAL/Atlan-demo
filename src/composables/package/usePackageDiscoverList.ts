@@ -73,9 +73,14 @@ export function usePackageDiscoverList({
         }
     })
 
-    const fetch = () => {
+    const quickChange = () => {
         generateBody()
-        refresh()
+        cancelRequest()
+        if (localKey.value) {
+            localKey.value = `dirty_${Date.now().toString()}`
+        } else {
+            refresh()
+        }
     }
 
     return {
@@ -90,5 +95,6 @@ export function usePackageDiscoverList({
         fetch,
         cancelRequest,
         error,
+        quickChange,
     }
 }

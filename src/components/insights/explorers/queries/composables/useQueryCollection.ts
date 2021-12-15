@@ -24,6 +24,7 @@ const useQueryCollection = () => {
     const uuidv4 = generateUUID()
     const queryCollectionsLoading = ref(true)
     const queryCollections: Ref<QueryCollection[] | undefined> = ref()
+    const queryCollectionsError: Ref<QueryCollection[] | undefined> = ref()
 
     const attributes = [
         'name',
@@ -38,6 +39,8 @@ const useQueryCollection = () => {
         'viewerUsers',
         'viewerGroups',
         'classifications',
+        'icon',
+        'iconType',
         ...InternalAttributes,
     ]
     const body = ref({})
@@ -191,6 +194,7 @@ const useQueryCollection = () => {
     }
 
     return {
+        queryCollectionsError,
         queryCollections,
         queryCollectionsLoading,
         selectFirstCollectionByDefault,
@@ -210,13 +214,13 @@ export const isCollectionPrivate = (
     // owner/viewer are empty
     // eslint-disable-next-line no-underscore-dangle
     const isCreatedByCurrentUser =
-        collection.attributes.__createdBy === username
+        collection?.attributes?.__createdBy === username
     const hasNoViewers =
-        collection.attributes.viewerUsers.length === 0 &&
-        collection.attributes.viewerGroups.length === 0
+        collection?.attributes?.viewerUsers.length === 0 &&
+        collection?.attributes?.viewerGroups.length === 0
     const hasNoUsers =
-        collection.attributes.ownerUsers.length === 0 &&
-        collection.attributes.ownerGroups.length === 0
+        collection?.attributes?.ownerUsers.length === 0 &&
+        collection?.attributes?.ownerGroups.length === 0
     return isCreatedByCurrentUser && hasNoUsers && hasNoViewers
 }
 

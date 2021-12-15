@@ -52,8 +52,23 @@
             </a-form>
         </div>
         <div
-            class="absolute bottom-0 flex justify-end w-full px-4 mt-1 mb-3 border-t"
+            class="absolute bottom-0 flex items-center justify-between w-full px-4 mt-1 mb-3 border-t"
         >
+            <div class="flex items-center mt-3 gap-x-1">
+                <a-checkbox v-model:checked="isDefault">
+                    <span class="">Mark as default</span>
+                    <a-tooltip
+                        :title="'New users will be automatically added to default groups'"
+                        placement="right"
+                        ><span class="ml-1">
+                            <AtlanIcon
+                                icon="Info"
+                                class="text-gray-500 pushtop mb-0.5"
+                            ></AtlanIcon>
+                        </span>
+                    </a-tooltip>
+                </a-checkbox>
+            </div>
             <AtlanButton
                 class="mt-3"
                 size="sm"
@@ -148,6 +163,7 @@
                         attributes: {
                             description: [group.description],
                             alias: [group.name],
+                            isDefault: [`${isDefault.value}`],
                         },
                     },
                     users: userIds.value,

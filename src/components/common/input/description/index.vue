@@ -16,7 +16,7 @@
             }}</span>
             <span
                 v-else-if="!isEdit && description(selectedAsset) === ''"
-                class="text-gray-500"
+                class="text-gray-700"
                 >No description available</span
             >
             <a-textarea
@@ -117,9 +117,12 @@
 
             const { d, enter, shift } = useMagicKeys()
 
-            whenever(and(d, notUsingInput, !inProfile.value), () => {
-                handleEdit()
-            })
+            whenever(
+                and(d, notUsingInput, !inProfile.value, !readOnly.value),
+                () => {
+                    handleEdit()
+                }
+            )
 
             watchEffect(() => {
                 if (enter.value && !shift.value && isEdit.value) handleBlur()

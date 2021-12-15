@@ -2,11 +2,20 @@
     <div
         class="flex flex-col items-center w-full h-full bg-white query-explorer"
     >
-        <div v-if="queryCollections && !queryCollectionsLoading" class="w-full">
+        {{ queryCollectionsError }}
+        <div
+            v-if="
+                isValid(queryCollections) &&
+                !queryCollectionsError &&
+                !queryCollectionsLoading
+            "
+            class="w-full"
+        >
             <div class="w-full p-4 pb-0 rounded">
                 <div class="flex items-center">
                     <CollectionSelector
                         @update:data="updateCollection"
+                        @toggleCollectionModal="toggleCollectionModal"
                     ></CollectionSelector>
                     <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
                     <a-dropdown
@@ -14,9 +23,12 @@
                         class="ml-auto shadow-none h-7"
                         placement="bottomRight"
                     >
-                        <a-button size="small" :class="$style.filterButton">
-                            <AtlanIcon :icon="'Add'"></AtlanIcon>
-                        </a-button>
+                        <div
+                            class="px-2 pt-0.5 cursor-pointer rounded-lg"
+                            :class="$style.filterButton"
+                        >
+                            <span class="text-xs text-gray-700">New</span>
+                        </div>
                         <template #overlay>
                             <a-menu>
                                 <a-menu-item
@@ -89,7 +101,7 @@
                 </div>
             </div>
             <!-- <div class="w-full my-4 border-b"></div> -->
-            <div class="w-full h-full mt-2">
+            <div class="w-full h-full mt-2" v-if="queryCollections?.length > 0">
                 <div
                     v-if="!searchQuery?.length && !totalFilteredCount"
                     class="relative w-full px-4 pt-0 mt-2 overflow-y-auto"
@@ -167,6 +179,18 @@
                     </div>
                 </div>
             </div>
+            <EmptyView
+                v-else
+                empty-screen="EmptyCollections"
+                headline="Collections"
+                desc="Organise queries relevant for your project or team into collections and  share it with others. "
+                button-text="Create Collection"
+                @event="
+                    () => {
+                        showCollectionModal = true
+                    }
+                "
+            />
         </div>
         <div
             v-else-if="queryCollectionsLoading"
@@ -175,7 +199,7 @@
             <Loader></Loader>
         </div>
         <div
-            v-else-if="!queryCollections && !queryCollectionsLoading"
+            v-else-if="queryCollectionsError && !queryCollectionsLoading"
             class="flex items-center justify-center h-full"
         >
             <ErrorView :error="errorObjectForCollection">
@@ -245,6 +269,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
+    import EmptyView from '@common/empty/index.vue'
 
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import RaisedTab from '~/components/insights/common/raisedTabs/index.vue'
@@ -269,10 +294,12 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import Loader from '@common/loaders/page.vue'
     import ErrorView from '@common/error/index.vue'
+    import { isValid } from '~/utils/isValid'
 
     export default defineComponent({
         name: 'QueryExplorer',
         components: {
+            EmptyView,
             Loader,
             RaisedTab,
             QueryTree,
@@ -364,6 +391,9 @@
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
+            const queryCollectionsError = inject(
+                'queryCollectionsError'
+            ) as Ref<any>
             const queryCollectionsLoading = inject(
                 'queryCollectionsLoading'
             ) as Ref<Boolean>
@@ -950,12 +980,15 @@
                     }, 750)
                 }
             })
+            console.log(queryCollectionsError.value, 'queryCollectionsError')
 
             return {
+                isValid,
                 refreshQueryTree,
                 isQueriesLoading,
                 QueriesFetchError,
                 errorObjectForCollection,
+                queryCollectionsError,
                 searchTreeData,
                 onFilterChange,
                 resolvePublicFolderCreationPermission,
@@ -1033,7 +1066,7 @@
     }
     .filterButton {
         background: #ffffff;
-        border: 1px solid #e9ebf1;
+        border: 1px solid #e6e6eb;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
     }

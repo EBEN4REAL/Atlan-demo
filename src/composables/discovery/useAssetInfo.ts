@@ -152,6 +152,7 @@ export default function useAssetInfo() {
                     emoji: i.options?.emoji,
                     name: i.label,
                     tooltip: i.label,
+                    scrubbed: true,
                     data: i,
                     exclude: ['Query'],
                 }

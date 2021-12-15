@@ -27,6 +27,7 @@
             </div>
         </div>
         <slot></slot>
+
         <div class="overflow-y-auto">
             <a-collapse
                 v-model:activeKey="localActiveKeyValue"
@@ -188,13 +189,16 @@
             }
 
             const handleResetAll = () => {
-                localValue.value = {}
+                localValue.value = {
+                    verified: true,
+                }
                 activeKey.value = []
                 emit('reset')
                 forceRender()
             }
 
             const handleActiveKeyChange = () => {
+                console.log('sddas')
                 activeKey.value = localActiveKeyValue.value
                 emit('changeActiveKey')
             }
@@ -215,4 +219,3 @@
         },
     })
 </script>
-

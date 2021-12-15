@@ -26,18 +26,17 @@
                         :key="uploadKey"
                         :shape="avatarShape"
                         :size="avatarSize"
-                        class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
+                        class="hidden ant-tag-blue text-primary bg-primary-light sm:block"
                         :src="updatedImageUrl"
                     >
                         {{ getNameInitials(getNameInTitleCase(avatarName)) }}
                     </a-avatar>
                     <div
-                        class="absolute top-0 flex items-center justify-center w-full h-full transition-opacity bg-gray-700 rounded-full opacity-0  bg-opacity-70 group-hover:opacity-100"
+                        class="absolute top-0 flex items-center justify-center w-full h-full transition-opacity bg-gray-700 rounded-full opacity-0 bg-opacity-70 group-hover:opacity-100"
                     >
                         <span class="font-bold text-white">Change avatar</span>
                     </div>
                 </div>
-
             </a-upload>
         </div>
         <div v-else>
@@ -45,16 +44,17 @@
                 :key="uploadKey"
                 :shape="avatarShape"
                 :size="avatarSize"
-                class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
+                class="hidden ant-tag-blue text-primary bg-primary-light sm:block"
                 :src="updatedImageUrl"
-                >{{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar
+            >
+                {{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar
             >
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { ref, watch, PropType } from 'vue'
+    import { ref, watch, PropType, toRefs } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import uploadAvatar from '~/composables/avatar/uploadAvatar'
 
@@ -83,8 +83,8 @@
             },
         },
         setup(props, context) {
+            const { imageUrl: updatedImageUrl } = toRefs(props)
             const uploadStarted = ref(false)
-            const updatedImageUrl = ref(props.imageUrl)
 
             watch(
                 () => props.imageUrl,

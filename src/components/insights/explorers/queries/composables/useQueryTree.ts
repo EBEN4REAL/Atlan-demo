@@ -147,6 +147,7 @@ const useQueryTree = ({
             queries = await getQueries()
             folders = await getQueryFolders()
             console.log('hello')
+            errorReq.value = undefined
         } catch (error) {
             const er = Object.getOwnPropertyDescriptor(error, 'message')
             errorReq.value = er.value

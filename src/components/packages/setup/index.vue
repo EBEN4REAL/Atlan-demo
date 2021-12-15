@@ -103,10 +103,7 @@
             class="flex flex-col items-center justify-center w-full h-full"
             v-if="status"
         >
-            <div
-                class="flex flex-col justify-center"
-                v-if="isLoading || (!run.status && !errorMesssage)"
-            >
+            <div class="flex flex-col justify-center" v-if="isLoading">
                 <a-spin size="large" />
                 <div>Setting up Workflow</div>
             </div>
@@ -125,11 +122,20 @@
                             class="mb-3"
                         ></Run>
 
-                        <a-button v-if="status === 'success'">
-                            <router-link to="/assets">
-                                Back to Assets</router-link
+                        <div calss="flex">
+                            <a-button v-if="status === 'success'">
+                                <router-link to="/assets">
+                                    Back to Assets</router-link
+                                >
+                            </a-button>
+                            <a-button
+                                class="ml-3"
+                                @click="handleTrackLink"
+                                v-if="run?.metadata"
                             >
-                        </a-button>
+                                Monitor Run
+                            </a-button>
+                        </div>
                     </div>
 
                     <div
@@ -180,6 +186,8 @@
     } from 'vue'
 
     import { message } from 'ant-design-vue'
+    import { useIntervalFn } from '@vueuse/core'
+    import { useRoute, useRouter } from 'vue-router'
 
     // Components
     import EmptyView from '@common/empty/index.vue'
@@ -192,9 +200,9 @@
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
 
-    import { useRoute, useRouter } from 'vue-router'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
-    import { useIntervalFn } from '@vueuse/core'
+
+    import { getEnv } from '~/modules/__env'
 
     // Composables
 
@@ -346,6 +354,24 @@
                     }
                 }
             })
+
+            const handleTrackLink = () => {
+                if (import.meta.env.DEV) {
+                    window.open(
+                        `${
+                            getEnv().DEV_API_BASE_URL
+                        }/api/orchestration/workflows/default/${
+                            run.value?.metadata.name
+                        }`,
+                        '_blank'
+                    )
+                } else {
+                    window.open(
+                        `${window.location.origin}/api/orchestration/workflows/default/${run.value.metadata.name}`,
+                        '_blank'
+                    )
+                }
+            }
 
             const status = ref('')
             const title = ref('Setting up a workflow')
@@ -569,6 +595,7 @@
                 run,
                 pause,
                 resume,
+                handleTrackLink,
             }
         },
     })

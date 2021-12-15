@@ -2,28 +2,33 @@
     <div
         :key="item.guid"
         :class="[
-            'flex items-center justify-between p-1 cursor-pointer hover:bg-primary-light group relative overflow-x-hidden',
+            'flex items-center justify-between px-4 cursor-pointer hover:bg-primary-light group relative overflow-x-hidden w-full',
         ]"
+        style="height: 34px"
         @click="handleChange(item.guid)"
     >
         <div class="flex items-center overflow-x-hidden">
-            <AtlanIcon
-                v-if="index === 0"
-                icon="Group"
-                class="self-center w-4 h-4 pr-1"
-            ></AtlanIcon>
-            <AtlanIcon
-                v-else
-                icon="User"
-                class="self-center w-4 h-4 pr-1"
-            ></AtlanIcon>
+            <span class="w-4 h-4 -mt-0.5 mr-2.5">{{
+                item.attributes.icon
+            }}</span>
+
             <div class="truncate group-hover:text-primary" style="width: 90%">
-                <span class="truncate">{{ item.attributes.name }}</span>
+                <span class="text-sm text-gray-700 truncate mr-2.5">{{
+                    item.attributes.name
+                }}</span>
+                <AtlanIcon
+                    v-if="isCollectionPrivate(item, username)"
+                    icon="PrivateCollection"
+                    class="self-center w-4 h-4 -mt-1"
+                ></AtlanIcon>
+                <AtlanIcon
+                    v-else
+                    icon="PublicCollection"
+                    class="self-center w-4 h-4 -mt-1"
+                ></AtlanIcon>
             </div>
         </div>
-        <div
-            class="absolute opacity-0 group-hover:opacity-100 right-1 y-center"
-        >
+        <div class="absolute opacity-100 group right-3 y-center">
             <a-dropdown :trigger="['click']" @click.stop="() => {}">
                 <div class="pl-5" v-if="username === item?.createdBy">
                     <AtlanIcon
@@ -74,6 +79,7 @@
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import whoami from '~/composables/user/whoami'
+    import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
 
     export default defineComponent({
         components: {
@@ -96,17 +102,14 @@
                 type: Object,
                 required: true,
             },
-            index: {
-                type: Number,
-                required: true,
-            },
+
             handleChange: {
                 type: Function,
                 required: true,
             },
         },
         setup(props) {
-            const { item, handleChange, index } = toRefs(props)
+            const { item, handleChange } = toRefs(props)
 
             const showShareQueryModal = ref(false)
             const toggleShareQueryModal = () => {
@@ -123,13 +126,13 @@
 
             return {
                 item,
-                index,
                 handleChange,
                 showShareQueryModal,
                 toggleShareQueryModal,
                 showCollectionModal,
                 toggleShowCollectionModal,
                 username,
+                isCollectionPrivate,
             }
         },
     })

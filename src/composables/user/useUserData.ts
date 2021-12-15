@@ -6,7 +6,7 @@ export default function useUserData() {
 
     const avatarURL = computed(
         () =>
-            `${window.location.origin}/api/service/avatar/${authStore.username}`
+            `${window.location.origin}/api/service/avatars/${authStore.username}`
     )
 
     return {

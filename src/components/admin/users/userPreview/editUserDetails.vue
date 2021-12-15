@@ -32,22 +32,6 @@
                         :loading="isRequestLoading"
                     />
                 </a-form-item>
-                <a-form-item label="Role" prop="role">
-                    <a-select
-                        v-model:value="formData.role"
-                        :loading="isRequestLoading"
-                    >
-                        <a-select-option
-                            v-for="role in roles"
-                            :key="role.id"
-                            :value="role.id"
-                        >
-                            <span class="capitalize">
-                                {{ role.name }}
-                            </span>
-                        </a-select-option>
-                    </a-select>
-                </a-form-item>
                 <a-form-item label="Designation" prop="designation">
                     <a-input
                         v-model:value="formData.designation"
@@ -122,7 +106,6 @@
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import { Users } from '~/services/service/users'
-    import useRoles from '~/composables/roles/useRoles'
     import Avatar from '@common/avatar/avatar.vue'
     import { message } from 'ant-design-vue'
     import PopOverContent from '~/components/common/formGenerator/popOverContent.vue'
@@ -155,13 +138,9 @@
             })
             
             const { selectedUser } = toRefs(props)
-            const { roleList } = useRoles()
-            const selectedRole = computed(() => roleList.value?.filter((role) => role.name.localeCompare(selectedUser.value.role_object.name.toLowerCase()) === 0))
-
             const formData = ref({
                 firstName: selectedUser.value.firstName,
                 lastName: selectedUser.value.lastName,
-                role: selectedRole.value.length > 0 ? selectedRole.value[0].id : "",
                 designation: selectedUser.value?.attributes?.designation?.length > 0 ? selectedUser.value?.attributes?.designation[0] : "",
                 slack: ""
             })
@@ -174,10 +153,6 @@
                 lastName: [{
                     required: true,
                     message: "Please enter a last name."
-                }],
-                role: [{
-                    required: true,
-                    message: "Please select a role."
                 }],
                 designation: [{
                     message: "Please enter a designation."
@@ -192,17 +167,13 @@
             const requestPayload = ref()
             const onSubmit = async () => {
                 await formRef.value?.validate()
-                const attributes = {}
-                if (formData.value.designation.length > 0) {
-                    attributes.designation = [formData.value.designation]
+                const attributes = {
+                    designation: [formData.value.designation]
                 }
-                if (formData.value.slack.length > 0) {
-                    attributes.profiles = [`[{"slack": "${formData.value.slack}"}]`]
-                }
+                attributes.profiles = formData.value.slack.length > 0 ? [`[{"slack": "${formData.value.slack}"}]`] : []
                 requestPayload.value = {
                     firstName: formData.value.firstName,
                     lastName: formData.value.lastName,
-                    roleId: formData.value.role,
                 }
                 if (Object.keys(attributes).length > 0) {
                     requestPayload.value = {
@@ -226,8 +197,18 @@
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
+                            selectedUser.value.firstName = formData.value.firstName
+                            selectedUser.value.lastName = formData.value.lastName
+                            selectedUser.value.attributes.designation = [formData.value.designation]
+                            if (formData.value.slack.length > 0) {
+                                selectedUser.value.attributes.profiles = [`[{"slack": "${formData.value.slack}"}]`]
+                            }
+                            else {
+                                selectedUser.value.attributes.profiles = []
+                            }
                             message.success('The details have been updated')
                             emit('success')
+                            emit('toggleEdit')
                         } else if (error && error.value) {
                             updateError.value =
                                 'Unable to update user details. Please try again.'
@@ -252,7 +233,6 @@
                 rules,
                 formRef,
                 formData,
-                roles: roleList,
                 avatarUrl,
                 isRequestLoading,
                 updateError

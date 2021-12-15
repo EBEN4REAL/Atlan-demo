@@ -73,11 +73,11 @@ export const bottomNavKeys = [
         icon: 'Report',
         label: 'Reporting Center',
     },
-    {
-        path: '/platform',
-        icon: 'Platform',
-        label: 'Platform Center',
-    },
+    // {
+    //     path: '/platform',
+    //     icon: 'Platform',
+    //     label: 'Platform Center',
+    // },
     {
         path: '/#',
         icon: 'Support',

@@ -1,13 +1,13 @@
 <template>
-    <div class="grid h-full max-w-5xl grid-cols-6 mx-auto">
-        <section class="flex items-center h-24 col-span-6 gap-4">
+    <div class="grid h-full grid-cols-6 mx-auto" style="max-width: 1100px">
+        <section class="flex items-center h-24 col-span-6 gap-4 pl-9">
             <AtlanIcon class="h-8" :icon="getIcon()" />
             <span class="text-lg"
                 >{{ getGreet() }}, {{ getNameInTitleCase(name) }}!</span
             >
         </section>
         <main
-            class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-6"
+            class="flex flex-col col-span-4 pb-16 mb-16 border-r px-9 gap-y-6"
         >
             <section class="">
                 <SearchAndStats />
@@ -22,7 +22,7 @@
                 <YourOrgs />
             </section-->
         </main>
-        <aside class="flex flex-col w-64 mb-24 ml-8 gap-y-12">
+        <aside class="flex flex-col w-48 mb-24 ml-8 xl:w-64 gap-y-12 lg:w-56">
             <section>
                 <div class="">
                     <img

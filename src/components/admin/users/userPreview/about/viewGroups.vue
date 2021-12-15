@@ -47,7 +47,6 @@
         error,
         isLoading,
     } = getUserGroups(groupListAPIParams)
-
     const groups = computed(() => groupList.value.map((group) => group.name))
 </script>
 

@@ -28,7 +28,7 @@
     </div>
     <a-tree
         :tree-data="treeData"
-        :draggable="true"
+        :draggable="false"
         :block-node="true"
         :load-data="onLoadData"
         :treeDataSimpleMode="true"

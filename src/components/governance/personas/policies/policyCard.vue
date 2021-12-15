@@ -141,7 +141,7 @@
                             {{ item.label }}
                         </div>
                     </template> -->
-                    <div
+                    <!-- <div
                         class="font-bold text-gray-500 cursor-pointer"
                         @click="
                             () => {
@@ -153,7 +153,7 @@
                             >Show {{ splitAssets.b.length }} more</span
                         >
                         <span v-else-if="showAll">Show less</span>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- <div
                     class="flex items-stretch border border-gray-300 rounded opacity-0 group-hover:opacity-100 text-gray hover:text-primary"

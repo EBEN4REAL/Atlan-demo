@@ -67,8 +67,8 @@
 
     // Utils
     import useLineageService from '~/services/meta/lineage/lineage_service'
-    import { useAPIPromise } from '~/services/api/useAPIPromise'
-    import { map as entityMap } from '~/services/meta/entity/key'
+    // import { useAPIPromise } from '~/services/api/useAPIPromise'
+    // import { map as entityMap } from '~/services/meta/entity/key'
 
     export default defineComponent({
         name: 'LineageIndex',
@@ -112,14 +112,14 @@
 
             /** METHODS */
             // getEntity
-            const getEntity = async (guid: string) => {
-                const { entity } = await useAPIPromise(
-                    entityMap.GET_ENTITY({ guid }),
-                    'GET',
-                    {}
-                )
-                return entity
-            }
+            // const getEntity = async (guid: string) => {
+            //     const { entity } = await useAPIPromise(
+            //         entityMap.GET_ENTITY({ guid }),
+            //         'GET',
+            //         {}
+            //     )
+            //     return entity
+            // }
 
             // useLineageService
             const { useFetchLineage } = useLineageService()
@@ -138,17 +138,17 @@
                         }
                     } else lineage.value = data.value
 
-                    baseEntity.value = await getEntity(
-                        lineage.value.baseEntityGuid
-                    )
+                    baseEntity.value =
+                        lineage.value.guidEntityMap[
+                            lineage.value.baseEntityGuid
+                        ]
 
                     if (
                         selectedAssetGuid.value &&
                         data.value.guidEntityMap[selectedAssetGuid.value]
                     )
-                        selectedAsset.value = await getEntity(
-                            selectedAssetGuid.value
-                        )
+                        selectedAsset.value =
+                            lineage.value.guidEntityMap[selectedAssetGuid.value]
                     else selectedAsset.value = baseEntity.value
 
                     if (isFirstLoad.value) loaderText.value = 'Fetching Data...'

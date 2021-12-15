@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { getNodeSourceImage } from './util.js'
-import { useAPIPromise } from '~/services/api/useAPIPromise'
-import { map as entityMap } from '~/services/meta/entity/key'
+// import { useAPIPromise } from '~/services/api/useAPIPromise'
+// import { map as entityMap } from '~/services/meta/entity/key'
 
 import {
     iconVerified,
@@ -16,14 +16,19 @@ const getSource = (entity) => {
     if (item[0] === 'default') return item[1]
     return item[0]
 }
-const getEntity = async (guid: string) => {
-    const { entity } = await useAPIPromise(
-        entityMap.GET_ENTITY({ guid }),
-        'GET',
-        {}
-    )
-    return entity
+const getSchema = (entity) => {
+    const item = entity.attributes.qualifiedName.split('/')
+    if (item[0] === 'default') return item[4]
+    return item[3]
 }
+// const getEntity = async (guid: string) => {
+//     const { entity } = await useAPIPromise(
+//         entityMap.GET_ENTITY({ guid }),
+//         'GET',
+//         {}
+//     )
+//     return entity
+// }
 
 export default function useGraph() {
     const createNodeData = async (entity, baseEntityGuid, dataObj = {}) => {
@@ -33,11 +38,13 @@ export default function useGraph() {
         )
         const isBase = guid === baseEntityGuid
         const source = getSource(entity)
+        const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
-        const enrichedEntity = !isProcess ? await getEntity(guid) : entity
+        // const enrichedEntity = !isProcess ? await getEntity(guid) : entity
+        const enrichedEntity = entity
         const { attributes } = enrichedEntity
         let { displayText } = enrichedEntity
-        const { schemaName, certificateStatus } = attributes
+        const { certificateStatus } = attributes
 
         let certificateIcon = ''
         if (certificateStatus === 'VERIFIED') certificateIcon = iconVerified
@@ -90,18 +97,18 @@ export default function useGraph() {
                                 <div>
                                     <div class="node-text group-hover:underline">
                                         <div class="truncate">${displayText}</div>
-                                         ${certificateIcon}
+                                         ${certificateIcon || ''}
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
                                         <div class="node-meta__text truncate">${typeName}</div>
                                         ${
-                                            typeName === 'AtlanTable'
+                                            ['Table', 'View'].includes(typeName)
                                                 ? iconEllipse
                                                 : ''
                                         }
                                        <div class="node-meta__text text-truncate ${
-                                           typeName === 'AtlanTable'
+                                           ['Table', 'View'].includes(typeName)
                                                ? ''
                                                : 'd-none'
                                        }">${schemaName || ''}</div>

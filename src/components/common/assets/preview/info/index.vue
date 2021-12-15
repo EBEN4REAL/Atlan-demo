@@ -26,7 +26,12 @@
             "
             class="flex flex-col"
         >
-            <Shortcut shortcut-key="n" action="set name" placement="left">
+            <Shortcut
+                shortcut-key="n"
+                action="set name"
+                placement="left"
+                :read-only="readOnly"
+            >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -176,6 +181,7 @@
                 shortcut-key="d"
                 action="set description"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -207,7 +213,12 @@
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
             class="flex flex-col"
         >
-            <Shortcut shortcut-key="o" action="set owners" placement="left">
+            <Shortcut
+                shortcut-key="o"
+                action="set owners"
+                placement="left"
+                :read-only="readOnly"
+            >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -238,6 +249,7 @@
                 shortcut-key="t"
                 action="set classification"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -287,6 +299,7 @@
                 shortcut-key="c"
                 action="set certificate"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"

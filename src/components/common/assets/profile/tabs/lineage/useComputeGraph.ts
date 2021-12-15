@@ -31,7 +31,7 @@ export default async function useComputeGraph(
     /* Nodes */
     await Promise.all(
         guidEntityMap.map(async (entity) => {
-            const { nodeData, enrichedEntity: ent } = await createNodeData(
+            const { nodeData, entity: ent } = await createNodeData(
                 entity,
                 baseEntityGuid
             )

@@ -67,8 +67,6 @@
 
     // Utils
     import useLineageService from '~/services/meta/lineage/lineage_service'
-    // import { useAPIPromise } from '~/services/api/useAPIPromise'
-    // import { map as entityMap } from '~/services/meta/entity/key'
 
     export default defineComponent({
         name: 'LineageIndex',
@@ -110,16 +108,6 @@
             }))
 
             /** METHODS */
-            // getEntity
-            // const getEntity = async (guid: string) => {
-            //     const { entity } = await useAPIPromise(
-            //         entityMap.GET_ENTITY({ guid }),
-            //         'GET',
-            //         {}
-            //     )
-            //     return entity
-            // }
-
             // useLineageService
             const { useFetchLineage } = useLineageService()
             const { data, isLoading, isReady, mutate, error } =

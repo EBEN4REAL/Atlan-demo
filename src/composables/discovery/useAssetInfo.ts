@@ -153,6 +153,7 @@ export default function useAssetInfo() {
                     name: i.label,
                     tooltip: i.label,
                     scrubbed: true,
+                    requiredInProfile: true,
                     data: i,
                     exclude: ['Query'],
                 }

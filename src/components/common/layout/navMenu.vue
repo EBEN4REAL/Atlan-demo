@@ -31,9 +31,12 @@
                     <a-menu>
                         <div class="py-2">
                             <!-- had to replace a-menu-item with divs because v-auth wasn't working with it-->
-                            <!-- <div v-auth="[map.CREATE_WORKFLOW]">
-                            <a href="/workflows/setup">New Workflow</a>
-                        </div> -->
+                            <div
+                                v-auth="[map.CREATE_WORKFLOW]"
+                                class="menu-item"
+                            >
+                                <a href="/workflows/setup">New Workflow</a>
+                            </div>
                             <div class="menu-item">
                                 <a href="/insights">New Query</a>
                             </div>

@@ -8,7 +8,8 @@ import {
     selectedPersonaId,
 } from './usePurposeList'
 
-const { updatePersona, deletePersona } = usePurposeService()
+const { updatePersona, deletePersona, enableDisablePurpose } =
+    usePurposeService()
 
 export type PolicyType = 'meta' | 'data'
 export const newIdTag = 'new_'
@@ -71,6 +72,13 @@ export function updateSelectedPersona() {
         JSON.stringify(selectedPersonaDirty.value)
     )
     reFetchList()
+}
+export async function enablePurpose(id, isEnabled) {
+    selectedPersonaDirty.value!.enabled = isEnabled
+    const payload = {
+        action: isEnabled ? 'enable' : 'disable',
+    }
+    await enableDisablePurpose(id, payload)
 }
 
 export function addPolicy(type: PolicyType) {

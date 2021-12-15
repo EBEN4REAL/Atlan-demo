@@ -1,4 +1,5 @@
 import { IPurpose } from '~/types/accessPolicies/purposes'
+import { IEnableDisablePayload } from '~/types/accessPolicies/personas'
 import { Persona } from '../../../../services/service/purpose'
 
 export default function usePurposeService() {
@@ -24,6 +25,9 @@ export default function usePurposeService() {
             groups,
         })
     }
+    function enableDisablePurpose(id: string, payload: IEnableDisablePayload) {
+        return Persona.enableDisablePurpose(id, payload)
+    }
 
     return {
         listPurposes,
@@ -31,5 +35,6 @@ export default function usePurposeService() {
         updatePersona,
         deletePersona,
         updateUsers,
+        enableDisablePurpose,
     }
 }

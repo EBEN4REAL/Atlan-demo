@@ -4,6 +4,7 @@
         <ClassificationPill
             :name="classificationValue?.name"
             :displayName="classificationValue?.displayName"
+            :color="classificationValue?.options?.color"
         ></ClassificationPill>
     </div>
 </template>

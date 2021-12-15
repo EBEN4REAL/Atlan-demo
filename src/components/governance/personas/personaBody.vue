@@ -69,7 +69,7 @@
                 :persona="persona"
             />
             <div v-else-if="activeTabKey === 'policies'">
-                <div class="sticky top-0 z-10 bg-white">
+                <div class="bg-white">
                     <div class="flex items-center pt-3 pr-4">
                         <SearchAndFilter
                             v-model:value="searchPersona"
@@ -241,6 +241,8 @@
         <Addpolicy
             :type="typeAddPolicy"
             :show-drawer="addpolicyVisible"
+            :selected-policy="selectedPolicy"
+            :is-edit="isEdit"
             @save="savePolicyUI"
             @close="handleCloseAdd"
             @changeWidth="handleChangeWidth"
@@ -304,11 +306,13 @@
             const activeTabFilter = ref('')
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
+            const isEdit = ref(false)
             const width = ref(450)
             const typeAddPolicy = ref('')
             const handleAddPolicy = (type) => {
                 typeAddPolicy.value = type
                 addpolicyVisible.value = true
+                isEdit.value = false
             }
             const addPolicyDropdownConfig = [
                 {
@@ -441,7 +445,9 @@
             })
             const handleSelectPolicy = (policy) => {
                 selectedPolicy.value = policy
-                emit('selectPolicy', policy)
+                isEdit.value = true
+                addpolicyVisible.value = true
+                // emit('selectPolicy', policy)
             }
             const totalPolicy = computed(
                 () =>
@@ -486,6 +492,7 @@
                 width,
                 handleChangeWidth,
                 handleCloseAdd,
+                isEdit,
             }
         },
     })

@@ -8,6 +8,7 @@
             <table
                 ref="tableRef"
                 :data-test-id="'output-table'"
+                :key="counter"
                 :class="$style.tableStyle"
             >
                 <thead id="headerArea" class="clusterize-content">
@@ -57,21 +58,13 @@
                             class="bg-white border border-gray-light"
                             :class="{
                                 'hover:bg-primary-light cursor-pointer':
-                                    variantTypeIndexes.indexOf(key) !== -1,
+                                    variantTypeIndexes.includes(0),
                                 'outline-primary bg-primary-light ':
                                     selectedData === rowData,
                             }"
+                            @click="() => handleOpenModal(rowData)"
                         >
-                            <div
-                                v-if="variantTypeIndexes.indexOf(key) !== -1"
-                                @click="handleOpenModal(rowData)"
-                                class=""
-                            >
-                                {{ rowData }}
-                            </div>
-                            <div v-else>
-                                {{ rowData }}
-                            </div>
+                            {{ rowData }}
                         </td>
                     </tr>
                 </tbody>
@@ -109,7 +102,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, watch, ref } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        watch,
+        ref,
+        onMounted,
+    } from 'vue'
     import Clusterize from 'clusterize.js'
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
@@ -147,7 +147,7 @@
             const variantTypeIndexes = ref<Number[]>([])
             const selectedData = ref('')
             const modalVisible = ref<boolean>(false)
-            const loading = ref(true)
+            const counter = ref(1)
             const getDataType = (type: string) => {
                 let label = ''
                 dataTypeCategoryList.forEach((i) => {
@@ -156,8 +156,8 @@
                 return label
             }
 
-            watch([tableRef, dataList, loading], () => {
-                if (tableRef.value && !loading.value) {
+            watch([tableRef, dataList], () => {
+                if (tableRef.value) {
                     new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
@@ -169,21 +169,10 @@
 
             watch([tableRef, columns], () => {
                 if (tableRef.value) {
-                    columns.value.forEach((col, index) => {
-                        if (
-                            col.data_type.toLowerCase() === 'any' ||
-                            col.data_type.toLowerCase() === 'variant'
-                        ) {
-                            variantTypeIndexes.value.push(index)
-                        }
-                    })
-
                     new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'headerArea',
                     })
-
-                    loading.value = false
                 }
             })
 
@@ -192,15 +181,27 @@
                 selectedData.value = data
             }
 
+            onMounted(() => {
+                columns.value.forEach((col, index) => {
+                    if (
+                        col.data_type.toLowerCase() === 'any' ||
+                        col.data_type.toLowerCase() === 'variant'
+                    ) {
+                        variantTypeIndexes.value.push(index)
+                    }
+                })
+                counter.value += 1
+            })
+
             return {
                 tableRef,
+                counter,
                 images,
                 getDataType,
                 variantTypeIndexes,
                 selectedData,
                 handleOpenModal,
                 modalVisible,
-                loading,
             }
         },
     })

@@ -32,7 +32,7 @@
         :block-node="true"
         :load-data="onLoadData"
         :treeDataSimpleMode="true"
-        @select="selectNode"
+        @select="handleSelect"
         :auto-expand-parent="false"
         @expand="expandNode"
         :height="height"
@@ -151,13 +151,13 @@
                 isReady,
                 collapseAll,
                 updateNode,
-                checkedKeys
+                checkedKeys,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
                 parentGlossaryGuid,
                 checkable: props.checkable,
-                checkedGuids: checkedGuids.value
+                checkedGuids: checkedGuids.value,
             })
 
             const addGlossary = (asset) => {
@@ -188,16 +188,20 @@
             }
             const onCheck = (e, { checkedNodes, checked, node }) => {
                 if (checkedKeys) {
-                    if(checked) {
+                    if (checked) {
                         checkedKeys.value.push(node.key)
                         checkedGuids?.value?.push(node.guid)
                     } else {
-                        checkedKeys.value = checkedKeys.value.filter((key) => key !== node.key)
-                        checkedGuids.value = checkedGuids?.value?.filter((guid) => guid !== node.guid)
+                        checkedKeys.value = checkedKeys.value.filter(
+                            (key) => key !== node.key
+                        )
+                        checkedGuids.value = checkedGuids?.value?.filter(
+                            (guid) => guid !== node.guid
+                        )
                     }
                     // checkedKeys.value = checkedNodes.map((node) => node.key)
                 }
-                emit('check', checkedNodes, { checkedKeys: e, checked})
+                emit('check', checkedNodes, { checkedKeys: e, checked })
             }
             const updateTreeNode = (asset) => {
                 updateNode(asset)
@@ -205,10 +209,18 @@
             onMounted(() => {
                 reInitTree()
             })
-            // watch(defaultGlossary, () => {
-            //     reInitTree()
-            // })
-
+            const handleSelect = (selected: any, event: any) => {
+                if (props.checkable) {
+                    const found = checkedKeys.value.find(
+                        (el) => el === event?.node?.key
+                    )
+                    onCheck(event, {
+                        checkedNodes: event.selectedNodes,
+                        checked: !found,
+                        node: event.node,
+                    })
+                } else selectNode(selected, event)
+            }
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             return {
@@ -226,6 +238,7 @@
                 error,
                 isReady,
                 height,
+                handleSelect,
                 // addTerm,
                 // addCategory,
                 treeItemClass,

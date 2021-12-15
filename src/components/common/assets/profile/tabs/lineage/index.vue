@@ -39,7 +39,6 @@
                 "
                 :lineage="lineage"
                 :lineage-with-process="lineageWithProcess"
-                @preview="emit('preview', $event)"
             />
         </div>
     </div>

@@ -113,7 +113,6 @@
                 required: true,
             },
         },
-        emits: ['preview'],
         setup(props, { emit }) {
             /** INJECTIONS */
             const control = inject('control')

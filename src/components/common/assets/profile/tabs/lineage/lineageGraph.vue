@@ -255,7 +255,9 @@
             stroke-dashoffset: -1000;
         }
     }
-    .hide-scrollbar {
+    .hide-scrollbar,
+    .x6-graph-scroller,
+    .ant-tabs-content-holder {
         /* Hide scrollbar for IE, Edge and Firefox */
         -ms-overflow-style: none; /* IE and Edge */
         scrollbar-width: none; /* Firefox */

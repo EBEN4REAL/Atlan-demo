@@ -210,7 +210,10 @@
                 reInitTree()
             })
             const handleSelect = (selected: any, event: any) => {
-                if (props.checkable) {
+                if (
+                    props.checkable &&
+                    event?.node?.typeName === 'AtlasGlossaryTerm'
+                ) {
                     const found = checkedKeys.value.find(
                         (el) => el === event?.node?.key
                     )

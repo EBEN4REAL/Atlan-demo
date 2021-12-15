@@ -75,7 +75,7 @@
                 <atlan-icon
                     v-if="!queryText"
                     icon="TreeCollapseAll"
-                    class="h-4 mt-2 ml-2 cursor-pointer"
+                    class="h-4 mt-2 ml-2 cursor-pointer outline-none"
                     @click="handleCollapse"
                 >
                 </atlan-icon>

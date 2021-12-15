@@ -38,6 +38,8 @@ const useQueryCollection = () => {
         'viewerUsers',
         'viewerGroups',
         'classifications',
+        'icon',
+        'iconType',
         ...InternalAttributes,
     ]
     const body = ref({})

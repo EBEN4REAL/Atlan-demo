@@ -297,6 +297,7 @@ import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
 import Verified from '~/assets/images/status/verified.svg'
 import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
 import Compass from '~/assets/images/icons/Compass.svg'
+import Policies from '~/assets/images/icons/Policies.svg'
 
 import InnerJoin from '~/assets/images/icons/InnerJoin.svg'
 import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
@@ -599,4 +600,5 @@ export default {
     ShieldBlank,
     Compass,
     Teams,
+    Policies
 }

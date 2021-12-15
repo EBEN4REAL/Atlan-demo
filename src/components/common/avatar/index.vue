@@ -75,7 +75,7 @@
                 default: 'square',
             },
             avatarSize: {
-                type: String as PropType<Number | String>,
+                type: Number as PropType<Number | String>,
                 default: 56,
             },
             avatarBgClass: {

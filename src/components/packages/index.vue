@@ -10,6 +10,7 @@
                         v-model="facets"
                         v-model:activeKey="activeKey"
                         @change="handleFilterChange"
+                        @reset="handleResetEvent"
                     ></PackageFilters>
                 </div>
 
@@ -172,6 +173,16 @@
                 quickChange()
             }, 150)
 
+            const handleResetEvent = () => {
+                facets.value = {
+                    verified: true,
+                }
+                queryText.value = ''
+                handleFilterChange()
+                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
+            }
+
             return {
                 placeholder,
                 dirtyTimestamp,
@@ -189,6 +200,7 @@
                 handleFilterChange,
                 handleSearchChange,
                 activeKey,
+                handleResetEvent,
             }
         },
     })

@@ -189,7 +189,9 @@
             }
 
             const handleResetAll = () => {
-                localValue.value = {}
+                localValue.value = {
+                    verified: true,
+                }
                 activeKey.value = []
                 emit('reset')
                 forceRender()

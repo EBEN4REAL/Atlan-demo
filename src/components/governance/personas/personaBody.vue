@@ -247,6 +247,7 @@
             :persona="persona"
             @save="savePolicyUI"
             @close="handleCloseAdd"
+            :whitelistedConnectionIds="whitelistedConnectionIds"
         />
     </a-drawer>
 </template>
@@ -299,6 +300,10 @@
             persona: {
                 type: Object as PropType<IPurpose>,
                 required: true,
+            },
+            whitelistedConnectionIds: {
+                type: Array,
+                default: () => [],
             },
         },
         emits: ['selectPolicy'],

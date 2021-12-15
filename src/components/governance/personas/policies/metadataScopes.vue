@@ -136,6 +136,14 @@
 <style lang="less">
     .meta-data-scope {
         display: flex;
+        .ant-checkbox-wrapper {
+            display: flex;
+            .ant-checkbox {
+                margin-top: 5px;
+                margin-right: 7px;
+                height: fit-content;
+            }
+        }
         .wrapper-desc {
             flex: 1;
         }

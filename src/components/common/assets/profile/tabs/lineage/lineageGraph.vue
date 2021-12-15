@@ -126,7 +126,6 @@
             const control = inject('control')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
-            const preview = inject('preview')
 
             /** DATA */
             const isDrawerVisible = ref(false)
@@ -156,7 +155,6 @@
                 highlight = false,
                 openDrawer = true
             ) => {
-                // preview(item, false)
                 if (openDrawer) isDrawerVisible.value = true
                 control('selectedAsset', item)
                 control('selectedAssetGuid', item.guid)

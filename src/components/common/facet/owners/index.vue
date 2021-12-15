@@ -127,7 +127,7 @@
             modelValue: {
                 type: Object,
                 required: false,
-                default: () => {},
+                default: () => ({}),
             },
             showNone: {
                 type: Boolean,

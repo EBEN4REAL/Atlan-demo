@@ -21,6 +21,29 @@ export default function useConnection() {
         {
             dsl: {
                 size: MAX_CONNECTIONS,
+                query: {
+                    bool: {
+                        filter: [
+                            {
+                                term: {
+                                    __state: 'ACTIVE',
+                                },
+                            },
+                            {
+                                bool: {
+                                    must_not: {
+                                        terms: {
+                                            '__typeName.keyword': [
+                                                'Process',
+                                                'ColumnProcess',
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
                 post_filter: {
                     bool: {
                         filter: [
@@ -35,7 +58,7 @@ export default function useConnection() {
                 aggs: {
                     [GROUP_AGGREATION]: {
                         terms: {
-                            field: 'connectionName',
+                            field: 'connectionQualifiedName',
                             size: MAX_CONNECTIONS,
                         },
                     },

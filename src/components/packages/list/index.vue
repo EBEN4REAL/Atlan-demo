@@ -1,5 +1,5 @@
 <template>
-    <div class="grid w-full grid-cols-3 gap-4">
+    <div class="grid w-full grid-cols-3 gap-4 grid-flow-cols auto-rows-min">
         <Item
             style="height: 150px"
             v-for="item in list"

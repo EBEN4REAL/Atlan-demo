@@ -10,24 +10,25 @@
                     <AtlanIcon icon="Add" class="text-white" />
                 </div>
                 <div class="flex justify-between">
-                    <div class="text-lg font-bold">
-                        {{ selectedPersonaDirty?.name }} policy
-                    </div>
+                    <div class="text-lg font-bold">New policy</div>
                 </div>
                 <div class="flex items-center">
                     <AtlanIcon icon="Policies" class="mr-1" />
-                    <span class="text-neutral-600"
+                    <span class="mr-1 text-neutral-600"
                         >{{
                             policyType === 'meta'
                                 ? 'Metadata Policy'
                                 : 'Data Policy'
                         }}
                     </span>
+                    <div class="ml-1 mr-1 dot" />
+                    <span class="text-neutral-600">
+                        {{ persona?.displayName }}
+                    </span>
                 </div>
             </div>
             <div class="p-5">
-                <div class="font-bold base text-neutral-500">Detailed Info</div>
-                <div class="relative mt-8">
+                <div class="relative mt-4">
                     <div class="relative mb-2 text-sm text-gray-500 required">
                         Policy name <span class="text-red-500">*</span>
                     </div>
@@ -99,26 +100,28 @@
                                 size="sm"
                                 color="minimal"
                                 padding="compact"
-                                @click="addConnectionAsset"
+                                @click="handleAddAsset"
                             >
-                                <span class="text-primary"> Add All </span>
+                                <span class="text-primary"> Custom select</span>
                                 <AtlanIcon
                                     icon="Add"
                                     class="ml-1 text-primary"
                                 />
                             </AtlanBtn>
                             <span
+                                v-if="policy.assets.length === 0"
                                 class="pt-2 pl-1 pr-1 text-xs text-gray-500 bg-gray-100"
                                 >OR</span
                             >
                             <AtlanBtn
+                                v-if="policy.assets.length === 0"
                                 class="flex-none"
                                 size="sm"
                                 color="minimal"
                                 padding="compact"
-                                @click="handleAddAsset"
+                                @click="addConnectionAsset"
                             >
-                                <span class="text-primary"> Select</span>
+                                <span class="text-primary"> Add All </span>
                                 <AtlanIcon
                                     icon="Add"
                                     class="ml-1 text-primary"
@@ -162,8 +165,15 @@
                             </AtlanBtn>
                         </div>
                     </div>
+                    <div
+                        v-if="rules.assets.show"
+                        class="mt-2 text-xs text-red-500"
+                        data-test-id="policy-validation-connector"
+                    >
+                        {{ rules.assets.text }}
+                    </div>
                 </div>
-                <div v-if="policyType === 'meta'" class="mt-7">
+                <div v-if="policyType === 'meta'" class="mt-5">
                     <div class="flex justify-between">
                         <div class="text-gray-500">
                             Permissions <span class="text-red-500">*</span>
@@ -200,6 +210,13 @@
                                 {{ el }}
                             </div>
                         </div>
+                    </div>
+                    <div
+                        v-if="rules.metadata.show"
+                        class="mt-2 text-xs text-red-500"
+                        data-test-id="policy-validation-connector"
+                    >
+                        {{ rules.metadata.text }}
                     </div>
                 </div>
                 <div v-else>
@@ -242,7 +259,7 @@
                             </template>
                         </a-tooltip>
                         <a-switch
-                            :class="policy.allow ? `` : 'checked'"
+                            :class="policy.allow ? `` : 'bg-red-700'"
                             data-test-id="toggle-switch"
                             class="ml-3"
                             :checked="!policy.allow"
@@ -258,6 +275,7 @@
                     :connection-qf-name="connectorData.attributeValue"
                     class="drawerAddAsset"
                     :get-container="'body'"
+                    @update:assets="handleChangeAssets"
                 />
 
                 <a-drawer
@@ -314,9 +332,11 @@
     import { selectedPersonaDirty } from './composables/useEditPersona'
     import { useConnectionStore } from '~/store/connection'
     import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
-    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
+    // import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import ManagePermission from './policies/managePermission.vue'
     import DataMaskingSelector from './policies/dataMaskingSelector.vue'
+    import { IPersona } from '~/types/accessPolicies/personas'
+    import useScopeService from './composables/useScopeService'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -359,6 +379,10 @@
                 type: Boolean,
                 required: false,
             },
+            persona: {
+                type: Object as PropType<IPersona>,
+                required: true,
+            },
             selectedPolicy: {
                 type: Object,
                 required: false,
@@ -366,6 +390,7 @@
         },
         emits: ['close'],
         setup(props, { emit }) {
+            const { scopeList } = useScopeService().listScopes('persona')
             const policyType = ref('')
             const assetSelectorVisible = ref(false)
             const isShow = ref(false)
@@ -452,7 +477,7 @@
                     }
                     if (type.value === 'data') {
                         policy.value = {
-                            actions: [],
+                            actions: ['select'],
                             assets: [],
                             connectionName: '',
                             connectionId: '',
@@ -471,6 +496,9 @@
                     initPolicy()
                 }
             })
+            watch(selectedPolicy, () => {
+                initPolicy()
+            })
             const handleAddAsset = () => {
                 if (connectorData.value?.attributeValue) {
                     assetSelectorVisible.value = !assetSelectorVisible.value
@@ -484,6 +512,7 @@
             }
             const handleSavePermission = (prop) => {
                 policy.value.actions = prop
+                rules.value.metadata.show = false
             }
             const addConnectionAsset = () => {
                 if (connectorData.value.attributeValue) {
@@ -531,13 +560,20 @@
                 const result = []
                 const assetsPermission = []
                 const govermence = []
+                const assetsList = scopeList[0]
+                const govermanceList = scopeList[1]
                 policy.value.actions.forEach((el) => {
-                    const splited = el.split('-')
-                    const dataToShow = splited[1]
-                    if (splited.length === 2) {
-                        assetsPermission.push(dataToShow)
-                    } else {
-                        govermence.push(dataToShow)
+                    const findedAsset = assetsList.scopes.find(
+                        (elc) => elc.value === el
+                    )
+                    const findedGovrmance = govermanceList.scopes.find(
+                        (elc) => elc.value === el
+                    )
+                    if (findedAsset) {
+                        assetsPermission.push(findedAsset.label)
+                    }
+                    if (findedGovrmance) {
+                        govermence.push(findedGovrmance.label)
                     }
                 })
                 if (assetsPermission.length > 0) {
@@ -548,6 +584,9 @@
                 }
                 return result
             })
+            const handleChangeAssets = () => {
+                rules.value.assets.show = false
+            }
             const splitName = (name) => {
                 const splited = name.split('/')
                 const sliced = splited.slice(2, splited.length)
@@ -576,6 +615,7 @@
                 selectedPermition,
                 policyType,
                 splitName,
+                handleChangeAssets,
             }
         },
     })
@@ -631,5 +671,11 @@
         background-color: #f3f3f3;
         text-transform: capitalize;
         margin-top: 4px;
+    }
+    .dot {
+        height: 4px;
+        width: 4px;
+        background-color: #e6e6eb;
+        border-radius: 50%;
     }
 </style>

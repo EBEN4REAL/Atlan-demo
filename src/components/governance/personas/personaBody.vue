@@ -244,6 +244,7 @@
             :selected-policy="selectedPolicy"
             :is-edit="isEdit"
             :is-loading="loadingPolicy"
+            :persona="persona"
             @save="savePolicyUI"
             @close="handleCloseAdd"
         />

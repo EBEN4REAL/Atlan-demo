@@ -70,7 +70,6 @@ const groupColumns = [
 
     {
         title: 'Actions',
-        width: 120,
         slots: { customRender: 'actions' },
     },
 ]

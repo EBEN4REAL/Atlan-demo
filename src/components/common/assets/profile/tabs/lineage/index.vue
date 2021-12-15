@@ -39,7 +39,6 @@
                 "
                 :lineage="lineage"
                 :lineage-with-process="lineageWithProcess"
-                @preview="emit('preview', $event)"
             />
         </div>
     </div>
@@ -67,8 +66,6 @@
 
     // Utils
     import useLineageService from '~/services/meta/lineage/lineage_service'
-    // import { useAPIPromise } from '~/services/api/useAPIPromise'
-    // import { map as entityMap } from '~/services/meta/entity/key'
 
     export default defineComponent({
         name: 'LineageIndex',
@@ -87,7 +84,6 @@
             const direction = ref('BOTH')
             const selectedAssetGuid = ref('')
             const selectedAsset = ref({})
-            // const showProcess = ref(false)
             const hideProcess = ref(true)
             const loaderText = ref('Fetching Data...')
             const isFirstLoad = ref(true)
@@ -111,16 +107,6 @@
             }))
 
             /** METHODS */
-            // getEntity
-            // const getEntity = async (guid: string) => {
-            //     const { entity } = await useAPIPromise(
-            //         entityMap.GET_ENTITY({ guid }),
-            //         'GET',
-            //         {}
-            //     )
-            //     return entity
-            // }
-
             // useLineageService
             const { useFetchLineage } = useLineageService()
             const { data, isLoading, isReady, mutate, error } =
@@ -170,7 +156,6 @@
                     query: {
                         depth: depth.value,
                         direction: direction.value,
-                        // showProcess: showProcess.value,
                         select: selectedAssetGuid.value,
                     },
                 })
@@ -190,12 +175,6 @@
                     }...`
                     direction.value = item
                 }
-                // if (type === 'showProcess') {
-                //     loaderText.value = showProcess.value
-                //         ? 'Adding process nodes...'
-                //         : 'Removing process nodes...'
-                //     showProcess.value = item
-                // }
                 if (type === 'selectedAsset') selectedAsset.value = item
                 if (type === 'selectedAssetGuid') selectedAssetGuid.value = item
                 if (['depth', 'direction'].includes(type)) mutate()
@@ -205,12 +184,7 @@
 
             /** LIFECYCLES */
             onMounted(() => {
-                const {
-                    depth: de,
-                    direction: di,
-                    select: se,
-                    showProcess: sp,
-                } = route.query
+                const { depth: de, direction: di, select: se } = route.query
                 if (de)
                     depth.value = [1, 2, 3, 21].includes(Number(de))
                         ? Number(de)
@@ -222,7 +196,6 @@
                         ? di
                         : direction.value
                 if (se) selectedAssetGuid.value = se
-                // if (sp) showProcess.value = sp === 'true'
                 updateRouterQuery()
                 mutate()
             })
@@ -231,7 +204,6 @@
             provide('baseEntity', baseEntity)
             provide('selectedAssetGuid', selectedAssetGuid)
             provide('selectedAsset', selectedAsset)
-            // provide('showProcess', showProcess)
             provide('depth', depth)
             provide('direction', direction)
             provide('lineageDepths', lineageDepths)

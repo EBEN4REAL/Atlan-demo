@@ -1,7 +1,3 @@
-import useGraph from './useGraph'
-
-const { addNode, removeNode, addEdge, removeEdge } = useGraph()
-
 /* eslint-disable no-nested-ternary */
 export default function useUpdateGraph() {
     const highlightNodes = (graph, highlightedNode, nodesToHighlight) => {
@@ -41,80 +37,8 @@ export default function useUpdateGraph() {
         })
     }
 
-    // TODO: Redundant - To Remove Later on
-    const updateProcessNodesPosition = async (graph, num) => {
-        await graph.value.model.nodes
-        const graphNodes = graph.value.getNodes()
-        graphNodes.forEach((z) => {
-            if (z.store.data?.isProcess) {
-                const p = z.position()
-                z.position(p.x + num, p.y)
-            }
-        })
-    }
-
-    // TODO: Redundant - To Remove Later on
-    const toggleProcessNodes = async (graph, removedNodes, showProcess) => {
-        if (showProcess.value) {
-            if (!removedNodes.value?.isProcess?.length) return
-            await Promise.all(
-                removedNodes.value.isProcess.map(async (x) => {
-                    const { entity, data } = x.data
-                    await addNode(graph, entity, data)
-
-                    const { edges } = x
-                    edges.forEach((y) => {
-                        const [newSource, newTarget] = y.split('@')
-                        const relation = {
-                            fromEntityId: newSource,
-                            toEntityId: newTarget,
-                        }
-                        addEdge(graph, relation)
-                    })
-                })
-            )
-
-            removeEdge(graph, 'isComputedEdge')
-        }
-
-        if (!showProcess.value) {
-            removeNode(graph, 'isProcess', removedNodes)
-            if (!Object.keys(removedNodes.value).length) return
-            removedNodes.value.isProcess.forEach((x) => {
-                const relationsSet = new Set()
-                const sources = new Set()
-                const targets = new Set()
-                x.edges.forEach((y) => {
-                    const [source, target] = y.split('@')
-
-                    if (source !== x.data.id) sources.add(source)
-                    if (target !== x.data.id) targets.add(target)
-
-                    Array.from(sources).forEach((z) => {
-                        Array.from(targets).forEach((a) => {
-                            relationsSet.add(`${z}@${a}`)
-                        })
-                    })
-
-                    const relations = Array.from(relationsSet)
-
-                    relations.forEach((z) => {
-                        const [newSource, newTarget] = z.split('@')
-                        const relation = {
-                            fromEntityId: newSource,
-                            toEntityId: newTarget,
-                        }
-                        addEdge(graph, relation, { isComputedEdge: true })
-                    })
-                })
-            })
-        }
-    }
-
     return {
         highlightNodes,
         highlightEdges,
-        updateProcessNodesPosition,
-        toggleProcessNodes,
     }
 }

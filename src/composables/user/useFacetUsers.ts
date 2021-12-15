@@ -7,7 +7,9 @@ import { Users } from '~/services/service/users'
 export default function useFacetUsers(sort?: string, columns?: string[], immediate = true) {
     const params = ref(new URLSearchParams())
 
-    params.value.append('limit', '20')
+    const limit = 20
+    let offset = 0
+    params.value.append('limit', `${limit}`)
     if (columns?.length) {
         params.value.append('sort', sort ?? columns[0])
         columns.forEach(c => {
@@ -31,13 +33,20 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
         },
     })
 
+    const loadMore = () => {
+        offset += limit
+        params.value.set('offset', `${offset}`)
+        mutate()
+    }
+
     const list: any = ref([])
     watch(data, () => {
-        if (data.value?.records) {
-            list.value = [...data?.value?.records]
-        } else {
+        if (data?.value?.records) {
+            if (offset > 0)
+                list.value.push(...data.value.records)
+            else list.value = [...data.value.records]
+        } else if (offset === 0)
             list.value = []
-        }
     })
 
     // const total: ComputedRef<number> = computed(() => data.value?.total_record)
@@ -45,8 +54,8 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
 
     const total = computed(() => data.value?.total_record)
 
-    function setLimit(limit = 20) {
-        params.value.set('limit', `${limit}`)
+    function setLimit(l = 20) {
+        params.value.set('limit', `${l}`)
     }
 
     let debounce: any = null
@@ -79,6 +88,7 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
     }
 
     return {
+        loadMore,
         isLoading,
         error,
         list,

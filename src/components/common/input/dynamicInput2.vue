@@ -81,6 +81,7 @@
         v-model="localValue"
         :enum="dataType"
         :multiple="multiple"
+        @change="handleInputChange"
     />
 </template>
 

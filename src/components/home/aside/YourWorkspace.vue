@@ -23,15 +23,21 @@
 
             const worksplaceListMeta = {
                 assets: {
-                    desc: `Discover & enrich all data assets in ${orgname.value}`,
+                    desc: `Discover & enrich all data assets in ${
+                        orgname.value || 'your organization'
+                    }`,
                     icon: 'AssetIcon',
                 },
                 glossary: {
-                    desc: `All of ${orgname.value}’s business terms in one place`,
+                    desc: `All of ${
+                        orgname.value || 'your organization'
+                    }’s business terms in one place`,
                     icon: 'GlossaryIcon',
                 },
                 insights: {
-                    desc: `Query Datasets across ${orgname.value} and empower your business`,
+                    desc: `Query Datasets across ${
+                        orgname.value || 'your organization'
+                    } and empower your business`,
                     icon: 'InsightsIcon',
                 },
                 workflows: {

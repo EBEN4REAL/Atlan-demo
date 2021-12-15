@@ -17,7 +17,6 @@
         </div>
     </div>
     <div class="p-5">
-        <div class="font-bold base text-neutral-500">Detailed Info</div>
         <div class="mt-4">
             <div class="text-gray-500">Name</div>
             <div class="mt-1">{{ selectedPolicy.name }}</div>

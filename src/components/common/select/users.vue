@@ -2,19 +2,21 @@
     <a-select
         v-model:value="localValue"
         placeholder="Users"
-        class="w-full"
+        class="w-full center-arrow"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="userList"
+        :open="open"
         @change="handleChange"
         @search="handleSearch"
+        @click="open = !open"
+        @select="open = false"
+        @blur="
+            () => {
+                if (!isLoading) open = false
+            }
+        "
     >
-        <!-- <a-select-option
-            v-for="(item, x) in userList"
-            :key="x"
-            :value="item.username"
-        >
-        </a-select-option> -->
         <template #option="item">
             <div class="flex">
                 <Avatar
@@ -22,7 +24,7 @@
                     :image-url="avatarUrl(item)"
                     :allow-upload="false"
                     :avatar-name="item.name || item.username || item.email"
-                    avatar-size="25"
+                    :avatar-size="25"
                     class="mr-2"
                 />
                 <div class="">
@@ -36,7 +38,7 @@
 
         <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu"> </v-nodes>
-            <div v-if="userList?.length < filterTotal" class="px-2">
+            <div class="px-2 pt-2">
                 <div class="flex justify-center">
                     <AtlanIcon
                         v-if="isLoading"
@@ -44,32 +46,19 @@
                         class="animate-spin"
                     />
                 </div>
-                <div
-                    class="flex justify-end cursor-pointer text-primary hover:underline"
-                    @click="loadMore"
-                >
-                    load more
+                <div class="flex items-end justify-between">
+                    <span v-if="userList?.length" class="text-xs text-gray-500">
+                        showing {{ userList?.length }} of {{ filterTotal }}
+                    </span>
+                    <span
+                        v-if="userList?.length < filterTotal"
+                        class="cursor-pointer text-primary hover:underline"
+                        @click="loadMore"
+                    >
+                        load more
+                    </span>
                 </div>
             </div>
-
-            <!-- <div class="">
-                <div class="flex">
-                    <Avatar
-                        avatar-shape="circle"
-                        :image-url="avatarUrl(item)"
-                        :allow-upload="false"
-                        :avatar-name="item.name || item.username || item.email"
-                        avatar-size="25"
-                        class="mr-2"
-                    />
-                    <div class="">
-                        <div>{{ fullName(item) }}</div>
-                        <div class="text-xs text-gray-500">
-                            @{{ item.username }}
-                        </div>
-                    </div>
-                </div>
-            </div> -->
         </template>
 
         <template #suffixIcon>
@@ -79,14 +68,21 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, computed, ref, toRefs } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        computed,
+        ref,
+        toRefs,
+        onBeforeUnmount,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useUserData from '~/composables/user/useUserData'
     import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
-        name: 'OwnersFilter',
+        name: 'UsersSelector',
         components: { VNodes: (_, { attrs }) => attrs.vnodes, Avatar },
         props: {
             queryText: {
@@ -107,6 +103,7 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const open = ref(false)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const { multiple } = toRefs(props)
@@ -150,17 +147,15 @@
                     {
                         username,
                         firstName,
-                        lastName,
+                        lastName: `${lastName} (me)`,
                         id,
                         value: username,
-                        label: `${firstName} ${lastName}`,
                         key: id,
                     },
                     ...tempList.map((u) => ({
                         ...u,
                         key: u.id,
                         value: u.username,
-                        label: fullName(u),
                     })),
                 ]
             })
@@ -173,7 +168,12 @@
                 emit('change')
             }
 
+            onBeforeUnmount(() => {
+                open.value = false
+            })
+
             return {
+                open,
                 loadMore,
                 filterTotal,
                 userList,
@@ -189,3 +189,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .center-arrow:deep(.ant-select-arrow) {
+        @apply flex items-center;
+    }
+</style>

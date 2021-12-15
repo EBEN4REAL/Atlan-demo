@@ -20,7 +20,8 @@ export default function useEventGraph(
     highlightedNode,
     loaderCords,
     currZoom,
-    onSelectAsset
+    onSelectAsset,
+    resetSelections
 ) {
     const edgesHighlighted = ref([])
 
@@ -51,8 +52,17 @@ export default function useEventGraph(
     }
 
     watch(assetGuidToHighlight, (newVal) => {
-        if (!newVal) return
-        highlight(newVal)
+        if (!newVal) highlight(null)
+        else highlight(newVal)
+    })
+
+    watch(resetSelections, (newVal) => {
+        if (newVal) {
+            onSelectAsset(baseEntity.value, false, false)
+            che.value = ''
+            highlight(null)
+            resetSelections.value = false
+        }
     })
 
     const columns = ref({})

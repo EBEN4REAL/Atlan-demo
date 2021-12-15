@@ -273,8 +273,7 @@
                     :connection-qf-name="connectorData.attributeValue"
                     class="drawerAddAsset"
                     :get-container="'body'"
-                    @change="handleChangeAssets"
-                    @update:data="handleChangeAssets"
+                    @update:assets="handleChangeAssets"
                 />
 
                 <a-drawer

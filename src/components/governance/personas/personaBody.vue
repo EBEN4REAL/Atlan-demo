@@ -234,7 +234,7 @@
         placement="right"
         :closable="false"
         :visible="addpolicyVisible"
-        :width="width"
+        :width="450"
         :mask="false"
         @close="handleCloseAddPolicy"
     >
@@ -243,9 +243,9 @@
             :show-drawer="addpolicyVisible"
             :selected-policy="selectedPolicy"
             :is-edit="isEdit"
+            :is-loading="loadingPolicy"
             @save="savePolicyUI"
             @close="handleCloseAdd"
-            @changeWidth="handleChangeWidth"
         />
     </a-drawer>
 </template>
@@ -307,8 +307,8 @@
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
             const isEdit = ref(false)
-            const width = ref(450)
             const typeAddPolicy = ref('')
+            const loadingPolicy = ref(false)
             const handleAddPolicy = (type) => {
                 typeAddPolicy.value = type
                 addpolicyVisible.value = true
@@ -329,9 +329,11 @@
 
             watch(selectedPersonaDirty, () => {
                 activeTabFilter.value = ''
+                addpolicyVisible.value = false
             })
             async function savePolicyUI(type: PolicyType, dataPolicy: Object) {
                 const messageKey = Date.now()
+                loadingPolicy.value = true
                 message.loading({
                     content: 'Saving policy',
                     duration: 0,
@@ -347,12 +349,14 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+                    loadingPolicy.value = false
                 } catch (error: any) {
                     message.error({
                         content: error?.response?.data?.message,
                         duration: 1.5,
                         key: messageKey,
                     })
+                    loadingPolicy.value = false
                 }
             }
 
@@ -459,9 +463,7 @@
             const handleCloseAddPolicy = () => {
                 addpolicyVisible.value = false
             }
-            const handleChangeWidth = (widthUpdated) => {
-                width.value = widthUpdated
-            }
+
             const handleCloseAdd = () => {
                 addpolicyVisible.value = false
             }
@@ -489,10 +491,9 @@
                 addpolicyVisible,
                 handleCloseAddPolicy,
                 typeAddPolicy,
-                width,
-                handleChangeWidth,
                 handleCloseAdd,
                 isEdit,
+                loadingPolicy,
             }
         },
     })

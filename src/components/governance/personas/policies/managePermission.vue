@@ -12,20 +12,22 @@
                 <AtlanIcon icon="ArrowRight" class="-rotate-180" />
             </AtlanBtn>
             <div>
-                <span class="text-lg font-bold text-gray-700">Manage permissions</span>
-                <div class="text-gray-500">
-                    Data consultant policy
-                </div>
+                <span class="text-lg font-bold text-gray-700"
+                    >Manage permissions</span
+                >
+                <div class="text-gray-500">Data consultant policy</div>
             </div>
         </div>
-        <a-divider/>
+        <a-divider />
         <div class="p-4 pt-0 container-content">
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"
                 type="purpose"
             />
-         <div class="flex items-center justify-end p-3 mt-auto border border-solid gap-x-2 border-slate-300">
+            <div
+                class="flex items-center justify-end p-3 mt-auto border border-solid gap-x-2 border-slate-300"
+            >
                 <span class="mr-auto text-gray-500"
                     >{{ actionsLocal.length || 'No' }} items updated</span
                 >
@@ -45,8 +47,7 @@
                     @click="handleSave"
                 >
                     Save
-                </AtlanBtn
-                >
+                </AtlanBtn>
             </div>
         </div>
     </div>
@@ -60,8 +61,8 @@
     export default defineComponent({
         name: 'ManagePermition',
         components: {
-           MetadataScopes,
-           AtlanBtn
+            MetadataScopes,
+            AtlanBtn,
         },
         props: {
             actions: {
@@ -75,7 +76,7 @@
         },
         emits: ['close', 'save'],
         setup(props, { emit }) {
-            const { actions, visibleDrawer} = toRefs(props)
+            const { actions, visibleDrawer } = toRefs(props)
             const actionsLocal = ref(actions.value)
             const handleClose = () => {
                 emit('close')
@@ -86,29 +87,34 @@
                 handleClose()
             }
             watch(visibleDrawer, () => {
-                if(visibleDrawer.value){
+                if (visibleDrawer.value) {
                     actionsLocal.value = actions.value
                 }
             })
             return {
                 handleClose,
                 handleSave,
-                actionsLocal
+                actionsLocal,
             }
         },
     })
 </script>
 <style lang="less">
-    .btn-back{
+    .btn-back {
         transform: rotate(180deg);
     }
-    .container-content{
+    .container-content {
         height: inherit;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        .ant-collapse-content-box {
+            padding: 0.75em;
+            padding-left: 0.75em !important;
+            padding-top: 0.75em !important;
+        }
     }
-    .wrapper-manage-permition{
-        height: 86vh
+    .wrapper-manage-permition {
+        height: 86vh;
     }
 </style>

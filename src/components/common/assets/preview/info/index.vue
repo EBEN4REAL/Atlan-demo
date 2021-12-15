@@ -84,6 +84,14 @@
                     <span class="mb-2 text-sm text-gray-500">Definition</span>
                     <span class="text-primary">SQL</span>
                 </div>
+                <template #action>
+                    <a-button
+                        size="small"
+                        block
+                        @click="switchTab(selectedAsset, 'Lineage')"
+                        >View Lineage</a-button
+                    >
+                </template>
             </SQL>
             <!-- <RowInfoHoverCard
                 v-if="

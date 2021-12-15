@@ -2,7 +2,12 @@
     <a-popover placement="left">
         <template #content>
             <div class="p-4">
-                <pre>{{ displaySQL }}</pre>
+                <SQLFormatter
+                    :text="displaySQL"
+                    background="bg-primary-light"
+                    class="mb-1"
+                />
+                <slot name="action"></slot>
             </div>
         </template>
         <slot></slot>
@@ -12,9 +17,13 @@
 <script lang="ts">
     import { computed, defineComponent, toRefs, ref } from 'vue'
     import { format } from 'sql-formatter'
+    import SQLFormatter from '@common/sql/snippet.vue'
 
     export default defineComponent({
         name: 'SqlInfo',
+        components: {
+            SQLFormatter,
+        },
         props: {
             sql: {
                 type: String,

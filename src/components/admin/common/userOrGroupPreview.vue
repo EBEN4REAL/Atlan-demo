@@ -40,22 +40,30 @@
                 <div class="w-full ml-4">
                     <div class="flex items-center content-center text-gray-500">
                         <div class="w-4/5">
-                            <div class="flex text-base content-center items-center capitalize text-gray-700 font-bold mb-0.5">
+                            <div
+                                class="flex text-base content-center items-center capitalize text-gray-700 font-bold mb-0.5"
+                            >
                                 <span class="mr-1">{{ title }}</span>
-                                <SlackMessageCta v-if="slackEnabled" :link="slackUrl"/>
+                                <SlackMessageCta
+                                    v-if="slackEnabled"
+                                    :link="slackUrl"
+                                />
                             </div>
                             <span class="text-sm truncate w-28">
                                 @{{ name }}
                             </span>
                             <span
                                 v-if="details"
-                                class="content-center px-2 py-1 ml-2 text-xs text-gray-700 uppercase bg-gray-200 rounded "
+                                class="content-center px-2 py-1 ml-2 text-xs text-gray-700 uppercase bg-gray-200 rounded"
                             >
                                 {{ details }}
                             </span>
                         </div>
                         <div class="ml-auto">
-                            <a-button class="border-0 shadow-none" @click="$emit('close')">
+                            <a-button
+                                class="border-0 shadow-none"
+                                @click="$emit('close')"
+                            >
                                 <AtlanIcon icon="Cross" />
                             </a-button>
                         </div>
@@ -137,13 +145,13 @@
             ErrorView,
             SidePanelTabHeaders,
             AtlanButton,
-            SlackMessageCta
+            SlackMessageCta,
         },
         props: {
             previewType: {
                 type: String,
                 required: true,
-            }
+            },
         },
         emits: ['close'],
         setup(props) {
@@ -164,11 +172,15 @@
                 activeKey,
             } = useUserOrGroupPreview(previewType.value)
             const isValidUser = computed(() =>
-                Boolean(selectedUser && selectedUser.value && selectedUser.value.id)
+                Boolean(
+                    selectedUser && selectedUser.value && selectedUser.value.id
+                )
             )
             const isValidGroup = computed(() =>
                 Boolean(
-                    selectedGroup && selectedGroup.value && selectedGroup.value.id
+                    selectedGroup &&
+                        selectedGroup.value &&
+                        selectedGroup.value.id
                 )
             )
             const isValidEntity = computed(() =>
@@ -198,7 +210,9 @@
             const title = computed(() => getUserOrGroupValue('name', 'name'))
 
             // The name, maybe a username or a group alias.
-            const name = computed(() => getUserOrGroupValue('username', 'alias'))
+            const name = computed(() =>
+                getUserOrGroupValue('username', 'alias')
+            )
 
             // The details to be displayed.
             const details = computed(() => {
@@ -262,5 +276,5 @@
                 slackUrl,
             }
         },
-})
+    })
 </script>

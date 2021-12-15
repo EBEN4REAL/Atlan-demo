@@ -2,6 +2,7 @@
     <div class="flex flex-col w-full h-full pt-4 overflow-auto gap-y-4">
         <div class="flex items-center justify-between px-5">
             <span class="font-semibold text-gray-500">Overview</span>
+
             <span
                 v-if="isLoading || isLoadingClassification"
                 class="flex items-center"
@@ -13,6 +14,12 @@
                 ></a-spin>
                 Saving</span
             >
+        </div>
+        <div v-if="selectedAsset" class="flex flex-col px-5">
+            <span class="text-gray-500">Name</span>
+            <span class="text-gray-500 truncate">{{
+                selectedAsset.displayText || selectedAsset.attributes.name
+            }}</span>
         </div>
         <AnnouncementWidget
             class="mx-5"
@@ -27,7 +34,7 @@
         >
             <Shortcut shortcutKey="n" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Name</span>
                 </div>
@@ -172,7 +179,7 @@
         <div class="flex flex-col">
             <Shortcut shortcutKey="d" action="set description" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span>Description</span>
                     <AtlanIcon
@@ -200,7 +207,7 @@
         >
             <Shortcut shortcutKey="o" action="set owners" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Owners</span>
                 </div>
@@ -231,7 +238,7 @@
                 placement="left"
             >
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Classification</span>
                 </div>
@@ -258,7 +265,7 @@
             class="flex flex-col"
         >
             <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
             >
                 Terms
             </p>
@@ -276,7 +283,7 @@
         >
             <Shortcut shortcutKey="c" action="set certificate" placement="left">
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 "
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span> Certificate</span>
                 </div>

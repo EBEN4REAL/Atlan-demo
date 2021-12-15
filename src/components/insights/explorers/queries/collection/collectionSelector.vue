@@ -83,6 +83,8 @@
             <div class="flex items-center overflow-x-hidden">
                 <span class="w-4 h-4 -mt-0.5 mr-2.5">{{
                     selectedCollection?.attributes?.icon
+                        ? selectedCollection?.attributes?.icon
+                        : '🗃'
                 }}</span>
 
                 <div

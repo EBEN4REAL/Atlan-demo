@@ -367,6 +367,8 @@
                 rowsCount: 100,
             })
 
+            // FIXME: refactor it
+
             const detectQuery = () => {
                 const queryTab: activeInlineTabInterface = {
                     key: generateUUID(),

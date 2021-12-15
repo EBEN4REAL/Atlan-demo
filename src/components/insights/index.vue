@@ -516,16 +516,18 @@
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0
                             ) {
-                                queryCollections.value =
-                                    data.value.entities ?? []
-                                selectFirstCollectionByDefault(
-                                    queryCollections.value,
-                                    activeInlineTab,
-                                    tabsArray
-                                )
+                                queryCollections.value = data.value.entities
+                            } else {
+                                queryCollections.value = []
                             }
+                            selectFirstCollectionByDefault(
+                                queryCollections.value,
+                                activeInlineTab,
+                                tabsArray
+                            )
                         } else {
                             queryCollectionsLoading.value = false
+                            queryCollections.value = undefined
                             message.error({
                                 content: `Error fetching collections`,
                             })

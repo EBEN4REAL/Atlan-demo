@@ -152,6 +152,7 @@
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                         @clickCard="handleSelectPolicy"
+                        :whitelistedConnectionIds="whitelistedConnectionIds"
                     />
                 </template>
                 <template
@@ -176,6 +177,7 @@
                         @delete="deletePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                         @clickCard="handleSelectPolicy"
+                        :whitelistedConnectionIds="whitelistedConnectionIds"
                     />
                 </template>
                 <!-- For pusing the new edit policy to bottom -->

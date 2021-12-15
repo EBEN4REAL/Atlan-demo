@@ -10,24 +10,25 @@
                     <AtlanIcon icon="Add" class="text-white" />
                 </div>
                 <div class="flex justify-between">
-                    <div class="text-lg font-bold">
-                        {{ selectedPersonaDirty?.name }} policy
-                    </div>
+                    <div class="text-lg font-bold">New policy</div>
                 </div>
                 <div class="flex items-center">
                     <AtlanIcon icon="Policies" class="mr-1" />
-                    <span class="text-neutral-600"
+                    <span class="mr-1 text-neutral-600"
                         >{{
                             policyType === 'meta'
                                 ? 'Metadata Policy'
                                 : 'Data Policy'
                         }}
                     </span>
+                    <div class="ml-1 mr-1 dot" />
+                    <span class="text-neutral-600">
+                        {{ persona?.displayName }}
+                    </span>
                 </div>
             </div>
             <div class="p-5">
-                <div class="font-bold base text-neutral-500">Detailed Info</div>
-                <div class="relative mt-8">
+                <div class="relative mt-4">
                     <div class="relative mb-2 text-sm text-gray-500 required">
                         Policy name <span class="text-red-500">*</span>
                     </div>
@@ -317,6 +318,7 @@
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import ManagePermission from './policies/managePermission.vue'
     import DataMaskingSelector from './policies/dataMaskingSelector.vue'
+    import { IPersona } from '~/types/accessPolicies/personas'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -358,6 +360,10 @@
             isLoading: {
                 type: Boolean,
                 required: false,
+            },
+            persona: {
+                type: Object as PropType<IPersona>,
+                required: true,
             },
             selectedPolicy: {
                 type: Object,
@@ -631,5 +637,11 @@
         background-color: #f3f3f3;
         text-transform: capitalize;
         margin-top: 4px;
+    }
+    .dot {
+        height: 4px;
+        width: 4px;
+        background-color: #e6e6eb;
+        border-radius: 50%;
     }
 </style>

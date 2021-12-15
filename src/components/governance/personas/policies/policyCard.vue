@@ -184,6 +184,7 @@
             overlay-class-name="popoverConfirm"
             cancel-text="Cancel"
             @confirm="removePolicy"
+            v-if="canDelete"
         >
             <AtlanBtn
                 class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
@@ -230,6 +231,10 @@
                 type: Object as PropType<DataPolicies & MetadataPolicies>,
                 required: true,
             },
+            whitelistedConnectionIds: {
+                type: Array,
+                default: () => [],
+            },
         },
         emits: ['edit', 'cancel', 'delete', 'clickCard'],
         setup(props, { emit }) {
@@ -275,6 +280,11 @@
             const handleClickPlicyCard = () => {
                 emit('clickCard', { ...policy.value, type: type.value })
             }
+            const canDelete = computed(() => {
+                return props.whitelistedConnectionIds.includes(
+                    policy?.value?.connectionId
+                )
+            })
             return {
                 getPopoverContent,
                 removePolicy,
@@ -286,6 +296,7 @@
                 showAll,
                 splitAssets,
                 handleClickPlicyCard,
+                canDelete,
             }
         },
     })

@@ -136,10 +136,12 @@
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
+    import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
-    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
     import { generateUUID } from '~/utils/helper/generator'
+    import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {
@@ -156,6 +158,11 @@
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
             >
+            const runQuery = inject('runQuery')
+            const refetchQueryCollection = inject(
+                'refetchQueryCollection'
+            ) as Ref<Function>
+
             const {
                 explorerPaneSize,
                 assetSidebarPaneSize,
@@ -169,6 +176,12 @@
                 resultsPaneSizeToggle,
                 assetSidebarToggle,
             } = useHotKeys()
+            const {
+                getQueryCollections,
+                queryCollections,
+                queryCollectionsLoading,
+                selectFirstCollectionByDefault,
+            } = useQueryCollection()
             const { editorConfig, editorHoverConfig } = useEditorPreference()
             const { fullSreenState } = useFullScreen()
             const savedQueryGuidFromURL = ref(route.query?.id)
@@ -243,6 +256,8 @@
             */
             const provideData: provideDataInterface = {
                 activeInlineTab,
+                queryCollections,
+                queryCollectionsLoading,
                 activeInlineTabKey,
                 inlineTabs: tabsArray,
                 editorInstance,
@@ -276,6 +291,21 @@
                             savedQueryInfo.value?.attributes?.parent?.attributes
                                 ?.name,
                     })
+
+                    // console.log('run query: ', savedQueryInfo.value)
+
+                    if (runQuery.value === 'true') {
+                        queryRun(
+                            activeInlineTab,
+                            getData,
+                            limitRows,
+                            null,
+                            null,
+                            savedQueryInfo.value?.attributes.rawQuery,
+                            editorInstance,
+                            monacoInstance
+                        )
+                    }
                 }
             })
             watch(editorConfig, () => {
@@ -337,8 +367,6 @@
                 rowsCount: 100,
             })
 
-            const demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
-
             const detectQuery = () => {
                 const queryTab: activeInlineTabInterface = {
                     key: generateUUID(),
@@ -360,24 +388,34 @@
                                 attributeValue: undefined,
                             },
                         },
-                        playground: {
-                            vqb: {
-                                panels: [
-                                    {
-                                        order: 1,
-                                        id: 'columns',
-                                        hide: false,
-                                        subpanels: [
-                                            {
-                                                id: '1',
-                                                tableQualifiedName: undefined,
-                                                columns: [],
-                                                columnsData: [],
-                                            },
-                                        ],
-                                    },
-                                ],
+                        queries: {
+                            connectors: {
+                                connector: undefined,
                             },
+                            collection: {
+                                guid: '',
+                                qualifiedName: undefined,
+                                parentQualifiedName: undefined,
+                            },
+                        },
+                    },
+                    playground: {
+                        vqb: {
+                            panels: [
+                                {
+                                    order: 1,
+                                    id: 'columns',
+                                    hide: false,
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                            columnsData: [],
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                         editor: {
                             text: '',
@@ -417,6 +455,7 @@
                             sqlHelp: {},
                         },
                     },
+
                     favico: 'https://atlan.com/favicon.ico',
                     assetSidebar: {
                         isVisible: false,
@@ -450,33 +489,53 @@
                 }
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
-                // activeInlineTabKey.value = queryTab.key
-                // syncInlineTabsInLocalStorage(tabsArray.value)
 
-                const range = toRaw(editorInstance.value)
-                    ?.getModel()
-                    ?.getFullModelRange()
-                toRaw(editorInstance.value)?.setSelection(range)
+                console.log('detect query: ', newQuery)
+                queryRun(
+                    activeInlineTab,
+                    getData,
+                    limitRows,
+                    null,
+                    null,
+                    newQuery,
+                    editorInstance,
+                    monacoInstance
+                )
+            }
 
-                const selectedQuery = toRaw(editorInstance.value)
-                    ?.getModel()
-                    ?.getValueInRange(
-                        toRaw(editorInstance.value)?.getSelection()
-                    )
-
-                // queryRun(
-                //     activeInlineTab,
-                //     getData,
-                //     limitRows,
-                //     null,
-                //     null,
-                //     selectedQuery,
-                //     editorInstance,
-                //     monacoInstance
-                // )
+            const fetchQueryCollections = () => {
+                const { data, error, isLoading, mutate } = getQueryCollections()
+                refetchQueryCollection.value = mutate
+                queryCollectionsLoading.value = true
+                watch([data, error, isLoading], () => {
+                    queryCollectionsLoading.value = true
+                    if (isLoading.value === false) {
+                        queryCollectionsLoading.value = false
+                        if (error.value === undefined) {
+                            if (
+                                data.value?.entities &&
+                                data.value?.entities?.length > 0
+                            ) {
+                                queryCollections.value =
+                                    data.value.entities ?? []
+                                selectFirstCollectionByDefault(
+                                    queryCollections.value,
+                                    activeInlineTab,
+                                    tabsArray
+                                )
+                            }
+                        } else {
+                            queryCollectionsLoading.value = false
+                            message.error({
+                                content: `Error fetching collections`,
+                            })
+                        }
+                    }
+                })
             }
 
             onMounted(() => {
+                fetchQueryCollections()
                 window.addEventListener('keydown', _keyListener)
 
                 if (
@@ -644,54 +703,6 @@
             }
         }
     }
-    // :global(.splitpanes--horizontal > .splitpanes__splitter) {
-    //     position: relative;
-    //     margin-top: -1px;
-    //     box-sizing: border-box;
-    //     position: relative;
-    //     touch-action: none;
-    //     border-width: 1.5px !important;
-    //     @apply border-t !important;
-    //     &:hover {
-    //         // @apply border-primary;
-    //         // border-width: 2px !important;
-    //     }
-    // }
-
-    // :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-    //     content: '';
-    //     position: absolute;
-    //     top: 50%;
-    //     left: 50%;
-    //     background-color: rgba(0, 0, 0, 0.15);
-    //     -webkit-transition: background-color 0.3s;
-    //     transition: background-color 0.3s;
-    //     margin-top: -2px;
-    //     transform: translateX(-50%);
-    //     width: 30px;
-    //     height: 1px;
-    // }
-    // :global(.splitpanes--horizontal > .splitpanes__splitter):after {
-    //     // content: '';
-    //     position: absolute;
-    //     top: 50%;
-    //     left: 50%;
-    //     background-color: rgba(0, 0, 0, 0.15);
-    //     -webkit-transition: background-color 0.3s;
-    //     transition: background-color 0.3s;
-
-    //     transform: translateX(-50%);
-    //     width: 30px;
-    //     height: 1px;
-
-    //     margin-top: 1px;
-    // }
-    // :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
-    //     @apply bg-primary !important;
-    // }
-    // :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
-    //     @apply bg-primary !important;
-    // }
 </style>
 <style lang="less" scoped>
     .placeholder {
@@ -710,9 +721,6 @@
         width: 20.75rem;
         background-color: white;
     }
-    // .sidebar-nav-icon:first-child {
-    //     @apply pt-2 !important;
-    // }
     .sidebar-nav-icon {
         padding-top: 16px;
         padding-bottom: 16px;

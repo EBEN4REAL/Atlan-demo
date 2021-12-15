@@ -14,7 +14,7 @@
             <span class="mt-1 mr-1 text-base text-gray-700">{{
                 activeInlineTab.label
             }}</span>
-            <!-- <AtlanBtn
+            <AtlanBtn
                 size="sm"
                 color="secondary"
                 padding="compact"
@@ -41,9 +41,9 @@
 
                     <span>Update</span>
                 </div>
-            </AtlanBtn> -->
+            </AtlanBtn>
 
-            <!-- <div
+            <div
                 v-else-if="activeInlineTab.queryId && activeInlineTab.isSaved"
                 class="transition duration-150 hover:text-primary"
             >
@@ -57,13 +57,13 @@
                     </template>
                     <AtlanIcon class="mr-1" icon="Check" />Saved
                 </a-tooltip>
-            </div> -->
+            </div>
 
-            <!-- <AtlanBtn
+            <AtlanBtn
+                v-else
                 size="sm"
                 color="secondary"
                 padding="compact"
-                v-else
                 class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
                 @click="$emit('onClickSaveQuery')"
             >
@@ -77,7 +77,7 @@
 
                     <span>Save</span>
                 </div>
-            </AtlanBtn> -->
+            </AtlanBtn>
         </div>
         <div class="flex items-center">
             <a-popover
@@ -129,6 +129,33 @@
                             class="w-4 h-4 mx-1 connector_icon"
                         />
                         <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
+
+                        <div v-if="connectionName">
+                            <div
+                                class="flex items-center"
+                                v-if="
+                                    activeInlineTab?.explorer?.schema
+                                        ?.connectors?.attributeValue !==
+                                    activeInlineTab?.playground?.editor?.context
+                                        ?.attributeValue
+                                "
+                            >
+                                <div class="text-gray-700">
+                                    {{ connectionName }}
+                                </div>
+                                <div
+                                    :class="
+                                        schemaName
+                                            ? `text-gray-700`
+                                            : `text-gray-500`
+                                    "
+                                    class="text-base font-bold"
+                                >
+                                    .
+                                </div>
+                            </div>
+                        </div>
+
                         <span v-else class="text-gray-500"
                             >Select Connector</span
                         >
@@ -266,7 +293,7 @@
     import { useTimeAgo } from '@vueuse/core'
 
     export default defineComponent({
-        name: 'Editor Context',
+        name: 'EditorContext',
         components: { StatusBadge, Connector, AtlanBtn, ThreeDotMenu },
         props: {
             isUpdating: {

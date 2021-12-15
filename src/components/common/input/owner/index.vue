@@ -5,7 +5,7 @@
     >
         <a-popover
             v-model:visible="isEdit"
-            placement="leftTop"
+            :placement="placementPos"
             :overlay-class-name="$style.ownerPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
@@ -136,6 +136,10 @@
                 type: Object as PropType<assetInterface>,
                 required: false,
                 default: () => {},
+            },
+            placementPos: {
+                type: String,
+                default: 'leftBottom',
             },
             inProfile: {
                 type: Boolean,

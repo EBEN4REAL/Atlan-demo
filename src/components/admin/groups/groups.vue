@@ -72,7 +72,6 @@
             <a-table
                 id="groupList"
                 class="overflow-hidden border rounded-lg"
-                :class="$style.groupTable"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 :pagination="false"
@@ -507,17 +506,6 @@
     .hide-checkbox {
         .ant-checkbox {
             display: none;
-        }
-    }
-</style>
-<style lang="less" module>
-    .group-table {
-        // extra row hide hack
-        :global(.ant-table-measure-row) {
-            @apply hidden;
-        }
-        :global(.ant-table-column-title) {
-            @apply text-left;
         }
     }
 </style>

@@ -56,6 +56,6 @@
 </script>
 <style lang="less" scoped>
     .tab-content-wrapper {
-        height: calc(100vh - 10rem) !important;
+        height: calc(100vh - 5rem) !important;
     }
 </style>

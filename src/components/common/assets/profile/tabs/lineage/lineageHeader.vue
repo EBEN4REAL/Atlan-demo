@@ -44,15 +44,15 @@
                                     >
                                 </a-menu-item>
 
-                                <a-menu-divider />
+                                <!-- <a-menu-divider /> -->
 
-                                <a-menu-item>
+                                <!-- <a-menu-item>
                                     <a-checkbox
                                         v-model:checked="showProcess"
                                         @change="onShowProcess"
                                         >Show Process</a-checkbox
                                     >
-                                </a-menu-item>
+                                </a-menu-item> -->
                             </a-menu>
                         </template>
                     </a-dropdown>
@@ -76,12 +76,12 @@
                         <template #overlay>
                             <a-menu class="lineage-header-menu">
                                 <a-menu-item
+                                    v-for="item in lineageDepths"
+                                    :key="item.id"
                                     :class="{
                                         'ant-dropdown-menu-item-activee':
                                             depth === item.id,
                                     }"
-                                    v-for="item in lineageDepths"
-                                    :key="item.id"
                                     @click="onChangeDepth(item.id)"
                                 >
                                     {{ item.label }}
@@ -142,9 +142,8 @@
         emits: ['show-process', 'show-impacted-assets', 'show-add-lineage'],
         setup(props, { emit }) {
             /** INJECTIONS */
-            /** INJECTIONS */
             const control = inject('control')
-            const showProcess = inject('showProcess')
+            // const showProcess = inject('showProcess')
             const depth = inject('depth')
             const direction = inject('direction')
             const lineageDepths = inject('lineageDepths')
@@ -156,7 +155,6 @@
             const currDepth = computed(
                 () => lineageDepths.find((x) => x.id === depth.value)?.label
             )
-
             const isLeafNode = computed(() => {
                 const id = highlightedNode.value || baseEntityGuid.value
                 const cell = graph.value.getCellById(id)
@@ -171,9 +169,9 @@
             }
 
             // onShowProcess
-            const onShowProcess = () => {
-                control('showProcess', showProcess.value)
-            }
+            // const onShowProcess = () => {
+            //     control('showProcess', showProcess.value)
+            // }
 
             // onChangeDirection
             const onChangeDirection = (e) => {
@@ -193,11 +191,11 @@
                 direction,
                 control,
                 showSearch,
-                showProcess,
+                // showProcess,
                 lineageDepths,
                 lineageDirections,
                 onShowImpactedAssets,
-                onShowProcess,
+                // onShowProcess,
                 onChangeDirection,
                 onChangeDepth,
             }

@@ -71,9 +71,7 @@ export function useWorkflowHelper() {
             }
         })
         const authType = formState[`${propertyId}.auth-type`]
-        console.log(formState)
-        console.log(authType)
-        console.log(`${propertyId}.${authType}`)
+
         return {
             name,
             host: formState[`${propertyId}.host`],

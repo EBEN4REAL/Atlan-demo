@@ -23,6 +23,7 @@ export const ARCHIVED_WORKFLOW_RUN_LOGS = 'ARCHIVED_WORKFLOW_RUN_LOGS'
 export const GET_ARTIFACTS = 'GET_ARTIFACTS'
 
 export const WORKFLOW_TEMPLATE_INDEX = 'WORKFLOW_TEMPLATE_INDEX'
+export const WORKFLOW_RUN_INDEX = 'WORKFLOW_RUN_INDEX'
 
 export const map = {
     [SCHEDULES]: () => getAPIPath(BASE_PATH, '/workflows/schedules'),
@@ -66,5 +67,10 @@ export const map = {
         getAPIPath(
             BASE_PATH,
             `/es-atlas/tenants/default/atlan_argo_cluster_workflow_templates/_search`
+        ),
+    [WORKFLOW_RUN_INDEX]: () =>
+        getAPIPath(
+            BASE_PATH,
+            `/es-atlas/tenants/default/atlan_argo_workflows/_search`
         ),
 }

@@ -1,4 +1,4 @@
-import { ref, Ref, watch, computed } from 'vue'
+import { ref, Ref, watch } from 'vue'
 
 import { usePackageBody } from './usePackageBody'
 
@@ -50,15 +50,12 @@ export function usePackageDiscoverList({
     }
 
     const localKey = ref(dependentKey?.value)
-
     generateBody()
 
     const { data, refresh, isLoading, isValidating, cancelRequest, error } =
         usePackageIndexSearch(defaultBody, localKey, isCache, false, 1)
-    const list = ref([])
 
-    // For column widget
-    const freshList = ref([])
+    const list = ref([])
 
     watch(data, () => {
         if (offset?.value > 0) {
@@ -76,28 +73,9 @@ export function usePackageDiscoverList({
         }
     })
 
-    const totalCount = computed(() => {
-        // if (assetTypeAggregationList.value.length > 0) {
-        //     const type = postFacets?.value.typeName || '__all'
-        //     const typeName = assetTypeAggregationList.value.find(
-        //         (i) => i.id === type
-        //     )
-        //     return typeName?.count || approximateCount.value
-        // }
-        // return approximateCount.value
-    })
-
-    const isLoadMore = computed(() => {
-        // if (totalCount.value > list?.value?.length) {
-        //     return true
-        // }
-        return false
-    })
-
     const quickChange = () => {
         generateBody()
         cancelRequest()
-
         if (localKey.value) {
             localKey.value = `dirty_${Date.now().toString()}`
         } else {
@@ -105,28 +83,18 @@ export function usePackageDiscoverList({
         }
     }
 
-    const fetch = () => {
-        generateBody()
-        refresh()
-    }
-
     return {
         queryText,
         limit,
         offset,
         postFacets,
-        totalCount,
-
         isValidating,
         isLoading,
         list,
-        freshList,
         data,
         fetch,
-        quickChange,
         cancelRequest,
-        isLoadMore,
-
         error,
+        quickChange,
     }
 }

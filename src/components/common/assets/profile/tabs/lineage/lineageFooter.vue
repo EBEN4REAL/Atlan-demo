@@ -100,9 +100,11 @@
             },
             graphHeight: {
                 type: Number,
+                required: true,
             },
             graphWidth: {
                 type: Number,
+                required: true,
             },
             lineageContainer: {
                 type: Object,
@@ -125,9 +127,11 @@
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
 
+            /** METHODS */
             // transform
             const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
 
+            // onFullscreen
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
                 if (isFullscreen.value) {

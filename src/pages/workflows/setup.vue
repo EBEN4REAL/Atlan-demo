@@ -14,7 +14,7 @@
         </div>
 
         <div
-            class="relative hidden h-full bg-white border-l border-gray-200 asset-preview-container md:block"
+            class="relative hidden h-full overflow-y-auto bg-white border-l border-gray-200 asset-preview-container md:block"
         >
             <PackagePreview :selectedPackage="selectedPackage"></PackagePreview>
         </div>

@@ -2,10 +2,12 @@ import { Ref, ref, computed, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from './useLocalStorageSync'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
+import { QueryCollection } from '~/types/insights/savedQuery.interface'
 
 export function useInlineTab(
     treeSelectedKeys?: Ref<string[]>,
-    shouldDefaultTabAdd?: boolean
+    shouldDefaultTabAdd?: boolean,
+    queryCollections?: Ref<QueryCollection[]>
 ) {
     const {
         syncInlineTabsInLocalStorage,
@@ -23,13 +25,31 @@ export function useInlineTab(
         })
         return localStorageInlineTabsX
     }
-    const setInlineTabsArray = (shouldDefaultTabAdd: boolean) => {
+    const setInlineTabsArray = (
+        shouldDefaultTabAdd: boolean,
+        queryCollections?: Ref<QueryCollection[]>
+    ) => {
         // checking if localstorage already have active tabs
         const localStorageInlineTabs = getInlineTabsFromLocalStorage()
         if (localStorageInlineTabs.length > 0) {
             return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
-        if (shouldDefaultTabAdd) return inlineTabsDemoData
+        if (shouldDefaultTabAdd) {
+            /* Set initial states for collections */
+            let inlineTabsDemoDataCopy = JSON.parse(
+                JSON.stringify(inlineTabsDemoData)
+            )
+            if (queryCollections?.value?.length > 0) {
+                const col = queryCollections?.value[0]
+                if (inlineTabsDemoDataCopy?.key) {
+                    inlineTabsDemoDataCopy.explorer.queries.collection.guid =
+                        col?.guid
+                    inlineTabsDemoDataCopy.explorer.queries.collection.qualifiedName =
+                        col?.attributes?.qualifiedName
+                }
+            }
+            return inlineTabsDemoDataCopy
+        }
 
         return []
     }
@@ -215,7 +235,7 @@ export function useInlineTab(
     }
 
     const tabsArray: Ref<activeInlineTabInterface[]> = ref(
-        setInlineTabsArray(Boolean(shouldDefaultTabAdd))
+        setInlineTabsArray(Boolean(shouldDefaultTabAdd), queryCollections)
     )
     const activeInlineTabKey = ref(setActiveInlineTabKey())
     const activeInlineTab = computed(() =>

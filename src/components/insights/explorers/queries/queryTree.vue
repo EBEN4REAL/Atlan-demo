@@ -1,8 +1,8 @@
 TR
 <template>
-    <div class="max-h-screen" :class="$style.queryTreeStyles">
+    <div class="h-full max-h-screen" :class="$style.queryTreeStyles">
         <div class="h-full overflow-x-hidden query-tree-root-div">
-            <div v-if="treeData.length">
+            <div v-if="!isQueriesLoading && treeData?.length">
                 <a-tree
                     :expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
@@ -34,22 +34,28 @@ TR
                             @click="item.click()"
                         >
                             <span v-if="item.isLoading">
-                                <LoadingView
-                                    size="small"
-                                    class="w-1 h-1 mr-4"
-                                />
+                                <LoadingView />
                             </span>
                             <span v-else>{{ item.title }}</span>
                         </div>
                     </template>
                 </a-tree>
             </div>
-            <div v-else-if="isLoading" :data-test-id="'loading'">
-                <LoadingView />
+            <div
+                v-if="isLoading"
+                class="flex items-center justify-center h-full"
+                :data-test-id="'loading'"
+            >
+                <Loader />
             </div>
             <div
                 :data-test-id="'noData'"
-                v-else-if="!treeData.length && showEmptyState"
+                v-else-if="
+                    !isLoading &&
+                    treeData?.length == 0 &&
+                    showEmptyState &&
+                    !QueriesFetchError
+                "
                 class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
             >
                 <div class="flex flex-col items-center justify-center">
@@ -93,6 +99,28 @@ TR
                     >
                 </div>
             </div>
+            <div
+                v-else-if="QueriesFetchError && !isLoading"
+                class="flex items-center justify-center h-full"
+            >
+                <ErrorView :error="errorObjectForCollection">
+                    <div class="mt-3">
+                        <a-button
+                            data-test-id="try-again"
+                            size="large"
+                            type="primary"
+                            ghost
+                            @click="
+                                () => {
+                                    refreshQueryTree()
+                                }
+                            "
+                        >
+                            <fa icon="fal sync" class="mr-2"></fa>Try again
+                        </a-button>
+                    </div>
+                </ErrorView>
+            </div>
         </div>
     </div>
 </template>
@@ -111,7 +139,6 @@ TR
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
     // components
-    import LoadingView from '@common/loaders/section.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import QueryTreeItem from './queryTreeItem.vue'
 
@@ -125,14 +152,17 @@ TR
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
+    import Loader from '@common/loaders/page.vue'
+    import ErrorView from '@common/error/index.vue'
 
     export default defineComponent({
         components: {
-            LoadingView,
+            Loader,
             AtlanIcon,
             AtlanBtn,
             StatusBadge,
             QueryTreeItem,
+            ErrorView,
         },
         emits: ['toggleCreateQueryModal', 'createFolderInput'],
         props: {
@@ -185,6 +215,11 @@ TR
             },
             refreshQueryTree: {
                 type: Function,
+                required: false,
+                default: () => {},
+            },
+            QueriesFetchError: {
+                type: Object,
             },
             // refetchTreeData: {
             //     type: Function,
@@ -193,7 +228,8 @@ TR
             // },
         },
         setup(props, { emit }) {
-            const { savedQueryType } = toRefs(props)
+            const { savedQueryType, QueriesFetchError, isLoading } =
+                toRefs(props)
             // data
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -233,6 +269,8 @@ TR
             }
 
             return {
+                isLoading,
+                QueriesFetchError,
                 createFolderInput,
                 toggleCreateQueryModal,
                 savedQueryType,

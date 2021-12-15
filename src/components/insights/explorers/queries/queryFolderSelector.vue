@@ -13,24 +13,17 @@
         >
             <AtlanIcon icon="FolderClosed"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
-                {{ selectedFolder }}
+                {{ selectedFolder ? selectedFolder : 'Folder' }}
             </span>
         </AtlanBtn>
 
         <template #overlay>
             <div class="popover-container">
-                <div class="m-4 w-9/11">
-                    <ClassificationDropdown
-                        :modelValue="savedQueryType2"
-                        @change="onClassificationChange"
-                        :connector="connector"
-                    />
-                </div>
                 <div
                     class="h-full pt-0 pb-4 mx-4 overflow-y-hidden w-9/11"
                     @mouseleave="closeDropdown"
                 >
-                    <div class="flex w-full">
+                    <div class="flex w-full mt-4">
                         <AtlanIcon
                             :icon="folderOpened ? 'CaretDown' : 'CaretRight'"
                             class="my-auto mr-0.5 cursor-pointer"
@@ -41,7 +34,7 @@
                             class="flex w-full px-1 py-1 rounded cursor-pointer"
                             :class="`${
                                 selectedFolderContext?.guid ===
-                                queryFolderNamespace?.guid
+                                selectedCollection?.guid
                                     ? 'bg-primary-selected-focus w-9/11'
                                     : 'bg-white'
                             }`"
@@ -54,7 +47,7 @@
                             ></AtlanIcon>
                             <span
                                 class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >{{ savedQueryType2?.displayName }} Folder</span
+                                >{{ selectedCollection?.attributes.name }}</span
                             >
                         </div>
                     </div>
@@ -84,7 +77,7 @@
                                     class="my-2 mb-0 mb-6 text-xs text-center text-gray-700 max-width-text"
                                 >
                                     Sorry, no data found <br />in selected
-                                    classification
+                                    collection
                                 </p>
                             </div>
                         </div>
@@ -108,6 +101,8 @@
         // Vue,
         inject,
         ComputedRef,
+        computed,
+        onMounted,
     } from 'vue'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -118,16 +113,17 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    import { Folder } from '~/types/insights/savedQuery.interface'
+    import {
+        Folder,
+        QueryCollection,
+    } from '~/types/insights/savedQuery.interface'
     // import { colSize } from 'ant-design-vue/lib/grid/Col'
-    import ClassificationDropdown from '~/components/insights/common/classification/index.vue'
 
     export default defineComponent({
+        name: 'QueryFolderSelector',
         components: {
             QueryTreeList,
             AtlanBtn,
-            // AssetDropdown,
-            ClassificationDropdown,
         },
         props: {
             parentFolder: {
@@ -156,11 +152,23 @@
                 'queryFolderNamespace',
                 ref({}) as Ref<Folder>
             )
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
 
-            const selectedFolder = ref('Folder')
+            const selectedFolder = ref()
             const selectedKey = ref<string[]>([])
             let dropdownVisible = ref(false)
             let selectedFolderContext = ref({})
+            const selectedCollection = computed(() => {
+                const collection = queryCollections.value?.find(
+                    (coll) =>
+                        coll.attributes.qualifiedName ===
+                        activeInlineTab.value.explorer.queries.collection
+                            .qualifiedName
+                )
+                return collection
+            })
 
             // console.log('already selected: ', props.selectedFolderQF)
             // console.log('already selected: ', parentFolder)
@@ -176,7 +184,7 @@
                             ...item,
                             attributes: {
                                 ...item.attributes,
-                                parentFolderQualifiedName: 'namespace',
+                                parentQualifiedName: 'namespace',
                             },
                         }
 
@@ -184,8 +192,6 @@
                             dataRef: {
                                 ...rootData,
                             },
-                            selectedFolderClassification:
-                                savedQueryType2.value?.name,
                         }
                         if (savedQueryType.value) {
                             selectedFolder.value = `${savedQueryType.value?.displayName} folder`
@@ -194,7 +200,6 @@
                         dropdownVisible.value = false
                         selectedFolderContext.value = {
                             ...rootData,
-                            selectedFolderClassification: savedQueryType2.value,
                         }
 
                         emit('folderChange', data)
@@ -206,14 +211,10 @@
 
                             selectedFolderContext.value = {
                                 ...parentFolder.value,
-                                selectedFolderClassification:
-                                    savedQueryType2.value,
                             }
 
                             emit('folderChange', {
                                 dataRef: parentFolder.value,
-                                selectedFolderClassification:
-                                    savedQueryType2.value.name,
                             })
                         }
                     }
@@ -223,31 +224,21 @@
 
             const onSelect = (selected: any, event: any) => {
                 if (event === 'root') {
-                    let rootData = {
-                        ...queryFolderNamespace.value,
-                        attributes: {
-                            ...queryFolderNamespace.value.attributes,
-                            parentFolderQualifiedName: 'namespace',
-                        },
-                    }
+                    console.log('selected folder: ', selectedCollection.value)
+                    const rootData = selectedCollection.value
 
-                    let data = {
+                    const data = {
                         dataRef: {
                             ...rootData,
                         },
-                        selectedFolderClassification:
-                            savedQueryType2.value?.name,
                     }
 
-                    if (savedQueryType.value) {
-                        selectedFolder.value = `${savedQueryType2.value?.displayName} folder`
-                    }
-                    selectedKey.value = [rootData.guid]
+                    selectedKey.value = [selectedCollection?.value?.guid]
+                    selectedFolder.value = selectedCollection.value?.displayText
                     dropdownVisible.value = false
                     // selectedFolderContext.value = data
                     selectedFolderContext.value = {
                         ...rootData,
-                        selectedFolderClassification: savedQueryType2.value,
                     }
 
                     emit('folderChange', data)
@@ -259,20 +250,11 @@
                         selectedFolder.value = event?.node?.dataRef.title
                         dropdownVisible.value = false
                     }
-
-                    // selectedFolderContext.value = {
-                    //     dataRef: event.node,
-                    //     selectedFolderClassification:
-                    //         savedQueryType2.value.name,
-                    // }
                     selectedFolderContext.value = {
                         ...item,
-                        selectedFolderClassification: savedQueryType2.value,
                     }
                     emit('folderChange', {
                         dataRef: event.node,
-                        selectedFolderClassification:
-                            savedQueryType2.value.name,
                     })
                 }
             }
@@ -286,15 +268,6 @@
             }
             const showDropdown = () => {
                 dropdownVisible.value = true
-            }
-
-            // const classificationValue = ref(savedQueryType2?.value?.name)
-            let selectedClassification = ref(savedQueryType2?.value?.name)
-            const onClassificationChange = (value) => {
-                // emit('change', checkedValues)
-                console.log('change: ', value)
-                selectedClassification.value = value.name
-                savedQueryType2.value = value
             }
 
             const pushGuidToURL = (guid: string) => {
@@ -339,19 +312,23 @@
                 openSavedQueryInNewTab,
                 pushGuidToURL,
                 connector,
-                savedQueryType: selectedClassification,
                 queryFolderNamespace,
                 permissions: {
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
+                collection: selectedCollection,
             })
 
             const folderOpened = ref(true)
             const toggleFolder = () => {
                 folderOpened.value = !folderOpened.value
             }
-
+            onMounted(() => {
+                if (!parentFolder.value || !parentFolder.value.guid) {
+                    onSelect('root', 'root')
+                }
+            })
             return {
                 onSelect,
                 selectedFolder,
@@ -372,13 +349,12 @@
                 dropdownVisible,
                 closeDropdown,
                 showDropdown,
-                // classificationValue,
-                onClassificationChange,
                 folderOpened,
                 toggleFolder,
                 currentSelectedNode,
                 selectedFolderContext,
                 queryFolderNamespace,
+                selectedCollection,
             }
         },
     })

@@ -16,7 +16,7 @@
                             :connector="currentConnector"
                             :savedQueryType="queryType"
                             :parentFolder="parentFolder"
-                            @folderChange="getSelectedFolder"
+                            @folderChange="setSelectedFolder"
                         />
                     </div>
                     <div>
@@ -132,7 +132,10 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { List } from '~/constant/status'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
-    import { Folder } from '~/types/insights/savedQuery.interface'
+    import {
+        Folder,
+        QueryCollection,
+    } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'
 
@@ -142,6 +145,7 @@
     // import AddTerms from './addTerms.vue'
 
     export default defineComponent({
+        name: 'SavedQueryModal',
         components: { StatusBadge, QueryFolderSelector, AtlanBtn },
         props: {
             showSaveQueryModal: {
@@ -181,7 +185,6 @@
             //     ref({}) as Ref<Folder>
             // )
             const selectedParentFolder = ref<Folder | null>(null)
-            const selectedFolderClassification = ref(null)
 
             const untitledRegex = /(?:Untitled )([0-9]+)/gim
             const inlineTabs = inject('inlineTabs') as ComputedRef<
@@ -216,10 +219,8 @@
                 })
                 return max_number
             }
-            const getSelectedFolder = (folder) => {
+            const setSelectedFolder = (folder) => {
                 selectedParentFolder.value = folder.dataRef
-                selectedFolderClassification.value =
-                    folder.selectedFolderClassification
             }
 
             let assetTerms = []
@@ -243,30 +244,12 @@
                         selectedParentFolder.value?.attributes?.qualifiedName,
                     parentGuid: selectedParentFolder.value?.guid,
                 }
-                emit(
-                    'onSaveQuery',
-                    saveQueryData,
-                    assetTerms,
-                    selectedFolderClassification.value
-                )
+                emit('onSaveQuery', saveQueryData, assetTerms)
             }
             onMounted(async () => {
                 await nextTick()
                 titleBarRef.value?.focus()
             })
-            // const selectFolder = (folder: Folder) => {
-            //     selectedParentFolder.value = folder
-            // }
-
-            // watch(
-            //     parentFolder,
-            //     () => {
-            //         console.log('parent folder: ', parentFolder.value)
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
 
             return {
                 getLastUntitledNumber,
@@ -286,7 +269,7 @@
                 createSaveQuery,
                 handleMenuClick,
                 selectedParentFolder,
-                getSelectedFolder,
+                setSelectedFolder,
 
                 saveTerms,
             }

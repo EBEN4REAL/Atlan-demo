@@ -252,7 +252,8 @@
                     },
                     allowQueryPreview: {
                         type: 'boolean',
-                        default: false,
+                        default: true,
+                        required: true,
                         ui: {
                             label: 'Allow Data Preview',
                             help: 'Users will be view sample preview of the assets',

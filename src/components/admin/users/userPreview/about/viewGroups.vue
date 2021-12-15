@@ -12,7 +12,7 @@
                 {{ group.alias }}
             </span>
             <span
-                v-if="filteredGroupCount < 2"
+                v-if="filteredGroupCount > 2"
                 class="rounded-3xl ml-1 mt-1 bg-gray-300 border border-gray-200 py-1 px-3 text-center font-normal text-sm"
             >
                 <a href="#">+ {{ filteredGroupCount - 2 }} more</a>

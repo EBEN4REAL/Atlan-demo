@@ -22,7 +22,7 @@
                 :key="index"
                 class="search-results__item"
                 :class="{ selected: searchItem === item.guid }"
-                @click="setSearchItem(item.guid)"
+                @click="setSearchItem(item)"
             >
                 <span class="w-6 h-4 bg-gray-300"></span>
                 <span>{{ item.displayText || item.attributes.name }}</span>
@@ -44,7 +44,7 @@
 
             /** INJECTIONS */
             const searchItems = inject('searchItems')
-            const selectSearchItem = inject('selectSearchItem')
+            const onSelectAsset = inject('onSelectAsset')
 
             /** COMPUTED */
             const filteredItems = computed(() => {
@@ -61,9 +61,9 @@
                 query.value = e.target.value
             }
 
-            const setSearchItem = (guid) => {
-                searchItem.value = guid
-                selectSearchItem(guid)
+            const setSearchItem = (item) => {
+                searchItem.value = item.guid
+                onSelectAsset(item, true)
             }
 
             const onBlur = () => {

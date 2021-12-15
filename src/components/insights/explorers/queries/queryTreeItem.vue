@@ -328,6 +328,10 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useRoute, useRouter } from 'vue-router'
+
+    const { inlineTabRemove } = useInlineTab()
 
     import { message } from 'ant-design-vue'
 
@@ -385,6 +389,10 @@
                 title,
                 certificateStatus,
             } = useAssetInfo()
+
+            const route = useRoute()
+            const router = useRouter()
+
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -412,6 +420,10 @@
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchNode', () => {})
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
@@ -553,16 +565,24 @@
                             watch(
                                 error,
                                 () => {
-                                    console.log('rename erro: ', error)
+                                    console.log('rename error: ', error)
                                     if (error.value == undefined) {
                                         message.success({
-                                            content: `Folder renamed successfully`,
+                                            content: `${
+                                                item.value.typeName === 'Query'
+                                                    ? 'Query'
+                                                    : 'Folder'
+                                            } renamed successfully`,
                                         })
                                     } else {
                                         item.value.attributes.name = orignalName
 
-                                        message.success({
-                                            content: `Folder rename failed`,
+                                        message.error({
+                                            content: `${
+                                                item.value.typeName === 'Query'
+                                                    ? 'Query'
+                                                    : 'Folder'
+                                            } rename failed`,
                                         })
                                     }
                                 },
@@ -577,16 +597,45 @@
                     }
                 })
                 input.addEventListener('blur', (e) => {
-                    if (input.value) {
+                    if (input.value && input.value !== orignalName) {
                         item.value.attributes.name = input.value
-                        const { data, error } = Insights.CreateSavedQuery({
-                            entiy: item.value.entity,
-                        })
-                        watch(error, (newError) => {
-                            if (newError) {
-                                item.value.attributes.name = orignalName
-                            }
-                        })
+                        const { data, error } = Insights.CreateQueryFolder(
+                            {
+                                entiy: item.value.entity,
+                            },
+                            {}
+                        )
+                        // watch(error, (newError) => {
+                        //     if (newError) {
+                        //         item.value.attributes.name = orignalName
+                        //     }
+                        // })
+                        watch(
+                            error,
+                            () => {
+                                console.log('rename erro: ', error)
+                                if (error.value == undefined) {
+                                    message.success({
+                                        content: `${
+                                            item.value.typeName === 'Query'
+                                                ? 'Query'
+                                                : 'Folder'
+                                        } renamed successfully`,
+                                    })
+                                } else {
+                                    item.value.attributes.name = orignalName
+
+                                    message.error({
+                                        content: `${
+                                            item.value.typeName === 'Query'
+                                                ? 'Query'
+                                                : 'Folder'
+                                        } rename failed`,
+                                    })
+                                }
+                            },
+                            { immediate: true }
+                        )
                     }
                     try {
                         parentNode?.removeChild(div)
@@ -596,18 +645,40 @@
             }
 
             let isDeleteLoading = ref(false)
+
+            const pushGuidToURL = (guid: string | undefined) => {
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                if (guid) {
+                    queryParams.id = guid
+                    router.push({ path: `insights`, query: queryParams })
+                } else {
+                    router.push({ path: `insights`, query: queryParams })
+                }
+            }
+
             const delteItem = (type: 'Query' | 'QueryFolder') => {
+                let key = item.value.guid
                 const { data, error, isLoading } = Insights.DeleteEntity(
                     item.value.guid,
                     {}
                 )
                 isDeleteLoading.value = true
+
                 watch([data, error, isLoading], ([newData, newError]) => {
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
                         useAddEvent('insights', 'folder', 'deleted', undefined)
                         showDeletePopover.value = false
+
+                        inlineTabRemove(
+                            key,
+                            inlineTabs,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+
                         setTimeout(() => {
                             refetchParentNode(
                                 props.item.guid,
@@ -720,18 +791,11 @@
             }
 
             let selectedFolder = ref(null)
-            let selectedType = ref(null)
 
             const getSelectedFolder = (folder) => {
                 if (folder) {
-                    console.log('folder: ', folder.selectedFolderClassification)
                     console.log('folder selected', folder?.dataRef)
                     selectedFolder.value = folder?.dataRef
-                    selectedType.value = folder.selectedFolderClassification
-                    // console.log(
-                    //     'folder.selectedFolderClassification',
-                    //     selectedType.value.name
-                    // )
                 } else {
                     console.log('no folder selected')
                     selectedFolder.value = null
@@ -742,7 +806,7 @@
 
             const changeFolder = (item: any) => {
                 let previousParentGuId = item.attributes.parent.guid
-                let selectedParentGuid = selectedFolder.value.guid
+                let selectedParentGuid = selectedFolder?.value?.guid
 
                 // console.log('entity item parent: ', previousParentGuId)
                 // console.log('entity selected folder: ', selectedParentGuid)
@@ -766,21 +830,12 @@
                                 guid: selectedParentGuid,
                                 typeName: selectedFolder.value.typeName,
                             },
-                            parentFolderQualifiedName:
+                            parentQualifiedName:
                                 selectedFolder.value.attributes.qualifiedName,
                         }
                         // console.log('select QFN')
                         // if (selectedType.value?.name) {
-                        newEntity.classifications = [
-                            {
-                                attributes: {},
-                                propagate: true,
-                                entityGuid: item.guid,
-                                removePropagationsOnEntityDelete: true,
-                                typeName: selectedType.value?.name,
-                                validityPeriods: [],
-                            },
-                        ]
+                        newEntity.classifications = []
 
                         // } else {
                         //     newEntity.classifications = []
@@ -800,7 +855,7 @@
                                 guid: selectedParentGuid,
                                 typeName: selectedFolder.value.typeName,
                             },
-                            parentFolderQualifiedName:
+                            parentQualifiedName:
                                 selectedFolder.value.attributes.qualifiedName,
                         }
                         newEntity.classifications = []

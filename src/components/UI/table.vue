@@ -1,10 +1,6 @@
 <template>
     <div id="table-container" class="table_height clusterize">
-        <div
-            id="scrollArea"
-            class="clusterize-scroll -mt-0.5 -ml-0.5"
-            style="max-height: 101%; max-width: 101%"
-        >
+        <div id="scrollArea" class="max-w-full max-h-full clusterize-scroll">
             <table
                 ref="tableRef"
                 :data-test-id="'output-table'"
@@ -12,16 +8,8 @@
             >
                 <thead id="headerArea" class="clusterize-content">
                     <tr>
-                        <th
-                            class="truncate bg-gray-100 border border-gray-light"
-                        >
-                            #
-                        </th>
-                        <th
-                            v-for="(col, index) in columns"
-                            :key="index"
-                            class="bg-gray-100 border border-gray-light"
-                        >
+                        <th class="truncate">#</th>
+                        <th v-for="(col, index) in columns" :key="index">
                             <div class="flex items-center">
                                 <a-tooltip :title="col.data_type">
                                     <component
@@ -41,7 +29,7 @@
                             :class="
                                 rowClassNames !== ''
                                     ? rowClassNames
-                                    : 'truncate bg-gray-100 border border-gray-light'
+                                    : 'truncate '
                             "
                         >
                             {{ index + 1 }}
@@ -50,7 +38,7 @@
                         <td
                             v-for="(rowData, index) in row"
                             :key="index"
-                            class="truncate bg-white border border-gray-light"
+                            class="bg-white"
                             :class="{
                                 'outline-primary bg-primary-light ':
                                     selectedData === rowData,
@@ -60,10 +48,10 @@
                         >
                             <div
                                 v-if="variantTypeIndexes.includes(index)"
-                                class="flex items-center justify-between"
+                                class="flex items-center justify-between overflow-ellipsis"
                                 v-on:click="handleOpenModal(rowData)"
                             >
-                                {{ rowData }}
+                                <div style="max-width: 70%">{{ rowData }}</div>
                                 <AtlanIcon
                                     icon="Expand"
                                     class="h-4 w-auto mb-0.5"
@@ -82,7 +70,7 @@
         v-if="modalVisible"
         v-model:visible="modalVisible"
         :footer="null"
-        :afterClose="() => (selectedData = '')"
+        :afterClose="() => (selectedData = null)"
         centered
         :destroyOnClose="true"
         :class="$style.variant_modal"
@@ -153,7 +141,7 @@
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
             const variantTypeIndexes = ref<Number[]>([])
-            const selectedData = ref('')
+            const selectedData = ref(null)
             const modalVisible = ref<boolean>(false)
             const getDataType = (type: string) => {
                 let label = ''
@@ -212,17 +200,16 @@
 
 <style lang="less" module>
     .tableStyle {
-        border-radius: 10px !important;
-
+        @apply rounded !important;
         td,
         th {
-            width: 200px;
-            max-width: 250px !important;
-            min-width: 150px !important;
+            max-width: 200px;
+            min-width: 200px;
             text-align: left !important;
             height: 32px !important;
             padding: 0px 16px !important;
             font-size: 12px !important;
+            @apply border border-gray-light !important;
         }
         tbody {
             font-family: Hack !important;
@@ -232,9 +219,10 @@
         th {
             position: sticky;
             top: 0;
+            border-top: 0;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-700;
+            @apply text-gray-700 bg-gray-100;
             font-weight: 400 !important;
         }
         td:first-child {
@@ -242,16 +230,18 @@
             min-width: 30px !important;
             width: 30px;
             left: 0;
+            border-left: 0;
             position: sticky;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-500;
+            @apply text-gray-500 bg-gray-100;
         }
 
         th:first-child {
             max-width: 100px !important;
             min-width: 30px !important;
             width: 30px;
+            border-left: 0;
             left: 0;
             z-index: 10;
             @apply text-gray-500;

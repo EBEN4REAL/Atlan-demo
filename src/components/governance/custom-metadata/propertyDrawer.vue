@@ -32,6 +32,7 @@
                     layout="vertical"
                     :rules="rules"
                     :model="form"
+                    :validate-trigger="['click', 'submit']"
                 >
                     <div class="grid grid-cols-2 gap-4">
                         <a-form-item
@@ -47,7 +48,7 @@
                         </a-form-item>
                         <a-form-item
                             class="ant-form-undo-flex-direction"
-                            name="typeName"
+                            :name="['options', 'primitiveType']"
                             label="Type"
                         >
                             <a-select

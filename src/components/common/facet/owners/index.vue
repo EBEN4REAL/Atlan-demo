@@ -66,12 +66,14 @@
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
                 @change="handleChange"
+                ref="usersRef"
             ></Users>
             <Groups
                 v-if="componentType == 'groups'"
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
+                ref="groupRef"
             ></Groups>
         </div>
         <div v-if="showNone" class="px-4 pt-1">
@@ -161,6 +163,10 @@
             const { showNone, enableTabs, selectUserKey, selectGroupKey } =
                 toRefs(props)
             const componentType = ref('users')
+
+            const usersRef = ref()
+            const groupRef = ref()
+
             if (enableTabs.value.length < 2) {
                 watch(
                     enableTabs,
@@ -187,9 +193,9 @@
 
             const placeholder = computed(() => {
                 if (componentType.value === 'groups') {
-                    return 'Search groups'
+                    return `Search ${groupRef?.value?.filterTotal ?? ''} groups`
                 }
-                return 'Search users'
+                return `Search ${usersRef?.value?.filterTotal ?? ''} users`
             })
 
             watch(localValue.value, (prev, cur) => {
@@ -226,6 +232,8 @@
                 emit('change')
             }
             return {
+                groupRef,
+                usersRef,
                 selectGroupKey,
                 selectUserKey,
                 enableTabs,
@@ -239,7 +247,7 @@
                 showNone,
                 ownerSearchRef,
                 forceFocus,
-                handleChange
+                handleChange,
             }
         },
     })

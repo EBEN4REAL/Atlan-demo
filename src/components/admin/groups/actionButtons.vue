@@ -8,24 +8,13 @@
                 v-auth="map.ADD_USER_GROUP"
                 size="small"
                 type="secondary"
-                class="
-                    flex
-                    mr-3.5
-                    items-center
-                    justify-center
-                    w-8
-                    h-8
-                    border
-                    rounded
-                    customShadow
-                    cursor-pointer
-                "
+                class="flex mr-3.5 items-center justify-center w-8 h-8 border rounded customShadow cursor-pointer"
                 @click="$emit('addMembers')"
             >
                 <AtlanIcon icon="AddUser" class="text-gray-500"></AtlanIcon>
             </div>
         </a-tooltip>
-        <a-tooltip placement="topLeft">
+        <!-- <a-tooltip placement="topLeft">
             <template #title>
                 <span>Delete group</span>
             </template>
@@ -49,22 +38,21 @@
             >
                 <AtlanIcon icon="Delete" class="text-gray-500"></AtlanIcon>
             </div>
-        </a-tooltip>
-        <!-- <a-dropdown
-            class="hidden"
+        </a-tooltip> -->
+        <a-dropdown
             v-auth="[map.UPDATE_GROUP]"
             :trigger="['click']"
             :visible="dropDownOpened"
             @visibleChange="handleVisibleChange"
         >
             <div
-                class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
+                class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow p-2"
             >
                 <AtlanIcon icon="KebabMenu" class="text-gray-500"></AtlanIcon>
             </div>
             <template #overlay>
                 <a-menu>
-                 <a-menu-item
+                    <a-menu-item
                         key="1"
                         v-auth="map.UPDATE_GROUP"
                         :disabled="markAsDefaultLoading || deleteGroupLoading"
@@ -102,11 +90,11 @@
 
                                 <AtlanIcon
                                     icon="Info"
-                                    class="text-xs text-gray-500"
+                                    class="text-xs text-gray-500 mb-0.5"
                                 />
                             </a-tooltip>
                         </div>
-                    </a-menu-item> 
+                    </a-menu-item>
                     <a-menu-item
                         key="2"
                         :disabled="deleteGroupLoading || markAsDefaultLoading"
@@ -126,7 +114,7 @@
                     </a-menu-item>
                 </a-menu>
             </template>
-        </a-dropdown> -->
+        </a-dropdown>
     </a-button-group>
 </template>
 

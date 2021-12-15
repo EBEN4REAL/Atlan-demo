@@ -17,15 +17,17 @@
                 />
             </div>
             <template v-if="showHeaderButtons">
-                <a-button
-                    type="primary"
+                <AtlanButton
+                    color="secondary"
+                    size="sm"
+                    padding="compact"
                     :loading="addMemberLoading"
                     :disabled="addMemberLoading || !selectedIds.length"
                     class="flex items-center text-sm"
                     @click="$emit('addMembersToGroup')"
                 >
                     Done
-                </a-button>
+                </AtlanButton>
             </template>
         </div>
         <div
@@ -48,9 +50,15 @@
                 </div>
             </ErrorView>
         </div>
+        <div
+            v-else-if="searchText && !userList?.length"
+            class="flex items-center justify-center h-64"
+        >
+            <EmptyView desc="No Results found." />
+        </div>
         <template v-else>
             <div class="pl-4 mt-2 overflow-auto">
-                <a-checkbox-group class="w-full">
+                <a-checkbox-group v-if="userList?.length" class="w-full">
                     <div class="flex flex-col w-full" :style="userListStyle">
                         <template v-for="user in userList" :key="user.id">
                             <a-checkbox
@@ -63,18 +71,35 @@
                         </template>
                     </div>
                 </a-checkbox-group>
-                <div v-if="isLoading" class="flex justify-center mt-3">
+
+                <div
+                    v-if="isLoading && !userList.length"
+                    class="flex justify-center mt-3"
+                >
                     <AtlanIcon icon="Loader" class="h-10 animate-spin" />
                 </div>
             </div>
             <div v-if="showLoadMore" class="flex justify-center w-full mt-3">
-                <AtlanButton
-                    color="secondary"
-                    padding="compact"
-                    size="sm"
+                <button
+                    :disabled="isLoading"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                    :class="isLoading ? 'px-2 w-9' : ''"
                     @click="handleLoadMore"
-                    >load more
-                </AtlanButton>
+                >
+                    <template v-if="!isLoading">
+                        <p
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                        >
+                            Load more
+                        </p>
+                        <AtlanIcon icon="ArrowDown" />
+                    </template>
+                    <AtlanIcon
+                        icon="Loader"
+                        v-else
+                        class="w-auto h-10 animate-spin"
+                    ></AtlanIcon>
+                </button>
             </div>
         </template>
     </div>
@@ -88,11 +113,13 @@
     import AtlanButton from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import UserCard from './userCard.vue'
+    import EmptyView from '@/common/empty/index.vue'
 
     export default defineComponent({
         name: 'UsersList',
         components: {
             UserCard,
+            EmptyView,
             ErrorView,
             AtlanButton,
             SearchAndFilter,
@@ -126,11 +153,11 @@
             const userListAPIParams: any = reactive({
                 limit: 10,
                 offset: 0,
-                sort: 'first_name',
+                sort: 'firstName',
                 filter: {
                     $and: [
                         {
-                            email_verified: true,
+                            emailVerified: true,
                         },
                     ],
                 },
@@ -141,21 +168,21 @@
                 getUserList,
                 isLoading,
                 error,
-            } = useUsers(userListAPIParams, 'LIST_ALL_USERS')
+            } = useUsers(userListAPIParams, true)
 
             const handleSearch = useDebounceFn(() => {
                 userListAPIParams.filter = {
                     $and: [
-                        { email_verified: true },
+                        { emailVerified: true },
                         {
                             $or: [
                                 {
-                                    first_name: {
+                                    firstName: {
                                         $ilike: `%${searchText.value}%`,
                                     },
                                 },
                                 {
-                                    last_name: {
+                                    lastName: {
                                         $ilike: `%${searchText.value}%`,
                                     },
                                 },
@@ -172,7 +199,6 @@
                 userListAPIParams.offset = 0
                 getUserList()
             }, 200)
-
             const handleLoadMore = () => {
                 userListAPIParams.offset += userListAPIParams.limit
                 getUserList()
@@ -183,7 +209,7 @@
                     userList.value.length,
                     userListAPIParams.offset,
                     userListAPIParams.limit,
-                    filteredUserCount.value // filtered value because we are filtering users in the getUsers API call and getting only the users that have email_verified as true.
+                    filteredUserCount.value // filtered value because we are filtering users in the getUsers API call and getting only the users that have emailVerified as true.
                 )
             )
             const handleChange = (event) => {

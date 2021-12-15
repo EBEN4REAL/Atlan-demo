@@ -19,6 +19,7 @@
             <AssetPreview
                 :selected-asset="data"
                 :isDrawer="true"
+                @closeDrawer="$emit('closeDrawer')"
             ></AssetPreview> </a-drawer
     ></teleport>
 </template>

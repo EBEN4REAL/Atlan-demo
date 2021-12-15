@@ -1,13 +1,15 @@
 <template>
     <a-select
-        placeholder="Select"
         v-model:value="localValue"
+        placeholder="Select"
         class="w-full"
+        :mode="multiple ? 'multiple' : null"
         @change="handleChange"
     >
         <a-select-option
+            v-for="(item, x) in enumSelected?.elementDefs"
+            :key="x"
             :value="item.value"
-            v-for="item in enumSelected?.elementDefs"
         >
             {{ item.value }}
         </a-select-option>
@@ -33,6 +35,11 @@
                 required: false,
                 default: () => '',
             },
+            multiple: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             modelValue: {
                 type: [Array, String],
                 required: false,
@@ -45,9 +52,9 @@
 
             const { enumList: list } = useTypedefData()
 
-            const enumSelected = computed(() => {
-                return list.value.find((item) => item.name === props.enum)
-            })
+            const enumSelected = computed(() =>
+                list.value.find((item) => item.name === props.enum)
+            )
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -64,14 +71,3 @@
     })
 </script>
 
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

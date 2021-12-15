@@ -1,5 +1,6 @@
 import { AssetTypeList } from '~/constant/assetType'
 import assetCategories from '~/constant/assetCategories'
+import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 
 const inApplicableTypeName = ['Connection']
 const otherTypes = [
@@ -26,7 +27,7 @@ export const applicableEntityTypesOptions = [
 /**
  * @desc default template for new BM attribute
  */
-export const DEFAULT_ATTRIBUTE = {
+export const DEFAULT_ATTRIBUTE: CMA = {
     cardinality: 'SINGLE',
     includeInNotification: false,
     isIndexable: true,
@@ -37,16 +38,15 @@ export const DEFAULT_ATTRIBUTE = {
     options: {
         /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas hold this here: [JSON.stringify(applicableEntityTypes)] */
         applicableEntityTypes: JSON.stringify(['Asset']),
-        customApplicableEntityTypes: applicableEntityTypesOptions.map(t => t.value),
+        customApplicableEntityTypes: applicableEntityTypesOptions.reduce((acc, item) => [...acc, ...(item?.children?.map(v => v.value) ?? [])], []),
         maxStrLength: '100000000',
-        isBadge: false,
-        isFacet: true,
         isEnum: false,
         enumType: '',
         // new options
         multiValueSelect: false,
         allowFiltering: true,
-        allowSearch: false,
+        allowSearch: true,
+        primitiveType: 'string'
         // customType:'url' // added on submit for user, link or group
     },
     typeName: 'string',

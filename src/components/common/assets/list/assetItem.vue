@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 transition-all duration-300 hover:bg-primary-light"
+        class="my-1 transition-all duration-300 rounded hover:bg-primary-light"
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
         @click="handlePreview(item)"
     >
@@ -38,28 +38,11 @@
                                 class="h-4 mb-1 text-gray-500"
                             />
                         </div>
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossarycategory'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Category"
-                            class="h-4 mb-0.5 mr-1"
-                        ></AtlanIcon>
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossaryterm'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Term"
-                            class="h-4 mb-0.5 mr-1"
-                        ></AtlanIcon>
 
                         <router-link
                             :to="getProfilePath(item)"
-                            class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            class="flex-shrink mb-0 overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                            @click="(e) => e.stopPropagation()"
                         >
                             {{ title(item) }}
                         </router-link>
@@ -68,16 +51,26 @@
                             :status="certificateStatus(item)"
                             :username="certificateUpdatedBy(item)"
                             :timestamp="certificateUpdatedAt(item)"
-                            class="mb-0.5"
+                            class="mb-1 ml-1"
                         ></CertificateBadge>
+
+                        <a-tooltip placement="right"
+                            ><template #title>Limited Access</template>
+                            <AtlanIcon
+                                v-if="isScrubbed(item)"
+                                icon="Lock"
+                                class="h-4 mb-1 ml-1"
+                            ></AtlanIcon
+                        ></a-tooltip>
                     </div>
 
                     <div v-if="description(item)" class="flex mt-0.5">
-                        <span
+                        <Tooltip
                             v-if="preference?.display?.includes('description')"
                             class="text-xs text-gray-500"
-                            >{{ description(item) }}</span
-                        >
+                            :tooltip-text="description(item)"
+                            :rows="2"
+                        />
                     </div>
 
                     <!-- Info bar -->
@@ -119,7 +112,7 @@
                             ></AtlanIcon>
 
                             <div
-                                class="text-sm tracking-wider text-gray-500 uppercase "
+                                class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
                             </div>
@@ -128,7 +121,7 @@
                         <div class="flex items-center">
                             <div
                                 v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -167,7 +160,7 @@
                             </div>
                             <div
                                 v-if="parentCategory(item)"
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
                                 in
                                 <div
@@ -215,7 +208,7 @@
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
-                                        class="font-semibold tracking-tight text-gray-500 "
+                                        class="font-semibold tracking-tight text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
                                     Rows</span
@@ -232,7 +225,7 @@
                             </a-tooltip>
                             <span class="text-gray-500">
                                 <span
-                                    class="font-semibold tracking-tight text-gray-500 "
+                                    class="font-semibold tracking-tight text-gray-500"
                                     >{{ columnCount(item, false) }}</span
                                 >
                                 Cols</span
@@ -265,12 +258,6 @@
                             class="flex items-center mr-2"
                         >
                             <div class="flex items-center">
-                                <!-- <component
-                                :is="dataTypeImage(item)"
-                                class="w-auto h-4 text-gray-500"
-                                style="margin-top: 1px"
-                            ></component> -->
-
                                 <component
                                     :is="dataTypeCategoryImage(item)"
                                     class="h-4 text-gray-500 mr-0.5 mb-0.5"
@@ -412,32 +399,65 @@
                             </a-tooltip>
                         </div>
                     </div>
-
-                    <div
-                        v-if="
-                            list.length > 0 &&
-                            preference?.display?.includes('classifications')
-                        "
-                        class="flex flex-wrap mt-1 gap-x-1"
-                    >
-                        <template
-                            v-for="classification in list"
-                            :key="classification.guid"
+                    <div class="flex flex-wrap mt-1 gap-x-1">
+                        <div
+                            v-if="
+                                list.length > 0 &&
+                                preference?.display?.includes('classifications')
+                            "
+                            class="flex flex-wrap mt-1 gap-x-1"
                         >
-                            <PopoverClassification
-                                :classification="classification"
+                            <template
+                                v-for="classification in list"
+                                :key="classification.guid"
                             >
-                                <ClassificationPill
-                                    :name="classification.name"
-                                    :display-name="classification?.displayName"
-                                    :is-propagated="
-                                        isPropagated(classification)
-                                    "
-                                    :allow-delete="false"
-                                    :color="classification.options?.color"
-                                ></ClassificationPill>
-                            </PopoverClassification>
-                        </template>
+                                <PopoverClassification
+                                    :classification="classification"
+                                >
+                                    <ClassificationPill
+                                        :name="classification.name"
+                                        :display-name="
+                                            classification?.displayName
+                                        "
+                                        :is-propagated="
+                                            isPropagated(classification)
+                                        "
+                                        :allow-delete="false"
+                                        :color="
+                                            classification.options?.color.toLowerCase()
+                                        "
+                                    ></ClassificationPill>
+                                </PopoverClassification>
+                            </template>
+                        </div>
+                        <div
+                            v-if="
+                                meaningRelationships(item).length > 0 &&
+                                preference?.display?.includes('terms')
+                            "
+                            class="flex flex-wrap mt-1 gap-x-1"
+                        >
+                            <template
+                                v-for="term in meaningRelationships(item)"
+                                :key="term.guid"
+                            >
+                                <div
+                                    class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                                >
+                                    <AtlanIcon
+                                        :icon="termIcon(term)"
+                                        class="group-hover:text-white text-purple mb-0.5"
+                                    ></AtlanIcon>
+
+                                    <div class="ml-1 group-hover:text-white">
+                                        {{
+                                            term.attributes?.name ??
+                                            term.displayText
+                                        }}
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -445,14 +465,16 @@
         <hr class="mx-4" :class="bulkSelectMode && isChecked ? 'hidden' : ''" />
         <AssetDrawer
             :data="selectedAssetDrawerData"
-            :showDrawer="showAssetSidebarDrawer"
+            :show-drawer="showAssetSidebarDrawer"
             @closeDrawer="handleCloseDrawer"
+            @update="handleListUpdate"
         />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed } from 'vue'
+    import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
+    import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -460,6 +482,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -468,10 +491,11 @@
             ClassificationPill,
             PopoverClassification,
             AssetDrawer,
+            Tooltip,
         },
         props: {
             item: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: false,
                 default() {
                     return {}
@@ -525,7 +549,7 @@
                 default: false,
             },
         },
-        emits: ['listItem:check', 'unlinkAsset', 'preview'],
+        emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
             const {
                 preference,
@@ -572,6 +596,8 @@
                 classifications,
                 getProfilePath,
                 isUserDescription,
+                isScrubbed,
+                meaningRelationships,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -586,6 +612,10 @@
             const handleCloseDrawer = () => {
                 selectedAssetDrawerData.value = {}
                 showAssetSidebarDrawer.value = false
+            }
+
+            const handleListUpdate = (asset) => {
+                emit('updateDrawer', asset)
             }
 
             const isSelected = computed(() => {
@@ -617,14 +647,33 @@
                 return matchingIdsResult
             })
 
+            const termIcon = (term) => {
+                if (
+                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    'verified'
+                ) {
+                    return 'TermVerified'
+                }
+                if (
+                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    'draft'
+                ) {
+                    return 'TermDraft'
+                }
+                if (
+                    term?.attributes?.certificateStatus?.toLowerCase() ===
+                    'deprecated'
+                ) {
+                    return 'TermDeprecated'
+                }
+                return 'Term'
+            }
+
             return {
-                isChecked,
-                showCheckBox,
-                bulkSelectMode,
-                item,
                 isSelected,
                 title,
                 getConnectorImage,
+                termIcon,
                 assetType,
                 dataType,
                 rowCount,
@@ -645,11 +694,12 @@
                 certificateStatusMessage,
                 tableName,
                 viewName,
-                preference,
+                meaningRelationships,
                 assetTypeLabel,
                 description,
                 handlePreview,
                 isGTC,
+                handleListUpdate,
                 getAnchorName,
                 categories,
                 parentCategory,
@@ -661,6 +711,7 @@
                 selectedAssetDrawerData,
                 handleCloseDrawer,
                 isUserDescription,
+                isScrubbed,
             }
         },
     })

@@ -1,5 +1,6 @@
 <template>
-    <RequestList />
+    <RequestList v-if="isAccess" />
+    <NoAccess v-else />
 </template>
 
 <script lang="ts">
@@ -7,19 +8,24 @@
     import { useHead } from '@vueuse/head'
     import RequestList from '~/components/governance/requests/index.vue'
     // import Overview from '~/components/admin/overview/index.vue'
+    import NoAccess from '@/common/secured/access.vue'
+    import useAuth from '~/composables/auth/useAuth'
+
     export default defineComponent({
-        components: { RequestList },
-        // components: { Overview },
+        components: { RequestList, NoAccess },
         setup() {
             useHead({
                 title: 'Requests',
             })
+            const { isAccess } = useAuth()
+            return { isAccess }
         },
     })
 </script>
 
 <route lang="yaml">
 meta:
-layout: default
-requiresAuth: true
+    layout: default
+    requiresAuth: true
+    permissions: [LIST_REQUEST]
 </route>

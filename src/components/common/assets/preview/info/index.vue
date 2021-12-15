@@ -32,7 +32,7 @@
             "
             class="flex flex-col"
         >
-            <Shortcut shortcutKey="n" action="set description" placement="left">
+            <Shortcut shortcut-key="n" action="set name" placement="left">
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -41,20 +41,21 @@
             </Shortcut>
 
             <Name
+                ref="nameRef"
                 v-model="localName"
                 class="mx-4"
+                :read-only="readOnly"
                 @change="handleChangeName"
-                ref="nameRef"
             />
         </div>
 
         <Connection v-if="selectedAsset.typeName === 'Connection'"></Connection>
 
-        <div class="px-5" v-if="webURL(selectedAsset)">
+        <div v-if="webURL(selectedAsset)" class="px-5">
             <a-button
                 block
-                @click="handlePreviewClick"
                 class="flex items-center justify-between"
+                @click="handlePreviewClick"
                 ><div class="flex items-center">
                     <img
                         :src="getConnectorImage(selectedAsset)"
@@ -145,12 +146,12 @@
                 </div>
 
                 <div
-                    class="flex"
                     v-if="
                         isPrimary(selectedAsset) ||
                         isDist(selectedAsset) ||
                         isPartition(selectedAsset)
                     "
+                    class="flex"
                 >
                     <AtlanIcon
                         icon="PrimaryKey"
@@ -158,18 +159,18 @@
                     ></AtlanIcon>
 
                     <span
-                        class="ml-1 text-sm text-gray-700"
                         v-if="isPrimary(selectedAsset)"
+                        class="ml-1 text-sm text-gray-700"
                         >Primary Key</span
                     >
                     <span
-                        class="ml-1 text-sm text-gray-700"
                         v-if="isDist(selectedAsset)"
+                        class="ml-1 text-sm text-gray-700"
                         >Dist Key</span
                     >
                     <span
-                        class="ml-1 text-sm text-gray-700"
                         v-if="isPartition(selectedAsset)"
+                        class="ml-1 text-sm text-gray-700"
                         >Partition Key</span
                     >
                 </div>
@@ -177,16 +178,22 @@
         </div>
 
         <div class="flex flex-col">
-            <Shortcut shortcutKey="d" action="set description" placement="left">
+            <Shortcut
+                shortcut-key="d"
+                action="set description"
+                placement="left"
+            >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
                     <span>Description</span>
-                    <AtlanIcon
-                        icon="User"
-                        class="h-3 mr-1"
-                        v-if="isUserDescription(selectedAsset)"
-                    ></AtlanIcon>
+                    <a-tooltip title="User Description" placement="left">
+                        <AtlanIcon
+                            v-if="isUserDescription(selectedAsset)"
+                            icon="User"
+                            class="h-3 mr-1"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
             </Shortcut>
 
@@ -194,18 +201,19 @@
                 ref="descriptionRef"
                 v-model="localDescription"
                 class="mx-4"
-                @change="handleChangeDescription"
                 :selected-asset="selectedAsset"
+                :read-only="readOnly"
+                @change="handleChangeDescription"
             />
         </div>
         <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
             <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
         </div>
         <div
-            class="flex flex-col"
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
+            class="flex flex-col"
         >
-            <Shortcut shortcutKey="o" action="set owners" placement="left">
+            <Shortcut shortcut-key="o" action="set owners" placement="left">
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -215,10 +223,10 @@
 
             <Owners
                 v-model="localOwners"
-                :used-for-assets="true"
-                @change="handleOwnersChange"
                 class="px-5"
                 :selected-asset="selectedAsset"
+                :read-only="readOnly"
+                @change="handleOwnersChange"
             />
         </div>
 
@@ -233,7 +241,7 @@
             class="flex flex-col"
         >
             <Shortcut
-                shortcutKey="t"
+                shortcut-key="t"
                 action="set classification"
                 placement="left"
             >
@@ -245,10 +253,11 @@
             </Shortcut>
 
             <Classification
-                :guid="selectedAsset.guid"
                 v-model="localClassifications"
-                @change="handleClassificationChange"
+                :guid="selectedAsset.guid"
+                :read-only="readOnly"
                 class="px-5"
+                @change="handleClassificationChange"
             >
             </Classification>
         </div>
@@ -269,19 +278,22 @@
             >
                 Terms
             </p>
-            <Terms :selected-asset="selectedAsset" class="px-5"></Terms>
+            <Terms
+                v-model="localMeanings"
+                :selected-asset="selectedAsset"
+                class="px-5"
+                :read-only="readOnly"
+                @change="handleMeaningsUpdate"
+            >
+            </Terms>
         </div>
 
-        <div
-            v-if="
-                !['AtlasGlossary', 'AtlasGlossaryCategory'].includes(
-                    selectedAsset.typeName
-                )
-            "
-            class="flex flex-col"
-            ref="animationPoint"
-        >
-            <Shortcut shortcutKey="c" action="set certificate" placement="left">
+        <div ref="animationPoint" class="flex flex-col">
+            <Shortcut
+                shortcut-key="c"
+                action="set certificate"
+                placement="left"
+            >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -290,10 +302,11 @@
             </Shortcut>
 
             <Certificate
-                class="px-5"
                 v-model="localCertificate"
-                @change="handleChangeCertificate"
+                class="px-5"
                 :selected-asset="selectedAsset"
+                :read-only="readOnly"
+                @change="handleChangeCertificate"
             />
         </div>
         <a-modal
@@ -336,11 +349,9 @@
         name: 'AssetDetails',
         components: {
             Connection,
-            // Experts,
             Description,
             Name,
             AnnouncementWidget,
-            // Status,
             Owners,
             Classification,
             SavedQuery,
@@ -359,6 +370,11 @@
         },
         props: {
             isDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            readOnly: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -404,6 +420,8 @@
                 localCertificate,
                 localOwners,
                 localClassifications,
+                localMeanings,
+                handleMeaningsUpdate,
                 handleChangeName,
                 handleChangeDescription,
                 handleOwnersChange,
@@ -471,6 +489,8 @@
                 descriptionRef,
                 sampleDataVisible,
                 showSampleDataModal,
+                localMeanings,
+                handleMeaningsUpdate,
                 isUserDescription,
             }
         },

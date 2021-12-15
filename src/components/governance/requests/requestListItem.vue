@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded  group gap-x-4 hover:bg-primary-light"
+        class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded group gap-x-4 hover:bg-primary-light"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
@@ -12,49 +12,49 @@
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
             <AssetPiece
-                v-if="request.destination_qualified_name"
-                :asset-qf-name="request.destination_qualified_name"
-                :entityType="request?.entity_type"
+                v-if="request.destinationQualifiedName"
+                :asset-qf-name="request.destinationQualifiedName"
+                :entity-type="request?.entityType"
             />
             <span v-else class="text-sm overflow-ellipsis">
-                {{ primaryText[request.request_type](request) }}
+                {{ primaryText[request.requestType](request) }}
             </span>
         </div>
         <div class="flex items-center col-span-3">
             <ClassificationPiece
                 v-if="
-                    request?.request_type === 'create_typedef' &&
+                    request?.requestType === 'create_typedef' &&
                     request?.payload?.classificationDefs
                 "
                 :data="request.payload.classificationDefs"
             />
             <ClassificationPiece
-                v-else-if="request?.request_type === 'attach_classification'"
-                :typeName="request.payload.typeName"
+                v-else-if="request?.requestType === 'attach_classification'"
+                :type-name="request.payload.typeName"
             />
 
             <TermPiece
                 v-else-if="
-                    request?.request_type === 'create_term' && request?.payload
+                    request?.requestType === 'create_term' && request?.payload
                 "
                 :data="request.payload"
             />
 
             <TermPiece
-                v-else-if="request.request_type === 'term_link'"
+                v-else-if="request.requestType === 'term_link'"
                 :data="request?.sourceEntity?.attributes"
             />
 
             <AttrPiece
-                v-else-if="request.destination_attribute"
-                :name="request.destination_attribute"
-                :value="request.destination_value"
+                v-else-if="request.destinationAttribute"
+                :name="request.destinationAttribute"
+                :value="request.destinationValue"
             />
 
             <AssetPiece
-                v-else-if="request.source_qualified_name"
-                :asset-qf-name="request.source_qualified_name"
-                :entityType="request?.entity_type"
+                v-else-if="request.sourceQualifiedName"
+                :asset-qf-name="request.sourceQualifiedName"
+                :entity-type="request?.entityType"
             />
         </div>
 
@@ -67,7 +67,7 @@
             <!-- <div v-else-if="selected"> -->
             <template v-else>
                 <div
-                    class="items-center justify-center hidden w-full font-bold  group-hover:flex"
+                    class="items-center justify-center hidden w-full font-bold group-hover:flex"
                 >
                     <RequestActions
                         v-if="request.status === 'active'"
@@ -90,19 +90,19 @@
                 <div class="flex w-1/2 gap-x-2 group-hover:hidden">
                     <Avatar
                         :allow-upload="false"
-                        :avatar-name="request.createdByUser?.username"
+                        :avatar-name="request.created_by_user?.username"
                         avatar-size="24"
                         :avatar-shape="'circle'"
                     />
 
                     <div class="flex flex-col">
                         <UserPiece
-                            :user="request.createdByUser"
+                            :user="request.created_by_user"
                             :is-pill="false"
                         />
                         <DatePiece
                             label="Created At"
-                            :date="request.created_at"
+                            :date="request.createdAt"
                             class="text-gray-500"
                         />
                     </div>

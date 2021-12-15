@@ -2,13 +2,10 @@
     <div>
         <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
-            <div
-                v-if="Object.keys(creator).length > 0"
-                class="flex items-center text-sm"
-            >
-                <PopOverUser :item="creator.username">
+            <div v-if="persona.createdBy" class="flex items-center text-sm">
+                <PopOverUser :item="persona.createdBy">
                     <UserPill
-                        :username="creator.username"
+                        :username="persona.createdBy"
                         :allow-delete="false"
                         :enable-hover="true"
                     ></UserPill>
@@ -161,15 +158,6 @@
                 },
             }))
 
-            // Fetch the details of the user, and use the unique identifier as
-            // the cache key.
-            const { userList } = useUsers(params, persona.value.createdBy)
-
-            // Get the details of the creator.
-            const creator = computed(() =>
-                userList.value.length > 0 ? userList.value[0] : {}
-            )
-
             const timeStamp = (time, raw: boolean = false) => {
                 if (time) {
                     return raw
@@ -186,7 +174,6 @@
                 enablePersonaCheck,
                 enablePersona,
                 setActiveTab,
-                creator,
                 timeStamp,
             }
         },

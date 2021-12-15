@@ -39,7 +39,7 @@
 
             const list = computed(() => {
                 const temp = []
-                for (let i = 1; i < 31; i++) {
+                for (let i = 1; i < 32; i++) {
                     temp.push({
                         value: i.toString(),
                         label: i,
@@ -61,15 +61,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

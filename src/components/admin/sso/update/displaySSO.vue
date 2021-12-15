@@ -37,56 +37,60 @@
             :closable="false"
             :destroy-on-close="true"
         >
-            <div class="mb-4 text-lg">Enforce SSO</div>
-            <div class="mb-3 font-bold">
-                <span class="text-error"> Warning </span>
-                <span class="font-normal"> : </span>
-                <span
-                    >You can lock all users including yourself out of your
-                    account if not properly tested.</span
-                >
-            </div>
-            <div class="flex mb-2">
-                <a-checkbox v-model:checked="verifiedSSO" />
-                <div class="ml-2">
-                    I have verfied the SSO connection by loggin in and out
-                    successfully
-                </div>
-            </div>
-            <div class="flex">
-                <a-checkbox v-model:checked="providedNotice" />
-                <div class="ml-2">
-                    I have provided advanced notice and training for my company
-                    on new login procedures
-                </div>
-            </div>
-            <div class="flex justify-end mt-3">
-                <AtlanBtn
-                    padding="compact"
-                    size="sm"
-                    class="mr-1 bg-transparent border-transparent text-gray"
-                    @click="handleCancelEnforceSSO"
-                >
-                    Cancel
-                </AtlanBtn>
-                <AtlanBtn
-                    padding="compact"
-                    size="sm"
-                    color="primary"
-                    class="font-bold"
-                    :is-loading="enforceSSOChanging"
-                    :disabled="!verifiedSSO || !providedNotice"
-                    @click="handleEnforceSSO"
-                >
-                    <span v-if="enforceSSOChanging">
-                        {{
-                            ssoForm.enforceSSO ? 'Enforcing' : 'Disabling'
-                        }}</span
+            <div class="p-5">
+                <div class="mb-4 text-lg">Enforce SSO</div>
+                <div class="mb-3 font-bold">
+                    <span class="text-error"> Warning </span>
+                    <span class="font-normal"> : </span>
+                    <span
+                        >You can lock all users including yourself out of your
+                        account if not properly tested.</span
                     >
-                    <span v-else>
-                        {{ ssoForm.enforceSSO ? 'Enforce' : 'Disable' }}</span
+                </div>
+                <div class="flex mb-2">
+                    <a-checkbox v-model:checked="verifiedSSO" />
+                    <div class="ml-2">
+                        I have verfied the SSO connection by loggin in and out
+                        successfully
+                    </div>
+                </div>
+                <div class="flex">
+                    <a-checkbox v-model:checked="providedNotice" />
+                    <div class="ml-2">
+                        I have provided advanced notice and training for my
+                        company on new login procedures
+                    </div>
+                </div>
+                <div class="flex justify-end mt-3">
+                    <AtlanBtn
+                        padding="compact"
+                        size="sm"
+                        class="mr-1 bg-transparent border-transparent text-gray"
+                        @click="handleCancelEnforceSSO"
                     >
-                </AtlanBtn>
+                        Cancel
+                    </AtlanBtn>
+                    <AtlanBtn
+                        padding="compact"
+                        size="sm"
+                        color="primary"
+                        class="font-bold"
+                        :is-loading="enforceSSOChanging"
+                        :disabled="!verifiedSSO || !providedNotice"
+                        @click="handleEnforceSSO"
+                    >
+                        <span v-if="enforceSSOChanging">
+                            {{
+                                ssoForm.enforceSSO ? 'Enforcing' : 'Disabling'
+                            }}</span
+                        >
+                        <span v-else>
+                            {{
+                                ssoForm.enforceSSO ? 'Enforce' : 'Disable'
+                            }}</span
+                        >
+                    </AtlanBtn>
+                </div>
             </div>
         </a-modal>
     </div>

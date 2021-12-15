@@ -1,21 +1,26 @@
 <template>
     <div class="flex self-start flex-grow">
-        <a-select
+        <MultiInput
             v-if="
-                getDatatypeOfAttribute(attribute) === 'number' && isMultivalued
+                [
+                    'number',
+                    'int',
+                    'long',
+                    'float',
+                    'url',
+                    'string',
+                    'text',
+                ].includes(typeName.toLowerCase()) && isMultivalued
             "
-            :value="localValue"
+            v-model="localValue"
             class="flex-grow shadow-none"
-            mode="tags"
-            placeholder="Enter Number(s) separated by Enter key"
-            :allow-clear="true"
-            :dropdown-style="{ display: 'none' }"
-            @keydown.tab="(e) => e.preventDefault()"
-            @inputKeyDown="handleNumerKeyPress"
+            placeholder="Press Enter to add"
+            :data-type="typeName"
             @change="handleChange"
         />
+
         <a-input
-            v-else-if="getDatatypeOfAttribute(attribute) === 'number'"
+            v-else-if="typeName === 'number'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -23,22 +28,8 @@
             placeholder="Enter an integer..."
             @change="handleChange"
         />
-        <a-select
-            v-if="
-                getDatatypeOfAttribute(attribute) === 'float' && isMultivalued
-            "
-            :value="localValue"
-            class="flex-grow shadow-none"
-            mode="tags"
-            placeholder="Enter Number(s) separated by Enter key"
-            :allow-clear="true"
-            :dropdown-style="{ display: 'none' }"
-            @keydown.tab="(e) => e.preventDefault()"
-            @inputKeyDown="handleNumerKeyPress"
-            @change="handleChange"
-        />
         <a-input
-            v-else-if="getDatatypeOfAttribute(attribute) === 'float'"
+            v-else-if="typeName === 'float'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -49,21 +40,8 @@
             placeholder="Enter decimal value..."
             @change="handleChange"
         />
-        <a-select
-            v-else-if="
-                getDatatypeOfAttribute(attribute) === 'url' && isMultivalued
-            "
-            v-model:value="localValue"
-            class="flex-grow shadow-none"
-            mode="tags"
-            placeholder="Enter URLs separated by Enter key"
-            :allow-clear="true"
-            :dropdown-style="{ display: 'none' }"
-            @keydown.tab="(e) => e.preventDefault()"
-            @change="handleChange"
-        />
         <a-input
-            v-else-if="getDatatypeOfAttribute(attribute) === 'url'"
+            v-else-if="typeName === 'url'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -72,7 +50,7 @@
             @change="handleChange"
         />
         <a-radio-group
-            v-else-if="getDatatypeOfAttribute(attribute) === 'boolean'"
+            v-else-if="typeName === 'boolean'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow"
@@ -82,28 +60,15 @@
             <a-radio :value="false">No</a-radio>
         </a-radio-group>
         <a-date-picker
-            v-else-if="getDatatypeOfAttribute(attribute) === 'date'"
+            v-else-if="typeName === 'date'"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow w-100"
             value-format="x"
             @change="handleChange"
         />
-        <a-select
-            v-else-if="
-                getDatatypeOfAttribute(attribute) === 'text' && isMultivalued
-            "
-            v-model:value="localValue"
-            class="flex-grow shadow-none"
-            mode="tags"
-            placeholder="Enter text separated by Enter key"
-            :allow-clear="true"
-            :dropdown-style="{ display: 'none' }"
-            @keydown.tab="(e) => e.preventDefault()"
-            @change="handleChange"
-        />
         <a-textarea
-            v-else-if="getDatatypeOfAttribute(attribute) === 'text'"
+            v-else-if="typeName === 'text'"
             v-model:value="localValue"
             :allow-clear="true"
             :auto-size="true"
@@ -115,9 +80,9 @@
             @change="handleChange"
         />
         <a-select
-            v-else-if="getDatatypeOfAttribute(attribute) === 'users'"
+            v-else-if="typeName === 'users'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'users' : 'a user'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -126,6 +91,14 @@
             @focus="userSearch"
             @change="handleChange"
         >
+            <template #suffixIcon>
+                <AtlanIcon
+                    v-if="uLoading"
+                    icon="CircleLoader"
+                    class="animate-spin"
+                />
+                <AtlanIcon v-else icon="CaretDown" />
+            </template>
             <a-select-option
                 v-for="(item, index) in userList"
                 :key="index"
@@ -135,9 +108,9 @@
             </a-select-option>
         </a-select>
         <a-select
-            v-else-if="getDatatypeOfAttribute(attribute) === 'groups'"
+            v-else-if="typeName === 'groups'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'groups' : 'a group'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -145,7 +118,16 @@
             :show-arrow="true"
             @focus="groupSearch"
             @change="handleChange"
-            ><a-select-option
+        >
+            <template #suffixIcon>
+                <AtlanIcon
+                    v-if="gLoading"
+                    icon="CircleLoader"
+                    class="animate-spin"
+                />
+                <AtlanIcon v-else icon="CaretDown" />
+            </template>
+            <a-select-option
                 v-for="(item, index) in groupList"
                 :key="index"
                 :value="item.alias"
@@ -154,31 +136,37 @@
             </a-select-option>
         </a-select>
         <a-select
-            v-else-if="getDatatypeOfAttribute(attribute) === 'enum'"
+            v-else-if="typeName === 'enum'"
             v-model:value="localValue"
-            class="flex-grow shadow-none border-1"
+            class="flex-grow shadow-none center-arrow border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
             :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
-            :options="getEnumOptions(attribute.typeName)"
+            :options="getEnumOptions(attribute.options.enumType)"
             @change="handleChange"
-        />
+        >
+            <template #suffixIcon>
+                <AtlanIcon icon="CaretDown" />
+            </template>
+        </a-select>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
 
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useFacetGroups from '~/composables/group/useFacetGroups'
+    import MultiInput from '@/common/input/customizedTagInput.vue'
+    import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
-
+        components: { MultiInput },
         props: {
             attribute: {
                 type: Object,
@@ -196,26 +184,43 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const localValue: any = ref(modelValue.value)
-
             const {
                 getDatatypeOfAttribute,
                 isLink,
                 formatDisplayValue,
                 getEnumOptions,
             } = useCustomMetadataHelpers()
+            const typeName = computed(() =>
+                getDatatypeOfAttribute(props.attribute as CMA)
+            )
 
-            const { list: userList, handleSearch: handleUserSearch } =
-                useFacetUsers(false)
+            const localValue: any = ref(modelValue.value)
+
+            if (typeName.value === 'date' && localValue.value)
+                localValue.value = localValue.value.toString()
+
+            const {
+                list: userList,
+                handleSearch: handleUserSearch,
+                isLoading: uLoading,
+                isReady: isUserReady,
+                error: userError,
+            } = useFacetUsers('username', ['username'], false)
 
             const userSearch = (val) => {
-                handleUserSearch(val)
+                if (!isUserReady?.value || userError.value)
+                    handleUserSearch(val)
             }
 
-            const { list: groupList, handleSearch: handleGroupSearch } =
-                useFacetGroups(false)
+            const {
+                list: groupList,
+                handleSearch: handleGroupSearch,
+                isLoading: gLoading,
+                isReady,
+                error,
+            } = useFacetGroups('alias', ['alias'], false)
             const groupSearch = (val) => {
-                handleGroupSearch(val)
+                if (!isReady?.value || error.value) handleGroupSearch(val)
             }
 
             const isMultivalued = ref(
@@ -226,41 +231,13 @@
             if (isMultivalued.value && !localValue.value) localValue.value = []
             else if (!localValue.value) localValue.value = ''
 
-            const handleNumber = (v) => {
-                localValue.value = v.map((s) => parseInt(s, 10))
-            }
-            const handleDecimal = (v) => {
-                localValue.value = v.map((s) => parseFloat(s))
-            }
-
-            const handleChange = (v) => {
-                if (
-                    isMultivalued.value &&
-                    getDatatypeOfAttribute(props.attribute) === 'number'
-                )
-                    handleNumber(v)
-                else if (
-                    isMultivalued.value &&
-                    getDatatypeOfAttribute(props.attribute) === 'float'
-                )
-                    handleDecimal(v)
-
+            const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
             }
 
-            const handleNumerKeyPress = (v) => {
-                const allowDecimal =
-                    getDatatypeOfAttribute(props.attribute) === 'float'
-                const n = parseInt(v.key, 10)
-                if (Number.isNaN(n)) {
-                    if (allowDecimal && v.key === '.') return
-                    v.preventDefault()
-                }
-            }
-
             return {
-                handleNumerKeyPress,
+                typeName,
                 isMultivalued,
                 getDatatypeOfAttribute,
                 isLink,
@@ -272,7 +249,15 @@
                 userList,
                 groupSearch,
                 groupList,
+                gLoading,
+                uLoading,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .center-arrow:deep(.ant-select-arrow) {
+        @apply flex items-center;
+    }
+</style>

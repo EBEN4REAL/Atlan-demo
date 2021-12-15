@@ -4,7 +4,7 @@
             <div>
                 <AtlanIcon
                     icon="ChevronDown"
-                    class="ml-3 text-gray-500 transition-transform duration-300 transform"
+                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
             </div>
@@ -53,11 +53,16 @@
                 type: Array as PropType<string[]>,
                 required: true,
             },
+            type: {
+                type: String,
+                required: true,
+                default: () => 'persona',
+            },
         },
         emits: ['update:actions', 'change'],
         setup(props, { emit }) {
-            const { actions } = toRefs(props)
-            const { scopeList } = useScopeService().listScopes()
+            const { actions, type } = toRefs(props)
+            const { scopeList } = useScopeService().listScopes(type.value)
             const collapseRef = ref()
 
             const groupedActions = computed(() =>

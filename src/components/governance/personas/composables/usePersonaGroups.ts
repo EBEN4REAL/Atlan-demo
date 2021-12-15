@@ -8,7 +8,7 @@ function usePersonaGroupList(persona: Ref<IPersona>) {
     params.value.append('limit', '20')
     params.value.append('sort', 'name')
     params.value.append('columns', 'name')
-    params.value.append('columns', 'user_count')
+    params.value.append('columns', 'userCount')
     params.value.append('columns', 'id')
     params.value.append('columns', 'attributes')
 

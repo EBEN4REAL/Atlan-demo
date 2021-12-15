@@ -30,7 +30,7 @@
                             <div class="flex items-center">
                                 <AtlanIcon
                                     icon="Download"
-                                    class="m-0 mr-2 transform rotate-180  text-primary"
+                                    class="m-0 mr-2 transform rotate-180 text-primary"
                                 />
                                 <p class="p-0 m-0 text-gray-700 capitalize">
                                     Bulk upload terms
@@ -47,7 +47,7 @@
                     class="text-red-700"
                     @click="closeMenu"
                 >
-                    <RemoveGTCModal :entity="entity">
+                    <RemoveGTCModal :entity="entity" :redirect="true">
                         <template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon

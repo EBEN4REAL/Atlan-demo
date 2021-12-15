@@ -102,7 +102,7 @@
                         empty-screen="EmptyDiscover"
                         :desc="
                             staticUse
-                                ? 'No assets found'
+                                ? emptyViewText || 'No assets found'
                                 : 'We didnt find anything that matches your search criteria'
                         "
                         :button-text="staticUse ? '' : 'Reset Filter'"
@@ -128,6 +128,7 @@
                             :item="item"
                             :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
+                            @updateDrawer="updateCurrentList"
                             :preference="preference"
                             :show-check-box="showCheckBox"
                             :bulk-select-mode="
@@ -252,6 +253,10 @@
                 required: false,
                 default: false,
             },
+            emptyViewText: {
+                type: String,
+                default: ''
+            }
         },
         setup(props, { emit }) {
             const { preference: preferenceProp, checkedCriteria } =
@@ -329,7 +334,6 @@
                 error,
                 selectedAsset,
                 quickChange,
-                handleSelectedAsset,
                 updateList,
             } = useDiscoverList({
                 isCache: true,
@@ -349,7 +353,6 @@
 
             const updateCurrentList = (asset) => {
                 updateList(asset)
-                handleSelectedAsset(asset)
             }
 
             const handleSearchChange = useDebounceFn(() => {

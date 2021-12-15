@@ -1,24 +1,67 @@
 <template>
-    <div class="flex items-center p-6 border rounded bg-blue-50 border-primary">
-        <AtlanIcon class="mr-6 h-9" icon="InformationAnnouncement"/>
-        <p class="flex flex-col text-gray-700 gap-y-1.5">
-            <h3 class="text-lg font-bold">Company Level Announcement</h3>
-            <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi dolorum quo obcaecati necessitatibus! Assumenda sunt, </span>
-            <div class="text-sm">
-                <span >Shreyas Gupta</span>
-                <span class="ml-1 text-gray-500">12 Jan 2021</span>
+    <div
+        v-if="data?.attributes?.announcementTitle"
+        class="flex justify-between px-4 py-3 border rounded bg-blue-50 border-primary"
+    >
+        <AtlanIcon icon="InformationAnnouncement" class="h-5 mr-4"></AtlanIcon>
+        <div class="flex flex-col w-full">
+            <div class="flex justify-between w-full mb-2">
+                <div class="text-base font-bold text-gray-700">
+                    {{ data?.attributes?.announcementTitle }}
+                </div>
             </div>
-        </p>
+            <div class="mb-2 text-gray-500">
+                {{ data?.attributes?.announcementMessage }}
+            </div>
+            <div class="flex items-center text-gray-500 gap-x-1">
+                <div class="flex items-center text-sm">
+                    <Avatar
+                        :image-url="
+                            imageUrl(data?.attributes?.announcementUpdatedBy)
+                        "
+                        :allow-upload="false"
+                        :avatar-name="data?.attributes?.announcementUpdatedBy"
+                        :avatar-size="16"
+                        :avatar-shape="'circle'"
+                        class="mr-1 mt-0.5"
+                        avatar-bg-class="bg-blue-100"
+                    />
+                    <div class="ml-1">
+                        {{ data?.attributes?.announcementUpdatedBy }},
+                    </div>
+                </div>
+                {{ updatedDate }}
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
-    
+    import { defineComponent, computed } from 'vue'
+    import dayjs from 'dayjs'
+    import useTenant from '~/composables/tenant/useTenant'
+    import Avatar from '~/components/common/avatar/index.vue'
+
     export default defineComponent({
-        name: "Annoucements",
+        name: 'Annoucements',
+        components: {
+            Avatar,
+        },
         setup() {
-            return {}
+            const { data } = useTenant()
+            const updatedDate = computed(() =>
+                dayjs(
+                    Number(data.value?.attributes?.announcementUpdatedAt) ||
+                        new Date()
+                ).format('MMM DD, YYYY')
+            )
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
+            return {
+                data,
+                updatedDate,
+                imageUrl,
+            }
         },
     })
 </script>

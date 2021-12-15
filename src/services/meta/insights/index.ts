@@ -25,6 +25,16 @@ const CreateQueryFolder = (body: Record<string, any>,  options: useOptions) => {
         options || {}
     )
 }
+const CreateQueryCollection = (body: Record<string, any>,  options: useOptions) => {
+    return useAPI<BasicSearchResponse<any>>(
+        map.CREATE_QUERY_FOLDER,
+        'POST',
+        {
+            body,
+        },
+        options || {}
+    )
+}
 const GetSavedQuery = (guid: string, options: useOptions) => {
     return useAPI<SavedQueryResponse>(
         map.GET_SAVED_QUERY,
@@ -88,5 +98,6 @@ export const Insights = {
     CreateQueryFolder,
     DeleteEntity,
     UpdateSavedFolder,
-    GetSavedQueryIndex
+    GetSavedQueryIndex,
+    CreateQueryCollection
 }

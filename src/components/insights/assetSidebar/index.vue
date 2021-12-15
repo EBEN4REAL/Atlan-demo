@@ -7,48 +7,6 @@
             @asset-mutation="() => {}"
         ></AssetPreview>
     </div>
-    <div></div>
-    <!-- <div
-        class="w-full h-full placeholder"
-        v-if="selectedAsset.openingPos === 'editor' && activeInlineTab?.queryId"
-    >
-        <div class="flex items-center justify-between w-full p-3">
-            <span
-                v-if="activeInlineTab && activeInlineTab?.assetSidebar"
-                class="font-bold text-gray"
-            >
-                Unsaved Tab Screen
-            </span>
-            <span
-                class="flex items-center justify-center"
-                @click="() => closeAssetSidebar(activeInlineTab)"
-            >
-                <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
-            </span>
-        </div>
-    </div>
-    <div
-        class="w-full h-full placeholder"
-        v-if="
-            !selectedAsset.openingPos === 'not_editor' &&
-            !activeInlineTab?.queryId
-        "
-    >
-        <div class="flex items-center justify-between w-full p-3">
-            <span
-                v-if="activeInlineTab && activeInlineTab?.assetSidebar"
-                class="font-bold text-gray"
-            >
-                Unsaved Tab Screen
-            </span>
-            <span
-                class="flex items-center justify-center"
-                @click="() => closeAssetSidebar(activeInlineTab)"
-            >
-                <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
-            </span>
-        </div>
-    </div> -->
 </template>
 
 <script lang="ts">
@@ -60,6 +18,7 @@
         computed,
         ref,
         watch,
+        provide,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
@@ -83,6 +42,10 @@
                 )
                 return activeInlineTab.value?.assetSidebar?.assetInfo
             })
+
+            const updateList = (asset) => {}
+
+            provide('updateList', updateList)
 
             // watch(
             //     activeInlineTab,

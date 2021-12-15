@@ -17,8 +17,8 @@
                     </span>
                 </div>
             </div>
-            <div v-else class="flex items-center justify-between text-gray-500">
-                <span> Filters</span>
+            <div v-else class="flex items-center justify-between text-gray-500 no-filter">
+                <span> {{noFilterTitle}}</span>
             </div>
         </div>
         <slot></slot>
@@ -26,7 +26,6 @@
             <a-collapse
                 v-model:activeKey="localActiveKeyValue"
                 :accordion="isAccordion"
-                :class="$style.filter"
                 expand-icon-position="right"
                 :bordered="false"
                 @change="handleActiveKeyChange"
@@ -98,6 +97,18 @@
                     return true
                 },
             },
+            noFilterTitle: {
+                required: false,
+                default() {
+                    return "Filters"
+                },
+            },
+            extraCountFilter: {
+                required: false,
+                default() {
+                    return 0
+                },
+            },
         },
         emits: [
             'change',
@@ -108,7 +119,7 @@
         ],
         setup(props, { emit }) {
             const { modelValue, activeKey } = useVModels(props, emit)
-            const { typeName, isAccordion, filterList, allowCustomFilters } =
+            const { typeName, isAccordion, filterList, allowCustomFilters, extraCountFilter } =
                 toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
@@ -148,7 +159,7 @@
             })
 
             const totalFilteredCount = computed(() => {
-                let count = 0
+                let count = 0 + extraCountFilter.value
                 Object.keys(localValue.value).forEach((key) => {
                     if (Array.isArray(localValue.value[key])) {
                         if (localValue.value[key].length > 0) {
@@ -199,43 +210,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .filter {
-        :global(.ant-collapse-item) {
-            @apply border-b border-gray-light !important;
-        }
-
-        :global(.ant-collapse-item-active) {
-            @apply bg-white;
-
-            :global(.title) {
-                @apply text-primary !important;
-            }
-        }
-
-        :global(.ant-collapse-header) {
-            @apply px-4 !important;
-            @apply py-3 !important;
-
-            &:hover {
-                @apply bg-white;
-                /* some rules */
-            }
-        }
-
-        :global(.ant-collapse-item:last-child) {
-            @apply border-gray-300;
-        }
-
-        :global(.ant-collapse-content-box) {
-            @apply pb-3;
-            padding-right: 0px;
-            padding-left: 0px;
-            padding-top: 0px !important;
-        }
-        :global(.ant-collapse-content) {
-            @apply bg-white !important;
-        }
-    }
-</style>

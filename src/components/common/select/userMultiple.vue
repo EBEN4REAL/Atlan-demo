@@ -56,16 +56,16 @@
                 return [
                     {
                         username,
-                        first_name: firstName,
-                        last_name: lastName,
+                        firstName: firstName,
+                        lastName: lastName,
                     },
                     ...tempList,
                 ]
             })
 
             const fullName = (item) => {
-                if (item.first_name) {
-                    return `${item.first_name} ${item.last_name || ''}`
+                if (item.firstName) {
+                    return `${item.firstName} ${item.lastName || ''}`
                 }
                 return `${item.username}`
             }
@@ -91,15 +91,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

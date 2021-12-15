@@ -7,6 +7,7 @@ import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import confetti from '~/utils/confetti'
 import { generateUUID } from '~/utils/helper/generator'
+import { Entity } from '~/services/meta/entity/index'
 
 export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const {
@@ -22,8 +23,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         getAnchorGuid,
         announcementMessage,
         announcementType,
+        attributes,
+        assetType,
         announcementTitle,
         readmeContent,
+        meaningRelationships,
     } = useAssetInfo()
 
     const entity = ref({
@@ -87,6 +91,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementTitle: announcementTitle(selectedAsset.value) || '',
     })
 
+    const localMeanings = ref(meaningRelationships(selectedAsset.value))
+
     const localResource = ref({
         link: '',
         title: '',
@@ -113,11 +119,44 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
+    const addParentQualifiedName = (entity) => {
+        entity.attributes = {
+            ...entity.attributes,
+            parentQualifiedName: attributes(selectedAsset?.value)?.parentQualifiedName
+        }
+        return entity
+    }
+
+    const addParent = (entity) => {
+        entity.attributes = {
+            ...entity.attributes,
+            parent: attributes(selectedAsset?.value)?.parent
+        }
+        return entity
+    }
+
+    const addCollectionQualifiedName = (entity) => {
+        entity.attributes = {
+            ...entity.attributes,
+            collectionQualifiedName: attributes(selectedAsset?.value)?.collectionQualifiedName
+        }
+        return entity
+    }
+
     // Description Change
     const handleChangeDescription = () => {
+        console.log('entity: ', selectedAsset.value)
         if (description(selectedAsset?.value) !== localDescription.value) {
             entity.value.attributes.userDescription = localDescription.value
             body.value.entities = [entity.value]
+
+            if(assetType(selectedAsset?.value)==='Query') {
+                entity.value = addParentQualifiedName(entity.value)
+                entity.value = addCollectionQualifiedName(entity.value)
+                entity.value = addParent(entity.value)
+            }
+
+            console.log('new entity: ',  entity.value)
             currentMessage.value = 'Description has been updated'
             mutate()
         }
@@ -148,6 +187,13 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         if (isChanged) {
             body.value.entities = [entity.value]
+
+            if(assetType(selectedAsset?.value)==='Query') {
+                entity.value = addParentQualifiedName(entity.value)
+                entity.value = addCollectionQualifiedName(entity.value)
+                entity.value = addParent(entity.value)
+            }
+
             currentMessage.value = 'Owners has been updated'
             mutate()
         }
@@ -173,6 +219,13 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             entity.value.attributes.certificateStatusMessage =
                 localCertificate.value.certificateStatusMessage
             body.value.entities = [entity.value]
+
+            if(assetType(selectedAsset?.value)==='Query') {
+                entity.value = addParentQualifiedName(entity.value)
+                entity.value = addCollectionQualifiedName(entity.value)
+                entity.value = addParent(entity.value)
+            }
+
             currentMessage.value = 'Certificate has been updated'
             mutate()
         }
@@ -187,10 +240,37 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         entity.value.attributes.announcementType =
             localAnnouncement.value.announcementType
         body.value.entities = [entity.value]
+
+        if(assetType(selectedAsset?.value)==='Query') {
+            entity.value = addParentQualifiedName(entity.value)
+            entity.value = addCollectionQualifiedName(entity.value)
+            entity.value = addParent(entity.value)
+        }
+
         currentMessage.value = 'Announcement has been updated'
         mutate()
     }
+    const handleMeaningsUpdate = () => {
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                meanings: localMeanings.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid ?? term.termGuid,
+                })),
+            },
+        }
+        body.value.entities = [entity.value]
 
+        if(assetType(selectedAsset?.value)==='Query') {
+            entity.value = addParentQualifiedName(entity.value)
+            entity.value = addCollectionQualifiedName(entity.value)
+            entity.value = addParent(entity.value)
+        }
+
+        currentMessage.value = 'Terms have been updated'
+        mutate()
+    }
     // Resource Addition
     const handleAddResource = () => {
         const resourceEntity = ref<any>({
@@ -208,8 +288,33 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             },
         })
         body.value.entities = [resourceEntity.value]
+
+        if(assetType(selectedAsset?.value)==='Query') {
+            entity.value = addParentQualifiedName(entity.value)
+            entity.value = addCollectionQualifiedName(entity.value)
+            entity.value = addParent(entity.value)
+        }
+
         currentMessage.value = 'A new resource has been added'
         mutate()
+    }
+
+    // Resource Deletion
+    const handleResourceDelete = (guidToDelete: string) => {
+        const { error, isLoading, isReady } = Entity.DeleteEntity(guidToDelete)
+        whenever(error, () => {
+            message.error(
+                `${error.value?.response?.data?.errorCode} ${
+                    error.value?.response?.data?.errorMessage.split(':')[0]
+                }` ?? 'Something went wrong'
+            )
+        })
+        whenever(isReady, () => {
+            message.success(`Resource "${title(selectedAsset.value)}" deleted`)
+            guid.value = selectedAsset.value.guid
+
+            mutateUpdate()
+        })
     }
 
     // Readme Update
@@ -230,6 +335,13 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
         if (readmeContent(selectedAsset.value) !== localReadmeContent.value) {
             body.value.entities = [readmeEntity.value]
+
+            if(assetType(selectedAsset?.value)==='Query') {
+                entity.value = addParentQualifiedName(entity.value)
+                entity.value = addCollectionQualifiedName(entity.value)
+                entity.value = addParent(entity.value)
+            }
+
             currentMessage.value = 'Readme has been updated'
             mutate()
         }
@@ -256,17 +368,32 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(error, () => {
         if (title(selectedAsset?.value) !== localName.value) {
             localName.value = title(selectedAsset?.value)
-            nameRef.value?.handleReset(localName.value)
+            if (nameRef.value?.handleReset)
+                nameRef.value?.handleReset(localName.value)
         }
         if (description(selectedAsset?.value) !== localDescription.value) {
             localDescription.value = description(selectedAsset?.value)
-            descriptionRef.value?.handleReset(localDescription.value)
+            if (descriptionRef.value?.handleReset)
+                descriptionRef.value?.handleReset(localDescription.value)
         }
+        if (ownerUsers(selectedAsset?.value) !== localOwners.value.ownerUsers) {
+            localOwners.value.ownerUsers = ownerUsers(selectedAsset?.value)
+        }
+        if (
+            ownerGroups(selectedAsset?.value) !== localOwners.value.ownerGroups
+        ) {
+            localOwners.value.ownerGroups = ownerGroups(selectedAsset?.value)
+        }
+        if (
+            meaningRelationships(selectedAsset?.value) !== localMeanings.value
+        ) {
+            localMeanings.value = meaningRelationships(selectedAsset.value)
+        }
+
         message.error(
-            error.value?.response?.data?.errorCode +
-                ' ' +
-                error.value?.response?.data?.errorMessage.split(':')[0] ??
-                'Something went wrong'
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
+            }` ?? 'Something went wrong'
         )
     })
 
@@ -339,7 +466,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     whenever(isErrorClassification, () => {
-        message.error('Something went wrong. Please try again')
+        localClassifications.value = classifications(selectedAsset.value)
+        message.error(
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
+            }` ?? 'Something went wrong'
+        )
     })
 
     return {
@@ -351,6 +483,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localOwners,
         localClassifications,
         localAnnouncement,
+        localMeanings,
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
@@ -363,8 +496,10 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         animationPoint,
         handleAddResource,
         localResource,
+        handleResourceDelete,
         handleUpdateReadme,
         localReadmeContent,
+        handleMeaningsUpdate,
         shouldDrawerUpdate,
         asset,
     }

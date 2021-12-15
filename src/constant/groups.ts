@@ -40,7 +40,6 @@ export const columns = [
         ellipsis: true,
         width: 370,
         sortKey: 'alias',
-        colSpan: 2,
         slots: { title: 'customTitle', customRender: 'name' },
     },
     {
@@ -50,7 +49,7 @@ export const columns = [
         sorter: true,
         ellipsis: true,
         width: 190,
-        sortKey: 'user_count',
+        sortKey: 'userCount',
     },
     {
         title: 'Created By',
@@ -59,13 +58,13 @@ export const columns = [
         key: 'createdBy',
     },
     {
-        title: 'Created on',
+        title: 'Created',
         dataIndex: 'createdAtTimeAgo',
         key: 'createdAt',
         sorter: true,
         width: 190,
         ellipsis: true,
-        sortKey: 'created_at',
+        sortKey: 'createdAt',
     },
     {
         title: 'Actions',

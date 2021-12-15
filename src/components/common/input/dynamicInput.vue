@@ -123,25 +123,51 @@
     />
 
     <!-- async tree select end -->
-    <div v-if="dataType === 'upload'">
-        <a-upload
-            v-model:file-list="fileList"
-            :accept="accept"
-            :multiple="false"
-            :remove="handleRemove"
-            :before-upload="beforeUpload"
+    <div class="flex flex-col items-center">
+        <div
+            v-if="dataType === 'upload'"
+            class="flex items-center mt-2 space-x-3"
         >
-            <a-button :disabled="fileList.length > 0"> Select File </a-button>
-        </a-upload>
-        <a-button
-            type="primary"
-            :disabled="fileList.length === 0"
-            :loading="uploading"
-            style="margin-top: 16px"
-            @click="handleUpload"
+            <a-upload
+                v-model:file-list="fileList"
+                :accept="accept"
+                :multiple="false"
+                :remove="handleRemove"
+                :before-upload="beforeUpload"
+                :showUploadList="false"
+            >
+                <a-button :disabled="fileList.length > 0">
+                    Select File
+                </a-button>
+            </a-upload>
+            <a-button
+                v-if="fileList?.length"
+                type="primary"
+                :disabled="fileList.length === 0"
+                :loading="uploading"
+                @click="handleUpload"
+            >
+                {{ uploading ? 'Uploading' : 'Start Upload' }}
+            </a-button>
+        </div>
+        <span
+            v-if="accept?.length && !fileList?.length"
+            class="self-center mt-2 text-gray-500"
+            >Format allowed: {{ accept?.toUpperCase() }}</span
         >
-            {{ uploading ? 'Uploading' : 'Start Upload' }}
-        </a-button>
+        <div v-if="fileList?.length" class="flex items-center mt-3 space-x-1">
+            <atlan-icon icon="Link" />
+            <span class="text-gray-500">{{ fileList[0]?.name }}</span>
+            <span class="text-gray-500">|</span>
+            <atlan-icon
+                icon="Delete"
+                class="text-red-500"
+                @click="fileList = []"
+            />
+        </div>
+        <span v-if="fileList?.length" class="mt-3"
+            >Hit the “Start Upload” button to start upload.</span
+        >
     </div>
 
     <a-input-number

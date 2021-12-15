@@ -23,8 +23,11 @@
                         <Description
                             ref="descriptionRef"
                             v-model="localDescription"
-                            @change="handleChangeDescription"
                             :selected-asset="asset"
+                            :read-only="readOnly"
+                            :in-profile="true"
+                            class="-ml-1"
+                            @change="handleChangeDescription"
                         />
                     </div>
                 </div>
@@ -35,17 +38,20 @@
                         <Certificate
                             v-model="localCertificate"
                             :selected-asset="asset"
+                            :read-only="readOnly"
+                            :in-profile="true"
                             @change="handleChangeCertificate"
                         />
                     </div>
 
-                    <div v-if="asset.guid" class="flex flex-col">
+                    <div v-if="asset.guid" class="flex flex-col max-w-sm">
                         <p class="mb-1 text-sm text-gray-500">Owners</p>
                         <Owners
                             v-model="localOwners"
-                            :used-for-assets="true"
-                            @change="handleOwnersChange"
                             :selected-asset="asset"
+                            :read-only="readOnly"
+                            :in-profile="true"
+                            @change="handleOwnersChange"
                         />
                     </div>
                 </div>
@@ -101,10 +107,10 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            editPermission: {
+            readOnly: {
                 type: Boolean,
                 required: false,
-                default: true,
+                default: false,
             },
         },
         setup(props) {

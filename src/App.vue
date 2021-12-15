@@ -22,13 +22,13 @@
             authStore.setUserDetails()
 
             // permissions
-            const { data: permissions } = usePermissions()
+            usePermissions()
 
             // tenant
             useTenant()
 
             // typedefs
-            const { data: typedef } = useTypedefs()
+            useTypedefs()
 
             // // connections
             useConnection()

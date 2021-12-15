@@ -1,6 +1,6 @@
 <template>
     <EmptyView
-        v-if="!error && !searchText && !isLoading && !groupList?.length"
+        v-if="!totalGroupsCount"
         empty-screen="CreateGroups"
         headline="Create a new group"
         button-text="Create Group"
@@ -45,8 +45,11 @@
             />
         </a-drawer>
 
+        <div v-if="isLoading" class="flex items-center justify-center h-full">
+            <AtlanIcon icon="Loader" class="h-7 animate-spin" />
+        </div>
         <div
-            v-if="error"
+            v-else-if="error"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -68,7 +71,7 @@
         <template v-else-if="groupList?.length">
             <a-table
                 id="groupList"
-                class="overflow-hidden border rounded-lg group-table"
+                class="overflow-hidden border rounded-lg"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 :pagination="false"
@@ -92,12 +95,12 @@
                             <div class="mr-2 truncate max-w-3/4">
                                 {{ group.name }}
                             </div>
-                            <div
+                            <!-- <div
                                 v-if="group.isDefault === 'true'"
                                 class="px-2 py-1 text-xs rounded-full bg-blue-50 text-gray"
                             >
                                 Default
-                            </div>
+                            </div> -->
                         </div>
                         <p class="mb-0 text-gray-500 truncate">
                             {{ group.description }}
@@ -111,17 +114,21 @@
                         :mark-as-default-loading="markAsDefaultLoading"
                         :delete-group-loading="deleteGroupLoading"
                         @addMembers="handleAddMembers(group)"
-                        @deleteGroup="handleDeleteGroup(group.id)"
+                        @deleteGroup="handleDeleteGroup(group)"
                         @toggleDefault="handleToggleDefault(group)"
                     />
                 </template>
             </a-table>
-            <div class="flex justify-end max-w-full mt-4">
-                <a-pagination
-                    :total="pagination.total"
-                    :current="pagination.current"
-                    :page-size="pagination.pageSize"
-                    @change="handlePagination"
+            <div
+                class="flex justify-end max-w-full mt-4"
+                v-if="pagination.total > 1 || isLoading"
+            >
+                <Pagination
+                    v-model:offset="groupListAPIParams.offset"
+                    :totalPages="pagination.total"
+                    :loading="isLoading"
+                    :pageSize="pagination.pageSize"
+                    @mutate="getGroupList"
                 />
             </div>
         </template>
@@ -135,9 +142,9 @@
     </DefaultLayout>
 </template>
 <script lang="ts">
-    import { ref, reactive, defineComponent, computed, watch } from 'vue'
+    import { ref, reactive, defineComponent, computed, watch, h } from 'vue'
     import ErrorView from '@common/error/index.vue'
-    import { message } from 'ant-design-vue'
+    import { message, Modal } from 'ant-design-vue'
     import { useDebounceFn } from '@vueuse/core'
     import EmptyView from '@common/empty/index.vue'
     import { Groups } from '~/services/service/groups'
@@ -152,10 +159,12 @@
     import AddGroup from '@/admin/groups/addGroup.vue'
     import { columns } from '~/constant/groups'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import Pagination from '@/common/list/pagination.vue'
 
     export default defineComponent({
         name: 'GroupList',
         components: {
+            Pagination,
             ErrorView,
             EmptyView,
             AddGroup,
@@ -174,20 +183,11 @@
 
             const selectedGroupId = ref('')
             const groupListAPIParams = reactive({
-                limit: 15,
+                limit: 50,
                 offset: 0,
                 filter: {},
-                sort: '-created_at',
+                sort: '-createdAt',
             })
-            const pagination = computed(() => ({
-                total: Object.keys(groupListAPIParams.filter).length
-                    ? filteredGroupsCount.value
-                    : totalGroupsCount.value,
-                pageSize: groupListAPIParams.limit,
-                current:
-                    groupListAPIParams.offset / groupListAPIParams.limit + 1,
-            }))
-
             const {
                 groupList,
                 totalGroupsCount,
@@ -196,6 +196,19 @@
                 error,
                 isLoading,
             } = useGroups(groupListAPIParams)
+
+            const pagination = computed(() => ({
+                total: Object.keys(groupListAPIParams.filter).length
+                    ? Math.ceil(
+                          filteredGroupsCount.value / groupListAPIParams.limit
+                      )
+                    : Math.ceil(
+                          totalGroupsCount.value / groupListAPIParams.limit
+                      ),
+                pageSize: groupListAPIParams.limit,
+                current:
+                    groupListAPIParams.offset / groupListAPIParams.limit + 1,
+            }))
 
             // BEGIN: GROUP PREVIEW
             const {
@@ -250,13 +263,7 @@
             }, 600)
             const clearFilter = () => {
                 groupListAPIParams.filter = {}
-                getGroupList()
-            }
-
-            const handlePagination = (page: number) => {
-                // modify offset
-                const offset = (page - 1) * groupListAPIParams.limit
-                groupListAPIParams.offset = offset
+                searchText.value = ''
                 getGroupList()
             }
 
@@ -267,7 +274,7 @@
             ) => {
                 // add sort
                 if (Object.keys(sorter).length) {
-                    let sortValue = '-created_at'
+                    let sortValue = '-createdAt'
                     if (sorter.order && sorter.column && sorter.column.sortKey)
                         sortValue = `${sorter.order === 'descend' ? '-' : ''}${
                             sorter.column.sortKey
@@ -276,9 +283,9 @@
                     groupListAPIParams.offset = 0
                 }
                 // modify offset
-                const offset =
-                    (pagination.current - 1) * groupListAPIParams.limit
-                groupListAPIParams.offset = offset
+                // const offset =
+                //     (pagination.current - 1) * groupListAPIParams.limit
+                // groupListAPIParams.offset = offset
                 // fetch groups
                 getGroupList()
             }
@@ -303,24 +310,100 @@
                 defaultTab.value = 'about'
                 showGroupPreview.value = false
             }
-            const handleDeleteGroup = (groupId: string) => {
-                const { data, isReady, error, isLoading } =
-                    Groups.DeleteGroup(groupId)
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        deleteGroupLoading.value = isLoading.value
-                        if (isReady && !error.value && !isLoading.value) {
-                            getGroupList()
-                            message.success('Group Removed')
-                        } else if (error && error.value) {
-                            message.error('Failed, try again')
-                        }
+            const handleDeleteGroup = (group) => {
+                Modal.confirm({
+                    title: 'Delete Group',
+                    class: 'delete-group-modal',
+                    content: () => {
+                        return h('div', [
+                            'Are you sure you want to delete group',
+                            h('span', [' ']),
+                            h(
+                                'span',
+                                {
+                                    class: ['font-bold'],
+                                },
+                                [`${group.name}`]
+                            ),
+                            h('span', '?'),
+                            h(
+                                'div',
+                                {
+                                    class: ['my-4'],
+                                },
+                                [
+                                    h(
+                                        'div',
+                                        {
+                                            class: ['font-bold'],
+                                        },
+                                        [
+                                            h(
+                                                'span',
+                                                { class: ['text-error'] },
+                                                ['Warning']
+                                            ),
+                                            ' : Deleting a group will also remove it from',
+                                        ]
+                                    ),
+                                    h('ol', { class: ['text-sm'] }, [
+                                        h(
+                                            'li',
+                                            '1. Personas which this group is a part of'
+                                        ),
+                                        h(
+                                            'li',
+                                            '2. Policies inside purposes which include this group'
+                                        ),
+                                    ]),
+                                ]
+                            ),
+                        ])
                     },
-                    { immediate: true }
-                )
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        const messageKey = Date.now()
+                        const { data, isReady, error, isLoading } =
+                            Groups.DeleteGroup(group.id)
+                        watch(
+                            [data, isReady, error, isLoading],
+                            () => {
+                                deleteGroupLoading.value = isLoading.value
+                                if (!error.value && !isLoading.value) {
+                                    getGroupList()
+                                    message.success({
+                                        content: `Group Removed`,
+                                        duration: 1.5,
+                                        key: messageKey,
+                                    } as any)
+                                } else if (
+                                    error &&
+                                    error.value &&
+                                    !isLoading.value
+                                ) {
+                                    message.error({
+                                        content: `Failed to remove group`,
+                                        duration: 1.5,
+                                        key: messageKey,
+                                    } as any)
+                                } else
+                                    message.loading({
+                                        content: `Removing group`,
+                                        duration: 0,
+                                        key: messageKey,
+                                    } as any)
+                            },
+                            { immediate: true }
+                        )
+                    },
+                })
             }
-
             const handleToggleDefault = (group: any) => {
                 const requestPayload = ref()
                 requestPayload.value = {
@@ -364,6 +447,7 @@
                 columns,
                 isGroupDrawerVisible,
                 searchText,
+                groupListAPIParams,
                 onSearch,
                 groupList,
                 pagination,
@@ -385,12 +469,16 @@
                 deleteGroupLoading,
                 showActionsDropdown,
                 map,
-                handlePagination,
             }
         },
     })
 </script>
 <style lang="less">
+    .delete-group-modal {
+        .ant-modal-confirm-body-wrapper {
+            @apply p-5;
+        }
+    }
     #groupList {
         th.ant-table-row-cell-last {
             display: flex;
@@ -402,16 +490,22 @@
             display: none;
         }
     }
-</style>
-
-<style lang="less" scoped>
-    .group-table {
-        // extra row hide hack
-        :global(.ant-table-measure-row) {
-            @apply hidden;
+    .delete-group-modal {
+        .ant-modal-confirm-body-wrapper {
+            @apply p-5;
         }
-        :global(.ant-table-column-title) {
-            @apply text-left;
+    }
+</style>
+<style lang="less" scoped>
+    #groupList {
+        th.ant-table-row-cell-last {
+            display: flex;
+            justify-content: center;
+        }
+    }
+    .hide-checkbox {
+        .ant-checkbox {
+            display: none;
         }
     }
 </style>

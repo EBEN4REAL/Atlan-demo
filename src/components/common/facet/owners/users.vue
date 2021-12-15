@@ -13,18 +13,17 @@
                 <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
                         :checked="map[item[selectUserKey]]"
+                        class="atlanReverse inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
                         @change="
                             (checked) =>
                                 handleChange(checked, item[selectUserKey])
                         "
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
-                        :class="$style.atlanReverse"
                     >
                         <div class="text-sm leading-none capitalize text-gray">
                             {{ fullName(item) }}
                             <span
-                                class="text-sm text-gray-500"
                                 v-if="item.username === username"
+                                class="text-sm text-gray-500"
                             >
                                 (me)
                             </span>
@@ -81,7 +80,6 @@
                 localValue.value.map((id) => {
                     map.value[id] = true
                 })
-                console.log(map)
             }
             updateMap(localValue)
             const { list, handleSearch, total, filterTotal } = useFacetUsers()
@@ -105,16 +103,16 @@
                     {
                         username,
                         id,
-                        first_name: firstName,
-                        last_name: lastName,
+                        firstName: firstName,
+                        lastName: lastName,
                     },
                     ...tempList,
                 ]
             })
 
             const fullName = (item) => {
-                if (item.first_name) {
-                    return `${item.first_name} ${item.last_name || ''}`
+                if (item.firstName) {
+                    return `${item.firstName} ${item.lastName || ''}`
                 }
                 return `${item.username}`
             }
@@ -145,14 +143,3 @@
     })
 </script>
 
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

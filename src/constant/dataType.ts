@@ -6,6 +6,7 @@ import date from '~/assets/images/dataType/date.svg'
 import array from '~/assets/images/dataType/array.svg'
 import struct from '~/assets/images/dataType/struct.svg'
 import geography from '~/assets/images/dataType/geography.svg'
+import variant from '~/assets/images/dataType/variant.svg'
 
 export const images = {
     Number: number,
@@ -16,6 +17,7 @@ export const images = {
     Array: array,
     Object: struct,
     Geography: geography,
+    Variant: variant,
 }
 
 export const dataTypeCategoryList = [
@@ -107,9 +109,15 @@ export const dataTypeCategoryList = [
         imageText: 'array',
     },
     {
+        id: 'variant',
+        label: 'Variant',
+        type: ['VARIANT'],
+        image: variant,
+    },
+    {
         id: 'object',
         label: 'Object',
-        type: ['VARIANT', 'OBJECT'],
+        type: ['OBJECT'],
         image: struct,
         imageText: 'struct',
     },

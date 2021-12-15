@@ -3,20 +3,11 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { Roles } from '~/services/service/roles'
 import swrvState from '~/utils/swrvState'
 
-let memberCountList = []
-
-const getMemberCount = (id) => {
-    if (memberCountList && memberCountList.length > 0) {
-        const details = memberCountList.find((role) => role.roleId === id)
-        return details ? details.count : 0
-    }
-    return 0
-}
 const getFormattedRole = (role: any) => {
     const localRole = {
-        id: role.roleId,
-        name: role.roleName.substring(1), // remove $ from name
-        memberCount: getMemberCount(role.roleId),
+        id: role.id,
+        name: role.name.substring(1), // remove $ from name
+        memberCount: parseInt(role.memberCount, 10)
     }
     return localRole
 }
@@ -28,7 +19,11 @@ export default function useRoles() {
         isValidating,
         error,
     } = Roles.List(
-        {},
+        {
+            filter: {
+                level: 'workspace',
+            },
+        },
         {
             cacheOptions: {
                 shouldRetryOnError: false,
@@ -42,18 +37,19 @@ export default function useRoles() {
 
     const { state, STATES } = swrvState(data, error, isValidating)
     const roleList = computed(() => {
-        if (data.value && data.value.length) {
-            const roles = data.value.filter((role) =>
-                role.roleName.startsWith('$')
-            )
-            return roles.map((role: any) => getFormattedRole(role))
+        const customSort = ['member', 'admin', 'guest']
+
+        const customSortFn = (a, b) =>
+            customSort.indexOf(a.name) < customSort.indexOf(b.name) ? -1 : 1
+
+
+        if (data?.value?.records?.length) {
+            const roles = data.value.records.map((role: any) => getFormattedRole(role)).sort(customSortFn)
+            return roles
         }
         return []
     })
-    watch(data, () => {
-        if (data && data.value && data.value.memberCount)
-            memberCountList = data.value.memberCount
-    })
+
     return {
         roleList,
         getRoleList,

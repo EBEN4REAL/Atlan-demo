@@ -50,6 +50,16 @@ export const discoveryFilters = [
         exclude: false,
     },
     {
+        id: 'terms',
+        label: 'Terms',
+        component: 'terms',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
         id: 'properties',
         label: 'Properties',
         component: 'properties',
@@ -305,19 +315,6 @@ export const glossaryFilters = [
             },
         ],
         overallCondition: 'OR',
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-    },
-]
-
-export const packageFilters = [
-    {
-        id: 'certificateStatus',
-        label: 'Certificate',
-        component: 'certificate',
-        overallCondition: 'OR',
-        attributes: [],
         isDeleted: false,
         isDisabled: false,
         exclude: false,

@@ -1,10 +1,10 @@
 <template>
     <div
-        class="flex items-center w-full p-3 bg-gray-100 border-t border-gray-300 rounded-b  group-hover:border-white"
+        class="flex items-center w-full p-3 bg-gray-100 border-t border-gray-300 rounded-b group-hover:border-white"
     >
         <template v-for="item in items" :key="item.label">
             <AtlanBtn
-                class="flex items-center px-4 mr-3 text-gray-700 bg-white border border-gray-300 rounded "
+                class="flex items-center px-4 mr-3 text-gray-700 bg-white border border-gray-300 rounded"
                 size="sm"
                 color="secondary"
                 padding="compact"
@@ -25,6 +25,7 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
     import AtlanBtn from '@/UI/button.vue'
+    import { generateUUID } from '~/utils/helper/generator'
 
     export default defineComponent({
         name: 'Footer Panels',
@@ -63,7 +64,48 @@
                 },
             ]
             const handleAdd = (type) => {
-                emit('add', type)
+                let panel = {}
+                let uuid = generateUUID()
+
+                if (type === 'aggregate') {
+                    panel = {
+                        id: uuid,
+                        column: {},
+                        aggregators: [],
+                    }
+                } else if (type === 'group') {
+                    panel = {
+                        id: uuid,
+                        tableQualfiedName: undefined,
+                        columns: [],
+                        columnsData: [],
+                    }
+                } else if (type === 'sort') {
+                    panel = {
+                        id: uuid,
+                        column: {},
+                        order: 'asc',
+                    }
+                } else if (type === 'filter') {
+                    panel = {
+                        id: uuid,
+                        column: {},
+                        filter: {
+                            filterType: 'and',
+                        },
+                    }
+                } else if (type === 'join') {
+                    panel = {
+                        id: uuid,
+                        columnsDataLeft: {},
+                        columnsDataRight: {},
+                        joinType: {
+                            type: 'inner_join',
+                            name: 'Inner Join',
+                        },
+                    }
+                }
+                emit('add', type, panel)
             }
             return {
                 handleAdd,

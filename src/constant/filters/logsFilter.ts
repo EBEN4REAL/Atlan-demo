@@ -101,11 +101,22 @@ export const accessLogsFilter = [
 ]
 
 export const requestFilter = [
+    //   {
+    //     id: 'hierarchy',
+    //     label: 'Connection',
+    //     component: 'hierarchy',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    // },
     {
-        id: 'users',
+        id: 'requestor',
         label: 'Requestor',
         component: 'owners',
         overallCondition: 'OR',
+        // selectUserKey: "id",
         attributes: [],
         isDeleted: false,
         isDisabled: false,

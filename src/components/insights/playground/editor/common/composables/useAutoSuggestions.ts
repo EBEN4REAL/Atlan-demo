@@ -285,7 +285,7 @@ const attributes = [
     "connectorName",
     "connectionId",
     "connectionQualifiedName",
-    "parentFolderQualifiedName",
+    "parentQualifiedName",
     "defaultSchemaQualifiedName",
     "rowCount",
     "columnCount",

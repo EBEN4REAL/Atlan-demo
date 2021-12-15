@@ -25,11 +25,26 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                 connectors: {
                     connector: undefined,
                 },
+                collection: { guid: '', qualifiedName: undefined, parentQualifiedName: undefined, },
             },
         },
         playground: {
             vqb: {
-                panels: [{ order: 1, id: 'columns', hide: false, columns: [] }],
+                panels: [
+                    {
+                        order: 1,
+                        id: 'columns',
+                        hide: true,
+                        subpanels: [
+                            {
+                                id: '1',
+                                tableQualifiedName: undefined,
+                                columns: [],
+                                columnsData: [],
+                            },
+                        ],
+                    },
+                ],
             },
             editor: {
                 text: '',

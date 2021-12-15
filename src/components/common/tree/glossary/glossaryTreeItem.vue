@@ -1,14 +1,11 @@
 <template>
     <div class="flex items-center justify-between w-full py-0 m-0 group">
-        <div
-            v-if="item?.typeName === 'cta'"
-            class="flex items-center space-x-2"
-        >
+        <div v-if="item?.typeName === 'cta'" class="flex flex-col space-y-2">
             <AddGtcModal
                 entityType="AtlasGlossaryTerm"
-                :glossaryName="getAnchorName(item) || title(item)"
-                :categoryName="title(item)"
-                :categoryGuid="categoryId"
+                :glossaryName="item?.glossaryName"
+                :categoryName="item?.categoryName"
+                :categoryGuid="item?.categoryGuid"
                 :glossary-qualified-name="glossaryQualifiedName"
                 @add="handleAdd"
             >
@@ -21,9 +18,9 @@
             </AddGtcModal>
             <AddGtcModal
                 entityType="AtlasGlossaryCategory"
-                :glossaryName="getAnchorName(item) || title(item)"
-                :categoryName="title(item)"
-                :categoryGuid="categoryId"
+                :glossaryName="item?.glossaryName"
+                :categoryName="item?.categoryName"
+                :categoryGuid="item?.categoryGuid"
                 :glossary-qualified-name="glossaryQualifiedName"
                 @add="handleAdd"
             >
@@ -35,25 +32,45 @@
                 </template>
             </AddGtcModal>
         </div>
+
+        <div
+            v-else-if="item?.typeName === 'loadMore'"
+            class="flex items-center justify-between w-full py-0 m-0 group"
+            @click="item.click"
+        >
+            <div class="text-primary">{{ item.title }}</div>
+            <div v-if="item.isLoading">
+                <a-spin
+                    size="small"
+                    icon="Loader"
+                    class="w-auto h-4 mr-1 animate-spin"
+                ></a-spin>
+            </div>
+            <div v-else-if="!item.isLoading && item.isError">
+                <AtlanIcon icon="Error"></AtlanIcon>
+            </div>
+        </div>
         <div
             v-else
             class="flex items-center justify-between w-full py-0 m-0 group"
         >
-            <div class="flex items-center py-1 pr-2">
-                <AtlanIcon
-                    :icon="
-                        getEntityStatusIcon(
-                            item.typeName,
-                            certificateStatus(item)
-                        )
-                    "
-                    :style="iconSize"
-                    class="self-center"
+            <div class="flex items-center w-10/12 py-1 pr-2">
+                <div class="w-4 mr-1">
+                    <AtlanIcon
+                        :icon="
+                            getEntityStatusIcon(
+                                item.typeName,
+                                certificateStatus(item)
+                            )
+                        "
+                        :style="iconSize"
+                        class="self-center"
+                    />
+                </div>
+                <Tooltip
+                    :tooltip-text="`${title(item)}`"
+                    :classes="'w-full '"
                 />
-
-                <span class="ml-1 text-sm" :class="textClass">{{
-                    title(item)
-                }}</span>
             </div>
 
             <div v-if="item.dataRef.isLoading">
@@ -66,7 +83,7 @@
             <div v-else-if="!item.dataRef.isLoading && item.dataRef.isError">
                 <AtlanIcon icon="Error"></AtlanIcon>
             </div>
-            <div v-else class="hidden group-hover:flex">
+            <div v-else-if="!checkable" class="hidden group-hover:flex">
                 <Actions
                     :treeMode="true"
                     :glossaryName="getAnchorName(item) || title(item)"
@@ -80,11 +97,19 @@
 </template>
 <script lang="ts">
     // library
-    import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        toRefs,
+        inject,
+        ref,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import Actions from './actions.vue'
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     import {
         Glossary,
@@ -94,18 +119,24 @@
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
-        components: { Actions, AtlanIcon, AddGtcModal },
+        components: { Actions, AtlanIcon, AddGtcModal, Tooltip },
         props: {
             item: {
                 type: Object as PropType<Glossary | Term | Category>,
                 required: false,
                 default: () => {},
             },
+            checkable: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
+            if (item.value.typeName === 'cta') console.log(item)
             const { getEntityStatusIcon } = useGlossaryData()
             const {
                 certificateStatus,
@@ -113,6 +144,7 @@
                 getAnchorQualifiedName,
                 getAnchorName,
             } = useAssetInfo()
+
             const iconSize = computed(() => {
                 if (item.value.typeName === 'AtlasGlossary') {
                     return 'height: 18px !important'

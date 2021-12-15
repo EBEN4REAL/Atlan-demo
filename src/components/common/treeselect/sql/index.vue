@@ -1,29 +1,39 @@
 /* eslint-disable vue/require-default-prop */
 <template>
-    <a-tree-select
-        style="width: 100%"
-        :dropdown-style="{
-            maxHeight: '400px',
-            maxWidth: '300px;',
-            overflow: 'auto',
-        }"
-        :multiple="true"
-        :tree-data="treeData"
-        :class="$style.connector"
-        placeholder=""
-        dropdown-class-name="sqlDropdown"
-        :allow-clear="true"
-        :tree-data-simple-mode="true"
-        :treeCheckable="true"
-    >
-        <template #title="node">
-            {{ node.title }}
-        </template>
-
-        <template #suffixIcon>
-            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-        </template>
-    </a-tree-select>
+    <a-input-group compact class="flex w-full mb-0">
+        <a-tree-select
+            style="width: 80%"
+            :dropdown-style="{
+                maxHeight: '400px',
+                maxWidth: '300px;',
+                overflow: 'auto',
+            }"
+            v-model:value="localValue"
+            :alwaysOpen="true"
+            :multiple="true"
+            :tree-data="treeData"
+            placeholder=""
+            :allow-clear="true"
+            :tree-data-simple-mode="true"
+            :treeCheckable="true"
+            showCheckedStrategy="SHOW_PARENT"
+            @dropdownVisibleChange="handleDropdownVisibleChange"
+            @change="handleChange"
+        >
+            <template #title="node">
+                {{ node.title }}
+            </template>
+        </a-tree-select>
+        <a-button style="width: 20%" @click="handleClick">
+            <a-spin size="small" v-if="isLoading" class="mt-1"></a-spin>
+            <AtlanIcon
+                icon="Error"
+                v-else-if="error && !isLoading"
+                style="height: 12px"
+            ></AtlanIcon>
+            <AtlanIcon icon="Refresh" v-else></AtlanIcon>
+        </a-button>
+    </a-input-group>
 </template>
 
 <script lang="ts">
@@ -46,7 +56,6 @@
     export default defineComponent({
         props: {
             modelValue: {
-                type: [Array, String],
                 required: false,
             },
             query: {
@@ -65,9 +74,10 @@
                 required: false,
             },
         },
+        emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            // const { modelValue } = useVModels(props, emit)
-            // const localValue = ref(modelValue.value)
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
             const { credential, query, exclude, include } = toRefs(props)
 
             const body = computed(() => ({
@@ -78,17 +88,24 @@
             }))
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
-            const handleClick = () => {
-                refresh()
-            }
-
             onMounted(() => {
-                refresh()
+                if (modelValue.value.length > 0) {
+                    refresh()
+                }
             })
 
             // watch(credential, () => {
             //     refresh()
             // })
+
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
+            }
+
+            const handleClick = () => {
+                refresh()
+            }
 
             const treeData = ref([])
             watch(data, () => {
@@ -100,25 +117,29 @@
                 db.forEach((element) => {
                     treeData.value.push({
                         id: element,
-                        key: element,
+
                         value: element,
                         isLeaf: false,
                         title: element,
                     })
                 })
-
-                console.log(treeData)
                 data.value.results?.forEach((element) => {
                     treeData.value.push({
-                        id: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
-                        key: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
+                        id: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
+
                         isLeaf: true,
                         pId: element.TABLE_CATALOG,
-                        value: `${element.TABLE_CATALOG}_${element.TABLE_SCHEM}`,
+                        value: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
                         title: element.TABLE_SCHEM,
                     })
                 })
             })
+
+            const handleDropdownVisibleChange = (open) => {
+                if (treeData.value?.length === 0 && open) {
+                    refresh()
+                }
+            }
 
             // const treeData = computed(() => {
             //     const mappedConnection = list.map((i) => ({
@@ -162,34 +183,21 @@
 
             return {
                 treeData,
-                handleClick,
+
                 isLoading,
                 credential,
                 query,
                 exclude,
                 include,
+                error,
+                handleDropdownVisibleChange,
+                isLoading,
+                handleChange,
+                localValue,
+                handleClick,
             }
         },
     })
 </script>
-<style lang="less">
-    .sqlDropdown {
-        .ant-select-tree-switcher {
-            width: 18px !important;
-            height: 24px !important;
-            line-height: 24px !important;
-            margin-top: -12px !important;
-        }
-        .ant-select-switcher-icon {
-            font-weight: normal !important;
-        }
-    }
-</style>
-<style lang="less" module>
-    .connector {
-        :global(.ant-select-selector) {
-            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
-            @apply rounded-lg !important;
-        }
-    }
-</style>
+<style lang="less"></style>
+<style lang="less" module></style>

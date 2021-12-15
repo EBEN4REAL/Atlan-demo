@@ -7,7 +7,7 @@
             >
         </section>
         <main
-            class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-14"
+            class="flex flex-col col-span-4 pb-16 mb-16 border-r pr-9 gap-y-6"
         >
             <section class="">
                 <SearchAndStats />
@@ -18,20 +18,20 @@
             <section>
                 <Relevant />
             </section>
-            <section>
+            <!--section>
                 <YourOrgs />
-            </section>
+            </section-->
         </main>
         <aside class="flex flex-col w-64 mb-24 ml-8 gap-y-12">
             <section>
                 <div class="">
                     <img
                         class="mb-3 rounded-lg"
-                        src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80"
+                        src="https://images.unsplash.com/photo-1606937589177-0c6374bd88ab?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1651&q=80"
                         alt=""
                     />
                     <span class="text-sm text-gray-500"
-                        >Pets of Atlan, Ginger and Lemon wish you nice day!
+                        >Pets of Atlan, Ginger and Lemon wish you a nice day!
                         🐾</span
                     >
                 </div>
@@ -39,7 +39,8 @@
             <section>
                 <YourWorkspace />
             </section>
-            <section>
+            <!-- TODO: Hidden for paytm rollout, will enable it back -->
+            <!--section>
                 <h2 class="mb-3 text-xl font-bold">Helpful links</h2>
                 <router-link to="//notion.so" target="_blank" replace>
                     <div
@@ -71,7 +72,7 @@
                         </span>
                     </div>
                 </router-link>
-            </section>
+            </section-->
         </aside>
     </div>
 </template>

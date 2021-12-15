@@ -28,8 +28,7 @@
                     class="my-3 bg-white"
                     :autofocus="true"
                     size="minimal"
-                >
-                </SearchAndFilter>
+                />
             </div>
 
             <ExplorerList
@@ -55,7 +54,10 @@
                         >
                             {{ item.displayName }}
                         </span>
-                        <!-- <div class="w-1.5 h-1.5 rounded-full success"></div> -->
+                        <div
+                            class="w-1.5 h-1.5 rounded-full"
+                            :class="item.isActive ? 'active' : 'inActive'"
+                        />
                     </div>
                 </template>
             </ExplorerList>
@@ -171,7 +173,10 @@
     })
 </script>
 <style lang="less" scoped>
-    .success {
+    .active {
         background: #00a680;
+    }
+    .inActive {
+        background: #cf592e;
     }
 </style>

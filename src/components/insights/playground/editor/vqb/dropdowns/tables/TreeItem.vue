@@ -167,7 +167,6 @@
     import { getLastMappedKeyword } from '~/components/insights/playground/editor/common/composables/useAutoSuggestions'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import AtlanBtn from '@/UI/button.vue'
-    import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
     import { generateUUID } from '~/utils/helper/generator'
     import { useMapping } from '~/components/insights/playground/editor/common/composables/useMapping'
     // import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
@@ -667,7 +666,6 @@
             // const router = useRouter()
             // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs')
-            let demoTab: activeInlineTabInterface = inlineTabsDemoData[0]
 
             const handleAddNewTab = async (query, context, previewItem) => {
                 const key = generateUUID()
@@ -775,6 +773,11 @@
                                         '/'
                                     )[1],
                             },
+                            collection: {
+                                guid: '',
+                                qualifiedName: undefined,
+                                parentQualifiedName: undefined,
+                            },
                         },
                     },
                     playground: {
@@ -783,8 +786,15 @@
                                 {
                                     order: 1,
                                     id: 'columns',
-                                    hide: false,
-                                    columns: [],
+                                    hide: true,
+                                    subpanels: [
+                                        {
+                                            id: '1',
+                                            tableQualifiedName: undefined,
+                                            columns: [],
+                                            columnsData: [],
+                                        },
+                                    ],
                                 },
                             ],
                         },

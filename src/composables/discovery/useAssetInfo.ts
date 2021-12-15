@@ -104,7 +104,15 @@ export default function useAssetInfo() {
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
 
-    const links = (asset: assetInterface) => attributes(asset)?.links
+    const links = (asset: assetInterface) => {
+        const allLinks = attributes(asset)?.links
+
+        const activeLinks = allLinks?.filter(
+            (link) => link?.attributes?.__state === 'ACTIVE'
+        )
+        return activeLinks
+    }
+    const link = (asset: assetInterface) => attributes(asset)?.link
 
     const getTabs = (list, typeName: string) => {
         console.log(list, typeName)
@@ -134,7 +142,7 @@ export default function useAssetInfo() {
 
     const { getList: cmList } = useCustomMetadataFacet()
 
-    const getPreviewTabs = (asset: assetInterface) => {
+    const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         let customTabList = []
         if (cmList(assetType(asset)).length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
@@ -149,8 +157,15 @@ export default function useAssetInfo() {
                 }
             })
         }
+        const allTabs = [
+            ...getTabs(previewTabs, assetType(asset)),
+            ...customTabList,
+        ]
+        if (inProfile) {
+            return allTabs.filter((tab) => tab.requiredInProfile === inProfile)
+        }
 
-        return [...getTabs(previewTabs, assetType(asset)), ...customTabList]
+        return allTabs
     }
     const getProfileTabs = (asset: assetInterface) => {
         return getTabs(profileTabs, assetType(asset))
@@ -215,7 +230,7 @@ export default function useAssetInfo() {
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
-            return `/insights?id=${asset.guid}`
+            return `/insights?id=${asset.guid}&runQuery=true`
         }
         return `/assets/${asset?.guid}`
     }
@@ -247,8 +262,7 @@ export default function useAssetInfo() {
             const tableName = attributes(asset).name
             queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
         } else if (assetType(asset) === 'Query') {
-            // console.log('assetType: ', asset.guid)
-            queryPath = `/insights?id=${asset.guid}`
+            queryPath = `/insights?id=${asset.guid}&runQuery=true`
         } else {
             queryPath = `/insights`
         }
@@ -384,6 +398,12 @@ export default function useAssetInfo() {
         }
         return '~'
     }
+    const rawQuery = (asset: assetInterface) => {
+        if (attributes(asset)?.rawQuery && attributes(asset)?.rawQuery !== '') {
+            return attributes(asset)?.rawQuery
+        }
+        return '~'
+    }
 
     const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
         if (attributes(asset)?.sourceUpdatedAt) {
@@ -454,6 +474,13 @@ export default function useAssetInfo() {
         attributes(asset)?.readme?.attributes?.description
 
     const isEditAllowed = (asset: assetInterface) => {}
+
+    const isScrubbed = (asset: assetInterface) => {
+        if (asset?.scrubbed) {
+            return true
+        }
+        return false
+    }
 
     // const modifiedBy = (asset: assetInterface) =>
     //     attributes(asset)?.__modifiedBy
@@ -564,7 +591,11 @@ export default function useAssetInfo() {
     }
 
     const isNonBiAsset = (asset: assetInterface) => {
-        return assetType(asset) === 'Table' || assetType(asset) === 'View'
+        return (
+            assetType(asset) === 'Table' ||
+            assetType(asset) === 'View' ||
+            assetType(asset) === 'Column'
+        )
     }
 
     const discoveryStore = useAssetStore()
@@ -871,6 +902,7 @@ export default function useAssetInfo() {
         isPartition,
         isDist,
         compiledQuery,
+        rawQuery,
         definition,
         description,
         classifications,
@@ -923,6 +955,7 @@ export default function useAssetInfo() {
         assetTypeLabel,
         getActions,
         getAssetQueryPath,
+        link,
         webURL,
         isBiAsset,
         selectedGlossary,
@@ -936,5 +969,6 @@ export default function useAssetInfo() {
         isNonBiAsset,
         getLineagePath,
         isUserDescription,
+        isScrubbed,
     }
 }

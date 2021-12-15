@@ -43,14 +43,25 @@
                                     ? `Search through ${filteredLogsCount} logs`
                                     : `Search logs`
                             "
-                            class="w-1/3 mr-1 border border-l-0 border-gray-300 rounded-none rounded-tr rounded-br shadow-sm "
+                            class="w-1/3 mr-1 border border-l-0 border-gray-300 rounded-none rounded-tr rounded-br shadow-sm"
                             size="default"
                             :allow-clear="true"
                             @change="handleSearch"
                         ></a-input-search>
                     </div>
-                    <div class="flex-grow w-0"></div>
-
+                    <div class="mr-3">
+                        <a-tooltip placement="bottom">
+                            <template #title> Refresh </template>
+                            <AtlanBtn
+                                class="px-2 bg-transparent border-gray-300"
+                                size="sm"
+                                color="secondary"
+                                padding="compact"
+                                @click="refetchList"
+                                ><AtlanIcon icon="Refresh"></AtlanIcon
+                            ></AtlanBtn>
+                        </a-tooltip>
+                    </div>
                     <TimeFrameSelector
                         v-model:modelValue="timeFrame"
                         :time-frame="timeFrame"
@@ -69,50 +80,16 @@
             />
 
             <div
-                v-if="(queryList && queryList.length) || isLoading"
+                v-if="pagination.total > 1 || isLoading"
                 class="flex flex-row items-center justify-end w-full mt-4"
             >
-                <AtlanBtn
-                    class="bg-transparent rounded-r-none"
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                    :disabled="pagination.current === 1"
-                    @click="handlePagination(pagination.current - 1)"
-                >
-                    <AtlanIcon icon="CaretLeft" />
-                </AtlanBtn>
-                <AtlanBtn
-                    class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default "
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                >
-                    {{ pagination.current }} of
-                    <span v-if="Math.ceil(pagination.total)">{{
-                        Math.ceil(pagination.total)
-                    }}</span>
-
-                    <div
-                        v-else-if="isLoading"
-                        class="flex items-center justify-center"
-                    >
-                        <AtlanIcon icon="CircleLoader" class="animate-spin" />
-                    </div>
-                </AtlanBtn>
-
-                <AtlanBtn
-                    class="bg-transparent rounded-l-none"
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                    :disabled="
-                        pagination.current === Math.ceil(pagination.total)
-                    "
-                    @click="handlePagination(pagination.current + 1)"
-                >
-                    <AtlanIcon icon="CaretRight" />
-                </AtlanBtn>
+                <Pagination
+                    :totalPages="pagination.total"
+                    :loading="isLoading"
+                    :pageSize="size"
+                    v-model:offset="from"
+                    @mutate="refreshList"
+                />
             </div>
         </DefaultLayout>
         <a-drawer
@@ -154,7 +131,7 @@
                 /></AssetFilters>
                 <AtlanBtn
                     v-if="queryLogsFilterDrawerVisible"
-                    class="fixed z-10 px-0 border-l-0 rounded-none rounded-r  top-1/4 left-72"
+                    class="fixed z-10 px-0 border-l-0 rounded-none rounded-r top-1/4 left-72"
                     color="secondary"
                     @click="
                         () => {
@@ -164,7 +141,7 @@
                 >
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="h-4 px-1 transition-transform transform rotate-90 "
+                        class="h-4 px-1 transition-transform transform rotate-90"
                     />
                 </AtlanBtn>
             </div>
@@ -173,182 +150,188 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref, watch, computed } from 'vue'
-import dayjs from 'dayjs'
-import { useDebounceFn } from '@vueuse/core'
-import map from '~/constant/accessControl/map'
-import DefaultLayout from '~/components/admin/layout.vue'
-import AtlanBtn from '@/UI/button.vue'
-import QueryLogTable from '@/governance/queryLogs/queryTable.vue'
-import QueryPreviewDrawer from '~/components/governance/queryLogs/queryDrawer.vue'
-import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
-import { useQueryLogs } from './composables/useQueryLogs'
-import AssetFilters from '@/common/assets/filters/index.vue'
-import { queryLogsFilter } from '~/constant/filters/logsFilter'
-import Connector from '~/components/insights/common/connector/connector.vue'
-import { useConnector } from '~/components/insights/common/composables/useConnector'
-import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
+    import { defineComponent, ref, Ref, watch, computed } from 'vue'
+    import dayjs from 'dayjs'
+    import { useDebounceFn } from '@vueuse/core'
+    import map from '~/constant/accessControl/map'
+    import DefaultLayout from '~/components/admin/layout.vue'
+    import AtlanBtn from '@/UI/button.vue'
+    import QueryLogTable from '@/governance/queryLogs/queryTable.vue'
+    import QueryPreviewDrawer from '~/components/governance/queryLogs/queryDrawer.vue'
+    import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
+    import { useQueryLogs } from './composables/useQueryLogs'
+    import AssetFilters from '@/common/assets/filters/index.vue'
+    import { queryLogsFilter } from '~/constant/filters/logsFilter'
+    import Connector from '~/components/insights/common/connector/connector.vue'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
+    import Pagination from '@/common/list/pagination.vue'
 
-export default defineComponent({
-    name: 'QueryLogsView',
-    components: {
-        DefaultLayout,
-        AtlanBtn,
-        QueryLogTable,
-        TimeFrameSelector,
-        QueryPreviewDrawer,
-        AssetFilters,
-        Connector,
-    },
-    setup() {
-        /** LOCAL STATE */
-        const facets = ref({})
-        const searchText: Ref<string> = ref('')
-        const queryLogsFilterDrawerVisible: Ref<boolean> = ref(false)
-        const timeFrame = ref('30 days')
-        const selectedQuery = ref({})
-        const isQueryPreviewDrawerVisible = ref(false)
-        const gte = ref(
-            dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
-        )
-        const lt = ref(dayjs().format())
-        const from = ref(0)
-        const size = ref(6)
-        const { getDatabaseName, getSchemaName, getConnectionQualifiedName } =
-            useConnector()
-        const {
-            list: queryList,
-            mutateBody,
-            refetchList,
-            isLoading,
-            filteredLogsCount,
-            savedQueryMetaMap,
-        } = useQueryLogs(gte, lt, from, size)
-        // since we always get filtered total count in response, storing the total count when we get the logs first time, i.e. when no filters are applied to find the total number of logs to decide if we want to render empty state or logs table.
-        const totalLogsCount = ref(0)
-        const stopWatcher = watch(filteredLogsCount, () => {
-            totalLogsCount.value = filteredLogsCount.value
-        })
-        watch(totalLogsCount, stopWatcher)
-        const toggleQueryPreviewDrawer = (
-            val: boolean | undefined = undefined
-        ) => {
-            if (val === undefined)
-                isQueryPreviewDrawerVisible.value =
-                    !isQueryPreviewDrawerVisible.value
-            else isQueryPreviewDrawerVisible.value = val
-        }
-
-        const setSelectedQuery = (query: Object) => {
-            selectedQuery.value = query
-        }
-        const handleSelectQuery = (query: Object) => {
-            if (
-                isQueryPreviewDrawerVisible.value &&
-                query._id === selectedQuery.value._id
-            ) {
-                isQueryPreviewDrawerVisible.value = false
-            } else if (!isQueryPreviewDrawerVisible.value) {
-                isQueryPreviewDrawerVisible.value = true
-            }
-            setSelectedQuery(query)
-        }
-        const selectedRowKeys = computed(() =>
-            selectedQuery.value?._id !== undefined
-                ? [selectedQuery.value?._id]
-                : []
-        )
-        const pagination = computed(() => ({
-            total: filteredLogsCount.value / size.value,
-            pageSize: size.value,
-            current: from.value / size.value + 1,
-        }))
-        const refreshList = () => {
-            const usernames = facets.value?.users?.ownerUsers
-            const queryStatusValues = facets.value?.queryStatus?.status
-            const connectorFacet = facets.value?.connector?.attributeName
-            const facetValue = facets.value?.connector?.attributeValue
-            let schemaName = ''
-            let dbName = ''
-            let connectionQF = ''
-            let connectorName = ''
-            if (connectorFacet) {
-                if (connectorFacet === 'schemaQualifiedName') {
-                    dbName = getDatabaseName(facetValue) || ''
-                    schemaName = getSchemaName(facetValue) || ''
-                    connectionQF = getConnectionQualifiedName(facetValue) || ''
-                } else if (connectorFacet === 'databaseQualifiedName') {
-                    dbName = getDatabaseName(facetValue) || ''
-                    connectionQF = getConnectionQualifiedName(facetValue) || ''
-                } else if (connectorFacet === 'connectionQualifiedName') {
-                    connectionQF = facetValue || ''
-                } else if (connectorFacet === 'connectorName') {
-                    connectorName = facetValue || ''
-                }
-            }
-            mutateBody({
-                from,
-                size,
-                gte,
-                lt,
-                usernames,
-                queryStatusValues,
-                dbName,
-                schemaName,
-                connectionQF,
-                connectorName,
-                searchText: searchText.value,
+    export default defineComponent({
+        name: 'QueryLogsView',
+        components: {
+            Pagination,
+            DefaultLayout,
+            AtlanBtn,
+            QueryLogTable,
+            TimeFrameSelector,
+            QueryPreviewDrawer,
+            AssetFilters,
+            Connector,
+        },
+        setup() {
+            /** LOCAL STATE */
+            const facets = ref({})
+            const searchText: Ref<string> = ref('')
+            const queryLogsFilterDrawerVisible: Ref<boolean> = ref(false)
+            const timeFrame = ref('30 days')
+            const selectedQuery = ref({})
+            const isQueryPreviewDrawerVisible = ref(false)
+            const gte = ref(
+                dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
+            )
+            const lt = ref(dayjs().format())
+            const from = ref(0)
+            const size = ref(20)
+            const {
+                getDatabaseName,
+                getSchemaName,
+                getConnectionQualifiedName,
+            } = useConnector()
+            const {
+                list: queryList,
+                mutateBody,
+                refetchList,
+                isLoading,
+                filteredLogsCount,
+                savedQueryMetaMap,
+            } = useQueryLogs(gte, lt, from, size)
+            // since we always get filtered total count in response, storing the total count when we get the logs first time, i.e. when no filters are applied to find the total number of logs to decide if we want to render empty state or logs table.
+            const totalLogsCount = ref(0)
+            const stopWatcher = watch(filteredLogsCount, () => {
+                totalLogsCount.value = filteredLogsCount.value
             })
-            refetchList()
-        }
-        const handleFilterChange = () => {
-            from.value = 0
-            refreshList()
-        }
-        const handlePagination = (page) => {
-            const offset = (page - 1) * size.value
-            from.value = offset
-            refreshList()
-        }
+            watch(totalLogsCount, stopWatcher)
+            const toggleQueryPreviewDrawer = (
+                val: boolean | undefined = undefined
+            ) => {
+                if (val === undefined)
+                    isQueryPreviewDrawerVisible.value =
+                        !isQueryPreviewDrawerVisible.value
+                else isQueryPreviewDrawerVisible.value = val
+            }
 
-        const handleRangePickerChange = (e) => {
-            gte.value = e[0]
-            lt.value = e[1]
-            refreshList()
-        }
-        const handleSearch = useDebounceFn(() => {
-            from.value = 0
-            refreshList()
-        }, 200)
-        const handleResetEvent = () => {
-            facets.value = {}
-            handleFilterChange()
-        }
-        return {
-            selectedRowKeys,
-            isQueryPreviewDrawerVisible,
-            selectedQuery,
-            queryList,
-            isLoading,
-            handleSearch,
-            handleSelectQuery,
-            toggleQueryPreviewDrawer,
-            handleRangePickerChange,
-            timeFrame,
-            searchText,
-            queryLogsFilterDrawerVisible,
-            map,
-            queryLogsFilter,
-            handleFilterChange,
-            handleResetEvent,
-            facets,
-            pagination,
-            filteredLogsCount,
-            handlePagination,
-            savedQueryMetaMap,
-            totalLogsCount,
-            EmptyLogsIllustration,
-        }
-    },
-})
+            const setSelectedQuery = (query: Object) => {
+                selectedQuery.value = query
+            }
+            const handleSelectQuery = (query: Object) => {
+                if (
+                    isQueryPreviewDrawerVisible.value &&
+                    query._id === selectedQuery.value._id
+                ) {
+                    isQueryPreviewDrawerVisible.value = false
+                } else if (!isQueryPreviewDrawerVisible.value) {
+                    isQueryPreviewDrawerVisible.value = true
+                }
+                setSelectedQuery(query)
+            }
+            const selectedRowKeys = computed(() =>
+                selectedQuery.value?._id !== undefined
+                    ? [selectedQuery.value?._id]
+                    : []
+            )
+            const pagination = computed(() => ({
+                total: filteredLogsCount.value / size.value,
+                pageSize: size.value,
+                current: from.value / size.value + 1,
+            }))
+            const refreshList = () => {
+                const usernames = facets.value?.users?.ownerUsers
+                const queryStatusValues = facets.value?.queryStatus?.status
+                const connectorFacet = facets.value?.connector?.attributeName
+                const facetValue = facets.value?.connector?.attributeValue
+                let schemaName = ''
+                let dbName = ''
+                let connectionQF = ''
+                let connectorName = ''
+                if (connectorFacet) {
+                    if (connectorFacet === 'schemaQualifiedName') {
+                        dbName = getDatabaseName(facetValue) || ''
+                        schemaName = getSchemaName(facetValue) || ''
+                        connectionQF =
+                            getConnectionQualifiedName(facetValue) || ''
+                    } else if (connectorFacet === 'databaseQualifiedName') {
+                        dbName = getDatabaseName(facetValue) || ''
+                        connectionQF =
+                            getConnectionQualifiedName(facetValue) || ''
+                    } else if (connectorFacet === 'connectionQualifiedName') {
+                        connectionQF = facetValue || ''
+                    } else if (connectorFacet === 'connectorName') {
+                        connectorName = facetValue || ''
+                    }
+                }
+                mutateBody({
+                    from,
+                    size,
+                    gte,
+                    lt,
+                    usernames,
+                    queryStatusValues,
+                    dbName,
+                    schemaName,
+                    connectionQF,
+                    connectorName,
+                    searchText: searchText.value,
+                })
+                refetchList()
+            }
+            const handleFilterChange = () => {
+                from.value = 0
+                refreshList()
+            }
+
+            const handleRangePickerChange = (e) => {
+                gte.value = e[0]
+                lt.value = e[1]
+                refreshList()
+            }
+            const handleSearch = useDebounceFn(() => {
+                from.value = 0
+                refreshList()
+            }, 200)
+            const handleResetEvent = () => {
+                facets.value = {}
+                handleFilterChange()
+            }
+            return {
+                size,
+                from,
+                selectedRowKeys,
+                isQueryPreviewDrawerVisible,
+                selectedQuery,
+                queryList,
+                isLoading,
+                handleSearch,
+                handleSelectQuery,
+                toggleQueryPreviewDrawer,
+                handleRangePickerChange,
+                timeFrame,
+                searchText,
+                queryLogsFilterDrawerVisible,
+                map,
+                queryLogsFilter,
+                handleFilterChange,
+                handleResetEvent,
+                facets,
+                pagination,
+                filteredLogsCount,
+
+                savedQueryMetaMap,
+                totalLogsCount,
+                EmptyLogsIllustration,
+                refetchList,
+                refreshList,
+            }
+        },
+    })
 </script>

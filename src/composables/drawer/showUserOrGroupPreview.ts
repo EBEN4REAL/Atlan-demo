@@ -5,6 +5,8 @@ import whoami from '~/composables/user/whoami'
 
 import { useGroupPreview } from '~/composables/group/showGroupPreview'
 import useGroups from '~/composables/group/useGroups'
+import bodybuilder from 'bodybuilder'
+import { Search } from '~/services/meta/search'
 
 /**
  * A composable for driving the userOrGroupPreview component. Under the hood,
@@ -31,15 +33,12 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                 uniqueAttribute.value === 'username'
                     ? {
                           $and: [
-                              { email_verified: true },
+                              { emailVerified: true },
                               { username: userNameUser },
                           ],
                       }
                     : {
-                          $and: [
-                              { email_verified: true },
-                              { id: userId.value },
-                          ],
+                          $and: [{ emailVerified: true }, { id: userId.value }],
                       },
         }))
 
@@ -66,7 +65,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
         )
         const imageUrl = computed(() => {
             if (selectedUser.value && selectedUser.value.username)
-                return `${window.location.origin}/api/service/avatars/${selectedUser.value.id}`
+                return `${window.location.origin}/api/service/avatars/${selectedUser.value.username}`
             return ''
         })
 

@@ -1,10 +1,13 @@
 @import 'ant-design-vue/dist/antd.less';
-@import './antd/ant-tabs.less';
-@import './antd/ant-form.less';
-@import './antd/ant-tree.less';
-@import './antd/ant-popover.less';
-@import './antd/ant-modal.less';
+
 @import './antd/ant-checkbox.less';
+@import './antd/ant-collapse.less';
+@import './antd/ant-form.less';
+@import './antd/ant-modal.less';
+@import './antd/ant-popover.less';
+@import './antd/ant-tabs.less';
+@import './antd/ant-timeline.less';
+@import './antd/ant-tree.less';
 
 body {
     font-family: 'Avenir', sans-serif !important;
@@ -64,10 +67,6 @@ body {
 .ant-checkbox-wrapper + .ant-checkbox-wrapper {
     margin-left: 0px !important;
 }
-
-// .ant-collapse-header {
-//     @apply py-2 !important;
-// }
 
 .ant-select-multiple .ant-select-selection-item-remove > .anticon {
     vertical-align: 0.2em !important;
@@ -148,3 +147,18 @@ Table .ant-table-body {
         height: 0px !important;
     }
 }
+.ant-modal-confirm-btns {
+    @apply mt-3 !important;
+    [class="ant-btn"] { // only targeting the cancel button; btn that has only one class and that class is ant-btn
+        @apply bg-transparent;
+        @apply border-transparent;
+        @apply hover:text-gray;
+    }
+    .ant-btn.ant-btn-primary.ant-btn-dangerous { // only targeting danger btns
+        @apply bg-error;
+        @apply border-error;
+        @apply font-bold;
+        
+    }
+}
+

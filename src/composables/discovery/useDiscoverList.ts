@@ -15,7 +15,7 @@ const glossaryAggregationName = 'group_by_glossary'
 
 interface DiscoverListParams {
     isCache?: boolean | false
-    dependentKey?: Ref<any>
+    dependentKey: Ref<any>
     queryText?: Ref<any>
     facets?: Ref<any>
     postFacets?: Ref<any>
@@ -73,16 +73,23 @@ export function useDiscoverList({
     } = useIndexSearch<assetInterface>(defaultBody, localKey, isCache, false, 1)
 
     const list = ref<assetInterface[]>([])
+
+    // For column widget
+    const freshList = ref<assetInterface[]>([])
+
     watch(data, () => {
         if (offset?.value > 0) {
             if (data.value?.entities) {
                 list.value.push(...data.value?.entities)
+                freshList.value = [...data?.value?.entities]
             }
         } else {
             if (data.value?.entities) {
                 list.value = [...data?.value?.entities]
+                freshList.value = [...data?.value?.entities]
             } else {
                 list.value = []
+                freshList.value = []
             }
         }
     })
@@ -225,6 +232,7 @@ export function useDiscoverList({
         isValidating,
         isLoading,
         list,
+        freshList,
         data,
         fetch,
         quickChange,

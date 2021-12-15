@@ -1,20 +1,25 @@
 <template>
     <a-select
-        placeholder="Users"
         v-model:value="localValue"
+        placeholder="Users"
         class="w-full"
+        :show-search="true"
+        :mode="multiple ? 'multiple' : null"
         @change="handleChange"
-        :showSearch="true"
         @search="handleSearch"
     >
-        <a-select-option :value="item.username" v-for="item in userList">
+        <a-select-option
+            v-for="(item, x) in userList"
+            :key="x"
+            :value="item.username"
+        >
             {{ fullName(item) }}
         </a-select-option>
     </a-select>
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, computed, ref } from 'vue'
+    import { defineComponent, watch, computed, ref, toRefs } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useUserData from '~/composables/user/useUserData'
@@ -27,6 +32,11 @@
                 required: false,
                 default: () => '',
             },
+            multiple: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             modelValue: {
                 type: Array,
                 required: false,
@@ -37,6 +47,8 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const { multiple } = toRefs(props)
+
             const { list, handleSearch, total } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
             watch(
@@ -55,16 +67,16 @@
                 return [
                     {
                         username,
-                        first_name: firstName,
-                        last_name: lastName,
+                        firstName: firstName,
+                        lastName: lastName,
                     },
                     ...tempList,
                 ]
             })
 
             const fullName = (item) => {
-                if (item.first_name) {
-                    return `${item.first_name} ${item.last_name || ''}`
+                if (item.firstName) {
+                    return `${item.firstName} ${item.lastName || ''}`
                 }
                 return `${item.username}`
             }
@@ -90,15 +102,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .atlanReverse {
-        > span:nth-child(2) {
-            @apply w-full pl-0;
-        }
-
-        :global(.ant-checkbox) {
-            top: 0px !important;
-        }
-    }
-</style>

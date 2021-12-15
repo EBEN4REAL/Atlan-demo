@@ -20,7 +20,8 @@
             </p>
         </div>
 
-        <div class="flex justify-end p-3 border-t border-gray-200">
+        <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
+            <a-button @click="handleCancel">Cancel</a-button>
             <a-button type="danger" @click="handleDelete" :loading="isLoading"
                 >Delete</a-button
             >
@@ -77,6 +78,13 @@
                     return ''
                 },
             },
+            redirect: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
         },
         emits: ['delete', 'update:visible'],
         setup(props, { emit }) {
@@ -84,37 +92,14 @@
             const visible = ref(false)
             const isLoading = ref(false)
             const glossaryStore = useGlossaryStore()
+            const handleSelectGlossary = inject('handleSelectGlossary')
             const selectedGlossaryQf = computed(
                 () => glossaryStore.activeGlossaryQualifiedName
             )
-            // const entityToDelete = reactive({
-            //     attributes: {
-            //         userDescription: '',
-            //         name: '',
-            //         qualifiedName: '',
-            //     },
-            //     typeName: entityType.value,
-            // })
-            const { deleteGlossary, deleteCategory, deleteTerm } =
-                useDeleteGlossary()
-            const serviceMap = {
-                AtlasGlossaryTerm: deleteTerm,
-                AtlasGlossaryCategory: deleteCategory,
-                AtlasGlossary: deleteGlossary,
-            }
+            const { deleteGTC } = useDeleteGlossary()
             const showModal = async () => {
                 visible.value = true
             }
-            // const body = ref({
-            //     entities: [],
-            // })
-            // const {
-            //     mutate: mutateAsset,
-            //     isLoading,
-            //     isReady,
-            //     guidUpdatedMaps,
-            //     error,
-            // } = updateAsset(body)
             const typeNameTitle = computed(() => {
                 switch (entityType.value) {
                     case 'AtlasGlossary':
@@ -127,30 +112,16 @@
                         return 'Glossary'
                 }
             })
-            // const handleSave = () => {
-            //     if (typeNameTitle.value === 'Glossary') {
-            //         entityToDelete.attributes.qualifiedName = generateUUID()
-            //     }
-            //     entityToDelete.attributes.name = entity.value.attributes.name
-            //     entityToDelete.attributes.name = entity.value.attributes.name
-            //     entityToDelete.attributes.anchor =
-            //         entity.value.attributes.anchor
-            //     body.value = {
-            //         entities: [entityToDelete],
-            //     }
-            //     console.log(entityToDelete)
 
-            //     mutateAsset()
-            // }
+            const handleCancel = () => {
+                visible.value = false
+            }
             const handleDelete = () => {
                 const {
                     data,
                     isLoading: loading,
                     deleteError,
-                } = serviceMap[props.entity?.typeName](
-                    props.entity?.guid,
-                    false
-                )
+                } = deleteGTC(props.entity?.guid, props.redirect ?? false)
                 isLoading.value = loading.value
                 if (data && !deleteError.value) {
                     if (props.entity?.typeName === 'AtlasGlossaryCategory') {
@@ -187,6 +158,10 @@
                             )
                         } else emit('delete', 'root')
                     } else {
+                        if (props.redirect) {
+                            console.log('change select')
+                            handleSelectGlossary('')
+                        }
                         emit('delete', 'root')
                     }
                 }
@@ -199,6 +174,7 @@
                 typeNameTitle,
                 isLoading,
                 handleDelete,
+                handleCancel,
             }
         },
     })

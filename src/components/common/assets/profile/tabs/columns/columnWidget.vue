@@ -2,17 +2,29 @@
     <div>
         <!-- Search and Filter -->
         <div class="w-1/2 mb-3">
-            <SearchAndFilter
+            <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
                 :placeholder="`Search ${totalCount} columns`"
-                @change="handleSearchChange"
                 size="minimal"
-            />
+                @change="handleSearchChange"
+            >
+                <template #postFilter>
+                    <div class="flex items-center justify-between py-1 rounded">
+                        <p class="mr-4 text-sm text-gray-500">Sort By</p>
+
+                        <Sorting
+                            v-model="preference.sort"
+                            asset-type="Column"
+                            @change="handleChangeSort"
+                        ></Sorting>
+                    </div>
+                </template>
+            </SearchAdvanced>
         </div>
         <!-- Table -->
         <div
-            class="flex items-center justify-center w-full border rounded  h-96 border-gray-light"
+            class="flex items-center justify-center w-full border rounded border-gray-light h-96"
         >
             <div
                 v-if="isLoading"
@@ -30,6 +42,16 @@
                 <ErrorView />
             </div>
 
+            <div
+                v-else-if="columnsList.length === 0 && !isLoading"
+                class="flex-grow"
+            >
+                <EmptyView
+                    empty-screen="EmptyDiscover"
+                    desc="No columns found"
+                ></EmptyView>
+            </div>
+
             <a-table
                 v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
@@ -39,11 +61,12 @@
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
                 class="self-start"
+                :class="$style.columnTable"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">
                         <div
-                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-r  border-gray-light"
+                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-r border-gray-light"
                         >
                             {{ text }}
                         </div>
@@ -52,8 +75,9 @@
                         <div
                             :class="{
                                 'border-primary': record.key === selectedRow,
+                                'flex items-center justify-between':
+                                    record.is_primary,
                             }"
-                            class="flex items-center justify-between"
                         >
                             <div class="flex items-center">
                                 <component
@@ -63,7 +87,7 @@
 
                                 <Tooltip
                                     :tooltip-text="text"
-                                    classes="hover:text-primary mr-1"
+                                    classes="hover:text-primary"
                                 />
 
                                 <CertificateBadge
@@ -75,12 +99,16 @@
                                     :timestamp="
                                         certificateUpdatedAt(record.item)
                                     "
-                                    class="mb-0.5"
+                                    class="mb-0.5 ml-1"
                                 ></CertificateBadge>
-
-                                <!--  <div v-if="record.is_primary" class="mb-1 ml-2">
-                                    <AtlanIcon icon="Pin" />
-                                </div> -->
+                                <a-tooltip placement="right"
+                                    ><template #title>Limited Access</template>
+                                    <AtlanIcon
+                                        v-if="isScrubbed(record.item)"
+                                        icon="Lock"
+                                        class="h-3.5 mb-0.5 ml-1"
+                                    ></AtlanIcon
+                                ></a-tooltip>
                             </div>
                             <div v-if="record.is_primary">
                                 <AtlanIcon icon="PrimaryKey" />
@@ -88,41 +116,64 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'data_type'">
-                        <span class="data-type">{{ text.toUpperCase() }}</span>
+                        <span class="data-type">{{ text?.toUpperCase() }}</span>
                     </template>
                     <template v-else-if="column.key === 'description'">
                         <Tooltip :tooltip-text="text" />
                     </template>
                 </template>
             </a-table>
-            <div v-else class="flex-grow">
-                <EmptyView
-                    empty-screen="EmptyDiscover"
-                    desc="No columns found"
-                ></EmptyView>
-            </div>
-
-            <!-- <div
-                v-if="isLoadMore"
-                class="flex items-center justify-center mt-3"
-            >
-                <button
-                    v-if="!isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                    @click="handleLoadMore"
-                >
-                    <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
-                    >
-                        Load more
-                    </p>
-                    <AtlanIcon icon="ArrowDown" />
-                </button>
-            </div> -->
         </div>
+
+        <!-- Pagination -->
+        <div
+            v-if="(columnsList && columnsList.length) || isLoading"
+            class="flex flex-row items-center justify-end w-full mt-4"
+        >
+            <AtlanBtn
+                class="bg-transparent rounded-r-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                :disabled="pagination.current === 1"
+                @click="handlePagination(pagination.current - 1)"
+            >
+                <AtlanIcon icon="CaretLeft" />
+            </AtlanBtn>
+            <AtlanBtn
+                class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default"
+                size="sm"
+                color="secondary"
+                padding="compact"
+            >
+                {{ pagination.current }} of
+                <span v-if="Math.ceil(pagination.total)"
+                    >{{ Math.ceil(pagination.total) }}
+                </span>
+
+                <div
+                    v-else-if="isValidating"
+                    class="flex items-center justify-center"
+                >
+                    <AtlanIcon icon="Loader" class="animate-spin"></AtlanIcon>
+                </div>
+            </AtlanBtn>
+
+            <AtlanBtn
+                class="bg-transparent rounded-l-none"
+                size="sm"
+                color="secondary"
+                padding="compact"
+                :disabled="pagination.current === Math.ceil(pagination.total)"
+                @click="handlePagination(pagination.current + 1)"
+            >
+                <AtlanIcon icon="CaretRight" />
+            </AtlanBtn>
+        </div>
+
         <AssetDrawer
             :data="selectedRowData"
-            :showDrawer="showColumnSidebar"
+            :show-drawer="showColumnSidebar"
             @closeDrawer="handleCloseColumnSidebar"
             @update="handleListUpdate"
         />
@@ -137,12 +188,15 @@
     import { useRoute } from 'vue-router'
 
     // Components
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import AssetDrawer from '@/common/assets/preview/drawer.vue'
-    import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
+    import EmptyView from '@common/empty/index.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+    import Sorting from '@/common/select/sorting.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import AtlanBtn from '@/UI/button.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -160,12 +214,14 @@
 
     export default defineComponent({
         components: {
-            SearchAndFilter,
+            SearchAdvanced,
             AssetDrawer,
             EmptyView,
             ErrorView,
             Tooltip,
             CertificateBadge,
+            AtlanBtn,
+            Sorting,
         },
         setup() {
             /** DATA */
@@ -177,6 +233,8 @@
             const columnsList: Ref<assetInterface[]> = ref([])
             const columnFromUrl: Ref<assetInterface[]> = ref([])
 
+            const openDrawerOnLoad = ref<boolean>(false)
+
             const {
                 selectedAsset,
                 certificateStatus,
@@ -184,6 +242,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 dataTypeCategoryImage,
+                isScrubbed,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -224,14 +283,13 @@
             updateFacet()
 
             const {
-                list,
+                freshList: list,
+                list: combinedList,
                 isLoading,
-                isLoadMore,
                 quickChange,
                 totalCount,
                 error,
                 isValidating,
-                updateList,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -302,8 +360,12 @@
             }
 
             const handleListUpdate = (asset: any) => {
-                updateList(asset)
                 selectedRowData.value = asset
+
+                const index = list.value.findIndex((i) => i.guid === asset.guid)
+                if (index > -1) {
+                    list.value[index] = asset
+                }
 
                 // In case column from url was updated instead of the other list (20 items)
                 if (asset.guid === columnFromUrl.value[0]?.guid) {
@@ -313,10 +375,14 @@
                 filterColumnsList()
             }
 
-            const handleLoadMore = () => {
-                if (isLoadMore.value) {
-                    offset.value += limit.value
-                }
+            const pagination = computed(() => ({
+                total: totalCount.value / limit.value,
+
+                current: offset.value / limit.value + 1,
+            }))
+
+            const handlePagination = (page) => {
+                offset.value = (page - 1) * 20
                 quickChange()
             }
 
@@ -324,6 +390,10 @@
                 offset.value = 0
                 quickChange()
             }, 150)
+
+            const handleChangeSort = () => {
+                quickChange()
+            }
 
             // customRow Antd
             const customRow = (record: { key: null }) => ({
@@ -344,75 +414,80 @@
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch([list], () => {
-                // If redirected from asset column discovery
-                if (column.value !== '') {
-                    const limit = ref(1)
-                    const offset = ref(0)
-                    const facets = ref({
-                        guid: column.value,
-                    })
-                    const fetchKey = computed(() => {
-                        if (
-                            list.value.some(
-                                (item) => item.guid === column.value
-                            )
-                        ) {
-                            return null
+            watch(
+                () => [...list.value],
+                () => {
+                    // If redirected from asset column discovery
+                    if (column.value !== '') {
+                        columnFromUrl.value = []
+                        const limit = ref(1)
+                        const offset = ref(0)
+                        const facets = ref({
+                            guid: column.value,
+                        })
+                        const fetchKey = computed(() => {
+                            if (
+                                combinedList.value.some(
+                                    (item) => item.guid === column.value
+                                )
+                            ) {
+                                return null
+                            }
+                            return column.value
+                        })
+                        const dependentKey = ref(fetchKey.value)
+
+                        const { freshList: urlColumnList } = useDiscoverList({
+                            isCache: false,
+                            dependentKey,
+                            facets,
+                            limit,
+                            offset,
+                            attributes: defaultAttributes,
+                            relationAttributes,
+                        })
+                        watch([urlColumnList], () => {
+                            columnFromUrl.value = urlColumnList.value
+                            filterColumnsList()
+                        })
+                        if (fetchKey.value === null) {
+                            filterColumnsList()
                         }
-                        return column.value
-                    })
-                    const dependentKey = ref(fetchKey.value)
-
-                    const { list: urlColumnList } = useDiscoverList({
-                        isCache: false,
-                        dependentKey,
-                        facets,
-                        limit,
-                        offset,
-                        attributes: defaultAttributes,
-                        relationAttributes,
-                    })
-                    watch([urlColumnList], () => {
-                        columnFromUrl.value = urlColumnList.value
+                    } else {
                         filterColumnsList()
+                    }
+                }
+            )
 
+            watch(
+                () => [...columnsList.value],
+                () => {
+                    if (!openDrawerOnLoad.value) {
                         columnsList.value?.forEach((singleRow) => {
                             if (singleRow.guid === column.value) {
                                 openColumnSidebar(singleRow.attributes.order)
                             }
                         })
+                        openDrawerOnLoad.value = true
 
                         nextTick(() => {
                             scrollToElement()
                         })
-                    })
-                    filterColumnsList()
-
-                    columnsList.value?.forEach((singleRow) => {
-                        if (singleRow.guid === column.value) {
-                            openColumnSidebar(singleRow.attributes.order)
-                        }
-                    })
-
-                    nextTick(() => {
-                        scrollToElement()
-                    })
-                } else {
-                    filterColumnsList()
+                    }
                 }
-            })
+            )
 
             return {
                 rowClassName,
                 customRow,
                 handleSearchChange,
-                isLoadMore,
                 handleListUpdate,
                 handleCloseColumnSidebar,
+                isScrubbed,
                 isLoading,
                 columnsList,
                 totalCount,
+                preference,
                 error,
                 isValidating,
                 certificateStatus,
@@ -423,9 +498,11 @@
                 selectedRow,
                 columnsData,
                 queryText,
+                handlePagination,
+                handleChangeSort,
                 showColumnSidebar,
+                pagination,
                 selectedRowData,
-                handleLoadMore,
                 columns: [
                     {
                         width: 50,
@@ -435,7 +512,7 @@
                         align: 'center',
                     },
                     {
-                        width: 240,
+                        width: 280,
                         title: 'Column Name',
                         dataIndex: 'column_name',
                         key: 'column_name',
@@ -457,6 +534,34 @@
     })
 </script>
 
+<style lang="less" module>
+    .columnTable {
+        :global(.ant-table-container) {
+            @apply text-gray-700 text-sm font-normal !important;
+        }
+        :global(.ant-table-thead) {
+            max-height: 40px !important;
+            height: 40px !important;
+        }
+        :global(.ant-table-thead tr th) {
+            @apply text-gray-700 text-sm font-normal py-0  !important;
+        }
+        :global(.ant-table td) {
+            @apply cursor-pointer !important;
+        }
+        :global(.ant-table-container
+                table
+                > thead
+                > tr:first-child
+                th:first-child) {
+            @apply border-r border-gray-light text-gray-500 !important;
+        }
+        :global(.ant-table-tbody tr:not(.ant-table-measure-row)) {
+            max-height: 32px !important;
+            height: 32px !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
     @font-face {
         font-family: Hack;
@@ -465,29 +570,5 @@
     .data-type {
         font-family: Hack !important;
         @apply text-gray-500 text-xs !important;
-    }
-    :global(.ant-table-container) {
-        @apply text-gray-700 text-sm font-normal !important;
-    }
-    :global(.ant-table-thead) {
-        max-height: 40px !important;
-        height: 40px !important;
-    }
-    :global(.ant-table-thead tr th) {
-        @apply text-gray-700 text-sm font-normal py-0  !important;
-    }
-    :global(.ant-table td) {
-        @apply cursor-pointer !important;
-    }
-    :global(.ant-table-container
-            table
-            > thead
-            > tr:first-child
-            th:first-child) {
-        @apply border-r border-gray-light text-gray-500 !important;
-    }
-    :global(.ant-table-tbody tr:not(.ant-table-measure-row)) {
-        max-height: 32px !important;
-        height: 32px !important;
     }
 </style>

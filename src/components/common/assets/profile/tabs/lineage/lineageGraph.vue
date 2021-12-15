@@ -117,11 +117,9 @@
         setup(props, { emit }) {
             /** INJECTIONS */
             const control = inject('control')
-            // const showProcess = inject('showProcess')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
             const preview = inject('preview')
-            // provide('preview', handlePreview)
 
             /** DATA */
             const { lineage, lineageWithProcess } = toRefs(props)
@@ -181,7 +179,6 @@
                     graph,
                     baseEntity,
                     lineageWithProcess,
-                    // showProcess,
                     assetGuidToHighlight,
                     highlightedNode,
                     loaderCords,
@@ -228,7 +225,6 @@
                 selectedAsset,
                 baseEntity,
                 graph,
-                // showProcess,
                 showMinimap,
                 showImpactedAssets,
                 showAddLineage,

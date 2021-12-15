@@ -16,7 +16,6 @@ export default function useEventGraph(
     graph,
     baseEntity,
     lineageWithProcess,
-    // showProcess,
     assetGuidToHighlight,
     highlightedNode,
     loaderCords,
@@ -55,11 +54,6 @@ export default function useEventGraph(
         if (!newVal) return
         highlight(newVal)
     })
-
-    // watch(showProcess, () => {
-    //     onSelectAsset(baseEntity.value)
-    //     highlight(null)
-    // })
 
     const columns = ref({})
     const nodesWithPorts = ref({})

@@ -163,6 +163,13 @@
                             </AtlanBtn>
                         </div>
                     </div>
+                    <div
+                        v-if="rules.assets.show"
+                        class="absolute text-xs text-red-500 -bottom-5"
+                        data-test-id="policy-validation-connector"
+                    >
+                        {{ rules.assets.text }}
+                    </div>
                 </div>
                 <div v-if="policyType === 'meta'" class="mt-7">
                     <div class="flex justify-between">
@@ -201,6 +208,13 @@
                                 {{ el }}
                             </div>
                         </div>
+                    </div>
+                    <div
+                        v-if="rules.metadata.show"
+                        class="absolute text-xs text-red-500 -bottom-5"
+                        data-test-id="policy-validation-connector"
+                    >
+                        {{ rules.metadata.text }}
                     </div>
                 </div>
                 <div v-else>
@@ -460,7 +474,7 @@
                     }
                     if (type.value === 'data') {
                         policy.value = {
-                            actions: ['SELECT'],
+                            actions: ['select'],
                             assets: [],
                             connectionName: '',
                             connectionId: '',

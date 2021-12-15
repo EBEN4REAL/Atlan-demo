@@ -15,4 +15,6 @@ export const map = {
     DELETE_PERSONA: ({ guid }: PathParams) =>
         getAPIPath('/service', `/personas/${guid}`),
     LIST_SCOPES: () => getAPIPath('/service', '/scopes'),
+    ENABLE_DISABLE_PERSONA: ({ id }: PathParams) =>
+        getAPIPath('/service', `/personas/${id}/action`),
 }

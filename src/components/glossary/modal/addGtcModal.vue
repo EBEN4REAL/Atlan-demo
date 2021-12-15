@@ -49,7 +49,6 @@
                     {{ categoryName }}
                 </div>
             </div>
-
             <a-input
                 ref="titleBar"
                 v-model:value="entity.attributes.name"
@@ -105,6 +104,7 @@
     import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
     import whoami from '~/composables/user/whoami'
     import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     import { List } from '~/constant/status'
     import {
@@ -181,6 +181,9 @@
                 glossaryName,
                 categoryName,
             } = toRefs(props)
+            // shortcuts for cmnd+enter to save
+            const keys = useMagicKeys()
+            const { meta, Enter } = keys
 
             const localEntityType = ref(entityType.value)
             watch(entityType, () => {
@@ -241,6 +244,7 @@
             const defaultRetry = ref(3)
             const handleSave = () => {
                 defaultRetry.value = 2
+                console.log(entity.attributes.name)
                 if (entity.attributes.name) {
                     entity.typeName = localEntityType.value
                     if (typeNameTitle.value === 'Glossary') {
@@ -310,8 +314,8 @@
                     if (!isCreateMore.value) {
                         visible.value = false
                     }
-                    resetInput()
                     message.success(`${typeNameTitle.value} created`)
+                    // resetInput()
 
                     if (guidCreatedMaps.value?.length > 0) {
                         guid.value = guidCreatedMaps.value[0]
@@ -321,7 +325,6 @@
             })
 
             whenever(error, () => {
-                console.log(error.value.response?.data?.errorMessage)
                 if (error.value) {
                     if (error.value.response?.status === 409) {
                         message.error(
@@ -341,6 +344,13 @@
                 } else if (defaultRetry.value > 0) {
                     defaultRetry.value -= 1
                     mutateUpdate()
+                }
+            })
+            whenever(Enter, () => {
+                if (meta.value && Enter.value) {
+                    Enter.value = false
+                    meta.value = false
+                    if (entity.attributes.name) handleSave()
                 }
             })
 

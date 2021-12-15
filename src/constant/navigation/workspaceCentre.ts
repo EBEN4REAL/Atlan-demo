@@ -16,13 +16,13 @@ export const workspaceCentreList = [
         isActive: true,
         auth: page.PAGE_ADMIN,
     },
-    {
-        path: '/platform',
-        icon: 'Platform',
-        label: 'Platform Center',
-        isActive: true,
-        auth: page.PAGE_PLATFORM,
-    },
+    // {
+    //     path: '/platform',
+    //     icon: 'Platform',
+    //     label: 'Platform Center',
+    //     isActive: true,
+    //     auth: page.PAGE_PLATFORM,
+    // },
     {
         path: '/reporting',
         icon: 'Admin',

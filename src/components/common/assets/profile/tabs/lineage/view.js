@@ -13,7 +13,7 @@ export class NV extends NodeView {
             body: {
                 refWidth: '100%',
                 refHeight: '100%',
-                fill: '#2026d2',
+                fill: '#d1d1d1',
             },
         })
     }

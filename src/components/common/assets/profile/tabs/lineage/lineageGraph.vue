@@ -13,6 +13,13 @@
             </div>
         </div>
 
+        <a-spin
+            v-if="loaderCords.x"
+            :style="`position: absolute; left: ${loaderCords.x - 25}px; top: ${
+                loaderCords.y - 148
+            }px; z-index: 999`"
+        />
+
         <!-- Graph Container -->
         <div style="display: flex">
             <div ref="graphContainer" style="flex: 1"></div>
@@ -22,16 +29,14 @@
             v-if="isComputeDone"
             :base-entity-guid="lineage.baseEntityGuid"
             :highlighted-node="highlightedNode"
-            :is-cyclic="isCyclic"
+            :is-cyclic="false"
             :graph="graph"
-            @show-process="onShowProcess($event)"
             @show-impacted-assets="onShowImpactedAssets($event)"
             @show-add-lineage="onShowAddLineage($event)"
         />
 
         <!-- Lineage Footer -->
         <LineageFooter
-            v-if="isComputeDone"
             :graph="graph"
             :lineage-container="lineageContainer"
             :curr-zoom="currZoom"
@@ -79,16 +84,6 @@
         provide,
         toRefs,
         inject,
-        watch,
-        onBeforeMount,
-        onBeforeUpdate,
-        onUpdated,
-        onBeforeUnmount,
-        onErrorCaptured,
-        onRenderTracked,
-        onRenderTriggered,
-        onActivated,
-        onDeactivated,
     } from 'vue'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
@@ -98,7 +93,7 @@
     /** COMPOSABLES */
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
-    import useHighlight from './useHighlight'
+    import useEventGraph from './useEventGraph'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -113,21 +108,26 @@
                 type: Object,
                 required: true,
             },
+            lineageWithProcess: {
+                type: Object,
+                required: true,
+            },
         },
         emits: ['preview'],
         setup(props, { emit }) {
             /** INJECTIONS */
             const control = inject('control')
-            const showProcess = inject('showProcess')
+            // const showProcess = inject('showProcess')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
+            const preview = inject('preview')
+            // provide('preview', handlePreview)
 
             /** DATA */
-            const { lineage } = toRefs(props)
-            const graphHeight = ref(null)
-            const graphWidth = ref(null)
-            const removedNodes = ref([])
-
+            const { lineage, lineageWithProcess } = toRefs(props)
+            const graphHeight = ref(0)
+            const graphWidth = ref(0)
+            // const removedNodes = ref([])
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref(null)
@@ -136,19 +136,17 @@
             const showImpactedAssets = ref(false)
             const showAddLineage = ref(false)
             const showMinimap = ref(false)
-            const useCyclic = ref(false)
             const searchItems = ref([])
-            const selectedSearchItem = ref('')
-            const isCyclic = ref(false)
             const assetGuidToHighlight = ref('')
             const highlightedNode = ref('')
-            const highlightLoadingCords = ref({})
+            const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
 
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (item, highlight = false) => {
+                // preview(item)
                 control('selectedAsset', item)
                 control('selectedAssetGuid', item.guid)
                 if (highlight) assetGuidToHighlight.value = item.guid
@@ -162,44 +160,32 @@
                     graphLayout,
                     graphContainer,
                     minimapContainer,
-                    showProcess,
                     graphWidth,
                     graphHeight
                 )
 
                 // useComputeGraph
-                const { isCyclic: ic } = await useComputeGraph(
+                await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
-                    showProcess,
+                    lineageWithProcess,
                     searchItems,
                     currZoom,
-                    removedNodes,
                     isComputeDone,
                     emit
                 )
-                isCyclic.value = ic
 
-                // events
-                graph.value.on('cell:mousedown', ({ e }) => {
-                    highlightLoadingCords.value = { x: e.clientX, y: e.clientY }
-                })
-                graph.value.on('blank:mousewheel', () => {
-                    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-                })
-                graph.value.on('cell:mousewheel', () => {
-                    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-                })
-
-                // useHighlight
-                useHighlight(
+                // useEventGraph
+                useEventGraph(
                     graph,
                     baseEntity,
-                    showProcess,
+                    lineageWithProcess,
+                    // showProcess,
                     assetGuidToHighlight,
                     highlightedNode,
-                    highlightLoadingCords,
+                    loaderCords,
+                    currZoom,
                     onSelectAsset
                 )
             }
@@ -234,7 +220,7 @@
 
             onUnmounted(() => {
                 isComputeDone.value = false
-                removedNodes.value = {}
+                // removedNodes.value = {}
                 if (graph.value) graph.value.dispose()
             })
 
@@ -242,17 +228,17 @@
                 selectedAsset,
                 baseEntity,
                 graph,
-                showProcess,
+                // showProcess,
                 showMinimap,
                 showImpactedAssets,
+                showAddLineage,
                 lineageContainer,
                 graphContainer,
                 minimapContainer,
                 currZoom,
-                isCyclic,
                 highlightedNode,
                 isComputeDone,
-                highlightLoadingCords,
+                loaderCords,
                 graphHeight,
                 graphWidth,
                 onShowImpactedAssets,
@@ -269,6 +255,11 @@
 </style>
 
 <style lang="less">
+    @keyframes ant-line {
+        to {
+            stroke-dashoffset: -1000;
+        }
+    }
     .hide-scrollbar {
         /* Hide scrollbar for IE, Edge and Firefox */
         -ms-overflow-style: none; /* IE and Edge */
@@ -362,7 +353,7 @@
 
         // Process Nodes
         &-process {
-            border: 2px solid #e6e6eb;
+            border: 1px solid #e6e6eb;
             border-radius: 100%;
             display: flex;
             align-items: center;
@@ -373,10 +364,10 @@
             cursor: pointer;
 
             &.isHighlightedNode {
-                border: 2px solid #5277d7;
+                border: 1px solid #5277d7;
             }
             &.isHighlightedNodePath {
-                border: 2px solid #5277d7;
+                border: 1px solid #5277d7;
             }
 
             & > .process-icon {
@@ -390,13 +381,13 @@
 
         // Non-Process Nodes
         &-node {
-            padding: 4px 8px 3px 8px;
+            padding: 10px 8px 0px 10px;
             font-size: 16px;
-            border: 2px solid #e6e6eb;
+            border: 1px solid #e6e6eb;
             border-radius: 4px;
             background-color: #ffffff;
             width: 270px;
-            height: 60px;
+            height: 70px;
             cursor: pointer;
             outline: 0 !important;
 
@@ -407,11 +398,11 @@
 
             &.isBase {
                 border-top-left-radius: 0;
-                border: 2px solid #5277d7 !important;
+                border: 1px solid #5277d7 !important;
                 background-color: #ffffff !important;
 
                 &.isHighlightedNode {
-                    border: 2px solid #5277d7 !important;
+                    border: 1px solid #5277d7 !important;
                 }
 
                 .inscr {
@@ -424,11 +415,11 @@
                         background: #ffffff;
                         color: #5277d7;
                         position: absolute;
-                        border: 2px solid #5277d7;
+                        border: 1px solid #5277d7;
                         border-bottom: 0;
-                        top: -33px;
+                        top: -37px;
                         padding: 0 8px;
-                        left: -10px;
+                        left: -11px;
                         border-top-right-radius: 4px;
                         border-top-left-radius: 4px;
                     }
@@ -464,7 +455,7 @@
         }
 
         .isGrayed {
-            border: 2px solid #e6e6eb !important;
+            border: 1px solid #e6e6eb !important;
 
             .node-text {
                 color: #6f7590 !important;
@@ -476,12 +467,12 @@
         }
 
         .isHighlightedNode {
-            border: 2px solid #5277d7 !important;
+            border: 1px solid #5277d7 !important;
             background-color: #e5ecff !important;
         }
 
         .isHighlightedNodePath {
-            border: 2px solid #5277d7;
+            border: 1px solid #5277d7;
             background-color: #ffffff;
         }
     }

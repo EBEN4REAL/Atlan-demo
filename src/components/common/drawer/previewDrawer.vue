@@ -9,7 +9,10 @@
         :closable="false"
         class="drawer"
     >
-        <UserOrGroupPreview previewType="group" @close="handleCloseGroupPreview" />
+        <UserOrGroupPreview
+            previewType="group"
+            @close="handleCloseGroupPreview"
+        />
     </a-drawer>
     <a-drawer
         :visible="showUserPreview"
@@ -21,7 +24,10 @@
         :closable="false"
         class="drawer"
     >
-        <UserOrGroupPreview previewType="user" @close="handleCloseUserPreview" />
+        <UserOrGroupPreview
+            previewType="user"
+            @close="handleCloseUserPreview"
+        />
     </a-drawer>
 </template>
 
@@ -32,21 +38,21 @@
     import UserOrGroupPreview from '@/admin/common/userOrGroupPreview.vue'
 
     export default defineComponent({
-        name: 'UserPreviewDrawer',
+        name: 'PreviewDrawer',
         components: {
             UserOrGroupPreview,
         },
         setup() {
             const {
                 showPreview: showUserPreview,
-                closePreview: closeUserPreview
+                closePreview: closeUserPreview,
             } = useUserPreview()
             const handleCloseUserPreview = () => {
                 closeUserPreview()
             }
             const {
                 showPreview: showGroupPreview,
-                closePreview: closeGroupPreview
+                closePreview: closeGroupPreview,
             } = useGroupPreview()
             const handleCloseGroupPreview = () => {
                 closeGroupPreview()

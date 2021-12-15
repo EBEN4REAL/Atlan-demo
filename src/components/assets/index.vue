@@ -255,8 +255,8 @@
             },
             emptyViewText: {
                 type: String,
-                default: ''
-            }
+                default: '',
+            },
         },
         setup(props, { emit }) {
             const { preference: preferenceProp, checkedCriteria } =

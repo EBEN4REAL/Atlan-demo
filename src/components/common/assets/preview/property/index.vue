@@ -88,7 +88,12 @@
             <span class="mb-1 text-gray-500">Last updated</span>
             <div class="flex flex-col">
                 <div class="flex mb-2">
-                    <UserPill :username="modifiedBy(selectedAsset)"></UserPill>
+                    <PopOverUser :item="modifiedBy(selectedAsset)">
+                        <UserPill
+                            :username="modifiedBy(selectedAsset)"
+                            @click="handleClickUser(modifiedBy(selectedAsset))"
+                        ></UserPill
+                    ></PopOverUser>
                 </div>
 
                 <span class="text-xs text-gray-700"
@@ -116,7 +121,12 @@
 
             <div class="flex flex-col">
                 <div class="flex mb-2">
-                    <UserPill :username="createdBy(selectedAsset)"></UserPill>
+                    <PopOverUser :item="createdBy(selectedAsset)">
+                        <UserPill
+                            :username="createdBy(selectedAsset)"
+                            @click="handleClickUser(createdBy(selectedAsset))"
+                        ></UserPill
+                    ></PopOverUser>
                 </div>
                 <span class="text-xs text-gray-700"
                     >{{ createdAt(selectedAsset, true) }} ({{
@@ -129,24 +139,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-    import Owners from '@/common/input/owner/index.vue'
-    import useConnectionData from '~/composables/connection/useConnectionData'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
     import UserPill from '@/common/pills/user.vue'
-
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
     import { capitalizeFirstLetter } from '~/utils/string'
 
     export default defineComponent({
         name: 'PropertiesWidget',
         components: {
             UserPill,
-            Owners,
+            PopOverUser,
         },
         props: {
             selectedAsset: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
             userHasEditPermission: {
@@ -179,6 +189,13 @@
                 getAnchorName,
             } = useAssetInfo()
 
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
+            }
+
             return {
                 connectorName,
                 connectionName,
@@ -193,7 +210,7 @@
                 getAnchorName,
                 getConnectorImage,
                 createdBy,
-
+                handleClickUser,
                 connectionQualifiedName,
                 ownerUsers,
                 capitalizeFirstLetter,

@@ -104,12 +104,15 @@
         toRefs,
         inject,
         ref,
+        watch,
+        onMounted,
     } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import Actions from './actions.vue'
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import { useRouter, useRoute } from 'vue-router'
 
     import {
         Glossary,
@@ -132,11 +135,13 @@
                 default: false,
             },
         },
-
+        emits: ['addSelectedKey'],
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
-            if (item.value.typeName === 'cta') console.log(item)
+            const route = useRoute()
+            const profileId = computed(() => route?.params?.id || null)
+
             const { getEntityStatusIcon } = useGlossaryData()
             const {
                 certificateStatus,
@@ -187,6 +192,16 @@
                 addGTCNode(asset, item.value.parentCategory)
             }
 
+            const addSelectedKey = () => {
+                if (profileId.value === item.value?.guid) {
+                    emit('addSelectedKey', item?.value?.key)
+                }
+            }
+            onMounted(addSelectedKey)
+            watch(profileId, () => {
+                addSelectedKey()
+            })
+
             return {
                 getEntityStatusIcon,
                 certificateStatus,
@@ -198,6 +213,7 @@
                 handleAdd,
                 glossaryQualifiedName,
                 categoryId,
+                profileId,
             }
         },
     })

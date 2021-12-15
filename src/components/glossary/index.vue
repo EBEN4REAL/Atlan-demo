@@ -167,6 +167,7 @@
         computed,
         provide,
         PropType,
+        watch,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import { useVModels } from '@vueuse/core'
@@ -261,7 +262,6 @@
                 () => selectedGlossary?.value?.attributes?.name
             )
 
-
             // List Options
             const limit = ref(20)
             const offset = ref(0)
@@ -290,6 +290,7 @@
                 ...facets.value,
                 ...initialFilters.value,
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+                glossary: selectedGlossaryQf,
             }
 
             // Virtual List Height
@@ -445,7 +446,7 @@
                 emit('check', checkedNodes, { checkedKeys, checked })
             }
             const onSearchItemCheck = (checkedNode, checked) => {
-                if(!checkedGuids.value.includes(checkedNode.guid)) {
+                if (!checkedGuids.value.includes(checkedNode.guid)) {
                     checkedGuids.value.push(checkedNode.guid)
                 }
                 emit('searchItemCheck', checkedNode, checked)
@@ -494,7 +495,7 @@
                 checkedGuids,
                 updateTreeNode,
                 searchBar,
-                onSearchItemCheck
+                onSearchItemCheck,
             }
         },
     })

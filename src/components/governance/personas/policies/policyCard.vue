@@ -120,7 +120,8 @@
                         <div class="dot" />
                         <AtlanIcon icon="Compass" />
                         <span class="flex-none text-sm">
-                            {{ policy.assets.length }} assets
+                            {{ policy.assets.length }}
+                            {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
                         </span>
                     </template>
                     <!-- <template v-for="item in splitAssets.a" :key="item.label">
@@ -261,13 +262,13 @@
                 emit('cancel')
             }
             const connectionQfName = computed(() => {
-                if (type.value === 'meta') {
-                    const found = connStore.getList.find(
-                        (conn) => conn.guid === policy.value.connectionId
-                    )
-                    return found?.attributes?.qualifiedName
+                if (policy.value.connectionName) {
+                    return policy.value.connectionName
                 }
-                return policy.value.connectionName
+                const found = connStore.getList.find(
+                    (conn) => conn.guid === policy.value.connectionId
+                )
+                return found?.attributes?.qualifiedName
             })
             const getPopoverContent = (policy: any) =>
                 `Are you sure you want to delete ${policy?.name}?`

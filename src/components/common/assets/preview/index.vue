@@ -4,7 +4,7 @@
             v-if="!isProfile"
             class="flex flex-col px-4 py-3 border-b border-gray-200"
         >
-            <div class="flex items-center mb-1" style="padding-bottom: 1px">
+            <div class="flex items-center mb-2" style="padding-bottom: 1px">
                 <div
                     v-if="
                         ['column'].includes(

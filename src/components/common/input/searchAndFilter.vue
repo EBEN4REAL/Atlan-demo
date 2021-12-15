@@ -42,7 +42,7 @@
                 </template>
 
                 <button
-                    class="p-1 mr-2 transition-colors rounded  hover:bg-gray-light"
+                    class="p-1 mr-2 transition-colors rounded hover:bg-gray-light"
                 >
                     <AtlanIcon
                         :icon="dot ? 'FilterDot' : 'Filter'"

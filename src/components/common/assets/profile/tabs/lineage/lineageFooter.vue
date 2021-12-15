@@ -1,19 +1,4 @@
 <template>
-    <!-- Lineage Legend -->
-    <!-- <div class="lineage-legend">
-        <div class="lineage-legend__item">
-            <span id="upstream"></span>
-            <span>Upstream</span>
-        </div>
-        <div class="lineage-legend__item">
-            <span id="downstream"></span>
-            <span>Downstream</span>
-        </div>
-        <div class="lineage-legend__item">
-            <span id="selected"></span>
-            <span>Selected Path</span>
-        </div>
-    </div> -->
     <div class="lineage-control footer">
         <slot></slot>
 

@@ -41,9 +41,9 @@
 
             const assetStore = useAssetStore()
 
-            const handlePreview = (asset) => {
+            const handlePreview = (asset, setStore = true) => {
                 localSelected.value = asset
-                assetStore.setSelectedAsset(asset)
+                if (setStore) assetStore.setSelectedAsset(asset)
             }
             const updateList = (asset) => {
                 if (assetdiscovery.value) {

@@ -21,6 +21,17 @@ export default function useConnection() {
         {
             dsl: {
                 size: MAX_CONNECTIONS,
+                query: {
+                    bool: {
+                        filter: [
+                            {
+                                term: {
+                                    __state: 'ACTIVE',
+                                },
+                            },
+                        ],
+                    },
+                },
                 post_filter: {
                     bool: {
                         filter: [

@@ -24,6 +24,7 @@ const useQueryCollection = () => {
     const uuidv4 = generateUUID()
     const queryCollectionsLoading = ref(true)
     const queryCollections: Ref<QueryCollection[] | undefined> = ref()
+    const queryCollectionsError: Ref<QueryCollection[] | undefined> = ref()
 
     const attributes = [
         'name',
@@ -191,6 +192,7 @@ const useQueryCollection = () => {
     }
 
     return {
+        queryCollectionsError,
         queryCollections,
         queryCollectionsLoading,
         selectFirstCollectionByDefault,

@@ -327,8 +327,7 @@
             const isShow = ref(false)
             const policyNameRef = ref()
             const connectorComponentRef = ref()
-            const { showDrawer, type, width, isEdit, selectedPolicy } =
-                toRefs(props)
+            const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
             const isAddAll = ref(false)
@@ -388,7 +387,11 @@
             const initPolicy = () => {
                 isAddAll.value = false
                 if (isEdit.value) {
-                    policy.value = selectedPolicy.value
+                    const newArray = []
+                    selectedPolicy.value.assets.forEach((el) =>
+                        newArray.push(el)
+                    )
+                    policy.value = { ...selectedPolicy.value, assets: newArray }
                     policyType.value = selectedPolicy.value.type
                 } else {
                     policyType.value = type.value
@@ -477,7 +480,7 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', type.value, policy.value)
+                    emit('save', policyType.value, policy.value)
                 }
             }
             const selectedPermition = computed(() => {

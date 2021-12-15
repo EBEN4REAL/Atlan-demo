@@ -1,15 +1,6 @@
 import { ref } from 'vue'
 import { getNodeSourceImage } from './util.js'
-// import { useAPIPromise } from '~/services/api/useAPIPromise'
-// import { map as entityMap } from '~/services/meta/entity/key'
-
-import {
-    iconVerified,
-    iconDraft,
-    iconDeprecated,
-    iconProcess,
-    iconEllipse,
-} from './icons'
+import { iconProcess, iconEllipse } from './icons'
 
 const getSource = (entity) => {
     const item = entity.attributes.qualifiedName.split('/')
@@ -21,36 +12,16 @@ const getSchema = (entity) => {
     if (item[0] === 'default') return item[4]
     return item[3]
 }
-// const getEntity = async (guid: string) => {
-//     const { entity } = await useAPIPromise(
-//         entityMap.GET_ENTITY({ guid }),
-//         'GET',
-//         {}
-//     )
-//     return entity
-// }
 
 export default function useGraph() {
     const createNodeData = async (entity, baseEntityGuid, dataObj = {}) => {
-        const { guid, typeName } = entity
-        const isProcess = ['Process', 'ColumnProcess', 'AtlanProcess'].includes(
-            typeName
-        )
-        const isBase = guid === baseEntityGuid
+        const { guid, typeName, attributes } = entity
+        let { displayText } = entity
         const source = getSource(entity)
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
-        // const enrichedEntity = !isProcess ? await getEntity(guid) : entity
-        const enrichedEntity = entity
-        const { attributes } = enrichedEntity
-        let { displayText } = enrichedEntity
-        const { certificateStatus } = attributes
-
-        let certificateIcon = ''
-        if (certificateStatus === 'VERIFIED') certificateIcon = iconVerified
-        else if (certificateStatus === 'DEPRECATED')
-            certificateIcon = iconDeprecated
-        else if (certificateStatus === 'DRAFT') certificateIcon = iconDraft
+        const isBase = guid === baseEntityGuid
+        const isProcess = ['Process', 'ColumnProcess'].includes(typeName)
 
         if (!displayText) displayText = attributes.name
 
@@ -67,7 +38,7 @@ export default function useGraph() {
             typeName,
             source,
             isBase,
-            entity: enrichedEntity,
+            entity,
             isProcess,
             width: isProcess ? 60 : 270,
             height: 70,
@@ -97,7 +68,7 @@ export default function useGraph() {
                                 <div>
                                     <div class="node-text group-hover:underline">
                                         <div class="truncate">${displayText}</div>
-                                         ${certificateIcon || ''}
+                                        
                                     </div>
                                     <div class="node-meta">
                                         <img class="node-meta__source" src="${img}" />
@@ -188,7 +159,7 @@ export default function useGraph() {
 
         if (isProcess) delete nodeData.ports
 
-        return { nodeData, enrichedEntity, isProcess }
+        return { nodeData, entity, isProcess }
     }
 
     const addNode = async (graph, entity, data = {}) => {

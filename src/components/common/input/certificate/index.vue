@@ -45,7 +45,7 @@
         >
             <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
         ></a-button>
-        <span v-else class="text-sm text-gray-500">No certification</span>
+        <span v-else class="text-sm text-gray-700">No certification</span>
     </div>
 </template>
 
@@ -108,7 +108,7 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
-            const { selectedAsset, inProfile } = toRefs(props)
+            const { selectedAsset, inProfile, readOnly } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -140,11 +140,14 @@
                         'true'
             )
             const { c, Escape, v, enter, shift } = useMagicKeys()
-            whenever(and(c, notUsingInput, !inProfile.value), () => {
-                if (!isEdit.value) {
-                    isEdit.value = true
+            whenever(
+                and(c, notUsingInput, !inProfile.value, !readOnly.value),
+                () => {
+                    if (!isEdit.value) {
+                        isEdit.value = true
+                    }
                 }
-            })
+            )
 
             whenever(and(v, notUsingInput), () => {
                 if (isEdit.value) {

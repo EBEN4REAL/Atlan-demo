@@ -1,18 +1,7 @@
 <template>
     <div
         @click.stop="() => {}"
-        class="
-            flex
-            items-center
-            py-0.5
-            pl-1
-            pr-2
-            bg-white
-            border border-gray-200
-            rounded-full
-            cursor-pointer
-            group
-        "
+        class="flex items-center py-1 pl-2 pr-2 bg-white border border-gray-200 rounded-full cursor-pointer group"
         :class="
             enableHover
                 ? ' hover:bg-primary group hover:border-primary hover:text-white'

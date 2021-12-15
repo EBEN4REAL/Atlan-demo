@@ -113,15 +113,12 @@
                 required: true,
             },
         },
-        emits: ['preview'],
         setup(props, { emit }) {
             /** INJECTIONS */
             const control = inject('control')
-            // const showProcess = inject('showProcess')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
             const preview = inject('preview')
-            // provide('preview', handlePreview)
 
             /** DATA */
             const { lineage, lineageWithProcess } = toRefs(props)
@@ -146,7 +143,7 @@
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (item, highlight = false) => {
-                // preview(item)
+                preview(item, false)
                 control('selectedAsset', item)
                 control('selectedAssetGuid', item.guid)
                 if (highlight) assetGuidToHighlight.value = item.guid
@@ -181,7 +178,6 @@
                     graph,
                     baseEntity,
                     lineageWithProcess,
-                    // showProcess,
                     assetGuidToHighlight,
                     highlightedNode,
                     loaderCords,
@@ -228,7 +224,6 @@
                 selectedAsset,
                 baseEntity,
                 graph,
-                // showProcess,
                 showMinimap,
                 showImpactedAssets,
                 showAddLineage,
@@ -260,7 +255,9 @@
             stroke-dashoffset: -1000;
         }
     }
-    .hide-scrollbar {
+    .hide-scrollbar,
+    .x6-graph-scroller,
+    .ant-tabs-content-holder {
         /* Hide scrollbar for IE, Edge and Firefox */
         -ms-overflow-style: none; /* IE and Edge */
         scrollbar-width: none; /* Firefox */

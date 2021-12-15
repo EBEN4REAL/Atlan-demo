@@ -31,16 +31,16 @@
         <div class="flex mb-0 bg-white pt-7 gap-x-2">
             <div style="width: 90%">
                 <div class="mb-0 text-xl text-gray-700 truncate">
-                    <span class="truncate" data-test-id="header-name">
+                    <span class="truncate font-bold" data-test-id="header-name">
                         {{ persona.displayName }}</span
                     >
                 </div>
-                <div class="flex mb-0 text-sm text-gray-500">
+                <!-- <div class="flex mb-0 text-sm text-gray-500">
                     <span class="truncate" data-test-id="header-description">
                         {{ persona.description }}</span
                     >
-                </div>
-                <div class="flex" v-if="persona.updatedBy">
+                </div> -->
+                <!-- <div class="flex" v-if="persona.updatedBy">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"
@@ -48,7 +48,7 @@
                         placement="right"
                         >{{ timeStamp(persona.updatedAt) }}</a-tooltip
                     >
-                </div>
+                </div> -->
             </div>
             <Dropdown class="ml-auto" :options="personaActions"></Dropdown>
         </div>

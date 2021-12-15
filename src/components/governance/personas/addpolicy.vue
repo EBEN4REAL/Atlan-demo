@@ -43,7 +43,12 @@
         <div class="flex items-center">
             <AtlanIcon icon="Policies" class="mr-1" />
             <span class="text-neutral-600"
-                >{{ type === 'meta' ? 'Metadata Policy' : 'Data Policy' }}
+                >{{
+                    (type === 'meta' && !isEdit) ||
+                    (selectedPolicy.type === 'meta' && isEdit)
+                        ? 'Metadata Policy'
+                        : 'Data Policy'
+                }}
             </span>
         </div>
     </div>
@@ -91,7 +96,7 @@
                 "
                 v-model:data="connectorData"
                 class="mb-6"
-                :disabled="!policy?.isNew"
+                :disabled="isEdit"
                 @change="handleConnectorChange"
                 @blur="
                     () => {
@@ -312,6 +317,14 @@
                 type: Number,
                 required: false,
             },
+            isEdit: {
+                type: Boolean,
+                required: false,
+            },
+            selectedPolicy: {
+                type: Object,
+                required: false,
+            },
         },
         emits: ['close'],
         setup(props, { emit }) {
@@ -319,7 +332,8 @@
             const isShow = ref(false)
             const policyNameRef = ref()
             const connectorComponentRef = ref()
-            const { showDrawer, type, width } = toRefs(props)
+            const { showDrawer, type, width, isEdit, selectedPolicy } =
+                toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
             const isAddAll = ref(false)
@@ -384,28 +398,32 @@
             }
             const initPolicy = () => {
                 isAddAll.value = false
-                if (type.value === 'meta') {
-                    policy.value = {
-                        actions: [],
-                        assets: [],
-                        connectionId: '',
-                        allow: true,
-                        name: '',
-                        description: '',
-                        isNew: true,
+                if (isEdit.value) {
+                    policy.value = selectedPolicy.value
+                } else {
+                    if (type.value === 'meta') {
+                        policy.value = {
+                            actions: [],
+                            assets: [],
+                            connectionId: '',
+                            allow: true,
+                            name: '',
+                            description: '',
+                            isNew: true,
+                        }
                     }
-                }
-                if (type.value === 'data') {
-                    policy.value = {
-                        actions: [],
-                        assets: [],
-                        connectionName: '',
-                        connectionId: '',
-                        maskType: 'null',
-                        allow: true,
-                        name: '',
-                        description: '',
-                        isNew: true,
+                    if (type.value === 'data') {
+                        policy.value = {
+                            actions: [],
+                            assets: [],
+                            connectionName: '',
+                            connectionId: '',
+                            maskType: 'null',
+                            allow: true,
+                            name: '',
+                            description: '',
+                            isNew: true,
+                        }
                     }
                 }
             }

@@ -11,34 +11,6 @@
             <div class="text-lg font-bold">
                 {{ selectedPersonaDirty?.name }} policy
             </div>
-            <div class="flex">
-                <a-popconfirm
-                    placement="leftTop"
-                    :title="'Are you sure you want to reset?'"
-                    ok-text="Yes"
-                    :ok-type="'default'"
-                    overlay-class-name="popoverConfirm"
-                    cancel-text="Cancel"
-                    @confirm="resetPolicy"
-                >
-                    <AtlanBtn
-                        class="flex-none"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                    >
-                        <AtlanIcon icon="Delete" class="-mx-1 text-black" />
-                    </AtlanBtn>
-                </a-popconfirm>
-                <AtlanBtn
-                    class="ml-2"
-                    size="sm"
-                    padding="compact"
-                    @click="handleSave"
-                >
-                    Save
-                </AtlanBtn>
-            </div>
         </div>
         <div class="flex items-center">
             <AtlanIcon icon="Policies" class="mr-1" />
@@ -215,27 +187,37 @@
                 </div>
             </div>
         </div>
-        <div class="mt-4">
-            <span>Deny Permissions</span>
-            <a-tooltip placement="right" color="white">
-                <AtlanIcon icon="Overview" class="mx-2" />
-                <template #title>
-                    <p class="m-3 text-gray">
-                        This will deny the permissions you have selected above,
-                        for all the users in the persona, even if they had
-                        access to those permissions via some other persona or
-                        purpose.
-                    </p>
-                </template>
-            </a-tooltip>
-            <a-switch
-                :class="policy.allow ? `` : 'checked'"
-                data-test-id="toggle-switch"
-                class="ml-3"
-                :checked="!policy.allow"
-                style="width: 40px !important"
-                @update:checked="policy.allow = !$event"
-            />
+        <div class="flex items-center justify-between">
+            <div class="mt-4">
+                <span>Deny Permissions</span>
+                <a-tooltip placement="right" color="white">
+                    <AtlanIcon icon="Overview" class="mx-2" />
+                    <template #title>
+                        <p class="m-3 text-gray">
+                            This will deny the permissions you have selected
+                            above, for all the users in the persona, even if
+                            they had access to those permissions via some other
+                            persona or purpose.
+                        </p>
+                    </template>
+                </a-tooltip>
+                <a-switch
+                    :class="policy.allow ? `` : 'checked'"
+                    data-test-id="toggle-switch"
+                    class="ml-3"
+                    :checked="!policy.allow"
+                    style="width: 40px !important"
+                    @update:checked="policy.allow = !$event"
+                />
+            </div>
+            <AtlanBtn
+                class="mt-4 ml-2"
+                size="sm"
+                padding="compact"
+                @click="handleSave"
+            >
+                Save
+            </AtlanBtn>
         </div>
         <AssetSelectorDrawer
             v-if="connectorData.attributeValue"

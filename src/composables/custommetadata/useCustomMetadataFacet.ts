@@ -43,7 +43,7 @@ export default function useCustomMetadataFacet() {
                         a.options?.customApplicableEntityTypes
                     )
                     if (temp) {
-                        if (temp.includes(typeName)) {
+                        if (temp.includes(typeName) || typeName === '__all') {
                             attributeList.push({
                                 ...a,
                                 typeList: JSON.parse(
@@ -82,7 +82,7 @@ export default function useCustomMetadataFacet() {
                 })
             }
         })
-
+        console.log({ list })
         return list
     }
 

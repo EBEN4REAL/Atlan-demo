@@ -62,18 +62,18 @@
         <div class="mt-1">
             <Users
                 v-if="componentType == 'users'"
+                ref="usersRef"
                 v-model="localValue.ownerUsers"
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
                 @change="handleChange"
-                ref="usersRef"
             ></Users>
             <Groups
                 v-if="componentType == 'groups'"
+                ref="groupRef"
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
-                ref="groupRef"
             ></Groups>
         </div>
         <div v-if="showNone" class="px-4 pt-1">
@@ -127,15 +127,11 @@
             modelValue: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => {},
             },
             showNone: {
                 type: Boolean,
-                default() {
-                    return true
-                },
+                default: true,
             },
             selectUserKey: {
                 type: String,
@@ -148,8 +144,8 @@
                 default: () => 'name', // can be id/username
             },
             enableTabs: {
-                type: Object as PropType<Array<any>>,
-                default: ['users', 'groups'],
+                type: Array as PropType<Array<any>>,
+                default: () => ['users', 'groups'],
             },
             hideDisabledTabs: {
                 type: Boolean,

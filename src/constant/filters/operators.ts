@@ -1,5 +1,5 @@
 export const operators = {
-    array: [
+    enum: [
         {
             id: 'equals',
             label: 'Equals(=)',

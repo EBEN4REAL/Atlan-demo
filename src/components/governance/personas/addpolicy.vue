@@ -11,44 +11,11 @@
             <div class="text-lg font-bold">
                 {{ selectedPersonaDirty?.name }} policy
             </div>
-            <div class="flex">
-                <a-popconfirm
-                    placement="leftTop"
-                    :title="'Are you sure you want to reset?'"
-                    ok-text="Yes"
-                    :ok-type="'default'"
-                    overlay-class-name="popoverConfirm"
-                    cancel-text="Cancel"
-                    @confirm="resetPolicy"
-                >
-                    <AtlanBtn
-                        class="flex-none"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                    >
-                        <AtlanIcon icon="Delete" class="-mx-1 text-black" />
-                    </AtlanBtn>
-                </a-popconfirm>
-                <AtlanBtn
-                    class="ml-2"
-                    size="sm"
-                    padding="compact"
-                    @click="handleSave"
-                >
-                    Save
-                </AtlanBtn>
-            </div>
         </div>
         <div class="flex items-center">
             <AtlanIcon icon="Policies" class="mr-1" />
             <span class="text-neutral-600"
-                >{{
-                    (type === 'meta' && !isEdit) ||
-                    (selectedPolicy.type === 'meta' && isEdit)
-                        ? 'Metadata Policy'
-                        : 'Data Policy'
-                }}
+                >{{ policyType === 'meta' ? 'Metadata Policy' : 'Data Policy' }}
             </span>
         </div>
     </div>
@@ -179,7 +146,7 @@
                 </div>
             </div>
         </div>
-        <div class="mt-7">
+        <div v-if="policyType === 'meta'" class="mt-7">
             <div class="flex justify-between">
                 <div class="text-gray-500">
                     Permissions <span class="text-red-500">*</span>
@@ -215,27 +182,56 @@
                 </div>
             </div>
         </div>
-        <div class="mt-4">
-            <span>Deny Permissions</span>
-            <a-tooltip placement="right" color="white">
-                <AtlanIcon icon="Overview" class="mx-2" />
-                <template #title>
-                    <p class="m-3 text-gray">
-                        This will deny the permissions you have selected above,
-                        for all the users in the persona, even if they had
-                        access to those permissions via some other persona or
-                        purpose.
-                    </p>
-                </template>
-            </a-tooltip>
-            <a-switch
-                :class="policy.allow ? `` : 'checked'"
-                data-test-id="toggle-switch"
-                class="ml-3"
-                :checked="!policy.allow"
-                style="width: 40px !important"
-                @update:checked="policy.allow = !$event"
+        <div v-else>
+            <div class="flex items-center mt-7 gap-x-1">
+                <AtlanIcon class="text-gray-500" icon="Lock" />
+                <span class="text-sm text-gray-500">Query permissions</span>
+                <AtlanIcon class="h-3 ml-2 text-gray-500" icon="RunSuccess" />
+                <span class="text-sm text-gray-500"
+                    >Query access allowed by default</span
+                >
+            </div>
+            <div class="flex items-center mb-2 gap-x-1 mt-7">
+                <span class="text-sm text-gray-500">Masking</span>
+            </div>
+
+            <DataMaskingSelector
+                v-model:maskType="policy.maskType"
+                class="mb-6 w-80"
             />
+        </div>
+
+        <div class="flex items-center justify-between">
+            <div class="mt-4">
+                <span>Deny Permissions</span>
+                <a-tooltip placement="right" color="white">
+                    <AtlanIcon icon="Overview" class="mx-2" />
+                    <template #title>
+                        <p class="m-3 text-gray">
+                            This will deny the permissions you have selected
+                            above, for all the users in the persona, even if
+                            they had access to those permissions via some other
+                            persona or purpose.
+                        </p>
+                    </template>
+                </a-tooltip>
+                <a-switch
+                    :class="policy.allow ? `` : 'checked'"
+                    data-test-id="toggle-switch"
+                    class="ml-3"
+                    :checked="!policy.allow"
+                    style="width: 40px !important"
+                    @update:checked="policy.allow = !$event"
+                />
+            </div>
+            <AtlanBtn
+                class="mt-4 ml-2"
+                size="sm"
+                padding="compact"
+                @click="handleSave"
+            >
+                Save
+            </AtlanBtn>
         </div>
         <AssetSelectorDrawer
             v-if="connectorData.attributeValue"
@@ -280,6 +276,7 @@
     import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
     import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import ManagePermission from './policies/managePermission.vue'
+    import DataMaskingSelector from './policies/dataMaskingSelector.vue'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -288,6 +285,7 @@
             Connector,
             AssetSelectorDrawer,
             ManagePermission,
+            DataMaskingSelector,
         },
         props: {
             type: {
@@ -313,10 +311,6 @@
                 required: false,
                 default: () => {},
             },
-            width: {
-                type: Number,
-                required: false,
-            },
             isEdit: {
                 type: Boolean,
                 required: false,
@@ -328,22 +322,16 @@
         },
         emits: ['close'],
         setup(props, { emit }) {
+            const policyType = ref('')
             const assetSelectorVisible = ref(false)
             const isShow = ref(false)
             const policyNameRef = ref()
             const connectorComponentRef = ref()
-            const { showDrawer, type, width, isEdit, selectedPolicy } =
-                toRefs(props)
+            const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
             const isAddAll = ref(false)
-            watch(isShow, () => {
-                if (isShow.value) {
-                    emit('changeWidth', 200)
-                } else {
-                    emit('changeWidth', 450)
-                }
-            })
+
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -399,8 +387,14 @@
             const initPolicy = () => {
                 isAddAll.value = false
                 if (isEdit.value) {
-                    policy.value = selectedPolicy.value
+                    const newArray = []
+                    selectedPolicy.value.assets.forEach((el) =>
+                        newArray.push(el)
+                    )
+                    policy.value = { ...selectedPolicy.value, assets: newArray }
+                    policyType.value = selectedPolicy.value.type
                 } else {
+                    policyType.value = type.value
                     if (type.value === 'meta') {
                         policy.value = {
                             actions: [],
@@ -471,28 +465,6 @@
             const resetPolicy = () => {
                 initPolicy()
             }
-            watch(isShow, () => {
-                if (isShow.value) {
-                    setTimeout(() => {
-                        emit('changeWidth', 200)
-                    }, 100)
-                } else {
-                    setTimeout(() => {
-                        emit('changeWidth', 450)
-                    }, 100)
-                }
-            })
-            watch(assetSelectorVisible, () => {
-                if (assetSelectorVisible.value) {
-                    setTimeout(() => {
-                        emit('changeWidth', 200)
-                    }, 100)
-                } else {
-                    setTimeout(() => {
-                        emit('changeWidth', 450)
-                    }, 100)
-                }
-            })
             const handleSave = () => {
                 if (!policy.value.name) {
                     policyNameRef.value?.focus()
@@ -502,14 +474,13 @@
                     rules.value.connection.show = true
                 } else if (policy.value.assets.length < 1) {
                     rules.value.assets.show = true
-                } else if (policy.value.actions.length === 0) {
+                } else if (
+                    policy.value.actions.length === 0 &&
+                    policyType.value === 'meta'
+                ) {
                     rules.value.metadata.show = true
                 } else {
-                    console.log(
-                        connectorComponentRef.value.treeData,
-                        policy.value
-                    )
-                    emit('save', type.value, policy.value)
+                    emit('save', policyType.value, policy.value)
                 }
             }
             const selectedPermition = computed(() => {
@@ -554,6 +525,7 @@
                 resetPolicy,
                 handleSave,
                 selectedPermition,
+                policyType,
             }
         },
     })

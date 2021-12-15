@@ -11,6 +11,7 @@
                     v-model:checkedGuids="checkedGuids"
                     :checkable="true"
                     @check="onCheck"
+                    @searchItemCheck="onSearchItemCheck"
                 />
             </template>
             <a-button
@@ -147,6 +148,15 @@
                 hasBeenEdited.value = true
             }
 
+            const onSearchItemCheck = (checkedNode, checked) => {
+                if(checked) {
+                    localValue.value.push(checkedNode)    
+                } else {
+                    localValue.value = localValue.value?.filter((localTerm) => (localTerm.guid ?? localTerm.termGuid) !== checkedNode.guid)
+                }
+                hasBeenEdited.value = true
+            }
+            
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
@@ -162,6 +172,7 @@
                 onPopoverClose,
                 localValue,
                 checkedGuids,
+                onSearchItemCheck
             }
         },
     })

@@ -70,6 +70,8 @@
                 } else {
                     localValue.value.terms = localValue.value.terms?.filter((local) => local.guid !== checkedNode.guid)
                 }
+                modelValue.value = localValue.value
+                emit('change')
             }
 
             const onCheck = (checkedNodes) => {
@@ -77,6 +79,8 @@
                     guid: term.guid,
                     qualifiedName: term.attributes.qualifiedName
                 }))
+                modelValue.value = localValue.value
+                emit('change')
             }
 
             const checkNoTerms = (t) => {
@@ -98,8 +102,8 @@
                     if (localValue.value.terms?.length === 0) {
                         delete localValue.value.terms
                     }
-                    modelValue.value = localValue.value
-                    emit('change')
+                    // modelValue.value = localValue.value
+                    // emit('change')
                 }
             )
             watch(() => localValue.value.empty, () => {

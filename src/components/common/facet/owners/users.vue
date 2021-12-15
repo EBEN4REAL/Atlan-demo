@@ -59,7 +59,6 @@
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useUserData from '~/composables/user/useUserData'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'UsersFilter',

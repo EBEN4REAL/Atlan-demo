@@ -494,6 +494,9 @@
                     initPolicy()
                 }
             })
+            watch(selectedPolicy, () => {
+                initPolicy()
+            })
             const handleAddAsset = () => {
                 if (connectorData.value?.attributeValue) {
                     assetSelectorVisible.value = !assetSelectorVisible.value

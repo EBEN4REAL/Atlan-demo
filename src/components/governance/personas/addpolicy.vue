@@ -15,12 +15,7 @@
         <div class="flex items-center">
             <AtlanIcon icon="Policies" class="mr-1" />
             <span class="text-neutral-600"
-                >{{
-                    (type === 'meta' && !isEdit) ||
-                    (selectedPolicy.type === 'meta' && isEdit)
-                        ? 'Metadata Policy'
-                        : 'Data Policy'
-                }}
+                >{{ policyType === 'meta' ? 'Metadata Policy' : 'Data Policy' }}
             </span>
         </div>
     </div>
@@ -310,6 +305,7 @@
         },
         emits: ['close'],
         setup(props, { emit }) {
+            const policyType = ref('')
             const assetSelectorVisible = ref(false)
             const isShow = ref(false)
             const policyNameRef = ref()
@@ -382,7 +378,9 @@
                 isAddAll.value = false
                 if (isEdit.value) {
                     policy.value = selectedPolicy.value
+                    policyType.value = selectedPolicy.value.type
                 } else {
+                    policyType.value = type.value
                     if (type.value === 'meta') {
                         policy.value = {
                             actions: [],
@@ -536,6 +534,7 @@
                 resetPolicy,
                 handleSave,
                 selectedPermition,
+                policyType,
             }
         },
     })

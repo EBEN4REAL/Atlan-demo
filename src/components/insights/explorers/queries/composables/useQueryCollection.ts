@@ -25,7 +25,6 @@ const useQueryCollection = () => {
     const queryCollectionsLoading = ref(true)
     const queryCollections: Ref<QueryCollection[] | undefined> = ref()
     const queryCollectionsError: Ref<QueryCollection[] | undefined> = ref()
-    const collectionError: Ref<QueryCollection[] | undefined> = ref()
 
     const attributes = [
         'name',
@@ -193,7 +192,6 @@ const useQueryCollection = () => {
     }
 
     return {
-        collectionError,
         queryCollectionsError,
         queryCollections,
         queryCollectionsLoading,

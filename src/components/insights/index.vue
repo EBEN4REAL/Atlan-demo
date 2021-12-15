@@ -177,7 +177,6 @@
                 assetSidebarToggle,
             } = useHotKeys()
             const {
-                collectionError,
                 queryCollectionsError,
                 getQueryCollections,
                 queryCollections,
@@ -260,7 +259,6 @@
                 activeInlineTab,
                 queryCollections,
                 queryCollectionsLoading,
-                collectionError,
                 queryCollectionsError,
                 activeInlineTabKey,
                 inlineTabs: tabsArray,
@@ -532,12 +530,9 @@
                                 tabsArray
                             )
                             queryCollectionsError.value = undefined
-                            collectionError.value = undefined
                         } else {
                             queryCollectionsLoading.value = false
                             queryCollectionsError.value = error.value
-                            collectionError.value = toRaw(error.value)
-                            console.log(collectionError.value, 'line 535')
 
                             message.error({
                                 content: `Error fetching collections`,

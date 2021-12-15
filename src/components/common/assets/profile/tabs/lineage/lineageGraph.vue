@@ -71,12 +71,13 @@
             style="z-index: 600"
             @cancel="showAddLineage = false"
         />
+        <AssetDrawer
+            :data="selectedAsset"
+            :show-drawer="isDrawerVisible"
+            :show-mask="false"
+            @closeDrawer="onCloseDrawer"
+        />
     </div>
-    <AssetDrawer
-        :data="selectedAsset"
-        :show-drawer="isDrawerVisible"
-        @closeDrawer="onCloseDrawer"
-    />
 </template>
 
 <script lang="ts">

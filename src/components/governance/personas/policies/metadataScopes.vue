@@ -188,7 +188,7 @@
             flex: 1;
             height: auto;
             .ant-checkbox-wrapper {
-                height: 42px;
+                height: 40px;
             }
             // justify-content: space-between;
         }

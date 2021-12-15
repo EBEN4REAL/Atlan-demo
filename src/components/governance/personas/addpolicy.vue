@@ -89,7 +89,7 @@
                         {{ rules.connection.text }}
                     </div>
                 </div>
-                <div class="mt-7">
+                <div class="mt-5">
                     <div class="flex justify-between">
                         <div class="text-gray-500">
                             Asset <span class="text-red-500">*</span>

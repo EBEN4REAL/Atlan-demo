@@ -146,7 +146,7 @@
                             class="flex items-center justify-between p-1 cursor-pointer hover:bg-primary-light wrapper-asset"
                         >
                             <span class="asset-name">
-                                {{ asset }}
+                                {{ splitName(asset) }}
                             </span>
                             <AtlanBtn
                                 class="flex-none btn-delete-asset"
@@ -548,6 +548,11 @@
                 }
                 return result
             })
+            const splitName = (name) => {
+                const splited = name.split('/')
+                const sliced = splited.slice(2, splited.length)
+                return sliced.join('/')
+            }
             return {
                 selectedPersonaDirty,
                 rules,
@@ -570,6 +575,7 @@
                 handleSave,
                 selectedPermition,
                 policyType,
+                splitName,
             }
         },
     })

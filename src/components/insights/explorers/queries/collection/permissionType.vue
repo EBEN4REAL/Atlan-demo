@@ -8,7 +8,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <div>
-                        <span class="text-sm text-gray-700">can view</span>
+                        <span class="text-sm text-gray-700">Can view</span>
                     </div>
                     <div>
                         <span class="text-xs text-gray-500"
@@ -32,7 +32,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <div>
-                        <span class="text-sm text-gray-700">can edit</span>
+                        <span class="text-sm text-gray-700">Can edit</span>
                     </div>
                     <div>
                         <span class="text-xs text-gray-500"

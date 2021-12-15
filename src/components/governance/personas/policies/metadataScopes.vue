@@ -24,26 +24,8 @@
                         :checked="
                             groupedActions[idx].scopes.length ===
                             scopeList[idx].scopes.length
-                    "
-                    @click.stop="toggleCheckAll(idx)"
-                >
-                    {{ scope.type }}
-                </a-checkbox>
-            </template>
-            <div class="meta-data-scope">
-                <a-checkbox-group
-                    :value="groupedActions[idx].scopes"
-                    :name="scope.type"
-                    :options="scope.scopes"
-                    :class="['capitalize', $style.checkbox_custom]"
-                    class="wrapper-checkbox"
-                    @update:value="updateSelection(scope.type, $event)"
-                ></a-checkbox-group>
-                <div class="wrapper-desc">
-                    <div
-                        v-for="(item, i) in scope.scopes"
-                        :key="i"
-                        class="desc"
+                        "
+                        @click.stop="toggleCheckAll(idx)"
                     >
                         {{ scope.type }}
                     </a-checkbox>
@@ -56,7 +38,7 @@
                         :class="['capitalize', $style.checkbox_custom]"
                         class="wrapper-checkbox"
                         @update:value="updateSelection(scope.type, $event)"
-                    />
+                    ></a-checkbox-group>
                     <div class="wrapper-desc">
                         <div
                             v-for="(item, i) in scope.scopes"

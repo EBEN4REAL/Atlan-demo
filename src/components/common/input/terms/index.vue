@@ -129,19 +129,8 @@
                 }
                 return 'Term'
             }
-            // if node has not been loaded, it will not be in checked node
-            // even if it is in checkedKeys
 
-            //  CHECK EVENT
-            //
-            //  just append to loaclValue
-            //
-
-            // UNCHECK EVENT
-            //
-            //
-
-            const onCheck = (checkedNodes, { checkedKeys, checked }) => {
+            const onCheck = (checkedNodes) => {
                 checkedNodes.forEach((term) => {
                     if (
                         !localValue.value.find(

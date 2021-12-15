@@ -108,15 +108,12 @@ export default function useProject() {
         // console.log('selected text: ', selectedText)
         /* Checking If any text is selected */
 
-<<<<<<< HEAD
-        if (selectedText && selectedText !== '') {
-=======
-        let semiColonMatchs = toRaw(editorInstance.value)?.getModel()?.findMatches(';');
-        if(semiColonMatchs?.length===0) {
+        let semiColonMatchs = toRaw(editorInstance.value)
+            ?.getModel()
+            ?.findMatches(';')
+        if (semiColonMatchs?.length === 0) {
             queryText = activeInlineTab.value.playground.editor.text
-
         } else if (selectedText && selectedText !== '') {
->>>>>>> main
             queryText = getParsedQuery(
                 activeInlineTab.value.playground.editor.variables,
                 selectedText
@@ -157,8 +154,7 @@ export default function useProject() {
             // console.log('query: ', queryText)
 
             // no semicolon support
-            
-            
+
             let queryData = getParsedQueryCursor(
                 activeInlineTab.value.playground.editor.variables,
                 activeInlineTab.value.playground.editor.text,

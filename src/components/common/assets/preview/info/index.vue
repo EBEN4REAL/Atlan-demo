@@ -15,12 +15,6 @@
                 Saving</span
             >
         </div>
-        <div v-if="selectedAsset" class="flex flex-col px-5">
-            <span class="text-gray-500">Name</span>
-            <span class="text-gray-500 truncate">{{
-                selectedAsset.displayText || selectedAsset.attributes.name
-            }}</span>
-        </div>
         <AnnouncementWidget
             class="mx-5"
             :selected-asset="selectedAsset"

@@ -72,7 +72,6 @@ export const dataTypeCategoryList = [
             'VARBINARY',
             'BPCHAR',
             'VARCHAR',
-            'ANY',
         ],
         image: string,
         imageText: 'string',
@@ -111,7 +110,7 @@ export const dataTypeCategoryList = [
     {
         id: 'variant',
         label: 'Variant',
-        type: ['VARIANT'],
+        type: ['VARIANT', 'ANY'],
         image: variant,
     },
     {

@@ -305,6 +305,8 @@ import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
 import RightJoin from '~/assets/images/icons/RightJoin.svg'
 import TableSwap from '~/assets/images/icons/swapTable.svg'
 import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
+import PublicCollection from '~/assets/images/icons/PublicCollection.svg'
+import PrivateCollection from '~/assets/images/icons/PrivateCollection.svg'
 
 export default {
     BuilderGroup,
@@ -603,4 +605,6 @@ export default {
     Compass,
     Teams,
     Policies,
+    PublicCollection,
+    PrivateCollection
 }

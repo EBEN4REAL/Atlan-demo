@@ -36,6 +36,7 @@ import EmptySampleData from '~/assets/images/illustrations/empty_sample_data.svg
 import ErrorSampleData from '~/assets/images/illustrations/error_sample_data.svg'
 import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
+import Expand from '~/assets/images/icons/expand.svg'
 import Variant from '~/assets/images/dataType/variant.svg'
 import Database from '~/assets/images/icons/database.svg'
 import DatabaseVerified from '~/assets/images/icons/database_verified.svg'
@@ -327,6 +328,7 @@ export default {
     NoUsers,
     Times,
     ExclaimCircle,
+    Expand,
     RemoveUser,
     NoRuns,
     CreateWF,
@@ -608,5 +610,5 @@ export default {
     Teams,
     Policies,
     PublicCollection,
-    PrivateCollection
+    PrivateCollection,
 }

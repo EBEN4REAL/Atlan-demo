@@ -8,7 +8,6 @@
             <table
                 ref="tableRef"
                 :data-test-id="'output-table'"
-                :key="counter"
                 :class="$style.tableStyle"
             >
                 <thead id="headerArea" class="clusterize-content">
@@ -21,20 +20,16 @@
                         <th
                             v-for="(col, index) in columns"
                             :key="index"
-                            class="truncate bg-gray-100 border border-gray-light"
+                            class="bg-gray-100 border border-gray-light"
                         >
                             <div class="flex items-center">
-                                <a-tooltip>
-                                    <template #title>{{
-                                        col.data_type
-                                    }}</template>
+                                <a-tooltip :title="col.data_type">
                                     <component
                                         :is="images[getDataType(col.data_type)]"
                                         class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
                                     ></component>
                                 </a-tooltip>
-
-                                {{ col.title }}
+                                <Tooltip :tooltip-text="`${col.title}`" />
                             </div>
                         </th>
                     </tr>
@@ -53,18 +48,30 @@
                         </td>
 
                         <td
-                            v-for="(rowData, key) in row"
-                            :key="key"
-                            class="bg-white border border-gray-light"
+                            v-for="(rowData, index) in row"
+                            :key="index"
+                            class="truncate bg-white border border-gray-light"
                             :class="{
-                                'hover:bg-primary-light cursor-pointer':
-                                    variantTypeIndexes.includes(0),
                                 'outline-primary bg-primary-light ':
                                     selectedData === rowData,
+                                'cursor-pointer hover:bg-primary-light':
+                                    variantTypeIndexes.includes(index),
                             }"
-                            @click="() => handleOpenModal(rowData)"
                         >
-                            {{ rowData }}
+                            <div
+                                v-if="variantTypeIndexes.includes(index)"
+                                class="flex items-center justify-between"
+                                v-on:click="handleOpenModal(rowData)"
+                            >
+                                {{ rowData }}
+                                <AtlanIcon
+                                    icon="Expand"
+                                    class="h-4 w-auto mb-0.5"
+                                />
+                            </div>
+                            <div v-else>
+                                <Tooltip :tooltip-text="`${rowData}`" />
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -72,13 +79,14 @@
         </div>
     </div>
     <a-modal
+        v-if="modalVisible"
         v-model:visible="modalVisible"
         :footer="null"
         :afterClose="() => (selectedData = '')"
         centered
         :destroyOnClose="true"
         :class="$style.variant_modal"
-        width="800px"
+        width="600px"
     >
         <template #title>
             <div class="flex items-center text-gray-700 gap-x-1.5">
@@ -90,7 +98,7 @@
             </div>
         </template>
         <div
-            class="p-4 overflow-auto border rounded border-gray-light variant_body"
+            class="overflow-auto border rounded border-gray-light variant_body"
         >
             <pre>
                 <code>
@@ -147,7 +155,6 @@
             const variantTypeIndexes = ref<Number[]>([])
             const selectedData = ref('')
             const modalVisible = ref<boolean>(false)
-            const counter = ref(1)
             const getDataType = (type: string) => {
                 let label = ''
                 dataTypeCategoryList.forEach((i) => {
@@ -158,21 +165,19 @@
 
             watch([tableRef, dataList], () => {
                 if (tableRef.value) {
-                    new Clusterize({
+                    /*  new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
-                    })
-
-                    console.log(variantTypeIndexes.value)
+                    }) */
                 }
             })
 
             watch([tableRef, columns], () => {
                 if (tableRef.value) {
-                    new Clusterize({
+                    /* new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'headerArea',
-                    })
+                    }) */
                 }
             })
 
@@ -190,12 +195,10 @@
                         variantTypeIndexes.value.push(index)
                     }
                 })
-                counter.value += 1
             })
 
             return {
                 tableRef,
-                counter,
                 images,
                 getDataType,
                 variantTypeIndexes,
@@ -216,9 +219,6 @@
             width: 200px;
             max-width: 250px !important;
             min-width: 150px !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
             text-align: left !important;
             height: 32px !important;
             padding: 0px 16px !important;
@@ -276,6 +276,6 @@
         src: url('~/assets/fonts/hack/Hack-Regular.ttf');
     }
     .variant_body {
-        max-height: 600px;
+        max-height: 400px;
     }
 </style>

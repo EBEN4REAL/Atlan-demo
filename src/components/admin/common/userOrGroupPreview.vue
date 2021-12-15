@@ -41,9 +41,13 @@
                     <div class="flex items-center content-center text-gray-500">
                         <div class="w-4/5">
                             <div
-                                class="text-base font-bold text-gray-700 capitalize"
+                                class="flex text-base content-center items-center capitalize text-gray-700 font-bold mb-0.5"
                             >
-                                {{ title }}
+                                <span class="mr-1">{{ title }}</span>
+                                <SlackMessageCta
+                                    v-if="slackEnabled"
+                                    :link="slackUrl"
+                                />
                             </div>
                             <span class="text-sm truncate w-28">
                                 @{{ name }}
@@ -56,31 +60,12 @@
                             </span>
                         </div>
                         <div class="ml-auto">
-                            <a-button-group>
-                                <a-button
-                                    v-if="isValidUser"
-                                    class="border border-gray-300 border-solid"
-                                    html-type="a"
-                                    :href="`https://teams.microsoft.com/l/chat/0/0?users=${selectedUser.email}`"
-                                    target="_blank"
-                                >
-                                    <AtlanIcon icon="Teams" />
-                                </a-button>
-                                <a-button
-                                    v-if="slackEnabled"
-                                    class="border border-gray-300 border-solid"
-                                    html-type="a"
-                                    :href="slackUrl"
-                                >
-                                    <AtlanIcon icon="Slack" />
-                                </a-button>
-                                <a-button
-                                    class="border border-gray-300 border-solid"
-                                    @click="$emit('close')"
-                                >
-                                    <AtlanIcon icon="Cross" />
-                                </a-button>
-                            </a-button-group>
+                            <a-button
+                                class="border-0 shadow-none"
+                                @click="$emit('close')"
+                            >
+                                <AtlanIcon icon="Cross" />
+                            </a-button>
                         </div>
                     </div>
                 </div>
@@ -127,6 +112,7 @@
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
+    import SlackMessageCta from '@common/popover/user/slackMessageCta.vue'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -159,6 +145,7 @@
             ErrorView,
             SidePanelTabHeaders,
             AtlanButton,
+            SlackMessageCta,
         },
         props: {
             previewType: {

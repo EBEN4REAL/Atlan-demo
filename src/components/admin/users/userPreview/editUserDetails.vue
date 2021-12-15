@@ -228,6 +228,7 @@
                             }, 2000)
                             message.success('The details have been updated')
                             emit('success')
+                            emit('toggleEdit')
                         } else if (error && error.value) {
                             updateError.value =
                                 'Unable to update user details. Please try again.'

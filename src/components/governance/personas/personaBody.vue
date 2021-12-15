@@ -69,7 +69,7 @@
                 :persona="persona"
             />
             <div v-else-if="activeTabKey === 'policies'">
-                <div class="sticky top-0 z-10 bg-white">
+                <div class="bg-white">
                     <div class="flex items-center pt-3 pr-4">
                         <SearchAndFilter
                             v-model:value="searchPersona"
@@ -234,16 +234,17 @@
         placement="right"
         :closable="false"
         :visible="addpolicyVisible"
-        :width="width"
+        :width="450"
         :mask="false"
         @close="handleCloseAddPolicy"
     >
         <Addpolicy
             :type="typeAddPolicy"
             :show-drawer="addpolicyVisible"
+            :selected-policy="selectedPolicy"
+            :is-edit="isEdit"
             @save="savePolicyUI"
             @close="handleCloseAdd"
-            @changeWidth="handleChangeWidth"
         />
     </a-drawer>
 </template>
@@ -304,11 +305,12 @@
             const activeTabFilter = ref('')
             const selectedPolicy = ref({})
             const addpolicyVisible = ref(false)
-            const width = ref(450)
+            const isEdit = ref(false)
             const typeAddPolicy = ref('')
             const handleAddPolicy = (type) => {
                 typeAddPolicy.value = type
                 addpolicyVisible.value = true
+                isEdit.value = false
             }
             const addPolicyDropdownConfig = [
                 {
@@ -441,7 +443,9 @@
             })
             const handleSelectPolicy = (policy) => {
                 selectedPolicy.value = policy
-                emit('selectPolicy', policy)
+                isEdit.value = true
+                addpolicyVisible.value = true
+                // emit('selectPolicy', policy)
             }
             const totalPolicy = computed(
                 () =>
@@ -453,9 +457,7 @@
             const handleCloseAddPolicy = () => {
                 addpolicyVisible.value = false
             }
-            const handleChangeWidth = (widthUpdated) => {
-                width.value = widthUpdated
-            }
+
             const handleCloseAdd = () => {
                 addpolicyVisible.value = false
             }
@@ -483,9 +485,8 @@
                 addpolicyVisible,
                 handleCloseAddPolicy,
                 typeAddPolicy,
-                width,
-                handleChangeWidth,
                 handleCloseAdd,
+                isEdit,
             }
         },
     })

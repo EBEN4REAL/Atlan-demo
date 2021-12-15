@@ -282,7 +282,7 @@
                     placement="right"
                     :closable="false"
                     :visible="isShow"
-                    :width="450"
+                    :width="480"
                     :mask="false"
                     @close="handleToggleManage"
                 >

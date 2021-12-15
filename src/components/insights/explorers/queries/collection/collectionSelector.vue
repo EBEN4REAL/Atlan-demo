@@ -5,13 +5,17 @@
         placement="bottomLeft"
         trigger="['click']"
         overlayClassName="collectionSelectPopover"
+        :overlay-class-name="$style.classificationPopover"
     >
         <template #content>
-            <div class="flex flex-col w-full pt-1 pb-3">
+            <div
+                class="flex flex-col pt-4 mt-0"
+                style="width: 315px !important; height: 338px"
+            >
                 <div class="px-3">
                     <a-input
                         v-model:value="queryText"
-                        class="h-8 mt-2 rounded"
+                        class="h-8 rounded"
                         :class="$style.inputSearch"
                         :placeholder="`Search in ${
                             sharedCollections?.length +
@@ -19,28 +23,30 @@
                         } Collections`"
                         :allowClear="true"
                     >
-                        <!-- <template #suffix>
+                        <template #prefix>
                             <AtlanIcon icon="Search" color="#6F7590" />
-                        </template> -->
+                        </template>
                     </a-input>
                 </div>
                 <!-- FIXME: These should be using a same component -->
                 <div class="pt-3">
-                    <span class="px-3 text-xs font-bold text-gray-500">{{
-                        `Shared (${sharedCollections?.length ?? 0})`
-                    }}</span>
-
                     <div
-                        class="px-3 mb-3 overflow-x-hidden overflow-y-auto h-44"
+                        class="overflow-x-hidden overflow-y-auto"
+                        style="height: 242px"
                     >
                         <div
-                            v-if="sharedCollections?.length !== 0"
-                            v-for="collection in sharedCollections"
+                            v-if="
+                                [...sharedCollections, ...privateCollections]
+                                    ?.length !== 0
+                            "
+                            v-for="collection in [
+                                ...sharedCollections,
+                                ...privateCollections,
+                            ]"
                             :key="collection.guid"
                         >
                             <CollectionItem
                                 :item="collection"
-                                :index="index"
                                 :handle-change="handleChange"
                             />
                         </div>
@@ -53,52 +59,57 @@
                                 class="h-24 mr-8 -mt-4 no-svaved-query-icon text-primary"
                             />
                             <span class="mt-3 text-gray-500"
-                                >No shared collection found</span
-                            >
-                        </div>
-                    </div>
-
-                    <span class="px-3 text-xs font-bold text-gray-500">{{
-                        `Private (${privateCollections?.length ?? 0})`
-                    }}</span>
-
-                    <div class="px-3 overflow-x-hidden overflow-y-auto h-44">
-                        <div
-                            v-if="privateCollections?.length !== 0"
-                            v-for="collection in privateCollections"
-                            :key="collection.guid"
-                        >
-                            <CollectionItem
-                                :item="collection"
-                                :index="index"
-                                :handle-change="handleChange"
-                            />
-                        </div>
-                        <div
-                            v-else
-                            class="flex flex-col items-center justify-center w-full h-full"
-                        >
-                            <AtlanIcon
-                                icon="EmptySearchQuery"
-                                class="h-24 mr-8 -mt-4 no-svaved-query-icon text-primary"
-                            />
-                            <span class="mt-3 text-gray-500"
-                                >No private collection found</span
+                                >No collection found</span
                             >
                         </div>
                     </div>
                 </div>
+
+                <div
+                    class="flex flex-row-reverse items-center pr-4 mt-auto border-t border-gray-300 cursor-pointer h-9"
+                    @click="emit('toggleCollectionModal')"
+                >
+                    <AtlanIcon
+                        icon="ArrowRight"
+                        class="w-4 h-4 no-svaved-query-icon text-primary"
+                    />
+                    <span class="text-xs text-primary"
+                        >Create new collection</span
+                    >
+                </div>
             </div>
         </template>
         <div class="flex items-center w-full cursor-pointer hover:text-primary">
-            <AtlanIcon icon="Group" class="self-center h-4 mr-1"></AtlanIcon>
-            <p class="text-sm truncate">
-                {{ selectedCollection?.attributes?.name }}
-            </p>
-            <AtlanIcon
-                icon="ChevronDown"
-                class="self-center h-4 ml-1 text-gray-400"
-            ></AtlanIcon>
+            <div class="flex items-center overflow-x-hidden">
+                <span class="w-4 h-4 -mt-0.5 mr-2.5">{{
+                    selectedCollection?.attributes?.icon
+                }}</span>
+
+                <div
+                    class="truncate group-hover:text-primary"
+                    style="width: 90%"
+                >
+                    <span
+                        class="text-base font-bold text-gray-700 truncate mr-2.5"
+                        >{{ selectedCollection?.attributes?.name }}</span
+                    >
+                    <AtlanIcon
+                        v-if="isCollectionPrivate(selectedCollection, username)"
+                        icon="PrivateCollection"
+                        class="self-center w-4 h-4 -mt-1"
+                    ></AtlanIcon>
+                    <AtlanIcon
+                        v-else
+                        icon="PublicCollection"
+                        class="self-center w-4 h-4 -mt-1"
+                    ></AtlanIcon>
+
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="self-center h-4 ml-1 text-gray-400"
+                    ></AtlanIcon>
+                </div>
+            </div>
         </div>
     </a-popover>
 </template>
@@ -131,7 +142,7 @@
 
     export default defineComponent({
         name: 'CollectionSelector',
-        emits: ['update:data'],
+        emits: ['update:data', 'toggleCollectionModal'],
         components: { AtlanIcon, SearchAndFilter, CollectionItem },
         setup(props, { emit }) {
             // store
@@ -257,6 +268,7 @@
                 username,
                 sharedCollections,
                 privateCollections,
+                emit,
             }
         },
     })
@@ -275,6 +287,13 @@
         border: 1px solid #e9ebf1 !important;
         color: #6f7590 !important;
         border-radius: 8px !important;
+    }
+
+    .classificationPopover {
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-0 !important;
+            width: 315px !important;
+        }
     }
     :global(.ant-input) {
         color: #6f7590 !important;

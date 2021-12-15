@@ -165,13 +165,13 @@
                     </div>
                     <div
                         v-if="rules.assets.show"
-                        class="absolute text-xs text-red-500 -bottom-5"
+                        class="mt-2 text-xs text-red-500"
                         data-test-id="policy-validation-connector"
                     >
                         {{ rules.assets.text }}
                     </div>
                 </div>
-                <div v-if="policyType === 'meta'" class="mt-7">
+                <div v-if="policyType === 'meta'" class="mt-5">
                     <div class="flex justify-between">
                         <div class="text-gray-500">
                             Permissions <span class="text-red-500">*</span>
@@ -211,7 +211,7 @@
                     </div>
                     <div
                         v-if="rules.metadata.show"
-                        class="absolute text-xs text-red-500 -bottom-5"
+                        class="mt-2 text-xs text-red-500"
                         data-test-id="policy-validation-connector"
                     >
                         {{ rules.metadata.text }}
@@ -273,6 +273,8 @@
                     :connection-qf-name="connectorData.attributeValue"
                     class="drawerAddAsset"
                     :get-container="'body'"
+                    @change="handleChangeAssets"
+                    @update:data="handleChangeAssets"
                 />
 
                 <a-drawer
@@ -329,7 +331,7 @@
     import { selectedPersonaDirty } from './composables/useEditPersona'
     import { useConnectionStore } from '~/store/connection'
     import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
-    import { MetadataPolicies } from '~/types/accessPolicies/purposes'
+    // import { MetadataPolicies } from '~/types/accessPolicies/purposes'
     import ManagePermission from './policies/managePermission.vue'
     import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
@@ -506,6 +508,7 @@
             }
             const handleSavePermission = (prop) => {
                 policy.value.actions = prop
+                rules.value.metadata.show = false
             }
             const addConnectionAsset = () => {
                 if (connectorData.value.attributeValue) {
@@ -577,6 +580,9 @@
                 }
                 return result
             })
+            const handleChangeAssets = () => {
+                rules.value.assets.show = false
+            }
             const splitName = (name) => {
                 const splited = name.split('/')
                 const sliced = splited.slice(2, splited.length)
@@ -605,6 +611,7 @@
                 selectedPermition,
                 policyType,
                 splitName,
+                handleChangeAssets,
             }
         },
     })

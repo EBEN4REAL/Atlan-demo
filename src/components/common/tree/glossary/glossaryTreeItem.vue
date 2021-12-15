@@ -11,7 +11,7 @@
             >
                 <template #trigger>
                     <div class="flex items-center hover:underline text-primary">
-                        <AtlanIcon icon="Term" class="m-0 mr-2" />
+                        <AtlanIcon icon="Term" class="m-0 mr-2 align-text-bottom" />
                         <p class="p-0 m-0">Add Term</p>
                     </div>
                 </template>
@@ -26,7 +26,7 @@
             >
                 <template #trigger>
                     <div class="flex items-center hover:underline text-primary">
-                        <AtlanIcon icon="Category" class="m-0 mr-2" />
+                        <AtlanIcon icon="Category" class="m-0 mr-2 align-text-bottom" />
                         <p class="p-0 m-0">Add Category</p>
                     </div>
                 </template>
@@ -64,7 +64,7 @@
                             )
                         "
                         :style="iconSize"
-                        class="self-center"
+                        class="self-center align-text-bottom"
                     />
                 </div>
                 <Tooltip

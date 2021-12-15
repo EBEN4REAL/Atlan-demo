@@ -12,7 +12,14 @@
             <div class="w-full px-3">
                 <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
-                        :checked="map[item[selectUserKey]]"
+                        :checked="
+                            map[item[selectUserKey]] ||
+                            disabledKeyMap[item[selectUserKey]]
+                        "
+                        :disabled="
+                            disabledKeyMap[item[selectUserKey]] &&
+                            disabledKeyMap[item[selectUserKey]] === true
+                        "
                         class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
                         @change="
                             (checked) =>
@@ -83,10 +90,14 @@
                 required: false,
                 default: () => 'DEFAULT_USERS',
             },
+            disabledKeys: {
+                type: Array,
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, disabledKeys } = useVModels(props, emit)
             const { selectUserKey } = toRefs(props)
             const localValue = ref(modelValue.value)
             const map = ref({})
@@ -129,6 +140,17 @@
                     ...tempList,
                 ]
             })
+
+            const disabledKeyMap = computed(() => {
+                let data = {}
+                disabledKeys?.value?.forEach((key) => {
+                    data[key] = true
+                })
+
+                // console.log('disabled keys: ', data)
+                return data
+            })
+
             const fullName = (item) => {
                 if (item.firstName) {
                     return `${item.firstName} ${item.lastName || ''}`
@@ -156,6 +178,7 @@
                 localValue,
                 filterTotal,
                 handleChange,
+                disabledKeyMap,
             }
         },
     })

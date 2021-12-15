@@ -37,6 +37,7 @@
                 :data-type="
                     attribute?.options?.customType ||
                     attribute?.subTypeName ||
+                    attribute?.options?.enumType ||
                     attribute?.options?.primitiveType ||
                     attribute?.typeName
                 "
@@ -84,8 +85,9 @@
             const { attribute } = toRefs(props)
 
             const operatorDataType = computed(() => {
-                if (attribute.value?.options?.primitiveType)
+                if (attribute.value?.options?.primitiveType) {
                     return attribute.value.options.primitiveType
+                }
                 const keys: string[] = []
                 keys.push(attribute.value?.typeName)
 

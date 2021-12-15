@@ -9,7 +9,7 @@
             @click="handleEdit"
         >
             <span v-if="!isEdit && localValue">{{ localValue }}</span>
-            <span v-else-if="!isEdit && localValue === ''"
+            <span v-else-if="!isEdit && localValue === ''" class="text-gray-700"
                 >No name available</span
             >
             <a-input

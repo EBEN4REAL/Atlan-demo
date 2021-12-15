@@ -44,7 +44,7 @@
                 />
             </Popover>
         </template>
-        <span class="-ml-1 text-gray-500" v-if="readOnly && list?.length < 1"
+        <span class="-ml-1 text-gray-700" v-if="readOnly && list?.length < 1"
             >No linked classifications</span
         >
     </div>

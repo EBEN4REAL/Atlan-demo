@@ -69,7 +69,7 @@
                 :persona="persona"
             />
             <div v-else-if="activeTabKey === 'policies'">
-                <div class="sticky top-0 bg-white">
+                <div class="sticky top-0 z-10 bg-white">
                     <div class="flex items-center pt-3 pr-4">
                         <SearchAndFilter
                             v-model:value="searchPersona"

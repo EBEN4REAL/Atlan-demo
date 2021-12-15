@@ -33,20 +33,25 @@
 
                             <router-link
                                 :to="assetURL(item)"
-                                class="flex-shrink mb-0 mr-1 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                                :class="checkable ? 'text-sm' : 'text-base'"
                             >
                                 {{ title(item) }}
                             </router-link>
                         </div>
                         <div class="flex mt-0" v-if="description(item)">
-                            <span class="text-sm text-gray-700">{{
+                            <span class="text-gray-700"
+                                :class="checkable ? 'text-xs' : 'text-sm '"
+                        
+                            >{{
                                 description(item)
                             }}</span>
                         </div>
 
                         <div class="flex items-center mt-1">
                             <div
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-gray-500  gap-x-1"
+                                :class="checkable ? 'text-xs' : 'text-sm'"
                                 v-if="categories(item)?.length > 0"
                             >
                                 in
@@ -85,7 +90,8 @@
                                 </div>
                             </div>
                             <div
-                                class="flex items-center mr-3 text-sm text-gray-500  gap-x-1"
+                                class="flex items-center mr-3 text-gray-500  gap-x-1"
+                                :class="checkable ? 'text-xs' : 'text-sm'"
                                 v-if="parentCategory(item)"
                             >
                                 in
@@ -106,7 +112,8 @@
                                 </div>
                             </div>
                             <div
-                                class="flex items-center text-sm text-gray-500"
+                                class="flex items-center text-gray-500"
+                                :class="checkable ? 'text-xs' : 'text-sm'"
                             >
                                 <AtlanIcon
                                     icon="Glossary"

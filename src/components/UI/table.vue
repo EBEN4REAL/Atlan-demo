@@ -40,7 +40,7 @@
                             :key="key"
                             class="bg-white"
                             :class="{
-                                'outline-primary bg-primary-light':
+                                'selected-state bg-primary-light':
                                     selectedData === rowData && modalVisible,
                                 'cursor-pointer hover:bg-primary-light':
                                     variantTypeIndexes.includes(key.toString()),
@@ -228,7 +228,7 @@
             border-top: 0;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-700 bg-gray-100;
+            @apply text-gray-700 bg-gray-100 border-r border-gray-light;
             font-weight: 400 !important;
         }
         td:first-child {
@@ -273,5 +273,9 @@
     }
     .variant_body {
         max-height: 400px;
+    }
+
+    .selected-state {
+        box-shadow: inset 0px 0px 0px 1px rgba(82, 119, 215);
     }
 </style>

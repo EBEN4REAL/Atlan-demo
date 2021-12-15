@@ -4,7 +4,10 @@ import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { useOptions } from '~/services/api/common'
-import { IPersona } from '~/types/accessPolicies/personas'
+import {
+    IPersona,
+    IEnableDisablePayload,
+} from '~/types/accessPolicies/personas'
 
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PERSONAS, 'GET', { params }, options || {})
@@ -49,6 +52,7 @@ const updatePersona = (body: IPersona) =>
     useAPIPromise(map.UPDATE_PERSONA({ guid: body.id! }), 'POST', {
         body: body,
     })
+
 const updatePersonaUsers = ({ personaId, users, groups }) =>
     useAPIPromise(map.UPDATE_PERSONA_USERS({ guid: personaId! }), 'POST', {
         body: { users, groups },
@@ -56,6 +60,11 @@ const updatePersonaUsers = ({ personaId, users, groups }) =>
 
 const deletePersona = (id: string): Promise<IPersona> =>
     useAPIPromise(map.DELETE_PERSONA({ guid: id }), 'DELETE', {})
+
+const enableDisablePersona = (id: string, body: IEnableDisablePayload) =>
+    useAPIPromise(map.ENABLE_DISABLE_PERSONA({ id }), 'POST', {
+        body,
+    })
 
 export const Persona = {
     List,
@@ -66,4 +75,5 @@ export const Persona = {
     createPersona,
     updatePersona,
     deletePersona,
+    enableDisablePersona,
 }

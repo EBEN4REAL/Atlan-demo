@@ -1,4 +1,7 @@
-import { IPersona } from '~/types/accessPolicies/personas'
+import {
+    IPersona,
+    IEnableDisablePayload,
+} from '~/types/accessPolicies/personas'
 import { Persona } from '../../../../services/service/persona'
 
 export default function usePersonaService() {
@@ -24,6 +27,9 @@ export default function usePersonaService() {
             groups,
         })
     }
+    function enableDisablePersona(id: string, payload: IEnableDisablePayload) {
+        return Persona.enableDisablePersona(id, payload)
+    }
 
     return {
         listPersonas,
@@ -31,5 +37,6 @@ export default function usePersonaService() {
         updatePersona,
         deletePersona,
         updateUsers,
+        enableDisablePersona,
     }
 }

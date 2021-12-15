@@ -91,7 +91,7 @@
 
             const getCell = (guid) => graph.value.getCellById(guid)
 
-            const getImpactedAssets = async () => {
+            const getImpactedAssets = () => {
                 if (!guid.value) return
                 columnsData.value = []
                 const { successors } = useGetNodes(graph, guid.value, false)

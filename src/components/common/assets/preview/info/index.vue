@@ -2,6 +2,7 @@
     <div class="flex flex-col w-full h-full pt-4 overflow-auto gap-y-4">
         <div class="flex items-center justify-between px-5">
             <span class="font-semibold text-gray-500">Overview</span>
+
             <span
                 v-if="isLoading || isLoadingClassification"
                 class="flex items-center"
@@ -14,7 +15,16 @@
                 Saving</span
             >
         </div>
-        <AnnouncementWidget class="mx-5" :selected-asset="selectedAsset" />
+        <div v-if="selectedAsset" class="flex flex-col px-5">
+            <span class="text-gray-500">Name</span>
+            <span class="text-gray-500 truncate">{{
+                selectedAsset.displayText || selectedAsset.attributes.name
+            }}</span>
+        </div>
+        <AnnouncementWidget
+            class="mx-5"
+            :selected-asset="selectedAsset"
+        ></AnnouncementWidget>
 
         <div
             v-if="

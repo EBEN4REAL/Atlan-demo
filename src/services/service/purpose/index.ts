@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { Ref } from 'vue'
+
+import { IEnableDisablePayload } from '~/types/accessPolicies/personas'
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
@@ -71,7 +72,10 @@ const updatePersonaUsers = ({ personaId, users, groups }) =>
 
 const deletePersona = (id: string): Promise<IPersona> =>
     useAPIPromise(map.DELETE_PURPOSE({ guid: id }), 'DELETE', {})
-
+const enableDisablePurpose = (id: string, body: IEnableDisablePayload) =>
+    useAPIPromise(map.ENABLE_DISABLE_PURPOSE({ id }), 'POST', {
+        body,
+    })
 export const Persona = {
     List,
     Create,
@@ -81,4 +85,5 @@ export const Persona = {
     createPersona,
     updatePersona,
     deletePersona,
+    enableDisablePurpose,
 }

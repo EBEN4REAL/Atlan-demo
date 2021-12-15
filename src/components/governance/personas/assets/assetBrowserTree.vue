@@ -16,6 +16,8 @@
         <div class="w-full h-full">
             <SchemaTree
                 v-if="treeData.length > 0"
+                v-model:expanded-keys="expandedKeys"
+                v-model:checkedKeys="checkedKeys"
                 :tree-data="treeData"
                 :checkable="true"
                 :on-load-data="onLoadData"
@@ -23,13 +25,11 @@
                 :is-loading="isInitingTree"
                 :loaded-keys="loadedKeys"
                 :selected-keys="selectedKeys"
-                v-model:expanded-keys="expandedKeys"
-                v-model:checkedKeys="checkedKeys"
-                :checkStrictly="true"
-                :hoverActions="false"
+                :check-strictly="true"
+                :hover-actions="false"
             />
             <div
-                v-else-if="treeData.length == 0"
+                v-else-if="treeData.length === 0 && !isInitingTree"
                 data-test-id="no-assets-available"
                 class="flex flex-col items-center justify-center h-full text-base leading-6 text-center text-gray-500"
             >
@@ -37,6 +37,12 @@
                 <p class="mt-6 mb-0 text-base text-gray-700">
                     No assets available
                 </p>
+            </div>
+            <div
+                v-if="treeData.length === 0 && isInitingTree"
+                class="flex items-center justify-center h-96"
+            >
+                <AtlanIcon icon="Loader" class="h-10 animate-spin" />
             </div>
         </div>
     </div>

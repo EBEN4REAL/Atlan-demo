@@ -11,11 +11,14 @@
                         class="mr-1"
                         size="minimal"
                         @change="handleSearch"
-                    />
-                    <UserFilter
-                        v-model="statusFilter"
-                        @change="updateFilters"
-                    />
+                    >
+                        <template #filter>
+                            <UserFilter
+                                v-model="statusFilter"
+                                @change="updateFilters"
+                            />
+                        </template>
+                    </SearchAndFilter>
                 </div>
                 <div v-auth="map.CREATE_USERS" class="flex">
                     <AtlanButton

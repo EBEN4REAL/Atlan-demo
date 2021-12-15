@@ -36,8 +36,7 @@
                     :class="['capitalize', $style.checkbox_custom]"
                     class="wrapper-checkbox"
                     @update:value="updateSelection(scope.type, $event)"
-                    >sjdhgshdgjshdgjsgd</a-checkbox-group
-                >
+                ></a-checkbox-group>
                 <div class="wrapper-desc">
                     <div
                         v-for="(item, i) in scope.scopes"
@@ -136,6 +135,14 @@
 <style lang="less">
     .meta-data-scope {
         display: flex;
+        .ant-checkbox-wrapper {
+            display: flex;
+            .ant-checkbox {
+                margin-top: 5px;
+                margin-right: 7px;
+                height: fit-content;
+            }
+        }
         .wrapper-desc {
             flex: 1;
         }

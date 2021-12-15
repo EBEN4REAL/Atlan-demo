@@ -26,7 +26,7 @@
                         ></a-input>
                     </div>
 
-                    <div class="flex flex-1 overflow-y-auto">
+                    <div class="flex h-full overflow-y-auto">
                         <div
                             class="flex items-center justify-center w-full"
                             v-if="isLoading"

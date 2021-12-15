@@ -20,7 +20,12 @@
             :key="item.guid"
         >
             <div class="flex flex-col">
-                {{ item.attributes.name }}
+                <div class="flex items-center">
+                    <img
+                        :src="getConnectorImage(item)"
+                        class="h-3 mr-1 mb-0.5"
+                    />{{ item.attributes.name }}
+                </div>
                 <span class="text-xs text-gray-500" v-if="showCount"
                     >{{ item.assetCount }} assets</span
                 >
@@ -34,6 +39,7 @@
     import { defineComponent, ref, toRefs, computed } from 'vue'
 
     import useConnectionData from '~/composables/connection/useConnectionData'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         props: {
@@ -68,33 +74,46 @@
             const { list } = useConnectionData()
             const queryText = ref('')
 
+            const { getConnectorImage } = useAssetInfo()
+
             const filteredList = computed(() => {
                 if (connector.value) {
-                    return list.filter((item) => {
-                        if (queryText.value && connector.value) {
-                            return (
-                                item.attributes?.connectorName?.toLowerCase() ===
-                                    connector.value.toLowerCase() &&
-                                item.attributes.name
+                    return list
+                        .filter((item) => {
+                            if (queryText.value && connector.value) {
+                                return (
+                                    item.attributes?.connectorName?.toLowerCase() ===
+                                        connector.value.toLowerCase() &&
+                                    item.attributes.name
+                                        .toLowerCase()
+                                        .includes(queryText.value.toLowerCase())
+                                )
+                            }
+                            if (connector.value) {
+                                return (
+                                    item.attributes?.connectorName?.toLowerCase() ===
+                                    connector.value.toLowerCase()
+                                )
+                            }
+                            if (queryText.value) {
+                                return item.attributes.name
                                     .toLowerCase()
                                     .includes(queryText.value.toLowerCase())
-                            )
-                        }
-                        if (connector.value) {
-                            return (
-                                item.attributes?.connectorName?.toLowerCase() ===
-                                connector.value.toLowerCase()
-                            )
-                        }
-                        if (queryText.value) {
-                            return item.attributes.name
-                                .toLowerCase()
-                                .includes(queryText.value.toLowerCase())
-                        }
-                        return true
-                    })
+                            }
+                            return true
+                        })
+                        .sort((a, b) => {
+                            if (a.assetCount > b.assetCount) return -1
+                            if (a.assetCount < b.assetCount) return 1
+                            return 0
+                        })
                 }
-                return list
+                const temp = list.sort((a, b) => {
+                    if (a.assetCount > b.assetCount) return -1
+                    if (a.assetCount < b.assetCount) return 1
+                    return 0
+                })
+                return temp
             })
 
             const selectedValue = ref(modelValue.value)
@@ -114,6 +133,7 @@
                 handleChange,
                 handleSearch,
                 showCount,
+                getConnectorImage,
             }
         },
     })

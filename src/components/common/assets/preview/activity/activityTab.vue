@@ -36,7 +36,9 @@
                             />
                         </template>
                         <template v-else>
-                            {{ getEventByAction(log)?.label || 'Event' }}
+                            <div class="mb-3">
+                                {{ getEventByAction(log)?.label || 'Event' }}
+                            </div>
                         </template>
                     </div>
                     <div class="flex items-center leading-5 text-gray-500">

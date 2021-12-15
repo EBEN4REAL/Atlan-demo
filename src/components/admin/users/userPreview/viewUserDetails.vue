@@ -1,6 +1,14 @@
 <template>
     <div class="flex">
         <div class="mb-3 text-lg font-bold text-gray-500">Profile</div>
+        <div v-if="isCurrentUser" class="ml-auto">
+            <a-button
+                @click="$emit('toggleEdit')"
+            >
+                <AtlanIcon icon="Edit" />
+                <span class="ml-1 text-gray-700">Edit</span>
+            </a-button>
+        </div>
     </div>
     <div class="pb-6 border-solid border-b border-gray-200">
         <div class="mb-3">

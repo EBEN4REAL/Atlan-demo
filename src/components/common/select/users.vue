@@ -13,8 +13,29 @@
             :key="x"
             :value="item.username"
         >
-            {{ fullName(item) }}
+            <div class="">
+                <div class="flex">
+                    <Avatar
+                        avatar-shape="circle"
+                        :image-url="avatarUrl(item)"
+                        :allow-upload="false"
+                        :avatar-name="item.name || item.username || item.email"
+                        :avatar-size="25"
+                        class="mr-2"
+                    />
+                    <div class="">
+                        <div>{{ fullName(item) }}</div>
+                        <div class="text-xs text-gray-500">
+                            @{{ item.username }}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </a-select-option>
+
+        <template #suffixIcon>
+            <AtlanIcon icon="CaretDown" />
+        </template>
     </a-select>
 </template>
 
@@ -23,9 +44,11 @@
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import useUserData from '~/composables/user/useUserData'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
         name: 'OwnersFilter',
+        components: { VNodes: (_, { attrs }) => attrs.vnodes, Avatar },
         props: {
             queryText: {
                 type: String,
@@ -40,7 +63,7 @@
             modelValue: {
                 type: Array,
                 required: false,
-                default: () => [],
+                default: () => undefined,
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -51,6 +74,7 @@
 
             const { list, handleSearch, total } = useFacetUsers()
             const { username, firstName, lastName } = useUserData()
+
             watch(
                 () => props.queryText,
                 () => {
@@ -67,8 +91,8 @@
                 return [
                     {
                         username,
-                        firstName: firstName,
-                        lastName: lastName,
+                        firstName,
+                        lastName,
                     },
                     ...tempList,
                 ]

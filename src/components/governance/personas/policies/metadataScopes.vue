@@ -1,54 +1,57 @@
 <template>
-    <a-collapse expand-icon-position="right" :active-key="defaultExpandedState">
-        <template #expandIcon="{ isActive }">
-            <div>
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="ml-3 text-gray-500 transition-transform duration-300 transform"
-                    :class="isActive ? '-rotate-180' : 'rotate-0'"
-                />
-            </div>
-        </template>
-
-        <a-collapse-panel v-for="(scope, idx) in scopeList" :key="scope.type">
-            <template #header>
-                <a-checkbox
-                    data-test-id="checkbox"
-                    :checked="
-                        groupedActions[idx].scopes.length ===
-                        scopeList[idx].scopes.length
-                    "
-                    :indeterminate="
-                        0 < groupedActions[idx].scopes.length &&
-                        groupedActions[idx].scopes.length <
-                            scopeList[idx].scopes.length
-                    "
-                    @click.stop="toggleCheckAll(idx)"
-                >
-                    {{ scope.type }}
-                </a-checkbox>
+    <div class="meta-data-scope-container">
+        <a-collapse
+            expand-icon-position="right"
+            :active-key="defaultExpandedState"
+        >
+            <template #expandIcon="{ isActive }">
+                <div>
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="ml-3 text-gray-500 transition-transform duration-300 transform"
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
+                </div>
             </template>
-            <div class="meta-data-scope">
-                <a-checkbox-group
-                    :value="groupedActions[idx].scopes"
-                    :name="scope.type"
-                    :options="scope.scopes"
-                    :class="['capitalize', $style.checkbox_custom]"
-                    class="wrapper-checkbox"
-                    @update:value="updateSelection(scope.type, $event)"
-                ></a-checkbox-group>
-                <div class="wrapper-desc">
-                    <div
-                        v-for="(item, i) in scope.scopes"
-                        :key="i"
-                        class="desc"
+
+            <a-collapse-panel
+                v-for="(scope, idx) in scopeList"
+                :key="scope.type"
+            >
+                <template #header>
+                    <a-checkbox
+                        data-test-id="checkbox"
+                        :checked="
+                            groupedActions[idx].scopes.length ===
+                            scopeList[idx].scopes.length
+                        "
+                        @click.stop="toggleCheckAll(idx)"
                     >
-                        {{ item.desc }}
+                        {{ scope.type }}
+                    </a-checkbox>
+                </template>
+                <div class="meta-data-scope">
+                    <a-checkbox-group
+                        :value="groupedActions[idx].scopes"
+                        :name="scope.type"
+                        :options="scope.scopes"
+                        :class="['capitalize', $style.checkbox_custom]"
+                        class="wrapper-checkbox"
+                        @update:value="updateSelection(scope.type, $event)"
+                    ></a-checkbox-group>
+                    <div class="wrapper-desc">
+                        <div
+                            v-for="(item, i) in scope.scopes"
+                            :key="i"
+                            class="desc"
+                        >
+                            {{ item.desc }}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </a-collapse-panel>
-    </a-collapse>
+            </a-collapse-panel>
+        </a-collapse>
+    </div>
 </template>
 
 <script lang="ts">
@@ -133,6 +136,11 @@
     }
 </style>
 <style lang="less">
+    .meta-data-scope-container {
+        .ant-collapse-header {
+            background-color: #fafafa;
+        }
+    }
     .meta-data-scope {
         display: flex;
         .ant-checkbox-wrapper {

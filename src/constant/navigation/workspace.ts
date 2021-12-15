@@ -20,13 +20,13 @@ export const workspaceList = [
         isActive: true,
         inactiveIcon: 'InsightsInactive',
     },
-    {
-        path: '/workflows',
-        label: 'Workflows',
-        icon: 'WorkflowsActive',
-        isActive: true,
-        inactiveIcon: 'WorkflowsInactive',
-    },
+    // {
+    //     path: '/workflows',
+    //     label: 'Workflows',
+    //     icon: 'WorkflowsActive',
+    //     isActive: true,
+    //     inactiveIcon: 'WorkflowsInactive',
+    // },
 ]
 
 export const topNavKeys = [
@@ -66,7 +66,7 @@ export const bottomNavKeys = [
         icon: 'Admin',
         id: 'admin',
         label: 'Admin Center',
-        image: ''
+        image: '',
     },
     {
         path: '/reporting',

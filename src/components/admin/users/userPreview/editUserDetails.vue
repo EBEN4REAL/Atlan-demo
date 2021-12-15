@@ -95,7 +95,7 @@
                     Cancel
                 </a-button>
                 <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
-                    Done
+                    Save
                 </a-button>
             </a-button-group>
         </div>

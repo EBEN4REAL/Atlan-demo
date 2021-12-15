@@ -191,7 +191,7 @@
                                     <a-popover>
                                         <template #content>
                                             <div
-                                                class="flex flex-col items-center w-60"
+                                                class="flex flex-col items-center px-4 py-2 w-60"
                                             >
                                                 This property will only be
                                                 available for selected asset
@@ -200,7 +200,7 @@
                                         </template>
                                         <AtlanIcon
                                             icon="Info"
-                                            class="h-3 ml-2"
+                                            class="h-3 ml-1"
                                         />
                                     </a-popover>
                                 </template>
@@ -257,8 +257,29 @@
                                 class="mb-2"
                             >
                                 <div class="flex justify-between">
-                                    <label :for="`${form.name}-isFacet`"
-                                        >Allow multiple values
+                                    <label :for="`${form.name}-isFacet`">
+                                        <span class="flex items-center">
+                                            Allow multiple values
+                                            <a-popover>
+                                                <template #content>
+                                                    <div class="px-4 py-2 w-60">
+                                                        Users will be able to
+                                                        add multiple values
+                                                        while filling
+                                                        <b>
+                                                            {{
+                                                                form.displayName ??
+                                                                'this property.'
+                                                            }}
+                                                        </b>
+                                                    </div>
+                                                </template>
+                                                <AtlanIcon
+                                                    icon="Info"
+                                                    class="h-3 ml-1"
+                                                />
+                                            </a-popover>
+                                        </span>
                                     </label>
                                     <a-switch
                                         :id="`${form.name}-isFacet`"
@@ -274,9 +295,30 @@
                             </a-form-item>
                             <a-form-item class="mb-2">
                                 <div class="flex justify-between">
-                                    <label :for="`${form.name}-isBadge`"
-                                        >Allow filtering</label
-                                    >
+                                    <label :for="`${form.name}-isBadge`">
+                                        <span class="flex items-center">
+                                            Allow filtering
+                                            <a-popover>
+                                                <template #content>
+                                                    <div class="px-4 py-2 w-60">
+                                                        <b>
+                                                            {{
+                                                                form.displayName ??
+                                                                'This property '
+                                                            }}
+                                                        </b>
+                                                        will be available in
+                                                        asset filtering
+                                                    </div>
+                                                </template>
+                                                <AtlanIcon
+                                                    icon="Info"
+                                                    class="h-3 ml-1"
+                                                />
+                                            </a-popover>
+                                        </span>
+                                    </label>
+
                                     <a-switch
                                         :id="`${form.name}-isBadge`"
                                         v-model:checked="
@@ -290,9 +332,11 @@
                             </a-form-item>
                             <a-form-item class="mb-0">
                                 <div class="flex justify-between">
-                                    <label :for="`${form.name}-isBadge`"
-                                        >Allow search</label
-                                    >
+                                    <label :for="`${form.name}-isBadge`">
+                                        <span class="flex items-center">
+                                            Allow search
+                                        </span>
+                                    </label>
                                     <a-switch
                                         :id="`${form.name}-isBadge`"
                                         v-model:checked="

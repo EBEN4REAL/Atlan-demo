@@ -4,6 +4,7 @@
         :v-model:value="selectedValue"
         :allowClear="true"
         :showSearch="true"
+        :filterOption="false"
         @search="handleSearch"
         @change="handleChange"
         :get-popup-container="(target) => target.parentNode"
@@ -19,7 +20,7 @@
             :key="item.guid"
         >
             <div class="flex flex-col">
-                {{ item?.attributes.displayName || item.attributes.name }}
+                {{ item.attributes.name }}
                 <span class="text-xs text-gray-500" v-if="showCount"
                     >{{ item.assetCount }} assets</span
                 >
@@ -65,8 +66,36 @@
             const { modelValue } = useVModels(props, emit)
 
             const { list } = useConnectionData()
-
             const queryText = ref('')
+
+            const filteredList = computed(() => {
+                if (connector.value) {
+                    return list.filter((item) => {
+                        if (queryText.value && connector.value) {
+                            return (
+                                item.attributes?.connectorName?.toLowerCase() ===
+                                    connector.value.toLowerCase() &&
+                                item.attributes.name
+                                    .toLowerCase()
+                                    .includes(queryText.value.toLowerCase())
+                            )
+                        }
+                        if (connector.value) {
+                            return (
+                                item.attributes?.connectorName?.toLowerCase() ===
+                                connector.value.toLowerCase()
+                            )
+                        }
+                        if (queryText.value) {
+                            return item.attributes.name
+                                .toLowerCase()
+                                .includes(queryText.value.toLowerCase())
+                        }
+                        return true
+                    })
+                }
+                return list
+            })
 
             const selectedValue = ref(modelValue.value)
             const handleChange = (value) => {
@@ -77,37 +106,6 @@
             const handleSearch = (val) => {
                 queryText.value = val
             }
-
-            const filteredList = computed(() => {
-                return list
-                    .filter((i) => {
-                        let isConnector = true
-                        if (connector?.value !== '') {
-                            isConnector =
-                                i.attributes?.connectorName?.toLowerCase() ===
-                                connector.value.toLowerCase()
-                        }
-                        if (queryText?.value !== '') {
-                            return (
-                                isConnector &&
-                                (i.attributes?.name
-                                    ?.toLowerCase()
-                                    .includes(queryText.value.toLowerCase()) ||
-                                    i.attributes?.displayName
-                                        ?.toLowerCase()
-                                        .includes(
-                                            queryText.value.toLowerCase()
-                                        ))
-                            )
-                        }
-                        return isConnector
-                    })
-                    .sort((a, b) => {
-                        if (a.assetCount > b.assetCount) return -1
-                        if (a.assetCount < b.assetCount) return 1
-                        return 0
-                    })
-            })
 
             return {
                 list,

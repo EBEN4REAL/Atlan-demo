@@ -10,6 +10,7 @@ export default function useLineageService() {
     ) {
         const asyncOptions = {
             resetOnExecute: false,
+            immediate: false,
         }
         const { data, error, isLoading, isReady, mutate } =
             lineageServiceAPI.getLineage(config, asyncOptions)

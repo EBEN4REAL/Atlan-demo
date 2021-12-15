@@ -27,6 +27,7 @@
         </AddGtcModal>
     </div>
     <a-tree
+        :class="$style.glossaryTree"
         :tree-data="treeData"
         :draggable="false"
         :block-node="true"
@@ -40,7 +41,6 @@
         :selected-keys="selectedKeys"
         :expanded-keys="expandedKeys"
         :checked-keys="checkedKeys"
-        :class="$style.glossaryTree"
         :checkable="checkable"
         :checkStrictly="false"
         @check="onCheck"
@@ -52,8 +52,9 @@
         <template #title="entity">
             <GlossaryTreeItem
                 :item="entity"
-                :class="treeItemClass"
                 :checkable="checkable"
+                :class="treeItemClass"
+                @addSelectedKey="handleAddSelectedKey"
             />
         </template>
     </a-tree>
@@ -70,7 +71,7 @@
         provide,
         PropType,
     } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import { useVModels } from '@vueuse/core'
 
     import EmptyView from '@common/empty/index.vue'
@@ -81,6 +82,7 @@
 
     import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
     import useGlossaryStore from '~/store/glossary'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
@@ -124,16 +126,18 @@
         setup(props, { emit }) {
             const router = useRouter()
 
+            const route = useRoute()
+            const profileId = computed(() => route?.params?.id || null)
             const { defaultGlossary, height, treeItemClass } = toRefs(props)
             const { checkedGuids } = useVModels(props, emit)
-
+            const { selectedGlossary } = useAssetInfo()
             const glossaryStore = useGlossaryStore()
             const parentGlossaryGuid = computed(() => {
-                const selectedGlossary = glossaryStore.list.find(
+                const selectedGtc = glossaryStore.list.find(
                     (el) =>
                         el?.attributes?.qualifiedName === defaultGlossary.value
                 )
-                return selectedGlossary?.guid
+                return selectedGtc?.guid
             })
             const {
                 onLoadData,
@@ -179,7 +183,6 @@
                 else addNode(asset)
             }
             const deleteGTCNode = (asset, entity = {}) => {
-                console.log('delete node', selectedKeys.value)
                 if (entity !== {}) deleteNode(asset, entity)
                 else deleteNode(asset)
             }
@@ -224,6 +227,9 @@
                     })
                 } else selectNode(selected, event)
             }
+            const handleAddSelectedKey = (key) => {
+                selectedKeys.value = [key]
+            }
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             return {
@@ -251,6 +257,9 @@
                 onCheck,
                 checkedKeys,
                 updateTreeNode,
+                profileId,
+                selectedGlossary,
+                handleAddSelectedKey,
             }
             // data
         },
@@ -278,6 +287,9 @@
 
         :global(.ant-tree-list-holder-inner) {
             @apply px-3 !important;
+        }
+        :global(.ant-tree-treenode-selected) {
+            @apply bg-primary-light !important;
         }
     }
 </style>

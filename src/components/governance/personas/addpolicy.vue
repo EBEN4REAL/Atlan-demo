@@ -313,10 +313,6 @@
                 required: false,
                 default: () => {},
             },
-            width: {
-                type: Number,
-                required: false,
-            },
             isEdit: {
                 type: Boolean,
                 required: false,
@@ -337,13 +333,7 @@
             const policy = ref({})
             const connectionStore = useConnectionStore()
             const isAddAll = ref(false)
-            watch(isShow, () => {
-                if (isShow.value) {
-                    emit('changeWidth', 200)
-                } else {
-                    emit('changeWidth', 450)
-                }
-            })
+
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -471,28 +461,6 @@
             const resetPolicy = () => {
                 initPolicy()
             }
-            watch(isShow, () => {
-                if (isShow.value) {
-                    setTimeout(() => {
-                        emit('changeWidth', 200)
-                    }, 100)
-                } else {
-                    setTimeout(() => {
-                        emit('changeWidth', 450)
-                    }, 100)
-                }
-            })
-            watch(assetSelectorVisible, () => {
-                if (assetSelectorVisible.value) {
-                    setTimeout(() => {
-                        emit('changeWidth', 200)
-                    }, 100)
-                } else {
-                    setTimeout(() => {
-                        emit('changeWidth', 450)
-                    }, 100)
-                }
-            })
             const handleSave = () => {
                 if (!policy.value.name) {
                     policyNameRef.value?.focus()
@@ -505,10 +473,6 @@
                 } else if (policy.value.actions.length === 0) {
                     rules.value.metadata.show = true
                 } else {
-                    console.log(
-                        connectorComponentRef.value.treeData,
-                        policy.value
-                    )
                     emit('save', type.value, policy.value)
                 }
             }

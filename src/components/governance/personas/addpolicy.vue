@@ -193,10 +193,44 @@
             <div
                 class="flex items-center p-2 mt-1 border border-dashed border-bottom border-slate-300"
             >
-                <span class="p-2 text-xs text-gray-500">
+                <span
+                    v-if="selectedPermition.length === 0"
+                    class="p-2 text-xs text-gray-500"
+                >
                     Select from set of permissions for your policy
                 </span>
+                <div v-else>
+                    <div
+                        v-for="el in selectedPermition"
+                        :key="el"
+                        class="tag-permission"
+                    >
+                        {{ el }}
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="mt-4">
+            <span>Deny Permissions</span>
+            <a-tooltip placement="right" color="white">
+                <AtlanIcon icon="Overview" class="mx-2" />
+                <template #title>
+                    <p class="m-3 text-gray">
+                        This will deny the permissions you have selected above,
+                        for all the users in the persona, even if they had
+                        access to those permissions via some other persona or
+                        purpose.
+                    </p>
+                </template>
+            </a-tooltip>
+            <a-switch
+                :class="policy.allow ? `` : 'checked'"
+                data-test-id="toggle-switch"
+                class="ml-3"
+                :checked="!policy.allow"
+                style="width: 40px !important"
+                @update:checked="policy.allow = !$event"
+            />
         </div>
         <AssetSelectorDrawer
             v-if="connectorData.attributeValue"
@@ -460,6 +494,27 @@
                     emit('save', type.value, policy.value)
                 }
             }
+            const selectedPermition = computed(() => {
+                const result = []
+                const assetsPermission = []
+                const govermence = []
+                policy.value.actions.forEach((el) => {
+                    const splited = el.split('-')
+                    const dataToShow = splited[1]
+                    if (splited.length === 2) {
+                        assetsPermission.push(dataToShow)
+                    } else {
+                        govermence.push(dataToShow)
+                    }
+                })
+                if (assetsPermission.length > 0) {
+                    result.push(`Assets : ${assetsPermission.join(', ')}`)
+                }
+                if (govermence.length > 0) {
+                    result.push(`Governance : ${govermence.join(', ')}`)
+                }
+                return result
+            })
             return {
                 selectedPersonaDirty,
                 rules,
@@ -480,6 +535,7 @@
                 showDrawer,
                 resetPolicy,
                 handleSave,
+                selectedPermition,
             }
         },
     })
@@ -514,5 +570,12 @@
         left: -40px;
         top: 20px;
         cursor: pointer;
+    }
+    .tag-permission {
+        padding: 4px 8px;
+        padding-top: 0px;
+        background-color: #f3f3f3;
+        text-transform: capitalize;
+        margin-top: 4px;
     }
 </style>

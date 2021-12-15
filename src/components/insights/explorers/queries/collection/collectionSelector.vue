@@ -30,7 +30,10 @@
                 </div>
                 <!-- FIXME: These should be using a same component -->
                 <div class="pt-3">
-                    <div class="overflow-x-hidden overflow-y-auto h-44">
+                    <div
+                        class="overflow-x-hidden overflow-y-auto"
+                        style="height: 242px"
+                    >
                         <div
                             v-if="
                                 [...sharedCollections, ...privateCollections]

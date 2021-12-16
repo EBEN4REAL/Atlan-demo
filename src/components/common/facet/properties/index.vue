@@ -27,7 +27,7 @@
             <Popover
                 v-for="attribute in filteredAttributeList"
                 :key="attribute.name"
-                :trigger="['click']"
+                :trigger="['hover']"
                 :attribute="attribute"
                 v-model="localValue[attribute.name]"
                 @change="handleChange"
@@ -95,7 +95,7 @@
             )
 
             const handleClick = (id) => {
-                activeProperty.value = id
+                // activeProperty.value = id
             }
 
             const handleChange = () => {

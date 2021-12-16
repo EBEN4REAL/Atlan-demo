@@ -19,24 +19,29 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineProps, toRefs, watch } from 'vue'
+    import { computed, defineProps, toRefs, watch, ref } from 'vue'
     import getUserGroups from '~/composables/user/getUserGroups'
-    import Tags from "~/components/common/badge/tags/index.vue"
+    import Tags from '~/components/common/badge/tags/index.vue'
+    import { Users } from '~/services/service/users'
 
     export default {
         name: 'ViewGroups',
         components: {
-            Tags
+            Tags,
         },
         props: {
             user: {
                 type: Object,
-                required: true
-            }
+                required: true,
+            },
         },
         setup(props) {
             const { user } = toRefs(props)
             const userId = computed(() => user.value.id)
+            const groupListLoading = ref(false)
+            const groupList = ref([])
+            const filteredGroupCount = ref(0)
+            const groupListError = ref({})
             const groupListAPIParams = computed(() => ({
                 userId: userId.value,
                 params: {
@@ -45,28 +50,59 @@
                     sort: 'name',
                     filter: {},
                 },
-                immediate: true
+                immediate: true,
             }))
-            const {
-                groupList,
-                filteredGroupCount,
-                error,
-                isLoading,
-                getUserGroupList
-            } = getUserGroups(groupListAPIParams)
+            const fetchGroupList = () => {
+                const { data, isReady, error, isLoading } =
+                    Users.ListUserGroups(
+                        groupListAPIParams.value.params,
+                        groupListAPIParams.value.userId,
+                        {
+                            asyncOptions: {
+                                immediate: groupListAPIParams.value.immediate,
+                            },
+                        }
+                    )
+                watch(
+                    isLoading,
+                    () => {
+                        groupListLoading.value = isLoading.value
+                    },
+                    { immediate: true }
+                )
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        if (isReady && !error.value && !isLoading.value) {
+                            groupList.value = data?.value?.records ?? []
+                            filteredGroupCount.value =
+                                data?.value?.filteredRecord ?? []
+                        } else if (error && error.value) {
+                            groupListError.value = error.value
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
 
-            watch(userId, () => {
-                getUserGroupList()
-            })
+            watch(
+                userId,
+                () => {
+                    fetchGroupList()
+                },
+                { immediate: true }
+            )
 
-            const groups = computed(() => groupList.value.map((group) => group.name))
+            const groups = computed(() =>
+                groupList.value.map((group) => group.name)
+            )
 
             return {
                 groups,
-                error,
-                isLoading,
-                filteredGroupCount
+                groupListError,
+                groupListLoading,
+                filteredGroupCount,
             }
-        }
+        },
     }
 </script>

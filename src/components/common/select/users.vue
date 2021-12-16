@@ -5,10 +5,16 @@
         class="w-full center-arrow"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
-        :options="userList"
+        :options="finalList"
         :open="open"
+        :filter-option="() => true"
         @change="handleChange"
-        @search="handleSearch"
+        @search="
+            (v) => {
+                open = true
+                handleSearch(v)
+            }
+        "
         @click="open = !open"
         @select="open = false"
         @blur="
@@ -48,7 +54,7 @@
                 </div>
                 <div class="flex items-end justify-between">
                     <span v-if="userList?.length" class="text-xs text-gray-500">
-                        showing {{ userList?.length }} of {{ filterTotal }}
+                        {{ userList?.length }} of {{ filterTotal }}
                     </span>
                     <span
                         v-if="userList?.length < filterTotal"
@@ -106,17 +112,15 @@
             const open = ref(false)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { multiple } = toRefs(props)
 
             const {
-                list,
+                userList,
                 handleSearch,
                 total,
                 isLoading,
                 filterTotal,
                 loadMore,
             } = useFacetUsers()
-            const { username, firstName, lastName, id } = useUserData()
 
             watch(
                 () => props.queryText,
@@ -130,35 +134,18 @@
                 }
                 return `${item.username}`
             }
-            const userList = computed(() => {
-                if (props.queryText !== '') {
-                    return [
-                        ...list.value.map((u) => ({
-                            ...u,
-                            key: u.id,
-                            value: u.id,
-                        })),
-                    ]
-                }
-                const tempList = list.value.filter(
-                    (obj) => obj.username !== username
-                )
-                return [
-                    {
-                        username,
-                        firstName,
-                        lastName: `${lastName} (me)`,
-                        id,
-                        value: username,
-                        key: id,
-                    },
-                    ...tempList.map((u) => ({
-                        ...u,
-                        key: u.id,
-                        value: u.username,
-                    })),
-                ]
-            })
+
+            const finalList = computed(() =>
+                (userList?.value ?? []).map((u) => ({
+                    ...u,
+                    value: u.username,
+                    key: u.id,
+                    firstName: u.firstName,
+                    lastName: u.lastName,
+                    username: u.username,
+                    label: `${u.firstName ?? ''} ${u.lastName ?? ''}`,
+                }))
+            )
 
             const avatarUrl = (item) =>
                 `${window.location.origin}/api/services/avatar/${item.username}`
@@ -174,12 +161,12 @@
 
             return {
                 open,
+                finalList,
                 loadMore,
                 filterTotal,
                 userList,
                 fullName,
                 avatarUrl,
-                username,
                 handleSearch,
                 isLoading,
                 total,

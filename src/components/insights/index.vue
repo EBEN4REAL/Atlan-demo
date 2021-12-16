@@ -406,6 +406,7 @@
                         },
                     },
                     playground: {
+                        isVQB: false,
                         vqb: {
                             panels: [
                                 {

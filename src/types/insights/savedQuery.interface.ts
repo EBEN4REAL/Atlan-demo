@@ -27,6 +27,8 @@ export type Attributes = {
     connectionId: string
     defaultSchemaQualifiedName: string
     variablesSchemaBase64: string // base64 string
+    isVisualQuery: boolean
+    visualBuilderSchemaBase64: string
     owner?: string
     __createdBy: string
     __customAttributes: string

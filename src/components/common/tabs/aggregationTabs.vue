@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { getCountString } from '~/utils/number'
 
@@ -86,7 +86,8 @@
         setup(props, { emit }) {
             const { list, icon, noAll } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
-            const selectedTab = ref(modelValue.value)
+            // const selectedTab = ref(modelValue.value)
+            const selectedTab = computed(() => modelValue.value)
             const dataList = ref(list.value)
 
             const onTabChange = () => {

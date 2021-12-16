@@ -12,10 +12,13 @@
             <AtlanIcon icon="CaretDown" class="mb-1" />
         </template>
         <template v-for="item in sourceList" :key="item.id">
-            <a-select-option :value="item.id">
+            <a-select-option :value="item.id" class="flex">
                 <div class="flex items-center">
                     <img :src="item.image" class="w-auto h-4 mr-1" />
                     {{ item.label }}
+                    <span v-if="showCount" class="ml-1"
+                        >({{ item.count }})</span
+                    >
                 </div>
             </a-select-option>
         </template>
@@ -24,7 +27,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, watch, ref } from 'vue'
+    import { defineComponent, watch, ref, toRefs } from 'vue'
     import useConnectionData from '~/composables/connection/useConnectionData'
 
     export default defineComponent({
@@ -36,12 +39,19 @@
                     return undefined
                 },
             },
+            showCount: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const { showCount } = toRefs(props)
             const { sourceList } = useConnectionData()
 
-            console.log('list', sourceList)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             watch(localValue, () => {
@@ -51,6 +61,7 @@
             return {
                 sourceList,
                 localValue,
+                showCount,
             }
         },
     })

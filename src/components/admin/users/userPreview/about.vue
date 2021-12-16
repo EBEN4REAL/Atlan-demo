@@ -6,27 +6,27 @@
                 :selected-user="selectedUser"
                 :is-current-user="isCurrentUser"
                 @toggle-edit="toggleEdit"
+                @success="$emit('success')"
             />
             <ViewUser
                 v-else
                 :selected-user="selectedUser"
                 :is-current-user="isCurrentUser"
                 @toggle-edit="toggleEdit"
+                @success="$emit('success')"
             />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
-    import ViewUser from '@/admin/users/userPreview/viewUserDetails.vue'
-    import EditUser from '@/admin/users/userPreview/editUserDetails.vue'
+    import { defineAsyncComponent, defineComponent, ref, toRefs } from 'vue'
 
     export default defineComponent({
         name: 'UserPreviewAboutComponent',
         components: {
-            EditUser,
-            ViewUser,
+            EditUser: defineAsyncComponent(() => import("@/admin/users/userPreview/editUserDetails.vue")),
+            ViewUser: defineAsyncComponent(() => import("@/admin/users/userPreview/viewUserDetails.vue")),
         },
         props: {
             selectedUser: {
@@ -38,11 +38,12 @@
                 default: false,
             },
         },
-        emits: ['updatedUser'],
-        setup(props) {
+        emits: ['updatedUser', 'success'],
+        setup(props, { emit }) {
             const { selectedUser, isCurrentUser } = toRefs(props)
             const isEditing = ref(false)
             const toggleEdit = () => {
+                emit("success")
                 isEditing.value = !isEditing.value
             }
             return {

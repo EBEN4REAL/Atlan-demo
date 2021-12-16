@@ -15,12 +15,7 @@
                 Saving</span
             >
         </div>
-        <div v-if="selectedAsset" class="flex flex-col px-5">
-            <span class="text-gray-500">Name</span>
-            <span class="text-gray-500 truncate">{{
-                selectedAsset.displayText || selectedAsset.attributes.name
-            }}</span>
-        </div>
+
         <AnnouncementWidget
             class="mx-5"
             :selected-asset="selectedAsset"
@@ -32,7 +27,12 @@
             "
             class="flex flex-col"
         >
-            <Shortcut shortcut-key="n" action="set name" placement="left">
+            <Shortcut
+                shortcut-key="n"
+                action="set name"
+                placement="left"
+                :read-only="readOnly"
+            >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -74,8 +74,9 @@
         >
             <SQL
                 v-if="
-                    selectedAsset.typeName == 'View' ||
-                    selectedAsset.typeName == 'MaterialisedView'
+                    (selectedAsset.typeName == 'View' ||
+                        selectedAsset.typeName == 'MaterialisedView') &&
+                    definition(selectedAsset)
                 "
                 :sql="definition(selectedAsset)"
             >
@@ -83,6 +84,14 @@
                     <span class="mb-2 text-sm text-gray-500">Definition</span>
                     <span class="text-primary">SQL</span>
                 </div>
+                <template #action>
+                    <a-button
+                        size="small"
+                        block
+                        @click="switchTab(selectedAsset, 'Lineage')"
+                        >View Lineage</a-button
+                    >
+                </template>
             </SQL>
             <!-- <RowInfoHoverCard
                 v-if="
@@ -97,14 +106,18 @@
                 :source-created-at="sourceCreatedAt(selectedAsset)"
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
             > -->
+
             <div
-                v-if="rowCount(selectedAsset) > 0"
+                v-if="
+                    rowCount(selectedAsset, true) !== '0' &&
+                    rowCount(selectedAsset, true)
+                "
                 class="flex flex-col text-sm cursor-pointer"
                 @click="showSampleDataModal"
             >
                 <span class="mb-2 text-sm text-gray-500">Rows</span>
                 <span class="font-semibold text-primary">{{
-                    rowCount(selectedAsset)
+                    rowCount(selectedAsset, true)
                 }}</span>
             </div>
             <!-- </RowInfoHoverCard> -->
@@ -182,6 +195,7 @@
                 shortcut-key="d"
                 action="set description"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -213,7 +227,12 @@
             v-if="selectedAsset.guid && selectedAsset.typeName !== 'Column'"
             class="flex flex-col"
         >
-            <Shortcut shortcut-key="o" action="set owners" placement="left">
+            <Shortcut
+                shortcut-key="o"
+                action="set owners"
+                placement="left"
+                :read-only="readOnly"
+            >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
@@ -244,6 +263,7 @@
                 shortcut-key="t"
                 action="set classification"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -293,6 +313,7 @@
                 shortcut-key="c"
                 action="set certificate"
                 placement="left"
+                :read-only="readOnly"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -309,6 +330,28 @@
                 @change="handleChangeCertificate"
             />
         </div>
+
+        <div
+            v-if="
+               selectedAsset.typeName === 'AtlasGlossaryTerm'
+            "
+            class="flex flex-col"
+        >
+            <p
+                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+            >
+                Categories
+            </p>
+            <Categories
+                v-model="localCategories"
+                :selected-asset="selectedAsset"
+                class="px-5"
+                :read-only="readOnly"
+                @change="handleCategoriesUpdate"
+            >
+            </Categories>
+        </div>
+
         <a-modal
             v-model:visible="sampleDataVisible"
             :footer="null"
@@ -340,6 +383,7 @@
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import Terms from '@/common/input/terms/index.vue'
+    import Categories from '@/common/input/categories/categories.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -360,6 +404,7 @@
             SQL,
             Terms,
             Shortcut,
+            Categories,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -421,6 +466,8 @@
                 localOwners,
                 localClassifications,
                 localMeanings,
+                localCategories,
+                handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
                 handleChangeDescription,
@@ -491,7 +538,9 @@
                 showSampleDataModal,
                 localMeanings,
                 handleMeaningsUpdate,
+                handleCategoriesUpdate,
                 isUserDescription,
+                localCategories,
             }
         },
     })

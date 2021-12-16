@@ -11,8 +11,12 @@ import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
 
 export default function useProject() {
-    const { getParsedQuery, resetErrorDecorations, setErrorDecorations, getParsedQueryCursor } =
-        useEditor()
+    const {
+        getParsedQuery,
+        resetErrorDecorations,
+        setErrorDecorations,
+        getParsedQueryCursor,
+    } = useEditor()
     const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
         useConnector()
     const { modifyActiveInlineTab } = useInlineTab()
@@ -39,9 +43,8 @@ export default function useProject() {
                 columnList.value.push({
                     title: col.columnName.split('_').join('_'),
                     dataIndex: col.columnName,
-                    width: 'fit-content',
                     key: col.columnName,
-                    type: col.type.name
+                    data_type: col.type.name,
                 })
             })
 
@@ -67,7 +70,7 @@ export default function useProject() {
                     ...tmp,
                     ...{
                         // key: rowindex,
-                        [columns[rowindex].dataIndex]: row,
+                        [columns[rowindex].dataIndex]: row || '---',
                         // key: rowindex,
                     },
                 }
@@ -91,7 +94,8 @@ export default function useProject() {
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'loading'
-        activeInlineTab.value.playground.resultsPane.result.isQueryAborted = false
+        activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
+            false
         const attributeValue =
             activeInlineTab.value?.playground?.editor?.context?.attributeValue
         let queryText
@@ -104,24 +108,25 @@ export default function useProject() {
         // console.log('selected text: ', selectedText)
         /* Checking If any text is selected */
 
-        let semiColonMatchs = toRaw(editorInstance.value)?.getModel()?.findMatches(';');
-        if(semiColonMatchs?.length===0) {
+        let semiColonMatchs = toRaw(editorInstance.value)
+            ?.getModel()
+            ?.findMatches(';')
+        if (semiColonMatchs?.length === 0) {
             queryText = activeInlineTab.value.playground.editor.text
-
         } else if (selectedText && selectedText !== '') {
             queryText = getParsedQuery(
                 activeInlineTab.value.playground.editor.variables,
                 selectedText
             )
-            var count=0;
+            var count = 0
             let text = queryText
 
-            console.log('selected query text1: ', {queryText})
-            
-            while(text.startsWith('\n')) {
-                text=text.slice(1);
-                console.log('selected query text: ', {text})
-                count++;
+            console.log('selected query text1: ', { queryText })
+
+            while (text.startsWith('\n')) {
+                text = text.slice(1)
+                console.log('selected query text: ', { text })
+                count++
             }
 
             let selection = toRaw(editorInstance.value)?.getSelection()
@@ -133,15 +138,15 @@ export default function useProject() {
 
             // }
 
-            for(var i=0;i<count+selection?.startLineNumber-1;i++) {
-                queryText = '\n'+queryText
+            for (var i = 0; i < count + selection?.startLineNumber - 1; i++) {
+                queryText = '\n' + queryText
             }
             // console.log('selected query text2: ', {queryText})
             // console.log('selected query text2: ', {text, count})
             // console.log('query selected text1: ', queryText)
 
             // console.log('selected query text: ', toRaw(editorInstance.value).getSelection())
-        } else if(activeInlineTab.value.playground.editor.text!=='') {
+        } else if (activeInlineTab.value.playground.editor.text !== '') {
             // queryText = getParsedQuery(
             //     activeInlineTab.value.playground.editor.variables,
             //     activeInlineTab.value.playground.editor.text
@@ -149,8 +154,7 @@ export default function useProject() {
             // console.log('query: ', queryText)
 
             // no semicolon support
-            
-            
+
             let queryData = getParsedQueryCursor(
                 activeInlineTab.value.playground.editor.variables,
                 activeInlineTab.value.playground.editor.text,
@@ -165,12 +169,12 @@ export default function useProject() {
             //     )
 
             let selectedQuery = queryData.rawQuery.replace(/^\s+|\s+$/g, '')
-            let newLines = "\n".repeat(queryData.range.startLineNumber-1)
-            selectedQuery=newLines+selectedQuery;
+            let newLines = '\n'.repeat(queryData.range.startLineNumber - 1)
+            selectedQuery = newLines + selectedQuery
 
             console.log('selected query: ', selectedQuery)
 
-            if(selectedQuery && selectedQuery.length) {
+            if (selectedQuery && selectedQuery.length) {
                 queryText = getParsedQuery(
                     activeInlineTab.value.playground.editor.variables,
                     selectedQuery
@@ -181,12 +185,10 @@ export default function useProject() {
                     activeInlineTab.value.playground.editor.text
                 )
             }
-            
         } else {
-            queryText=''
+            queryText = ''
         }
         console.log('selected query: ', queryText)
-        
 
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))
@@ -233,7 +235,7 @@ export default function useProject() {
         })
 
         watch([isLoading, error], () => {
-            console.log('heka request log: ', isLoading.value, error.value, )
+            console.log('heka request log: ', isLoading.value, error.value)
             try {
                 if (!isLoading.value && error.value === undefined) {
                     const { subscribe } = sse.value
@@ -335,8 +337,6 @@ export default function useProject() {
                         error.value?.error &&
                         Array.isArray(error.value?.error?.message)
                     ) {
-                        
-
                         activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
                             {
                                 requestId: '',
@@ -425,7 +425,8 @@ export default function useProject() {
             .then(() => {
                 activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
                     ''
-                activeInlineTab.value.playground.resultsPane.result.isQueryAborted = true
+                activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
+                    true
 
                 activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
                     undefined
@@ -442,7 +443,6 @@ export default function useProject() {
                     inlineTabs,
                     activeInlineTabCopy.isSaved
                 )
-
             })
             .catch((error) => {
                 /* Query related data */

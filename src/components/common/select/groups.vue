@@ -8,7 +8,7 @@
         @change="handleChange"
         @search="handleSearch"
     >
-        <a-select-option v-for="(item, x) in list" :key="x" :value="item.name">
+        <a-select-option v-for="(item, x) in list" :key="x" :value="item.alias">
             {{ item.alias || item.name }}
         </a-select-option>
     </a-select>

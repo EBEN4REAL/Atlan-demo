@@ -117,9 +117,12 @@
 
             const { d, enter, shift } = useMagicKeys()
 
-            whenever(and(d, notUsingInput, !inProfile.value), () => {
-                handleEdit()
-            })
+            whenever(
+                and(d, notUsingInput, !inProfile.value, !readOnly.value),
+                () => {
+                    handleEdit()
+                }
+            )
 
             watchEffect(() => {
                 if (enter.value && !shift.value && isEdit.value) handleBlur()

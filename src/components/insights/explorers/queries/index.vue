@@ -18,6 +18,7 @@
                 <div class="flex items-center">
                     <CollectionSelector
                         @update:data="updateCollection"
+                        @toggleCollectionModal="toggleCollectionModal"
                     ></CollectionSelector>
                     <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
                     <a-dropdown
@@ -25,9 +26,12 @@
                         class="ml-auto shadow-none h-7"
                         placement="bottomRight"
                     >
-                        <a-button size="small" :class="$style.filterButton">
-                            <AtlanIcon :icon="'Add'"></AtlanIcon>
-                        </a-button>
+                        <div
+                            class="px-2 pt-0.5 cursor-pointer rounded-lg"
+                            :class="$style.filterButton"
+                        >
+                            <span class="text-xs text-gray-700">New</span>
+                        </div>
                         <template #overlay>
                             <a-menu>
                                 <a-menu-item
@@ -1066,7 +1070,7 @@
     }
     .filterButton {
         background: #ffffff;
-        border: 1px solid #e9ebf1;
+        border: 1px solid #e6e6eb;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
     }

@@ -38,7 +38,9 @@
                     :name="classification.name"
                     :display-name="classification?.displayName"
                     :is-propagated="isPropagated(classification)"
-                    :allow-delete="!readOnly"
+                    :allow-delete="
+                        allowDelete === null ? !readOnly : allowDelete
+                    "
                     :color="classification.options?.color"
                     @delete="handleDeleteClassification"
                 />
@@ -101,12 +103,17 @@
                 required: false,
                 default: false,
             },
+            allowDelete: {
+                type: Boolean,
+                required: false,
+                default: null,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const { guid, disabled } = toRefs(props)
+            const { guid, readOnly } = toRefs(props)
             const localValue = ref(modelValue.value)
             const selectedValue = ref({
                 classifications: modelValue.value.map((i) => i.typeName),
@@ -199,7 +206,7 @@
                         'true'
             )
             const { t, Escape } = useMagicKeys()
-            whenever(and(t, notUsingInput), () => {
+            whenever(and(t, notUsingInput, !readOnly.value), () => {
                 if (!isEdit.value) {
                     isEdit.value = true
                 }

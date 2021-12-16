@@ -43,16 +43,6 @@
                                         }}</a-radio
                                     >
                                 </a-menu-item>
-
-                                <!-- <a-menu-divider /> -->
-
-                                <!-- <a-menu-item>
-                                    <a-checkbox
-                                        v-model:checked="showProcess"
-                                        @change="onShowProcess"
-                                        >Show Process</a-checkbox
-                                    >
-                                </a-menu-item> -->
                             </a-menu>
                         </template>
                     </a-dropdown>
@@ -101,7 +91,7 @@
                         icon="ImpactedAssets"
                         class="ml-3 outline-none"
                         :class="
-                            isLeafNode
+                            isLeafNode || !highlightedNode
                                 ? 'text-gray-500 cursor-not-allowed'
                                 : 'text-primary'
                         "
@@ -143,7 +133,6 @@
         setup(props, { emit }) {
             /** INJECTIONS */
             const control = inject('control')
-            // const showProcess = inject('showProcess')
             const depth = inject('depth')
             const direction = inject('direction')
             const lineageDepths = inject('lineageDepths')
@@ -164,14 +153,10 @@
             /** METHODS */
             // onShowImpactedAssets
             const onShowImpactedAssets = () => {
+                if (!highlightedNode.value) return
                 if (isLeafNode.value) return
                 emit('show-impacted-assets')
             }
-
-            // onShowProcess
-            // const onShowProcess = () => {
-            //     control('showProcess', showProcess.value)
-            // }
 
             // onChangeDirection
             const onChangeDirection = (e) => {
@@ -191,11 +176,9 @@
                 direction,
                 control,
                 showSearch,
-                // showProcess,
                 lineageDepths,
                 lineageDirections,
                 onShowImpactedAssets,
-                // onShowProcess,
                 onChangeDirection,
                 onChangeDepth,
             }

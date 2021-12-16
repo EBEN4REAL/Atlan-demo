@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full overflow-y-auto h-44">
+    <div class="w-full h-44">
         <div
             v-if="userList.length < 1"
             class="flex flex-col items-center justify-center h-full"
@@ -8,12 +8,12 @@
                 <span class="text-gray-500">No users found</span>
             </div>
         </div>
-        <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full h-40 overflow-y-auto">
             <div class="w-full px-3">
                 <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
                         :checked="map[item[selectUserKey]]"
-                        class="atlanReverse inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded hover:bg-primary-light"
+                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
                         @change="
                             (checked) =>
                                 handleChange(checked, item[selectUserKey])
@@ -31,9 +31,26 @@
                     </a-checkbox>
                 </template>
             </div>
-            <p class="px-4 mt-1 text-xs text-gray-500">
-                showing {{ userList.length }} of {{ total }} users
-            </p>
+            <div
+                class="flex items-center justify-between px-4"
+                v-if="userList.length > 0"
+            >
+                <p class="mt-1 text-xs text-gray-500">
+                    {{ userList.length }} of {{ filterTotal }} users
+                </p>
+                <template v-if="userList?.length < filterTotal">
+                    <div class="flex justify-center" v-if="isLoading">
+                        <a-spin size="small"></a-spin>
+                    </div>
+                    <div
+                        class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
+                        @click="loadMore"
+                        v-else
+                    >
+                        load more...
+                    </div>
+                </template>
+            </div>
         </div>
     </div>
 </template>
@@ -71,10 +88,9 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { selectUserKey } = toRefs(props)
+            const { selectUserKey, queryText } = toRefs(props)
             const localValue = ref(modelValue.value)
             const map = ref({})
-
             const updateMap = (localValue: Ref<any>) => {
                 map.value = {}
                 localValue.value.map((id) => {
@@ -82,18 +98,23 @@
                 })
             }
             updateMap(localValue)
-            const { list, handleSearch, total, filterTotal } = useFacetUsers()
+            const {
+                list,
+                handleSearch,
+                total,
+                filterTotal,
+                loadMore,
+                isLoading,
+            } = useFacetUsers()
             const { username, firstName, lastName, id } = useUserData()
-
             watch(
                 () => props.queryText,
                 () => {
-                    handleSearch(props.queryText)
+                    handleSearch(queryText.value)
                 }
             )
-
             const userList = computed(() => {
-                if (props.queryText !== '') {
+                if (queryText.value !== '') {
                     return [...list.value]
                 }
                 const tempList = list.value.filter(
@@ -109,14 +130,12 @@
                     ...tempList,
                 ]
             })
-
             const fullName = (item) => {
                 if (item.firstName) {
                     return `${item.firstName} ${item.lastName || ''}`
                 }
                 return `${item.username}`
             }
-
             const handleChange = (checked, id) => {
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -126,10 +145,10 @@
                 modelValue.value = [...Object.keys(map.value)]
                 emit('change')
             }
-
             return {
+                loadMore,
+                isLoading,
                 map,
-                selectUserKey,
                 userList,
                 fullName,
                 username,
@@ -137,9 +156,9 @@
                 total,
                 localValue,
                 filterTotal,
+                queryText,
                 handleChange,
             }
         },
     })
 </script>
-

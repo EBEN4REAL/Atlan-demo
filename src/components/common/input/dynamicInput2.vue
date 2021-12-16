@@ -81,6 +81,7 @@
         v-model="localValue"
         :enum="dataType"
         :multiple="multiple"
+        @change="handleInputChange"
     />
 </template>
 
@@ -100,7 +101,6 @@
     import UserSelector from '@/common/select/users.vue'
     import GroupSelector from '@/common/select/groups.vue'
     import EnumSelector from '@/common/select/enum.vue'
-    import AtlanIcon from '../icon/atlanIcon.vue'
     import MultiInput from './customizedTagInput.vue'
 
     dayjs.extend(utc)

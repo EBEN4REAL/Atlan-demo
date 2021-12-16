@@ -10,13 +10,32 @@
     >
         <div class="pb-6 border-solid border-b border-gray-200">
             <div class="flex justify-center">
-                <Avatar
-                    :avatar-name="`${selectedUser.firstName} ${selectedUser.lastName}`"
-                    :allow-upload="true"
-                    :avatar-shape="'circle'"
-                    :image-url="avatarUrl"
-                    :avatar-size="100"
-                />
+                <div class="relative flex items-center">
+                    <Avatar
+                        :avatar-name="`${selectedUser.firstName} ${selectedUser.lastName}`"
+                        :allow-upload="true"
+                        :avatar-shape="'circle'"
+                        :image-url="avatarUrl"
+                        :avatar-size="100"
+                    />
+                    <div
+                        class="absolute bottom-0 p-1 bg-white rounded-full  left-20"
+                    >
+                        <div
+                            class="
+                                    p-1
+                                    bg-gray-100
+                                    border border-gray-300
+                                    rounded-full
+                                    px-1
+                                    py-0.5
+                                    text-gray-500
+                                "
+                        >
+                            <AtlanIcon icon="Camera"></AtlanIcon>
+                        </div>
+                    </div>
+                </div>
             </div>
                 <a-form-item label="First Name" prop="firstName">
                     <a-input
@@ -95,7 +114,7 @@
                     Cancel
                 </a-button>
                 <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
-                    Done
+                    Save
                 </a-button>
             </a-button-group>
         </div>
@@ -167,13 +186,10 @@
             const requestPayload = ref()
             const onSubmit = async () => {
                 await formRef.value?.validate()
-                const attributes = {}
-                if (formData.value.designation.length > 0) {
-                    attributes.designation = [formData.value.designation]
+                const attributes = {
+                    designation: [formData.value.designation]
                 }
-                if (formData.value.slack.length > 0) {
-                    attributes.profiles = [`[{"slack": "${formData.value.slack}"}]`]
-                }
+                attributes.profiles = formData.value.slack.length > 0 ? [`[{"slack": "${formData.value.slack}"}]`] : []
                 requestPayload.value = {
                     firstName: formData.value.firstName,
                     lastName: formData.value.lastName,
@@ -200,6 +216,15 @@
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
+                            selectedUser.value.firstName = formData.value.firstName
+                            selectedUser.value.lastName = formData.value.lastName
+                            selectedUser.value.attributes.designation = [formData.value.designation]
+                            if (formData.value.slack.length > 0) {
+                                selectedUser.value.attributes.profiles = [`[{"slack": "${formData.value.slack}"}]`]
+                            }
+                            else {
+                                selectedUser.value.attributes.profiles = []
+                            }
                             message.success('The details have been updated')
                             emit('success')
                             emit('toggleEdit')

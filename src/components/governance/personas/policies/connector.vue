@@ -23,14 +23,19 @@
         >
             <template #title="node">
                 <div
+                    v-if="node.node.nodeType !== 'info-node'"
                     class="flex items-center truncate"
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
-                    <AtlanIcon
-                        :icon="iconName(node)"
-                        class="h-4 -ml-0.5 mr-1"
-                    />
+                    <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
                     {{ node.title }}
+                </div>
+                <div
+                    v-else
+                    class="flex p-1 text-xs text-gray-500 bg-gray-100 rounded cursor-default"
+                >
+                    <AtlanIcon icon="Overview" class="mt-1 mr-2"></AtlanIcon>
+                    <div>{{ node.node.value }}</div>
                 </div>
             </template>
 
@@ -58,6 +63,11 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
+        components: {
+            // UserSelector,
+
+            VNodes: (_, { attrs }) => attrs.vnodes,
+        },
         props: {
             data: {
                 type: Object as PropType<{
@@ -75,6 +85,18 @@
                 type: Boolean,
                 required: false,
                 default: () => false,
+            },
+            showEmptyParents: {
+                type: Boolean,
+                default: true,
+            },
+            whitelistedConnections: {
+                type: Array,
+                default: null,
+            },
+            footerNodeContent: {
+                type: String,
+                default: '',
             },
         },
         emits: ['change', 'update:data', 'blur'],
@@ -124,8 +146,13 @@
             const checkedValues = ref([])
             const placeholderLabel: Ref<Record<string, string>> = ref({})
 
-            const transformConnectionsToTree = (connectorId: string) =>
-                store.getList
+            const transformConnectionsToTree = (connectorId: string) => {
+                let filteredList = store.getList
+                if (props.whitelistedConnections)
+                    filteredList = filteredList.filter((item) =>
+                        props.whitelistedConnections.includes(item.guid)
+                    )
+                return filteredList
                     .filter(
                         (connection) =>
                             getConnectorName(connection?.attributes) ===
@@ -165,10 +192,12 @@
                             }
                         }
                     })
+            }
 
             const transformConnectorToTree = (data: any) => {
                 const tree: Record<string, any>[] = []
                 data.forEach((item: any) => {
+                    const children = transformConnectionsToTree(item.id)
                     const treeNodeObj = {
                         value: item.id,
                         key: item.id,
@@ -177,10 +206,21 @@
                         connector: item.id,
                         connection: undefined,
                         title: item.id,
-                        children: transformConnectionsToTree(item.id),
+                        children,
                     }
-                    tree.push(treeNodeObj)
+                    if (props.showEmptyParents) tree.push(treeNodeObj)
+                    else {
+                        if (children && children.length) tree.push(treeNodeObj)
+                    }
                 })
+                if (props.footerNodeContent)
+                    tree.push({
+                        value: props.footerNodeContent,
+                        id: 'info-node',
+                        selectable: false,
+                        nodeType: 'info-node',
+                        disabled: true,
+                    })
                 return tree
             }
 
@@ -355,6 +395,11 @@
         }
         .ant-select-switcher-icon {
             font-weight: normal !important;
+        }
+        .ant-select-tree-treenode-leaf-last {
+            .ant-select-tree-switcher-noop {
+                display: none;
+            }
         }
     }
 </style>

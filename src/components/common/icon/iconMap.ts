@@ -36,6 +36,8 @@ import EmptySampleData from '~/assets/images/illustrations/empty_sample_data.svg
 import ErrorSampleData from '~/assets/images/illustrations/error_sample_data.svg'
 import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
+import Expand from '~/assets/images/icons/expand.svg'
+import Variant from '~/assets/images/dataType/variant.svg'
 import Database from '~/assets/images/icons/database.svg'
 import DatabaseVerified from '~/assets/images/icons/database_verified.svg'
 import DatabaseDeprecated from '~/assets/images/icons/database_deprecated.svg'
@@ -305,6 +307,8 @@ import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
 import RightJoin from '~/assets/images/icons/RightJoin.svg'
 import TableSwap from '~/assets/images/icons/swapTable.svg'
 import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
+import PublicCollection from '~/assets/images/icons/publicCollection.svg'
+import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 
 export default {
     BuilderGroup,
@@ -324,11 +328,13 @@ export default {
     NoUsers,
     Times,
     ExclaimCircle,
+    Expand,
     RemoveUser,
     NoRuns,
     CreateWF,
     Warning,
     Error,
+    Variant,
     WFEmptyTab,
     QueryVerified,
     QueryDeprecated,
@@ -603,4 +609,6 @@ export default {
     Compass,
     Teams,
     Policies,
+    PublicCollection,
+    PrivateCollection,
 }

@@ -112,7 +112,7 @@
                     </template>
                 </div> -->
         </div>
-        <div class="flex flex-col pt-2 overflow-y-auto max-h-80">
+        <div class="relative flex flex-col pt-2 overflow-y-auto max-h-80">
             <div
                 v-if="!list?.length && queryText.length"
                 class="flex flex-col items-center justify-center pt-12 pb-20"
@@ -132,7 +132,13 @@
                     >You haven’t searched for anything just yet ...</span
                 >
             </div>
-            <div v-for="item in list" v-else :key="item?.guid">
+            <div
+                :id="`${item.guid}-asset`"
+                v-for="item in list"
+                v-else
+                :key="item?.guid"
+                :class="{ 'bg-blue-50': item?.guid === activeAsset?.guid }"
+            >
                 <div
                     v-if="
                         [
@@ -148,8 +154,6 @@
                 <AssetCard v-else :item="item" Modal="$emit('closeModal')" />
             </div>
         </div>
-        <!-- body ends here  -->
-        <!-- footer starts here -->
     </div>
 </template>
 <script lang="ts">
@@ -162,7 +166,9 @@
         Ref,
         nextTick,
     } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
+    import { useDebounceFn, onKeyStroke } from '@vueuse/core'
+
     import {
         AssetAttributes,
         AssetRelationAttributes,
@@ -206,13 +212,51 @@
             const postFacets = ref({
                 typeName: '__all',
             })
+            const router = useRouter()
 
             const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
+                'anchor',
+                'name',
+                'displayName',
+                'description',
+                'displayDescription',
+                'userDescription',
+                'certificateStatus',
+                'certificateUpdatedAt',
+                'certificateUpdatedBy',
+                'certificateStatusMessage',
+                'connectorName',
+                'connectionName',
+                'connectionQualifiedName',
+                'ownerUsers',
+                'ownerGroups',
+                'allowQuery',
+                'allowQueryPreview',
+                'parentQualifiedName',
+                'collectionQualifiedName',
+                'parent',
+                'rowCount',
+                'columnCount',
+                'sizeBytes',
+                'schemaName',
+                'tableName',
+                'viewName',
+                'databaseName',
+                'dataType',
+                'definition',
+                'isPrimary',
+                'order',
+                'isPartition',
+                'isSort',
+                'isIndexed',
+                'isForeign',
+                'isDist',
             ])
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([
+                'name',
+                'description',
+                'shortDescription',
+            ])
 
             const dynamicSearchPlaceholder = ref(
                 'Search for tables, columns, terms and more...'
@@ -233,12 +277,17 @@
                     relationAttributes,
                 })
 
+            const activeAssetIndex = ref(0)
+            const activeAsset = computed(
+                () => list.value[activeAssetIndex.value]
+            )
+
             const handleSearchChange = useDebounceFn(() => {
                 isLoading.value = true
                 offset.value = 0
                 quickChange()
                 // handleFocusOnInput()
-            }, 750)
+            }, 100)
 
             // TODO: Uncomment when bringing category filters
             // function handleCategoryChange() {
@@ -261,7 +310,17 @@
             // TODO This is a manual isLoading hack, not sure why one from composable not working
             watch(
                 list,
-                () => {
+                async () => {
+                    if (list.value && list.value.length) {
+                        activeAssetIndex.value = 0
+                        await nextTick()
+                        document
+                            .getElementById(`${list.value[0].guid}-asset`)
+                            ?.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'end',
+                            })
+                    }
                     isLoading.value = false
                 },
                 { deep: true }
@@ -273,6 +332,33 @@
                 quickChange()
                 // discoveryStore.setActivePostFacet(postFacets.value)
             }
+
+            onKeyStroke(['ArrowDown', 'ArrowUp', 'Enter'], (e) => {
+                const { key } = e
+                const asset = list.value[activeAssetIndex.value]
+                e.preventDefault()
+                if (key === 'ArrowUp') {
+                    if (activeAssetIndex.value > 0) {
+                        activeAssetIndex.value--
+                        document
+                            .getElementById(`${asset.guid}-asset`)
+                            ?.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'end',
+                            })
+                    }
+                } else if (key === 'ArrowDown') {
+                    if (activeAssetIndex.value < list.value.length - 1) {
+                        activeAssetIndex.value++
+                        document
+                            .getElementById(`${asset.guid}-asset`)
+                            ?.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start',
+                            })
+                    }
+                } else if (key === 'Enter') router.push(`/assets/${asset.guid}`)
+            })
 
             return {
                 isVisible,
@@ -289,6 +375,7 @@
                 handleAssetTypeChange,
                 handleFocusOnInput,
                 postFacets,
+                activeAsset,
             }
         },
     })

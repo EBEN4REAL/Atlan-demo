@@ -159,15 +159,14 @@
             <a-table
                 v-if="filteredList && listType === 'users'"
                 id="userList"
-                class="border rounded border-300"
                 :key="persona.id"
+                class="border rounded border-300 persona-user-group-table"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 :data-source="filteredList"
                 :columns="userColumns"
                 :row-key="(user) => user.id"
                 data-test-id="user-table"
-                :class="$style.table"
                 :loading="
                     [USER_STATES.PENDING].includes(userState) ||
                     [USER_STATES.VALIDATING].includes(userState)
@@ -287,7 +286,7 @@
                 v-if="filteredList && listType === 'groups'"
                 id="groupList"
                 :key="persona.id"
-                :class="$style.table"
+                class="persona-user-group-table"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 data-test-id="group-table"
@@ -703,13 +702,3 @@
         },
     })
 </script>
-<style lang="less" module>
-    .table {
-        :global(.ant-table-measure-row) {
-            display: none;
-        }
-        :global(.ant-table-pagination.ant-pagination) {
-            @apply m-4 !important;
-        }
-    }
-</style>

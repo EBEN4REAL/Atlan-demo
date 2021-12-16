@@ -4,6 +4,7 @@
         :v-model:value="selectedValue"
         :allowClear="true"
         :showSearch="true"
+        :filterOption="false"
         @search="handleSearch"
         @change="handleChange"
         :get-popup-container="(target) => target.parentNode"
@@ -19,7 +20,12 @@
             :key="item.guid"
         >
             <div class="flex flex-col">
-                {{ item?.attributes.displayName || item.attributes.name }}
+                <div class="flex items-center">
+                    <img
+                        :src="getConnectorImage(item)"
+                        class="h-3 mr-1 mb-0.5"
+                    />{{ item.attributes.name }}
+                </div>
                 <span class="text-xs text-gray-500" v-if="showCount"
                     >{{ item.assetCount }} assets</span
                 >
@@ -33,6 +39,7 @@
     import { defineComponent, ref, toRefs, computed } from 'vue'
 
     import useConnectionData from '~/composables/connection/useConnectionData'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         props: {
@@ -65,8 +72,49 @@
             const { modelValue } = useVModels(props, emit)
 
             const { list } = useConnectionData()
-
             const queryText = ref('')
+
+            const { getConnectorImage } = useAssetInfo()
+
+            const filteredList = computed(() => {
+                if (connector.value) {
+                    return list
+                        .filter((item) => {
+                            if (queryText.value && connector.value) {
+                                return (
+                                    item.attributes?.connectorName?.toLowerCase() ===
+                                        connector.value.toLowerCase() &&
+                                    item.attributes.name
+                                        .toLowerCase()
+                                        .includes(queryText.value.toLowerCase())
+                                )
+                            }
+                            if (connector.value) {
+                                return (
+                                    item.attributes?.connectorName?.toLowerCase() ===
+                                    connector.value.toLowerCase()
+                                )
+                            }
+                            if (queryText.value) {
+                                return item.attributes.name
+                                    .toLowerCase()
+                                    .includes(queryText.value.toLowerCase())
+                            }
+                            return true
+                        })
+                        .sort((a, b) => {
+                            if (a.assetCount > b.assetCount) return -1
+                            if (a.assetCount < b.assetCount) return 1
+                            return 0
+                        })
+                }
+                const temp = list.sort((a, b) => {
+                    if (a.assetCount > b.assetCount) return -1
+                    if (a.assetCount < b.assetCount) return 1
+                    return 0
+                })
+                return temp
+            })
 
             const selectedValue = ref(modelValue.value)
             const handleChange = (value) => {
@@ -78,37 +126,6 @@
                 queryText.value = val
             }
 
-            const filteredList = computed(() => {
-                return list
-                    .filter((i) => {
-                        let isConnector = true
-                        if (connector?.value !== '') {
-                            isConnector =
-                                i.attributes?.connectorName?.toLowerCase() ===
-                                connector.value.toLowerCase()
-                        }
-                        if (queryText?.value !== '') {
-                            return (
-                                isConnector &&
-                                (i.attributes?.name
-                                    ?.toLowerCase()
-                                    .includes(queryText.value.toLowerCase()) ||
-                                    i.attributes?.displayName
-                                        ?.toLowerCase()
-                                        .includes(
-                                            queryText.value.toLowerCase()
-                                        ))
-                            )
-                        }
-                        return isConnector
-                    })
-                    .sort((a, b) => {
-                        if (a.assetCount > b.assetCount) return -1
-                        if (a.assetCount < b.assetCount) return 1
-                        return 0
-                    })
-            })
-
             return {
                 list,
                 filteredList,
@@ -116,6 +133,7 @@
                 handleChange,
                 handleSearch,
                 showCount,
+                getConnectorImage,
             }
         },
     })

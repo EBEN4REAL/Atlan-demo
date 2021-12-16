@@ -64,3 +64,7 @@ export interface IGroup {
     name: string
     user_count: string
 }
+
+export interface IEnableDisablePayload {
+    action: string
+}

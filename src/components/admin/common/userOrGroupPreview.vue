@@ -93,6 +93,7 @@
                         :selected-group="isValidGroup ? selectedGroup : null"
                         @updatedUser="handleUpdate"
                         @refreshTable="reload"
+                        @success="reload"
                     />
                 </a-tab-pane>
             </a-tabs>

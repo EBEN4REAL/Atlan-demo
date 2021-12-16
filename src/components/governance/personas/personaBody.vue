@@ -55,7 +55,7 @@
         <div
             class="overflow-y-auto content-wrapper"
             :class="
-                activeTabKey === 'policies'
+                activeTabKey === 'policies' || activeTabKey === 'users'
                     ? 'bg-white pt-0 pb-0 pr-3 pl-3'
                     : 'px-5'
             "

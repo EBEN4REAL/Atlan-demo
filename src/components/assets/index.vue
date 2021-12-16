@@ -358,7 +358,7 @@
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
-            }, 150)
+            }, 100)
 
             const handleFilterChange = () => {
                 offset.value = 0

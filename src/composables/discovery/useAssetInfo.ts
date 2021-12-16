@@ -163,6 +163,13 @@ export default function useAssetInfo() {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
+                    excludes: [
+                        'Query',
+                        'QueryFolder',
+                        'AtlasGlossary',
+                        'AtlasGlossaryTerm',
+                        'AtlasGlossaryCategory',
+                    ],
                     image: i.options?.imageId,
                     emoji: i.options?.emoji,
                     name: i.label,
@@ -170,13 +177,12 @@ export default function useAssetInfo() {
                     scrubbed: true,
                     requiredInProfile: true,
                     data: i,
-                    exclude: ['Query'],
                 }
             })
         }
         const allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
-            ...customTabList,
+            ...getTabs(customTabList, assetType(asset)),
         ]
         if (inProfile) {
             return allTabs.filter((tab) => tab.requiredInProfile === inProfile)

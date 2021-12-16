@@ -44,7 +44,14 @@
                                     </a-menu-item>
                                 </a-menu>
                             </template>
-                            <div class="button">
+                            <div
+                                class="flex flex-row-reverse"
+                                style="width: 140px"
+                            >
+                                <AtlanIcon
+                                    icon="CaretDown"
+                                    class="w-4 h-4 ml-1"
+                                ></AtlanIcon>
                                 <StatusBadge
                                     :status-id="currentStatus"
                                     :show-chip-style-status="false"

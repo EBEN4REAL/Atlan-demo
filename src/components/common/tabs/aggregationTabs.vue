@@ -91,7 +91,7 @@
 
             const onTabChange = () => {
                 modelValue.value = selectedTab.value
-                emit('change')
+                emit('change', selectedTab.value)
             }
 
             const addAllToList = () => {

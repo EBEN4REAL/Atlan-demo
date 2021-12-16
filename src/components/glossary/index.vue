@@ -48,9 +48,10 @@
                 @change="handleSearchChange"
                 placeholder="Search terms & categories..."
             >
-                <template #filter>
+                <template v-if="showCollapseAll" #filter>
                     <a-tooltip>
                         <template #title>Collapse all </template>
+
                         <atlan-icon
                             v-if="!queryText"
                             icon="TreeCollapseAll"
@@ -231,6 +232,10 @@
             const router = useRouter()
             const { getGlossaryByQF } = useGlossaryData()
             const searchBar = ref(null)
+            const glossaryTree = ref(null)
+            const showCollapseAll = computed(
+                () => glossaryTree.value?.expandedKeys?.length > 0
+            )
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -374,7 +379,6 @@
                 glossaryStore.setActivePanel(activeKey.value)
             }
 
-            const glossaryTree = ref(null)
             const handleAddGTC = (asset) => {
                 if (asset) {
                     if (asset.typeName === 'AtlasGlossary') {
@@ -477,6 +481,7 @@
                 updateTreeNode,
                 searchBar,
                 onSearchItemCheck,
+                showCollapseAll,
             }
         },
     })

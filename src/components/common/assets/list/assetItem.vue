@@ -548,6 +548,10 @@
                 required: false,
                 default: false,
             },
+            itemIndex: {
+                type: Number,
+                require: true
+            }
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -559,6 +563,7 @@
                 showCheckBox,
                 bulkSelectMode,
                 enableSidebarDrawer,
+                itemIndex
             } = toRefs(props)
 
             const showAssetSidebarDrawer = ref(false)
@@ -605,7 +610,7 @@
                     showAssetSidebarDrawer.value = true
                     selectedAssetDrawerData.value = item
                 } else {
-                    emit('preview', item)
+                    emit('preview', item, itemIndex.value)
                 }
             }
 

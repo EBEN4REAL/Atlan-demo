@@ -62,7 +62,10 @@
                                 />
                             </div>
                             <div v-else>
-                                <Tooltip :tooltip-text="`${rowData}`" />
+                                <Tooltip
+                                    :tooltip-text="`${rowData}`"
+                                    width="1000px"
+                                />
                             </div>
                         </td>
                     </tr>

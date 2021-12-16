@@ -128,6 +128,7 @@
             :isLoadMore="isLoadMore"
             :isLoading="isValidating"
             @loadMore="handleLoadMore"
+            class="mt-3"
         >
             <template v-slot:default="{ item }">
                 <GlossaryItem

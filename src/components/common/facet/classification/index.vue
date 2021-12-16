@@ -1,10 +1,13 @@
 <template>
     <div class="w-full" data-test-id="classifications-facet">
-        <div class="flex items-center justify-between px-4">
+        <div
+            class="flex items-center justify-between px-4"
+            v-if="filteredList.length > 3"
+        >
             <SearchAdvanced
                 ref="classificationSearchRef"
                 v-model="queryText"
-                placeholder="Search classifications"
+                :placeholder="placeholder"
                 class="-mt-1.5"
                 :allowClear="true"
             >
@@ -37,7 +40,9 @@
                                         :color="item.options?.color"
                                         style="min-width: 16px"
                                     />
-                                    <span class="mb-0 ml-1 text-gray">
+                                    <span
+                                        class="mb-0 ml-1 text-gray line-clamp-1"
+                                    >
                                         {{ item.displayName }}
                                     </span>
                                 </div>
@@ -108,6 +113,12 @@
             const localValue = ref(modelValue.value)
 
             const { classificationList } = useTypedefData()
+
+            const placeholder = computed(() => {
+                return `Search ${
+                    filteredList?.value?.length ?? ''
+                } classifications`
+            })
 
             const filteredList = computed(() =>
                 classificationList.value.filter((i) =>
@@ -183,6 +194,7 @@
                 queryText,
                 showNone,
                 height,
+                placeholder,
             }
         },
     })

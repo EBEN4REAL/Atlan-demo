@@ -27,9 +27,9 @@ export default function usePersonaList(params?: Ref<PersonaParams>) {
             )
         return personaList.value
     })
-    const filteredPersonasCount = computed(() => data?.value?.filter_record)
+    const filteredPersonasCount = computed(() => data?.value?.filterRecord)
     const totalPersonasCount = computed(
-        () => data?.value?.total_record
+        () => data?.value?.totalRecord
         // return 0
     )
 

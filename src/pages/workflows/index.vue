@@ -194,12 +194,12 @@
                 loadMore,
                 isReady,
                 mutate,
-                filter_record,
+                filterRecord,
                 allCreatorIDs,
             } = useWorkflowSearchList(false)
 
             const isLoadMore = computed(
-                () => filter_record.value > workflowList.value.length
+                () => filterRecord.value > workflowList.value.length
             )
 
             watch(error, (v) => {

@@ -100,8 +100,8 @@ export default function useUsers(userListAPIParams: {
             )
         return []
     })
-    const totalUserCount = computed(() => data?.value?.total_record ?? 0)
-    const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
+    const totalUserCount = computed(() => data?.value?.totalRecord ?? 0)
+    const filteredUserCount = computed(() => data?.value?.filterRecord ?? 0)
 
     return {
         userList,

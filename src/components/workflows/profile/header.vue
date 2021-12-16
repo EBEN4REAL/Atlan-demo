@@ -109,9 +109,9 @@
             const totalRun = ref(0)
             const latRun = ref('')
             const { id } = toRefs(props)
-            const { archivedList, filter_record } = getArchivedRunList(id.value)
+            const { archivedList, filterRecord } = getArchivedRunList(id.value)
             watch(archivedList, (newVal) => {
-                totalRun.value = filter_record.value ?? 0
+                totalRun.value = filterRecord.value ?? 0
                 if (newVal?.length > 0) {
                     const lastRun = newVal[newVal.length - 0]
                     latRun.value = lastRun?.finished_at

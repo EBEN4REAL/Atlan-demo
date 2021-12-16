@@ -9,7 +9,7 @@
             @change="(event) => onChange(event, 'first', type)"
         />
         <a-date-picker
-            v-else-if="'date'"
+            v-else-if="type === 'date'"
             v-model:value="firstvalue"
             class="flex-1 w-full border-gray-300 rounded box-shadow focus:border-primary-focus"
             @change="(event) => onChange(event, 'first', type)"
@@ -34,7 +34,7 @@
             @change="(event) => onChange(event, 'second', type)"
         />
         <a-date-picker
-            v-else-if="'date'"
+            v-else-if="type === 'date'"
             v-model:value="secondValue"
             class="flex-1 w-full ml-3 border-gray-300 rounded box-shadow focus:border-primary-focus"
             style="height: 32px !important"
@@ -73,17 +73,26 @@
         },
 
         setup(props, { emit }) {
-            const { inputValue } = useVModels(props)
+            const { inputValue, type } = useVModels(props)
             const dateFormat = 'YYYY-MM-DD HH:mm:ss'
-            let firstvalue = ref(
-                inputValue.value ? dayjs(inputValue.value[0]) : undefined
-            )
-            let secondValue = ref(
-                inputValue.value ? dayjs(inputValue.value[1]) : undefined
-            )
+            let firstvalue = ref(undefined)
+            let secondValue = ref(undefined)
+
+            if (
+                type.value === 'date' &&
+                inputValue.value &&
+                inputValue.value?.length > 0
+            ) {
+                firstvalue.value = inputValue.value
+                    ? dayjs(inputValue.value[0])
+                    : undefined
+                secondValue.value = inputValue.value
+                    ? dayjs(inputValue.value[1])
+                    : undefined
+            }
 
             const onChange = (event, _pos, type) => {
-                if (type !== 'date') {
+                if (type === 'text') {
                     if (_pos === 'first') {
                         inputValue.value = [
                             event.target.value,
@@ -95,7 +104,13 @@
                             event.target.value,
                         ]
                     }
-                } else {
+                } else if (type === 'number') {
+                    if (_pos === 'first') {
+                        inputValue.value = [event, secondValue.value]
+                    } else {
+                        inputValue.value = [firstvalue.value, event]
+                    }
+                } else if (type === 'date') {
                     // event -> date in YYYY-MM-DD HH:mm:ss format in string
                     inputValue.value = [
                         firstvalue.value?.format(dateFormat),

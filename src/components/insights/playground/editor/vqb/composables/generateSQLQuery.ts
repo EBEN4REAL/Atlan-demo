@@ -2,9 +2,20 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import squel from 'squel'
 import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
+import { useFilter } from './useFilter'
 
+const { nameMap, getInputTypeFromColumnType } = useFilter()
+function getValueStringFromType(subpanel, value) {
+    let res = ''
+    const type = getInputTypeFromColumnType(subpanel?.column?.type)
+    if (type === 'number') res += `${value}`
+    else if (type === 'text') res += `'${value}'`
+    else if (type === 'date') res += `DATE '${value}'`
+    return res
+}
 export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     const { getTableNameFromTableQualifiedName } = useUtils()
+
     const select = squel.select()
     const columnPanel = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'columns'
@@ -85,13 +96,49 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     it is this way because of two way binidng */
     if (filter?.hide) {
         console.log(filter)
-        // filter?.subpanels.forEach((subpanel,index) => {
-        //     if(index==0){
-        //         select.where(`${}`)
-        //     }
+        let res = ''
+        filter?.subpanels.forEach((subpanel, index) => {
+            res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+            if (index == 0) res = ''
 
-        // })
-        // console.log(select.toString(), 'select.toString()')
+            res += `"${subpanel?.column?.label}"`
+            res += `${nameMap[subpanel?.filter?.name]}`
+
+            switch (subpanel?.filter?.type) {
+                case 'range_input': {
+                    if (subpanel?.filter?.name === 'between') {
+                        if (subpanel?.filter?.value > 0) {
+                            const firstVal = getValueStringFromType(
+                                subpanel,
+                                subpanel?.filter?.value[0]
+                            )
+                            const secondVal = getValueStringFromType(
+                                subpanel,
+                                subpanel?.filter?.value[1]
+                            )
+                            res += ` ${firstVal} AND ${secondVal}`
+                        }
+                    }
+                    break
+                }
+                case 'input': {
+                    res += ` ${getValueStringFromType(
+                        subpanel,
+                        subpanel?.filter?.value
+                    )}`
+                    break
+                }
+                case 'multi_input': {
+                    res += ` '${subpanel?.filter?.value?.join(',')}'`
+                    break
+                }
+                case 'none': {
+                    break
+                }
+            }
+        })
+        select.where(res)
     }
+    console.log(select.toString(), 'select.toString()')
     return select.toString()
 }

@@ -17,7 +17,7 @@
     />
 
     <a-date-picker
-        v-else-if="'date'"
+        v-else-if="type === 'date'"
         placeholder="Select Date"
         :show-time="{ format: 'HH:mm' }"
         v-model:value="localeValue"
@@ -68,10 +68,14 @@
             const localeValue: Ref<any> = ref(inputValue.value)
 
             watch(
-                selectedFilter,
+                [selectedFilter],
                 () => {
-                    localeValue.value = inputValue.value
-                    console.log(inputValue.value, 'inputValue')
+                    if (type.value === 'date') {
+                        if (inputValue.value)
+                            localeValue.value = dayjs(inputValue.value)
+                        /* Else is IMP here otherwise it will break */ else
+                            localeValue.value = ''
+                    } else localeValue.value = inputValue.value
                 },
                 { immediate: true }
             )
@@ -80,16 +84,15 @@
                 localeValue.value = dayjs(inputValue.value)
 
             const onChange = (event, type) => {
-                if (type !== 'date') {
+                if (type === 'text') {
                     inputValue.value = event.target.value
-                } else {
+                } else if (type == 'date') {
                     // event -> date in YYYY-MM-DD HH:mm:ss format in string
-                    inputValue.value = localeValue.value.format(dateFormat)
+                    inputValue.value = localeValue.value?.format(dateFormat)
+                } else if (type == 'number') {
+                    inputValue.value = event
                 }
             }
-            onUnmounted(() => {
-                localeValue.value = undefined
-            })
 
             return {
                 type,

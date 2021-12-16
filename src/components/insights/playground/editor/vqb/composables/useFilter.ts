@@ -23,6 +23,17 @@ export function useFilter() {
         not_equal: '<>',
         before: '<',
         after: '>',
+        between: 'BETWEEN',
+        exists: 'IS NOT NULL',
+        does_not_exists: 'IS NULL',
+        on_or_after: '>=',
+        on_or_before: '<=',
+        between_and_includes: 'BETWEEN',
+        is_not_one_of: 'NOT IN',
+        is_not_of: 'IN',
+        like: '%',
+        not_contains: 'NOT LIKE',
+        contains: 'LIKE',
     }
 
     let text = [
@@ -96,7 +107,7 @@ export function useFilter() {
                         name: 'Greater than',
                     },
                     {
-                        key: 'greater_than_equal',
+                        key: 'on_or_after',
                         type: 'input',
                         name: 'Greater than equal to',
                     },
@@ -106,7 +117,7 @@ export function useFilter() {
                         name: 'Smaller than',
                     },
                     {
-                        key: 'less_than_equal',
+                        key: 'on_or_before',
                         type: 'input',
                         name: 'Smaller than equal to',
                     },
@@ -157,7 +168,7 @@ export function useFilter() {
                         name: 'Starts with',
                     },
                     {
-                        key: 'is_not_like',
+                        key: 'like',
                         type: 'input',
                         name: 'Ends with',
                     },
@@ -169,7 +180,7 @@ export function useFilter() {
                     {
                         key: 'not_contains',
                         type: 'input',
-                        name: 'Not contains',
+                        name: 'Does not contains',
                     },
                 ],
             },
@@ -196,6 +207,16 @@ export function useFilter() {
                         key: 'after',
                         type: 'input',
                         name: 'After',
+                    },
+                    {
+                        key: 'on_or_before',
+                        type: 'input',
+                        name: 'On or before',
+                    },
+                    {
+                        key: 'on_or_after',
+                        type: 'input',
+                        name: 'On or after',
                     },
                     {
                         key: 'exists',
@@ -244,6 +265,7 @@ export function useFilter() {
         if (geography.includes(columnType)) return 'geography'
     }
     return {
+        nameMap,
         getInputTypeFromColumnType,
         filterList,
     }

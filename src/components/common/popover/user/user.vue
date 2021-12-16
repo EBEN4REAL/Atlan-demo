@@ -1,5 +1,10 @@
 <template>
-    <a-popover @visibleChange="handleVisibleChange" placement="left">
+    <a-popover
+        @visibleChange="handleVisibleChange"
+        placement="left"
+        :mouseEnterDelay="0.2"
+        :mouseLeaveDelay="0.2"
+    >
         <template #content>
             <div class="user-popover">
                 <div class="flex items-center justify-between">
@@ -34,19 +39,6 @@
                         {{ selectedUser.workspaceRole }}
                     </div>
                 </div>
-
-                <!--  <div v-if="groupList.length > 0" class="mt-3">
-                    <div class="text-xs text-gray-500">Groups</div>
-                    <div class="flex flex-wrap gap-2 mt-2">
-                        <span
-                            v-for="group in groupList"
-                            :key="group.id"
-                            class="px-2 py-0.5 text-xs border border-gray-300 border-solid rounded-xl capitalize"
-                        >
-                            {{ group.name }}
-                        </span>
-                    </div>
-                </div>-->
 
                 <div v-if="selectedUser.personaList?.length > 0" class="mt-3">
                     <div class="text-xs text-gray-500">Personas</div>

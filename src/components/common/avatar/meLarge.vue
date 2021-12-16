@@ -17,9 +17,7 @@
                     <div class="text-sm text-gray-700 capitalize">
                         {{ name }}
                     </div>
-                    <div class="text-sm text-gray-500">
-                        {{ username }}
-                    </div>
+                    <div class="text-sm text-gray-500">@{{ username }}</div>
                 </div>
             </div>
             <div><AtlanIcon class="h-3 ml-1" icon="ChevronDown" /></div>
@@ -29,10 +27,24 @@
     </a>-->
         <template #overlay>
             <a-menu>
-                <!-- <a-menu-item>
-                    <a @click="() => handleClickUser(username)">View Profile</a>
-                </a-menu-item>
                 <a-menu-item>
+                    <a
+                        class="font-bold text-red-500"
+                        @click.stop="handleLogout"
+                    >
+                        Logout</a
+                    >
+                </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item>
+                    <a
+                        @click="() => handleClickUser(username)"
+                        class="flex items-center"
+                        ><AtlanIcon icon="User" class="mr-1"></AtlanIcon>View
+                        Profile</a
+                    >
+                </a-menu-item>
+                <!--       <a-menu-item>
                     <a href="javascript:;">Admin Centre</a>
                 </a-menu-item>
                 <a-menu-divider />
@@ -44,13 +56,7 @@
                 </a-menu-item>
                 <a-menu-item>
                     <a href="javascript:;">Keyboard Shortcuts</a>
-                </a-menu-item>
-                <a-menu-divider /> -->
-                <a-menu-item>
-                    <a class="text-red-500" @click.stop="handleLogout"
-                        >Logout</a
-                    >
-                </a-menu-item>
+                </a-menu-item> -->
             </a-menu>
         </template>
     </a-dropdown>
@@ -62,6 +68,7 @@
     // import whoami from '~/composables/user/whoami'
     import useUserData from '~/composables/user/useUserData'
     import Avatar from '~/components/common/avatar/index.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
 
     export default defineComponent({
         name: 'UserPersonalAvatar',
@@ -80,10 +87,16 @@
 
             const { name, username, avatar } = useUserData()
             // user preview drawer
-            // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            // // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            // const handleClickUser = (username: string) => {
+            //     // setUserUniqueAttribute(username, 'username')
+            //     // showUserPreview()
+            // }
+
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
             const handleClickUser = (username: string) => {
-                // setUserUniqueAttribute(username, 'username')
-                // showUserPreview()
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview()
             }
 
             return {

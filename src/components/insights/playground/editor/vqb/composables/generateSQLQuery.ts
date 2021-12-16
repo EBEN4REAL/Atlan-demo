@@ -6,6 +6,7 @@ import { useFilter } from './useFilter'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
 export function getValueStringFromType(subpanel, value) {
+    
     let res = ''
     const type = getInputTypeFromColumnType(subpanel?.column?.type)
     if (type === 'number') res += `${value}`
@@ -56,6 +57,13 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     const filter = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'filter'
     )
+
+    const join = activeInlineTab.playground.vqb.panels.find(
+        (panel) => panel.id.toLowerCase() === 'join'
+    )
+    // console.log('joins: ', joins)
+
+    
     /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
     it is this way because of two way binidng */
 
@@ -164,6 +172,45 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         })
         select.where(res)
     }
+
+    if(join?.hide) {
+        console.log('join: ', join)
+        // .join("table2", "t2", "t1.id = t2.id")
+
+        // let columnDataLeft = join?.subpanels[0]?.columnDataLeft
+        // let columnDataRight = join?.subpanels[0]?.columnDataRight
+
+        // let leftContext = columnDataLeft?.columnQualifiedName?.split('/')
+        // let columnLeft = leftContext[leftContext.length-1]
+        // let TableLeft = leftContext[leftContext.length-2]
+
+        // let schemaName = leftContext[leftContext.length-2]
+
+        //backup
+        // select.join("COVID_COUNTY_LEVEL_STATS_INFRA_DETAILS", undefined, `"COVID_COUNTY_LEVEL_PIVOT"."COUNTRY_REGION" = "COVID_COUNTY_LEVEL_STATS_INFRA_DETAILS"."COUNTRY_REGION"` )
+
+        const query = `SELECT
+        "COVID_COUNTY_LEVEL_PIVOT"."ACTIVE",
+        "COVID_COUNTY_LEVEL_PIVOT"."CONFIRMED",
+        "COVID_COUNTY_LEVEL_PIVOT"."COUNTRY_REGION",
+        SUM (ACTIVE) AS "sum_ACTIVE"
+        FROM
+            COVID_COUNTY_LEVEL_PIVOT
+        INNER JOIN COVID_19."COVID_COUNTY_LEVEL_STATS_INFRA_DETAILS"
+        ON COVID_19."COVID_COUNTY_LEVEL_PIVOT"."COUNTRY_REGION"= COVID_19."COVID_COUNTY_LEVEL_STATS_INFRA_DETAILS"."COUNTRY_REGION"
+        WHERE
+            ("ACTIVE" = 32)
+        GROUP BY
+            "COVID_COUNTY_LEVEL_PIVOT"."ACTIVE",
+            "COVID_COUNTY_LEVEL_PIVOT"."CONFIRMED",
+            "COVID_COUNTY_LEVEL_PIVOT"."COUNTRY_REGION"
+        ORDER BY
+             "COVID_COUNTY_LEVEL_PIVOT"."ACTIVE" ASC,
+             "COVID_COUNTY_LEVEL_PIVOT"."CONFIRMED" DESC`
+             
+        return query
+    }
+
     console.log(select.toString(), 'select.toString()')
     return select.toString()
 }

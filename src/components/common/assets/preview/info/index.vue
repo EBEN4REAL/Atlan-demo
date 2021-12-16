@@ -74,8 +74,9 @@
         >
             <SQL
                 v-if="
-                    selectedAsset.typeName == 'View' ||
-                    selectedAsset.typeName == 'MaterialisedView'
+                    (selectedAsset.typeName == 'View' ||
+                        selectedAsset.typeName == 'MaterialisedView') &&
+                    definition(selectedAsset)
                 "
                 :sql="definition(selectedAsset)"
             >

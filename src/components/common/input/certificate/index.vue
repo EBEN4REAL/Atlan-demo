@@ -45,7 +45,7 @@
         >
             <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
         ></a-button>
-        <span v-else class="text-sm text-gray-700">No certification</span>
+        <span v-else class="text-sm text-gray-500">No certification</span>
     </div>
 </template>
 

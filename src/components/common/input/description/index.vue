@@ -16,7 +16,7 @@
             }}</span>
             <span
                 v-else-if="!isEdit && description(selectedAsset) === ''"
-                class="text-gray-700"
+                class="text-gray-500"
                 >No description available</span
             >
             <a-textarea

@@ -31,7 +31,8 @@ export function useFilter() {
         between_and_includes: 'BETWEEN',
         is_not_one_of: 'NOT IN',
         is_not_of: 'IN',
-        like: '%',
+        start_like: 'LIKE',
+        end_like: 'LIKE',
         not_contains: 'NOT LIKE',
         contains: 'LIKE',
     }
@@ -163,12 +164,12 @@ export function useFilter() {
                         name: 'Does not exists',
                     },
                     {
-                        key: 'like',
+                        key: 'start_like',
                         type: 'input',
                         name: 'Starts with',
                     },
                     {
-                        key: 'like',
+                        key: 'end_like',
                         type: 'input',
                         name: 'Ends with',
                     },

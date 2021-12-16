@@ -9,8 +9,32 @@ function getValueStringFromType(subpanel, value) {
     let res = ''
     const type = getInputTypeFromColumnType(subpanel?.column?.type)
     if (type === 'number') res += `${value}`
-    else if (type === 'text') res += `'${value}'`
-    else if (type === 'date') res += `DATE '${value}'`
+    else if (type === 'text') {
+        if (subpanel?.filter?.name?.includes('like')) {
+            console.log(subpanel?.filter?.name?.includes('like'), 'sd like')
+            switch (subpanel?.filter?.name) {
+                case 'start_like': {
+                    res += `'${value}%'`
+                    break
+                }
+                case 'end_like': {
+                    res += `'%${value}'`
+                    break
+                }
+            }
+        } else if (subpanel?.filter?.name?.includes('contains')) {
+            switch (subpanel?.filter?.name) {
+                case 'not_contains': {
+                    res += `'%${value}%'`
+                    break
+                }
+                case 'contains': {
+                    res += `'%${value}%'`
+                    break
+                }
+            }
+        } else res += `'${value}'`
+    } else if (type === 'date') res += `DATE '${value}'`
     return res
 }
 export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {

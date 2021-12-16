@@ -15,7 +15,6 @@
                 >
                     <ColumnSelector
                         class="flex-1"
-                        style="max-width: 45.5%"
                         v-model:selectedItem="subpanel.column"
                         :tableQualfiedName="
                             columnSubpanels[0]?.tableQualfiedName
@@ -27,7 +26,6 @@
 
                     <AggregateSelector
                         class="flex-1"
-                        style="max-width: 45%"
                         v-model:selectedItems="subpanel.aggregators"
                         :columnName="subpanel?.column?.label"
                         :columnType="subpanel?.column?.type"

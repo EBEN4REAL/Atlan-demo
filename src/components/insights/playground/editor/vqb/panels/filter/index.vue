@@ -27,7 +27,7 @@
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 border rounded-full p-1.5"
+                            class="flex items-center relative justify-center mr-2 bg-gray-100 border rounded-full p-1.5"
                             :class="[
                                 isChecked
                                     ? 'text-gray-500 bg-gray-100 border border-gray-300'
@@ -54,24 +54,38 @@
                             />
                         </div>
                         <div class="">
-                            <p
+                            <div
                                 :class="[
                                     isChecked ? 'text-gray' : 'text-gray-500',
-                                    'text-sm font-bold  ',
+                                    'text-sm  ',
                                 ]"
                             >
-                                Filter
-                            </p>
+                                <div class="flex items-center">
+                                    <div class="relative font-bold">Filter</div>
+                                    <div
+                                        v-if="!isChecked && expand"
+                                        class="px-3 py-1 ml-2 text-gray-500 rounded-full bg-gray-light"
+                                    >
+                                        Disabled
+                                    </div>
+                                </div>
+                            </div>
                             <p
                                 :class="[
                                     isChecked
                                         ? 'text-gray-500'
                                         : 'text-gray-400 line-through',
-                                    'text-xs',
+                                    'text-xs truncate',
                                 ]"
                                 v-if="!expand"
                             >
-                                Summarised info
+                                {{
+                                    getSummarisedInfoOfFilterPanel(
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ].subpanels
+                                    )
+                                }}
                             </p>
                         </div>
                     </div>
@@ -197,6 +211,7 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import FilterSubPanel from './subpanel/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -218,6 +233,7 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
+            const { getSummarisedInfoOfFilterPanel } = useUtils()
             const isChecked = computed(
                 () =>
                     activeInlineTab.value.playground.vqb.panels[index.value]
@@ -293,6 +309,7 @@
             )
 
             return {
+                getSummarisedInfoOfFilterPanel,
                 isChecked,
                 submenuHovered,
                 handleMouseOver,

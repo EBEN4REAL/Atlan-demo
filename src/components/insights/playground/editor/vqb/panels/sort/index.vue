@@ -51,14 +51,22 @@
                             />
                         </div>
                         <div class="">
-                            <p
+                            <div
                                 :class="[
                                     isChecked ? 'text-gray' : 'text-gray-500',
-                                    'text-sm font-bold  ',
+                                    'text-sm   ',
                                 ]"
                             >
-                                Sort
-                            </p>
+                                <div class="flex items-center">
+                                    <div class="relative font-bold">Sort</div>
+                                    <div
+                                        v-if="!isChecked && expand"
+                                        class="px-3 py-1 ml-2 text-gray-500 rounded-full bg-gray-light"
+                                    >
+                                        Disabled
+                                    </div>
+                                </div>
+                            </div>
                             <p
                                 :class="[
                                     isChecked

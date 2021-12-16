@@ -5,7 +5,7 @@ import { aggregatedAliasMap } from '../constants/aggregation'
 import { useFilter } from './useFilter'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
-function getValueStringFromType(subpanel, value) {
+export function getValueStringFromType(subpanel, value) {
     let res = ''
     const type = getInputTypeFromColumnType(subpanel?.column?.type)
     if (type === 'number') res += `${value}`

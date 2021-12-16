@@ -106,7 +106,7 @@ export function useFilter() {
                     {
                         key: 'between',
                         type: 'range_input',
-                        name: 'Between & including',
+                        name: 'Between',
                     },
                     {
                         key: 'is_one_of',

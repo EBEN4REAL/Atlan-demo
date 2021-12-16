@@ -587,6 +587,7 @@
                 toggleRun: toggleRun,
                 runQuery: runQuery,
                 saveOrUpdate: saveOrUpdate,
+                showcustomToolBar: showcustomToolBar,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -752,3 +753,4 @@ meta:
     layout: default
     requiresAuth: true
 </route>
+:wq

@@ -9,7 +9,7 @@ export function getValueStringFromType(subpanel, value) {
     
     let res = ''
     const type = getInputTypeFromColumnType(subpanel?.column?.type)
-    if (type === 'number') res += `${value}`
+    if (type === 'number') res += `${Number(value)}`
     else if (type === 'text') {
         if (subpanel?.filter?.name?.includes('like')) {
             console.log(subpanel?.filter?.name?.includes('like'), 'sd like')
@@ -155,10 +155,20 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                     break
                 }
                 case 'input': {
-                    res += `${getValueStringFromType(
-                        subpanel,
-                        subpanel?.filter?.value ?? ''
-                    )}`
+                    if (subpanel.filter?.isVariable) {
+                        const variable =
+                            activeInlineTab.playground.editor.variables.find(
+                                (variable) =>
+                                    variable?.subpanelId === subpanel.id
+                            )
+
+                        res += `${variable?.value}`
+                    } else {
+                        res += `${getValueStringFromType(
+                            subpanel,
+                            subpanel?.filter?.value ?? ''
+                        )}`
+                    }
                     break
                 }
                 case 'multi_input': {

@@ -75,9 +75,21 @@
                         style="height: 32px !important"
                     >
                         <code class="px-3 truncate">
-                            <div class="truncate moustacheDecoration" v-pre>
-                                {{Hello world}}
-                            </div>
+                            <a-tooltip placement="bottomLeft">
+                                <template #title
+                                    >{{
+                                        getInputTypeFromColumnType(
+                                            subpanel?.column?.type
+                                        )?.toUpperCase()
+                                    }}:&nbsp;
+                                    {{ getCustomVariable(subpanel.id).value }}
+                                </template>
+                                <div
+                                    class="truncate cursor-pointer moustacheDecoration"
+                                >
+                                    {{ getCustomVariableText(subpanel.id) }}
+                                </div>
+                            </a-tooltip>
                         </code>
                     </div>
                     <!--  -->
@@ -101,7 +113,12 @@
                                 <AtlanIcon
                                     v-if="!subpanel?.filter?.isVariable"
                                     @click.stop="
-                                        () => toggleVariableType(false, index)
+                                        () =>
+                                            toggleVariableType(
+                                                false,
+                                                index,
+                                                subpanel
+                                            )
                                     "
                                     icon="Flash"
                                     class="w-6 h-6 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
@@ -109,7 +126,12 @@
                                 <AtlanIcon
                                     v-else
                                     @click.stop="
-                                        () => toggleVariableType(true, index)
+                                        () =>
+                                            toggleVariableType(
+                                                true,
+                                                index,
+                                                subpanel
+                                            )
                                     "
                                     icon="FlashColor"
                                     class="w-6 h-6 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
@@ -132,7 +154,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRaw,
+        inject,
+        ComputedRef,
+        Ref,
+    } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
     // import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import FilterSelector from '../filterSelector/index.vue'
@@ -148,6 +179,9 @@
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
 
     import RangeInput from '../filterComponents/rangeInput.vue'
+    import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { editor } from 'monaco-editor'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -181,6 +215,24 @@
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
             const { getInputTypeFromColumnType } = useFilter()
+
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+            const showcustomVariablesToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<Boolean>
+            const editorInstanceRef = inject(
+                'editorInstance'
+            ) as Ref<editor.IStandaloneCodeEditor>
+            const monacoInstanceRef = inject('monacoInstance') as Ref<any>
+            const editorInstance = toRaw(editorInstanceRef.value)
+            const monacoInstance = toRaw(monacoInstanceRef.value)
+            const {
+                addVariableFromVQB,
+                getCustomVaribleByVQBFilterSubpanelId,
+            } = useCustomVariable(editorInstance, monacoInstance)
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
 
             const { subpanels, columnSubpanels } = useVModels(props)
             const columnName = ref('Hello World')
@@ -230,17 +282,45 @@
             const handleDelete = (index) => {
                 subpanels.value.splice(index, 1)
             }
-            const toggleVariableType = (currVal, index) => {
+            const toggleVariableType = (currVal, index, subpanel) => {
+                const Varindex =
+                    activeInlineTab.value.playground.editor.variables.findIndex(
+                        (variable) => variable?.subpanelId === subpanel.id
+                    )
+                if (Varindex < 0) {
+                    addVariableFromVQB(activeInlineTab, tabs, {
+                        vqbPanelId: 'filter',
+                        subpanelId: subpanel.id,
+                    })
+                }
                 subpanels.value[index].filter.isVariable = !currVal
+                showcustomVariablesToolBar.value = !currVal
             }
 
             const changeColumn = (column) => {
                 console.log('columns: ', column)
             }
+            const getCustomVariableText = (id) => {
+                const variable = getCustomVaribleByVQBFilterSubpanelId(
+                    id,
+                    activeInlineTab
+                )
+                if (variable) {
+                    return `{{${variable.name}}}`
+                } else return false
+            }
+            const getCustomVariable = (id) => {
+                return getCustomVaribleByVQBFilterSubpanelId(
+                    id,
+                    activeInlineTab
+                )
+            }
 
             let hoverItem = ref(null)
 
             return {
+                getCustomVariable,
+                getCustomVariableText,
                 toggleVariableType,
                 getInputTypeFromColumnType,
                 selectedAggregates,

@@ -6,27 +6,10 @@
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
-        :open="open"
         :filter-option="() => true"
         @change="handleChange"
-        @focus="
-            () => {
-                if (userList.length < 2) mutate()
-            }
-        "
-        @search="
-            (v) => {
-                open = true
-                handleSearch(v)
-            }
-        "
-        @click="open = !open"
-        @select="open = false"
-        @blur="
-            () => {
-                if (!isLoading) open = false
-            }
-        "
+        @click="mutate"
+        @search="handleSearch"
     >
         <template #option="item">
             <div class="flex">
@@ -65,6 +48,7 @@
                         v-if="userList?.length < filterTotal"
                         class="cursor-pointer text-primary hover:underline"
                         @click="loadMore"
+                        @mousedown="(e) => e.preventDefault()"
                     >
                         load more
                     </span>

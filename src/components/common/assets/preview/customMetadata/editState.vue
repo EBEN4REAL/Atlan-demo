@@ -212,7 +212,11 @@
                 isLoading: uLoading,
                 isReady: isUserReady,
                 error: userError,
-            } = useFacetUsers('username', ['username'], false)
+            } = useFacetUsers({
+                sort: 'username',
+                columns: ['username'],
+                immediate: false,
+            })
 
             const userSearch = (val) => {
                 if (!isUserReady?.value || userError.value)

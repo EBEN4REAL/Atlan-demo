@@ -3,12 +3,11 @@
         <avatar
             :image-url="avatarURL"
             :allow-upload="false"
-            :avatar-name="username"
             :avatar-size="avatarSize"
             :avatar-shape="'circle'"
             class="mr-1"
-        />
-
+        >
+        </avatar>
         <div v-if="showUsername">{{ username }}</div>
     </div>
 </template>

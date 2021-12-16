@@ -314,6 +314,7 @@
                     if (!isCreateMore.value) {
                         visible.value = false
                     }
+                    resetInput()
                     message.success(`${typeNameTitle.value} created`)
                     // resetInput()
 

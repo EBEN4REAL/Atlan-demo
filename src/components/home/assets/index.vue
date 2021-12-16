@@ -1,75 +1,8 @@
 <template>
-    <div class="flex w-full h-full">
-        <div
-            v-if="showFilters"
-            class="flex flex-col hidden h-full bg-gray-100 border-r border-gray-300 sm:block facets"
-        >
-            <AssetFilters
-                v-if="showFilters"
-                :key="dirtyTimestamp"
-                v-model="facets"
-                v-model:activeKey="activeKey"
-                :filter-list="discoveryFilters"
-                :type-name="postFacets.typeName"
-                @change="handleFilterChange"
-                @reset="handleResetEvent"
-                @change-active-key="handleActiveKeyChange"
-            ></AssetFilters>
-        </div>
-
+    <div class="flex w-full">
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
-            <div class="flex flex-col h-full">
-                <div class="flex">
-                    <SearchAdvanced
-                        :key="searchDirtyTimestamp"
-                        v-model="queryText"
-                        :connector-name="facets?.hierarchy?.connectorName"
-                        :autofocus="true"
-                        :allow-clear="true"
-                        size="large"
-                        :class="page !== 'admin' ? 'px-6' : ''"
-                        :placeholder="placeholder"
-                        @change="handleSearchChange"
-                    >
-                        <template #filter>
-                            <a-popover
-                                class="sm:block md:hidden"
-                                placement="bottom"
-                                :trigger="['click']"
-                                :overlay-class-name="$style.filterPopover"
-                            >
-                                <template #content>
-                                    <AssetFilters
-                                        :key="dirtyTimestamp"
-                                        v-model="facets"
-                                        v-model:activeKey="activeKey"
-                                        :filter-list="discoveryFilters"
-                                        :type-name="postFacets.typeName"
-                                        @change="handleFilterChange"
-                                        @change-active-key="
-                                            handleActiveKeyChange
-                                        "
-                                    ></AssetFilters
-                                ></template>
-                                <AtlanIcon
-                                    icon="FilterFunnel"
-                                    class="mr-1"
-                                ></AtlanIcon>
-                            </a-popover>
-                        </template>
-                        <template #postFilter>
-                            <div style="max-width: 330px">
-                                <PreferenceSelector
-                                    v-model="preference"
-                                    @change="handleChangePreference"
-                                    @display="handleDisplayChange"
-                                />
-                            </div>
-                        </template>
-                    </SearchAdvanced>
-                </div>
-
-                <div v-if="showAggrs" class="w-full px-4">
+            <div class="flex flex-col">
+                <div v-if="showAggrs" class="w-full">
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class="mt-3"
@@ -122,32 +55,26 @@
                     :isLoadMore="isLoadMore"
                     :isLoading="isValidating"
                     @loadMore="handleLoadMore"
+                    style="height: 350px"
                 >
-                    <template v-slot:default="{ item, itemIndex }">
+                    <template v-slot:default="{ item }">
                         <AssetItem
                             :item="item"
-                            :itemIndex="itemIndex"
-                            :selectedGuid="selectedAsset.guid"
-                            @preview="handleClickAssetItem"
-                            @updateDrawer="updateCurrentList"
+                            @preview="handlePreview"
                             :preference="preference"
                             :show-check-box="showCheckBox"
-                            :bulk-select-mode="
-                                bulkSelectedAssets && bulkSelectedAssets.length
-                                    ? true
-                                    : false
-                            "
                             :enableSidebarDrawer="enableSidebarDrawer"
-                            :is-checked="checkSelectedCriteriaFxn(item)"
-                            @listItem:check="
-                                (e, item) => updateBulkSelectedAssets(item)
-                            "
-                            :class="page !== 'admin' ? 'mx-3' : ''"
+                            :class="page !== 'admin' ? '' : ''"
                         ></AssetItem>
                     </template>
                 </AssetList>
             </div>
         </div>
+        <AssetDrawer
+            :data="selectedAsset"
+            :show-drawer="showDrawer"
+            @closeDrawer="handleCloseDrawer"
+        />
     </div>
 </template>
 
@@ -168,11 +95,9 @@
     import ErrorView from '@common/error/discover.vue'
 
     import { useDebounceFn } from '@vueuse/core'
-    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import PreferenceSelector from '@/assets/preference/index.vue'
 
-    import AssetFilters from '@/common/assets/filters/index.vue'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -185,23 +110,22 @@
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import AtlanIcon from '../common/icon/atlanIcon.vue'
+
     import useAssetStore from '~/store/asset'
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
-    import useBulkUpdateStore from '~/store/bulkUpdate'
+
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'AssetDiscovery',
         components: {
             AssetList,
             AggregationTabs,
-            AssetFilters,
-            SearchAdvanced,
-            PreferenceSelector,
+
             EmptyView,
             ErrorView,
-            AtlanIcon,
+            AssetDrawer,
             AssetItem,
         },
         props: {
@@ -213,7 +137,9 @@
             initialFilters: {
                 type: Object,
                 required: false,
-                default: () => {},
+                default: () => {
+                    return {}
+                },
             },
             preference: {
                 type: Object as PropType<any>,
@@ -261,20 +187,22 @@
             },
         },
         setup(props, { emit }) {
+            const showDrawer = ref(false)
+
             const { preference: preferenceProp, checkedCriteria } =
                 toRefs(props)
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({})
-            const selectedAssetId = ref('')
+
             /* Assiging prefrence props if any from props */
             const preference = ref(toRaw(preferenceProp.value))
             const aggregations = ref(['typeName'])
             const postFacets = ref({
                 typeName: '__all',
             })
-            const dependentKey = ref('DEFAULT_ASSET_LIST')
+            const dependentKey = ref('DEFAULT_ASSET_LIST_HOME')
 
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
@@ -290,26 +218,24 @@
             const { initialFilters, page, projection } = toRefs(props)
             const discoveryStore = useAssetStore()
 
-            if (discoveryStore.activeFacet && page.value === 'assets') {
-                facets.value = discoveryStore.activeFacet
-            }
-            if (discoveryStore.activePostFacet && page.value === 'assets') {
-                postFacets.value = discoveryStore.activePostFacet
-            }
+            // if (discoveryStore.activeFacet && page.value === 'assets') {
+            //     facets.value = discoveryStore.activeFacet
+            // }
+            // if (discoveryStore.activePostFacet && page.value === 'assets') {
+            //     postFacets.value = discoveryStore.activePostFacet
+            // }
             if (discoveryStore.preferences) {
-                console.log(discoveryStore.preferences)
-
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
                 preference.value.display =
                     discoveryStore.preferences.display ||
                     preference.value.display
             }
-            if (discoveryStore.activeFacetTab?.length > 0) {
-                activeKey.value = discoveryStore.activeFacetTab
-            } else {
-                activeKey.value = ['hierarchy']
-            }
+            // if (discoveryStore.activeFacetTab?.length > 0) {
+            //     activeKey.value = discoveryStore.activeFacetTab
+            // } else {
+            //     activeKey.value = ['hierarchy']
+            // }
             if (props.initialFilters) {
                 facets.value = {
                     ...facets.value,
@@ -334,7 +260,7 @@
                 fetch,
 
                 error,
-                selectedAsset,
+
                 quickChange,
                 updateList,
             } = useDiscoverList({
@@ -351,7 +277,16 @@
                 relationAttributes,
             })
 
-            const handlePreview = inject('preview')
+            const selectedAsset = ref(null)
+            const handlePreview = (item) => {
+                selectedAsset.value = item
+
+                showDrawer.value = true
+            }
+
+            const handleCloseDrawer = () => {
+                showDrawer.value = false
+            }
 
             const updateCurrentList = (asset) => {
                 updateList(asset)
@@ -361,43 +296,22 @@
                 useAddEvent('discovery', 'search', 'changed')
             }, 600)
 
-            const sendFilterEvent = useDebounceFn((filterItem) => {
-                console.log('sendFilterEvent', filterItem)
-                if (filterItem && filterItem.analyticsKey) {
-                    useAddEvent('discovery', 'filter', 'changed', {
-                        type: filterItem.analyticsKey,
-                    })
-                }
-            }, 600)
-
-            const handleClickAssetItem = (...args) => {
-                console.log('handleClickAssetItem', ...args)
-                useAddEvent('discovery', 'asset_card', 'clicked', {
-                    click_index: args[1],
-                })
-                handlePreview(...args)
-            }
-
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 sendSearchEvent()
                 quickChange()
             }, 100)
 
-            const handleFilterChange = (filterItem) => {
-                sendFilterEvent(filterItem)
+            const handleFilterChange = () => {
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
             }
 
-            const handleAssetTypeChange = (tabName) => {
+            const handleAssetTypeChange = () => {
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActivePostFacet(postFacets.value)
-                useAddEvent('discovery', 'aggregate_tab', 'changed', {
-                    name: tabName,
-                })
             }
 
             const handleLoadMore = () => {
@@ -424,10 +338,6 @@
                 searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
-            const handleActiveKeyChange = () => {
-                discoveryStore.setActivePanel(activeKey.value)
-            }
-
             const placeholder = computed(() => {
                 const found = assetTypeAggregationList.value.find(
                     (item) => item.id === postFacets.value.typeName
@@ -440,85 +350,7 @@
                 return 'Search all assets'
             })
 
-            /* BULK SELECTION */
-            const store = useBulkUpdateStore()
-            const bulkSelectedAssets: Ref<any[]> = ref(
-                toRaw(store.bulkSelectedAssets)
-            )
-            watch(store, () => {
-                bulkSelectedAssets.value = store.$state.bulkSelectedAssets
-            })
-            const updateBulkSelectedAssets = (listItem) => {
-                switch (checkedCriteria.value) {
-                    case 'guid': {
-                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                            (item) => item?.guid === listItem?.guid
-                        )
-                        if (itemIndex >= 0)
-                            bulkSelectedAssets.value.splice(itemIndex, 1)
-                        else bulkSelectedAssets.value.push(listItem)
-                        break
-                    }
-                    case 'qualifiedName': {
-                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                            (qualifiedName) =>
-                                qualifiedName ===
-                                listItem?.attributes?.qualifiedName
-                        )
-                        if (itemIndex >= 0)
-                            bulkSelectedAssets.value.splice(itemIndex, 1)
-                        else
-                            bulkSelectedAssets.value.push(
-                                listItem?.attributes?.qualifiedName
-                            )
-                        break
-                    }
-                    default: {
-                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                            (item) => item?.guid === listItem?.guid
-                        )
-                        if (itemIndex >= 0)
-                            bulkSelectedAssets.value.splice(itemIndex, 1)
-                        else bulkSelectedAssets.value.push(listItem)
-                    }
-                }
-                store.setBulkMode(!!bulkSelectedAssets.value.length)
-                store.setBulkSelectedAssets(bulkSelectedAssets.value)
-            }
-            /* By default it will be guid, but it can be through qualifiedName */
-            const checkSelectedCriteriaFxn = (item) => {
-                switch (checkedCriteria.value) {
-                    case 'guid': {
-                        return (
-                            bulkSelectedAssets.value.findIndex(
-                                (listItem) => listItem.guid === item.guid
-                            ) > -1
-                        )
-                        break
-                    }
-                    case 'qualifiedName': {
-                        return (
-                            bulkSelectedAssets.value.findIndex(
-                                (qualifiedName) =>
-                                    qualifiedName ===
-                                    item?.attributes.qualifiedName
-                            ) > -1
-                        )
-                        break
-                    }
-                    default: {
-                        return (
-                            bulkSelectedAssets.value.findIndex(
-                                (listItem) => listItem.guid === item.guid
-                            ) > -1
-                        )
-                    }
-                }
-            }
-
             return {
-                checkSelectedCriteriaFxn,
-                selectedAssetId,
                 projection,
                 handleFilterChange,
                 isLoading,
@@ -540,7 +372,7 @@
                 handleResetEvent,
                 dirtyTimestamp,
                 handleDisplayChange,
-                handleActiveKeyChange,
+
                 activeKey,
                 discoveryFilters,
                 error,
@@ -548,9 +380,9 @@
                 updateList,
                 updateCurrentList,
                 searchDirtyTimestamp,
-                updateBulkSelectedAssets,
-                bulkSelectedAssets,
-                handleClickAssetItem,
+
+                showDrawer,
+                handleCloseDrawer,
             }
         },
     })

@@ -19,7 +19,7 @@
         AssetAttributes,
         InternalAttributes,
         SQLAttributes,
-        DefaultRelationAttributes,
+        AssetRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -65,9 +65,9 @@
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
-                'categories'
+                'categories',
             ])
-            const relationAttributes = ref([...DefaultRelationAttributes, 'name'])
+            const relationAttributes = ref([...AssetRelationAttributes])
 
             const { list, isLoading, quickChange } = useDiscoverList({
                 isCache: false,

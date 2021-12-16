@@ -377,7 +377,7 @@
                     label: `${tableNameFromURL} preview`,
                     isSaved: false,
                     queryId: undefined,
-                    status: 'DRAFT',
+                    status: 'is_null',
                     connectionId: '',
                     description: '',
                     qualifiedName: '',

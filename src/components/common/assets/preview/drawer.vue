@@ -10,7 +10,7 @@
             :style="{ position: 'absolute' }"
             :content-wrapper-style="{ width: '420px' }"
             :mask="showMask"
-            :key="data.guid"
+            :key="data?.guid"
             @close="$emit('closeDrawer')"
         >
             <AssetPreview
@@ -63,7 +63,9 @@
 
             provide('updateDrawerList', updateDrawerList)
 
-            watch(showDrawer, () => (visible.value = showDrawer.value))
+            watch(showDrawer, () => {
+                visible.value = showDrawer.value
+            })
 
             return { visible }
         },

@@ -3,7 +3,7 @@
     <div class="w-full h-full p-4">
         <div class="flex items-center mb-4 text-xs">
             <div
-                class="flex items-center justify-end px-3 py-1  light_creme dark_orange rounded-3xl"
+                class="flex items-center justify-end px-3 py-1 light_creme dark_orange rounded-3xl"
             >
                 Invalid query
             </div>
@@ -97,6 +97,8 @@
                                 lineRegex
                             ),
                         ]
+                        console.log(linesInfo, 'linesInfo')
+                        debugger
                         /* [["column 4", "4"], ["column 7", "7"]]*/
                         const columnsInfo = [
                             ...queryErrorObj.value.errorMessage.matchAll(

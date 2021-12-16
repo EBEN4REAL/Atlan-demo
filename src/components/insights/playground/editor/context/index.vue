@@ -291,6 +291,8 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import AtlanBtn from '~/components/UI/button.vue'
     import { useTimeAgo } from '@vueuse/core'
+    import { useConnectionStore } from '~/store/connection'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'EditorContext',
@@ -313,6 +315,7 @@
                 getDatabaseName,
                 getSchemaName,
                 getConnectorName,
+                getConnectionQualifiedName,
             } = useConnector()
             const { getFirstQueryConnection } = useUtils()
             const { modifyActiveInlineTab } = useInlineTab()
@@ -332,12 +335,25 @@
                 }
             )
 
+            const store = useConnectionStore()
+
             const connectorName = computed(() =>
                 getConnectorName(connectorsData.value.attributeValue)
             )
-            const connectionName = computed(() =>
-                getConnectionName(connectorsData.value.attributeValue)
-            )
+            const connectionName = computed(() => {
+                console.log('store list: ', store.getList)
+                let data = getConnectionQualifiedName(
+                    connectorsData.value.attributeValue
+                )
+
+                let connectionData = store.getList.find(
+                    (connection) =>
+                        connection?.attributes?.qualifiedName === data
+                )
+                let name = connectionData?.attributes?.name
+                // console.log('connection data: ', connectionData)
+                return name
+            })
             const databaseName = computed(() =>
                 getDatabaseName(connectorsData.value.attributeValue)
             )

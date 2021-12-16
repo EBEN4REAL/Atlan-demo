@@ -103,7 +103,7 @@
                         :desc="
                             staticUse
                                 ? emptyViewText || 'No assets found'
-                                : 'We didnt find anything that matches your search criteria'
+                                : 'We didn\'t find anything that matches your search criteria'
                         "
                         :button-text="staticUse ? '' : 'Reset Filter'"
                         class="mb-10"

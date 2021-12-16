@@ -5,7 +5,7 @@
             <AssetsWrapper
                 :initial-filters="ownerFilter"
                 :show-filters="false"
-                :static-use="true"
+                :static-use="false"
                 :show-aggrs="false"
                 class="asset-list"
                 page="admin"

@@ -8,7 +8,6 @@
                     placement="bottom"
                     :trigger="['click']"
                     :destroy-tooltip-on-hide="true"
-                    :overlay-class-name="$style.ownerPopover"
                 >
                     <template #content>
                         <div class="">
@@ -79,13 +78,17 @@
                 </div>
             </div>
             <div
-                v-if="!totalGroupCount && !isLoading"
+                v-if="totalGroupCount === 0 && !isLoading"
                 class="flex flex-col items-center justify-center empty-state-wrapper"
             >
                 <div
                     class="flex items-center justify-center w-full componentHeight"
                 >
-                    <EmptyState desc="This user is not part of any group." />
+                    <EmptyState
+                        empty-screen="NoGroups"
+                        headline="No Groups Found"
+                        desc="This user is not part of any group."
+                    />
                 </div>
             </div>
             <div

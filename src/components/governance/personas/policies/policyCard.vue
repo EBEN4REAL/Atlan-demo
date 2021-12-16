@@ -1,9 +1,9 @@
 <template>
     <div
-        class="relative border-b border-gray-300 container-policy-card last:border-0"
+        class="relative pt-1 pb-1 border-b border-gray-300 container-policy-card last:border-0"
     >
         <div
-            class="flex flex-col p-2 pr-2 text-gray-500 rounded cursor-pointer group hover:bg-primary-light card-policy"
+            class="flex flex-col p-3 text-gray-500 rounded cursor-pointer group hover:bg-primary-light card-policy"
             :class="
                 selectedPolicy.id === policy.id
                     ? 'outline-primary bg-primary-light'
@@ -42,7 +42,7 @@
                     >Data Policy</span
                 > -->
                 <span
-                    class="px-1 ml-auto text-xs bg-gray-200"
+                    class="p-1 ml-auto text-xs bg-gray-200 rounded"
                     data-test-id="policy-type"
                     >{{
                         type === 'meta' ? 'Metadata Policy' : 'Data Policy'
@@ -176,7 +176,55 @@
                 </div> -->
             </div>
         </div>
-        <a-popconfirm
+        <a-popover
+            v-model:visible="visibleDelete"
+            trigger="click"
+            placement="topRight"
+            @onMouseleave="() => (visibleDelete = false)"
+        >
+            <template #content>
+                <div class="popover-delete">
+                    <span>
+                        Are you sure you want to delete
+                        <strong>{{ policy?.name }}</strong> ?
+                    </span>
+                    <div class="btn-wrapper">
+                        <AtlanBtn
+                            padding="compact"
+                            color="minimal"
+                            data-test-id="cancel"
+                            class="btn-asset"
+                            size="sm"
+                            @click="() => (visibleDelete = false)"
+                        >
+                            Cancel
+                        </AtlanBtn>
+                        <AtlanBtn
+                            padding="compact"
+                            data-test-id="save"
+                            class="btn-asset"
+                            size="sm"
+                            color="danger"
+                            @click="removePolicy"
+                        >
+                            Save
+                        </AtlanBtn>
+                    </div>
+                </div>
+            </template>
+            <AtlanBtn
+                class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
+                size="sm"
+                color="secondary"
+                data-test-id="policy-delete"
+                padding="compact"
+                @click="() => (visibleDelete = true)"
+            >
+                <AtlanIcon icon="Delete" class="" />
+            </AtlanBtn>
+        </a-popover>
+        <!-- <a-popconfirm
+            v-if="canDelete"
             placement="leftTop"
             :title="getPopoverContent(policy)"
             ok-text="Yes"
@@ -184,7 +232,6 @@
             overlay-class-name="popoverConfirm"
             cancel-text="Cancel"
             @confirm="removePolicy"
-            v-if="canDelete"
         >
             <AtlanBtn
                 class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
@@ -195,7 +242,7 @@
             >
                 <AtlanIcon icon="Delete" class="" />
             </AtlanBtn>
-        </a-popconfirm>
+        </a-popconfirm> -->
     </div>
 </template>
 
@@ -238,6 +285,7 @@
         },
         emits: ['edit', 'cancel', 'delete', 'clickCard'],
         setup(props, { emit }) {
+            const visibleDelete = ref(false)
             const { policy, type, width } = toRefs(props)
             const { findActions } = useScopeService()
             const { getAssetIcon } = useUtils()
@@ -263,6 +311,7 @@
             const getImage = (id: string) => connStore.getImage(id)
             const removePolicy = () => {
                 /* Delete when the policy is saved */
+                visibleDelete.value = false
                 if (!policy.value?.isNew) emit('delete')
                 emit('cancel')
             }
@@ -280,11 +329,11 @@
             const handleClickPlicyCard = () => {
                 emit('clickCard', { ...policy.value, type: type.value })
             }
-            const canDelete = computed(() => {
-                return props.whitelistedConnectionIds.includes(
+            const canDelete = computed(() =>
+                props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId
                 )
-            })
+            )
             return {
                 getPopoverContent,
                 removePolicy,
@@ -297,6 +346,7 @@
                 splitAssets,
                 handleClickPlicyCard,
                 canDelete,
+                visibleDelete,
             }
         },
     })
@@ -348,5 +398,14 @@
     }
     .card {
         box-shadow: 1px 2px 3px 3px rgba(0, 0, 0, 0.05);
+    }
+    .popover-delete {
+        padding: 20px;
+        max-width: 350px;
+    }
+    .btn-wrapper {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 15px;
     }
 </style>

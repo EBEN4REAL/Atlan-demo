@@ -29,7 +29,7 @@ export function useFilter() {
         on_or_after: '>=',
         on_or_before: '<=',
         is_not_one_of: 'NOT IN',
-        is_not_of: 'IN',
+        is_one_of: 'IN',
         start_like: 'LIKE',
         end_like: 'LIKE',
         not_contains: 'NOT LIKE',

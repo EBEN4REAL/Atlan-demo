@@ -196,11 +196,8 @@
                                     :showNone="false"
                                     select-group-key="alias"
                                     select-user-key="username"
-                                    v-model="userData[selectedType]"
-                                    v-model:disabledModalValue="
-                                        userData[otherType]
-                                    "
-                                    @change="handleOwnerChange"
+                                    v-model:modelValue="userData[selectedType]"
+                                    :disabledModalValue="userData[otherType]"
                                 />
                             </div>
                         </template>
@@ -427,16 +424,16 @@
             //     { immediate: true }
             // )
 
-            const userDataDetail = ref({
-                edit: {
-                    ownerGroups: [],
-                    ownerUsers: [],
-                },
-                view: {
-                    ownerGroups: [],
-                    ownerUsers: [],
-                },
-            })
+            // const userDataDetail = ref({
+            //     edit: {
+            //         ownerGroups: [],
+            //         ownerUsers: [],
+            //     },
+            //     view: {
+            //         ownerGroups: [],
+            //         ownerUsers: [],
+            //     },
+            // })
 
             const closeModal = () => {
                 emit('update:showCollectionModal', false)
@@ -593,9 +590,9 @@
                     } else if (item === 'edit') {
                         otherType.value = 'view'
                     }
-                    console.log('users: ', {
-                        userData: userData.value,
-                    })
+                    // console.log('users: ', {
+                    //     userData: userData.value,
+                    // })
                 } else {
                 }
             }
@@ -623,55 +620,51 @@
             }
 
             const handleOwnerChange = () => {
-                if (userData?.value?.edit?.ownerUsers) {
-                    if (userData?.value?.edit?.ownerUsers?.length) {
-                    } else {
-                        userData.value.edit.ownerUsers = []
-                    }
-                } else {
-                    userData.value.edit = {
-                        ...userData.value.edit,
-                        ownerUsers: [],
-                    }
-                }
-
-                if (userData?.value?.edit?.ownerGroups) {
-                    if (userData?.value?.edit?.ownerGroups?.length) {
-                    } else {
-                        userData.value.edit.ownerGroups = []
-                    }
-                } else {
-                    userData.value.edit = {
-                        ...userData.value.edit,
-                        ownerGroups: [],
-                    }
-                }
-
-                if (userData?.value?.view?.ownerUsers) {
-                    if (userData?.value?.view?.ownerUsers?.length) {
-                    } else {
-                        userData.value.view.ownerUsers = []
-                    }
-                } else {
-                    userData.value.view = {
-                        ...userData.value.view,
-                        ownerUsers: [],
-                    }
-                }
-
-                if (userData?.value?.view?.ownerGroups) {
-                    if (userData?.value?.view?.ownerGroups?.length) {
-                    } else {
-                        userData.value.view.ownerGroups = []
-                    }
-                } else {
-                    userData.value.view = {
-                        ...userData.value.view,
-                        ownerGroups: [],
-                    }
-                }
-
-                console.log('model value: ', userData.value)
+                // if (userData?.value?.edit?.ownerUsers) {
+                //     if (userData?.value?.edit?.ownerUsers?.length) {
+                //     } else {
+                //         userData.value.edit.ownerUsers = []
+                //     }
+                // } else {
+                //     userData.value.edit = {
+                //         ...userData.value.edit,
+                //         ownerUsers: [],
+                //     }
+                // }
+                // if (userData?.value?.edit?.ownerGroups) {
+                //     if (userData?.value?.edit?.ownerGroups?.length) {
+                //     } else {
+                //         userData.value.edit.ownerGroups = []
+                //     }
+                // } else {
+                //     userData.value.edit = {
+                //         ...userData.value.edit,
+                //         ownerGroups: [],
+                //     }
+                // }
+                // if (userData?.value?.view?.ownerUsers) {
+                //     if (userData?.value?.view?.ownerUsers?.length) {
+                //     } else {
+                //         userData.value.view.ownerUsers = []
+                //     }
+                // } else {
+                //     userData.value.view = {
+                //         ...userData.value.view,
+                //         ownerUsers: [],
+                //     }
+                // }
+                // if (userData?.value?.view?.ownerGroups) {
+                //     if (userData?.value?.view?.ownerGroups?.length) {
+                //     } else {
+                //         userData.value.view.ownerGroups = []
+                //     }
+                // } else {
+                //     userData.value.view = {
+                //         ...userData.value.view,
+                //         ownerGroups: [],
+                //     }
+                // }
+                // console.log('model value: ', userData.value)
             }
 
             return {
@@ -695,7 +688,7 @@
                 handleChange,
                 selectedType,
                 userData,
-                userDataDetail,
+                // userDataDetail,
                 permissionOptions,
                 showUserDropdown,
                 userDropdown,

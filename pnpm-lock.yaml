@@ -48,7 +48,7 @@ specifiers:
   '@vue/server-renderer': ^3.2.24
   '@vueuse/core': ^7.2.2
   '@vueuse/head': ^0.7.3
-  ant-design-vue: ^3.0.0-alpha.14
+  ant-design-vue: ^3.0.0-alpha.15
   autoprefixer: ^10.4.0
   axios: ^0.24.0
   babel-loader: ^8.2.3
@@ -150,7 +150,7 @@ dependencies:
   '@tiptap/vue-3': 2.0.0-beta.81_2315071c86c408ea8740b2a1ef36c407
   '@vueuse/core': 7.2.2_vue@3.2.24
   '@vueuse/head': 0.7.3_vue@3.2.24
-  ant-design-vue: 3.0.0-alpha.14_e9ad48123e44f1efa3c90c8e8375ea6d
+  ant-design-vue: 3.0.0-alpha.15_e9ad48123e44f1efa3c90c8e8375ea6d
   axios: 0.24.0
   bodybuilder: 2.4.0
   chart.js: 3.6.2
@@ -1495,8 +1495,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@intlify/bundle-utils/2.1.0:
-    resolution: {integrity: sha512-ogvmAjbSq0su4ijQbwqRfb0yimizZSK+HHV0SF3XCHSCtL+PDdRIDkkeNpNdPxNmdahORHXknC06Umehz4nTnQ==}
+  /@intlify/bundle-utils/2.2.0:
+    resolution: {integrity: sha512-qVuN7+c84UB6rlLHSued2J9R86LG1rHg6ZibCghGMyPXnW0nOuIfkUFf1F7tXIqfMXjIPeJzlbpmzjWTI2z9Kw==}
     engines: {node: '>= 12'}
     peerDependencies:
       petite-vue-i18n: '*'
@@ -1540,7 +1540,7 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/bundle-utils': 2.1.0
+      '@intlify/bundle-utils': 2.2.0
       '@intlify/shared': 9.2.0-beta.23
       '@rollup/pluginutils': 4.1.1
       debug: 4.3.2
@@ -2760,8 +2760,8 @@ packages:
       color-convert: 2.0.1
     dev: true
 
-  /ant-design-vue/3.0.0-alpha.14_e9ad48123e44f1efa3c90c8e8375ea6d:
-    resolution: {integrity: sha512-PmK8I90CMEwij+wFU52nPFi5PgRNlEzyHoF7gB2a7fU5m248OhTorQ9Rv3QqBwC1kjp4a2GpaFR2uvP0Mbu70Q==}
+  /ant-design-vue/3.0.0-alpha.15_e9ad48123e44f1efa3c90c8e8375ea6d:
+    resolution: {integrity: sha512-stDsetOC6XE0SCMYqI3/07FN0eWoWCaRrA54guu3pt1rcpRKvoF78wShGEuAmjlZUdyYFBimSJ//85NbUZ2l/w==}
     peerDependencies:
       '@vue/compiler-sfc': '>=3.1.0'
       vue: '>=3.1.0'

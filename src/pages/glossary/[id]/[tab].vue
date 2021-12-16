@@ -65,8 +65,9 @@
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
+                'categories'
             ])
-            const relationAttributes = ref([...DefaultRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes, 'name'])
 
             const { list, isLoading } = useDiscoverList({
                 isCache: false,

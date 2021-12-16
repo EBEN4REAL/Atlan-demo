@@ -2,9 +2,44 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import squel from 'squel'
 import { useUtils } from './useUtils'
 import { aggregatedAliasMap } from '../constants/aggregation'
+import { useFilter } from './useFilter'
 
+const { nameMap, getInputTypeFromColumnType } = useFilter()
+function getValueStringFromType(subpanel, value) {
+    let res = ''
+    const type = getInputTypeFromColumnType(subpanel?.column?.type)
+    if (type === 'number') res += `${value}`
+    else if (type === 'text') {
+        if (subpanel?.filter?.name?.includes('like')) {
+            console.log(subpanel?.filter?.name?.includes('like'), 'sd like')
+            switch (subpanel?.filter?.name) {
+                case 'start_like': {
+                    res += `'${value}%'`
+                    break
+                }
+                case 'end_like': {
+                    res += `'%${value}'`
+                    break
+                }
+            }
+        } else if (subpanel?.filter?.name?.includes('contains')) {
+            switch (subpanel?.filter?.name) {
+                case 'not_contains': {
+                    res += `'%${value}%'`
+                    break
+                }
+                case 'contains': {
+                    res += `'%${value}%'`
+                    break
+                }
+            }
+        } else res += `'${value}'`
+    } else if (type === 'date') res += `DATE '${value}'`
+    return res
+}
 export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     const { getTableNameFromTableQualifiedName } = useUtils()
+
     const select = squel.select()
     const columnPanel = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'columns'
@@ -17,6 +52,9 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     )
     const sortPanel = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'sort'
+    )
+    const filter = activeInlineTab.playground.vqb.panels.find(
+        (panel) => panel.id.toLowerCase() === 'filter'
     )
     /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
     it is this way because of two way binidng */
@@ -78,5 +116,53 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         })
         // console.log(select.toString(), 'select.toString()')
     }
+    /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
+    it is this way because of two way binidng */
+    if (filter?.hide) {
+        console.log(filter)
+        let res = ''
+        filter?.subpanels.forEach((subpanel, index) => {
+            res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+            if (index == 0) res = ''
+
+            res += `"${subpanel?.column?.label}"`
+            res += `${nameMap[subpanel?.filter?.name]} `
+
+            switch (subpanel?.filter?.type) {
+                case 'range_input': {
+                    if (subpanel?.filter?.name === 'between') {
+                        if (subpanel?.filter?.value?.length > 0) {
+                            const firstVal = getValueStringFromType(
+                                subpanel,
+                                subpanel?.filter?.value[0] ?? ''
+                            )
+                            const secondVal = getValueStringFromType(
+                                subpanel,
+                                subpanel?.filter?.value[1] ?? ''
+                            )
+                            res += `${firstVal} AND ${secondVal}`
+                        }
+                    }
+                    break
+                }
+                case 'input': {
+                    res += `${getValueStringFromType(
+                        subpanel,
+                        subpanel?.filter?.value ?? ''
+                    )}`
+                    break
+                }
+                case 'multi_input': {
+                    res += ` '${subpanel?.filter?.value?.join(',') ?? ''}'`
+                    break
+                }
+                case 'none': {
+                    break
+                }
+            }
+        })
+        select.where(res)
+    }
+    console.log(select.toString(), 'select.toString()')
     return select.toString()
 }

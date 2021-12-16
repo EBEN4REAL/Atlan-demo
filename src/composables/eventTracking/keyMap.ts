@@ -33,7 +33,9 @@ const keyMap = {
             },
         },
         search: {
-            changed: 'discovery_search_changed',
+            changed: {
+                action: 'discovery_search_changed',
+            },
         },
         asset_profile: {
             navigated: {

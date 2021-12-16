@@ -8,7 +8,12 @@
         :options="finalList"
         :filter-option="() => true"
         @change="handleChange"
-        @click="mutate"
+        @click="
+            () => {
+                if (finalList.length < 2) mutate()
+            }
+        "
+        @select="resetFilter"
         @search="handleSearch"
     >
         <template #option="item">
@@ -109,6 +114,7 @@
                 filterTotal,
                 loadMore,
                 mutate,
+                resetFilter,
             } = useFacetUsers({ immediate: false })
 
             watch(
@@ -149,6 +155,7 @@
             })
 
             return {
+                resetFilter,
                 mutate,
                 open,
                 finalList,

@@ -29,6 +29,18 @@ export default function useConnection() {
                                     __state: 'ACTIVE',
                                 },
                             },
+                            {
+                                bool: {
+                                    must_not: {
+                                        terms: {
+                                            '__typeName.keyword': [
+                                                'Process',
+                                                'ColumnProcess',
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
                         ],
                     },
                 },
@@ -46,7 +58,7 @@ export default function useConnection() {
                 aggs: {
                     [GROUP_AGGREATION]: {
                         terms: {
-                            field: 'connectionName',
+                            field: 'connectionQualifiedName',
                             size: MAX_CONNECTIONS,
                         },
                     },

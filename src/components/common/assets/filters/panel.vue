@@ -189,7 +189,7 @@
 
             const handleChange = () => {
                 modelValue.value = facetMap.value
-                emit('change')
+                emit('change', item.value)
             }
 
             const handleClear = () => {
@@ -245,9 +245,9 @@
                         : `${list?.length} applied`
                 }
 
-                if(id === 'terms' && facetMap.value[id]) {
+                if (id === 'terms' && facetMap.value[id]) {
                     let count = facetMap.value[id].terms.length
-                    if(facetMap.value[id].empty) count = count + 1
+                    if (facetMap.value[id].empty) count = count + 1
                     return `${count} applied`
                 }
 

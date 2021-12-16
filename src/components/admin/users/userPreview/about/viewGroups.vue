@@ -18,40 +18,55 @@
     </div>
 </template>
 
-<script setup lang="ts">
-    import { toRefs, defineProps, reactive, computed } from 'vue'
+<script lang="ts">
+    import { computed, defineProps, toRefs, watch } from 'vue'
     import getUserGroups from '~/composables/user/getUserGroups'
     import Tags from "~/components/common/badge/tags/index.vue"
 
-    const props = defineProps({
-        user: {
-            type: Object,
-            default: () => {},
-            required: true
-        }
-    })
-
-    const { user } = toRefs(props)
-    const groupListAPIParams = reactive({
-        userId: user.value.id,
-        params: {
-            limit: 10,
-            offset: 0,
-            sort: 'name',
-            filter: {},
-        },
-    })
-    const {
-        groupList,
-        filteredGroupCount,
-        error,
-        isLoading,
-    } = getUserGroups(groupListAPIParams)
-    const groups = computed(() => groupList.value.map((group) => group.name))
-</script>
-
-<script lang="ts">
     export default {
         name: 'ViewGroups',
+        components: {
+            Tags
+        },
+        props: {
+            user: {
+                type: Object,
+                required: true
+            }
+        },
+        setup(props) {
+            const { user } = toRefs(props)
+            const userId = computed(() => user.value.id)
+            const groupListAPIParams = computed(() => ({
+                userId: userId.value,
+                params: {
+                    limit: 10,
+                    offset: 0,
+                    sort: 'name',
+                    filter: {},
+                },
+                immediate: true
+            }))
+            const {
+                groupList,
+                filteredGroupCount,
+                error,
+                isLoading,
+                getUserGroupList
+            } = getUserGroups(groupListAPIParams)
+
+            watch(userId, () => {
+                getUserGroupList()
+            })
+
+            const groups = computed(() => groupList.value.map((group) => group.name))
+
+            return {
+                groups,
+                error,
+                isLoading,
+                filteredGroupCount
+            }
+        }
     }
 </script>

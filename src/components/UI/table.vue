@@ -1,32 +1,135 @@
 <template>
     <div id="table-container" class="table_height clusterize">
-        <div
-            id="scrollArea"
-            class="clusterize-scroll -mt-0.5 -ml-0.5"
-            style="max-height: 101%; max-width: 101%"
-        >
+        <div id="scrollArea" class="max-w-full max-h-full clusterize-scroll">
             <table
                 ref="tableRef"
                 :data-test-id="'output-table'"
                 :class="$style.tableStyle"
             >
-                <slot name="header" />
+                <thead id="headerArea" class="clusterize-content">
+                    <tr>
+                        <th class="truncate">#</th>
+                        <th v-for="(col, index) in columns" :key="index">
+                            <div class="flex items-center">
+                                <a-tooltip :title="col.data_type">
+                                    <component
+                                        :is="images[getDataType(col.data_type)]"
+                                        class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
+                                    ></component>
+                                </a-tooltip>
+                                <Tooltip :tooltip-text="`${col.title}`" />
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
 
-                <tbody id="contentArea" class="clusterize-content"></tbody>
+                <tbody id="contentArea" class="clusterize-content">
+                    <tr v-for="(row, index) in dataList" :key="index">
+                        <td
+                            :class="
+                                rowClassNames !== ''
+                                    ? rowClassNames
+                                    : 'truncate '
+                            "
+                        >
+                            {{ index + 1 }}
+                        </td>
+
+                        <td
+                            v-for="(rowData, key) in row"
+                            :key="key"
+                            class="bg-white"
+                            :class="{
+                                'selected-state bg-primary-light':
+                                    selectedData === rowData && modalVisible,
+                                'cursor-pointer hover:bg-primary-light':
+                                    variantTypeIndexes.includes(key.toString()),
+                            }"
+                        >
+                            <div
+                                v-if="
+                                    variantTypeIndexes.includes(key.toString())
+                                "
+                                class="flex items-center justify-between"
+                                v-on:click="handleOpenModal(rowData, key)"
+                            >
+                                <div style="max-width: 80%" class="truncate">
+                                    {{ rowData }}
+                                </div>
+                                <AtlanIcon
+                                    icon="Expand"
+                                    class="h-4 w-auto mb-0.5"
+                                />
+                            </div>
+                            <div v-else>
+                                <Tooltip
+                                    :tooltip-text="`${rowData}`"
+                                    width="1000px"
+                                />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
+    <a-modal
+        v-if="modalVisible"
+        v-model:visible="modalVisible"
+        :footer="null"
+        :afterClose="() => (selectedData = null)"
+        centered
+        :destroyOnClose="true"
+        :class="$style.variant_modal"
+        width="600px"
+    >
+        <template #title>
+            <div class="flex items-center text-gray-700 gap-x-1.5">
+                <AtlanIcon
+                    icon="Variant"
+                    class="w-auto h-4 text-gray-500 mb-0.5"
+                />
+                Response Type
+            </div>
+        </template>
+        <div
+            class="overflow-auto border rounded border-gray-light variant_body"
+        >
+            <pre>
+                <code>
+                    {{selectedData}}
+                </code>
+            </pre>
+        </div>
+    </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, watch, ref } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        watch,
+        ref,
+        onMounted,
+    } from 'vue'
     import Clusterize from 'clusterize.js'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import { images, dataTypeCategoryList } from '~/constant/dataType'
+    import AtlanIcon from '../common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'AtlanTable',
-        components: {},
+        components: {
+            Tooltip,
+            AtlanIcon,
+        },
         props: {
             dataList: {
+                type: Array as PropType<any[]>,
+                required: true,
+            },
+            columns: {
                 type: Array as PropType<any[]>,
                 required: true,
             },
@@ -42,39 +145,63 @@
             },
         },
         setup(props) {
-            const { showLoading, dataList, rowClassNames } = toRefs(props)
-            let tableRef = ref(null)
-            const defaultRowClassNames =
-                'truncate bg-gray-100 border border-gray-light'
+            const { dataList, columns } = toRefs(props)
+            const tableRef = ref(null)
+            const variantTypeIndexes = ref<String[]>([])
+            const selectedData = ref(null)
+            const modalVisible = ref<boolean>(false)
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeCategoryList.forEach((i) => {
+                    if (i.type.includes(type.toUpperCase())) label = i.label
+                })
+                return label
+            }
 
             watch([tableRef, dataList], () => {
-                // if (isQueryRunning === 'success') {
                 if (tableRef.value) {
-                    const data_here = dataList.value.map((row, index) => {
-                        let rows = `<td class="${
-                            rowClassNames.value !== ''
-                                ? rowClassNames.value
-                                : defaultRowClassNames
-                        }">${index + 1}</td>`
-                        for (const [key, value] of Object.entries(row)) {
-                            rows += `<td class="truncate bg-white border border-gray-light">${
-                                value == null ? '-' : value
-                            }</td>`
-                        }
-                        const res = '<tr>' + rows + '</tr>'
-                        return res
-                    })
-
-                    new Clusterize({
-                        rows: data_here,
+                    /*  new Clusterize({
                         scrollId: 'scrollArea',
                         contentId: 'contentArea',
-                    })
+                    }) */
                 }
+            })
+
+            watch([tableRef, columns], () => {
+                if (tableRef.value) {
+                    /* new Clusterize({
+                        scrollId: 'scrollArea',
+                        contentId: 'headerArea',
+                    }) */
+                }
+            })
+
+            const handleOpenModal = (data, index) => {
+                console.log(index)
+                modalVisible.value = true
+                selectedData.value = data
+            }
+
+            onMounted(() => {
+                columns.value.forEach((col) => {
+                    if (
+                        col.data_type.toLowerCase() === 'any' ||
+                        col.data_type.toLowerCase() === 'variant'
+                    ) {
+                        variantTypeIndexes.value.push(col.title)
+                    }
+                })
+                console.log(variantTypeIndexes.value)
             })
 
             return {
                 tableRef,
+                images,
+                getDataType,
+                variantTypeIndexes,
+                selectedData,
+                handleOpenModal,
+                modalVisible,
             }
         },
     })
@@ -82,19 +209,16 @@
 
 <style lang="less" module>
     .tableStyle {
-        border-radius: 10px !important;
+        @apply rounded !important;
         td,
         th {
-            max-width: 250px !important;
-            min-width: 150px !important;
-            width: 200px;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
+            max-width: 200px;
+            min-width: 200px;
             text-align: left !important;
             height: 32px !important;
             padding: 0px 16px !important;
             font-size: 12px !important;
+            @apply border border-gray-light !important;
         }
         tbody {
             font-family: Hack !important;
@@ -104,41 +228,44 @@
         th {
             position: sticky;
             top: 0;
+            border-top: 0;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-700;
+            @apply text-gray-700 bg-gray-100 border-r border-gray-light;
             font-weight: 400 !important;
         }
         td:first-child {
             max-width: 100px !important;
-            min-width: 40px !important;
-            width: 40px;
+            min-width: 30px !important;
+            width: 30px;
             left: 0;
+            border-left: 0;
             position: sticky;
             z-index: 4;
             font-size: 14px !important;
-            @apply text-gray-500;
+            @apply text-gray-500 bg-gray-100;
         }
 
         th:first-child {
             max-width: 100px !important;
-            min-width: 40px !important;
-            width: 40px;
+            min-width: 30px !important;
+            width: 30px;
+            border-left: 0;
             left: 0;
             z-index: 10;
             @apply text-gray-500;
+        }
+    }
+    .variant_modal {
+        :global(.ant-modal-body) {
+            padding: 1rem !important;
         }
     }
 </style>
 
 <style lang="less" scoped>
     @import url('clusterize.js/clusterize.css');
-    .button-shadow {
-        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);
-    }
-    .placeholder {
-        background-color: #f4f4f4;
-    }
+
     .table_height {
         height: 100% !important;
     }
@@ -146,5 +273,12 @@
     @font-face {
         font-family: Hack;
         src: url('~/assets/fonts/hack/Hack-Regular.ttf');
+    }
+    .variant_body {
+        max-height: 400px;
+    }
+
+    .selected-state {
+        box-shadow: inset 0px 0px 0px 1px rgba(82, 119, 215);
     }
 </style>

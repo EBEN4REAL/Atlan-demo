@@ -181,7 +181,7 @@
                 workflowList,
                 error,
                 loadMore,
-                filter_record,
+                filterRecord,
                 isLoading,
                 filterList,
                 mutate,
@@ -199,7 +199,7 @@
             })
 
             const isLoadMore = computed(
-                () => filter_record.value > workflowList.value.length
+                () => filterRecord.value > workflowList.value.length
             )
 
             const placeholderLabel: Ref<Record<string, string>> = ref({})

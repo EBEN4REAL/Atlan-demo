@@ -34,6 +34,7 @@
                 :user="selectedUser"
                 :allow-update="isCurrentUser"
                 @updated-user="$emit('updatedUser')"
+                @success="$emit('success')"
             />
         </div>
         <div class="mb-3">
@@ -81,7 +82,7 @@
                 default: false,
             },
         },
-        emits: ['updatedUser', 'toggleEdit'],
+        emits: ['updatedUser', 'toggleEdit', 'success'],
         setup(props) {
             const { selectedUser } = toRefs(props)
             const createdAt = computed(() => dayjs.unix(selectedUser.value.createdTimestamp / 1000).format('MMMM D, YYYY h:mm A'))

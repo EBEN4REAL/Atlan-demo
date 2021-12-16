@@ -30,10 +30,10 @@
                     class="hidden ant-tag-blue text-primary sm:block"
                     :class="avatarBgClass"
                     :src="updatedImageUrl"
-                    >{{
-                        getNameInitials(getNameInTitleCase(avatarName))
-                    }}</a-avatar
                 >
+                    <template #icon>
+                        <AtlanIcon icon="User"></AtlanIcon> </template
+                ></a-avatar>
             </a-upload>
         </div>
         <div v-else>
@@ -44,8 +44,13 @@
                 class="hidden ant-tag-blue text-primary sm:block"
                 :class="avatarBgClass"
                 :src="updatedImageUrl"
-                >{{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar
             >
+                <template #icon>
+                    <AtlanIcon icon="User"></AtlanIcon>
+                </template>
+
+                <!-- {{ getNameInitials(getNameInTitleCase(avatarName)) }} -->
+            </a-avatar>
         </div>
     </div>
 </template>
@@ -75,7 +80,7 @@
                 default: 'square',
             },
             avatarSize: {
-                type: String as PropType<Number | String>,
+                type: Number as PropType<Number | String>,
                 default: 56,
             },
             avatarBgClass: {

@@ -8,6 +8,7 @@ export interface Actions extends State {
     setPending(value: any): void
     setIsAuthenticated(value: any): void
     setUserDetails(): void
+    setRoles(value: any): void
 }
 
 export const actions: Actions = {
@@ -52,5 +53,8 @@ export const actions: Actions = {
             this.evaluations.splice(0, uniqueArray.length)
         }
         this.evaluations.push(...uniqueArray)
+    },
+    setRoles(value) {
+        this.roles = value
     },
 }

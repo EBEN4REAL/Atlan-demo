@@ -28,6 +28,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementTitle,
         readmeContent,
         meaningRelationships,
+        categories
     } = useAssetInfo()
 
     const entity = ref({
@@ -92,6 +93,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     const localMeanings = ref(meaningRelationships(selectedAsset.value))
+    const localCategories = ref(categories(selectedAsset.value))
 
     const localResource = ref({
         link: '',
@@ -271,6 +273,23 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         currentMessage.value = 'Terms have been updated'
         mutate()
     }
+
+    const handleCategoriesUpdate = () => {
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                categories: localCategories.value.map((category) => ({
+                    typeName: 'AtlasGlossaryCategory',
+                    guid: category.guid,
+                })),
+                anchor: selectedAsset?.value?.attributes?.anchor
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Categories have been updated'
+        mutate()
+    }
+
     // Resource Addition
     const handleAddResource = () => {
         const resourceEntity = ref<any>({
@@ -484,6 +503,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localClassifications,
         localAnnouncement,
         localMeanings,
+        localCategories,
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
@@ -500,6 +520,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleUpdateReadme,
         localReadmeContent,
         handleMeaningsUpdate,
+        handleCategoriesUpdate,
         shouldDrawerUpdate,
         asset,
     }

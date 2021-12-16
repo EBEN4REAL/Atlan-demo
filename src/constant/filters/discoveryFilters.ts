@@ -8,6 +8,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'connection',
     },
     {
         id: 'certificateStatus',
@@ -18,6 +19,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'certificate',
     },
     {
         id: 'owners',
@@ -28,6 +30,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'owner',
     },
     // {
     //     id: 'terms',
@@ -48,6 +51,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'classification',
     },
     {
         id: 'terms',
@@ -58,6 +62,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'term',
     },
     {
         id: 'properties',
@@ -142,6 +147,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'property',
     },
     {
         id: 'sql',
@@ -180,6 +186,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'sql_assets',
     },
 
     {
@@ -208,6 +215,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'table',
     },
     {
         id: 'column',
@@ -240,6 +248,7 @@ export const discoveryFilters = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
+        analyticsKey: 'table',
     },
 ]
 

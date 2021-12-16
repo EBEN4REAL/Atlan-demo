@@ -32,7 +32,7 @@
                     <div class="relative mb-2 text-sm text-gray-500 required">
                         Policy name <span class="text-red-500">*</span>
                     </div>
-                    <div>
+                    <div v-if="isEdit ? canEdit : true">
                         <a-input
                             :ref="
                                 (el) => {
@@ -51,6 +51,7 @@
                             "
                         />
                     </div>
+                    <div v-else>{{ policy.name }}</div>
                     <div
                         v-if="rules.policyName.show"
                         class="absolute text-xs text-red-500 -bottom-5"
@@ -64,6 +65,11 @@
                         Connection <span class="text-red-500">*</span>
                     </div>
                     <Connector
+                        :footerNodeContent="'You can only view the connections in which you’re added as the owner.'"
+                        :whitelistedConnections="
+                            isEdit ? null : whitelistedConnectionIds
+                        "
+                        :showEmptyParents="isEdit ? true : false"
                         :ref="
                             (el) => {
                                 connectorComponentRef = el
@@ -89,12 +95,15 @@
                         {{ rules.connection.text }}
                     </div>
                 </div>
-                <div class="mt-7">
+                <div class="mt-5">
                     <div class="flex justify-between">
                         <div class="text-gray-500">
                             Asset <span class="text-red-500">*</span>
                         </div>
-                        <div v-if="!isAddAll" class="flex">
+                        <div
+                            v-if="!isAddAll && isEdit ? canEdit : true"
+                            class="flex"
+                        >
                             <AtlanBtn
                                 class="flex-none"
                                 size="sm"
@@ -146,7 +155,14 @@
                         <div
                             v-for="asset in policy.assets"
                             :key="asset"
-                            class="flex items-center justify-between p-1 cursor-pointer hover:bg-primary-light wrapper-asset"
+                            class="flex items-center justify-between p-1 wrapper-asset"
+                            :class="
+                                isEdit
+                                    ? canEdit
+                                    : true
+                                    ? 'hover:bg-primary-light cursor-pointer'
+                                    : ''
+                            "
                         >
                             <span class="asset-name">
                                 {{ splitName(asset) }}
@@ -157,6 +173,7 @@
                                 color="minimal"
                                 padding="compact"
                                 @click="handleDeleteAsset(asset)"
+                                v-if="isEdit ? canEdit : true"
                             >
                                 <AtlanIcon
                                     icon="Add"
@@ -184,6 +201,7 @@
                             color="minimal"
                             padding="compact"
                             @click="handleToggleManage"
+                            v-if="isEdit ? canEdit : true"
                         >
                             <span class="text-primary"> Manage </span>
                             <AtlanIcon
@@ -243,7 +261,10 @@
                     />
                 </div>
 
-                <div class="flex items-center justify-between">
+                <div
+                    class="flex items-center justify-between"
+                    v-if="isEdit ? canEdit : true"
+                >
                     <div class="mt-4">
                         <span>Deny Permissions</span>
                         <a-tooltip placement="right" color="white">
@@ -268,6 +289,25 @@
                         />
                     </div>
                 </div>
+                <div
+                    v-else-if="!policy.allow"
+                    class="flex items-center justify-between"
+                >
+                    <div class="mt-4">
+                        <span class="text-error">Denied Permissions</span>
+                        <a-tooltip placement="right" color="white">
+                            <AtlanIcon icon="Overview" class="mx-2" />
+                            <template #title>
+                                <p class="m-3 text-gray">
+                                    The above permissions have been overidden
+                                    for all the users in the persona, even if
+                                    they have access to those permissions via
+                                    some other persona or purpose
+                                </p>
+                            </template>
+                        </a-tooltip>
+                    </div>
+                </div>
                 <AssetSelectorDrawer
                     v-if="connectorData.attributeValue"
                     v-model:visible="assetSelectorVisible"
@@ -282,7 +322,7 @@
                     placement="right"
                     :closable="false"
                     :visible="isShow"
-                    :width="450"
+                    :width="480"
                     :mask="false"
                     @close="handleToggleManage"
                 >
@@ -295,7 +335,7 @@
                 </a-drawer>
             </div>
         </div>
-        <div class="flex button-container">
+        <div class="flex button-container" v-if="isEdit ? canEdit : true">
             <AtlanBtn
                 size="sm"
                 padding="compact"
@@ -314,6 +354,15 @@
             >
                 {{ isLoading ? 'Loading' : isEdit ? 'Update' : 'Save' }}
             </AtlanBtn>
+        </div>
+        <div v-else-if="isEdit && !canEdit">
+            <div class="flex p-3 m-4 rounded bg-primary-light text-primary">
+                <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
+                <div>
+                    You can only edit policies for connections in which you're
+                    added as a owner.
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -386,6 +435,10 @@
             selectedPolicy: {
                 type: Object,
                 required: false,
+            },
+            whitelistedConnectionIds: {
+                type: Array,
+                default: () => [],
             },
         },
         emits: ['close'],
@@ -592,6 +645,11 @@
                 const sliced = splited.slice(2, splited.length)
                 return sliced.join('/')
             }
+            const canEdit = computed(() => {
+                return props.whitelistedConnectionIds.includes(
+                    policy?.value?.connectionId
+                )
+            })
             return {
                 selectedPersonaDirty,
                 rules,
@@ -616,6 +674,7 @@
                 policyType,
                 splitName,
                 handleChangeAssets,
+                canEdit,
             }
         },
     })

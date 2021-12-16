@@ -2,6 +2,7 @@
     <div class="flex flex-col w-full px-3 gap-y-2">
         <ConnectorSelect
             v-model="localValue.connectorName"
+            :showCount="true"
             class="w-full"
         ></ConnectorSelect>
         <ConnectionSelect

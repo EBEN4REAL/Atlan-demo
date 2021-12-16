@@ -18,6 +18,7 @@ export default function usePermissions() {
     const authStore = useAuthStore()
     watch(data, () => {
         authStore.setPermissions(data.value?.permissions)
+        authStore.setRoles(data.value?.roles)
     })
     return {
         data,

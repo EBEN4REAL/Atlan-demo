@@ -58,7 +58,7 @@
                         :class="$style.modalStyles"
                         :closable="false"
                         :footer="null"
-                        :mask="false"
+                        :mask="true"
                     >
                         <CmndK
                             :is-cmnd-k-visible="isCmndKVisible"

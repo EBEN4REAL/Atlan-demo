@@ -12,7 +12,6 @@ export function useWorkflowSearchList(immediate: boolean = true) {
     params.value.append('offset', offset.value.toString())
     params.value.append('filter', JSON.stringify(filter.value))
 
-
     const { data, error, isLoading, mutate, isReady } = Workflows.getWorkflows({
         immediate,
         options: {},
@@ -21,7 +20,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
 
     const workflowList = ref([])
     const totalCount = ref()
-    const filter_record = ref()
+    const filterRecord = ref()
     const allCreatorIDs = ref([])
 
     watch(data, () => {
@@ -31,8 +30,8 @@ export function useWorkflowSearchList(immediate: boolean = true) {
             emailVerified: true,
         }))
         allCreatorIDs.value = [...allCreatorIDs.value, ...filtered]
-        totalCount.value = data.value.total_record
-        filter_record.value = data.value.filter_record
+        totalCount.value = data.value.totalRecord
+        filterRecord.value = data.value.filterRecord
         workflowList.value.push(...data.value.records)
     })
 
@@ -82,7 +81,7 @@ export function useWorkflowSearchList(immediate: boolean = true) {
         loadMore,
         filterList,
         mutate,
-        filter_record,
+        filterRecord,
         isReady,
         allCreatorIDs,
     }
@@ -134,7 +133,7 @@ export function getArchivedRunList(name) {
     const archivedList: Ref<ArchivedRuns[]> = ref([])
     const params = ref(new URLSearchParams())
     const totalCount = ref(0)
-    const filter_record = ref(0)
+    const filterRecord = ref(0)
     const offset = ref(0)
     const limit = ref(10)
 
@@ -162,14 +161,14 @@ export function getArchivedRunList(name) {
     watch(data, () => {
         if (!data?.value?.records) {
             data.value = {
-                total_record: 0,
-                filter_record: 0,
+                totalRecord: 0,
+                filterRecord: 0,
                 records: [],
             }
             return
         }
-        totalCount.value = data.value.total_record
-        filter_record.value = data.value.filter_record
+        totalCount.value = data.value.totalRecord
+        filterRecord.value = data.value.filterRecord
         if (offset.value > 0)
             archivedList.value = [...archivedList.value, ...data.value.records]
         else archivedList.value = data.value.records ?? []
@@ -193,7 +192,7 @@ export function getArchivedRunList(name) {
         error,
         isLoading,
         totalCount,
-        filter_record,
+        filterRecord,
         loadMore,
         isReady,
         execute,
@@ -220,11 +219,11 @@ export function useWorkflowConfigMaps(immediate: boolean = true) {
 
     const workflowList = ref([])
     const totalCount = ref()
-    const filter_record = ref()
+    const filterRecord = ref()
     watch(data, () => {
         if (!data?.value?.records) return
-        totalCount.value = data.value.total_record
-        filter_record.value = data.value.filter_record
+        totalCount.value = data.value.totalRecord
+        filterRecord.value = data.value.filterRecord
         workflowList.value.push(...data.value.records)
     })
 
@@ -272,7 +271,7 @@ export function useWorkflowConfigMaps(immediate: boolean = true) {
     return {
         workflowList,
         loadMore,
-        filter_record,
+        filterRecord,
         totalCount,
         error,
         isLoading,
@@ -302,11 +301,11 @@ export function useWorkflowTemplates(immediate: boolean = true) {
 
     const workflowList = ref([])
     const totalCount = ref()
-    const filter_record = ref()
+    const filterRecord = ref()
     watch(data, () => {
         if (!data?.value?.records) return
-        totalCount.value = data.value.total_record
-        filter_record.value = data.value.filter_record
+        totalCount.value = data.value.totalRecord
+        filterRecord.value = data.value.filterRecord
         workflowList.value.push(...data.value.records)
     })
 
@@ -355,7 +354,7 @@ export function useWorkflowTemplates(immediate: boolean = true) {
     return {
         workflowList,
         loadMore,
-        filter_record,
+        filterRecord,
         totalCount,
         error,
         isLoading,

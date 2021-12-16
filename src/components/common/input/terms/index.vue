@@ -26,22 +26,17 @@
         </a-popover>
         <div class="flex flex-wrap gap-1 text-sm">
             <template v-for="term in list" :key="term.guid">
-                <div
-                    class="flex items-center py-1 pl-2 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
-                >
-                    <AtlanIcon
-                        :icon="icon(term)"
-                        class="group-hover:text-white text-purple"
-                    ></AtlanIcon>
-
-                    <div class="ml-1 group-hover:text-white">
-                        {{ term.attributes?.name ?? term.displayText }}
-                    </div>
-                </div>
+                <TermPill
+                    :term="term"
+                    :allow-delete="
+                        allowDelete === null ? !readOnly : allowDelete
+                    "
+                    @delete="handleDeleteTerm"
+                />
             </template>
             <span
                 v-if="readOnly && list?.length < 1"
-                class="-ml-1 text-gray-700"
+                class="-ml-1 text-gray-500"
                 >No linked terms</span
             >
         </div>
@@ -61,10 +56,11 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     import GlossaryTree from '~/components/glossary/index.vue'
+    import TermPill from '@/common/pills/term.vue'
 
     export default defineComponent({
         name: 'TermsWidget',
-        components: { GlossaryTree },
+        components: { GlossaryTree, TermPill },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -79,6 +75,11 @@
                 type: Boolean,
                 default: false,
                 required: false,
+            },
+            allowDelete: {
+                type: Boolean,
+                required: false,
+                default: null,
             },
             modelValue: {
                 type: Array,
@@ -109,28 +110,6 @@
                 }
             }
 
-            const icon = (term) => {
-                if (
-                    term?.attributes?.certificateStatus?.toLowerCase() ===
-                    'verified'
-                ) {
-                    return 'TermVerified'
-                }
-                if (
-                    term?.attributes?.certificateStatus?.toLowerCase() ===
-                    'draft'
-                ) {
-                    return 'TermDraft'
-                }
-                if (
-                    term?.attributes?.certificateStatus?.toLowerCase() ===
-                    'deprecated'
-                ) {
-                    return 'TermDeprecated'
-                }
-                return 'Term'
-            }
-
             const onCheck = (checkedNodes) => {
                 checkedNodes.forEach((term) => {
                     if (
@@ -149,14 +128,28 @@
             }
 
             const onSearchItemCheck = (checkedNode, checked) => {
-                if(checked) {
-                    localValue.value.push(checkedNode)    
+                if (checked) {
+                    localValue.value.push(checkedNode)
                 } else {
-                    localValue.value = localValue.value?.filter((localTerm) => (localTerm.guid ?? localTerm.termGuid) !== checkedNode.guid)
+                    localValue.value = localValue.value?.filter(
+                        (localTerm) =>
+                            (localTerm.guid ?? localTerm.termGuid) !==
+                            checkedNode.guid
+                    )
                 }
                 hasBeenEdited.value = true
             }
-            
+
+            const handleDeleteTerm = (term) => {
+                localValue.value = localValue.value?.filter(
+                    (localTerm) =>
+                        (localTerm.guid ?? localTerm.termGuid) !==
+                        (term.guid ?? term.termGuid)
+                )
+
+                modelValue.value = localValue.value
+                emit('change', localValue.value)
+            }
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
@@ -167,12 +160,12 @@
 
             return {
                 list,
-                icon,
                 onCheck,
                 onPopoverClose,
                 localValue,
                 checkedGuids,
-                onSearchItemCheck
+                onSearchItemCheck,
+                handleDeleteTerm
             }
         },
     })

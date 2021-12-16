@@ -1,6 +1,8 @@
 <template>
     <div class="flex flex-col h-full">
-        <div class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm filter-head">
+        <div
+            class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm filter-head"
+        >
             <div
                 v-if="totalFilteredCount > 0"
                 class="flex items-center justify-between"
@@ -17,8 +19,11 @@
                     </span>
                 </div>
             </div>
-            <div v-else class="flex items-center justify-between text-gray-500 no-filter">
-                <span> {{noFilterTitle}}</span>
+            <div
+                v-else
+                class="flex items-center justify-between text-gray-500 no-filter"
+            >
+                <span> {{ noFilterTitle }}</span>
             </div>
         </div>
         <slot></slot>
@@ -26,9 +31,9 @@
             <a-collapse
                 v-model:activeKey="localActiveKeyValue"
                 :accordion="isAccordion"
-                expand-icon-position="right"
                 :bordered="false"
                 @change="handleActiveKeyChange"
+                :class="$style.facetfilter"
             >
                 <template
                     v-for="item in dynamicList"
@@ -100,7 +105,7 @@
             noFilterTitle: {
                 required: false,
                 default() {
-                    return "Filters"
+                    return 'Filters'
                 },
             },
             extraCountFilter: {
@@ -119,8 +124,13 @@
         ],
         setup(props, { emit }) {
             const { modelValue, activeKey } = useVModels(props, emit)
-            const { typeName, isAccordion, filterList, allowCustomFilters, extraCountFilter } =
-                toRefs(props)
+            const {
+                typeName,
+                isAccordion,
+                filterList,
+                allowCustomFilters,
+                extraCountFilter,
+            } = toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
 
@@ -177,9 +187,9 @@
                 return count
             })
 
-            const handleChange = () => {
+            const handleChange = (filterItem) => {
                 modelValue.value = localValue.value
-                emit('change')
+                emit('change', filterItem)
             }
 
             const handleResetAll = () => {
@@ -210,3 +220,14 @@
         },
     })
 </script>
+
+<style lang="less" module>
+    .facetfilter {
+        :global(.ant-collapse-item) {
+            :global(.ant-collapse-header) {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+        }
+    }
+</style>

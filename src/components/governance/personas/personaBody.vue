@@ -124,7 +124,7 @@
                     </div>
                     <div
                         v-if="totalPolicy !== 0"
-                        class="px-3 pt-4 bg-white container-tabs"
+                        class="px-3 pt-4 pb-3 bg-white container-tabs"
                     >
                         <AggregationTabs
                             v-model="activeTabFilter"

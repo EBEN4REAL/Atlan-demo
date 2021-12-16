@@ -30,28 +30,28 @@
                         </div>
                     </a-checkbox>
                 </template>
-
+            </div>
+            <div
+                class="flex items-center justify-between px-4"
+                v-if="userList.length > 0"
+            >
+                <p class="mt-1 text-xs text-gray-500">
+                    {{ userList.length }} of {{ filterTotal }} users
+                </p>
                 <template v-if="userList?.length < filterTotal">
-                    <div class="flex justify-center">
-                        <AtlanIcon
-                            icon="Loader"
-                            v-if="isLoading"
-                            class="animate-spin"
-                        />
+                    <div class="flex justify-center" v-if="isLoading">
+                        <a-spin size="small"></a-spin>
                     </div>
                     <div
-                        class="flex items-center justify-center py-0.5 cursor-pointer text-primary hover:underline"
+                        class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
                         @click="loadMore"
+                        v-else
                     >
-                        load more
-                        <atlan-icon icon="ArrowDown" />
+                        load more...
                     </div>
                 </template>
             </div>
         </div>
-        <p class="px-4 mt-1 text-xs text-gray-500">
-            showing {{ userList.length }} of {{ filterTotal }} users
-        </p>
     </div>
 </template>
 
@@ -88,7 +88,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { selectUserKey } = toRefs(props)
+            const { selectUserKey, queryText } = toRefs(props)
             const localValue = ref(modelValue.value)
             const map = ref({})
             const updateMap = (localValue: Ref<any>) => {
@@ -110,11 +110,11 @@
             watch(
                 () => props.queryText,
                 () => {
-                    handleSearch(props.queryText)
+                    handleSearch(queryText.value)
                 }
             )
             const userList = computed(() => {
-                if (props.queryText !== '') {
+                if (queryText.value !== '') {
                     return [...list.value]
                 }
                 const tempList = list.value.filter(
@@ -156,6 +156,7 @@
                 total,
                 localValue,
                 filterTotal,
+                queryText,
                 handleChange,
             }
         },

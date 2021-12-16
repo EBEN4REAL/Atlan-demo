@@ -98,7 +98,7 @@
                             ),
                         ]
                         console.log(linesInfo, 'linesInfo')
-                        debugger
+                        // debugger
                         /* [["column 4", "4"], ["column 7", "7"]]*/
                         const columnsInfo = [
                             ...queryErrorObj.value.errorMessage.matchAll(

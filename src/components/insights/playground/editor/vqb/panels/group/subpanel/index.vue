@@ -6,7 +6,7 @@
                 :key="subpanel?.id + index"
             >
                 <!-- {{ subpanel }} -->
-                <div class="flex items-center w-full mb-3">
+                <div class="flex items-center w-full mb-3 pr-9">
                     <!-- <div class="flex-1 border rounded h-14"> -->
                     <!-- <div class="flex flex-wrap items-center w-full"> -->
                     <!-- <template v-for="item in subpanel.columnsData">
@@ -69,8 +69,7 @@
                             </a-popover> -->
                     <!-- </div> -->
                     <ColumnSelector
-                        class="h-9"
-                        style="min-width: 30%"
+                        class="flex-1 h-9"
                         v-model:selectedItems="subpanel.columns"
                         v-model:selectedColumnsData="subpanel.columnsData"
                         :tableQualfiedName="

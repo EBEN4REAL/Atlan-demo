@@ -109,6 +109,7 @@
 
             const treeData = ref([])
             watch(data, () => {
+                treeData.value = []
                 const db = [
                     ...new Set(
                         data.value.results?.map((item) => item.TABLE_CATALOG)

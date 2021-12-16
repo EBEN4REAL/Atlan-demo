@@ -215,7 +215,7 @@
         }
 
         :global(.ant-tabs-extra-content) {
-            @apply pb-1 pr-2   !important;
+            @apply pb-0 pr-0   !important;
         }
 
         :global(.ant-tabs-tab-arrow-show) {

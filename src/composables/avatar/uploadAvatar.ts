@@ -44,5 +44,6 @@ export default function uploadAvatar() {
         isReady,
         data,
         uploadKey,
+        refreshImage: mutate,
     }
 }

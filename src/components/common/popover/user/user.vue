@@ -7,49 +7,66 @@
     >
         <template #content>
             <div class="user-popover">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3 mt-2">
-                        <UserAvatar
-                            :username="item"
-                            style-class="mr-1 border-none bg-primary-light "
-                            :avatarSize="40"
-                        ></UserAvatar>
-                        <div>
-                            <div
-                                class="flex items-center text-sm font-semibold capitalize"
-                            >
-                                <span>{{ selectedUser.name }}</span>
-                                <span
-                                    v-if="userProfiles?.slack"
-                                    class="ml-2 text-sm font-semibold"
-                                >
-                                    <SlackMessageCta
-                                        :slackLink="userProfiles.slack"
-                                    />
-                                </span>
+                <div
+                    class="flex flex-col"
+                    v-if="!isLoading && selectedUser.username === item"
+                >
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3 mt-2">
+                                <UserAvatar
+                                    :username="item"
+                                    style-class="mr-1 border-none bg-primary-light "
+                                    :avatarSize="40"
+                                ></UserAvatar>
+                                <div>
+                                    <div
+                                        class="flex items-center text-sm font-semibold capitalize"
+                                    >
+                                        <span>{{ selectedUser?.name }}</span>
+                                        <span
+                                            v-if="userProfiles?.slack"
+                                            class="ml-2 text-sm font-semibold"
+                                        >
+                                            <SlackMessageCta
+                                                :slackLink="userProfiles.slack"
+                                            />
+                                        </span>
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        @{{ item }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-xs text-gray-500">
-                                {{ selectedUser.username }}
-                            </div>
+                        </div>
+                        <div
+                            class="px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
+                        >
+                            {{ selectedUser?.workspaceRole }}
                         </div>
                     </div>
                     <div
-                        class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
+                        v-if="selectedUser?.personaList?.length > 0"
+                        class="mt-3"
                     >
-                        {{ selectedUser.workspaceRole }}
+                        <div class="text-xs text-gray-500">Personas</div>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span
+                                v-for="persona in selectedUser?.personaList"
+                                :key="persona"
+                                class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
+                                >{{ persona }}</span
+                            >
+                        </div>
                     </div>
                 </div>
 
-                <div v-if="selectedUser.personaList?.length > 0" class="mt-3">
-                    <div class="text-xs text-gray-500">Personas</div>
-                    <div class="flex flex-wrap gap-2 mt-2">
-                        <span
-                            v-for="persona in selectedUser.personaList"
-                            :key="persona"
-                            class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
-                            >{{ persona }}</span
-                        >
-                    </div>
+                <div
+                    class="flex items-center justify-center w-full px-4"
+                    style="height: 110px"
+                    v-else
+                >
+                    <a-spin></a-spin>
                 </div>
                 <a-button class="mt-3" block @click="handleClickViewUser">
                     View Profile
@@ -117,17 +134,7 @@
 
             const { getUserProfiles } = useUserPopover('user', item.value)
             const userProfiles = computed(() => {
-                console.log(
-                    'selectedUser',
-                    selectedUser.value.attributes?.profiles
-                )
-                if (selectedUser.value.attributes?.profiles) {
-                    console.log(
-                        'parsed json',
-                        JSON.parse(selectedUser.value.attributes?.profiles)[0]
-                    )
-                }
-                return getUserProfiles(selectedUser?.value)
+                return getUserProfiles(selectedUser?.value) || {}
             })
 
             return {

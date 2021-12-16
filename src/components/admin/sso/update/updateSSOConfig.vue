@@ -16,7 +16,7 @@
                                 }}
                             </div>
                             <div
-                                class="flex items-center cursor-pointer  text-primary"
+                                class="flex items-center cursor-pointer text-primary"
                             >
                                 <AtlanIcon
                                     icon="CopyOutlined"
@@ -44,7 +44,7 @@
                                 }}
                             </div>
                             <div
-                                class="flex items-center cursor-pointer  text-primary"
+                                class="flex items-center cursor-pointer text-primary"
                             >
                                 <AtlanIcon
                                     icon="CopyOutlined"
@@ -126,7 +126,7 @@
                         Attribute Mapper
                     </div>
                     <div
-                        class="flex flex-row items-center justify-between w-full "
+                        class="flex flex-row items-center justify-between w-full"
                     >
                         <div class="w-5/12 mb-2">IDP Attribute</div>
                         <div class="w-5/12 mb-2">User Attribute</div>
@@ -135,7 +135,7 @@
                     <div
                         v-for="(mapper, index) in mapperLists"
                         :key="index"
-                        class="flex flex-row items-center justify-between w-full mb-8 "
+                        class="flex flex-row items-center justify-between w-full mb-8"
                     >
                         <div class="w-5/12">
                             <!-- this will change when we start getting config details -->
@@ -227,6 +227,8 @@
         computed,
         onMounted,
         toRaw,
+        watch,
+        Ref,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import { useRouter } from 'vue-router'
@@ -248,6 +250,7 @@
 
     import { Identity } from '~/services/service/identity'
     import { Tenant } from '~/services/service/tenant'
+    import { storeToRefs } from 'pinia'
 
     interface FormState {
         alias: string
@@ -263,7 +266,8 @@
             const allowAddDeleteMappers = ref(false)
             const tenantStore = useTenantStore()
             const router = useRouter()
-            const tenantData: any = computed(() => tenantStore.getTenant)
+            // const tenantData: any = computed(() => tenantStore.getTenant)
+            const tenantData = storeToRefs(tenantStore)
             const defaultMappers = ref([])
             defaultMappers.value = (
                 tenantStore.identityProviderMappers || []
@@ -285,14 +289,30 @@
                 }
             }[] = []
 
-            const identityProviders: Array<any> =
-                tenantData?.value?.identityProviders || []
-            const ssoProvider: any = computed(() => {
-                const ssoProviders = identityProviders.filter((idp) => {
-                    if (idp?.alias === props.alias) return idp
-                })
-                return ssoProviders[0] || {}
-            })
+            const identityProviders: Ref<Array<any>> = ref([])
+            const ssoProvider: any = ref({})
+            watch(
+                tenantData,
+                () => {
+                    debugger
+                    identityProviders.value =
+                        tenantData?.value?.identityProviders.value || []
+                    const ssoProviders = identityProviders.value.filter(
+                        (idp) => {
+                            if (idp?.alias === props.alias) return idp
+                        }
+                    )
+                    ssoProvider.value = ssoProviders[0] || {}
+                },
+                { immediate: true, deep: true }
+            )
+
+            // const ssoProvider: any = computed(() => {
+            //     const ssoProviders = identityProviders.value.filter((idp) => {
+            //         if (idp?.alias === props.alias) return idp
+            //     })
+            //     return ssoProviders[0] || {}
+            // })
             // TODO: create mappers with user and idp attributes when we start getting info in config
             const idpMappers = ref([])
 
@@ -439,6 +459,7 @@
             const updateSSO = async () => {
                 try {
                     isLoading.value = true
+                    debugger
                     const data: any = toRaw(ssoProvider.value)
                     const config = {
                         ...data,
@@ -501,6 +522,7 @@
                 allowAddDeleteMappers,
                 mapperLists,
                 idpMappers,
+                tenantData,
             }
         },
     })

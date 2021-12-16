@@ -148,7 +148,7 @@
             //     tenantStore.identityProviders || []
             const ssoProvider: any = computed(
                 () =>
-                    identityProviders.value.find(
+                    identityProviders?.value?.find(
                         (idp) => idp?.alias === alias.value
                     ) || {}
             )

@@ -96,7 +96,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, reactive, computed } from 'vue'
+    import { defineComponent, ref, reactive, computed, watch } from 'vue'
     import { message } from 'ant-design-vue'
     import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
     import { Identity } from '~/services/service/identity'
@@ -119,10 +119,10 @@
             const tenantStore = useTenantStore()
 
             const idp: any = computed(
-                () => tenantStore.identityProviders[0] || {}
+                () => tenantStore?.identityProviders?.[0] || {}
             )
             const samlProvider = topSAMLProviders.find(
-                (data) => data.alias === idp.value.alias
+                (data) => data?.alias === idp?.value?.alias
             )
             const provider: any = samlProvider || customSamlProvider
             const verifiedSSO = ref(false)
@@ -157,9 +157,21 @@
                 ssoForm.enabled = idp.value?.enabled
             }
             setConfig()
-            const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.GetTenant()
-                tenantStore.setTenant(tenantResponse)
+            const updateTenant = () => {
+                const { data, isReady, error, isLoading } = Tenant.GetTenant()
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        if (isReady && !error.value && !isLoading.value) {
+                            tenantStore.setTenant(data?.value)
+                        } else if (error && error.value) {
+                            console.error(
+                                'Unable to update API Key. Please try again.'
+                            )
+                        }
+                    },
+                    { immediate: true }
+                )
             }
             const handleChangeEnableSSO = async () => {
                 try {
@@ -172,13 +184,13 @@
                         idp.value?.alias,
                         config
                     )
+
                     await updateIDP()
                     if (!ssoForm.enabled) {
                         const { mutate: deleteDefaultIDP } =
                             Identity.deleteDefaultIDP(idp.value?.alias)
                         await deleteDefaultIDP()
                     }
-
                     await updateTenant()
                     await getDefaultIDPList()
                     await setConfig()
@@ -189,6 +201,7 @@
                         }`,
                     })
                 } catch (error) {
+                    console.log(error)
                     enableSSOChanging.value = false
                     message.error({
                         content: `Unable to ${

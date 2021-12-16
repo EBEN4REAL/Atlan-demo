@@ -9,6 +9,11 @@
         :open="open"
         :filter-option="() => true"
         @change="handleChange"
+        @focus="
+            () => {
+                if (userList.length < 2) mutate()
+            }
+        "
         @search="
             (v) => {
                 open = true
@@ -84,7 +89,6 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useUserData from '~/composables/user/useUserData'
     import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
@@ -120,7 +124,8 @@
                 isLoading,
                 filterTotal,
                 loadMore,
-            } = useFacetUsers()
+                mutate,
+            } = useFacetUsers({ immediate: false })
 
             watch(
                 () => props.queryText,
@@ -160,6 +165,7 @@
             })
 
             return {
+                mutate,
                 open,
                 finalList,
                 loadMore,

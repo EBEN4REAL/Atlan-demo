@@ -79,7 +79,13 @@
             class="flex-grow shadow-none"
             @change="handleChange"
         />
-        <a-select
+        <UserSelector
+            v-if="typeName === 'users'"
+            v-model:value="localValue"
+            :multiple="isMultivalued"
+            @change="handleChange"
+        />
+        <!-- <a-select
             v-else-if="typeName === 'users'"
             v-model:value="localValue"
             class="flex-grow shadow-none center-arrow border-1"
@@ -98,7 +104,7 @@
                     class="animate-spin"
                 />
                 <AtlanIcon v-else icon="CaretDown" />
-            </template>
+            </template> 
             <a-select-option
                 v-for="(item, index) in userList"
                 :key="index"
@@ -106,7 +112,7 @@
                 :label="item.username"
                 >{{ item.username }}
             </a-select-option>
-        </a-select>
+        </a-select> -->
         <a-select
             v-else-if="typeName === 'groups'"
             v-model:value="localValue"
@@ -163,10 +169,11 @@
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
+    import UserSelector from '@/common/select/users.vue'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
-        components: { MultiInput },
+        components: { MultiInput, UserSelector },
         props: {
             attribute: {
                 type: Object,

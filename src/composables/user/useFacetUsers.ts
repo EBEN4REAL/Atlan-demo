@@ -9,7 +9,7 @@ export default function useFacetUsers(
     config: {
         sort?: string,
         columns?: string[],
-        immediate?: true
+        immediate?: boolean
     } = { immediate: true }
 ) {
     const params = ref(new URLSearchParams())

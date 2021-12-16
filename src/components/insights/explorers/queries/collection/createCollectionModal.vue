@@ -6,9 +6,9 @@
         width="584px"
         :destroyOnClose="true"
     >
-        <div class="w-full p-4 text-gray-500 bg-white rounded">
+        <div class="w-full py-4 text-gray-500 bg-white rounded">
             <div
-                class="flex items-center justify-between mb-6 text-gray-500 flex-nowrap"
+                class="flex items-center justify-between px-4 mb-6 text-gray-500 flex-nowrap"
             >
                 <span
                     v-if="isCreate"
@@ -24,18 +24,21 @@
                         >{{ item?.attributes?.name }}</span
                     ></span
                 >
-                <div class="flex items-center">
+                <!-- <div class="flex items-center">
                     <span class="mr-2 text-sm font-normal text-gray-700"
                         >Share with others</span
                     >
                     <a-switch v-model:checked="isShareable" size="small" />
-                </div>
+                </div> -->
             </div>
-            <div class="mb-6">
+            <div class="px-4 mb-4">
+                <span class="text-sm font-bold text-gray-700"
+                    >Collection name</span
+                >
                 <a-input
                     :ref="titleBarRef"
                     v-model:value="title"
-                    class="w-full text-gray-500 border-gray-300 rounded-lg placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
+                    class="w-full mt-1 text-gray-500 border-gray-300 rounded-lg placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
                     placeholder="Collection name"
                 >
                     <template #prefix>
@@ -77,22 +80,49 @@
                         </div>
                     </template>
                 </a-input>
-                <div class="mt-6">
+                <div class="mt-4">
+                    <span class="text-sm font-bold text-gray-700"
+                        >Collection description</span
+                    >
                     <a-textarea
                         v-model:value="description"
                         placeholder="Describe your collection"
                         style="min-height: 82px !important"
-                        class="w-full text-sm text-gray-500 border-gray-300 rounded-lg text-area-padding placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
+                        class="w-full mt-1 text-sm text-gray-500 border-gray-300 rounded-lg text-area-padding placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
                     />
                 </div>
+
+                <div class="mt-4">
+                    <span class="text-sm font-bold text-gray-700"
+                        >Collection type</span
+                    >
+                    <!-- {{ isShareable }} -->
+                    <div class="mt-2">
+                        <a-radio-group
+                            v-model:value="isShareable"
+                            name="radioGroup"
+                        >
+                            <a-radio value="false">
+                                <span class="text-sm text-gray-700"
+                                    >Private</span
+                                >
+                            </a-radio>
+                            <a-radio value="true" class="ml-8">
+                                <span class="text-sm text-gray-700"
+                                    >Shared</span
+                                >
+                            </a-radio>
+                        </a-radio-group>
+                    </div>
+                </div>
             </div>
-            <div class="" v-if="isShareable">
-                <span class="text-sm text-gray-700"
+            <div class="px-4" v-if="isShareable === 'true'">
+                <span class="text-sm font-bold text-gray-700"
                     >Add members and groups</span
                 >
 
-                <div class="flex items-center">
-                    <UserList
+                <div class="flex items-center mb-1.5">
+                    <!-- <UserList
                         user-list-header-class="min-w-full"
                         :user-list-style="{
                             maxHeight: '250px',
@@ -112,17 +142,17 @@
                         v-model:selectedGroupsData="
                             userDataDetail[selectedType].ownerGroups
                         "
-                    />
-                    <a-dropdown :trigger="['click']" placement="bottomRight">
+                    /> -->
+                    <a-dropdown :trigger="['click']" placement="bottomLeft">
                         <div
-                            class="flex items-center justify-center h-8 pl-1 mt-2 text-gray-700 border border-l-0 border-gray-300 rounded-lg rounded-l-none cursor-pointer"
-                            style="width: 104px"
+                            class="flex items-center justify-center h-8 mt-2 text-gray-700 border border-r-0 border-gray-300 rounded-lg rounded-r-none cursor-pointer"
+                            style="width: 133px !important"
                         >
-                            <span class="mr-1.5">
+                            <span class="mr-1.5 pl-1 text-sm">
                                 {{
                                     selectedType === 'view'
-                                        ? 'can view'
-                                        : 'can edit'
+                                        ? 'Can view'
+                                        : 'Can edit'
                                 }}
                             </span>
                             <AtlanIcon
@@ -136,12 +166,44 @@
                                 :show-remove="false"
                                 :handle-change="handleChange"
                                 v-model:selectedType="selectedType"
-                                permissionOptions="permissionOptions"
                             />
                         </template>
                     </a-dropdown>
+                    <a-dropdown
+                        :trigger="['click']"
+                        placement="bottomLeft"
+                        v-model:visible="userDropdown"
+                    >
+                        <div
+                            class="flex items-center w-full h-8 pl-4 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-l-none cursor-pointer"
+                            @click="showUserDropdown"
+                        >
+                            <AtlanIcon
+                                icon="Search"
+                                class="w-4 h-4 text-gray-500"
+                            />
+                            <span class="px-2 text-gray-500">
+                                Search users and groups
+                            </span>
+                        </div>
+
+                        <template #overlay>
+                            <div
+                                style="width: 300px"
+                                class="px-2 py-2 pt-4 bg-white rounded-lg shadow-lg"
+                            >
+                                <Owners
+                                    :showNone="false"
+                                    select-group-key="alias"
+                                    select-user-key="username"
+                                    v-model:modelValue="userData[selectedType]"
+                                    :disabledModalValue="userData[otherType]"
+                                />
+                            </div>
+                        </template>
+                    </a-dropdown>
                 </div>
-                <span class="mt-2 text-xs text-gray-500"
+                <span class="text-xs text-gray-500"
                     >{{
                         selectedType === 'view'
                             ? 'Can view and run all the queries, but not edit'
@@ -150,18 +212,19 @@
                 </span>
 
                 <div
-                    style="max-height: 250px"
-                    class=""
+                    style="max-height: 180px"
+                    class="mt-2 overflow-auto"
                     v-if="
-                        [
-                            ...userData['edit'].ownerUsers,
-                            ...userData['edit'].ownerGroups,
-                            ...userData['view'].ownerUsers,
-                            ...userData['view'].ownerGroups,
-                        ].length
+                        userData['edit']['ownerUsers'].length ||
+                        userData['edit']['ownerGroups'].length ||
+                        userData['view']['ownerUsers'].length ||
+                        userData['view']['ownerGroups'].length
                     "
                 >
-                    <a-tabs
+                    <UserItem v-model:userData="userData" />
+                    <!-- </template>
+                    </div> -->
+                    <!-- <a-tabs
                         v-model:activeKey="editors"
                         size="small"
                         :class="$style.tabBar"
@@ -171,17 +234,7 @@
                                 class="overflow-auto"
                                 style="max-height: 150px"
                             >
-                                <template
-                                    v-for="item in [
-                                        ...userData['edit'].ownerUsers,
-                                        ...userData['edit'].ownerGroups,
-                                    ]"
-                                >
-                                    <UserItem
-                                        :user="item"
-                                        permission="Editor"
-                                    />
-                                </template>
+                                
                             </div>
                         </a-tab-pane>
                         <a-tab-pane key="viewers" tab="Viewers">
@@ -202,10 +255,10 @@
                                 </template>
                             </div>
                         </a-tab-pane>
-                    </a-tabs>
+                    </a-tabs> -->
                 </div>
             </div>
-            <div class="flex items-center w-full mt-5">
+            <div class="flex items-center w-full px-4 mt-5">
                 <div
                     class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer"
                 >
@@ -268,6 +321,7 @@
     import UserList from './userList.vue'
     import PermissionType from './permissionType.vue'
     import UserItem from './userItem.vue'
+    import Owners from './owner.vue'
 
     const emojiIndex = new EmojiIndex(emojiData)
 
@@ -282,6 +336,7 @@
             UserList,
             PermissionType,
             UserItem,
+            Owners,
         },
         props: {
             showCollectionModal: {
@@ -321,7 +376,7 @@
                 isCreate.value ? null : item?.value?.attributes?.iconType
             )
 
-            const isShareable = ref(true)
+            const isShareable = ref('true')
             const popOverVisible = ref(false)
 
             const editors = ref({
@@ -361,16 +416,24 @@
                 },
             })
 
-            const userDataDetail = ref({
-                edit: {
-                    ownerGroups: [],
-                    ownerUsers: [],
-                },
-                view: {
-                    ownerGroups: [],
-                    ownerUsers: [],
-                },
-            })
+            // watch(
+            //     userData,
+            //     () => {
+            //         console.log('userdata: ', userData.value)
+            //     },
+            //     { immediate: true }
+            // )
+
+            // const userDataDetail = ref({
+            //     edit: {
+            //         ownerGroups: [],
+            //         ownerUsers: [],
+            //     },
+            //     view: {
+            //         ownerGroups: [],
+            //         ownerUsers: [],
+            //     },
+            // })
 
             const closeModal = () => {
                 emit('update:showCollectionModal', false)
@@ -459,19 +522,20 @@
             const updateCollectionData = () => {
                 console.log('item: ', item.value)
 
-                let ownersData = isShareable.value
-                    ? {
-                          ownerUsers: userData.value['edit'].ownerUsers,
-                          ownerGroups: userData.value['edit'].ownerGroups,
-                          viewerUsers: userData.value['view'].ownerUsers,
-                          viewerGroups: userData.value['view'].ownerGroups,
-                      }
-                    : {
-                          ownerUsers: [],
-                          ownerGroups: [],
-                          viewerUsers: [],
-                          viewerGroups: [],
-                      }
+                let ownersData =
+                    isShareable.value === 'true'
+                        ? {
+                              ownerUsers: userData.value['edit'].ownerUsers,
+                              ownerGroups: userData.value['edit'].ownerGroups,
+                              viewerUsers: userData.value['view'].ownerUsers,
+                              viewerGroups: userData.value['view'].ownerGroups,
+                          }
+                        : {
+                              ownerUsers: [],
+                              ownerGroups: [],
+                              viewerUsers: [],
+                              viewerGroups: [],
+                          }
 
                 const entity = {
                     typeName: 'QueryCollection',
@@ -515,13 +579,19 @@
             }
 
             const selectedType = ref('view')
+            const otherType = ref('edit')
 
             const handleChange = (item) => {
                 if (item !== 'remove') {
                     selectedType.value = item
+
+                    if (item === 'view') {
+                        otherType.value = 'edit'
+                    } else if (item === 'edit') {
+                        otherType.value = 'view'
+                    }
                     // console.log('users: ', {
                     //     userData: userData.value,
-                    //     userDataDetail: userDataDetail.value,
                     // })
                 } else {
                 }
@@ -540,6 +610,62 @@
                     description: 'Can view, run and edit all <br />queries',
                 },
             ])
+
+            const userDropdown = ref(false)
+            const showUserDropdown = () => {
+                userDropdown.value = true
+            }
+            const hideUserDropdown = () => {
+                userDropdown.value = true
+            }
+
+            const handleOwnerChange = () => {
+                // if (userData?.value?.edit?.ownerUsers) {
+                //     if (userData?.value?.edit?.ownerUsers?.length) {
+                //     } else {
+                //         userData.value.edit.ownerUsers = []
+                //     }
+                // } else {
+                //     userData.value.edit = {
+                //         ...userData.value.edit,
+                //         ownerUsers: [],
+                //     }
+                // }
+                // if (userData?.value?.edit?.ownerGroups) {
+                //     if (userData?.value?.edit?.ownerGroups?.length) {
+                //     } else {
+                //         userData.value.edit.ownerGroups = []
+                //     }
+                // } else {
+                //     userData.value.edit = {
+                //         ...userData.value.edit,
+                //         ownerGroups: [],
+                //     }
+                // }
+                // if (userData?.value?.view?.ownerUsers) {
+                //     if (userData?.value?.view?.ownerUsers?.length) {
+                //     } else {
+                //         userData.value.view.ownerUsers = []
+                //     }
+                // } else {
+                //     userData.value.view = {
+                //         ...userData.value.view,
+                //         ownerUsers: [],
+                //     }
+                // }
+                // if (userData?.value?.view?.ownerGroups) {
+                //     if (userData?.value?.view?.ownerGroups?.length) {
+                //     } else {
+                //         userData.value.view.ownerGroups = []
+                //     }
+                // } else {
+                //     userData.value.view = {
+                //         ...userData.value.view,
+                //         ownerGroups: [],
+                //     }
+                // }
+                // console.log('model value: ', userData.value)
+            }
 
             return {
                 closeModal,
@@ -562,8 +688,13 @@
                 handleChange,
                 selectedType,
                 userData,
-                userDataDetail,
+                // userDataDetail,
                 permissionOptions,
+                showUserDropdown,
+                userDropdown,
+                hideUserDropdown,
+                otherType,
+                handleOwnerChange,
             }
         },
     })

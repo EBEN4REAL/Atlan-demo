@@ -1,23 +1,31 @@
-import { computed, ref, ComputedRef, watch } from 'vue'
+import { computed, ref, ComputedRef, watch, Ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import { userInterface } from '~/types/users/user.interface'
 import { Users } from '~/services/service/users'
+import useUserData from '~/composables/user/useUserData'
 
-export default function useFacetUsers(sort?: string, columns?: string[], immediate = true) {
+export default function useFacetUsers(
+    config: {
+        sort?: string,
+        columns?: string[],
+        immediate?: true
+    } = { immediate: true }
+) {
     const params = ref(new URLSearchParams())
+
+    const queryText = ref('')
 
     const limit = 20
     let offset = 0
     params.value.append('limit', `${limit}`)
-    if (columns?.length) {
-        params.value.append('sort', sort ?? columns[0])
-        columns.forEach(c => {
+    if (config.columns?.length) {
+        params.value.append('sort', config.sort ?? config.columns[0])
+        config.columns.forEach((c) => {
             params.value.append('columns', c)
         })
-    }
-    else {
-        params.value.append('sort', sort ?? 'firstName')
+    } else {
+        params.value.append('sort', config.sort ?? 'firstName')
         params.value.append('columns', 'firstName')
         params.value.append('columns', 'lastName')
         params.value.append('columns', 'username')
@@ -28,10 +36,14 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
 
     const { data, mutate, isLoading, error, isReady } = Users.List(params, {
         asyncOptions: {
-            immediate,
+            immediate: config.immediate,
             resetOnExecute: false,
         },
     })
+
+    // myself
+    const { username, firstName, lastName, id } = useUserData()
+
 
     const loadMore = () => {
         offset += limit
@@ -42,17 +54,37 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
     const list: any = ref([])
     watch(data, () => {
         if (data?.value?.records) {
-            if (offset > 0)
-                list.value.push(...data.value.records)
+            if (offset > 0) list.value.push(...data.value.records)
             else list.value = [...data.value.records]
-        } else if (offset === 0)
+        } else
             list.value = []
     })
 
-    // const total: ComputedRef<number> = computed(() => data.value?.total_record)
-    const filterTotal = computed(() => data.value?.filter_record)
 
-    const total = computed(() => data.value?.total_record)
+
+    // final user list including myself
+    const userList = computed(() => {
+        if (queryText.value !== '') {
+            return [...list.value]
+        }
+        const tempList = list.value.filter(
+            (obj) => obj.username !== username
+        )
+        return [
+            {
+                username,
+                id,
+                firstName,
+                lastName: `${lastName} (me)`,
+            },
+            ...tempList,
+        ]
+    })
+
+    // const total: ComputedRef<number> = computed(() => data.value?.totalRecord)
+    const filterTotal = computed(() => data.value?.filterRecord)
+
+    const total = computed(() => data.value?.totalRecord)
 
     function setLimit(l = 20) {
         params.value.set('limit', `${l}`)
@@ -60,6 +92,9 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
 
     let debounce: any = null
     const handleSearch = (val: Event | string) => {
+        queryText.value = val as string
+        offset = 0
+        params.value.set('offset', `${offset}`)
         let value = ''
         if (typeof val !== 'string') {
             value = (<HTMLInputElement>val.target).value as string
@@ -88,6 +123,7 @@ export default function useFacetUsers(sort?: string, columns?: string[], immedia
     }
 
     return {
+        userList,
         loadMore,
         isLoading,
         error,

@@ -1,5 +1,5 @@
 <template>
-    <a-popover>
+    <a-popover :mouseEnterDelay="0.2" :mouseLeaveDelay="0.2">
         <slot></slot>
     </a-popover>
 </template>

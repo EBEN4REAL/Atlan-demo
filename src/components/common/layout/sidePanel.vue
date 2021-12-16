@@ -1,12 +1,6 @@
 <template>
     <div class="flex flex-col flex-grow h-full">
         <!-- purpose  -->
-        <div
-            v-if="page === ''"
-            class="flex items-center justify-between w-full px-3 py-3 border-b border-gray-200"
-        >
-            <UserPersonalAvatar> </UserPersonalAvatar>
-        </div>
 
         <div class="px-3">
             <router-link
@@ -74,14 +68,23 @@
                 </router-link>
             </template>
         </div>
-        <div class="flex items-center justify-between px-3 my-3">
-            <div class="flex items-center px-3 text-sm text-gray-500">
-                with 💙
-                <span class="ml-2">by</span>
+
+        <!-- <div
+            v-if="path === '/'"
+            class="flex items-center justify-between w-full px-3 border-t border-b border-gray-200"
+        >
+            <UserPersonalAvatar placement="topLeft" class="py-2">
+            </UserPersonalAvatar>
+        </div> -->
+        <div class="flex items-center justify-between px-3 my-2">
+            <div class="flex items-center text-xs text-gray-500">
+                with
+                <span class="ml-1">💙</span>
+                <span class="ml-1">by</span>
                 <!-- FIXME: What is this URL??? -->
                 <img
                     src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-                    class="w-auto h-3 ml-2 mb-0.5"
+                    class="w-auto h-3 ml-1 mb-0.5"
                 />
             </div>
             <p class="flex items-center text-xs text-gray-500">
@@ -92,7 +95,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { computed, defineComponent } from 'vue'
 
     import UserPersonalAvatar from '@/common/avatar/meLarge.vue'
     import useUserData from '~/composables/user/useUserData'
@@ -101,6 +104,7 @@
     import { workspaceList } from '~/constant/navigation/workspace'
     import { workspaceCentreList } from '~/constant/navigation/workspaceCentre'
     import whoami from '~/composables/user/whoami'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'HomeSidePanel',
@@ -114,6 +118,11 @@
             const { role } = whoami()
 
             const getVersion = process.env.npm_package_version
+            const route = useRoute()
+
+            const path = computed(() => {
+                return route.path
+            })
 
             function closeNavDrawer() {
                 emit('closeNavbar')
@@ -127,6 +136,7 @@
                 name,
                 getVersion,
                 map,
+                path,
             }
         },
     })

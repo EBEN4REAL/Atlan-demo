@@ -17,14 +17,10 @@ export default function useGroupsMembers(memberListParams: {
         mutate: getGroupMembersList,
         isValidating,
         isLoading,
-    } = Groups.getGroupMembers(
-        pV,
-        memberListParams.params,
-        {
-            revalidateOnFocus: false,
-            dedupingInterval: 1,
-        }
-    )
+    } = Groups.getGroupMembers(pV, memberListParams.params, {
+        revalidateOnFocus: false,
+        dedupingInterval: 1,
+    })
 
     watch(data, () => {
         if (memberListParams.params.offset > 0) {
@@ -41,8 +37,8 @@ export default function useGroupsMembers(memberListParams: {
     const memberList: ComputedRef<any> = computed(
         () => localMembersList.value || []
     )
-    const totalMembersCount = computed(() => data?.value?.total_record ?? 0)
-    const filteredMembersCount = computed(() => data?.value?.filter_record ?? 0)
+    const totalMembersCount = computed(() => data?.value?.totalRecord ?? 0)
+    const filteredMembersCount = computed(() => data?.value?.filterRecord ?? 0)
     return {
         memberList,
         totalMembersCount,

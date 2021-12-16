@@ -161,8 +161,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                    getFormattedUser(user)
-                )
+                      getFormattedUser(user)
+                  )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 
@@ -194,8 +194,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
     //     return []
     // })
 
-    const totalUserCount = computed(() => data?.value?.total_record ?? 0)
-    const filteredUserCount = computed(() => data?.value?.filter_record ?? 0)
+    const totalUserCount = computed(() => data?.value?.totalRecord ?? 0)
+    const filteredUserCount = computed(() => data?.value?.filterRecord ?? 0)
 
     const cancelRequest = () => {
         if (cancel) {

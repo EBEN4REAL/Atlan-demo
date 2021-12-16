@@ -12,7 +12,14 @@
             <div class="w-full px-3">
                 <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
-                        :checked="map[item[selectUserKey]]"
+                        :checked="
+                            map[item[selectUserKey]] ||
+                            disabledKeyMap[item[selectUserKey]]
+                        "
+                        :disabled="
+                            disabledKeyMap[item[selectUserKey]] &&
+                            disabledKeyMap[item[selectUserKey]] === true
+                        "
                         class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
                         @change="
                             (checked) =>
@@ -59,7 +66,6 @@
     import { defineComponent, watch, computed, ref, toRefs, Ref } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
         name: 'UsersFilter',
@@ -84,52 +90,58 @@
                 required: false,
                 default: () => 'DEFAULT_USERS',
             },
+            disabledKeys: {
+                type: Array,
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, disabledKeys } = useVModels(props, emit)
             const { selectUserKey, queryText } = toRefs(props)
             const localValue = ref(modelValue.value)
-            const map = ref({})
-            const updateMap = (localValue: Ref<any>) => {
-                map.value = {}
-                localValue.value.map((id) => {
-                    map.value[id] = true
+            // const map = ref({})
+            // const updateMap = (localValue: Ref<any>) => {
+            //     map.value = {}
+            //     localValue.value.map((id) => {
+            //         map.value[id] = true
+            //     })
+            // }
+            // updateMap(localValue)
+
+            const map = computed(() => {
+                let data = {}
+                modelValue?.value?.forEach((key) => {
+                    data[key] = true
                 })
-            }
-            updateMap(localValue)
+                return data
+            })
+
             const {
-                list,
+                userList,
                 handleSearch,
                 total,
                 filterTotal,
                 loadMore,
                 isLoading,
             } = useFacetUsers()
-            const { username, firstName, lastName, id } = useUserData()
             watch(
-                () => props.queryText,
+                () => queryText.value,
                 () => {
                     handleSearch(queryText.value)
                 }
             )
-            const userList = computed(() => {
-                if (queryText.value !== '') {
-                    return [...list.value]
-                }
-                const tempList = list.value.filter(
-                    (obj) => obj.username !== username
-                )
-                return [
-                    {
-                        username,
-                        id,
-                        firstName: firstName,
-                        lastName: lastName,
-                    },
-                    ...tempList,
-                ]
+
+            const disabledKeyMap = computed(() => {
+                let data = {}
+                disabledKeys?.value?.forEach((key) => {
+                    data[key] = true
+                })
+
+                // console.log('disabled keys: ', data)
+                return data
             })
+
             const fullName = (item) => {
                 if (item.firstName) {
                     return `${item.firstName} ${item.lastName || ''}`
@@ -151,13 +163,12 @@
                 map,
                 userList,
                 fullName,
-                username,
                 handleSearch,
                 total,
                 localValue,
                 filterTotal,
-                queryText,
                 handleChange,
+                disabledKeyMap,
             }
         },
     })

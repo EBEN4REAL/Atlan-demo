@@ -1,4 +1,4 @@
-import { computed, Ref, ref, watch } from "vue";
+import { computed, Ref, ref, watch } from 'vue'
 // Composables
 import {
     getRunList,
@@ -6,43 +6,40 @@ import {
 } from '~/composables/workflow/useWorkflowList'
 import { LiveRun, ArchivedRuns } from '~/types/workflow/runs.interface'
 
-
-
 const useRunList = (wf_name) => {
     const list: Ref<(ArchivedRuns | LiveRun)[]> = ref([])
-    const { liveList, error: liveError, isLoading: liveLoading, execute: executeLive, isReady: liveReady } = getRunList(wf_name)
-
-
+    const {
+        liveList,
+        error: liveError,
+        isLoading: liveLoading,
+        execute: executeLive,
+        isReady: liveReady,
+    } = getRunList(wf_name)
 
     // getArchivedRunList
     const {
         archivedList,
         error: archiveError,
         isLoading: archiveLoading,
-        filter_record: archiveFilterRecord,
+        filterRecord: archiveFilterRecord,
         loadMore,
         isReady: archiveReady,
-        execute: executeArchive
+        execute: executeArchive,
     } = getArchivedRunList(wf_name)
 
     const isLoadMore = computed(
         () => archiveFilterRecord.value > (archivedList.value?.length ?? 0)
     )
-    const isReady = computed(
-        () => archiveReady?.value && liveReady?.value
-    )
+    const isReady = computed(() => archiveReady?.value && liveReady?.value)
     const isLoading = computed(
         () => archiveLoading?.value || liveLoading?.value
     )
-    const error = computed(
-        () => liveError?.value || archiveError?.value
-    )
+    const error = computed(() => liveError?.value || archiveError?.value)
 
     const execute = (n) => {
         executeLive(n)
         executeArchive(n)
     }
-
 
     // watcher
     watch([liveList, archivedList], ([newX, newY]) => {
@@ -65,16 +62,14 @@ const useRunList = (wf_name) => {
                         started_at,
                         finished_at,
                         phase,
-                        workflow: {}
+                        workflow: {},
                     }
                     obj.workflow = { status, metadata, spec }
                     return obj
                 })
 
                 const orderedItems = mappedItems.sort(
-                    (a, b) =>
-                        new Date(b.finished_at) -
-                        new Date(a.finished_at)
+                    (a, b) => new Date(b.finished_at) - new Date(a.finished_at)
                 )
 
                 liveRunItems = orderedItems
@@ -82,24 +77,27 @@ const useRunList = (wf_name) => {
 
             if (newY?.length) {
                 const orderedRecords = newY.sort(
-                    (a, b) =>
-                        new Date(b.finished_at) -
-                        new Date(a.finished_at)
+                    (a, b) => new Date(b.finished_at) - new Date(a.finished_at)
                 )
 
                 archivedRunItems = orderedRecords
             }
 
             list.value = [...liveRunItems, ...archivedRunItems]
-
-
-
         }
     })
 
     return {
-        list, liveList, archivedList, loadMore, isLoadMore, execute, error, isLoading, isReady
+        list,
+        liveList,
+        archivedList,
+        loadMore,
+        isLoadMore,
+        execute,
+        error,
+        isLoading,
+        isReady,
     }
 }
 
-export default useRunList;
+export default useRunList

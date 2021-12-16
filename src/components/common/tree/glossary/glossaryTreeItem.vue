@@ -11,7 +11,10 @@
             >
                 <template #trigger>
                     <div class="flex items-center hover:underline text-primary">
-                        <AtlanIcon icon="Term" class="m-0 mr-2 align-text-bottom" />
+                        <AtlanIcon
+                            icon="Term"
+                            class="m-0 mr-1 align-text-bottom"
+                        />
                         <p class="p-0 m-0">Add Term</p>
                     </div>
                 </template>
@@ -26,7 +29,10 @@
             >
                 <template #trigger>
                     <div class="flex items-center hover:underline text-primary">
-                        <AtlanIcon icon="Category" class="m-0 mr-2 align-text-bottom" />
+                        <AtlanIcon
+                            icon="Category"
+                            class="m-0 mr-2 align-text-bottom"
+                        />
                         <p class="p-0 m-0">Add Category</p>
                     </div>
                 </template>
@@ -54,7 +60,7 @@
             v-else
             class="flex items-center justify-between w-full py-0 m-0 group"
         >
-            <div class="flex items-center w-10/12 py-0 pr-2">
+            <div class="flex items-center py-0 pr-2">
                 <div class="w-4 mr-1">
                     <AtlanIcon
                         :icon="
@@ -152,7 +158,7 @@
 
             const iconSize = computed(() => {
                 if (item.value.typeName === 'AtlasGlossary') {
-                    return 'height: 18px !important'
+                    return 'height: 16px !important'
                 }
 
                 return 'height: 16px !important'

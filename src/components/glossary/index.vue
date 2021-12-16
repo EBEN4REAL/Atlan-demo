@@ -6,7 +6,7 @@
     >
         <div
             v-if="!checkable"
-            class="flex items-center justify-between w-full px-4 py-3 border-b"
+            class="flex items-center justify-between w-full px-4 py-3 mb-2 border-b"
         >
             <GlossarySelect
                 v-model="selectedGlossaryQf"
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="flex px-4 my-2">
+        <div class="flex px-4">
             <SearchAdvanced
                 v-model="queryText"
                 :connectorName="facets?.hierarchy?.connectorName"
@@ -48,38 +48,20 @@
                 @change="handleSearchChange"
                 placeholder="Search terms & categories..."
             >
-                <template #filter>
-                    <a-popover
-                        class="sm:block md:hidden"
-                        placement="bottom"
-                        :trigger="['click']"
-                        :overlay-class-name="$style.filterPopover"
-                    >
-                        <template #content>
-                            <AssetFilters
-                                :key="dirtyTimestamp"
-                                v-model="facets"
-                                v-model:activeKey="activeKey"
-                                :filter-list="discoveryFilters"
-                                :type-name="postFacets.typeName"
-                                @change="handleFilterChange"
-                                @change-active-key="handleActiveKeyChange"
-                            ></AssetFilters
-                        ></template>
-                        <AtlanIcon icon="FilterFunnel" class="mr-1"></AtlanIcon>
-                    </a-popover>
+                <template v-if="showCollapseAll" #filter>
+                    <a-tooltip>
+                        <template #title>Collapse all </template>
+
+                        <atlan-icon
+                            v-if="!queryText"
+                            icon="TreeCollapseAll"
+                            class="h-4 mt-2 ml-0 outline-none cursor-pointer"
+                            @click="handleCollapse"
+                        >
+                        </atlan-icon>
+                    </a-tooltip>
                 </template>
             </SearchAdvanced>
-            <a-tooltip>
-                <template #title>Collapse all </template>
-                <atlan-icon
-                    v-if="!queryText"
-                    icon="TreeCollapseAll"
-                    class="h-4 mt-2 ml-2 cursor-pointer outline-none"
-                    @click="handleCollapse"
-                >
-                </atlan-icon>
-            </a-tooltip>
         </div>
 
         <div class="w-full px-4" v-if="queryText">
@@ -92,17 +74,17 @@
             >
             </AggregationTabs>
         </div>
-        <GlossaryTree
-            v-if="!queryText"
-            ref="glossaryTree"
-            :height="height"
-            @select="handlePreview"
-            :defaultGlossary="checkable ? '' : selectedGlossaryQf"
-            :checkable="checkable"
-            v-model:checked-guids="checkedGuids"
-            @check="onCheck"
-        ></GlossaryTree>
-
+        <div v-if="!queryText" class="mt-2">
+            <GlossaryTree
+                ref="glossaryTree"
+                :height="height"
+                @select="handlePreview"
+                :defaultGlossary="checkable ? '' : selectedGlossaryQf"
+                :checkable="checkable"
+                v-model:checked-guids="checkedGuids"
+                @check="onCheck"
+            ></GlossaryTree>
+        </div>
         <div
             v-if="isLoading && queryText"
             class="flex items-center justify-center flex-grow"
@@ -250,6 +232,10 @@
             const router = useRouter()
             const { getGlossaryByQF } = useGlossaryData()
             const searchBar = ref(null)
+            const glossaryTree = ref(null)
+            const showCollapseAll = computed(
+                () => glossaryTree.value?.expandedKeys?.length > 0
+            )
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -290,7 +276,7 @@
                 ...facets.value,
                 ...initialFilters.value,
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-                glossary: selectedGlossaryQf,
+                glossary: props.checkable ? '' : selectedGlossaryQf,
             }
 
             // Virtual List Height
@@ -393,7 +379,6 @@
                 glossaryStore.setActivePanel(activeKey.value)
             }
 
-            const glossaryTree = ref(null)
             const handleAddGTC = (asset) => {
                 if (asset) {
                     if (asset.typeName === 'AtlasGlossary') {
@@ -496,6 +481,7 @@
                 updateTreeNode,
                 searchBar,
                 onSearchItemCheck,
+                showCollapseAll,
             }
         },
     })
@@ -509,9 +495,9 @@
     .checkableTree {
         max-height: 364px;
         :global(.ant-tree-checkbox) {
-            @apply my-auto mr-2 mt-2;
+            @apply my-auto mr-1 mt-2;
             position: absolute;
-            right: 1.5rem;
+            right: 0.75rem;
             z-index: 99;
         }
     }

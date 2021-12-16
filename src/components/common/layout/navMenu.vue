@@ -12,7 +12,7 @@
             <router-link v-if="logoUrl && !logoNotFound" to="/">
                 <img
                     :src="logoUrl"
-                    class="w-auto h-8 cursor-pointer select-none"
+                    class="w-auto h-4 cursor-pointer select-none"
                     :alt="defaultLogo"
                     @error="onLogoNotFound"
                 />

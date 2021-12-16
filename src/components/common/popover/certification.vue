@@ -1,5 +1,5 @@
 <template>
-    <a-popover>
+    <a-popover placement="left">
         <template #content
             ><div classs="popover-container">
                 <div class="flex flex-col">
@@ -7,18 +7,11 @@
                         <component
                             :is="icon"
                             :key="selectedAsset.guid"
-                            class="
-                                inline-flex
-                                self-center
-                                w-auto
-                                h-4
-                                mr-1
-                                mb-0.5
-                            "
+                            class="inline-flex self-center w-auto h-4 mr-1 mb-0.5"
                         />
 
                         <span
-                            class="text-sm font-bold tracking-wide capitalize  text-gray"
+                            class="text-sm font-bold tracking-wide capitalize text-gray"
                             >{{
                                 certificateStatus(selectedAsset)?.toLowerCase()
                             }}</span

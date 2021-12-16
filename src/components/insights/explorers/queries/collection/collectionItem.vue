@@ -9,7 +9,7 @@
     >
         <div class="flex items-center overflow-x-hidden">
             <span class="w-4 h-4 -mt-0.5 mr-2.5">{{
-                item.attributes.icon
+                item?.attributes?.icon ? item?.attributes?.icon : '🗃'
             }}</span>
 
             <div class="truncate group-hover:text-primary" style="width: 90%">

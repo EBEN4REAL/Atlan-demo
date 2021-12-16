@@ -63,17 +63,21 @@
             <Users
                 v-if="componentType == 'users'"
                 ref="usersRef"
-                v-model="localValue.ownerUsers"
+                v-model="modelValue.ownerUsers"
+                v-model:disabledKeys="disabledModalValue.ownerUsers"
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
                 @change="handleChange"
             ></Users>
+
             <Groups
                 v-if="componentType == 'groups'"
                 ref="groupRef"
-                v-model="localValue.ownerGroups"
+                v-model="modelValue.ownerGroups"
+                v-model:disabledKeys="disabledModalValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
+                @change="handleChange"
             ></Groups>
         </div>
         <div v-if="showNone" class="px-4 pt-1">
@@ -85,7 +89,7 @@
                     :is="noStatus"
                     class="inline-flex self-center w-auto h-4 mb-1"
                 />
-                <span class="mb-0 text-xs text-gray-500"> No Owners </span>
+                <span class="mb-0 text-gray-500"> No Owners </span>
             </a-checkbox>
         </div>
     </div>
@@ -151,6 +155,11 @@
                 type: Boolean,
                 default: false,
             },
+            disabledModalValue: {
+                type: Object,
+                required: false,
+                default: () => ({}),
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -194,21 +203,21 @@
                 return `Search ${usersRef?.value?.filterTotal ?? ''} users`
             })
 
-            watch(localValue.value, (prev, cur) => {
-                if (!localValue.value.ownerUsers) {
-                    delete localValue.value.ownerUsers
-                } else if (localValue.value.ownerUsers?.length === 0) {
-                    delete localValue.value.ownerUsers
-                }
+            // watch(localValue.value, (prev, cur) => {
+            //     if (!localValue.value.ownerUsers) {
+            //         delete localValue.value.ownerUsers
+            //     } else if (localValue.value.ownerUsers?.length === 0) {
+            //         delete localValue.value.ownerUsers
+            //     }
 
-                if (!localValue.value.ownerGroups) {
-                    delete localValue.value.ownerGroups
-                } else if (localValue.value.ownerGroups?.length === 0) {
-                    delete localValue.value.ownerGroups
-                }
-                modelValue.value = localValue.value
-                emit('change', localValue.value)
-            })
+            //     if (!localValue.value.ownerGroups) {
+            //         delete localValue.value.ownerGroups
+            //     } else if (localValue.value.ownerGroups?.length === 0) {
+            //         delete localValue.value.ownerGroups
+            //     }
+            //     modelValue.value = localValue.value
+            //     emit('change', localValue.value)
+            // })
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)
             const { start } = useTimeoutFn(() => {
                 if (ownerSearchRef.value?.forceFocus) {
@@ -224,9 +233,9 @@
                 start()
             }
             const handleChange = () => {
-                modelValue.value = localValue.value
                 emit('change')
             }
+
             return {
                 groupRef,
                 usersRef,
@@ -244,6 +253,7 @@
                 ownerSearchRef,
                 forceFocus,
                 handleChange,
+                // handleUserChange,
             }
         },
     })

@@ -12,7 +12,14 @@
             <div class="w-full px-4">
                 <template v-for="item in list" :key="item[selectGroupKey]">
                     <a-checkbox
-                        :checked="map[item[selectGroupKey]]"
+                        :checked="
+                            map[item[selectGroupKey]] ||
+                            disabledKeyMap[item[selectGroupKey]]
+                        "
+                        :disabled="
+                            disabledKeyMap[item[selectGroupKey]] &&
+                            disabledKeyMap[item[selectGroupKey]] === true
+                        "
                         @change="
                             (checked) =>
                                 handleChange(checked, item[selectGroupKey])
@@ -91,22 +98,35 @@
                 required: false,
                 default: () => 'DEFAULT_USERS',
             },
+            disabledKeys: {
+                type: Array,
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, disabledKeys } = useVModels(props, emit)
             const { selectGroupKey } = toRefs(props)
             const localValue = ref(modelValue.value)
-            const map = ref({})
+            // const map = ref({})
 
-            const updateMap = (localValue: Ref<any>) => {
-                map.value = {}
-                localValue.value.map((id) => {
-                    map.value[id] = true
+            // const updateMap = (localValue: Ref<any>) => {
+            //     map.value = {}
+            //     localValue.value.map((id) => {
+            //         map.value[id] = true
+            //     })
+            //     console.log(map)
+            // }
+            // updateMap(localValue)
+
+            const map = computed(() => {
+                let data = {}
+                modelValue?.value?.forEach((key) => {
+                    data[key] = true
                 })
-                console.log(map)
-            }
-            updateMap(localValue)
+                return data
+            })
+
             const {
                 list,
                 handleSearch,
@@ -122,6 +142,16 @@
                     handleSearch(props.queryText)
                 }
             )
+
+            const disabledKeyMap = computed(() => {
+                let data = {}
+                disabledKeys?.value?.forEach((key) => {
+                    data[key] = true
+                })
+                // console.log('disabled keys grp: ', data)
+                return data
+            })
+
             const handleChange = (checked, id) => {
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -141,6 +171,7 @@
                 filterTotal,
                 isLoading,
                 loadMore,
+                disabledKeyMap,
             }
         },
     })

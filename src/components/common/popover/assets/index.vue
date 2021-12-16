@@ -1,5 +1,5 @@
 <template>
-    <a-popover title="">
+    <a-popover title="" placement="left">
         <template #content>
             <div class="relation-ship">
                 <div class="flex justify-between">
@@ -35,7 +35,7 @@
                             item.typeName?.toLowerCase() === 'column' &&
                             item.attributes?.dataType
                         "
-                        class="flex items-center px-1 text-gray-500 bg-gray-100 border border-gray-300 border-solid "
+                        class="flex items-center px-1 text-gray-500 bg-gray-100 border border-gray-300 border-solid"
                     >
                         <component
                             :is="dataTypeCategoryImage(item)"
@@ -64,7 +64,7 @@
                         class="text-xs text-gray-500"
                     >
                         <span
-                            class="mr-1 text-xs font-semibold tracking-tight text-gray-500 "
+                            class="mr-1 text-xs font-semibold tracking-tight text-gray-500"
                             >{{ rows }}</span
                         >Rows
                     </span>
@@ -77,7 +77,7 @@
                         class="text-xs text-gray-500"
                     >
                         <span
-                            class="text-xs font-semibold tracking-tight text-gray-500 "
+                            class="text-xs font-semibold tracking-tight text-gray-500"
                             >{{ cols }}</span
                         >
                         Cols
@@ -103,7 +103,7 @@
                             }`"
                         />
                         <div
-                            class="max-w-full text-xs tracking-tight text-gray-500 break-all "
+                            class="max-w-full text-xs tracking-tight text-gray-500 break-all"
                         >
                             {{ table }}
                         </div>

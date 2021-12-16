@@ -268,14 +268,14 @@
 <style lang="less" module>
     .glossaryTree {
         :global(.ant-tree-switcher) {
-            margin-right: -3px !important;
+            margin-right: -1px !important;
         }
         :global(.ant-tree-switcher_open) {
             transform: rotate(90deg);
         }
         :global(.ant-tree-treenode) {
             padding-bottom: 0px !important;
-            @apply hover:bg-primary-light rounded !important;
+            @apply hover:bg-primary-light rounded mt-1 !important;
         }
         :global(.ant-tree-title) {
             @apply flex;

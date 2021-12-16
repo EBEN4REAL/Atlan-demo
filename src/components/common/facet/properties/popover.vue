@@ -1,5 +1,8 @@
 <template>
-    <a-popover overlay-class-name="propertiesPopover">
+    <a-popover
+        overlay-class-name="propertiesPopover"
+        :destroyTooltipOnHide="true"
+    >
         <template #title>
             <div class="flex items-center justify-between gap-x-4">
                 <div class="flex flex-col">

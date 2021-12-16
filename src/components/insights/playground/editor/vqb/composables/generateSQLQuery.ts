@@ -131,7 +131,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
                     if (subpanel?.filter?.name === 'between') {
-                        if (subpanel?.filter?.value > 0) {
+                        if (subpanel?.filter?.value?.length > 0) {
                             const firstVal = getValueStringFromType(
                                 subpanel,
                                 subpanel?.filter?.value[0] ?? ''

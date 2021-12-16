@@ -28,7 +28,6 @@ export function useFilter() {
         does_not_exists: 'IS NULL',
         on_or_after: '>=',
         on_or_before: '<=',
-        between_and_includes: 'BETWEEN',
         is_not_one_of: 'NOT IN',
         is_not_of: 'IN',
         start_like: 'LIKE',
@@ -93,17 +92,17 @@ export function useFilter() {
                         name: 'Is not one of',
                     },
                     {
-                        key: 'is_not_null',
+                        key: 'exists',
                         type: 'none',
                         name: 'Exists',
                     },
                     {
-                        key: 'is_null',
+                        key: 'does_not_exists',
                         type: 'none',
                         name: 'Does not exists',
                     },
                     {
-                        key: 'greater_than',
+                        key: 'after',
                         type: 'input',
                         name: 'Greater than',
                     },
@@ -113,7 +112,7 @@ export function useFilter() {
                         name: 'Greater than equal to',
                     },
                     {
-                        key: 'less_than',
+                        key: 'before',
                         type: 'input',
                         name: 'Smaller than',
                     },
@@ -123,7 +122,7 @@ export function useFilter() {
                         name: 'Smaller than equal to',
                     },
                     {
-                        key: 'between_and_includes',
+                        key: 'between',
                         type: 'range_input',
                         name: 'Between & including',
                     },

@@ -123,11 +123,12 @@
                     :isLoading="isValidating"
                     @loadMore="handleLoadMore"
                 >
-                    <template v-slot:default="{ item }">
+                    <template v-slot:default="{ item, itemIndex }">
                         <AssetItem
                             :item="item"
+                            :itemIndex="itemIndex"
                             :selectedGuid="selectedAsset.guid"
-                            @preview="handlePreview"
+                            @preview="handleClickAssetItem"
                             @updateDrawer="updateCurrentList"
                             :preference="preference"
                             :show-check-box="showCheckBox"
@@ -360,6 +361,14 @@
                 useAddEvent('discovery', 'search', 'changed')
             }, 600)
 
+            const handleClickAssetItem = (...args) => {
+                console.log('handleClickAssetItem', ...args)
+                useAddEvent('discovery', 'asset_card', 'clicked', {
+                    click_index: args[1],
+                })
+                handlePreview(...args)
+            }
+
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 sendSearchEvent()
@@ -528,6 +537,7 @@
                 searchDirtyTimestamp,
                 updateBulkSelectedAssets,
                 bulkSelectedAssets,
+                handleClickAssetItem,
             }
         },
     })

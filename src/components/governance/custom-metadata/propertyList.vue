@@ -26,7 +26,10 @@
                 >
                     <div class="flex items-center">
                         <div style="width: 44px" class="text-center">
-                            <AtlanIcon class="h-4 inlline" icon="MoveItem" />
+                            <AtlanIcon
+                                class="inline h-4 grap"
+                                icon="MoveItem"
+                            />
                         </div>
                         <!-- <div style="width: 44px">
                             {{ index + 1 }}
@@ -361,3 +364,9 @@
         },
     })
 </script>
+
+<style>
+    .grap {
+        cursor: grab;
+    }
+</style>

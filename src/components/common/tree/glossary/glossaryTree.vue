@@ -17,7 +17,7 @@
             <template #trigger>
                 <div class="flex-grow">
                     <EmptyView
-                        empty-screen="EmptyDiscover"
+                        empty-screen="EmptyGlossary"
                         desc="No terms found"
                         button-text="Add Term"
                     ></EmptyView>

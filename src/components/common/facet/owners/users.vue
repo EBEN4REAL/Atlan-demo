@@ -101,14 +101,6 @@
             const { modelValue, disabledKeys } = useVModels(props, emit)
             const { selectUserKey, queryText } = toRefs(props)
             const localValue = ref(modelValue.value)
-            // const map = ref({})
-            // const updateMap = (localValue: Ref<any>) => {
-            //     map.value = {}
-            //     localValue.value.map((id) => {
-            //         map.value[id] = true
-            //     })
-            // }
-            // updateMap(localValue)
 
             const map = computed(() => {
                 let data = {}

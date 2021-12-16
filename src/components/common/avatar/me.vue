@@ -40,8 +40,8 @@
                 </a-menu-item>
                 <a-menu-item>
                     <a href="javascript:;">Keyboard Shortcuts</a>
-                </a-menu-item>
-                <a-menu-divider /> -->
+                </a-menu-item> -->
+                <a-menu-divider />
                 <a-menu-item>
                     <a class="text-red-500" @click.stop="handleLogout"
                         >Logout</a

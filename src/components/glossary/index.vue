@@ -74,7 +74,10 @@
             >
             </AggregationTabs>
         </div>
-        <div v-if="!queryText" class="mt-2">
+        <div
+            v-if="!queryText"
+            class="flex flex-col items-stretch flex-1 h-full mt-2"
+        >
             <GlossaryTree
                 ref="glossaryTree"
                 :height="height"

@@ -40,7 +40,7 @@
         onUnmounted,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
-    import dayjs, { Dayjs } from 'dayjs'
+    import dayjs from 'dayjs'
 
     export default defineComponent({
         name: 'Sub panel',

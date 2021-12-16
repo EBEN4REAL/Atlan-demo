@@ -102,7 +102,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
             if (index == 0) res = ''
 
             res += `"${subpanel?.column?.label}"`
-            res += `${nameMap[subpanel?.filter?.name]}`
+            res += `${nameMap[subpanel?.filter?.name]} `
 
             switch (subpanel?.filter?.type) {
                 case 'range_input': {
@@ -110,21 +110,21 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                         if (subpanel?.filter?.value > 0) {
                             const firstVal = getValueStringFromType(
                                 subpanel,
-                                subpanel?.filter?.value[0]
+                                subpanel?.filter?.value[0] ?? ''
                             )
                             const secondVal = getValueStringFromType(
                                 subpanel,
-                                subpanel?.filter?.value[1]
+                                subpanel?.filter?.value[1] ?? ''
                             )
-                            res += ` ${firstVal} AND ${secondVal}`
+                            res += `${firstVal} AND ${secondVal}`
                         }
                     }
                     break
                 }
                 case 'input': {
-                    res += ` ${getValueStringFromType(
+                    res += `${getValueStringFromType(
                         subpanel,
-                        subpanel?.filter?.value
+                        subpanel?.filter?.value ?? ''
                     )}`
                     break
                 }

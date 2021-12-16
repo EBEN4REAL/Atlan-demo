@@ -156,6 +156,7 @@
                     JSON.stringify(toRaw(subpanels.value[index]))
                 )
                 copySubPanel.column = val
+                copySubPanel.filter.value = undefined
                 // copySubPanel.filter = {}
 
                 subpanels.value[index] = copySubPanel

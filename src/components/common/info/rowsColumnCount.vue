@@ -6,11 +6,11 @@
                     item.typeName?.toLowerCase()
                 )
             "
-            class="text-gray-500"
-            ><span class="font-semibold tracking-tight text-gray-500"
+            class="text-gray-500 mr-2"
+            ><span class="font-semibold tracking-tight text-gray-500 "
                 >{{ rowCount(item, false) }}
             </span>
-            Rows</span
+             Rows</span
         >
         <template #title>
             <span v-if="sizeBytes(item, false)" class="font-semibold"
@@ -24,7 +24,7 @@
         <span class="font-semibold tracking-tight text-gray-500">{{
             columnCount(item, false)
         }}</span>
-        Cols</span
+         Cols</span
     >
 </template>
 

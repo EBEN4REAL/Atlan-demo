@@ -29,18 +29,30 @@
             <a-dropdown placement="bottomRight">
                 <template #overlay>
                     <a-menu>
-                        <a-menu-item>
-                            <a href="/workflows/setup">New Workflow</a>
-                        </a-menu-item>
-                        <a-menu-item>
-                            <a href="/insights">New Query</a>
-                        </a-menu-item>
-                        <a-menu-item>
-                            <a href="/governance/personas">New Persona</a>
-                        </a-menu-item>
-                        <a-menu-item>
-                            <a href="/governance/purposes">New Purpose</a>
-                        </a-menu-item>
+                        <div class="py-2">
+                            <!-- had to replace a-menu-item with divs because v-auth wasn't working with it-->
+                            <div
+                                v-auth="[map.CREATE_WORKFLOW]"
+                                class="menu-item"
+                            >
+                                <a href="/workflows/setup">New Workflow</a>
+                            </div>
+                            <div class="menu-item">
+                                <a href="/insights">New Query</a>
+                            </div>
+                            <div
+                                class="menu-item"
+                                v-auth="[map.CREATE_PERSONA]"
+                            >
+                                <a href="/governance/personas">New Persona</a>
+                            </div>
+                            <div
+                                class="menu-item"
+                                v-auth="[map.CREATE_PURPOSE]"
+                            >
+                                <a href="/governance/purposes">New Purpose</a>
+                            </div>
+                        </div>
                     </a-menu></template
                 >
 
@@ -72,6 +84,7 @@
     import defaultLogo from '~/assets/images/your_company.png'
     import AtlanIcon from '../icon/atlanIcon.vue'
     import AssetMenu from '../assets/profile/header/assetMenu.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -126,9 +139,22 @@
                 handleNewPackage,
                 onLogoNotFound,
                 logoNotFound,
+                map,
             }
         },
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .menu-item {
+        @apply py-1;
+        @apply px-3;
+        cursor: pointer;
+    }
+    .menu-item:hover {
+        a {
+            @apply text-gray-700;
+        }
+        @apply bg-gray-100;
+    }
+</style>

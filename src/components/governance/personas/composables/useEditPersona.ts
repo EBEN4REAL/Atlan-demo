@@ -139,6 +139,10 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
     } else {
         delete dataPolicy?.type
     }
+    if(dataPolicy.actions.includes('entity-update-classification')){
+        dataPolicy.actions.push('entity-add-classification')
+        dataPolicy.actions.push('entity-remove-classification')
+    }
     if (type === 'meta') {
         if (dataPolicy.id) {
             tempPersona.metadataPolicies = tempPersona.metadataPolicies.map(
@@ -154,7 +158,16 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
         }
     }
     if (type === 'data') {
-        tempPersona.dataPolicies.push(dataPolicy)
+        if(dataPolicy.id){
+            tempPersona.dataPolicies = tempPersona.dataPolicies.map((el) => {
+                if(el.id === dataPolicy.id){
+                    return dataPolicy
+                }
+                    return el
+            })
+        }else {
+            tempPersona.dataPolicies.push(dataPolicy)
+        }
     }
     return savePersona(tempPersona)
 }

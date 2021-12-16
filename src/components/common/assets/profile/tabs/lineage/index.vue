@@ -64,6 +64,9 @@
     import LineageGraph from './lineageGraph.vue'
     import EmptyState from '~/components/common/empty/index.vue'
 
+    // Store
+    import useAssetStore from '~/store/asset'
+
     // Utils
     import useLineageService from '~/services/meta/lineage/lineage_service'
 
@@ -119,15 +122,18 @@
 
                     if (!data.value.relations.length) {
                         lineage.value = { ...data.value }
+                        const assetStore = useAssetStore()
+                        baseEntity.value = assetStore.getSelectedAsset
                         lineage.value.guidEntityMap = {
                             [lineage.value.baseEntityGuid]: baseEntity.value,
                         }
-                    } else lineage.value = data.value
-
-                    baseEntity.value =
-                        lineage.value.guidEntityMap[
-                            lineage.value.baseEntityGuid
-                        ]
+                    } else {
+                        lineage.value = data.value
+                        baseEntity.value =
+                            lineage.value.guidEntityMap[
+                                lineage.value.baseEntityGuid
+                            ]
+                    }
 
                     if (
                         selectedAssetGuid.value &&

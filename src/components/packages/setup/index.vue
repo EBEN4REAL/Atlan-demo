@@ -67,9 +67,13 @@
                     class="flex gap-x-2"
                     v-if="currentStep === steps.length - 1"
                 >
-                    <a-button class="px-6" @click="handleSubmit(false)"
+                    <a-button
+                        class="px-6"
+                        @click="handleSubmit(false)"
+                        :type="allowSchedule ? 'default' : 'primary'"
                         >Run</a-button
                     >
+
                     <a-popconfirm
                         v-if="allowSchedule"
                         ok-text="Confirm"
@@ -88,7 +92,10 @@
                         <template #title>
                             <Schedule class="mb-3" v-model="cron"></Schedule>
                         </template>
-                        <a-button type="primary" class="px-6"
+                        <a-button
+                            type="primary"
+                            class="px-6"
+                            v-if="allowSchedule"
                             >Schedule & Run
                             <AtlanIcon
                                 icon="ChevronRight"
@@ -264,15 +271,11 @@
 
             const allowSchedule = computed(() => {
                 if (
-                    workflowTemplate?.metadata?.annotations[
-                        'orchestration.atlan.com/allowSchedule '
-                    ]
+                    localTemplate.value?.metadata?.annotations[
+                        'orchestration.atlan.com/allowSchedule'
+                    ] === 'false'
                 ) {
-                    return (
-                        workflowTemplate?.metadata?.annotations[
-                            'orchestration.atlan.com/allowSchedule '
-                        ] === 'true'
-                    )
+                    return false
                 }
                 return true
             })

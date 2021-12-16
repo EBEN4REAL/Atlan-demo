@@ -129,6 +129,7 @@
                 @apply border-0  rounded-none  !important;
             }
         }
+
         &:global(.ant-select-focused) {
             @apply border-0  rounded-none  !important;
             :global(.ant-select-selector) {

@@ -6,7 +6,7 @@
             :table-layout="'fixed'"
             :pagination="false"
             :class="$style.table_custom"
-            :data-source="accessLogsList"
+            :data-source="filteredAccessLogsList"
             :columns="columns"
             :row-key="(log) => log._id"
             :loading="isLoading"
@@ -152,7 +152,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, watch, toRefs } from 'vue'
+    import { defineComponent, ref, Ref, watch, toRefs, computed } from 'vue'
     import dayjs from 'dayjs'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -226,6 +226,18 @@
                 setUserUniqueAttribute(username, 'username')
                 openPreview()
             }
+
+            // If you want to show empty access logs too, change this logic.
+            const { accessLogsList, assetMetaMap } = toRefs(props)
+            const filteredAccessLogsList = computed(() =>
+                accessLogsList.value?.filter((log) =>
+                    log &&
+                    log._source &&
+                    log._source.resourceQF &&
+                    assetMetaMap.value[log._source.resourceQF] &&
+                    Object.keys(assetMetaMap.value[log._source.resourceQF]).length > 0
+                )
+            )
 
             const getQueryStatusClass = (status: string) => {
                 if (status.toLowerCase() === 'success') return 'bg-green-500'
@@ -307,6 +319,7 @@
                 classifications,
                 assetURL,
                 getProfilePath,
+                filteredAccessLogsList
             }
         },
     })

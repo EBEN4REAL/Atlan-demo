@@ -40,16 +40,17 @@
                         />
                     </div>
                     <div
-                        class="flex justify-end cursor-pointer text-primary hover:underline"
+                        class="flex items-center justify-center py-0.5 cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                     >
                         load more
+                        <atlan-icon icon="ArrowDown" />
                     </div>
                 </template>
             </div>
         </div>
         <p class="px-4 mt-1 text-xs text-gray-500">
-            showing {{ userList.length }} of {{ total }} users
+            showing {{ userList.length }} of {{ filterTotal }} users
         </p>
     </div>
 </template>

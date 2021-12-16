@@ -50,7 +50,7 @@
 
                 <div class="w-full overflow-y-auto">
                     <a-modal
-                        :visible="isCmndKVisible"
+                        v-model:visible="isCmndKVisible"
                         width="800px"
                         class="rounded-md"
                         :destroy-on-close="true"
@@ -58,7 +58,7 @@
                         :class="$style.modalStyles"
                         :closable="false"
                         :footer="null"
-                        :mask="false"
+                        :mask="true"
                     >
                         <CmndK
                             :is-cmnd-k-visible="isCmndKVisible"

@@ -12,12 +12,12 @@
                     class="ml-auto"
                     data-test-id="toggle-switch"
                     style="width: 40px !important"
-                    :class="persona.enabled ? 'btn-checked' : 'btn-unchecked'"
-                    v-model:checked="persona.enabled"
+                    :class="purpose.enabled ? 'btn-checked' : 'btn-unchecked'"
+                    v-model:checked="purpose.enabled"
                     :loading="enableDisableLoading"
-                    @change="handleEnableDisablePersona"
+                    @change="handleEnableDisablePurpose"
                 />
-                <span class="ml-2 text-sm text-gray">Enable Persona</span>
+                <span class="ml-2 text-sm text-gray">Enable Purpose</span>
             </div>
         </div>
         <div class="flex mb-5">
@@ -25,18 +25,18 @@
                 <div class="mb-1 text-gray-500">Created By</div>
                 <div>
                     <PopOverUser
-                        :item="persona.createdBy"
+                        :item="purpose.createdBy"
                         class="flex items-center"
                     >
                         <Avatar
-                            :image-url="imageUrl(persona.createdBy)"
+                            :image-url="imageUrl(purpose.createdBy)"
                             :allow-upload="false"
-                            :avatar-name="persona.createdBy"
+                            :avatar-name="purpose.createdBy"
                             :avatar-size="16"
                             :avatar-shape="'circle'"
                             class="mr-1"
                         />
-                        <div>{{ persona.createdBy }}</div>
+                        <div>{{ purpose.createdBy }}</div>
                     </PopOverUser>
                 </div>
             </div>
@@ -44,17 +44,17 @@
                 <div class="mb-1 text-gray-500">Created</div>
                 <a-tooltip
                     class="cursor-default"
-                    :title="timeStamp(persona.createdAt, true)"
+                    :title="timeStamp(purpose.createdAt, true)"
                     placement="bottom"
-                    >{{ timeStamp(persona.createdAt) }}</a-tooltip
+                    >{{ timeStamp(purpose.createdAt) }}</a-tooltip
                 >
             </div>
             <div class="mr-3 info-widget" data-test-id="tab-policies">
                 <div class="mb-1 text-gray-500">Policies</div>
                 <div
                     v-if="
-                        persona.dataPolicies?.length === 0 &&
-                        persona.metadataPolicies?.length === 0
+                        purpose.dataPolicies?.length === 0 &&
+                        purpose.metadataPolicies?.length === 0
                     "
                     class="cursor-pointer text-primary"
                     @click="$emit('setActiveTab', 'policies')"
@@ -68,68 +68,45 @@
                     @click="$emit('setActiveTab', 'policies')"
                 >
                     <div>
-                        {{ persona.metadataPolicies?.length ?? 0 }}
-                        Metadata, {{ persona.dataPolicies?.length ?? 0 }} Data
-                    </div>
-                </div>
-            </div>
-            <div class="mr-3 info-widget" data-test-id="tab-users">
-                <div class="mb-1 text-gray-500">Users and Groups</div>
-                <div
-                    class="cursor-pointer text-primary"
-                    @click="$emit('setActiveTab', 'users')"
-                    v-if="
-                        persona.users?.length === 0 &&
-                        persona.groups?.length === 0
-                    "
-                >
-                    <AtlanIcon icon="Add" class="mb-0.5 mr-1"></AtlanIcon>
-                    Add users and groups
-                </div>
-                <div
-                    v-else
-                    class="cursor-pointer text-primary"
-                    @click="$emit('setActiveTab', 'users')"
-                >
-                    <div>
-                        {{ persona.users?.length ?? 0 }}
-                        Users, {{ persona.groups?.length ?? 0 }} Groups
+                        {{ purpose.metadataPolicies?.length ?? 0 }}
+                        Metadata, {{ purpose.dataPolicies?.length ?? 0 }} Data
                     </div>
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-5">
             <div class="mb-1 text-gray-500">Description</div>
             <div>
                 <div data-test-id="header-description">
-                    {{ persona.description || '-' }}
+                    {{ purpose.description || '-' }}
                 </div>
             </div>
         </div>
+        <slot name="classifications"></slot>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs, h } from 'vue'
-    import { enablePersona } from '../composables/useEditPersona'
+    import { enablePurpose } from '../composables/useEditPurpose'
     import Avatar from '~/components/common/avatar/index.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
-    import { IPersona } from '~/types/accessPolicies/personas'
+    import { IPurpose } from '~/types/accessPolicies/purposes'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
     import { message, Modal } from 'ant-design-vue'
     export default defineComponent({
         components: { Avatar, PopOverUser },
-        name: 'PersonaSummary',
+        name: 'PurposeSummary',
         props: {
-            persona: {
-                type: Object as PropType<IPersona>,
+            purpose: {
+                type: Object as PropType<IPurpose>,
                 required: true,
             },
         },
         emits: ['setActiveTab'],
         setup(props) {
-            const { persona } = toRefs(props)
+            const { purpose } = toRefs(props)
             const enableDisableLoading = ref(false)
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
@@ -141,21 +118,21 @@
                 }
                 return ''
             }
-            const enableDisablePersona = async (val) => {
+            const enableDisablePurpose = async (val) => {
                 const messageKey = Date.now()
                 enableDisableLoading.value = true
                 message.loading({
-                    content: `${val ? 'Enabling' : 'Disabling'} persona ${
-                        persona.value.displayName
+                    content: `${val ? 'Enabling' : 'Disabling'} purpose ${
+                        purpose.value.displayName
                     }`,
                     duration: 0,
                     key: messageKey,
                 })
                 try {
-                    await enablePersona(persona.value.id, val)
+                    await enablePurpose(purpose.value.id, val)
                     message.success({
-                        content: `${val ? 'Enabled' : 'Disabled'} persona ${
-                            persona.value.displayName
+                        content: `${val ? 'Enabled' : 'Disabled'} purpose ${
+                            purpose.value.displayName
                         }`,
                         duration: 1.5,
                         key: messageKey,
@@ -165,7 +142,7 @@
                     message.error({
                         content: `Failed to ${
                             val ? 'enable' : 'disable'
-                        } persona ${persona.value.displayName}`,
+                        } purpose ${purpose.value.displayName}`,
                         duration: 1.5,
                         key,
                     })
@@ -173,22 +150,22 @@
                 }
             }
 
-            const handleEnableDisablePersona = (val) => {
-                if (val) enableDisablePersona(val)
+            const handleEnableDisablePurpose = (val) => {
+                if (val) enableDisablePurpose(val)
                 else
                     Modal.confirm({
-                        title: 'Disable persona',
-                        class: 'disable-persona-modal',
+                        title: 'Disable purpose',
+                        class: 'disable-purpose-modal',
                         content: () => {
                             return h('div', [
-                                'Are you sure you want to disable persona',
+                                'Are you sure you want to disable purpose',
                                 h('span', [' ']),
                                 h(
                                     'span',
                                     {
                                         class: ['font-bold'],
                                     },
-                                    [`${persona.value.displayName}`]
+                                    [`${purpose.value.displayName}`]
                                 ),
                                 h('span', '?'),
                             ])
@@ -201,21 +178,21 @@
                         okText: 'Disable',
                         cancelText: 'Cancel',
                         async onOk() {
-                            enableDisablePersona(val)
+                            enableDisablePurpose(val)
                         },
                     })
             }
             return {
                 imageUrl,
                 timeStamp,
-                handleEnableDisablePersona,
+                handleEnableDisablePurpose,
                 enableDisableLoading,
             }
         },
     })
 </script>
 <style lang="less">
-    .disable-persona-modal {
+    .disable-purpose-modal {
         .ant-modal-confirm-body-wrapper {
             @apply p-5;
         }

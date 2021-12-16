@@ -112,6 +112,7 @@
 
             const handleColumnChange = (val, index) => {
                 console.log('col change: ', val)
+                console.log('column Subapanel', subpanels.value[0])
 
                 const copySubPanel = JSON.parse(
                     JSON.stringify(toRaw(subpanels.value[index]))

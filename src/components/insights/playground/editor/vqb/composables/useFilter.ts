@@ -82,15 +82,16 @@ export function useFilter() {
                         name: 'Does not equal',
                     },
                     {
-                        key: 'is_one_of',
-                        type: 'multi_input',
-                        name: 'Is one of',
+                        key: 'after',
+                        type: 'input',
+                        name: 'Greater than',
                     },
                     {
-                        key: 'is_not_one_of',
-                        type: 'multi_input',
-                        name: 'Is not one of',
+                        key: 'before',
+                        type: 'input',
+                        name: 'Smaller than',
                     },
+
                     {
                         key: 'exists',
                         type: 'none',
@@ -101,30 +102,21 @@ export function useFilter() {
                         type: 'none',
                         name: 'Does not exists',
                     },
-                    {
-                        key: 'after',
-                        type: 'input',
-                        name: 'Greater than',
-                    },
-                    {
-                        key: 'on_or_after',
-                        type: 'input',
-                        name: 'Greater than equal to',
-                    },
-                    {
-                        key: 'before',
-                        type: 'input',
-                        name: 'Smaller than',
-                    },
-                    {
-                        key: 'on_or_before',
-                        type: 'input',
-                        name: 'Smaller than equal to',
-                    },
+
                     {
                         key: 'between',
                         type: 'range_input',
                         name: 'Between & including',
+                    },
+                    {
+                        key: 'is_one_of',
+                        type: 'multi_input',
+                        name: 'Is one of',
+                    },
+                    {
+                        key: 'is_not_one_of',
+                        type: 'multi_input',
+                        name: 'Is not one of',
                     },
                 ],
             },
@@ -143,14 +135,14 @@ export function useFilter() {
                         name: 'Not equal to',
                     },
                     {
-                        key: 'is_one_of',
-                        type: 'multi_input',
-                        name: 'Is one of',
+                        key: 'contains',
+                        type: 'input',
+                        name: 'Contains',
                     },
                     {
-                        key: 'is_not_one_of',
-                        type: 'multi_input',
-                        name: 'Is not one of',
+                        key: 'not_contains',
+                        type: 'input',
+                        name: 'Does not contains',
                     },
                     {
                         key: 'exists',
@@ -171,16 +163,6 @@ export function useFilter() {
                         key: 'end_like',
                         type: 'input',
                         name: 'Ends with',
-                    },
-                    {
-                        key: 'contains',
-                        type: 'input',
-                        name: 'Contains',
-                    },
-                    {
-                        key: 'not_contains',
-                        type: 'input',
-                        name: 'Does not contains',
                     },
                 ],
             },
@@ -208,41 +190,23 @@ export function useFilter() {
                         type: 'input',
                         name: 'After',
                     },
-                    {
-                        key: 'on_or_before',
-                        type: 'input',
-                        name: 'On or before',
-                    },
-                    {
-                        key: 'on_or_after',
-                        type: 'input',
-                        name: 'On or after',
-                    },
-                    {
-                        key: 'exists',
-                        type: 'none',
-                        name: 'Exists',
-                    },
+
                     {
                         key: 'between',
                         type: 'range_input',
                         name: 'Between',
                     },
                     {
+                        key: 'exists',
+                        type: 'none',
+                        name: 'Exists',
+                    },
+
+                    {
                         key: 'does_not_exists',
                         type: 'none',
                         name: 'Does not exists',
                     },
-                    // {
-                    //     key: 'contains',
-                    //     type: 'input',
-                    //     name: 'Contains',
-                    // },
-                    // {
-                    //     key: 'not_contains',
-                    //     type: 'input',
-                    //     name: 'Does not contains',
-                    // },
                 ],
             },
         ]

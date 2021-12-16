@@ -6,22 +6,10 @@
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
-        :open="open"
         :filter-option="() => true"
         @change="handleChange"
-        @search="
-            (v) => {
-                open = true
-                handleSearch(v)
-            }
-        "
-        @click="open = !open"
-        @select="open = false"
-        @blur="
-            () => {
-                if (!isLoading) open = false
-            }
-        "
+        @click="mutate"
+        @search="handleSearch"
     >
         <template #option="item">
             <div class="flex">
@@ -60,6 +48,7 @@
                         v-if="userList?.length < filterTotal"
                         class="cursor-pointer text-primary hover:underline"
                         @click="loadMore"
+                        @mousedown="(e) => e.preventDefault()"
                     >
                         load more
                     </span>
@@ -84,7 +73,6 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useUserData from '~/composables/user/useUserData'
     import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
@@ -120,7 +108,8 @@
                 isLoading,
                 filterTotal,
                 loadMore,
-            } = useFacetUsers()
+                mutate,
+            } = useFacetUsers({ immediate: false })
 
             watch(
                 () => props.queryText,
@@ -160,6 +149,7 @@
             })
 
             return {
+                mutate,
                 open,
                 finalList,
                 loadMore,

@@ -99,7 +99,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue, disabledKeys } = useVModels(props, emit)
-            const { selectUserKey } = toRefs(props)
+            const { selectUserKey, queryText } = toRefs(props)
             const localValue = ref(modelValue.value)
             // const map = ref({})
             // const updateMap = (localValue: Ref<any>) => {

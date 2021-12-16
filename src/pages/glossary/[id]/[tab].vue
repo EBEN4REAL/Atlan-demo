@@ -69,7 +69,7 @@
             ])
             const relationAttributes = ref([...DefaultRelationAttributes, 'name'])
 
-            const { list, isLoading } = useDiscoverList({
+            const { list, isLoading, quickChange } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -84,6 +84,13 @@
                     localSelected.value = list.value[0]
 
                     handlePreview(list.value[0])
+                }
+            })
+            watch(id, () => {
+                if (id.value && selectedAsset.value.guid !== id.value) {
+                    dependentKey.value = fetchKey.value
+                    facets.value.guid = id.value
+                    quickChange()
                 }
             })
             watch(selectedAsset, () => {

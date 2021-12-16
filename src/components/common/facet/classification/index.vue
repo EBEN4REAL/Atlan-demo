@@ -35,6 +35,7 @@
                                 <div class="flex items-center">
                                     <ClassificationIcon
                                         :color="item.options?.color"
+                                        style="min-width: 16px"
                                     />
                                     <span class="mb-0 ml-1 text-gray">
                                         {{ item.displayName }}

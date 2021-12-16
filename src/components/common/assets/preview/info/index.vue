@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full pt-4 overflow-auto gap-y-4">
+    <div class="flex flex-col w-full h-full py-4 overflow-auto gap-y-4">
         <div class="flex items-center justify-between px-5">
             <span class="font-semibold text-gray-500">Overview</span>
 
@@ -332,9 +332,7 @@
         </div>
 
         <div
-            v-if="
-               selectedAsset.typeName === 'AtlasGlossaryTerm'
-            "
+            v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
             class="flex flex-col"
         >
             <p

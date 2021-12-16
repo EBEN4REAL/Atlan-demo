@@ -230,7 +230,7 @@
                             : req.status === filters.value.status
                     ) || []
                 pagination.value.totalPages =
-                    response.value.filter_record / pagination.value.limit
+                    response.value.filterRecord / pagination.value.limit
             })
             function isSelected(guid: string): boolean {
                 // TODO: change this when adding bulk support

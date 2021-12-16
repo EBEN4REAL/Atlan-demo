@@ -45,8 +45,8 @@ export default function getUserGroups(groupListAPIParams: {
     const groupList: ComputedRef<any> = computed(
         () => localGroupsList.value || []
     )
-    const totalGroupCount = computed(() => data?.value?.total_record ?? 0)
-    const filteredGroupCount = computed(() => data?.value?.filter_record ?? 0)
+    const totalGroupCount = computed(() => data?.value?.totalRecord ?? 0)
+    const filteredGroupCount = computed(() => data?.value?.filterRecord ?? 0)
     return {
         groupList,
         totalGroupCount,

@@ -81,7 +81,7 @@
         </template>
         <div class="flex items-center w-full cursor-pointer hover:text-primary">
             <div class="flex items-center overflow-x-hidden">
-                <span class="w-4 h-4 -mt-0.5 mr-2.5">{{
+                <span class="w-5 h-5 mr-2 -mt-1.5 text-xl">{{
                     selectedCollection?.attributes?.icon
                         ? selectedCollection?.attributes?.icon
                         : '🗃'
@@ -108,7 +108,7 @@
 
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="self-center h-4 ml-1 text-gray-400"
+                        class="self-center h-4 ml-1 -mt-1 text-gray-400"
                     ></AtlanIcon>
                 </div>
             </div>

@@ -17,8 +17,8 @@
                 >
                 <span
                     v-if="!isCreate"
-                    class="flex-none font-bold text text-gray"
-                    >Edit
+                    class="flex-none text-base font-bold text-gray"
+                    >{{ isShare ? 'Invite to ' : 'Edit ' }}
                     <span
                         class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg"
                         >{{ item?.attributes?.name }}</span
@@ -31,7 +31,7 @@
                     <a-switch v-model:checked="isShareable" size="small" />
                 </div> -->
             </div>
-            <div class="px-4 mb-4">
+            <div class="px-4 mb-4" v-if="!isShare">
                 <span class="text-sm font-bold text-gray-700"
                     >Collection name</span
                 >
@@ -91,32 +91,27 @@
                         class="w-full mt-1 text-sm text-gray-500 border-gray-300 rounded-lg text-area-padding placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
                     />
                 </div>
-
-                <div class="mt-4">
-                    <span class="text-sm font-bold text-gray-700"
-                        >Collection type</span
+            </div>
+            <div class="px-4 mt-4">
+                <span class="text-sm font-bold text-gray-700"
+                    >Collection type</span
+                >
+                <!-- {{ isShareable }} -->
+                <div class="mt-2">
+                    <a-radio-group
+                        v-model:value="isShareable"
+                        name="radioGroup"
                     >
-                    <!-- {{ isShareable }} -->
-                    <div class="mt-2">
-                        <a-radio-group
-                            v-model:value="isShareable"
-                            name="radioGroup"
-                        >
-                            <a-radio value="false">
-                                <span class="text-sm text-gray-700"
-                                    >Private</span
-                                >
-                            </a-radio>
-                            <a-radio value="true" class="ml-8">
-                                <span class="text-sm text-gray-700"
-                                    >Shared</span
-                                >
-                            </a-radio>
-                        </a-radio-group>
-                    </div>
+                        <a-radio value="false">
+                            <span class="text-sm text-gray-700">Private</span>
+                        </a-radio>
+                        <a-radio value="true" class="ml-8">
+                            <span class="text-sm text-gray-700">Shared</span>
+                        </a-radio>
+                    </a-radio-group>
                 </div>
             </div>
-            <div class="px-4" v-if="isShareable === 'true'">
+            <div class="px-4 mt-2" v-if="isShareable === 'true'">
                 <span class="text-sm font-bold text-gray-700"
                     >Add members and groups</span
                 >
@@ -189,7 +184,7 @@
 
                         <template #overlay>
                             <div
-                                style="width: 300px"
+                                style="width: 445px"
                                 class="px-2 py-2 pt-4 bg-white rounded-lg shadow-lg"
                             >
                                 <Owners
@@ -287,7 +282,13 @@
                                 class="w-4 h-4 text-white animate-spin"
                             ></AtlanIcon>
 
-                            <span>{{ isCreate ? 'Create' : 'Update' }}</span>
+                            <span>{{
+                                isCreate
+                                    ? 'Create'
+                                    : isShare
+                                    ? 'Invite'
+                                    : 'Update'
+                            }}</span>
                         </div>
                     </AtlanBtn>
                 </div>
@@ -308,6 +309,7 @@
         toRefs,
         PropType,
         watch,
+        computed,
     } from 'vue'
     import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
     import AtlanBtn from '~/components/UI/button.vue'
@@ -322,6 +324,7 @@
     import PermissionType from './permissionType.vue'
     import UserItem from './userItem.vue'
     import Owners from './owner.vue'
+    import whoami from '~/composables/user/whoami'
 
     const emojiIndex = new EmojiIndex(emojiData)
 
@@ -351,10 +354,17 @@
                 type: Boolean,
                 required: true,
             },
+            isShare: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['update:showCollectionModal'],
         setup(props, { emit }) {
             let { isCreate, item } = toRefs(props)
+            const { username } = whoami()
+            // console.log('username: ', username.value)
 
             const title: Ref<string> = ref(
                 isCreate.value ? '' : item?.value?.attributes.name
@@ -376,26 +386,50 @@
                 isCreate.value ? null : item?.value?.attributes?.iconType
             )
 
-            const isShareable = ref('true')
+            const isShared = computed(() => {
+                if (isCreate.value) {
+                    return 'true'
+                } else {
+                    let x1 = item?.value?.attributes?.ownerGroups
+                        ? item?.value?.attributes?.ownerGroups
+                        : []
+                    let x2 = item?.value?.attributes?.ownerUsers
+                        ? item?.value?.attributes?.ownerUsers
+                        : []
+                    let x3 = item?.value?.attributes?.viewerUsers
+                        ? item?.value?.attributes?.viewerUsers
+                        : []
+                    let x4 = item?.value?.attributes?.viewerGroups
+                        ? item?.value?.attributes?.viewerGroups
+                        : []
+
+                    let len = x1.length + x2.length + x3.length + x4.length
+
+                    return len ? 'true' : 'false'
+                }
+            })
+
+            const isShareable = ref(isShared.value)
+
             const popOverVisible = ref(false)
 
-            const editors = ref({
-                ownerGroups: isCreate.value
-                    ? []
-                    : item?.value?.attributes?.ownerGroups,
-                ownerUsers: isCreate.value
-                    ? []
-                    : item?.value?.attributes?.ownerUsers,
-            })
+            // const editors = ref({
+            //     ownerGroups: isCreate.value
+            //         ? []
+            //         : item?.value?.attributes?.ownerGroups,
+            //     ownerUsers: isCreate.value
+            //         ? []
+            //         : item?.value?.attributes?.ownerUsers,
+            // })
 
-            const viewers = ref({
-                ownerGroups: isCreate.value
-                    ? []
-                    : item?.value?.attributes?.viewerGroups,
-                ownerUsers: isCreate.value
-                    ? []
-                    : item?.value?.attributes?.viewerUsers,
-            })
+            // const viewers = ref({
+            //     ownerGroups: isCreate.value
+            //         ? []
+            //         : item?.value?.attributes?.viewerGroups,
+            //     ownerUsers: isCreate.value
+            //         ? []
+            //         : item?.value?.attributes?.viewerUsers,
+            // })
 
             const userData = ref({
                 edit: {
@@ -403,7 +437,7 @@
                         ? []
                         : item?.value?.attributes?.ownerGroups,
                     ownerUsers: isCreate.value
-                        ? []
+                        ? [username.value]
                         : item?.value?.attributes?.ownerUsers,
                 },
                 view: {
@@ -474,22 +508,26 @@
                     return
                 }
 
+                let ownersData =
+                    isShareable.value === 'true'
+                        ? {
+                              ownerUsers: userData.value['edit'].ownerUsers,
+                              ownerGroups: userData.value['edit'].ownerGroups,
+                              viewerUsers: userData.value['view'].ownerUsers,
+                              viewerGroups: userData.value['view'].ownerGroups,
+                          }
+                        : {
+                              ownerUsers: [],
+                              ownerGroups: [],
+                              viewerUsers: [],
+                              viewerGroups: [],
+                          }
+
                 const { data, error, isLoading, isReady, mutate } =
                     createCollection({
                         name: title.value,
                         description: description.value,
-                        ownerUsers: userData.value['edit'].ownerUsers.length
-                            ? userData.value['edit'].ownerUsers
-                            : [],
-                        ownerGroups: userData.value['edit'].ownerGroups.length
-                            ? userData.value['edit'].ownerGroups
-                            : [],
-                        viewerUsers: userData.value['view'].ownerUsers.length
-                            ? userData.value['view'].ownerUsers
-                            : [],
-                        viewerGroups: userData.value['view'].ownerGroups.length
-                            ? userData.value['view'].ownerGroups
-                            : [],
+                        ...ownersData,
                         icon: selectedEmoji.value,
                         iconType: selectedEmojiType.value,
                     })
@@ -616,7 +654,7 @@
                 userDropdown.value = true
             }
             const hideUserDropdown = () => {
-                userDropdown.value = true
+                userDropdown.value = false
             }
 
             const handleOwnerChange = () => {
@@ -673,8 +711,8 @@
                 title,
                 description,
                 isShareable,
-                editors,
-                viewers,
+                // editors,
+                // viewers,
                 emojiIndex,
                 handleEmojiSelect,
                 popOverVisible,

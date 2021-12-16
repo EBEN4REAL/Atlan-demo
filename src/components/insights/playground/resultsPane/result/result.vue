@@ -38,7 +38,8 @@
                 v-else-if="isQueryRunning === ''"
                 class="flex flex-col items-center justify-center w-full h-full"
             >
-                <img :src="ResultsImg" class="text-white" :draggable="false" />
+                <!-- <img :src="ResultsImg" class="text-white" :draggable="false" /> -->
+                <AtlanIcon class="w-36 h-28" icon="NoDataInsights" />
                 <p class="mt-4 mb-0 text-base text-gray-700">
                     Your results will appear here
                 </p>
@@ -117,6 +118,7 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import AtlanTable from '~/components/UI/table.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         components: {
@@ -129,6 +131,7 @@
             QueryError,
             AtlanBtn,
             QueryAbort,
+            AtlanIcon,
         },
         props: {
             dataList: {

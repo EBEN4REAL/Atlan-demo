@@ -7,6 +7,12 @@
             @asset-mutation="() => {}"
         ></AssetPreview>
     </div>
+    <div v-else class="flex flex-col items-center justify-center h-full -mt-12">
+        <AtlanIcon icon="NoSelectedAsset" class="w-36 h-28" />
+        <div class="px-8 mt-6 text-base text-center text-gray-700">
+            This is where you will find information about your data assets
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -24,9 +30,10 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import AssetPreview from '~/components/common/assets/preview/index.vue'
     import useAssetStore from '~/store/asset'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
-        components: { AssetPreview },
+        components: { AssetPreview, AtlanIcon },
         props: {},
         setup(props, { emit }) {
             const storeDiscovery = useAssetStore()

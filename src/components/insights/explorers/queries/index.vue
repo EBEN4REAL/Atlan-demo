@@ -27,7 +27,7 @@
                         placement="bottomRight"
                     >
                         <div
-                            class="px-2 pt-0.5 cursor-pointer rounded-lg"
+                            class="flex items-center h-8 px-3 rounded-lg cursor-pointer"
                             :class="$style.filterButton"
                         >
                             <span class="text-xs text-gray-700">New</span>

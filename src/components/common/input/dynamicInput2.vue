@@ -1,6 +1,6 @@
 <template>
     <UserSelector
-        v-if="dataType === 'users'"
+        v-if="dataType === 'users' || dataType === 'user'"
         v-model:value="localValue"
         :multiple="multiple"
         @change="handleInputChange"

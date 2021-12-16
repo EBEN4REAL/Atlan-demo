@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { getCountString } from '~/utils/number'
 
@@ -138,6 +138,11 @@
 
             watch(list, (cur, prev) => {
                 addAllToList()
+            })
+
+            watch(modelValue, (cur) => {
+                selectedTab.value = cur
+                emit('change', selectedTab.value)
             })
 
             return {

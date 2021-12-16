@@ -9,7 +9,7 @@ import { getFormattedGroup } from '~/composables/group/formatGroup'
 import { Groups } from '~/services/service/groups'
 import { LIST_GROUPS, LIST_GROUP } from '~/services/service/groups/key'
 
-export const useGroup = (groupListAPIParams, cacheKeyProp = "") => {
+export const useGroup = (groupListAPIParams, cacheKeyProp = '') => {
     const {
         data,
         error,
@@ -33,8 +33,8 @@ export const useGroup = (groupListAPIParams, cacheKeyProp = "") => {
             )
         return []
     })
-    const totalGroupCount = computed(() => data?.value?.total_record ?? 0)
-    const filteredGroupCount = computed(() => data?.value?.filter_record ?? 0)
+    const totalGroupCount = computed(() => data?.value?.totalRecord ?? 0)
+    const filteredGroupCount = computed(() => data?.value?.filterRecord ?? 0)
 
     return {
         groupList,
@@ -110,8 +110,8 @@ export default function useGroups(
     const groupListConcatenated: ComputedRef<any> = computed(
         () => localGroupsList.value || []
     )
-    const totalGroupsCount = computed(() => data?.value?.total_record ?? 0)
-    const filteredGroupsCount = computed(() => data?.value?.filter_record ?? 0)
+    const totalGroupsCount = computed(() => data?.value?.totalRecord ?? 0)
+    const filteredGroupsCount = computed(() => data?.value?.filterRecord ?? 0)
     return {
         groupList,
         totalGroupsCount,

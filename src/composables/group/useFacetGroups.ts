@@ -40,7 +40,7 @@ export default function useFacetGroups(
             if (offset > 0)
                 list.value.push(...data.value.records)
             else list.value = [...data.value.records]
-        } else if (offset === 0)
+        } else
             list.value = []
     })
 
@@ -55,6 +55,8 @@ export default function useFacetGroups(
 
     let debounce: any = null
     const handleSearch = (val: Event | string) => {
+        offset = 0
+        params.value.set('offset', `${offset}`)
         let value = ''
         if (typeof val !== 'string') {
             value = (<HTMLInputElement>val.target).value as string

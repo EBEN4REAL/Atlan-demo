@@ -54,7 +54,7 @@
             </PopOverGroup>
         </template>
         <span
-            class="-ml-1 text-gray-700"
+            class="-ml-1 text-gray-500"
             v-if="
                 readOnly &&
                 localValue?.ownerGroups?.length < 1 &&

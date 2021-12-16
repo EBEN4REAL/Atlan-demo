@@ -215,11 +215,48 @@
             const router = useRouter()
 
             const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
+                'anchor',
+                'name',
+                'displayName',
+                'description',
+                'displayDescription',
+                'userDescription',
+                'certificateStatus',
+                'certificateUpdatedAt',
+                'certificateUpdatedBy',
+                'certificateStatusMessage',
+                'connectorName',
+                'connectionName',
+                'connectionQualifiedName',
+                'ownerUsers',
+                'ownerGroups',
+                'allowQuery',
+                'allowQueryPreview',
+                'parentQualifiedName',
+                'collectionQualifiedName',
+                'parent',
+                'rowCount',
+                'columnCount',
+                'sizeBytes',
+                'schemaName',
+                'tableName',
+                'viewName',
+                'databaseName',
+                'dataType',
+                'definition',
+                'isPrimary',
+                'order',
+                'isPartition',
+                'isSort',
+                'isIndexed',
+                'isForeign',
+                'isDist',
             ])
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([
+                'name',
+                'description',
+                'shortDescription',
+            ])
 
             const dynamicSearchPlaceholder = ref(
                 'Search for tables, columns, terms and more...'
@@ -250,7 +287,7 @@
                 offset.value = 0
                 quickChange()
                 // handleFocusOnInput()
-            }, 750)
+            }, 100)
 
             // TODO: Uncomment when bringing category filters
             // function handleCategoryChange() {

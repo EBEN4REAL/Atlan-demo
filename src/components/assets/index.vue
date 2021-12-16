@@ -103,7 +103,7 @@
                         :desc="
                             staticUse
                                 ? emptyViewText || 'No assets found'
-                                : 'We didnt find anything that matches your search criteria'
+                                : 'We didn\'t find anything that matches your search criteria'
                         "
                         :button-text="staticUse ? '' : 'Reset Filter'"
                         class="mb-10"
@@ -188,6 +188,7 @@
     import useAssetStore from '~/store/asset'
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useBulkUpdateStore from '~/store/bulkUpdate'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -355,10 +356,15 @@
                 updateList(asset)
             }
 
+            const sendSearchEvent = useDebounceFn(() => {
+                useAddEvent('discovery', 'search', 'changed')
+            }, 600)
+
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
+                sendSearchEvent()
                 quickChange()
-            }, 150)
+            }, 100)
 
             const handleFilterChange = () => {
                 offset.value = 0

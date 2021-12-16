@@ -32,13 +32,12 @@
                 v-model="localValue[attribute.name]"
                 @change="handleChange"
                 placement="rightBottom"
-                @click="handleClick(attribute.name)"
             >
                 <Item
                     :attribute="attribute"
                     :condition="localValue[attribute.name]"
                     :activeProperty="activeProperty"
-                    @click="handleClick"
+                    @click="handleClick(attribute.name)"
                 />
             </Popover>
         </div>
@@ -95,7 +94,12 @@
             )
 
             const handleClick = (id) => {
-                activeProperty.value = id
+                console.log('changed', id)
+                if (activeProperty.value === id) {
+                    activeProperty.value = 'id'
+                } else {
+                    activeProperty.value = id
+                }
             }
 
             const handleChange = () => {

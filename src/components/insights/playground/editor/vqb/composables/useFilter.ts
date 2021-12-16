@@ -18,6 +18,24 @@ export function useFilter() {
         'PRIMITIVE_DOUBLE',
     ]
 
+    const nameMap = {
+        equal: '=',
+        not_equal: '<>',
+        before: '<',
+        after: '>',
+        between: 'BETWEEN',
+        exists: 'IS NOT NULL',
+        does_not_exists: 'IS NULL',
+        on_or_after: '>=',
+        on_or_before: '<=',
+        is_not_one_of: 'NOT IN',
+        is_not_of: 'IN',
+        start_like: 'LIKE',
+        end_like: 'LIKE',
+        not_contains: 'NOT LIKE',
+        contains: 'LIKE',
+    }
+
     let text = [
         'CHAR',
         'CHARACTER',
@@ -56,69 +74,59 @@ export function useFilter() {
                     {
                         key: 'equal',
                         type: 'input',
-                        name: 'Equal to'
+                        name: 'Equal',
                     },
                     {
                         key: 'not_equal',
                         type: 'input',
-                        name: 'Not equal to'
+                        name: 'Does not equal',
                     },
                     {
                         key: 'is_one_of',
                         type: 'multi_input',
-                        name: 'Is one of'
+                        name: 'Is one of',
                     },
                     {
                         key: 'is_not_one_of',
                         type: 'multi_input',
-                        name: 'Is not one of'
+                        name: 'Is not one of',
                     },
-                    // {
-                    //     key: 'is_null',
-                    //     type: 'none',
-                    //     name: 'Is null'
-                    // },
-                    // {
-                    //     key: 'is_not_null',
-                    //     type: 'none',
-                    //     name: 'Is not null'
-                    // },
                     {
                         key: 'exists',
                         type: 'none',
-                        name: 'Exists'
+                        name: 'Exists',
                     },
                     {
                         key: 'does_not_exists',
                         type: 'none',
-                        name: 'Does not exists'
+                        name: 'Does not exists',
                     },
                     {
-                        key: 'greater_than',
+                        key: 'after',
                         type: 'input',
-                        name: 'Greater than'
+                        name: 'Greater than',
                     },
                     {
-                        key: 'greater_than_equal',
+                        key: 'on_or_after',
                         type: 'input',
-                        name: 'Greater than equal to'
+                        name: 'Greater than equal to',
                     },
                     {
-                        key: 'less_than',
+                        key: 'before',
                         type: 'input',
-                        name: 'Less than'
+                        name: 'Smaller than',
                     },
                     {
-                        key: 'less_than_equal',
+                        key: 'on_or_before',
                         type: 'input',
-                        name: 'Less than equal to'
+                        name: 'Smaller than equal to',
                     },
                     {
-                        key: 'between_and_includes',
+                        key: 'between',
                         type: 'range_input',
-                        name: 'Between and includes'
+                        name: 'Between & including',
                     },
-                ]
+                ],
             },
             {
                 key: 'text',
@@ -127,122 +135,116 @@ export function useFilter() {
                     {
                         key: 'equal',
                         type: 'input',
-                        name: 'Equal to'
+                        name: 'Equal to',
                     },
                     {
                         key: 'not_equal',
                         type: 'input',
-                        name: 'Not equal to'
+                        name: 'Not equal to',
                     },
                     {
                         key: 'is_one_of',
                         type: 'multi_input',
-                        name: 'Is one of'
+                        name: 'Is one of',
                     },
                     {
                         key: 'is_not_one_of',
                         type: 'multi_input',
-                        name: 'Is not one of'
+                        name: 'Is not one of',
                     },
                     {
                         key: 'exists',
                         type: 'none',
-                        name: 'Exists'
+                        name: 'Exists',
                     },
                     {
                         key: 'does_not_exists',
                         type: 'none',
-                        name: 'Does not exists'
+                        name: 'Does not exists',
                     },
-                    // {
-                    //     key: 'like',
-                    //     type: 'input',
-                    //     name: 'Like'
-                    // },
-                    // {
-                    //     key: 'is_not_like',
-                    //     type: 'input',
-                    //     name: 'Is not like'
-                    // },
+                    {
+                        key: 'start_like',
+                        type: 'input',
+                        name: 'Starts with',
+                    },
+                    {
+                        key: 'end_like',
+                        type: 'input',
+                        name: 'Ends with',
+                    },
                     {
                         key: 'contains',
                         type: 'input',
-                        name: 'Contains'
+                        name: 'Contains',
                     },
                     {
                         key: 'not_contains',
                         type: 'input',
-                        name: 'Not contains'
+                        name: 'Does not contains',
                     },
-                ]
+                ],
             },
             {
                 key: 'date',
                 includes: [...date],
                 functions: [
                     {
-                        key: 'between_and_includes',
-                        type: 'range_input',
-                        name: 'Between and includes'
+                        key: 'equal',
+                        type: 'input',
+                        name: 'Equal to',
                     },
                     {
-                        key: 'is',
+                        key: 'not_equal',
                         type: 'input',
-                        name: 'Is'
+                        name: 'Not equal to',
                     },
                     {
                         key: 'before',
                         type: 'input',
-                        name: 'Earlier than /  before'
+                        name: 'Before',
                     },
                     {
                         key: 'after',
                         type: 'input',
-                        name: 'Later than /  after'
+                        name: 'After',
                     },
-                    // {
-                    //     key: 'is_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is one of'
-                    // },
-                    // {
-                    //     key: 'is_not_one_of',
-                    //     type: 'multi_input',
-                    //     name: 'Is not one of'
-                    // },
-                    // {
-                    //     key: 'exists',
-                    //     type: 'none',
-                    //     name: 'Exists'
-                    // },
-                    // {
-                    //     key: 'does_not_exists',
-                    //     type: 'none',
-                    //     name: 'Does not exists'
-                    // },
-                    // {
-                    //     key: 'like',
-                    //     type: 'input',
-                    //     name: 'Like'
-                    // },
-                    // {
-                    //     key: 'is_not_like',
-                    //     type: 'input',
-                    //     name: 'Is not like'
-                    // },
+                    {
+                        key: 'on_or_before',
+                        type: 'input',
+                        name: 'On or before',
+                    },
+                    {
+                        key: 'on_or_after',
+                        type: 'input',
+                        name: 'On or after',
+                    },
+                    {
+                        key: 'exists',
+                        type: 'none',
+                        name: 'Exists',
+                    },
+                    {
+                        key: 'between',
+                        type: 'range_input',
+                        name: 'Between',
+                    },
+                    {
+                        key: 'does_not_exists',
+                        type: 'none',
+                        name: 'Does not exists',
+                    },
                     // {
                     //     key: 'contains',
                     //     type: 'input',
-                    //     name: 'Contains'
+                    //     name: 'Contains',
                     // },
                     // {
                     //     key: 'not_contains',
                     //     type: 'input',
-                    //     name: 'Not contains'
+                    //     name: 'Does not contains',
                     // },
-                ]
+                ],
             },
-            
         ]
 
         let filtersList = all.filter((el) => {
@@ -252,7 +254,19 @@ export function useFilter() {
 
         return filtersList
     }
+
+    function getInputTypeFromColumnType(columnType: string) {
+        if (numbers.includes(columnType)) return 'number'
+        if (text.includes(columnType)) return 'text'
+        if (date.includes(columnType)) return 'date'
+        if (boolean.includes(columnType)) return 'boolean'
+        if (array.includes(columnType)) return 'array'
+        if (object.includes(columnType)) return 'object'
+        if (geography.includes(columnType)) return 'geography'
+    }
     return {
-    filterList,
+        nameMap,
+        getInputTypeFromColumnType,
+        filterList,
     }
 }

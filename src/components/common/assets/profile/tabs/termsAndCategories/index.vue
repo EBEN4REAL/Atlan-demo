@@ -1,11 +1,12 @@
 <template>
-    <div class="p-6">
-        <div class="p-4 bg-white rounded">
+    <div class="px-3 pt-3 bg-white">
+        <div class="bg-white rounded">
             <Assets
                 :show-filters="false"
                 :initial-filters="tabFilter"
                 :static-use="true"
                 page="glossary"
+                :class="$style.glossaryTermsTab"
                 :enableSidebarDrawer="true"
             />
         </div>
@@ -44,3 +45,11 @@
         },
     })
 </script>
+
+<style lang="less" module>
+    .glossaryTermsTab {
+        :global(.ant-tabs-tab:first-child) {
+            @apply ml-0 !important;
+        }
+    }
+</style>

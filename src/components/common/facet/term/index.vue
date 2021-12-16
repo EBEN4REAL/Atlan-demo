@@ -1,12 +1,18 @@
 <template>
     <div class="w-full" data-test-id="terms-facet">
-        <div class="w-full mt-1 overflow-y-auto" :style="{ height: height }">
-            <GlossaryTree v-model:checkedGuids="checkedKeys" :checkable="true" @check="onCheck" @searchItemCheck="onSearchItemCheck" />
+        <div class="w-full overflow-y-auto" :style="{ height: height }">
+            <GlossaryTree
+                v-model:checkedGuids="checkedKeys"
+                :checkable="true"
+                @check="onCheck"
+                @searchItemCheck="onSearchItemCheck"
+                class="-mt-1.5"
+            />
         </div>
-        <div class="px-4 pt-1" v-if="showNone">
+        <!-- <div class="px-4 pt-1" v-if="showNone">
             <a-checkbox
                 @change="checkNoTerms"
-                class="inline-flex flex-row-reverse items-center w-full  atlan-reverse"
+                class="inline-flex flex-row-reverse items-center w-full atlan-reverse"
             >
                 <component
                     :is="noStatus"
@@ -14,17 +20,12 @@
                 />
                 <span class="mb-0 ml-1 text-gray-500">No Terms</span>
             </a-checkbox>
-        </div>
+        </div> -->
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
 
     import { useVModels } from '@vueuse/core'
     import noStatus from '~/assets/images/status/nostatus.svg'
@@ -57,18 +58,22 @@
             const { showNone } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const checkedKeys = ref(modelValue.value.terms?.map((term) => term?.guid) ?? [])
+            const checkedKeys = ref(
+                modelValue.value.terms?.map((term) => term?.guid) ?? []
+            )
 
             const onSearchItemCheck = (checkedNode, checked) => {
-                if(checked) {
-                    if(!localValue.value.terms) localValue.value.terms = []
+                if (checked) {
+                    if (!localValue.value.terms) localValue.value.terms = []
 
                     localValue.value.terms.push({
                         guid: checkedNode.guid,
-                        qualifiedName: checkedNode.attributes.qualifiedName
-                    })    
+                        qualifiedName: checkedNode.attributes.qualifiedName,
+                    })
                 } else {
-                    localValue.value.terms = localValue.value.terms?.filter((local) => local.guid !== checkedNode.guid)
+                    localValue.value.terms = localValue.value.terms?.filter(
+                        (local) => local.guid !== checkedNode.guid
+                    )
                 }
                 modelValue.value = localValue.value
                 emit('change')
@@ -77,14 +82,14 @@
             const onCheck = (checkedNodes) => {
                 localValue.value.terms = checkedNodes.map((term) => ({
                     guid: term.guid,
-                    qualifiedName: term.attributes.qualifiedName
+                    qualifiedName: term.attributes.qualifiedName,
                 }))
                 modelValue.value = localValue.value
                 emit('change')
             }
 
             const checkNoTerms = (t) => {
-                if(!localValue.value?.terms?.length) {
+                if (!localValue.value?.terms?.length) {
                     localValue.value.terms = []
                 }
                 localValue.value.empty = t.target.checked
@@ -106,15 +111,19 @@
                     // emit('change')
                 }
             )
-            watch(() => localValue.value.empty, () => {
-                emit('change')
-            })
+            watch(
+                () => localValue.value.empty,
+                () => {
+                    emit('change')
+                }
+            )
 
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
-                checkedKeys.value = modelValue.value.terms?.map((term) => term?.guid)
-
+                checkedKeys.value = modelValue.value.terms?.map(
+                    (term) => term?.guid
+                )
             })
 
             return {
@@ -125,7 +134,7 @@
                 noStatus,
                 checkedKeys,
                 checkNoTerms,
-                onSearchItemCheck
+                onSearchItemCheck,
             }
         },
     })

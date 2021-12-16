@@ -5,7 +5,7 @@
         class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
         :class="$style.multi_input"
         style="height: 32px !important"
-        placeholder="Enter value"
+        placeholder="Enter multi values 1,2,3"
         :token-separators="[',']"
     >
     </a-select>

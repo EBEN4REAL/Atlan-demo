@@ -12,42 +12,8 @@
                         : false
                 "
                 :dataList="activeInlineTab.playground.editor.dataList"
-            >
-                <template #header>
-                    <thead>
-                        <tr>
-                            <th
-                                class="truncate bg-gray-100 border border-gray-light"
-                            >
-                                #
-                                <!-- <span class="resize-handle"></span> -->
-                            </th>
-
-                            <th
-                                v-for="(col, index) in activeInlineTab
-                                    .playground.editor.columnList"
-                                :key="index"
-                                class="truncate bg-gray-100 border border-gray-light"
-                            >
-                                <div class="flex items-center">
-                                    <a-tooltip>
-                                        <template #title>{{
-                                            col.type
-                                        }}</template>
-                                        <component
-                                            :is="images[getDataType(col.type)]"
-                                            class="w-4 h-4 mr-1.5 cursor-pointer -mt-0.5"
-                                        ></component>
-                                    </a-tooltip>
-                                    <!-- {{ col.type }} -->
-                                    <Tooltip :tooltip-text="`${col.title}`" />
-                                </div>
-                                <!-- <span class="resize-handle"></span> -->
-                            </th>
-                        </tr>
-                    </thead>
-                </template>
-            </AtlanTable>
+                :columns="activeInlineTab.playground.editor.columnList"
+            />
 
             <div
                 v-else-if="
@@ -137,16 +103,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        Ref,
-        inject,
-        computed,
-        PropType,
-        ref,
-        toRaw,
-        watch,
-    } from 'vue'
+    import { defineComponent, Ref, inject, computed, PropType, ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import LoadingView from '@common/loaders/page.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
@@ -160,7 +117,6 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import AtlanTable from '~/components/UI/table.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
-    import { images, dataTypeCategoryList } from '~/constant/dataType'
 
     export default defineComponent({
         components: {
@@ -231,13 +187,6 @@
                 )
                 // isQueryAborted.value = true
             }
-            const getDataType = (type: string) => {
-                let label = ''
-                dataTypeCategoryList.forEach((i) => {
-                    if (i.type.includes(type.toUpperCase())) label = i.label
-                })
-                return label
-            }
 
             return {
                 errorDecorations,
@@ -249,11 +198,8 @@
                 outputPaneSize,
                 queryExecutionTime,
                 activeInlineTab,
-
                 abortRunningQuery,
                 isQueryAborted,
-                getDataType,
-                images,
                 // printData
             }
         },

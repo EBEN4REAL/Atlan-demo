@@ -48,40 +48,7 @@
             </div>
         </div>
         <div v-else class="w-full h-full">
-            <AtlanTable :dataList="results">
-                <template #header>
-                    <thead>
-                        <tr>
-                            <th
-                                class="truncate bg-gray-100 border border-gray-light"
-                            >
-                                #
-                                <!-- <span class="resize-handle"></span> -->
-                            </th>
-                            <th
-                                v-for="(col, index) in tableColumns"
-                                :key="index"
-                                class="bg-gray-100 border border-gray-light"
-                            >
-                                <div class="flex items-center">
-                                    <a-tooltip>
-                                        <template #title>{{
-                                            col.data_type
-                                        }}</template>
-                                        <component
-                                            :is="images[col.data_type]"
-                                            class="w-4 h-4 mr-1 cursor-pointer -mt-0.5"
-                                        ></component>
-                                    </a-tooltip>
-
-                                    <Tooltip :tooltip-text="`${col.title}`" />
-                                </div>
-                                <!-- <span class="resize-handle"></span> -->
-                            </th>
-                        </tr>
-                    </thead>
-                </template>
-            </AtlanTable>
+            <AtlanTable :dataList="results" :columns="tableColumns" />
         </div>
     </div>
 </template>
@@ -97,7 +64,6 @@
         // inject,
         // computed
     } from 'vue'
-    import { images, dataTypeCategoryList } from '~/constant/dataType'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AtlanTable from '@/UI/table.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -135,13 +101,6 @@
 
             /** METHODS */
             const { data, isLoading, error } = Insights.GetSampleData(body)
-            const getDataType = (type: string) => {
-                let label = ''
-                dataTypeCategoryList.forEach((i) => {
-                    if (i.type.includes(type.toUpperCase())) label = i.label
-                })
-                return label
-            }
 
             /** WATCHERS */
             watch([data], () => {
@@ -151,7 +110,7 @@
                         const obj = {
                             dataIndex: col.label,
                             title: col.columnName,
-                            data_type: getDataType(col.type.name),
+                            data_type: col.type.name,
                         }
                         tableColumns.value.push(obj)
                     })
@@ -171,7 +130,6 @@
                 tableColumns,
                 results,
                 isLoading,
-                images,
                 error,
             }
         },

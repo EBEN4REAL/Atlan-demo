@@ -85,7 +85,7 @@
                     :is="noStatus"
                     class="inline-flex self-center w-auto h-4 mb-1"
                 />
-                <span class="mb-0 text-gray-500"> No Owners </span>
+                <span class="mb-0 text-xs text-gray-500"> No Owners </span>
             </a-checkbox>
         </div>
     </div>

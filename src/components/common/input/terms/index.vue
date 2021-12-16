@@ -41,7 +41,7 @@
             </template>
             <span
                 v-if="readOnly && list?.length < 1"
-                class="-ml-1 text-gray-700"
+                class="-ml-1 text-gray-500"
                 >No linked terms</span
             >
         </div>
@@ -149,14 +149,18 @@
             }
 
             const onSearchItemCheck = (checkedNode, checked) => {
-                if(checked) {
-                    localValue.value.push(checkedNode)    
+                if (checked) {
+                    localValue.value.push(checkedNode)
                 } else {
-                    localValue.value = localValue.value?.filter((localTerm) => (localTerm.guid ?? localTerm.termGuid) !== checkedNode.guid)
+                    localValue.value = localValue.value?.filter(
+                        (localTerm) =>
+                            (localTerm.guid ?? localTerm.termGuid) !==
+                            checkedNode.guid
+                    )
                 }
                 hasBeenEdited.value = true
             }
-            
+
             /* Adding this when parent data change, sync it with local */
             watch(modelValue, () => {
                 localValue.value = modelValue.value
@@ -172,7 +176,7 @@
                 onPopoverClose,
                 localValue,
                 checkedGuids,
-                onSearchItemCheck
+                onSearchItemCheck,
             }
         },
     })

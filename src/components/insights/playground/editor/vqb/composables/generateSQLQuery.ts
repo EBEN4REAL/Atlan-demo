@@ -6,10 +6,9 @@ import { useFilter } from './useFilter'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
 export function getValueStringFromType(subpanel, value) {
-    
     let res = ''
     const type = getInputTypeFromColumnType(subpanel?.column?.type)
-    if (type === 'number') res += `${value}`
+    if (type === 'number') res += `${Number(value)}`
     else if (type === 'text') {
         if (subpanel?.filter?.name?.includes('like')) {
             console.log(subpanel?.filter?.name?.includes('like'), 'sd like')
@@ -63,7 +62,6 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
     )
     // console.log('joins: ', joins)
 
-    
     /* NOTE: Don't confuse hide=true means panel hide, it's opposite here, hide=true means it's included. The reaon why 
     it is this way because of two way binidng */
 
@@ -155,10 +153,24 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                     break
                 }
                 case 'input': {
-                    res += `${getValueStringFromType(
-                        subpanel,
-                        subpanel?.filter?.value ?? ''
-                    )}`
+                    if (subpanel.filter?.isVariable) {
+                        const variable =
+                            activeInlineTab.playground.editor.variables.find(
+                                (variable) =>
+                                    variable?.subpanelId === subpanel.id
+                            )
+
+                        res += `
+                        ${getValueStringFromType(
+                            subpanel,
+                            variable?.value ?? ''
+                        )}`
+                    } else {
+                        res += `${getValueStringFromType(
+                            subpanel,
+                            subpanel?.filter?.value ?? ''
+                        )}`
+                    }
                     break
                 }
                 case 'multi_input': {
@@ -173,7 +185,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         select.where(res)
     }
 
-    if(join?.hide) {
+    if (join?.hide) {
         console.log('join: ', join)
         // .join("table2", "t2", "t1.id = t2.id")
 
@@ -207,7 +219,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
         ORDER BY
              "COVID_COUNTY_LEVEL_PIVOT"."ACTIVE" ASC,
              "COVID_COUNTY_LEVEL_PIVOT"."CONFIRMED" DESC`
-             
+
         return query
     }
 

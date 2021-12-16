@@ -20,7 +20,7 @@
             </a-input>
         </div>
 
-        <div v-if="assetTypeAggregationList.length" class="w-full">
+        <div v-if="assetTypeAggregationList.length" class="w-full px-3">
             <AggregationTabs
                 v-model="postFacets.typeName"
                 class="mt-3"

@@ -10,6 +10,7 @@
                 <div
                     class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
                 >
+                    <!-- Line 1: G or T or C -->
                     <div class="flex flex-col">
                         <div class="flex items-center">
                             <AtlanIcon
@@ -39,6 +40,7 @@
                                 {{ title(item) }}
                             </router-link>
                         </div>
+                        <!-- Line 2: Description -->
                         <div class="flex mt-0" v-if="description(item)">
                             <span class="text-gray-700"
                                 :class="checkable ? 'text-xs' : 'text-sm '"
@@ -47,14 +49,19 @@
                                 description(item)
                             }}</span>
                         </div>
-
+                         <!-- Line 3:  -->
+                         <!-- TODO: to show dsecription and other detail in popver, as category is already a tab filter, so commenting the code for now, as it breaks for UI-->
                         <div class="flex items-center mt-1">
-                            <div
+                            <!--div
                                 class="flex items-center mr-3 text-gray-500  gap-x-1"
                                 :class="checkable ? 'text-xs' : 'text-sm'"
                                 v-if="categories(item)?.length > 0"
                             >
-                                in
+                                in 
+                                                                    <AtlanIcon
+                                        icon="Category"
+                                        class="h-4 mt-0.5 mr-1 align-text-bottom"
+                                    ></AtlanIcon>
                                 <div
                                     v-for="(cat, index) in categories(item)"
                                     class="flex"
@@ -65,10 +72,7 @@
                                         )
                                     "
                                 >
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="h-4 mt-0.5 mr-1"
-                                    ></AtlanIcon>
+
                                     {{ cat.attributes?.name }}
                                     <span
                                         v-if="
@@ -106,18 +110,19 @@
                                 >
                                     <AtlanIcon
                                         icon="Category"
-                                        class="h-4 mt-0.5 mr-1"
+                                        class="h-4 mt-0.5 mr-1 align-text-bottom"
                                     ></AtlanIcon>
                                     {{ parentCategory(item).attributes?.name }}
                                 </div>
-                            </div>
+                            </div-->
+                            <!-- Glossary -->
                             <div
                                 class="flex items-center text-gray-500"
                                 :class="checkable ? 'text-xs' : 'text-sm'"
                             >
                                 <AtlanIcon
                                     icon="Glossary"
-                                    class="h-4 mr-1"
+                                    class="h-4 mr-1 align-text-bottom"
                                 ></AtlanIcon>
                                 {{ getAnchorName(item) }}
                             </div>

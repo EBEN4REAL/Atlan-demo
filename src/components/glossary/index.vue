@@ -75,7 +75,7 @@
                 <atlan-icon
                     v-if="!queryText"
                     icon="TreeCollapseAll"
-                    class="h-4 mt-2 ml-2 cursor-pointer"
+                    class="h-4 mt-2 ml-2 cursor-pointer outline-none"
                     @click="handleCollapse"
                 >
                 </atlan-icon>
@@ -509,7 +509,7 @@
     .checkableTree {
         max-height: 364px;
         :global(.ant-tree-checkbox) {
-            @apply my-auto mr-2 mt-3;
+            @apply my-auto mr-2 mt-2;
             position: absolute;
             right: 1.5rem;
             z-index: 99;

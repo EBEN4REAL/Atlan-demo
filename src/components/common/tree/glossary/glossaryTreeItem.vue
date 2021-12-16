@@ -61,7 +61,7 @@
             class="flex items-center justify-between w-full py-0 m-0 group"
         >
             <div class="flex items-center py-0 pr-2">
-                <div class="w-4 mr-2">
+                <div class="w-4 mr-1">
                     <AtlanIcon
                         :icon="
                             getEntityStatusIcon(

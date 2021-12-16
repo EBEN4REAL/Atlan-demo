@@ -37,17 +37,17 @@ export default function useFacetGroups(
     const list = ref([])
     watch(data, () => {
         if (data.value?.records) {
-            if (offset > 0)
-                list.value.push(...data.value.records)
+            if (offset > 0) list.value.push(...data.value.records)
             else list.value = [...data.value.records]
-        } else if (offset === 0)
+        } else
             list.value = []
+
     })
 
-    // const total: ComputedRef<number> = computed(() => data.value?.total_record)
-    const filterTotal = computed(() => data.value?.filter_record)
+    // const total: ComputedRef<number> = computed(() => data.value?.totalRecord)
+    const filterTotal = computed(() => data.value?.filterRecord)
 
-    const total = computed(() => data.value?.total_record)
+    const total = computed(() => data.value?.totalRecord)
 
     function setLimit(l = 20) {
         params.value.set('limit', `${l}`)
@@ -55,6 +55,8 @@ export default function useFacetGroups(
 
     let debounce: any = null
     const handleSearch = (val: Event | string) => {
+        offset = 0
+        params.value.set('offset', `${offset}`)
         let value = ''
         if (typeof val !== 'string') {
             value = (<HTMLInputElement>val.target).value as string

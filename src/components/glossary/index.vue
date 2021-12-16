@@ -271,7 +271,7 @@
                 ...facets.value,
                 ...initialFilters.value,
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-                glossary: selectedGlossaryQf,
+                glossary: props.checkable ? '' : selectedGlossaryQf,
             }
 
             // Virtual List Height

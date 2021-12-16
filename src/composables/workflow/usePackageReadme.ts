@@ -76,11 +76,11 @@ export function usePackageReadme({
 
     const list = ref([])
     const totalCount = ref()
-    const filter_record = ref()
+    const filterRecord = ref()
     watch(data, () => {
         if (!data?.value?.records) return
-        totalCount.value = data.value.total_record
-        filter_record.value = data.value.filter_record
+        totalCount.value = data.value.totalRecord
+        filterRecord.value = data.value.filterRecord
         list.value.push(...data.value.records)
     })
 
@@ -103,7 +103,7 @@ export function usePackageReadme({
     return {
         list,
         loadMore,
-        filter_record,
+        filterRecord,
         totalCount,
         error,
         isLoading,

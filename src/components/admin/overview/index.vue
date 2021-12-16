@@ -25,13 +25,13 @@
                     <a-input
                         v-model:value="newTenantName"
                         :placeholder="`Add Workspace Name`"
-                        class="text-lg font-bold border-0 shadow-none outline-none "
+                        class="text-lg font-bold border-0 shadow-none outline-none"
                     />
                     <div class="flex items-center justify-end">
                         <AtlanBtn
                             padding="compact"
                             size="sm"
-                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none "
+                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none"
                             @click="showEditTenantNameModal = false"
                             >Cancel</AtlanBtn
                         >
@@ -57,23 +57,12 @@
                         :allow-upload="true"
                         :avatar-name="name"
                         :avatar-size="100"
-                        :avatar-shape="'circle'"
                         :bordered="false"
                         class="mt-2"
                     />
-                    <div
-                        class="absolute bottom-0 p-1 bg-white rounded-full  left-20"
-                    >
+                    <div class="absolute bottom-0 p-1 bg-white left-20">
                         <div
-                            class="
-                                p-1
-                                bg-gray-100
-                                border border-gray-300
-                                rounded-full
-                                px-1
-                                py-0.5
-                                text-gray-500
-                            "
+                            class="p-1 bg-gray-100 border border-gray-300 px-1 py-0.5 text-gray-500"
                         >
                             <AtlanIcon icon="Camera"></AtlanIcon>
                         </div>
@@ -86,7 +75,7 @@
                     <AtlanBtn
                         padding="compact"
                         size="sm"
-                        class="px-5 mr-3 text-gray-700 bg-transparent border border-gray-300 "
+                        class="px-5 mr-3 text-gray-700 bg-transparent border border-gray-300"
                         @click="showEditTenantNameModal = true"
                         >Edit</AtlanBtn
                     >
@@ -117,12 +106,12 @@
                     v-for="(card, key, index) in overviewCards"
                     :key="card.id"
                     :to="card.link"
-                    class="flex justify-between p-3 my-2 border rounded-md cursor-pointer  overview-card hover:shadow-md group"
+                    class="flex justify-between p-3 my-2 border rounded-md cursor-pointer overview-card hover:shadow-md group"
                     :class="!((index + 1) % 3) ? '' : 'mr-2'"
                 >
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center p-3 mr-3  bg-primary-light text-primary"
+                            class="flex items-center justify-center p-3 mr-3 bg-primary-light text-primary"
                         >
                             <AtlanIcon
                                 :icon="card.icon"
@@ -149,7 +138,7 @@
                     </div>
                     <AtlanIcon
                         icon="ArrowRight"
-                        class="mt-1 opacity-0  text-primary group-hover:opacity-100"
+                        class="mt-1 opacity-0 text-primary group-hover:opacity-100"
                     ></AtlanIcon>
                 </router-link>
             </div>

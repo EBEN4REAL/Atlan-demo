@@ -129,7 +129,7 @@
                         </div>
                     </div>
                 </div>
-                <a-checkbox v-if="checkable" :checked="isChecked" />
+                <a-checkbox v-if="checkable && item.typeName === 'AtlasGlossaryTerm'" :checked="isChecked" />
             </div>
         </div>
     </div>

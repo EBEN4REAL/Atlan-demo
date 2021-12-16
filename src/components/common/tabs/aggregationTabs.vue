@@ -86,8 +86,7 @@
         setup(props, { emit }) {
             const { list, icon, noAll } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
-            // const selectedTab = ref(modelValue.value)
-            const selectedTab = computed(() => modelValue.value)
+            const selectedTab = ref(modelValue.value)
             const dataList = ref(list.value)
 
             const onTabChange = () => {
@@ -139,6 +138,11 @@
 
             watch(list, (cur, prev) => {
                 addAllToList()
+            })
+
+            watch(modelValue, (cur) => {
+                selectedTab.value = cur
+                emit('change', selectedTab.value)
             })
 
             return {

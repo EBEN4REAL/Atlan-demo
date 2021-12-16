@@ -123,11 +123,12 @@
                     :isLoading="isValidating"
                     @loadMore="handleLoadMore"
                 >
-                    <template v-slot:default="{ item }">
+                    <template v-slot:default="{ item, itemIndex }">
                         <AssetItem
                             :item="item"
+                            :itemIndex="itemIndex"
                             :selectedGuid="selectedAsset.guid"
-                            @preview="handlePreview"
+                            @preview="handleClickAssetItem"
                             @updateDrawer="updateCurrentList"
                             :preference="preference"
                             :show-check-box="showCheckBox"
@@ -360,22 +361,43 @@
                 useAddEvent('discovery', 'search', 'changed')
             }, 600)
 
+            const sendFilterEvent = useDebounceFn((filterItem) => {
+                console.log('sendFilterEvent', filterItem)
+                if (filterItem && filterItem.analyticsKey) {
+                    useAddEvent('discovery', 'filter', 'changed', {
+                        type: filterItem.analyticsKey,
+                    })
+                }
+            }, 600)
+
+            const handleClickAssetItem = (...args) => {
+                console.log('handleClickAssetItem', ...args)
+                useAddEvent('discovery', 'asset_card', 'clicked', {
+                    click_index: args[1],
+                })
+                handlePreview(...args)
+            }
+
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 sendSearchEvent()
                 quickChange()
             }, 100)
 
-            const handleFilterChange = () => {
+            const handleFilterChange = (filterItem) => {
+                sendFilterEvent(filterItem)
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
             }
 
-            const handleAssetTypeChange = () => {
+            const handleAssetTypeChange = (tabName) => {
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActivePostFacet(postFacets.value)
+                useAddEvent('discovery', 'aggregate_tab', 'changed', {
+                    name: tabName,
+                })
             }
 
             const handleLoadMore = () => {
@@ -528,6 +550,7 @@
                 searchDirtyTimestamp,
                 updateBulkSelectedAssets,
                 bulkSelectedAssets,
+                handleClickAssetItem,
             }
         },
     })

@@ -48,9 +48,9 @@
                                     class="flex items-center inline_tab"
                                     :style="{
                                         width:
-                                            tabs.length == 1 ? '65px' : '49px',
+                                            tabs.length == 1 ? '89px' : '73px',
                                         'max-width':
-                                            tabs.length == 1 ? '65px' : '49px',
+                                            tabs.length == 1 ? '89px' : '73px',
                                     }"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
@@ -60,11 +60,13 @@
                                     >
                                         <span
                                             class="text-sm inline_tab_label"
-                                            :class="
+                                            :class="[
                                                 tab.key !== activeInlineTabKey
-                                                    ? 'text-gray-500'
-                                                    : ''
-                                            "
+                                                    ? tabHover === tab.key
+                                                        ? 'text-gray-700'
+                                                        : 'text-gray-500'
+                                                    : '',
+                                            ]"
                                             >{{ tab.label }}</span
                                         >
                                     </div>
@@ -256,7 +258,7 @@
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
-                    status: 'DRAFT',
+                    status: 'is_null',
                     connectionId: '',
                     description: '',
                     qualifiedName: '',
@@ -581,13 +583,19 @@
                 height: 100%;
             }
 
+            &:hover {
+                background-color: #fafafa !important;
+                // @apply text-gray-700 !important;
+                color: #3e4359 !important;
+            }
+
             &.ant-tabs-tab-active {
                 // border-bottom: 1px solid !important;
                 @apply bg-white !important;
 
-                &:hover {
-                    background-color: #fafafa !important;
-                }
+                // &:hover {
+                //     background-color: #fafafa !important;
+                // }
             }
             .ant-tabs-close-x {
                 visibility: hidden;
@@ -636,9 +644,9 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 49px;
-        width: 49px;
-        min-width: 49px;
+        max-width: 73px;
+        width: 73px;
+        min-width: 73px;
         overflow: hidden;
         height: 28px !important;
         // min-width: 3rem

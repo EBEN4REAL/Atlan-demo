@@ -20,15 +20,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
-    import ViewUser from '@/admin/users/userPreview/viewUserDetails.vue'
-    import EditUser from '@/admin/users/userPreview/editUserDetails.vue'
+    import { defineAsyncComponent, defineComponent, ref, toRefs } from 'vue'
 
     export default defineComponent({
         name: 'UserPreviewAboutComponent',
         components: {
-            EditUser,
-            ViewUser,
+            EditUser: defineAsyncComponent(() => import("@/admin/users/userPreview/editUserDetails.vue")),
+            ViewUser: defineAsyncComponent(() => import("@/admin/users/userPreview/viewUserDetails.vue")),
         },
         props: {
             selectedUser: {
@@ -41,10 +39,11 @@
             },
         },
         emits: ['updatedUser', 'success'],
-        setup(props) {
+        setup(props, { emit }) {
             const { selectedUser, isCurrentUser } = toRefs(props)
             const isEditing = ref(false)
             const toggleEdit = () => {
+                emit("success")
                 isEditing.value = !isEditing.value
             }
             return {

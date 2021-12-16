@@ -5,31 +5,31 @@
         </a-button>
         <template #overlay>
             <a-menu>
-                <a-menu-item
+                <div
+                    class="menu-item"
                     key="1"
                     v-auth="map.UPDATE_BUSINESS_METADATA"
                     @click="metadataModal.open()"
-                    ><AtlanIcon
-                        class="inline mr-2"
-                        icon="Edit"
-                    />Edit</a-menu-item
                 >
-                <a-menu-item
-                    key="1"
+                    <AtlanIcon class="inline mr-2" icon="Edit" />Edit
+                </div>
+                <div
+                    class="menu-item"
+                    key="3"
                     @click.prevent.stop="
                         copyAPI(metadata.displayName, 'Name Copied!')
                     "
                 >
                     <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
-                    name</a-menu-item
-                >
-                <a-menu-item
-                    key="1"
+                    name
+                </div>
+                <div
+                    class="menu-item"
+                    key="3"
                     @click.prevent.stop="copyAPI(metadata.guid, 'GUID Copied!')"
                 >
-                    <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
-                    ID</a-menu-item
-                >
+                    <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy ID
+                </div>
                 <!-- <a-menu-item
                     key="2"
                     v-auth="map.DELETE_BUSINESS_METADATA"
@@ -116,3 +116,12 @@
         },
     })
 </script>
+<style lang="less" scoped>
+    .menu-item {
+        @apply p-2;
+        @apply cursor-pointer;
+        &:hover {
+            @apply bg-gray-100;
+        }
+    }
+</style>

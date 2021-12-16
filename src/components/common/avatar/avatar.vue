@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-    import { ref, watch, PropType, toRefs } from 'vue'
+    import { ref, watch, PropType, toRefs, unref } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import uploadAvatar from '~/composables/avatar/uploadAvatar'
 
@@ -82,8 +82,10 @@
                 default: 56,
             },
         },
-        setup(props, context) {
-            const { imageUrl: updatedImageUrl } = toRefs(props)
+        emits: ['imageUpdated'],
+        setup(props, { emit }) {
+            const { imageUrl } = toRefs(props)
+            const updatedImageUrl = ref(unref(imageUrl))
             const uploadStarted = ref(false)
 
             watch(
@@ -102,8 +104,7 @@
                 return true
             }
             watch(uploadKey, () => {
-                context.emit('imageUpdated', updatedImageUrl)
-                console.log(updatedImageUrl)
+                emit('imageUpdated', updatedImageUrl)
             })
             return {
                 handleUploadAvatar,

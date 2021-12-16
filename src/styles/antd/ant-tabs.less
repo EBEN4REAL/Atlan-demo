@@ -1,16 +1,16 @@
-
 .ant-tabs-nav .ant-tabs-tab-active {
     text-shadow: none !important;
 }
 
 //used for BM image, icon when disabled
 .ant-tabs-tab-disabled {
-    img, svg {
+    img,
+    svg {
         @apply opacity-30 !important;
     }
 }
 
-//default override 
+//default override
 .ant-tabs-bar {
     @apply mb-0 border-0 !important;
 }
@@ -21,14 +21,15 @@
     }
 }
 
-.profiletab { 
+.profiletab {
     .ant-tabs-bar {
         @apply mb-0 pl-7;
         @apply bg-white;
     }
 }
 
-.typeTabs, .minimal-tab-bar {
+.typeTabs,
+.minimal-tab-bar {
     .ant-tabs-bar {
         margin-bottom: 0;
         @apply border-gray-300 !important;
@@ -45,10 +46,13 @@
         width: 48px !important;
         @apply ml-0 !important;
     }
-    .ant-tabs-tab {
-        height: 48px !important;
-        width: 48px !important;
-        @apply p-0 justify-center !important;
+
+    .ant-tabs-nav-wrap:first-of-type {
+        .ant-tabs-tab {
+            height: 48px;
+            width: 48px;
+            @apply p-0 justify-center;
+        }
     }
 
     .ant-tabs-content {

@@ -17,9 +17,11 @@
             <a-collapse-panel
                 v-for="(scope, idx) in scopeList"
                 :key="scope.type"
+                :showArrow="false"
             >
                 <template #header>
                     <a-checkbox
+                        class="font-bold"
                         data-test-id="checkbox"
                         :checked="
                             groupedActions[idx].scopes.length ===
@@ -43,7 +45,7 @@
                         <div
                             v-for="(item, i) in scope.scopes"
                             :key="i"
-                            class="desc"
+                            class="text-gray-500 desc"
                         >
                             {{ item.desc }}
                             <a-tooltip

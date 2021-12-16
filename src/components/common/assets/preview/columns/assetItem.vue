@@ -13,7 +13,7 @@
                     <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(item)"
-                            class="h-4 mr-1 mt-0.5 text-gray-500"
+                            class="h-4 mr-1 text-gray-500"
                         />
                         <span
                             class="flex-shrink overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"

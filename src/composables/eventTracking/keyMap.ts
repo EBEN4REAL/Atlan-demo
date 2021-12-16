@@ -8,6 +8,14 @@ const keyMap = {
                 }),
             },
         },
+        aggregate_tab: {
+            changed: {
+                action: 'discovery_aggregate_tab_changed',
+                properties: (props) => ({
+                    name: props.name,
+                }),
+            },
+        },
         asset_card: {
             clicked: {
                 action: 'discovery_asset_card_clicked',

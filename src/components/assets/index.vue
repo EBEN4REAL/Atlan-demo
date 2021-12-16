@@ -391,10 +391,13 @@
                 discoveryStore.setActiveFacet(facets.value)
             }
 
-            const handleAssetTypeChange = () => {
+            const handleAssetTypeChange = (tabName) => {
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActivePostFacet(postFacets.value)
+                useAddEvent('discovery', 'aggregate_tab', 'changed', {
+                    name: tabName,
+                })
             }
 
             const handleLoadMore = () => {

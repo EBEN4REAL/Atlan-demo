@@ -209,6 +209,7 @@
             )
 
             const handleDataTypeChange = () => {
+                console.log('change data type', facets.value)
                 offset.value = 0
                 quickChange()
             }

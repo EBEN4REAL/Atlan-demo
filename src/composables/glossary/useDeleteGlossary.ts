@@ -21,10 +21,7 @@ const useDeleteGlossary = () => {
             error.value = newError
         })
         const newList = glossaryStore.list?.filter((el) => el.guid !== guid)
-        console.log(newList)
-        console.log(glossaryStore.list)
         glossaryStore.setList(newList || [])
-        console.log(glossaryStore.list)
         return { data, deleteError, isLoading }
     }
     return {

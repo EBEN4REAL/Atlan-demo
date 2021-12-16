@@ -90,6 +90,7 @@
             const dataList = ref(list.value)
 
             const onTabChange = () => {
+                console.log('change data type')
                 modelValue.value = selectedTab.value
                 emit('change', selectedTab.value)
             }
@@ -142,7 +143,7 @@
 
             watch(modelValue, (cur) => {
                 selectedTab.value = cur
-                emit('change', selectedTab.value)
+                // emit('change', selectedTab.value)
             })
 
             return {

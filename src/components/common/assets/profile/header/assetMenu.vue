@@ -100,6 +100,28 @@
                         ></AnnouncementModal
                     ></a-menu-item
                 >
+                <a-menu-item
+                    v-if="isGTC(asset)"
+                    key="archive"
+                    @click="closeMenu"
+                >
+                    <RemoveGTCModal
+                        :entityType="asset.typeName"
+                        :entity="asset"
+                        :redirect="true"
+                    >
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Trash"
+                                    class="m-0 mr-2 text-red-700"
+                                />
+                                <p class="p-0 m-0">Archive</p>
+                            </div>
+                        </template>
+                    </RemoveGTCModal>
+                </a-menu-item>
+
                 <!-- <a-menu-item
                     key="archive"
                     class="flex items-center text-red-700"
@@ -114,15 +136,17 @@
     </a-dropdown>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs } from 'vue'
+    import { defineComponent, ref, PropType, toRefs, inject } from 'vue'
 
     // components
     import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
+    import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // utils
     import { assetInterface } from '~/types/assets/asset.interface'
     export default defineComponent({
-        components: { AnnouncementModal },
+        components: { AnnouncementModal, RemoveGTCModal },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -135,17 +159,17 @@
                 default: false,
             },
         },
-        setup() {
+        setup(props) {
             // data
             const isVisible = ref(false)
-
+            const { isGTC } = useAssetInfo()
             const closeMenu = () => {
                 isVisible.value = false
             }
-
             return {
                 isVisible,
                 closeMenu,
+                isGTC,
             }
         },
     })

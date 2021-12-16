@@ -50,21 +50,20 @@ export function useAggregate() {
     function aggregateList(type: string) {
         let all = [
             {
-                key: 'avg',
-                label: 'Average',
-                excludes: [...text, ...date, ...array, ...object, ...geography],
+                key: 'count',
+                label: 'Count',
+                excludes: [...array, ...object, ...geography],
             },
             {
-                key: 'min',
-                label: 'Min',
-                excludes: [
-                    ...text,
-                    ...date,
-                    ...boolean,
-                    ...array,
-                    ...object,
-                    ...geography,
-                ],
+                key: 'unique',
+                label: 'Unique Count',
+                excludes: [...array, ...object, ...geography],
+            },
+
+            {
+                key: 'sum',
+                label: 'Sum',
+                excludes: [...text, ...date, ...array, ...object, ...geography],
             },
             {
                 key: 'max',
@@ -79,18 +78,20 @@ export function useAggregate() {
                 ],
             },
             {
-                key: 'count',
-                label: 'Count',
-                excludes: [...array, ...object, ...geography],
+                key: 'min',
+                label: 'Min',
+                excludes: [
+                    ...text,
+                    ...date,
+                    ...boolean,
+                    ...array,
+                    ...object,
+                    ...geography,
+                ],
             },
             {
-                key: 'unique',
-                label: 'Unique Count',
-                excludes: [...array, ...object, ...geography],
-            },
-            {
-                key: 'sum',
-                label: 'Sum',
+                key: 'avg',
+                label: 'Average',
                 excludes: [...text, ...date, ...array, ...object, ...geography],
             },
         ]

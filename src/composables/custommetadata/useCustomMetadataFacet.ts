@@ -83,7 +83,6 @@ export default function useCustomMetadataFacet() {
                 })
             }
         })
-        console.log({ list })
         return list
     }
 

@@ -33,14 +33,8 @@
                 >
                     <EmptyView
                         empty-screen="EmptyDiscover"
-                        :desc="
-                            staticUse
-                                ? emptyViewText || 'No assets found'
-                                : 'We didn\'t find anything that matches your search criteria'
-                        "
-                        :button-text="staticUse ? '' : 'Reset Filter'"
+                        desc="No assets found"
                         class="mb-10"
-                        @event="handleResetEvent"
                     ></EmptyView>
                 </div>
 

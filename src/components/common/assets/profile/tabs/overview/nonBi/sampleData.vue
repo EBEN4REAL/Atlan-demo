@@ -17,7 +17,7 @@
             ></AtlanIcon>
             <div class="flex flex-col items-center justify-center">
                 <p class="mb-0 text-base font-bold text-gray-700">
-                    {{ error?.response?.data?.errorMessage }}
+                    Sample data unavailable!
                 </p>
                 <p class="mt-2 mb-0 text-base text-gray-500">
                     <span v-if="error?.response?.data?.errorName"
@@ -41,9 +41,6 @@
             <div class="flex flex-col items-center justify-center">
                 <p class="mb-0 text-base font-bold text-gray-700">
                     Sample data unavailable!
-                </p>
-                <p class="mt-2 mb-0 text-base text-gray-500">
-                    Sample data is unavailable for this dataset.
                 </p>
             </div>
         </div>

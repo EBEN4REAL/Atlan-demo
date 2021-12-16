@@ -12,7 +12,9 @@ export const SavedQueryAttributes = [
     'variablesSchemaBase64',
     'isSnippet',
     'parentQualifiedName',
-    'collectionQualifiedName'
+    'collectionQualifiedName',
+    'visualBuilderSchemaBase64',
+    'isVisualQuery'
 ]
 
 export const InternalAttributes = [
@@ -50,6 +52,8 @@ export const AssetAttributes = [
     'connectorName',
     'connectionName',
     'connectionQualifiedName',
+    'defaultSchemaQualifiedName',
+    'defaultDatabaseQualifiedName',
     'sourceURL',
     'sourceCreatedBy',
     'sourceCreatedAt',

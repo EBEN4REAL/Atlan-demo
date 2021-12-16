@@ -55,7 +55,7 @@
         <div
             class="overflow-y-auto content-wrapper"
             :class="
-                activeTabKey === 'policies'
+                activeTabKey === 'policies' || activeTabKey === 'users'
                     ? 'bg-white pt-0 pb-0 pr-3 pl-3'
                     : 'px-5'
             "
@@ -124,7 +124,7 @@
                     </div>
                     <div
                         v-if="totalPolicy !== 0"
-                        class="px-3 pt-4 bg-white container-tabs"
+                        class="px-3 pt-4 pb-3 bg-white container-tabs"
                     >
                         <AggregationTabs
                             v-model="activeTabFilter"

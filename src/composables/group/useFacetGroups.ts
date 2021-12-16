@@ -54,6 +54,10 @@ export default function useFacetGroups(
     }
 
     let debounce: any = null
+    const resetFilter = () => {
+        params.value.delete('filter')
+    }
+
     const handleSearch = (val: Event | string) => {
         offset = 0
         params.value.set('offset', `${offset}`)
@@ -84,6 +88,7 @@ export default function useFacetGroups(
 
     return {
         list,
+        resetFilter,
         total,
         data,
         mutate,

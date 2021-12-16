@@ -74,7 +74,10 @@
             >
             </AggregationTabs>
         </div>
-        <div v-if="!queryText" class="mt-2">
+        <div
+            v-if="!queryText"
+            class="flex flex-col items-stretch flex-1 h-full mt-2"
+        >
             <GlossaryTree
                 ref="glossaryTree"
                 :height="height"
@@ -125,6 +128,7 @@
             :isLoadMore="isLoadMore"
             :isLoading="isValidating"
             @loadMore="handleLoadMore"
+            class="mt-3"
         >
             <template v-slot:default="{ item }">
                 <GlossaryItem

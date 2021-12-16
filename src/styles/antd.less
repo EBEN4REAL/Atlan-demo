@@ -22,7 +22,6 @@ body {
     @apply bg-body !important;
 }
 
-
 .ant-form-vertical .ant-form-item-control {
     flex: 0 0 100% !important;
     max-width: 100% !important;
@@ -63,8 +62,6 @@ body {
     }
 }
 
-
-
 .ant-checkbox-wrapper + .ant-checkbox-wrapper {
     margin-left: 0px !important;
 }
@@ -104,13 +101,12 @@ Table .ant-table-body {
 }
 .ant-table-tbody {
     tr:not(.ant-table-measure-row) {
-        height: 3.5rem !important;
         td {
             color: theme('colors.gray.DEFAULT') !important;
         }
     }
 }
-.ant-dropdown-menu-root{
+.ant-dropdown-menu-root {
     padding: 0 !important;
 }
 // Split Panes
@@ -134,7 +130,6 @@ Table .ant-table-body {
     width: 0px !important;
 }
 
-
 .pushtop {
     top: 2px;
 }
@@ -150,16 +145,16 @@ Table .ant-table-body {
 }
 .ant-modal-confirm-btns {
     @apply mt-3 !important;
-    [class="ant-btn"] { // only targeting the cancel button; btn that has only one class and that class is ant-btn
+    [class='ant-btn'] {
+        // only targeting the cancel button; btn that has only one class and that class is ant-btn
         @apply bg-transparent;
         @apply border-transparent;
         @apply hover:text-gray;
     }
-    .ant-btn.ant-btn-primary.ant-btn-dangerous { // only targeting danger btns
+    .ant-btn.ant-btn-primary.ant-btn-dangerous {
+        // only targeting danger btns
         @apply bg-error;
         @apply border-error;
         @apply font-bold;
-        
     }
 }
-

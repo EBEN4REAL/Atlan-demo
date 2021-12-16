@@ -1,11 +1,10 @@
 const keyMap = {
     discovery: {
-        facet: {
+        filter: {
             changed: {
-                action: 'discovery_facet_changed',
+                action: 'discovery_filter_changed',
                 properties: (props) => ({
-                    filter_type: props.filter_type,
-                    count: props.count,
+                    type: props.type,
                 }),
             },
         },

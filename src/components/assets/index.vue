@@ -361,6 +361,15 @@
                 useAddEvent('discovery', 'search', 'changed')
             }, 600)
 
+            const sendFilterEvent = useDebounceFn((filterItem) => {
+                console.log('sendFilterEvent', filterItem)
+                if (filterItem && filterItem.analyticsKey) {
+                    useAddEvent('discovery', 'filter', 'changed', {
+                        type: filterItem.analyticsKey,
+                    })
+                }
+            }, 600)
+
             const handleClickAssetItem = (...args) => {
                 console.log('handleClickAssetItem', ...args)
                 useAddEvent('discovery', 'asset_card', 'clicked', {
@@ -375,7 +384,8 @@
                 quickChange()
             }, 100)
 
-            const handleFilterChange = () => {
+            const handleFilterChange = (filterItem) => {
+                sendFilterEvent(filterItem)
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)

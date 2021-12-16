@@ -11,7 +11,7 @@ const useAddEvent = (category, obj, action, props = {}) => {
 
     // API call for adding event to segment
     const properties = eventProperties ? eventProperties() : {}
-    console.log('analytics track', { eventName, properties })
+    console.log('analytics track', eventName, properties)
     if (eventProperties) {
         ;(window as any).analytics.track(eventName, properties)
     } else {

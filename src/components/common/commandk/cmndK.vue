@@ -1,12 +1,14 @@
 <template>
     <div>
         <div class="flex items-center px-3 py-2 border-b">
-            <AtlanIcon
-                v-if="isLoading"
-                icon="Loader"
-                class="w-5 h-5 mr-1 animate-spin"
-            ></AtlanIcon>
-            <atlan-icon v-else icon="Search" class="w-auto h-5 mr-1.5" />
+            <div class="w-5 h-5 pb-1 mr-1" style="margin-bottom: 2px">
+                <AtlanIcon
+                    v-if="isLoading"
+                    icon="Loader"
+                    class="w-auto h-5 animate-spin"
+                ></AtlanIcon>
+                <atlan-icon v-else icon="Search" class="w-auto h-5" />
+            </div>
             <a-input
                 ref="inputBox"
                 v-model:value="queryText"

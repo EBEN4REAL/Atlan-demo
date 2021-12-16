@@ -32,7 +32,8 @@
                 default: false,
             },
         },
-        setup(props, context) {
+emits: ['success'],
+        setup(props, { emit }) {
             const updatingSkills = ref(false)
             const userObj = ref(props.user)
             const skills = computed(
@@ -60,6 +61,7 @@
                         updatingSkills.value = isLoading.value
                         if (isReady && !error.value && !isLoading.value) {
                             userObj.value.attributes.skills = [...updatedTags]
+                            // emit("success")
                         } else if (error && error.value) {
                             message.error(
                                 'Unable to update skills, please try again'

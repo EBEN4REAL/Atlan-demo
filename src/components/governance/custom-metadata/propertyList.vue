@@ -347,8 +347,9 @@
                 enableDragSort()
             }
 
-            watch(properties, async () => {
+            watch(properties, async (n, o) => {
                 await nextTick() // wait for new property to be available in DOM
+                if (n?.length > o?.length) enableDragSort()
                 // reInitializeDragSort()
             })
 

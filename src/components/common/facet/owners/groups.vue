@@ -108,16 +108,25 @@
             const { modelValue, disabledKeys } = useVModels(props, emit)
             const { selectGroupKey } = toRefs(props)
             const localValue = ref(modelValue.value)
-            const map = ref({})
+            // const map = ref({})
 
-            const updateMap = (localValue: Ref<any>) => {
-                map.value = {}
-                localValue.value.map((id) => {
-                    map.value[id] = true
+            // const updateMap = (localValue: Ref<any>) => {
+            //     map.value = {}
+            //     localValue.value.map((id) => {
+            //         map.value[id] = true
+            //     })
+            //     console.log(map)
+            // }
+            // updateMap(localValue)
+
+            const map = computed(() => {
+                let data = {}
+                modelValue?.value?.forEach((key) => {
+                    data[key] = true
                 })
-                console.log(map)
-            }
-            updateMap(localValue)
+                return data
+            })
+
             const {
                 list,
                 handleSearch,

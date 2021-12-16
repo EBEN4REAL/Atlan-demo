@@ -242,6 +242,25 @@ export function useInlineTab(
         tabsArray.value.find((tab) => tab.key === activeInlineTabKey.value)
     )
 
+    const setVQBInInlineTab = (
+        activeTab: activeInlineTabInterface,
+        tabsArray: Ref<activeInlineTabInterface[]>,
+        // isVQB: boolean = false,
+        localStorageSync: boolean = true
+    ) => {
+        
+        const index = tabsArray.value.findIndex(
+            (tab) => tab.key === activeTab.key
+        )
+        if (index !== -1) {
+            tabsArray.value[index] = activeTab
+        }
+        if (localStorageSync) {
+            console.log('localStorageSync')
+            syncInlineTabsInLocalStorage(tabsArray.value)
+        }
+    }
+
     return {
         tabsArray,
         activeInlineTabKey,
@@ -255,5 +274,6 @@ export function useInlineTab(
         setActiveTabKey,
         overwriteInlineTab,
         changeInlineTabeKey,
+        setVQBInInlineTab
     }
 }

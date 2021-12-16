@@ -518,9 +518,7 @@
     export default defineComponent({
         components: {},
         props: {},
-        emits: ['toggleVQB'],
         setup(props, { emit }) {
-            const showVQB = ref(false)
             const router = useRouter()
             const {
                 setEditorTheme,
@@ -531,7 +529,7 @@
             } = useEditorPreference()
 
             const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
-            const { inlineTabAdd } = useInlineTab()
+            const { inlineTabAdd, setVQBInInlineTab } = useInlineTab()
 
             themes.sort(function (a: object, b: object) {
                 return a.label - b.label
@@ -568,10 +566,14 @@
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const editorInstance = inject('editorInstance') as Ref<any>
             const route = useRoute()
-            const vqbQueryRoute = ref(route.query?.vqb)
-            const t = computed(() => {
-                console.log(vqbQueryRoute.value)
-            })
+            // const vqbQueryRoute = ref(route.query?.vqb)
+            // const t = computed(() => {
+            //     console.log(vqbQueryRoute.value)
+            //     return vqbQueryRoute
+            // })
+
+            const vqbQueryRoute = computed(() => route.query?.vqb)
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -581,6 +583,14 @@
             const tabsArray = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+
+            const showVQB = computed(() => {
+                console.log(
+                    'showVQB: ',
+                    activeInlineTab?.value?.playground?.isVQB
+                )
+                return activeInlineTab?.value?.playground?.isVQB
+            })
 
             const isActive = ref(false)
             const toggleButtonState = () => {
@@ -678,8 +688,24 @@
                 )
             }
             const toggleVQB = () => {
-                showVQB.value = !showVQB.value
-                emit('toggleVQB', showVQB.value)
+                // showVQB.value = !showVQB.value
+                // activeInlineTab.value.playground.isVQB =
+                //     !activeInlineTab?.value?.playground?.isVQB
+
+                // console.log('show vqb: ', showVQB.value)
+                console.log('route: ', route.query?.vqb)
+                console.log('route: ', vqbQueryRoute.value)
+                // console.log('route: ', vqbRoute.value)
+
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+
+                activeInlineTabCopy.playground.isVQB =
+                    !activeInlineTabCopy?.playground?.isVQB
+
+                setVQBInInlineTab(activeInlineTabCopy, tabsArray, true)
+
+                // emit('toggleVQB', showVQB.value)
             }
             const copyURL = () => {
                 const URL = window.location.href

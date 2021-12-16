@@ -6,7 +6,6 @@
                 :isQueryRunning="isQueryRunning"
                 @onClickSaveQuery="saveOrUpdate"
                 @onClickRunQuery="toggleRun"
-                @toggleVQB="toggleVQB"
             />
             <SaveQueryModal
                 v-model:showSaveQueryModal="showSaveQueryModal"
@@ -291,8 +290,11 @@
             const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun, abortQuery } = useRunQuery()
-            const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
-                useInlineTab()
+            const {
+                modifyActiveInlineTabEditor,
+                modifyActiveInlineTab,
+                setVQBInInlineTab,
+            } = useInlineTab()
             const { toggleFullScreenMode } = useFullScreen()
             const editorPos: Ref<{ column: number; lineNumber: number }> = ref({
                 column: 0,
@@ -305,12 +307,16 @@
                 rowsCount: 100,
             })
             const showcustomToolBar = ref(false)
-            const showVQB = ref(false)
             const showQueryPreview = ref(false)
 
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const showVQB = computed(
+                () => activeInlineTab.value.playground.isVQB
+            )
+
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -594,9 +600,9 @@
                 }
             })
 
-            function toggleVQB() {
-                showVQB.value = !showVQB.value
-            }
+            // function toggleVQB() {
+            //     showVQB.value = !showVQB.value
+            // }
 
             const _keyListener = (e) => {
                 if (e.key === 'Enter') {
@@ -625,7 +631,18 @@
                     if (e.ctrlKey) {
                         e.preventDefault()
                         if (vqbQueryRoute.value) {
-                            showVQB.value = !showVQB.value
+                            // showVQB.value = !showVQB.value
+                            const activeInlineTabCopy: activeInlineTabInterface =
+                                Object.assign({}, activeInlineTab.value)
+
+                            activeInlineTabCopy.playground.isVQB =
+                                !activeInlineTabCopy?.playground?.isVQB
+
+                            setVQBInInlineTab(
+                                activeInlineTabCopy,
+                                inlineTabs,
+                                true
+                            )
                         }
                     }
                     //prevent the default action
@@ -689,7 +706,7 @@
                 toggleRun,
                 queryFolderNamespace,
                 defaultClassification,
-                toggleVQB,
+                // toggleVQB,
             }
         },
     })

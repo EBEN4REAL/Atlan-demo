@@ -330,6 +330,7 @@ const useQueryTree = ({
         currentSelectedNode.value = event.node
 
         if (item.typeName === 'Query') {
+            console.log('query item: ', item)
             immediateParentFolderQF.value = item.attributes.parentQualifiedName
             immediateParentGuid.value = nodeToParentKeyMap[item.guid]
 
@@ -337,7 +338,7 @@ const useQueryTree = ({
 
             selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {
-                pushGuidToURL(item.guid)
+                pushGuidToURL(item)
             }
         } else if (item.typeName === 'QueryFolder') {
             immediateParentFolderQF.value = item.attributes.qualifiedName

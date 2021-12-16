@@ -1,14 +1,14 @@
 <template>
     <div class="w-full">
         <a-tree-select
-            v-model:treeExpandedKeys="expandedKeys"
-            :value="selectedValue"
-            style="width: 100%"
             :ref="
                 (el) => {
                     treeSelectRef = el
                 }
             "
+            v-model:treeExpandedKeys="expandedKeys"
+            :value="selectedValue"
+            style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
@@ -24,7 +24,7 @@
             <template #title="node">
                 <div
                     v-if="node.node.nodeType !== 'info-node'"
-                    class="flex items-center truncate"
+                    class="flex items-center truncate selected-connetor"
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
@@ -209,9 +209,7 @@
                         children,
                     }
                     if (props.showEmptyParents) tree.push(treeNodeObj)
-                    else {
-                        if (children && children.length) tree.push(treeNodeObj)
-                    }
+                    else if (children && children.length) tree.push(treeNodeObj)
                 })
                 if (props.footerNodeContent)
                     tree.push({

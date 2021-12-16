@@ -27,24 +27,65 @@
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center">
                         <div
-                            class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5"
-                            :class="
-                                !expand
-                                    ? [
-                                          'flex items-center justify-center mr-2 bg-gray-100 border border-gray-300 rounded-full p-1.5 text-gray-500',
-                                      ]
-                                    : [
-                                          'flex items-center justify-center mr-2 bg-primary-light  border-primary-focus rounded-full p-1.5 text-primary',
-                                      ]
-                            "
+                            class="flex items-center relative justify-center mr-2 bg-gray-100 border rounded-full p-1.5"
+                            :class="[
+                                isChecked
+                                    ? 'text-gray-500 bg-gray-100 border border-gray-300'
+                                    : 'text-gray-400 bg-gray-100 border border-gray-300',
+                                isChecked && expand
+                                    ? 'border-primary-focus bg-primary-light text-primary '
+                                    : '',
+                                'flex items-center justify-center mr-2  rounded-full p-1.5 ',
+                            ]"
                             style="z-index: 2"
                         >
-                            <AtlanIcon icon="Columns" class="w-4 h-4" />
+                            <span class="absolute text-sm -right-0.5 -top-1.5"
+                                >⚡️</span
+                            >
+                            <AtlanIcon
+                                icon="FilterFunnel"
+                                :class="[
+                                    isChecked
+                                        ? 'text-gray-500'
+                                        : 'text-gray-400',
+                                    isChecked && expand ? 'text-primary' : '',
+                                    ' w-4 h-4 ',
+                                ]"
+                            />
                         </div>
                         <div class="">
-                            <p class="text-sm font-bold text-gray">Filter</p>
-                            <p class="text-xs text-gray-500" v-if="!expand">
-                                Summarised info
+                            <div
+                                :class="[
+                                    isChecked ? 'text-gray' : 'text-gray-500',
+                                    'text-sm  ',
+                                ]"
+                            >
+                                <div class="flex items-center">
+                                    <div class="relative font-bold">Filter</div>
+                                    <div
+                                        v-if="!isChecked && expand"
+                                        class="px-3 py-1 ml-2 text-gray-500 rounded-full bg-gray-light"
+                                    >
+                                        Disabled
+                                    </div>
+                                </div>
+                            </div>
+                            <p
+                                :class="[
+                                    isChecked
+                                        ? 'text-gray-500'
+                                        : 'text-gray-400 line-through',
+                                    'text-xs truncate',
+                                ]"
+                                v-if="!expand"
+                            >
+                                {{
+                                    getSummarisedInfoOfFilterPanel(
+                                        activeInlineTab.playground.vqb.panels[
+                                            index
+                                        ].subpanels
+                                    )
+                                }}
                             </p>
                         </div>
                     </div>
@@ -59,7 +100,12 @@
                             class="px-3 py-1.5 border-gray-300 flex items-center justify-center border-r"
                             @click.stop="() => {}"
                         >
-                            <a-checkbox v-model:checked="checkbox"></a-checkbox>
+                            <a-checkbox
+                                v-model:checked="
+                                    activeInlineTab.playground.vqb.panels[index]
+                                        .hide
+                                "
+                            ></a-checkbox>
                         </div>
                         <div
                             class="border-r border-gray-300"
@@ -147,6 +193,7 @@
 
 <script lang="ts">
     import {
+        computed,
         defineComponent,
         toRefs,
         watch,
@@ -164,6 +211,7 @@
     import Actions from '../action/index.vue'
     import FooterActions from '../action/footer.vue'
     import FilterSubPanel from './subpanel/index.vue'
+    import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
 
     export default defineComponent({
         name: 'Aggregate',
@@ -185,6 +233,12 @@
         },
         setup(props, { emit }) {
             const { index, panel } = toRefs(props)
+            const { getSummarisedInfoOfFilterPanel } = useUtils()
+            const isChecked = computed(
+                () =>
+                    activeInlineTab.value.playground.vqb.panels[index.value]
+                        .hide
+            )
             const containerHovered = ref(false)
             const submenuHovered = ref(false)
             const expand = ref(false)
@@ -255,6 +309,8 @@
             )
 
             return {
+                getSummarisedInfoOfFilterPanel,
+                isChecked,
                 submenuHovered,
                 handleMouseOver,
                 handleMouseOut,

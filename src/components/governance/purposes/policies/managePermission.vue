@@ -23,7 +23,7 @@
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"
-                type="persona"
+                type="purpose"
             />
         </div>
         <div
@@ -59,7 +59,7 @@
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
-        name: 'ManagePermition',
+        name: 'ManagePermitionPurpose',
         components: {
             MetadataScopes,
             AtlanBtn,

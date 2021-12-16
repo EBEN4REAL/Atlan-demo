@@ -310,6 +310,8 @@ import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
 import PublicCollection from '~/assets/images/icons/publicCollection.svg'
 import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
+import QueryGrey from '~/assets/images/icons/query-grey.svg'
+import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 
 export default {
     BuilderGroup,
@@ -612,5 +614,7 @@ export default {
     Policies,
     PublicCollection,
     PrivateCollection,
-    NoSelectedAsset
+    NoSelectedAsset,
+    QueryGrey,
+    NoResultIllustration,
 }

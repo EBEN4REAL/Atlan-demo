@@ -51,7 +51,7 @@
                 <div class="w-full overflow-y-auto">
                     <a-modal
                         v-model:visible="isCmndKVisible"
-                        width="800px"
+                        width="630px"
                         class="rounded-md"
                         :destroy-on-close="true"
                         wrap-class-name="rounded-md"

@@ -5,7 +5,7 @@
             v-model:activeKey="selectedTab"
             class="w-full"
             :class="$style.assetbar"
-            :tabBarGutter="2"
+            :tab-bar-gutter="2"
             @change="onTabChange"
         >
             <a-tab-pane v-for="item in dataList" :key="item.id">
@@ -15,9 +15,9 @@
                         class="flex items-center"
                     >
                         <AtlanIcon
+                            v-if="icon"
                             :icon="icon"
                             class="self-center mr-1"
-                            v-if="icon"
                         ></AtlanIcon>
 
                         <AtlanIcon
@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { getCountString } from '~/utils/number'
 
@@ -91,7 +91,7 @@
 
             const onTabChange = () => {
                 modelValue.value = selectedTab.value
-                emit('change')
+                emit('change', selectedTab.value)
             }
 
             const addAllToList = () => {
@@ -125,7 +125,7 @@
                             })
                         }
                     }
-                } else if (dataList.value.length !== 1) {
+                } else if (dataList.value.length !== 1 && !noAll.value) {
                     dataList.value.unshift({
                         id: '__all',
                         label: 'All',
@@ -138,6 +138,11 @@
 
             watch(list, (cur, prev) => {
                 addAllToList()
+            })
+
+            watch(modelValue, (cur) => {
+                selectedTab.value = cur
+                emit('change', selectedTab.value)
             })
 
             return {
@@ -210,7 +215,7 @@
         }
 
         :global(.ant-tabs-extra-content) {
-            @apply pb-1 pr-2   !important;
+            @apply pb-0 pr-0   !important;
         }
 
         :global(.ant-tabs-tab-arrow-show) {

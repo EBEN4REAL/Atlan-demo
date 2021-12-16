@@ -1,11 +1,18 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <a-tabs v-model:activeKey="relevantTab" @change="selectRelevantTab($event)">
+    <a-tabs
+        v-model:activeKey="relevantTab"
+        :class="$style.hometab"
+        @change="selectRelevantTab($event)"
+        class="px-6 py-3 border border-gray-200 rounded-lg"
+    >
         <a-tab-pane v-for="t in relevantTabList" :key="t.id" :tab="t.name"
             ><component
+                height="150px"
                 :is="t.component"
                 :username="myUsername"
                 :typeNames="t.typeName"
+                :initialFilters="t.filter"
                 :icon="t.icon"
                 :empty-text="t.emptyText"
             >
@@ -23,7 +30,7 @@
         name: 'Relevant',
         components: {
             AssetList: defineAsyncComponent(
-                () => import('~/components/home/assetList.vue')
+                () => import('~/components/home/assets/index.vue')
             ),
             recentlyViewedAssets: defineAsyncComponent(
                 () => import('~/components/home/recentlyViewedAssets.vue')
@@ -31,6 +38,7 @@
         },
         setup() {
             const relevantTab = ref(1)
+            const { username: myUsername } = whoami()
 
             const relevantTabList = [
                 /* {
@@ -43,20 +51,25 @@
                     name: 'Recent',
                     component: 'Recent',
                 }, */
-                {
-                    id: 1,
-                    name: 'Recently visited',
-                    component: 'recentlyViewedAssets',
-                    typeName: ['Table'],
-                    icon: 'NoRelevantAsset',
-                    emptyText: 'All your assets will appear here.',
-                },
+                // {
+                //     id: 1,
+                //     name: 'Recently visited',
+                //     component: 'recentlyViewedAssets',
+                //     typeName: ['Table'],
+                //     icon: 'NoRelevantAsset',
+                //     emptyText: 'All your assets will appear here.',
+                // },
                 {
                     id: 2,
                     name: 'My Assets',
                     component: 'AssetList',
                     typeName: ['Table'],
                     icon: 'NoRelevantAsset',
+                    filter: {
+                        owners: {
+                            ownerUsers: [myUsername.value],
+                        },
+                    },
                     emptyText: 'All your assets will appear here.',
                 },
                 /*{
@@ -82,8 +95,6 @@
                 }, */
             ]
 
-            const { username: myUsername } = whoami()
-
             const selectRelevantTab = (val: number) => {
                 relevantTab.value = val
             }
@@ -96,3 +107,11 @@
         },
     })
 </script>
+
+<style lang="less" module>
+    .hometab {
+        :global(.ant-tabs-nav) {
+            @apply mb-0 !important;
+        }
+    }
+</style>

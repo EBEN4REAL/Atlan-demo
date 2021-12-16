@@ -5,7 +5,7 @@ import { aggregatedAliasMap } from '../constants/aggregation'
 import { useFilter } from './useFilter'
 
 const { nameMap, getInputTypeFromColumnType } = useFilter()
-function getValueStringFromType(subpanel, value) {
+export function getValueStringFromType(subpanel, value) {
     let res = ''
     const type = getInputTypeFromColumnType(subpanel?.column?.type)
     if (type === 'number') res += `${value}`
@@ -71,7 +71,8 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                     }
                 }
                 subpanel.columns.forEach((columnName) => {
-                    select.field(columnName)
+                    if (columnName === 'all') select.field('*')
+                    else select.field(columnName)
                 })
             }
         })
@@ -153,7 +154,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                     break
                 }
                 case 'multi_input': {
-                    res += ` '${subpanel?.filter?.value?.join(',') ?? ''}'`
+                    res += ` ('${subpanel?.filter?.value?.join(',') ?? ''}')`
                     break
                 }
                 case 'none': {

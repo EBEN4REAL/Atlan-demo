@@ -110,7 +110,7 @@
                                         <div class="flex items-center">
                                             <AtlanIcon
                                                 v-if="option.icon"
-                                                class="w-4 h-4 text-gray-600"
+                                                class="w-4 h-4 text-gray-700"
                                                 :icon="option.icon"
                                             />
                                             <span class="pl-2 text-sm">{{
@@ -124,7 +124,7 @@
                     </div>
                     <div
                         v-if="totalPolicy !== 0"
-                        class="px-3 py-4 bg-white container-tabs"
+                        class="px-3 pt-4 bg-white container-tabs"
                     >
                         <AggregationTabs
                             v-model="activeTabFilter"
@@ -148,11 +148,11 @@
                         :policy="policy"
                         type="meta"
                         :selected-policy="selectedPolicy"
+                        :whitelisted-connection-ids="whitelistedConnectionIds"
                         @edit="setEditFlag('meta', policy.id!)"
                         @delete="deletePolicyUI('meta', policy.id!)"
                         @cancel="discardPolicy('meta', policy.id!)"
                         @clickCard="handleSelectPolicy"
-                        :whitelistedConnectionIds="whitelistedConnectionIds"
                     />
                 </template>
                 <template
@@ -173,13 +173,27 @@
                         :policy="policy"
                         type="data"
                         :selected-policy="selectedPolicy"
+                        :whitelisted-connection-ids="whitelistedConnectionIds"
                         @edit="setEditFlag('data', policy.id!)"
                         @delete="deletePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                         @clickCard="handleSelectPolicy"
-                        :whitelistedConnectionIds="whitelistedConnectionIds"
                     />
                 </template>
+                <div
+                    v-if="
+                        metaDataComputed.length === 0 &&
+                        dataPolicyComputed.length === 0 &&
+                        searchPersona
+                    "
+                    class="flex flex-col items-center justify-center mt-8"
+                >
+                    <component :is="NoResultIllustration"></component>
+                    <span class="text-sm font-bold text-gray">
+                        Sorry, we couldn’t find the policy you were looking
+                        for</span
+                    >
+                </div>
                 <!-- For pusing the new edit policy to bottom -->
                 <!-- <template
                     v-for="(
@@ -215,7 +229,8 @@
                 <div
                     v-if="
                         !selectedPersonaDirty.metadataPolicies?.length &&
-                        !selectedPersonaDirty.dataPolicies?.length
+                        !selectedPersonaDirty.dataPolicies?.length &&
+                        !searchPersona
                     "
                     class="flex flex-col items-center justify-center mt-8"
                 >
@@ -247,9 +262,9 @@
             :is-edit="isEdit"
             :is-loading="loadingPolicy"
             :persona="persona"
+            :whitelisted-connection-ids="whitelistedConnectionIds"
             @save="savePolicyUI"
             @close="handleCloseAdd"
-            :whitelistedConnectionIds="whitelistedConnectionIds"
         />
     </a-drawer>
 </template>
@@ -266,6 +281,7 @@
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+    import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { filterMethod } from '~/utils/helper/search'
     import Addpolicy from './addpolicy.vue'
@@ -330,7 +346,7 @@
                 },
                 {
                     title: 'Data Policy',
-                    icon: 'Query',
+                    icon: 'QueryGrey',
                     handleClick: () => handleAddPolicy('data'),
                 },
             ]
@@ -391,38 +407,6 @@
                     })
                 }
             }
-            const tabFilterList = computed(() => {
-                const listFilter = [
-                    {
-                        id: 'all Persona',
-                        label: 'All ',
-                        count:
-                            (selectedPersonaDirty?.value?.metadataPolicies
-                                ?.length || 0) +
-                            (selectedPersonaDirty?.value?.dataPolicies
-                                ?.length || 0),
-                    },
-                ]
-                const lengthMetaData =
-                    selectedPersonaDirty?.value?.metadataPolicies?.length || 0
-                const lengthDataPolicy =
-                    selectedPersonaDirty?.value?.dataPolicies?.length || 0
-                if (lengthMetaData > 0) {
-                    listFilter.push({
-                        id: 'metaData',
-                        label: 'MetaData',
-                        count: lengthMetaData,
-                    })
-                }
-                if (lengthDataPolicy > 0) {
-                    listFilter.push({
-                        id: 'data',
-                        label: 'data',
-                        count: lengthDataPolicy,
-                    })
-                }
-                return listFilter
-            })
             const metaDataComputed = computed(() => {
                 if (
                     !activeTabFilter.value ||
@@ -454,6 +438,40 @@
                     )
                 }
                 return []
+            })
+            const tabFilterList = computed(() => {
+                const dataMeta =
+                    selectedPersonaDirty?.value?.metadataPolicies || []
+                const lengthMetaData = filterMethod(
+                    dataMeta,
+                    searchPersona.value || '',
+                    'name'
+                ).length
+                const dataPolicy =
+                    selectedPersonaDirty?.value?.dataPolicies || 0
+                const lengthDataPolicy = filterMethod(
+                    dataPolicy,
+                    searchPersona.value || '',
+                    'name'
+                ).length
+                const listFilter = [
+                    {
+                        id: 'all Persona',
+                        label: 'All ',
+                        count: lengthMetaData + lengthDataPolicy || '0',
+                    },
+                ]
+                listFilter.push({
+                    id: 'metaData',
+                    label: 'Metadata',
+                    count: lengthMetaData || '0',
+                })
+                listFilter.push({
+                    id: 'data',
+                    label: 'Data',
+                    count: lengthDataPolicy || '0',
+                })
+                return listFilter
             })
             const handleSelectPolicy = (policy) => {
                 selectedPolicy.value = policy
@@ -502,6 +520,7 @@
                 handleCloseAdd,
                 isEdit,
                 loadingPolicy,
+                NoResultIllustration,
             }
         },
     })

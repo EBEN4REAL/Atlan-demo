@@ -1,6 +1,6 @@
 import { computed, Ref, ref, watch, onMounted } from 'vue'
 import bodybuilder from 'bodybuilder'
-import dayjs from "dayjs"
+import dayjs from 'dayjs'
 import { Search } from '~/services/meta/search'
 import { assetInterface } from '~/types/assets/asset.interface'
 import {
@@ -19,15 +19,9 @@ function generateQueryDSL(typeNames, username) {
     return query.build()
 }
 
-export function useAssetListing<T>(
-    typeNames?: string[],
-    username?: string,
-) {
-
+export function useAssetListing<T>(typeNames?: string[], username?: string) {
     const payload = computed(() => ({
-        relationAttributes: [
-            ...AssetRelationAttributes
-        ],
+        relationAttributes: [...AssetRelationAttributes],
         dsl: {
             size: 10,
             from: 0,
@@ -41,9 +35,8 @@ export function useAssetListing<T>(
     }))
 
     const list: Ref<assetInterface[]> = ref([])
-    const { data, mutate, error, isLoading } = Search.IndexSearch<assetInterface>(
-        payload.value, {}
-    )
+    const { data, mutate, error, isLoading } =
+        Search.IndexSearch<assetInterface>(payload.value, {})
 
     watch(data, () => {
         if (data.value?.entities) {
@@ -59,30 +52,30 @@ export function useAssetListing<T>(
     }
 }
 
-export function getAggregations<T>(
-    typeNames?: string[]
-) {
-
-    const query = bodybuilder().filter('terms', '__typeName.keyword', typeNames).size(0).filter(
-        'term',
-        '__state',
-        'ACTIVE'
-    )
+export function getAggregations<T>(typeNames?: string[]) {
+    const query = bodybuilder()
+        .filter('terms', '__typeName.keyword', typeNames)
+        .size(0)
+        .filter('term', '__state', 'ACTIVE')
         .aggregation(
             'terms',
             '__typeName.keyword',
             { size: 50 },
             'group_by_typeName'
-        ).build()
+        )
+        .build()
 
     const list: Ref<any[]> = ref([])
     const { data, isLoading } = Search.IndexSearch<assetInterface>(
-        { dsl: query }, {}
+        { dsl: query },
+        {}
     )
 
     watch(data, () => {
         if (data.value?.aggregations?.group_by_typeName?.buckets) {
-            list.value = [...data.value?.aggregations?.group_by_typeName?.buckets]
+            list.value = [
+                ...data.value?.aggregations?.group_by_typeName?.buckets,
+            ]
         } else {
             list.value = []
         }
@@ -147,4 +140,3 @@ export function useRecentAssets() {
 }
 
  */
-

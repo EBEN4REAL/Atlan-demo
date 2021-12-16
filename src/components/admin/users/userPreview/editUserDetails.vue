@@ -17,6 +17,7 @@
                         :avatar-shape="'circle'"
                         :image-url="avatarUrl"
                         :avatar-size="100"
+                        @image-updated="handleImageUpdate"
                     />
                     <div
                         class="absolute bottom-0 p-1 bg-white rounded-full  left-20"
@@ -146,7 +147,7 @@
                 default: false,
             },
         },
-        emits: ['updatedUser', 'toggleEdit', 'success', 'changedLoading'],
+        emits: ['updatedUser', 'toggleEdit', 'success', 'changedLoading', 'imageUpdated'],
         setup(props, { emit }) {
             const isRequestLoading = ref(false)
             const updateError = ref("")
@@ -243,6 +244,9 @@
                 formRef.value.resetFields()
                 emit('toggleEdit')
             }
+            const handleImageUpdate = (updatedImageUrl) => {
+                emit('imageUpdated', updatedImageUrl)
+            }
 
             const avatarUrl = computed(() => `${window.location.origin}/api/service/avatars/${selectedUser.value.username}`)
             return {
@@ -254,7 +258,8 @@
                 formData,
                 avatarUrl,
                 isRequestLoading,
-                updateError
+                updateError,
+                handleImageUpdate
             }
         }
     }

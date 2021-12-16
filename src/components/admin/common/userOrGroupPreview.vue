@@ -27,7 +27,7 @@
             <div class="relative flex mx-4 my-5">
                 <Avatar
                     v-if="isValidUser"
-                    :image-url="imageUrl"
+                    :image-url="updatedImageUrl || imageUrl"
                     :allow-upload="isCurrentUser"
                     :avatar-name="
                         selectedUser.name ||
@@ -94,6 +94,7 @@
                         @updatedUser="handleUpdate"
                         @refreshTable="reload"
                         @success="reload"
+                        @image-updated="handleImageUpdate"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -106,9 +107,10 @@
         defineAsyncComponent,
         computed,
         toRefs,
+        ref
     } from 'vue'
     import ErrorView from '@common/error/index.vue'
-    import Avatar from '@common/avatar/index.vue'
+    import Avatar from '@common/avatar/avatar.vue'
     import SidePanelTabHeaders from '@common/tabs/sidePanelTabHeaders.vue'
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
@@ -158,6 +160,7 @@
         setup(props) {
             // Is it a user preview drawer or a group one.
             const { previewType } = toRefs(props)
+            const updatedImageUrl = ref(null)
             const isUserPreview = computed(() => previewType.value === 'user')
 
             const {
@@ -250,6 +253,10 @@
                 return ''
             })
 
+            const handleImageUpdate = (newImageUrl) => {
+                updatedImageUrl.value = newImageUrl.value
+            }
+
             const slackEnabled = computed(() => slackProfile.value)
             const slackUrl = computed(() =>
                 slackEnabled.value
@@ -275,6 +282,8 @@
                 imageUrl,
                 slackEnabled,
                 slackUrl,
+                handleImageUpdate,
+                updatedImageUrl
             }
         },
     })

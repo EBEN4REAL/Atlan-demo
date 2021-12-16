@@ -282,6 +282,7 @@
         setup(props) {
             const router = useRouter()
             const route = useRoute()
+            const vqbQueryRoute = ref(route.query?.vqb)
             const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
@@ -623,7 +624,9 @@
                 if (e.key === 'Q' || e.key === 'q') {
                     if (e.ctrlKey) {
                         e.preventDefault()
-                        showVQB.value = !showVQB.value
+                        if (vqbQueryRoute.value) {
+                            showVQB.value = !showVQB.value
+                        }
                     }
                     //prevent the default action
                 }

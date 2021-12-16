@@ -153,7 +153,7 @@ export function generateSQLQuery(activeInlineTab: activeInlineTabInterface) {
                     break
                 }
                 case 'multi_input': {
-                    res += ` '${subpanel?.filter?.value?.join(',')}'`
+                    res += ` '${subpanel?.filter?.value?.join(',') ?? ''}'`
                     break
                 }
                 case 'none': {

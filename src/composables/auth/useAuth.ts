@@ -17,7 +17,24 @@ export default function useAuth() {
         }
     }
 
+    const checkAccess = (
+        permissions: Array<string> | string,
+        operator: 'and' | 'or' = 'and'
+    ) => {
+        if (Array.isArray(permissions)) {
+            if (operator === 'or')
+                return permissions?.some(
+                    (elem) => authStore.permissions.indexOf(elem) > -1
+                )
+            return permissions?.every(
+                (elem) => authStore.permissions.indexOf(elem) > -1
+            )
+        }
+        return authStore.permissions.indexOf(permissions) > -1
+    }
+
     return {
         isAccess,
+        checkAccess,
     }
 }

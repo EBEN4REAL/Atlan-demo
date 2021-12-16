@@ -60,27 +60,21 @@
                     <template v-slot:default="{ item }">
                         <AssetItem
                             :item="item"
-                            :selectedGuid="selectedAsset.guid"
                             @preview="handlePreview"
-                            @updateDrawer="updateCurrentList"
                             :preference="preference"
                             :show-check-box="showCheckBox"
-                            :bulk-select-mode="
-                                bulkSelectedAssets && bulkSelectedAssets.length
-                                    ? true
-                                    : false
-                            "
                             :enableSidebarDrawer="enableSidebarDrawer"
-                            :is-checked="checkSelectedCriteriaFxn(item)"
-                            @listItem:check="
-                                (e, item) => updateBulkSelectedAssets(item)
-                            "
                             :class="page !== 'admin' ? '' : ''"
                         ></AssetItem>
                     </template>
                 </AssetList>
             </div>
         </div>
+        <AssetDrawer
+            :data="selectedAsset"
+            :show-drawer="showDrawer"
+            @closeDrawer="handleCloseDrawer"
+        />
     </div>
 </template>
 
@@ -119,8 +113,9 @@
 
     import useAssetStore from '~/store/asset'
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
-    import useBulkUpdateStore from '~/store/bulkUpdate'
+
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -130,7 +125,7 @@
 
             EmptyView,
             ErrorView,
-
+            AssetDrawer,
             AssetItem,
         },
         props: {
@@ -143,11 +138,7 @@
                 type: Object,
                 required: false,
                 default: () => {
-                    return {
-                        owners: {
-                            ownerUsers: ['bankavarun'],
-                        },
-                    }
+                    return {}
                 },
             },
             preference: {
@@ -196,13 +187,15 @@
             },
         },
         setup(props, { emit }) {
+            const showDrawer = ref(false)
+
             const { preference: preferenceProp, checkedCriteria } =
                 toRefs(props)
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({})
-            const selectedAssetId = ref('')
+
             /* Assiging prefrence props if any from props */
             const preference = ref(toRaw(preferenceProp.value))
             const aggregations = ref(['typeName'])
@@ -267,7 +260,7 @@
                 fetch,
 
                 error,
-                selectedAsset,
+
                 quickChange,
                 updateList,
             } = useDiscoverList({
@@ -284,7 +277,16 @@
                 relationAttributes,
             })
 
-            const handlePreview = inject('preview')
+            const selectedAsset = ref(null)
+            const handlePreview = (item) => {
+                selectedAsset.value = item
+
+                showDrawer.value = true
+            }
+
+            const handleCloseDrawer = () => {
+                showDrawer.value = false
+            }
 
             const updateCurrentList = (asset) => {
                 updateList(asset)
@@ -348,85 +350,7 @@
                 return 'Search all assets'
             })
 
-            /* BULK SELECTION */
-            const store = useBulkUpdateStore()
-            const bulkSelectedAssets: Ref<any[]> = ref(
-                toRaw(store.bulkSelectedAssets)
-            )
-            watch(store, () => {
-                bulkSelectedAssets.value = store.$state.bulkSelectedAssets
-            })
-            const updateBulkSelectedAssets = (listItem) => {
-                switch (checkedCriteria.value) {
-                    case 'guid': {
-                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                            (item) => item?.guid === listItem?.guid
-                        )
-                        if (itemIndex >= 0)
-                            bulkSelectedAssets.value.splice(itemIndex, 1)
-                        else bulkSelectedAssets.value.push(listItem)
-                        break
-                    }
-                    case 'qualifiedName': {
-                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                            (qualifiedName) =>
-                                qualifiedName ===
-                                listItem?.attributes?.qualifiedName
-                        )
-                        if (itemIndex >= 0)
-                            bulkSelectedAssets.value.splice(itemIndex, 1)
-                        else
-                            bulkSelectedAssets.value.push(
-                                listItem?.attributes?.qualifiedName
-                            )
-                        break
-                    }
-                    default: {
-                        const itemIndex = bulkSelectedAssets?.value?.findIndex(
-                            (item) => item?.guid === listItem?.guid
-                        )
-                        if (itemIndex >= 0)
-                            bulkSelectedAssets.value.splice(itemIndex, 1)
-                        else bulkSelectedAssets.value.push(listItem)
-                    }
-                }
-                store.setBulkMode(!!bulkSelectedAssets.value.length)
-                store.setBulkSelectedAssets(bulkSelectedAssets.value)
-            }
-            /* By default it will be guid, but it can be through qualifiedName */
-            const checkSelectedCriteriaFxn = (item) => {
-                switch (checkedCriteria.value) {
-                    case 'guid': {
-                        return (
-                            bulkSelectedAssets.value.findIndex(
-                                (listItem) => listItem.guid === item.guid
-                            ) > -1
-                        )
-                        break
-                    }
-                    case 'qualifiedName': {
-                        return (
-                            bulkSelectedAssets.value.findIndex(
-                                (qualifiedName) =>
-                                    qualifiedName ===
-                                    item?.attributes.qualifiedName
-                            ) > -1
-                        )
-                        break
-                    }
-                    default: {
-                        return (
-                            bulkSelectedAssets.value.findIndex(
-                                (listItem) => listItem.guid === item.guid
-                            ) > -1
-                        )
-                    }
-                }
-            }
-
             return {
-                checkSelectedCriteriaFxn,
-                selectedAssetId,
                 projection,
                 handleFilterChange,
                 isLoading,
@@ -456,8 +380,9 @@
                 updateList,
                 updateCurrentList,
                 searchDirtyTimestamp,
-                updateBulkSelectedAssets,
-                bulkSelectedAssets,
+
+                showDrawer,
+                handleCloseDrawer,
             }
         },
     })

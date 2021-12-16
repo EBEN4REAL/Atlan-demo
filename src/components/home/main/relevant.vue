@@ -12,6 +12,7 @@
                 :is="t.component"
                 :username="myUsername"
                 :typeNames="t.typeName"
+                :initialFilters="t.filter"
                 :icon="t.icon"
                 :empty-text="t.emptyText"
             >
@@ -37,6 +38,7 @@
         },
         setup() {
             const relevantTab = ref(1)
+            const { username: myUsername } = whoami()
 
             const relevantTabList = [
                 /* {
@@ -63,6 +65,11 @@
                     component: 'AssetList',
                     typeName: ['Table'],
                     icon: 'NoRelevantAsset',
+                    filter: {
+                        owners: {
+                            ownerUsers: [myUsername.value],
+                        },
+                    },
                     emptyText: 'All your assets will appear here.',
                 },
                 /*{
@@ -87,8 +94,6 @@
                     component: 'Subscribed',
                 }, */
             ]
-
-            const { username: myUsername } = whoami()
 
             const selectRelevantTab = (val: number) => {
                 relevantTab.value = val

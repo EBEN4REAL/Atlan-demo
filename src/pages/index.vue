@@ -23,7 +23,7 @@
             </div>
         </div>
         <aside
-            class="flex flex-col w-48 col-span-2 mb-24 ml-8 xl:w-64 gap-y-12 lg:w-56"
+            class="flex flex-col w-48 col-span-2 mt-8 mb-24 ml-8 xl:w-64 gap-y-12 lg:w-56"
         >
             <section>
                 <YourWorkspace />

@@ -188,6 +188,7 @@
     import useAssetStore from '~/store/asset'
     import { discoveryFilters } from '~/constant/filters/discoveryFilters'
     import useBulkUpdateStore from '~/store/bulkUpdate'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -355,8 +356,13 @@
                 updateList(asset)
             }
 
+            const sendSearchEvent = useDebounceFn(() => {
+                useAddEvent('discovery', 'search', 'changed')
+            }, 600)
+
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
+                sendSearchEvent()
                 quickChange()
             }, 100)
 

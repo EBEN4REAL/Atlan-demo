@@ -130,7 +130,6 @@ export default function useAssetInfo() {
     const link = (asset: assetInterface) => attributes(asset)?.link
 
     const getTabs = (list, typeName: string) => {
-        console.log(list, typeName)
         return list.filter((i) => {
             let flag = true
             if (i.includes) {

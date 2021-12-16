@@ -79,8 +79,18 @@
                         </div>
                         <div
                             v-else
-                            class="text-sm tracking-wider text-gray-500 uppercase"
+                            class="flex items-center text-sm tracking-wider text-gray-500 uppercase"
                         >
+                            <atlan-icon
+                                v-if="isGTC(item)"
+                                :icon="`${
+                                    assetTypeLabel[item?.typeName]
+                                        .charAt(0)
+                                        .toUpperCase() +
+                                    assetTypeLabel[item?.typeName].slice(1)
+                                }`"
+                                class="mr-1"
+                            />
                             {{ assetTypeLabel[item?.typeName] }}
                         </div>
                     </div>
@@ -325,6 +335,7 @@
                 certificateStatusMessage,
                 getAssetQueryPath,
                 isScrubbed,
+                isGTC,
             } = useAssetInfo()
 
             const router = useRouter()
@@ -383,6 +394,7 @@
                 goToInsights,
                 isScrubbed,
                 assetTypeLabel,
+                isGTC,
             }
         },
     })

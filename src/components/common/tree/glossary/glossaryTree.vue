@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="isLoading && treeData.length == 0"
-        class="flex items-center justify-center flex-grow"
+        class="flex items-center justify-center flex-grow h-full"
     >
         <AtlanIcon icon="Loader" class="w-auto h-10 animate-spin"></AtlanIcon>
     </div>
@@ -17,10 +17,9 @@
             <template #trigger>
                 <div class="flex-grow">
                     <EmptyView
-                        empty-screen="EmptyDiscover"
+                        empty-screen="EmptyGlossary"
                         desc="No terms found"
                         button-text="Add Term"
-                        class="mb-10"
                     ></EmptyView>
                 </div>
             </template>

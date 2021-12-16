@@ -417,7 +417,7 @@
             }
 
             const handleResetEvent = () => {
-                facets.value = {}
+                facets.value = { ...initialFilters.value }
                 queryText.value = ''
                 handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`

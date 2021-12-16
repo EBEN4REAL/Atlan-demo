@@ -8,7 +8,6 @@
                 :static-use="false"
                 :show-aggrs="true"
                 class="asset-list"
-                page="admin"
                 :emptyViewText="
                     selectedUser || selectedGroup
                         ? `Seems like ${

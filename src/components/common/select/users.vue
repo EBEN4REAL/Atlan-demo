@@ -46,11 +46,11 @@
                     </span>
                     <span
                         v-if="userList?.length < filterTotal"
-                        class="cursor-pointer text-primary hover:underline"
+                        class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                         @mousedown="(e) => e.preventDefault()"
                     >
-                        load more
+                        load more...
                     </span>
                 </div>
             </div>

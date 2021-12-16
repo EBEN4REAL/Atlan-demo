@@ -1,41 +1,30 @@
 <template>
     <div class="grid h-full grid-cols-6 mx-auto" style="max-width: 1100px">
-        <section class="flex items-center h-24 col-span-6 gap-4 pl-9">
-            <AtlanIcon class="h-8" :icon="getIcon()" />
-            <span class="text-lg"
-                >{{ getGreet() }}, {{ getNameInTitleCase(name) }}!</span
-            >
-        </section>
-        <main
-            class="flex flex-col col-span-4 pb-16 mb-16 border-r px-9 gap-y-6"
-        >
-            <section class="">
-                <SearchAndStats />
-            </section>
-            <section class="">
-                <Announcements />
-            </section>
-            <section>
+        <div class="flex flex-col col-span-4">
+            <div class="flex items-center h-24 col-span-6 gap-4 pl-9">
+                <AtlanIcon class="h-8" :icon="getIcon()" />
+                <span class="text-lg"
+                    >{{ getGreet() }}, {{ getNameInTitleCase(name) }}!</span
+                >
+            </div>
+            <div class="flex flex-col col-span-4 px-9 gap-y-3">
+                <div class="">
+                    <SearchAndStats />
+                </div>
+                <div class="">
+                    <Announcements />
+                </div>
+
                 <Relevant />
-            </section>
-            <!--section>
+
+                <!--section>
                 <YourOrgs />
             </section-->
-        </main>
-        <aside class="flex flex-col w-48 mb-24 ml-8 xl:w-64 gap-y-12 lg:w-56">
-            <section>
-                <div class="">
-                    <img
-                        class="mb-3 rounded-lg"
-                        src="https://images.unsplash.com/photo-1606937589177-0c6374bd88ab?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1651&q=80"
-                        alt=""
-                    />
-                    <span class="text-sm text-gray-500"
-                        >Pets of Atlan, Ginger and Lemon wish you a nice day!
-                        🐾</span
-                    >
-                </div>
-            </section>
+            </div>
+        </div>
+        <aside
+            class="flex flex-col w-48 col-span-2 mb-24 ml-8 xl:w-64 gap-y-12 lg:w-56"
+        >
             <section>
                 <YourWorkspace />
             </section>

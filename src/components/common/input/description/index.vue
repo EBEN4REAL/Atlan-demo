@@ -11,9 +11,11 @@
             :class="$style.editable"
             @click="handleEdit"
         >
-            <span v-if="!isEdit && description(selectedAsset)">{{
-                description(selectedAsset)
-            }}</span>
+            <span
+                v-if="!isEdit && description(selectedAsset)"
+                class="whitespace-pre-wrap"
+                >{{ description(selectedAsset) }}</span
+            >
             <span
                 v-else-if="!isEdit && description(selectedAsset) === ''"
                 class="text-gray-500"

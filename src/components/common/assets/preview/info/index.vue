@@ -106,14 +106,18 @@
                 :source-created-at="sourceCreatedAt(selectedAsset)"
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
             > -->
+
             <div
-                v-if="rowCount(selectedAsset) > 0"
+                v-if="
+                    rowCount(selectedAsset, true) !== '0' &&
+                    rowCount(selectedAsset, true)
+                "
                 class="flex flex-col text-sm cursor-pointer"
                 @click="showSampleDataModal"
             >
                 <span class="mb-2 text-sm text-gray-500">Rows</span>
                 <span class="font-semibold text-primary">{{
-                    rowCount(selectedAsset)
+                    rowCount(selectedAsset, true)
                 }}</span>
             </div>
             <!-- </RowInfoHoverCard> -->

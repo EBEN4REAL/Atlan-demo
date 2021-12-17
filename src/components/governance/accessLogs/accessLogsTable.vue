@@ -2,7 +2,7 @@
     <div>
         <a-table
             class="overflow-hidden border rounded-lg query-access-logs-table"
-            :scroll="{ y: 'calc(100vh - 20rem)' }"
+            :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
             :table-layout="'fixed'"
             :pagination="false"
             :data-source="filteredAccessLogsList"

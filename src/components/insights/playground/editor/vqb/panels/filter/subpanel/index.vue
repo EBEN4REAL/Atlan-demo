@@ -1,15 +1,11 @@
 <template>
-    <div :class="[' mx-3 mt-1 mb-4']">
+    <div :class="[' mx-3 mt-1 mb-4 ']">
         <div class="">
             <template
                 v-for="(subpanel, index) in subpanels"
                 :key="subpanel?.id + index"
             >
-                <div
-                    class="flex items-center w-full mb-3"
-                    @mouseover="hoverItem = subpanel.id"
-                    @mouseout="hoverItem = null"
-                >
+                <div class="flex items-center w-full mb-3 group">
                     <div style="width: 90px">
                         <FilterType
                             v-if="index !== 0"
@@ -39,7 +35,10 @@
                     />
 
                     <Input
-                        v-if="subpanel?.filter?.type === 'input'"
+                        v-if="
+                            subpanel?.filter?.type === 'input' &&
+                            !subpanel?.filter?.isVariable
+                        "
                         :selectedFilter="subpanel.filter"
                         class="flex-1 ml-6"
                         :type="
@@ -49,27 +48,97 @@
                     />
 
                     <MultiInput
-                        v-if="subpanel?.filter?.type === 'multi_input'"
+                        v-if="
+                            subpanel?.filter?.type === 'multi_input' &&
+                            !subpanel?.filter?.isVariable
+                        "
                         class="flex-1 ml-6"
                         v-model:inputValue="subpanel.filter.value"
                     />
 
                     <RangeInput
-                        v-if="subpanel?.filter?.type === 'range_input'"
+                        v-if="
+                            subpanel?.filter?.type === 'range_input' &&
+                            !subpanel?.filter?.isVariable
+                        "
                         class="flex-1 ml-6"
                         :type="
                             getInputTypeFromColumnType(subpanel?.column?.type)
                         "
                         v-model:inputValue="subpanel.filter.value"
                     />
-                    <AtlanIcon
-                        @click.stop="() => handleDelete(index)"
-                        icon="Close"
-                        class="w-6 h-6 text-gray-500 mt-0.5 cursor-pointer ml-3"
-                        :class="`opacity-${
-                            hoverItem === subpanel.id ? 100 : 0
-                        }`"
-                    />
+
+                    <!-- Custom variable placeholder -->
+                    <div
+                        v-if="subpanel?.filter?.isVariable"
+                        class="flex items-center flex-1 ml-6 border border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+                        style="height: 32px !important"
+                    >
+                        <code class="px-3 truncate">
+                            <a-tooltip placement="bottomLeft">
+                                <template #title
+                                    >{{
+                                        getInputTypeFromColumnType(
+                                            subpanel?.column?.type
+                                        )?.toUpperCase()
+                                    }}:&nbsp;
+                                    {{ getCustomVariable(subpanel.id).value }}
+                                </template>
+                                <div
+                                    class="truncate cursor-pointer moustacheDecoration"
+                                >
+                                    {{ getCustomVariableText(subpanel.id) }}
+                                </div>
+                            </a-tooltip>
+                        </code>
+                    </div>
+                    <!--  -->
+                    <div class="flex items-center ml-3 text-gray-500">
+                        <AtlanIcon
+                            @click.stop="() => handleDelete(index)"
+                            icon="Close"
+                            class="w-6 h-6 mr-3 text-gray-500 opacity-0 mt-0.5 cursor-pointer group-hover:opacity-100"
+                        />
+
+                        <a-tooltip placement="bottomLeft">
+                            <template #title
+                                >Toggle this to change it to
+                                {{
+                                    subpanel?.filter?.isVariable
+                                        ? 'input field'
+                                        : 'custom variable'
+                                }}
+                            </template>
+                            <div>
+                                <AtlanIcon
+                                    v-if="!subpanel?.filter?.isVariable"
+                                    @click.stop="
+                                        () =>
+                                            toggleVariableType(
+                                                false,
+                                                index,
+                                                subpanel
+                                            )
+                                    "
+                                    icon="Flash"
+                                    class="w-6 h-6 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
+                                />
+                                <AtlanIcon
+                                    v-else
+                                    @click.stop="
+                                        () =>
+                                            toggleVariableType(
+                                                true,
+                                                index,
+                                                subpanel
+                                            )
+                                    "
+                                    icon="FlashColor"
+                                    class="w-6 h-6 opacity-0 cursor-pointer mt-9px hover:text-yellow-400 group-hover:opacity-100"
+                                />
+                            </div>
+                        </a-tooltip>
+                    </div>
                 </div>
             </template>
         </div>
@@ -85,7 +154,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRaw } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        PropType,
+        toRaw,
+        inject,
+        ComputedRef,
+        Ref,
+    } from 'vue'
     // import Pill from '~/components/UI/pill/pill.vue'
     // import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import FilterSelector from '../filterSelector/index.vue'
@@ -101,6 +179,9 @@
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
 
     import RangeInput from '../filterComponents/rangeInput.vue'
+    import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { editor } from 'monaco-editor'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -134,6 +215,24 @@
             const selectedAggregates = ref([])
             const selectedColumn = ref({})
             const { getInputTypeFromColumnType } = useFilter()
+
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+            const showcustomVariablesToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<Boolean>
+            const editorInstanceRef = inject(
+                'editorInstance'
+            ) as Ref<editor.IStandaloneCodeEditor>
+            const monacoInstanceRef = inject('monacoInstance') as Ref<any>
+            const editorInstance = toRaw(editorInstanceRef.value)
+            const monacoInstance = toRaw(monacoInstanceRef.value)
+            const {
+                addVariableFromVQB,
+                getCustomVaribleByVQBFilterSubpanelId,
+            } = useCustomVariable(editorInstance, monacoInstance)
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
 
             const { subpanels, columnSubpanels } = useVModels(props)
             const columnName = ref('Hello World')
@@ -173,6 +272,7 @@
                     column: {},
                     filter: {
                         filterType: 'and',
+                        isVariable: false,
                     },
                 })
                 subpanels.value = copySubPanels
@@ -182,14 +282,46 @@
             const handleDelete = (index) => {
                 subpanels.value.splice(index, 1)
             }
+            const toggleVariableType = (currVal, index, subpanel) => {
+                const Varindex =
+                    activeInlineTab.value.playground.editor.variables.findIndex(
+                        (variable) => variable?.subpanelId === subpanel.id
+                    )
+                if (Varindex < 0) {
+                    addVariableFromVQB(activeInlineTab, tabs, {
+                        vqbPanelId: 'filter',
+                        subpanelId: subpanel.id,
+                    })
+                }
+                subpanels.value[index].filter.isVariable = !currVal
+                showcustomVariablesToolBar.value = !currVal
+            }
 
             const changeColumn = (column) => {
                 console.log('columns: ', column)
+            }
+            const getCustomVariableText = (id) => {
+                const variable = getCustomVaribleByVQBFilterSubpanelId(
+                    id,
+                    activeInlineTab
+                )
+                if (variable) {
+                    return `{{${variable.name}}}`
+                } else return false
+            }
+            const getCustomVariable = (id) => {
+                return getCustomVaribleByVQBFilterSubpanelId(
+                    id,
+                    activeInlineTab
+                )
             }
 
             let hoverItem = ref(null)
 
             return {
+                getCustomVariable,
+                getCustomVariableText,
+                toggleVariableType,
                 getInputTypeFromColumnType,
                 selectedAggregates,
                 columnName,
@@ -212,5 +344,8 @@
     }
     .border-shift-minus {
         padding: 0px;
+    }
+    .mt-9px {
+        margin-top: 9px;
     }
 </style>

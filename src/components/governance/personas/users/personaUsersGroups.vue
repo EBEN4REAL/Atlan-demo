@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div class="bg-white">
         <div class="flex items-center mb-6 gap-x-3">
             <div style="width: 300px">
                 <SearchAndFilter
                     v-model:value="queryText"
                     class="bg-white w-80"
                     :placeholder="placeholder"
-                    size="bordered"
+                    size="minimal"
                 />
             </div>
             <RaisedTab v-model:active="listType" :data="tabConfig" />
@@ -18,17 +18,18 @@
                 :destroyTooltipOnHide="true"
             >
                 <AtlanBtn
-                    color="secondary"
+                    color="primary"
                     padding="compact"
+                    :size="'sm'"
                     data-test-id="add-users"
-                    class="items-center ml-auto"
+                    class="items-center px-12 ml-auto"
                     @click="() => setPopoverState(!popoverVisible)"
                     ><span class="text-xl">+</span>
                     <span>Add {{ listType }}</span></AtlanBtn
                 >
                 <template #content>
                     <div
-                        class="flex flex-col items-center px-3 py-4 bg-white rounded"
+                        class="flex flex-col items-center px-1 py-4 bg-white rounded"
                         style="width: 270px"
                     >
                         <!-- <OwnersSelector
@@ -45,75 +46,8 @@
                             :hideDisabledTabs="true"
                             v-model:modelValue="userGroupData"
                         />
-                        <div class="w-full mt-2">
-                            <!-- When both tab visible -->
-                            <div
-                                v-if="enableTabs.length == 2"
-                                class="flex justify-end text-xs"
-                            >
-                                <span
-                                    v-if="userGroupData.ownerUsers?.length > 0"
-                                    >{{
-                                        `${userGroupData.ownerUsers?.length} user(s)`
-                                    }}</span
-                                >
-                                <span
-                                    v-if="
-                                        userGroupData.ownerUsers?.length &&
-                                        userGroupData.ownerGroups?.length
-                                    "
-                                    >{{ `&nbsp;&` }}</span
-                                >
-                                <span
-                                    v-if="userGroupData.ownerGroups?.length > 0"
-                                    >{{
-                                        ` &nbsp;${userGroupData.ownerGroups?.length} group(s)`
-                                    }}</span
-                                >
-                                <span
-                                    v-if="
-                                        userGroupData.ownerGroups?.length > 0 ||
-                                        userGroupData.ownerUsers?.length > 0
-                                    "
-                                    >{{ `&nbsp;selected` }}</span
-                                >
-                            </div>
-                            <!-- -------------- -->
-                            <!-- When only user tab visible -->
-                            <div
-                                v-if="enableTabs[0] === 'users'"
-                                class="flex justify-end text-xs"
-                            >
-                                <span
-                                    v-if="userGroupData.ownerUsers?.length > 0"
-                                    >{{
-                                        `${userGroupData.ownerUsers?.length} user(s)`
-                                    }}</span
-                                >
-                                <span
-                                    v-if="userGroupData.ownerUsers?.length > 0"
-                                    >{{ `&nbsp;selected` }}</span
-                                >
-                            </div>
-                            <!-- ------------------- -->
-                            <!-- When only group tab visible -->
-                            <div
-                                v-if="enableTabs[0] === 'groups'"
-                                class="flex justify-end text-xs"
-                            >
-                                <span
-                                    v-if="userGroupData.ownerGroups?.length > 0"
-                                    >{{
-                                        ` &nbsp;${userGroupData.ownerGroups?.length} group(s)`
-                                    }}</span
-                                >
-                                <span
-                                    v-if="userGroupData.ownerGroups?.length > 0"
-                                    >{{ `&nbsp;selected` }}</span
-                                >
-                            </div>
-                            <!-- -------------- -->
-                            <div class="flex justify-between mt-2">
+                        <div class="w-full">
+                            <div class="flex justify-around">
                                 <AtlanBtn
                                     size="sm"
                                     @click="handleCancel"
@@ -148,33 +82,26 @@
                 </template>
             </a-popover>
         </div>
-        <div
-            v-if="
-                ![USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
-                    userState
-                )
-            "
-        >
+
+        <div v-if="!usersError">
             <!-- USER TABLE START -->
             <a-table
+                :pagination="false"
                 v-if="filteredList && listType === 'users'"
                 id="userList"
                 :key="persona.id"
-                class="border rounded border-300 persona-user-group-table"
+                class="overflow-hidden border rounded-lg border-300 persona-user-group-table"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 :data-source="filteredList"
                 :columns="userColumns"
                 :row-key="(user) => user.id"
                 data-test-id="user-table"
-                :loading="
-                    [USER_STATES.PENDING].includes(userState) ||
-                    [USER_STATES.VALIDATING].includes(userState)
-                "
+                :loading="isUsersLoading"
                 @change="handleUsersTableChange"
             >
                 <template #headerCell="{ title, column }">
-                    <div class="flex justify-center">
+                    <div class="flex ml-2">
                         <span>{{ title }}</span>
                     </div>
                 </template>
@@ -192,7 +119,8 @@
                                 user.email ||
                                 user.firstName + user.lastName
                             "
-                            :avatar-size="40"
+                            :avatar-size="26"
+                            avatar-shape="circle"
                             class="mr-2"
                         />
                         <div
@@ -215,7 +143,7 @@
                 <template #role="{ text: user }">
                     <div
                         :data-test-id="user.role_object.name"
-                        class="inline-flex items-center px-2 py-0.5 rounded text-gray-500"
+                        class="inline-flex items-center text-gray-700 rounded"
                     >
                         <div>{{ user.role_object.name || '-' }}</div>
                     </div>
@@ -235,12 +163,13 @@
                                 ok-text="Yes"
                                 :ok-type="'default'"
                                 cancel-text="Cancel"
+                                :icon="false"
                                 @confirm="confirmPopover(user, 'user')"
                             >
                                 <a-button
                                     size="small"
                                     data-test-id="remove-user"
-                                    class="ml-3.5 w-8 h-8 rounded"
+                                    class="w-8 h-8 rounded"
                                 >
                                     <AtlanIcon icon="RemoveUser"></AtlanIcon>
                                 </a-button>
@@ -249,14 +178,22 @@
                     </a-button-group>
                 </template>
             </a-table>
+
+            <!-- <div
+                class="flex justify-end max-w-full mt-4"
+                v-if="listType === 'users'"
+            >
+                <Pagination
+                    :total-pages="filteredList.length"
+                    :loading="isLoading"
+                    :page-size="15"
+                    v-model:offset="userListAPIParams.offset"
+                    @mutate="getUserList"
+                />
+            </div> -->
         </div>
         <div
-            v-else-if="
-                listType === 'users' &&
-                [USER_STATES.ERROR, USER_STATES.STALE_IF_ERROR].includes(
-                    userState
-                )
-            "
+            v-else-if="listType === 'users' && usersError"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -275,32 +212,24 @@
         </div>
 
         <!-- USER TABLE END -->
-        <div
-            v-if="
-                ![GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
-                    groupState
-                )
-            "
-        >
+        <div v-if="!groupsError">
             <a-table
+                :pagination="false"
                 v-if="filteredList && listType === 'groups'"
                 id="groupList"
                 :key="persona.id"
-                class="persona-user-group-table"
+                class="overflow-hidden border rounded-lg persona-user-group-table"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
                 :table-layout="'fixed'"
                 data-test-id="group-table"
                 :data-source="filteredList"
                 :columns="groupColumns"
                 :row-key="(group) => group.id"
-                :loading="
-                    [GROUP_STATES.PENDING].includes(groupState) ||
-                    [GROUP_STATES.VALIDATING].includes(groupState)
-                "
+                :loading="isGroupsLoading"
                 @change="handleGroupsTableChange"
             >
                 <template #headerCell="{ title, column }">
-                    <div class="flex justify-center">
+                    <div class="flex ml-2">
                         <span>{{ title }}</span>
                     </div>
                 </template>
@@ -309,13 +238,6 @@
                         class="flex items-center align-middle"
                         :data-test-id="group.alias"
                     >
-                        <avatar
-                            :image-url="imageUrl(group.alias)"
-                            :allow-upload="false"
-                            :avatar-name="group.alias"
-                            :avatar-size="40"
-                            class="mr-2"
-                        />
                         <div
                             class="truncate cursor-pointer"
                             @click="
@@ -325,11 +247,8 @@
                             "
                         >
                             <span class="text-primary">{{
-                                group.alias || '-'
+                                group.name || '-'
                             }}</span>
-                            <p class="mb-0 truncate text-gray">
-                                @{{ group.alias || '-' }}
-                            </p>
                         </div>
                     </div>
                 </template>
@@ -346,15 +265,12 @@
                                 :title="
                                     getPopoverContent(group, 'remove', 'group')
                                 "
-                                ok-text="Yes"
+                                ok-text="Remove"
                                 :ok-type="'default'"
                                 cancel-text="Cancel"
                                 @confirm="confirmPopover(group, 'group')"
                             >
-                                <a-button
-                                    size="small"
-                                    class="ml-3.5 w-8 h-8 rounded"
-                                >
+                                <a-button size="small" class="w-8 h-8 rounded">
                                     <AtlanIcon
                                         icon="RemoveUser"
                                     ></AtlanIcon> </a-button
@@ -363,14 +279,23 @@
                     </a-button-group>
                 </template>
             </a-table>
+
+            <!-- <div
+                class="flex justify-end max-w-full mt-4"
+                v-if="listType === 'groups'"
+            >
+                <Pagination
+                    :total-pages="paginationGroups.total"
+                    :loading="isLoading"
+                    :page-size="paginationGroups.pageSize"
+                    v-model:offset="groupListAPIParams.offset"
+                    @mutate="getGroupList"
+                />
+            </div> -->
         </div>
+
         <div
-            v-else-if="
-                listType === 'groups' &&
-                [GROUP_STATES.ERROR, GROUP_STATES.STALE_IF_ERROR].includes(
-                    groupState
-                )
-            "
+            v-else-if="listType === 'groups' && groupsError"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -402,7 +327,7 @@
     } from 'vue'
     import { whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
-
+    import EmptyView from '@common/empty/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -417,6 +342,8 @@
     import ErrorView from '@common/error/index.vue'
     import { reFetchList } from '../composables/usePersonaList'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
+    import Pagination from '@/common/list/pagination.vue'
+    import { useDebounceFn } from '@vueuse/core'
 
     import {
         isEditing,
@@ -432,6 +359,8 @@
             SearchAndFilter,
             OwnersSelector,
             ErrorView,
+            Pagination,
+            EmptyView,
         },
         props: {
             persona: {
@@ -464,12 +393,16 @@
                 STATES: USER_STATES,
                 state: userState,
                 userList,
+                isLoading: isUsersLoading,
+                error: usersError,
             } = usePersonaUserList(persona)
             const {
                 getGroupList,
                 STATES: GROUP_STATES,
                 state: groupState,
                 groupList,
+                isLoading: isGroupsLoading,
+                error: groupsError,
             } = usePersonaGroupList(persona)
 
             const filteredList = computed(() => {
@@ -698,6 +631,10 @@
                 groupList,
                 /* Users */
                 handleUsersTableChange,
+                isGroupsLoading,
+                isUsersLoading,
+                usersError,
+                groupsError,
             }
         },
     })

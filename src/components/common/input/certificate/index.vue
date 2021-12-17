@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
-            v-if="!readOnly"
+            v-if="editPermission"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.certificatePopover"
@@ -37,7 +37,7 @@
             @click="() => (isEdit = true)"
         ></CertificatePill>
         <a-button
-            v-else-if="!readOnly"
+            v-else-if="editPermission"
             shape="circle"
             size="small"
             class="text-center shadow hover:bg-primary-light hover:border-primary"
@@ -92,7 +92,7 @@
                 required: false,
                 default: () => {},
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -108,7 +108,7 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
-            const { selectedAsset, inProfile, readOnly } = toRefs(props)
+            const { selectedAsset, inProfile, editPermission } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -141,7 +141,7 @@
             )
             const { c, Escape, v, enter, shift } = useMagicKeys()
             whenever(
-                and(c, notUsingInput, !inProfile.value, !readOnly.value),
+                and(c, notUsingInput, !inProfile.value, editPermission.value),
                 () => {
                     if (!isEdit.value) {
                         isEdit.value = true

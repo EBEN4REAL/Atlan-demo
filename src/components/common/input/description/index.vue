@@ -3,7 +3,7 @@
         class="flex flex-col px-1 rounded"
         :class="{
             'bg-primary-light': isEdit,
-            'hover:bg-primary-light': !readOnly,
+            'hover:bg-primary-light': editPermission,
         }"
     >
         <div
@@ -60,7 +60,7 @@
                 type: String,
                 required: true,
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -79,7 +79,7 @@
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { readOnly, selectedAsset, inProfile } = toRefs(props)
+            const { editPermission, selectedAsset, inProfile } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
@@ -100,7 +100,7 @@
                 handleChange()
             }
             const handleEdit = () => {
-                if (!readOnly?.value) {
+                if (editPermission?.value) {
                     isEdit.value = true
                     start()
                 }
@@ -118,7 +118,7 @@
             const { d, enter, shift } = useMagicKeys()
 
             whenever(
-                and(d, notUsingInput, !inProfile.value, !readOnly.value),
+                and(d, notUsingInput, !inProfile.value, editPermission.value),
                 () => {
                     handleEdit()
                 }

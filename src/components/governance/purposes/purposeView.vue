@@ -2,7 +2,7 @@
     <ExplorerLayout
         title="Purpose"
         sub-title=""
-        :sidebarVisibility="Boolean(selectedPersonaId)"
+        :sidebar-visibility="Boolean(selectedPersonaId)"
     >
         <template #action>
             <AtlanBtn
@@ -33,8 +33,8 @@
             </div>
 
             <ExplorerList
-                type="purposes"
                 v-model:selected="selectedPersonaId"
+                type="purposes"
                 :disabled="isEditing"
                 :list="filteredPersonas"
                 data-key="id"
@@ -64,13 +64,17 @@
         <AddPurpose
             v-model:visible="modalVisible"
             v-model:persona="selectedPersona"
-            :personaList="personaList"
+            :persona-list="personaList"
         />
 
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
             <PurposeHeader :persona="selectedPersona" />
-            <PurposeBody v-model:persona="selectedPersona" />
+            <PurposeBody
+                v-model:persona="selectedPersona"
+                :whitelisted-connection-ids="whitelistedConnectionIds"
+                @selectPolicy="handleSelectPolicy"
+            />
         </template>
         <div
             v-else-if="
@@ -118,6 +122,8 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
+    import ErrorView from '@common/error/index.vue'
+    import { storeToRefs } from 'pinia'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -137,9 +143,9 @@
         isPersonaError,
     } from './composables/usePurposeList'
     import { isEditing } from './composables/useEditPurpose'
-    import ErrorView from '@common/error/index.vue'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
     import ErrorIllustration from '~/assets/images/error.svg'
+    import { useAuthStore } from '~/store/auth'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -155,10 +161,41 @@
         },
         setup() {
             const modalVisible = ref(false)
+            const modalDetailPolicyVisible = ref(false)
+            const selectedPolicy = ref({})
+            const authStore = useAuthStore()
+            const { roles } = storeToRefs(authStore)
             watch(searchTerm, () => {
                 console.log(searchTerm.value, 'searched')
             })
 
+            const handleCloseModalDetailPolicy = () => {
+                modalDetailPolicyVisible.value = false
+            }
+            const handleSelectPolicy = (policy) => {
+                selectedPolicy.value = policy
+                modalDetailPolicyVisible.value = true
+            }
+            const whitelistedConnectionIds = ref([])
+            watch(
+                roles,
+                () => {
+                    const filteredRoles = (roles.value || []).filter((role) =>
+                        role.name.startsWith('connection_admins_')
+                    )
+                    whitelistedConnectionIds.value = filteredRoles.map(
+                        (role) => {
+                            if (role && role.name)
+                                return role.name.split('_')[2]
+                            return ''
+                        }
+                    )
+                },
+                {
+                    immediate: true,
+                    deep: true,
+                }
+            )
             return {
                 reFetchList,
                 personaList,
@@ -174,6 +211,10 @@
                 AddPersonaIllustration,
                 isPersonaListReady,
                 ErrorIllustration,
+                handleCloseModalDetailPolicy,
+                handleSelectPolicy,
+                selectedPolicy,
+                whitelistedConnectionIds,
             }
         },
     })

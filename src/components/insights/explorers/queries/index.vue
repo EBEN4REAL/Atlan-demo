@@ -27,7 +27,7 @@
                         placement="bottomRight"
                     >
                         <div
-                            class="px-2 pt-0.5 cursor-pointer rounded-lg"
+                            class="flex items-center h-8 px-3 rounded-lg cursor-pointer"
                             :class="$style.filterButton"
                         >
                             <span class="text-xs text-gray-700">New</span>
@@ -724,9 +724,12 @@
                 // if the folder is not loaded, don't do anything
             }
 
-            const pushGuidToURL = (guid: string) => {
-                const queryParams = { id: guid }
-                if (route?.query?.vqb) queryParams.vqb = true
+            const pushGuidToURL = (item) => {
+                const queryParams = {}
+                if (item.guid) queryParams.id = item.guid
+                if (item?.attributes?.isVisualQuery) queryParams.vqb = true
+                // const queryParams = { id: guid }
+                // if (route?.query?.vqb) queryParams.vqb = true
                 router.push({ path: `insights`, query: queryParams })
             }
             const facets = ref({})

@@ -2,13 +2,18 @@
     <a-select
         v-model:value="localValue"
         placeholder="Users"
-        class="w-full center-arrow"
+        class="w-full"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
         :filter-option="() => true"
         @change="handleChange"
-        @click="mutate"
+        @click="
+            () => {
+                if (finalList.length < 2) mutate()
+            }
+        "
+        @select="resetFilter"
         @search="handleSearch"
     >
         <template #option="item">
@@ -97,7 +102,6 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const open = ref(false)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
@@ -109,6 +113,7 @@
                 filterTotal,
                 loadMore,
                 mutate,
+                resetFilter,
             } = useFacetUsers({ immediate: false })
 
             watch(
@@ -144,11 +149,8 @@
                 emit('change')
             }
 
-            onBeforeUnmount(() => {
-                open.value = false
-            })
-
             return {
+                resetFilter,
                 mutate,
                 open,
                 finalList,
@@ -167,8 +169,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .center-arrow:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

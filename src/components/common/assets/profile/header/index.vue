@@ -79,8 +79,18 @@
                         </div>
                         <div
                             v-else
-                            class="text-sm tracking-wider text-gray-500 uppercase"
+                            class="flex items-center text-sm tracking-wider text-gray-500 uppercase"
                         >
+                            <atlan-icon
+                                v-if="isGTC(item)"
+                                :icon="`${
+                                    assetTypeLabel[item?.typeName]
+                                        .charAt(0)
+                                        .toUpperCase() +
+                                    assetTypeLabel[item?.typeName].slice(1)
+                                }`"
+                                class="mr-1"
+                            />
                             {{ assetTypeLabel[item?.typeName] }}
                         </div>
                     </div>
@@ -260,7 +270,10 @@
                         <AtlanIcon icon="Share" class="mb-0.5" />
                     </a-button>
                 </ShareMenu>
-                <AssetMenu :asset="item" :read-only="isScrubbed(item)">
+                <AssetMenu
+                    :asset="item"
+                    :edit-permission="selectedAssetUpdatePermission(item)"
+                >
                     <a-button block class="flex items-center justify-center">
                         <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
                     </a-button>
@@ -325,6 +338,8 @@
                 certificateStatusMessage,
                 getAssetQueryPath,
                 isScrubbed,
+                selectedAssetUpdatePermission,
+                isGTC,
             } = useAssetInfo()
 
             const router = useRouter()
@@ -382,7 +397,9 @@
                 back,
                 goToInsights,
                 isScrubbed,
+                selectedAssetUpdatePermission,
                 assetTypeLabel,
+                isGTC,
             }
         },
     })

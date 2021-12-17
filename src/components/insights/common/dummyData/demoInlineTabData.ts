@@ -29,6 +29,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             },
         },
         playground: {
+            isVQB: false,
             vqb: {
                 panels: [
                     {

@@ -23,7 +23,7 @@
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"
-                type="persona"
+                type="purpose"
             />
         </div>
         <div
@@ -54,12 +54,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, ref, watch, onMounted } from 'vue'
+    import { defineComponent, toRefs, ref, watch } from 'vue'
     import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
-        name: 'ManagePermition',
+        name: 'ManagePermitionPurpose',
         components: {
             MetadataScopes,
             AtlanBtn,
@@ -90,13 +90,6 @@
                 if (visibleDrawer.value) {
                     actionsLocal.value = actions.value
                 }
-            })
-            onMounted(() => {
-                window.addEventListener('keydown', (keyDown) => {
-                    if (keyDown.keyCode === 27) {
-                        handleClose()
-                    }
-                })
             })
             return {
                 handleClose,

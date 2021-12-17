@@ -1,14 +1,12 @@
 <template>
-    <div class="flex content-center items-center mb-4">
-        <p class="text-lg font-bold text-gray-500">Edit user info</p>
-    </div>
     <a-form
         ref="formRef"
         :model="formData"
         :rules="rules"
         layout="vertical"
+        class="mb-6"
     >
-        <div class="pb-6 border-solid border-b border-gray-200">
+        <div class="pb-3 border-solid border-b border-gray-200">
             <div class="flex justify-center">
                 <div class="relative flex items-center">
                     <Avatar
@@ -38,32 +36,47 @@
                     </div>
                 </div>
             </div>
-                <a-form-item label="First Name" prop="firstName">
-                    <a-input
-                        v-model:value="formData.firstName"
-                        placeholder="Please enter a first name"
-                        :loading="isRequestLoading"
-                    />
-                </a-form-item>
-                <a-form-item label="Last Name" prop="lastName">
-                    <a-input
-                        v-model:value="formData.lastName"
-                        placeholder="Please enter a last name"
-                        :loading="isRequestLoading"
-                    />
-                </a-form-item>
-                <a-form-item label="Designation" prop="designation">
-                    <a-input
-                        v-model:value="formData.designation"
-                        placeholder="Please enter a designation"
-                        :loading="isRequestLoading"
-                    />
-                </a-form-item>
-                <UpdateSkills :user="selectedUser" :allow-update="isCurrentUser" />
+            <a-form-item label="First Name" prop="firstName">
+                <a-input
+                    v-model:value="formData.firstName"
+                    placeholder="Please enter a first name"
+                    :loading="isRequestLoading"
+                />
+            </a-form-item>
+            <a-form-item label="Last Name" prop="lastName">
+                <a-input
+                    v-model:value="formData.lastName"
+                    placeholder="Please enter a last name"
+                    :loading="isRequestLoading"
+                />
+            </a-form-item>
+            <a-form-item label="Designation" prop="designation">
+                <a-input
+                    v-model:value="formData.designation"
+                    placeholder="Please enter a designation"
+                    :loading="isRequestLoading"
+                />
+            </a-form-item>
+            <a-form-item label="Skills" prop="skills">
+                <a-select
+                    v-model:value="formData.skills"
+                    placeholder="Please choose a skill or enter one"
+                    :loading="isRequestLoading"
+                    mode="tags"
+                >
+                    <a-select-option
+                        v-for="(skill, index) in formData.skills"
+                        :key="index"
+                        :value="skill"
+                    >
+                        {{ skill }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
         </div>
         <div class="pt-6">
             <p class="uppercase text-gray-500 text-sm">Contact Details</p>
-            <div class="mt-4">
+            <div class="mt-2">
                 <a-form-item
                     prop="slack"
                 >
@@ -84,7 +97,7 @@
                         v-model:value="formData.slack"
                         class="mt-2"
                         :loading="isRequestLoading"
-                        placeholder="https://app.slack.com/client/[workspace]/[client]"
+                        placeholder="https://app.slack.com/client/abc/xyz"
                     >
                         <template #prefix>
                             <span class="border-solid border-gray-300 pr-2 border-r">
@@ -109,17 +122,15 @@
     <!--            </a-input>-->
     <!--        </div>-->
         </div>
-        <div class="w-full sticky bottom-0 pb-6">
-            <a-button-group class="w-full">
-                <a-button block type="minimal" :disabled="isRequestLoading" @click="onCancel">
-                    Cancel
-                </a-button>
-                <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
-                    Save
-                </a-button>
-            </a-button-group>
-        </div>
     </a-form>
+    <a-button-group class="w-full sticky bottom-0 bg-white py-4">
+        <a-button block type="minimal" :disabled="isRequestLoading" @click="onCancel">
+            Cancel
+        </a-button>
+        <a-button block type="primary" :loading="isRequestLoading" @click="onSubmit">
+            Save
+        </a-button>
+    </a-button-group>
 </template>
 
 <script lang="ts">
@@ -129,6 +140,7 @@
     import Avatar from '@common/avatar/avatar.vue'
     import { message } from 'ant-design-vue'
     import PopOverContent from '~/components/common/formGenerator/popOverContent.vue'
+    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
 
     export default {
         name: 'EditUser',
@@ -158,11 +170,29 @@
             })
             
             const { selectedUser } = toRefs(props)
+            const userProfiles = computed(() => selectedUser.value?.attributes?.profiles)
+            const slackProfile = computed(() => {
+                if (userProfiles.value?.length > 0) {
+                    const firstProfile = JSON.parse(userProfiles.value[0])
+                    if (
+                        firstProfile &&
+                        firstProfile.length > 0 &&
+                        firstProfile[0].hasOwnProperty('slack')
+                    ) {
+                        return firstProfile[0].slack
+                    }
+                }
+                return ''
+            })
+
+            const slackEnabled = computed(() => slackProfile.value)
+            const slackUrl = computed(() => slackEnabled.value ? slackEnabled.value : '')
             const formData = ref({
                 firstName: selectedUser.value.firstName,
                 lastName: selectedUser.value.lastName,
                 designation: selectedUser.value?.attributes?.designation?.length > 0 ? selectedUser.value?.attributes?.designation[0] : "",
-                slack: ""
+                slack: slackUrl.value,
+                skills: selectedUser.value.attributes?.skills?.length > 0 ? selectedUser.value.attributes.skills : []
             })
 
             const rules = {
@@ -188,7 +218,8 @@
             const onSubmit = async () => {
                 await formRef.value?.validate()
                 const attributes = {
-                    designation: [formData.value.designation]
+                    designation: [formData.value.designation],
+                    skills: formData.value.skills
                 }
                 attributes.profiles = formData.value.slack.length > 0 ? [`[{"slack": "${formData.value.slack}"}]`] : []
                 requestPayload.value = {

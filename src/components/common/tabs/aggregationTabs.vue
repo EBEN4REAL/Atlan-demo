@@ -5,7 +5,7 @@
             v-model:activeKey="selectedTab"
             class="w-full"
             :class="$style.assetbar"
-            :tabBarGutter="2"
+            :tab-bar-gutter="2"
             @change="onTabChange"
         >
             <a-tab-pane v-for="item in dataList" :key="item.id">
@@ -15,9 +15,9 @@
                         class="flex items-center"
                     >
                         <AtlanIcon
+                            v-if="icon"
                             :icon="icon"
                             class="self-center mr-1"
-                            v-if="icon"
                         ></AtlanIcon>
 
                         <AtlanIcon
@@ -90,6 +90,7 @@
             const dataList = ref(list.value)
 
             const onTabChange = () => {
+                console.log('change data type')
                 modelValue.value = selectedTab.value
                 emit('change', selectedTab.value)
             }
@@ -125,7 +126,7 @@
                             })
                         }
                     }
-                } else if (dataList.value.length !== 1) {
+                } else if (dataList.value.length !== 1 && !noAll.value) {
                     dataList.value.unshift({
                         id: '__all',
                         label: 'All',
@@ -142,7 +143,7 @@
 
             watch(modelValue, (cur) => {
                 selectedTab.value = cur
-                emit('change', selectedTab.value)
+                // emit('change', selectedTab.value)
             })
 
             return {

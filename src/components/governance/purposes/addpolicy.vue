@@ -34,7 +34,7 @@
                     <div class="relative mb-2 text-sm text-gray-500 required">
                         Name <span class="text-red-500">*</span>
                     </div>
-                    <div v-if="isEdit ? canEdit : true">
+                    <div>
                         <a-input
                             :ref="
                                 (el) => {
@@ -54,7 +54,7 @@
                             "
                         />
                     </div>
-                    <div v-else>{{ policy.name }}</div>
+                    <!-- <div v-else>{{ policy.name }}</div> -->
                     <div
                         v-if="rules.policyName.show"
                         class="absolute text-xs text-red-500 -bottom-5"
@@ -63,145 +63,36 @@
                         {{ rules.policyName.text }}
                     </div>
                 </div>
-                <div class="relative mt-7">
+                <div class="relative mt-6">
                     <div class="mb-2 text-sm text-gray-500 required">
-                        Connection <span class="text-red-500">*</span>
+                        Users / Groups <span class="text-red-500">*</span>
                     </div>
-                    <Connector
+                    <Owners
                         :ref="
                             (el) => {
-                                connectorComponentRef = el
+                                refOwners = el
                             }
                         "
-                        v-model:data="connectorData"
-                        :footer-node-content="'You can only view the connections in which you’re added as the owner.'"
-                        :whitelisted-connections="
-                            isEdit ? null : whitelistedConnectionIds
-                        "
-                        :show-empty-parents="isEdit ? true : false"
+                        v-model:modelValue="selectedOwnersData"
                         class="mb-6"
-                        :class="isEdit ? 'edit-connector' : ''"
-                        :disabled="isEdit"
-                        @change="handleConnectorChange"
-                        @blur="
-                            () => {
-                                if (!connectorData.attributeValue)
-                                    rules.connection.show = true
-                                else rules.connection.show = false
-                            }
-                        "
+                        :read-only="false"
+                        :destroy-tooltip-on-hide="true"
+                        @change="handleOwnersChange"
                     />
                     <div
-                        v-if="rules.connection.show"
+                        v-if="rules.users.show"
                         class="absolute text-xs text-red-500 -bottom-5"
-                        data-test-id="policy-validation-connector"
+                        data-test-id="policy-validation-owners"
                     >
-                        {{ rules.connection.text }}
+                        {{ rules.users.text }}
                     </div>
                 </div>
-                <div class="mt-5">
-                    <div class="flex items-center justify-between">
-                        <div class="text-gray-500">
-                            Asset <span class="text-red-500">*</span>
-                        </div>
-                        <div
-                            v-if="!isAddAll && isEdit ? canEdit : true"
-                            class="flex"
-                        >
-                            <AtlanBtn
-                                v-if="!isAddAll"
-                                class="flex-none"
-                                size="sm"
-                                color="minimal"
-                                padding="compact"
-                                @click="handleAddAsset"
-                            >
-                                <span class="text-primary"> Custom select</span>
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="ml-1 text-primary"
-                                />
-                            </AtlanBtn>
-                            <span
-                                v-if="policy.assets.length === 0"
-                                class="pt-2 pl-1 pr-1 text-xs text-gray-500 bg-gray-100"
-                                >OR</span
-                            >
-                            <AtlanBtn
-                                v-if="policy.assets.length === 0"
-                                class="flex-none"
-                                size="sm"
-                                color="minimal"
-                                padding="compact"
-                                @click="addConnectionAsset"
-                            >
-                                <span class="text-primary"> Add All </span>
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="ml-1 text-primary"
-                                />
-                            </AtlanBtn>
-                        </div>
-                    </div>
-                    <div
-                        v-if="policy.assets?.length === 0"
-                        class="flex items-center p-2 mt-1 border border-dashed rounded border-bottom border-slate-300"
-                    >
-                        <span class="p-2 text-xs text-gray-500">
-                            Select the assets your policy should apply to, or
-                            <strong>Add All</strong> to apply the policy to all
-                            assets
-                        </span>
-                    </div>
-                    <div
-                        v-else
-                        class="h-auto p-2 mt-1 overflow-auto border border-solid rounded border-bottom border-slate-300 max-h-32"
-                    >
-                        <div
-                            v-for="asset in policy.assets"
-                            :key="asset"
-                            class="flex items-center justify-between p-1 wrapper-asset"
-                            :class="
-                                isEdit
-                                    ? canEdit
-                                    : true
-                                    ? 'hover:bg-primary-light cursor-pointer'
-                                    : ''
-                            "
-                        >
-                            <span class="asset-name">
-                                {{ splitName(asset) }}
-                            </span>
-                            <AtlanBtn
-                                v-if="isEdit ? canEdit : true"
-                                class="flex-none btn-delete-asset"
-                                size="sm"
-                                color="minimal"
-                                padding="compact"
-                                @click="handleDeleteAsset(asset)"
-                            >
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="ml-1 text-primary"
-                                />
-                            </AtlanBtn>
-                        </div>
-                    </div>
-                    <div
-                        v-if="rules.assets.show"
-                        class="mt-2 text-xs text-red-500"
-                        data-test-id="policy-validation-connector"
-                    >
-                        {{ rules.assets.text }}
-                    </div>
-                </div>
-                <div v-if="policyType === 'meta'" class="mt-5">
+                <div v-if="policyType === 'meta'" class="mt-6">
                     <div class="flex justify-between">
                         <div class="text-gray-500">
                             Permissions <span class="text-red-500">*</span>
                         </div>
                         <AtlanBtn
-                            v-if="isEdit ? canEdit : true"
                             class="flex-none"
                             size="sm"
                             color="minimal"
@@ -272,12 +163,12 @@
                     </div>
 
                     <DataMaskingSelector
-                        v-model:maskType="policy.maskType"
+                        v-model:maskType="policy.mask"
                         class="mb-6 w-80"
                     />
                 </div>
 
-                <div v-if="isEdit ? canEdit : true" class="">
+                <div class="">
                     <div class="flex justify-between mt-4">
                         <div>
                             <span>Deny Permissions</span>
@@ -304,8 +195,8 @@
                         />
                     </div>
                 </div>
-                <div
-                    v-else-if="!policy.allow"
+                <!-- <div
+                    v-if="!policy.allow"
                     class="flex items-center justify-between"
                 >
                     <div class="mt-4">
@@ -322,16 +213,7 @@
                             </template>
                         </a-tooltip>
                     </div>
-                </div>
-                <AssetSelectorDrawer
-                    v-if="connectorData.attributeValue"
-                    v-model:visible="assetSelectorVisible"
-                    v-model:assets="policy.assets"
-                    :connection-qf-name="connectorData.attributeValue"
-                    class="drawerAddAsset"
-                    :get-container="'body'"
-                    @update:assets="handleChangeAssets"
-                />
+                </div> -->
 
                 <a-drawer
                     placement="right"
@@ -351,7 +233,7 @@
                 </a-drawer>
             </div>
         </div>
-        <div v-if="isEdit ? canEdit : true" class="flex button-container">
+        <div class="flex button-container">
             <AtlanBtn
                 size="sm"
                 padding="compact"
@@ -371,7 +253,7 @@
                 {{ isLoading ? 'Saving' : isEdit ? 'Update' : 'Save' }}
             </AtlanBtn>
         </div>
-        <div v-else-if="isEdit && !canEdit">
+        <!-- <div v-else-if="isEdit && !canEdit">
             <div class="flex p-3 m-4 rounded bg-primary-light text-primary">
                 <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
                 <div>
@@ -379,7 +261,7 @@
                     added as a owner.
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -391,28 +273,24 @@
         watch,
         toRefs,
         computed,
-        onMounted,
     } from 'vue'
-    import { useMagicKeys } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
-    import Connector from './policies/connector.vue'
-    import { selectedPersonaDirty } from './composables/useEditPersona'
-    import { useConnectionStore } from '~/store/connection'
-    import AssetSelectorDrawer from './assets/assetSelectorDrawer.vue'
-    // import { MetadataPolicies } from '~/types/accessPolicies/purposes'
+    import { selectedPersonaDirty } from './composables/useEditPurpose'
+    import Owners from '~/components/common/input/owner/index.vue'
     import ManagePermission from './policies/managePermission.vue'
-    import DataMaskingSelector from './policies/dataMaskingSelector.vue'
+    import DataMaskingSelector from '~/components/governance/personas/policies/dataMaskingSelector.vue'
+    import useScopeService from '../personas/composables/useScopeService'
+    // import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
-    import useScopeService from './composables/useScopeService'
+    // import useScopeService from './composables/useScopeService'
 
     export default defineComponent({
         name: 'AddPolicy',
         components: {
             AtlanBtn,
-            Connector,
-            AssetSelectorDrawer,
             ManagePermission,
             DataMaskingSelector,
+            Owners,
         },
         props: {
             type: {
@@ -461,69 +339,34 @@
         },
         emits: ['close'],
         setup(props, { emit }) {
-            const { scopeList } = useScopeService().listScopes('persona')
+            // const { scopeList } = useScopeService().listScopes('persona')
+            const { scopeList } = useScopeService().listScopes('purpose')
             const policyType = ref('')
-            const assetSelectorVisible = ref(false)
+            const refOwners = ref()
             const isShow = ref(false)
             const policyNameRef = ref()
-            const connectorComponentRef = ref()
             const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
             const policy = ref({})
-            const connectionStore = useConnectionStore()
             const isAddAll = ref(false)
+            const selectedOwnersData = ref({
+                ownerUsers: [],
+                ownerGroups: [],
+            })
+
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
                     show: false,
                 },
-                connection: {
-                    text: 'Connection is required!',
+                users: {
+                    text: 'Atleast one user is required!',
                     show: false,
                 },
-                assets: { text: 'Select atleast 1 asset!', show: false },
                 metadata: {
                     text: 'Select atleast 1 permissions!',
                     show: false,
                 },
             })
-            const connectorData = computed({
-                get: () => {
-                    const found = connectionStore.getList.find(
-                        (conn) => conn.guid === policy.value.connectionId
-                    )
-                    return {
-                        attributeName: found ? 'connectionQualifiedName' : '',
-                        attributeValue: found?.attributes?.qualifiedName,
-                    }
-                },
-                set: (val) => {
-                    const found = connectionStore.getList.find(
-                        (conn) =>
-                            conn.attributes?.qualifiedName ===
-                            val.attributeValue
-                    )
-                    policy.value.connectionId = found?.guid
-                },
-            })
-            const assets = computed({
-                get: () => {
-                    if (policy.value.assets.length > 0)
-                        rules.value.assets.show = false
-                    else rules.value.assets.show = true
-                    return policy.value.assets.map((name) => ({
-                        label: name,
-                    }))
-                },
-                set: (val) => {
-                    policy.value.assets = val.map((ast) => ast.label)
-                    if (val.length > 0) rules.value.assets.show = false
-                    else rules.value.assets.show = true
-                },
-            })
-            const handleConnectorChange = () => {
-                policy.value.assets = []
-                rules.value.connection.show = false
-            }
             const initPolicy = () => {
                 isAddAll.value = false
                 rules.value = {
@@ -531,47 +374,54 @@
                         text: 'Enter a policy name!',
                         show: false,
                     },
-                    connection: {
-                        text: 'Connection is required!',
+                    users: {
+                        text: 'Atleast one user is required!',
                         show: false,
                     },
-                    assets: { text: 'Select atleast 1 asset!', show: false },
                     metadata: {
                         text: 'Select atleast 1 permissions!',
                         show: false,
                     },
                 }
+
                 if (isEdit.value) {
-                    const newArray = []
-                    selectedPolicy.value.assets.forEach((el) =>
-                        newArray.push(el)
-                    )
-                    policy.value = { ...selectedPolicy.value, assets: newArray }
-                    policyType.value = selectedPolicy.value.type
+                    policy.value = { ...selectedPolicy.value }
+                    policyType.value = selectedPolicy.value?.type
+                    const objOwner = {
+                        ownerUsers: selectedPolicy.value?.users,
+                        ownerGroups: selectedPolicy.value?.groups,
+                    }
+                    selectedOwnersData.value = objOwner
+                    if (refOwners.value) {
+                        refOwners.value.setLocalValue(objOwner)
+                    }
                 } else {
+                    selectedOwnersData.value = {
+                        ownerUsers: [],
+                        ownerGroups: [],
+                    }
                     policyType.value = type.value
                     if (type.value === 'meta') {
                         policy.value = {
                             actions: [],
-                            assets: [],
-                            connectionId: '',
                             allow: true,
                             name: '',
                             description: '',
                             isNew: true,
+                            users: [],
+                            groups: [],
                         }
                     }
                     if (type.value === 'data') {
                         policy.value = {
                             actions: ['select'],
-                            assets: [],
-                            connectionName: '',
-                            connectionId: '',
-                            maskType: 'null',
+                            mask: 'null',
                             allow: true,
                             name: '',
                             description: '',
                             isNew: true,
+                            users: [],
+                            groups: [],
                         }
                     }
                 }
@@ -585,42 +435,17 @@
             watch(selectedPolicy, () => {
                 initPolicy()
             })
-            const handleAddAsset = () => {
-                if (connectorData.value?.attributeValue) {
-                    assetSelectorVisible.value = !assetSelectorVisible.value
-                    rules.value.connection.show = false
-                } else {
-                    rules.value.connection.show = true
-                }
-            }
+
             const handleToggleManage = () => {
                 isShow.value = true
             }
             const handleSavePermission = (prop) => {
+                isShow.value = false
                 policy.value.actions = prop
                 rules.value.metadata.show = false
             }
-            const addConnectionAsset = () => {
-                if (connectorData.value.attributeValue) {
-                    assets.value = [
-                        { label: connectorData.value.attributeValue },
-                    ]
-                    policy.value.assets = [connectorData.value.attributeValue]
-                    isAddAll.value = true
-                } else {
-                    connectorComponentRef.value?.treeSelectRef?.focus()
-                    rules.value.connection.show = true
-                }
-            }
-            const handleDeleteAsset = (asset) => {
-                policy.value.assets = policy.value.assets.filter(
-                    (el) => el !== asset
-                )
-                isAddAll.value = false
-            }
             const handleClose = () => {
-                if (assetSelectorVisible.value || isShow.value) {
-                    assetSelectorVisible.value = false
+                if (isShow.value) {
                     isShow.value = false
                     setTimeout(() => {
                         emit('close')
@@ -636,11 +461,11 @@
                 if (!policy.value.name) {
                     policyNameRef.value?.focus()
                     rules.value.policyName.show = true
-                } else if (!connectorData.value.attributeValue) {
-                    connectorComponentRef.value?.treeSelectRef?.focus()
-                    rules.value.connection.show = true
-                } else if (policy.value.assets.length < 1) {
-                    rules.value.assets.show = true
+                } else if (
+                    policy.value.users.length === 0 &&
+                    policy.value.groups.length === 0
+                ) {
+                    rules.value.users.show = true
                 } else if (
                     policy.value.actions.length === 0 &&
                     policyType.value === 'meta'
@@ -697,31 +522,41 @@
                     policy?.value?.connectionId
                 )
             )
-            onMounted(() => {
-                window.addEventListener('keydown', (keyDown) => {
-                    if (keyDown.keyCode === 27) {
-                        handleClose()
-                    }
-                })
-            })
+            const handleOwnersChange = () => {
+                if (selectedOwnersData.value?.ownerUsers?.length > 0) {
+                    policy.value.users = [
+                        ...selectedOwnersData.value?.ownerUsers,
+                    ]
+                } else {
+                    policy.value.users = []
+                }
+                if (selectedOwnersData.value?.ownerGroups?.length > 0) {
+                    policy.value.groups = [
+                        ...selectedOwnersData.value?.ownerGroups,
+                    ]
+                } else {
+                    policy.value.groups = []
+                }
+                if (
+                    selectedOwnersData.value?.ownerUsers?.length +
+                        selectedOwnersData.value?.ownerGroups?.length <
+                    1
+                ) {
+                    rules.value.users.show = true
+                } else {
+                    rules.value.users.show = false
+                }
+            }
             return {
                 selectedPersonaDirty,
                 rules,
                 policy,
                 policyNameRef,
-                connectorData,
-                connectorComponentRef,
-                handleConnectorChange,
-                assetSelectorVisible,
-                handleAddAsset,
                 isShow,
                 handleToggleManage,
                 handleSavePermission,
-                addConnectionAsset,
-                handleDeleteAsset,
                 isAddAll,
                 handleClose,
-                showDrawer,
                 resetPolicy,
                 handleSave,
                 selectedPermition,
@@ -729,6 +564,9 @@
                 splitName,
                 handleChangeAssets,
                 canEdit,
+                selectedOwnersData,
+                handleOwnersChange,
+                refOwners,
             }
         },
     })

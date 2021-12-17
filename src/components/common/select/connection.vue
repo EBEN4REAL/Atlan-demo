@@ -9,7 +9,6 @@
         @change="handleChange"
         :get-popup-container="(target) => target.parentNode"
         notFoundContent="No connection found"
-        class="selector"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="mb-1" />
@@ -139,8 +138,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .selector:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

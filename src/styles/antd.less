@@ -9,6 +9,7 @@
 @import './antd/ant-table.less';
 @import './antd/ant-timeline.less';
 @import './antd/ant-tree.less';
+@import './antd/ant-select.less';
 
 body {
     font-family: 'Avenir', sans-serif !important;
@@ -21,7 +22,6 @@ body {
 .ant-layout {
     @apply bg-body !important;
 }
-
 
 .ant-form-vertical .ant-form-item-control {
     flex: 0 0 100% !important;
@@ -63,8 +63,6 @@ body {
     }
 }
 
-
-
 .ant-checkbox-wrapper + .ant-checkbox-wrapper {
     margin-left: 0px !important;
 }
@@ -86,31 +84,7 @@ body {
     }
 }
 
-Table .ant-table-body {
-    border: 2px solid theme('colors.gray.100') !important;
-    border-bottom: 0 !important;
-    border-top-right-radius: 0.7rem !important;
-    border-top-left-radius: 0.7rem !important;
-    overflow-y: auto !important;
-}
-.ant-table-thead {
-    tr {
-        th {
-            font-weight: 700;
-            color: theme('colors.gray.DEFAULT') !important;
-            padding: 1rem !important;
-        }
-    }
-}
-.ant-table-tbody {
-    tr:not(.ant-table-measure-row) {
-        height: 3.5rem !important;
-        td {
-            color: theme('colors.gray.DEFAULT') !important;
-        }
-    }
-}
-.ant-dropdown-menu-root{
+.ant-dropdown-menu-root {
     padding: 0 !important;
 }
 // Split Panes
@@ -134,7 +108,6 @@ Table .ant-table-body {
     width: 0px !important;
 }
 
-
 .pushtop {
     top: 2px;
 }
@@ -142,24 +115,19 @@ Table .ant-table-body {
 .ant-upload {
     @apply w-full !important;
 }
-.ant-table-thead {
-    ::before {
-        width: 0px !important;
-        height: 0px !important;
-    }
-}
+
 .ant-modal-confirm-btns {
     @apply mt-3 !important;
-    [class="ant-btn"] { // only targeting the cancel button; btn that has only one class and that class is ant-btn
+    [class='ant-btn'] {
+        // only targeting the cancel button; btn that has only one class and that class is ant-btn
         @apply bg-transparent;
         @apply border-transparent;
         @apply hover:text-gray;
     }
-    .ant-btn.ant-btn-primary.ant-btn-dangerous { // only targeting danger btns
+    .ant-btn.ant-btn-primary.ant-btn-dangerous {
+        // only targeting danger btns
         @apply bg-error;
         @apply border-error;
         @apply font-bold;
-        
     }
 }
-

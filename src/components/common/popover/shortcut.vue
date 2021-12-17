@@ -1,6 +1,6 @@
 <template>
-    <a-popover :overlayClassName="readOnly ? '' : 'shortcutPopover'">
-        <template v-if="!readOnly" #content>
+    <a-popover :overlayClassName="editPermission ? 'shortcutPopover' : ''">
+        <template v-if="editPermission" #content>
             <div class="flex items-center text-gray-3]500 gap-x-2">
                 <span class="text-sm capitalize">{{ action }}</span>
 
@@ -31,7 +31,7 @@
                 required: false,
                 default: '',
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,

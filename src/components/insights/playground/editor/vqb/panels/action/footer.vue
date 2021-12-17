@@ -33,22 +33,22 @@
         setup(props, { emit }) {
             const items = [
                 {
-                    id: 'aggregate',
-                    icon: 'Trigger',
-                    label: 'Aggregate',
-                    class: 'mt-0.5 mr-2',
-                },
-                {
                     id: 'filter',
                     icon: 'Filter',
                     label: 'Filter',
                     class: 'mr-2',
                 },
                 {
-                    id: 'sort',
-                    icon: 'Sort',
-                    label: 'Sort',
+                    id: 'group',
+                    icon: 'BuilderGroup',
+                    label: 'Group',
                     class: 'mr-2',
+                },
+                {
+                    id: 'aggregate',
+                    icon: 'Trigger',
+                    label: 'Aggregate',
+                    class: 'mt-0.5 mr-2',
                 },
                 {
                     id: 'join',
@@ -57,9 +57,9 @@
                     class: 'mr-2',
                 },
                 {
-                    id: 'group',
-                    icon: 'BuilderGroup',
-                    label: 'Group',
+                    id: 'sort',
+                    icon: 'Sort',
+                    label: 'Sort',
                     class: 'mr-2',
                 },
             ]

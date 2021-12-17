@@ -195,6 +195,7 @@
             const columnNameFromURL = inject('columnNameFromURL')
 
             const { queryRun } = useRunQuery()
+            const showVQB = ref(false)
 
             // const schemaNameFromURL = ref(route.query?.schemaNameFromURL)
             // const tableNameFromURL = ref(route.query?.tableNameFromURL)
@@ -305,7 +306,8 @@
                             null,
                             savedQueryInfo.value?.attributes.rawQuery,
                             editorInstance,
-                            monacoInstance
+                            monacoInstance,
+                            showVQB
                         )
                     }
                 }
@@ -404,6 +406,7 @@
                         },
                     },
                     playground: {
+                        isVQB: false,
                         vqb: {
                             panels: [
                                 {

@@ -70,7 +70,7 @@
                         v-model:value="searchText"
                         :placeholder="`Search ${
                             groupList?.length ?? 0
-                        }  groups`"
+                        } groups`"
                         class="mr-1"
                         size="minimal"
                         @change="handleSearch"
@@ -92,7 +92,7 @@
                 </div>
             </div>
             <div
-                v-if="error"
+                v-else-if="error"
                 class="flex flex-col items-center justify-center h-full mt-3 bg-white"
             >
                 <ErrorView>
@@ -114,19 +114,23 @@
             </div>
             <div
                 v-else-if="searchText && !filteredGroupCount && !isLoading"
-                class="empty-state-wrapper"
+                class="flex flex-col items-center justify-center empty-state-wrapper"
             >
-                <EmptyState
-                    empty-screen="NoGroups"
-                    :desc="`No group with name ${searchText} found.`"
-                    button-text="Clear search"
-                    @event="
-                        () => {
-                            searchText = ''
-                            handleSearch()
-                        }
-                    "
-                />
+                <div
+                    class="flex items-center justify-center w-full componentHeight"
+                >
+                    <EmptyState
+                        empty-screen="NoGroups"
+                        :desc="`No group with name ${searchText} found.`"
+                        button-text="Clear search"
+                        @event="
+                            () => {
+                                searchText = ''
+                                handleSearch()
+                            }
+                        "
+                    />
+                </div>
             </div>
             <div v-else class="mt-4 mb-2">
                 <div v-for="group in groupList" :key="group.id">
@@ -189,7 +193,7 @@
 
 <script lang="ts">
     import { message, Modal } from 'ant-design-vue'
-    import { defineComponent, computed, reactive, ref, watch, h } from 'vue'
+    import { defineComponent, computed, reactive, ref, watch, h, toRefs } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import ErrorView from '@common/error/index.vue'
 
@@ -220,22 +224,34 @@
                 default: () => {},
             },
         },
-        setup(props, context) {
+        setup(props) {
+            const { selectedUser } = toRefs(props)
             const showUserGroups = ref(true)
             const searchText = ref('')
             const showAddToGroupModal = ref(false)
             const addToGroupLoading = ref(false)
             const removeFromGroupLoading = ref({})
             const selectedGroupIds = ref([])
-            const groupListAPIParams = reactive({
-                userId: props.selectedUser.id,
+            const filter = computed(() => searchText.value
+                ? {
+                    $or: [
+                        { name: { $ilike: `%${searchText.value}%` } },
+                        { alias: { $ilike: `%${searchText.value}%` } },
+                    ],
+                }
+                : {})
+            const offset = ref(0)
+            const limit = ref(10)
+            const groupListAPIParams = computed(() =>({
+                userId: selectedUser.value.id,
                 params: {
-                    limit: 10,
-                    offset: 0,
+                    limit: limit.value,
+                    offset: offset.value,
                     sort: 'name',
-                    filter: {},
+                    filter: filter.value,
                 },
-            })
+                immediate: true
+            }))
             const {
                 groupList,
                 totalGroupCount,
@@ -245,29 +261,22 @@
                 isLoading,
             } = getUserGroups(groupListAPIParams)
             const handleSearch = useDebounceFn((input: any) => {
-                groupListAPIParams.params.filter = searchText.value
-                    ? {
-                          $or: [
-                              { name: { $ilike: `%${searchText.value}%` } },
-                              { alias: { $ilike: `%${searchText.value}%` } },
-                          ],
-                      }
-                    : {}
-                groupListAPIParams.params.offset = 0
+                offset.value = 0
                 getUserGroupList()
             }, 200)
             const handleLoadMore = () => {
-                groupListAPIParams.params.offset =
-                    groupListAPIParams.params.offset +
-                    groupListAPIParams.params.limit
+                offset.value += limit.value
                 getUserGroupList()
             }
+            watch(selectedUser, () => {
+                getUserGroupList()
+            })
             const showLoadMore = computed(() =>
                 getIsLoadMore(
                     // TODO: check if there's a better way access memberList and not use ref in a ref
                     groupList.value.length,
-                    groupListAPIParams.params.offset,
-                    groupListAPIParams.params.limit,
+                    offset.value,
+                    limit.value,
                     searchText.value
                         ? filteredGroupCount.value
                         : totalGroupCount.value
@@ -294,7 +303,7 @@
                                 !addError.value &&
                                 !addLoading.value
                             ) {
-                                groupListAPIParams.params.offset = 0
+                                offset.value = 0
                                 getUserGroupList()
                                 message.success('User added to groups')
                                 showUserGroups.value = true
@@ -371,7 +380,7 @@
                                     !error.value &&
                                     !isLoading.value
                                 ) {
-                                    groupListAPIParams.params.offset = 0
+                                    offset.value = 0
                                     getUserGroupList()
                                     message.success({
                                         content: `${props.selectedUser.name} removed from ${group.name}`,

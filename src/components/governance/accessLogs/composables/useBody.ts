@@ -68,35 +68,23 @@ export default function useBody({
     })
     // If we have the name of the connector.
     if (connectorName) {
-        base.filter(
-            'regexp',
-            'resource.keyword',
-            `.+/\\[.*\\]/.*/${connectorName}/.*`
-        )
+        base.filter('regexp', 'resource', `.+/\\[.*\\]/.*/${connectorName}/.*`)
     }
     // If we have a qualified name for the connection.
     if (connectionQF) {
-        base.filter(
-            'regexp',
-            'resource.keyword',
-            `.+/\\[.*\\]/${connectionQF}.*`
-        )
+        base.filter('regexp', 'resource', `.+/\\[.*\\]/${connectionQF}.*`)
     } else if (dbQualifiedName) {
-        base.filter(
-            'regexp',
-            'resource.keyword',
-            `.+/\\[.*\\]/${dbQualifiedName}.*`
-        )
+        base.filter('regexp', 'resource', `.+/\\[.*\\]/${dbQualifiedName}.*`)
     } else if (schemaQualifiedName) {
         base.filter(
             'regexp',
-            'resource.keyword',
+            'resource',
             `.+/\\[.*\\]/${schemaQualifiedName}.*`
         )
     }
     // If we have the search text.
     if (searchText) {
-        base.query('wildcard', 'resource.keyword', {
+        base.query('wildcard', 'resource', {
             value: `*${searchText}*`,
         })
     }
@@ -107,7 +95,7 @@ export default function useBody({
 
     // If we have the log actions.
     if (logActionValues && logActionValues.length) {
-        base.filter('terms', 'action.keyword', logActionValues)
+        base.filter('terms', 'action', logActionValues)
     }
 
     // If we have the types of users.
@@ -122,46 +110,38 @@ export default function useBody({
 
         if (!includeAPIKeys) {
             if (includeBots && includeUsers) {
-                base.notFilter(
-                    'prefix',
-                    'reqUser.keyword',
-                    'service-account-apikey'
-                )
+                base.notFilter('prefix', 'reqUser', 'service-account-apikey')
             } else if (!includeBots && includeUsers) {
-                base.notFilter('wildcard', 'reqUser.keyword', {
+                base.notFilter('wildcard', 'reqUser', {
                     value: '*argo*',
                 })
             } else if (includeBots && !includeUsers) {
-                base.filter('wildcard', 'reqUser.keyword', {
+                base.filter('wildcard', 'reqUser', {
                     value: '*argo*',
                 })
             }
         } else if (!includeBots) {
             if (includeAPIKeys && includeUsers) {
-                base.notFilter('wildcard', 'reqUser.keyword', {
+                base.notFilter('wildcard', 'reqUser', {
                     value: '*argo*',
                 })
             } else if (includeAPIKeys && !includeUsers) {
-                base.filter(
-                    'prefix',
-                    'reqUser.keyword',
-                    'service-account-apikey'
-                )
+                base.filter('prefix', 'reqUser', 'service-account-apikey')
             }
         } else if (!includeUsers) {
             if (includeAPIKeys && includeBots) {
                 base.orFilter(
                     'prefix',
-                    'reqUser.keyword',
+                    'reqUser',
                     'service-account-apikey'
-                ).orFilter('wildcard', 'reqUser.keyword', {
+                ).orFilter('wildcard', 'reqUser', {
                     value: '*argo*',
                 })
             }
         }
     }
     if (usernames && usernames.length)
-        base.filter('terms', 'reqUser.keyword', usernames)
+        base.filter('terms', 'reqUser', usernames)
     if (properties) {
         // All the regular expressions listed below, assume a format of
         // {Asset Type}/[{Classification}]/{qualified name of asset}

@@ -4,30 +4,40 @@ import { getFormattedGroup } from '~/composables/group/formatGroup'
 import { Users } from '~/services/service/users'
 import { GET_USER_GROUPS } from '~/services/service/users/key'
 
-export default function getUserGroups(groupListAPIParams: {
-    userId: string
-    params: { limit: number; offset: number; filter: any; sort: string }
-    immediate: false
-}) {
+export default function getUserGroups(
+    groupListAPIParams: ComputedRef<{
+        userId: string
+        params: {
+            limit: number
+            offset: number
+            filter: any
+            sort: string
+        }
+        immediate: boolean | false
+    }>
+) {
     const localGroupsList: Ref<any[]> = ref([])
+    const userId = computed(() => groupListAPIParams.value.userId)
+    const params = computed(() => groupListAPIParams.value.params)
     const {
         data,
         mutate: getUserGroupList,
         isValidating,
         error,
         isLoading,
-    } = Users.ListUserGroups(
-        groupListAPIParams.params,
-        groupListAPIParams.userId,
-        {
-            asyncOptions: {
-                immediate: groupListAPIParams.immediate,
-            },
-        }
-    )
+    } = Users.ListUserGroups(params, userId, {
+        asyncOptions: {
+            immediate: groupListAPIParams.value.immediate,
+        },
+        cacheKey: groupListAPIParams.value.userId,
+        cacheOptions: {
+            refreshInterval: 0,
+            dedupingInterval: 2000,
+        },
+    })
 
     watch(data, () => {
-        if (groupListAPIParams.params.offset > 0) {
+        if (params.value.offset > 0) {
             localGroupsList.value = [
                 ...localGroupsList.value,
                 ...(data?.value?.records?.map((group: any) =>

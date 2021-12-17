@@ -67,7 +67,7 @@
                 ref="titleBar"
                 v-model:value="localAnnouncement.announcementTitle"
                 placeholder="Add Announcement Header..."
-                class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+                class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
             />
             <a-textarea
                 v-model:value="localAnnouncement.announcementMessage"
@@ -101,14 +101,14 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,
             },
         },
         setup(props) {
-            const { asset, readOnly } = toRefs(props)
+            const { asset, editPermission } = toRefs(props)
             const { title } = useAssetInfo()
 
             const visible = ref<boolean>(false)
@@ -149,7 +149,7 @@
             }
 
             const showModal = async () => {
-                if (!readOnly?.value) {
+                if (editPermission?.value) {
                     visible.value = true
                     await nextTick()
                     titleBar.value?.focus()

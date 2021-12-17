@@ -63,6 +63,7 @@
                         class=""
                         type="primary"
                         @click="addPropertyDrawer.open(null, false)"
+                        v-auth="map.UPDATE_BUSINESS_METADATA"
                     >
                         Add property
                     </a-button>
@@ -82,7 +83,7 @@
                     "
                 />
             </div>
-            <div v-else>
+            <div v-else class="flex items-center h-full justify-center">
                 <a-empty
                     :image="noPropertyImage"
                     :image-style="{
@@ -92,10 +93,17 @@
                     }"
                 >
                     <template #description>
-                        <p class="font-bold">Start adding properties</p>
+                        <p
+                            class="font-bold"
+                            v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
+                        >
+                            Start adding properties
+                        </p>
+                        <p v-else>This custom metadata has no properties</p>
                     </template>
 
                     <a-button
+                        v-auth="map.UPDATE_BUSINESS_METADATA"
                         type="primary"
                         @click="addPropertyDrawer.open(undefinded, false)"
                         ><AtlanIcon icon="Add" class="inline" /> Add property
@@ -123,6 +131,8 @@
 
     // ? Store
     import { useTypedefStore } from '~/store/typedef'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         components: {
@@ -141,6 +151,7 @@
         emits: ['update'],
         setup(props, context) {
             const store = useTypedefStore()
+            const { checkAccess } = useAuth()
             // * Data
             const localBm = computed({
                 get: () => props.selectedBm,
@@ -248,6 +259,8 @@
                 addPropertyDrawer,
                 searchedAttributeList,
                 handlePropertyUpdate,
+                map,
+                checkAccess,
             }
         },
         data() {

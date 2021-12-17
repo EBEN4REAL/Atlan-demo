@@ -11,20 +11,11 @@
             <a-tab-pane v-for="(item, index) in dataList" :key="item.id">
                 <template #tab>
                     <Shortcut
-                        :shortcut-key="
-                            getKeyboardShortcutData(index)?.action ===
-                            'Previous'
-                                ? 'shift+tab'
-                                : 'tab'
-                        "
-                        :action="
-                            getKeyboardShortcutData(index)
-                                ? getKeyboardShortcutData(index)?.action
-                                : ''
-                        "
+                        :shortcut-key="getKeyboardShortcutData(index)?.key"
+                        :action="getKeyboardShortcutData(index)?.action"
                         placement="bottom"
                         :edit-permission="
-                            shortcutEnabled && getKeyboardShortcutData(index)
+                            shortcutEnabled && index != currentIndex
                         "
                         :delay="1"
                     >
@@ -118,6 +109,11 @@
             const { modelValue } = useVModels(props, emit)
             const selectedTab = ref(modelValue.value)
             const dataList = ref(list.value)
+            const currentIndex = computed(() =>
+                dataList.value.findIndex(
+                    (item) => item.id === selectedTab.value
+                )
+            )
 
             const onTabChange = () => {
                 console.log('change data type')
@@ -166,13 +162,10 @@
             }
 
             const getKeyboardShortcutData = (index) => {
-                const currentIndex = dataList.value.findIndex(
-                    (i) => i.id === selectedTab.value
-                )
-                if (currentIndex === index) {
+                if (currentIndex.value === index) {
                     return null
                 }
-                if (index > currentIndex) {
+                if (index > currentIndex.value) {
                     return {
                         key: 'tab',
                         action: 'Next',
@@ -203,6 +196,7 @@
                 onTabChange,
                 icon,
                 getKeyboardShortcutData,
+                currentIndex,
             }
         },
     })

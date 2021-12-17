@@ -2,6 +2,7 @@
     <a-popover
         :overlayClassName="editPermission ? 'shortcutPopover' : ''"
         :mouseEnterDelay="delay"
+        :destroyTooltipOnHide="true"
     >
         <template v-if="editPermission" #content>
             <div class="flex items-center text-gray-3]500 gap-x-2">
@@ -21,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, toRefs, computed } from 'vue'
 
     export default defineComponent({
         components: {},
@@ -48,7 +49,7 @@
         },
         setup(props) {
             const { shortcutKey, action } = toRefs(props)
-            const keys = shortcutKey.value?.split('+')
+            const keys = computed(() => shortcutKey.value.split('+'))
 
             return {
                 shortcutKey,

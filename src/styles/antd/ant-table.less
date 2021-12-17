@@ -1,8 +1,57 @@
+.ant-table-thead {
+    ::before {
+        width: 0px !important;
+        height: 0px !important;
+    }
+}
+
 .persona-user-group-table {
-  .ant-table-pagination.ant-pagination {
-    @apply m-4 !important;
-  }
-  .ant-table thead th {
-    @apply p-2 !important;
-  }
+    .ant-table-pagination.ant-pagination {
+        @apply m-4 !important;
+    }
+    .ant-table thead th {
+        @apply p-2 !important;
+    }
+}
+
+.users-groups-table {
+    .ant-table-thead {
+        tr {
+            th {
+                font-weight: 700;
+                color: theme('colors.gray.DEFAULT') !important;
+                padding: 1rem !important;
+            }
+        }
+    }
+    .ant-table-tbody {
+        tr:not(.ant-table-measure-row) {
+            td {
+                color: theme('colors.gray.DEFAULT') !important;
+            }
+        }
+    }
+}
+
+.query-access-logs-table {
+    .ant-empty-normal {
+        height: calc(100vh - 20rem);
+    }
+
+    .ant-table-thead {
+        tr {
+            th {
+                font-weight: 700;
+                color: theme('colors.gray.DEFAULT') !important;
+                padding: 1rem !important;
+            }
+        }
+    }
+    .ant-table-tbody {
+        tr:not(.ant-table-measure-row) {
+            td {
+                color: theme('colors.gray.DEFAULT') !important;
+            }
+        }
+    }
 }

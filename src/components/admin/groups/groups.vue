@@ -71,9 +71,8 @@
         <template v-else-if="groupList?.length">
             <a-table
                 id="groupList"
-                class="overflow-hidden border rounded-lg"
+                class="overflow-hidden border rounded-lg users-groups-table"
                 :scroll="{ y: 'calc(100vh - 20rem)' }"
-                :table-layout="'fixed'"
                 :pagination="false"
                 :data-source="groupList"
                 :columns="columns"
@@ -473,39 +472,10 @@
         },
     })
 </script>
-<style lang="less">
-    .delete-group-modal {
-        .ant-modal-confirm-body-wrapper {
-            @apply p-5;
-        }
-    }
-    #groupList {
-        th.ant-table-row-cell-last {
-            display: flex;
-            justify-content: center;
-        }
-    }
-    .hide-checkbox {
-        .ant-checkbox {
-            display: none;
-        }
-    }
-    .delete-group-modal {
-        .ant-modal-confirm-body-wrapper {
-            @apply p-5;
-        }
-    }
-</style>
 <style lang="less" scoped>
-    #groupList {
-        th.ant-table-row-cell-last {
-            display: flex;
-            justify-content: center;
-        }
-    }
-    .hide-checkbox {
-        .ant-checkbox {
-            display: none;
+    .delete-group-modal {
+        :global(.ant-modal-confirm-body-wrapper) {
+            @apply p-5;
         }
     }
 </style>

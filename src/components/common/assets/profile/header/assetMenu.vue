@@ -87,9 +87,11 @@
                 </a-sub-menu>-->
                 <a-menu-item
                     key="announcement"
-                    :disabled="readOnly"
+                    :disabled="!editPermission"
                     @click="closeMenu"
-                    ><AnnouncementModal :readOnly="readOnly" :asset="asset"
+                    ><AnnouncementModal
+                        :editPermission="editPermission"
+                        :asset="asset"
                         ><template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon icon="Megaphone" />
@@ -153,7 +155,7 @@
                 required: true,
                 default: () => {},
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,

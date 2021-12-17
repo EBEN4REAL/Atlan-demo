@@ -1,7 +1,10 @@
 <template>
     <div class="flex flex-col gap-y-1">
         <div
-            v-if="attribute.typeName !== 'boolean'"
+            v-if="
+                attribute.typeName !== 'boolean' &&
+                attribute?.subTypeName !== 'user'
+            "
             class="flex items-center gap-x-1"
         >
             <a-select

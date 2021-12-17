@@ -1,11 +1,10 @@
 <template>
     <div>
         <a-table
-            class="overflow-hidden border rounded-lg"
+            class="overflow-hidden border rounded-lg query-access-logs-table"
             :scroll="{ y: 'calc(100vh - 20rem)' }"
             :table-layout="'fixed'"
             :pagination="false"
-            :class="$style.table_custom"
             :data-source="filteredAccessLogsList"
             :columns="columns"
             :row-key="(log) => log._id"
@@ -230,12 +229,14 @@
             // If you want to show empty access logs too, change this logic.
             const { accessLogsList, assetMetaMap } = toRefs(props)
             const filteredAccessLogsList = computed(() =>
-                accessLogsList.value?.filter((log) =>
-                    log &&
-                    log._source &&
-                    log._source.resourceQF &&
-                    assetMetaMap.value[log._source.resourceQF] &&
-                    Object.keys(assetMetaMap.value[log._source.resourceQF]).length > 0
+                accessLogsList.value?.filter(
+                    (log) =>
+                        log &&
+                        log._source &&
+                        log._source.resourceQF &&
+                        assetMetaMap.value[log._source.resourceQF] &&
+                        Object.keys(assetMetaMap.value[log._source.resourceQF])
+                            .length > 0
                 )
             )
 
@@ -319,7 +320,7 @@
                 classifications,
                 assetURL,
                 getProfilePath,
-                filteredAccessLogsList
+                filteredAccessLogsList,
             }
         },
     })
@@ -341,12 +342,5 @@
     }
     .selected-row {
         background: #f4f6fd;
-    }
-</style>
-<style lang="less" module>
-    .table_custom {
-        :global(.ant-empty-normal) {
-            height: calc(100vh - 20rem);
-        }
     }
 </style>

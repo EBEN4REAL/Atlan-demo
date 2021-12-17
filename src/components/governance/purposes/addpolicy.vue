@@ -342,7 +342,6 @@
             // const { scopeList } = useScopeService().listScopes('persona')
             const { scopeList } = useScopeService().listScopes('purpose')
             const policyType = ref('')
-            const assetSelectorVisible = ref(false)
             const refOwners = ref()
             const isShow = ref(false)
             const policyNameRef = ref()
@@ -446,7 +445,14 @@
                 rules.value.metadata.show = false
             }
             const handleClose = () => {
-                emit('close')
+                if (isShow.value) {
+                    isShow.value = false
+                    setTimeout(() => {
+                        emit('close')
+                    }, 180)
+                } else {
+                    emit('close')
+                }
             }
             const resetPolicy = () => {
                 initPolicy()
@@ -546,7 +552,6 @@
                 rules,
                 policy,
                 policyNameRef,
-                assetSelectorVisible,
                 isShow,
                 handleToggleManage,
                 handleSavePermission,

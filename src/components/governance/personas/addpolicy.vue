@@ -391,7 +391,7 @@
         watch,
         toRefs,
         computed,
-        onMounted
+        onMounted,
     } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
@@ -619,7 +619,15 @@
                 isAddAll.value = false
             }
             const handleClose = () => {
-                emit('close')
+                if (assetSelectorVisible.value || isShow.value) {
+                    assetSelectorVisible.value = false
+                    isShow.value = false
+                    setTimeout(() => {
+                        emit('close')
+                    }, 180)
+                } else {
+                    emit('close')
+                }
             }
             const resetPolicy = () => {
                 initPolicy()
@@ -690,11 +698,11 @@
                 )
             )
             onMounted(() => {
-               window.addEventListener('keydown', (keyDown) => {
-                   if(keyDown.keyCode === 27){
-                       handleClose()
-                   }
-               })
+                window.addEventListener('keydown', (keyDown) => {
+                    if (keyDown.keyCode === 27) {
+                        handleClose()
+                    }
+                })
             })
             return {
                 selectedPersonaDirty,

@@ -54,12 +54,12 @@
             </PopOverGroup>
         </template>
         <span
-            class="-ml-1 text-gray-500"
             v-if="
                 !editPermission &&
                 localValue?.ownerGroups?.length < 1 &&
                 localValue?.ownerUsers?.length < 1
             "
+            class="-ml-1 text-gray-500"
             >No owners assigned</span
         >
     </div>
@@ -150,8 +150,12 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+<<<<<<< HEAD
             const { selectedAsset, inProfile, editPermission } = toRefs(props)
 
+=======
+            const { selectedAsset, inProfile, readOnly } = toRefs(props)
+>>>>>>> beta
             const localValue = ref(modelValue.value)
 
             const { ownerGroups, ownerUsers } = useAssetInfo()
@@ -166,7 +170,9 @@
                 setUserUniqueAttribute(username, 'username')
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
-
+            const setLocalValue = (objOwners) => {
+                localValue.value = objOwners
+            }
             const handleClickGroup = (groupAlias: string) => {
                 setGroupUniqueAttribute(groupAlias, 'groupAlias')
                 showGroupPreview({ allowed: ['about', 'assets', 'members'] })
@@ -249,6 +255,7 @@
                 handleVisibleChange,
                 isEdit,
                 ownerFacetRef,
+                setLocalValue,
             }
         },
     })

@@ -239,6 +239,7 @@
         :visible="addpolicyVisible"
         :width="450"
         :mask="false"
+        :destroy-on-close="true"
         @close="handleCloseAddPolicy"
     >
         <Addpolicy

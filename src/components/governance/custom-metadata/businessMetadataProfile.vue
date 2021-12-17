@@ -15,7 +15,11 @@
                 </div>
             </div>
             <div class="flex items-center">
-                <MetadataHeaderButton :metadata="localBm" />
+                <MetadataHeaderButton
+                    :metadata="localBm"
+                    :allow-delete="allowDelete"
+                    :assetCount="assetCount"
+                />
             </div>
         </div>
         <div
@@ -60,10 +64,10 @@
                         </div>
                     </div>
                     <a-button
+                        v-auth="map.UPDATE_BUSINESS_METADATA"
                         class=""
                         type="primary"
                         @click="addPropertyDrawer.open(null, false)"
-                        v-auth="map.UPDATE_BUSINESS_METADATA"
                     >
                         Add property
                     </a-button>
@@ -83,7 +87,7 @@
                     "
                 />
             </div>
-            <div v-else class="flex items-center h-full justify-center">
+            <div v-else class="flex items-center justify-center h-full">
                 <a-empty
                     :image="noPropertyImage"
                     :image-style="{
@@ -94,8 +98,8 @@
                 >
                     <template #description>
                         <p
-                            class="font-bold"
                             v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
+                            class="font-bold"
                         >
                             Start adding properties
                         </p>
@@ -128,6 +132,8 @@
     import noPropertyImage from '~/assets/images/admin/no-property.png'
     import PropertyList from './propertyList.vue'
     import AvatarUpdate from './avatarUpdate.vue'
+
+    import getAssetCount from '@/governance/custom-metadata/composables/getAssetCount'
 
     // ? Store
     import { useTypedefStore } from '~/store/typedef'
@@ -244,7 +250,22 @@
                 localBm.value.attributeDefs = $event
             }
 
+            const {
+                count: assetCount,
+                mutate,
+                isReady,
+            } = getAssetCount(localBm.value)
+
+            if (localBm.value.attributeDefs?.length) mutate()
+
+            const allowDelete = computed(() => {
+                if (!localBm.value.attributeDefs?.length) return true
+                return !assetCount.value
+            })
+
             return {
+                allowDelete,
+                assetCount,
                 attrsearchText,
                 error,
                 handleRemoveAttribute,

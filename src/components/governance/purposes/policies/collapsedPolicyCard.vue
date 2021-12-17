@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative pt-1 pb-1 border-b border-gray-300 container-policy-card last:border-0"
+        class="relative pt-1 pb-1 mb-2 border-b border-gray-300 container-policy-card last:border-0"
     >
         <div
             class="flex flex-col p-3 text-gray-500 rounded cursor-pointer group hover:bg-primary-light card-policy"

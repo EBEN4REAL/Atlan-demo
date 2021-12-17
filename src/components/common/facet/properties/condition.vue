@@ -9,7 +9,7 @@
         >
             <a-select
                 v-model:value="localCondition.operator"
-                class="flex-1 selector"
+                class="flex-1"
                 @change="handleOperatorChange"
             >
                 <template #suffixIcon>
@@ -160,8 +160,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .selector:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

@@ -42,7 +42,7 @@
             />
             <a-tag
                 v-else-if="!updatingTags && allowUpdate"
-                class="flex items-center text-xs content-center bg-white border-dashed rounded-3xl text-gray-500"
+                class="flex content-center items-center bg-gray-100 border border-dashed border-gray-300 py-1 px-3 font-normal text-center text-sm rounded-3xl"
                 @click="showInput"
             >
                 + Add

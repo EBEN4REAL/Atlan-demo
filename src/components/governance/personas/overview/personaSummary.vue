@@ -214,13 +214,7 @@
         },
     })
 </script>
-<style lang="less">
-    .disable-persona-modal {
-        .ant-modal-confirm-body-wrapper {
-            @apply p-5;
-        }
-    }
-</style>
+<style lang="less"></style>
 <style lang="less" scoped>
     .btn-checked {
         background: #00a680;

@@ -2,11 +2,13 @@
     <a-popover :overlayClassName="editPermission ? 'shortcutPopover' : ''">
         <template v-if="editPermission" #content>
             <div class="flex items-center text-gray-3]500 gap-x-2">
-                <span class="text-sm">{{ action }}</span>
+                <span class="text-sm capitalize">{{ action }}</span>
 
-                <span class="px-1 text-sm bg-white border rounded-sm">
-                    {{ shortcutKey }}</span
+                <div
+                    class="w-5 h-5 font-bold text-center text-white capitalize rounded key-color"
                 >
+                    {{ shortcutKey }}
+                </div>
             </div>
         </template>
         <slot></slot>
@@ -51,5 +53,8 @@
         .ant-popover-inner-content {
             @apply px-2 py-1 !important;
         }
+    }
+    .key-color {
+        background-color: #9ea6b1;
     }
 </style>

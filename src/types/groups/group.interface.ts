@@ -1,4 +1,6 @@
 export interface groupInterface {
     name: string
-    user_count: number
+    userCount: number
+    alias: string,
+    id: string
 }

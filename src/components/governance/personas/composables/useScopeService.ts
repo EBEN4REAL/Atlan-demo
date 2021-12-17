@@ -35,19 +35,20 @@ const purposeScopeList = [
                 label: 'update: Custom Metadata',
                 desc: 'Update classifications for selected assets'
             },
-            {
-                value: 'entity-add-classification',
-                label: 'add: Classifications',
-                desc: 'Add classifications for selected assets'
-            },
-            {
-                value: 'entity-remove-classification',
-                label: 'remove: Classifications',
-                desc: 'Remove classifications for selected assets'
-            },
+            // {
+            //     value: 'entity-add-classification',
+            //     label: 'add: Classifications',
+            //     desc: 'Add classifications for selected assets'
+            // },
+            // {
+            //     value: 'entity-remove-classification',
+            //     label: 'remove: Classifications',
+            //     desc: 'Remove classifications for selected assets'
+            // },
             {
                 value: 'entity-update-classification',
                 label: 'update: Classifications',
+                desc: 'Update values for BM attributes for selected assets'
             },
 
             // {

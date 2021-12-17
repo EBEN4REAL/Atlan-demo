@@ -632,11 +632,11 @@ export default function useAssetInfo() {
 
     const authStore = useAuthStore()
 
-    const selectedAssetUpdatePermission = computed(() => {
+    const selectedAssetUpdatePermission = (asset: assetInterface) => {
         return authStore?.evaluations.find(
-            (ev) => ev?.entityGuid === selectedAsset?.value?.guid
+            (ev) => ev?.entityGuid === asset?.guid
         )?.allowed
-    })
+    }
 
     const isGTCByType = (typeName) => {
         if (

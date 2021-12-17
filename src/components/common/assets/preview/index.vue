@@ -164,7 +164,9 @@
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
                     :read-permission="isScrubbed(selectedAsset)"
-                    :edit-permission="selectedAssetUpdatePermission"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(selectedAsset)
+                    "
                     :data="tab.data"
                 ></component>
             </a-tab-pane>

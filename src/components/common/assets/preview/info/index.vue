@@ -422,6 +422,11 @@
                 required: false,
                 default: false,
             },
+            readPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
             const actions = inject('actions')

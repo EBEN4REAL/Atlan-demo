@@ -31,7 +31,7 @@
                         <a-tooltip placement="right"
                             ><template #title>Limited Access</template>
                             <AtlanIcon
-                                v-if="isScrubbed(item)"
+                                v-if="selectedAssetUpdatePermission(item)"
                                 icon="Lock"
                                 class="h-3.5 ml-1 mb-0.5"
                             ></AtlanIcon
@@ -65,7 +65,7 @@
                     ref="descriptionRef"
                     v-model="localDescription"
                     :selected-asset="item"
-                    :read-only="isScrubbed(item)"
+                    :edit-permission="selectedAssetUpdatePermission(item)"
                     @change="handleChangeDescription"
                 />
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-x-1">
@@ -145,7 +145,7 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
-                isScrubbed,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const { item } = toRefs(props)
@@ -216,7 +216,7 @@
                 handleChangeDescription,
                 descriptionRef,
                 isPropagated,
-                isScrubbed,
+                selectedAssetUpdatePermission,
                 list,
             }
         },

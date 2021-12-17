@@ -89,7 +89,7 @@ export default function useProject() {
         selectedText?: string,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>,
-        showVQB: Ref<Boolean> = ref(false) 
+        showVQB: Ref<Boolean> = ref(false)
     ) => {
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         // console.log('inside run query: ', activeInlineTab.value)
@@ -106,23 +106,19 @@ export default function useProject() {
                 undefined
         }
 
-
         let semiColonMatchs = toRaw(editorInstance.value)
             ?.getModel()
             ?.findMatches(';')
 
-
         if (semiColonMatchs?.length === 0) {
-            if(showVQB.value) {
+            if (showVQB.value) {
                 queryText = selectedText
+                activeInlineTab.value.playground.editor.text = queryText
             } else {
                 queryText = activeInlineTab.value.playground.editor.text
-
             }
-        } 
-        else if (selectedText && selectedText !== '') {
-
-            if(showVQB.value) {
+        } else if (selectedText && selectedText !== '') {
+            if (showVQB.value) {
                 queryText = selectedText
             } else {
                 queryText = getParsedQuery(
@@ -131,27 +127,27 @@ export default function useProject() {
                 )
                 var count = 0
                 let text = queryText
-    
+
                 console.log('selected query text1: ', { queryText })
-    
+
                 while (text.startsWith('\n')) {
                     text = text.slice(1)
                     console.log('selected query text: ', { text })
                     count++
                 }
-    
+
                 let selection = toRaw(editorInstance.value)?.getSelection()
                 console.log('selected query text3: ', selection)
-    
-                for (var i = 0; i < count + selection?.startLineNumber - 1; i++) {
+
+                for (
+                    var i = 0;
+                    i < count + selection?.startLineNumber - 1;
+                    i++
+                ) {
                     queryText = '\n' + queryText
                 }
             }
-            
-        
         } else if (activeInlineTab.value.playground.editor.text !== '') {
-
-
             let queryData = getParsedQueryCursor(
                 activeInlineTab.value.playground.editor.variables,
                 activeInlineTab.value.playground.editor.text,
@@ -159,7 +155,6 @@ export default function useProject() {
                 editorInstance.value,
                 monacoInstance.value
             )
-
 
             let selectedQuery = queryData.rawQuery.replace(/^\s+|\s+$/g, '')
             let newLines = '\n'.repeat(queryData.range.startLineNumber - 1)
@@ -185,7 +180,6 @@ export default function useProject() {
 
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))
- 
 
         const params = {
             sql: query,

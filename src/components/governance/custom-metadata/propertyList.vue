@@ -25,7 +25,15 @@
                     :class="{ 'border-b': properties.length !== index + 1 }"
                 >
                     <div class="flex items-center">
-                        <div style="width: 44px" class="text-center">
+                        <div
+                            style="width: 44px"
+                            class="h-4 text-center"
+                            :class="
+                                checkAccess(map.UPDATE_BUSINESS_METADATA)
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
+                            "
+                        >
                             <AtlanIcon
                                 class="inline h-4 grap"
                                 icon="MoveItem"
@@ -158,6 +166,8 @@
     import { Types } from '~/services/meta/types'
     import { useTypedefStore } from '~/store/typedef'
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         props: {
@@ -176,6 +186,7 @@
             const { metadata, properties } = toRefs(props)
             const isSorting = ref(false)
 
+            const { checkAccess } = useAuth()
             // map icon to type
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
@@ -256,10 +267,12 @@
             const sortedProperties = ref([])
 
             const enableDragSort = () => {
-                const sortableLists = properties.value
-                Array.prototype.map.call([sortableLists], (list) => {
-                    enableDragList(list)
-                })
+                if (checkAccess(map.UPDATE_BUSINESS_METADATA)) {
+                    const sortableLists = properties.value
+                    Array.prototype.map.call([sortableLists], (list) => {
+                        enableDragList(list)
+                    })
+                }
             }
 
             const enableDragList = (list) => {
@@ -361,6 +374,8 @@
                 reInitializeDragSort,
                 mapTypeToIcon,
                 resolveType,
+                map,
+                checkAccess,
             }
         },
     })

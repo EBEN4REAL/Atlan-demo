@@ -724,9 +724,12 @@
                 // if the folder is not loaded, don't do anything
             }
 
-            const pushGuidToURL = (guid: string) => {
-                const queryParams = { id: guid }
-                if (route?.query?.vqb) queryParams.vqb = true
+            const pushGuidToURL = (item) => {
+                const queryParams = {}
+                if (item.guid) queryParams.id = item.guid
+                if (item?.attributes?.isVisualQuery) queryParams.vqb = true
+                // const queryParams = { id: guid }
+                // if (route?.query?.vqb) queryParams.vqb = true
                 router.push({ path: `insights`, query: queryParams })
             }
             const facets = ref({})

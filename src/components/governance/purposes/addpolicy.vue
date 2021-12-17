@@ -68,6 +68,11 @@
                         Users / Groups <span class="text-red-500">*</span>
                     </div>
                     <Owners
+                        :ref="
+                            (el) => {
+                                refOwners = el
+                            }
+                        "
                         v-model:modelValue="selectedOwnersData"
                         class="mb-6"
                         :read-only="false"
@@ -338,6 +343,7 @@
             const { scopeList } = useScopeService().listScopes('purpose')
             const policyType = ref('')
             const assetSelectorVisible = ref(false)
+            const refOwners = ref()
             const isShow = ref(false)
             const policyNameRef = ref()
             const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
@@ -382,9 +388,13 @@
                 if (isEdit.value) {
                     policy.value = { ...selectedPolicy.value }
                     policyType.value = selectedPolicy.value?.type
-                    selectedOwnersData.value = {
+                    const objOwner = {
                         ownerUsers: selectedPolicy.value?.users,
                         ownerGroups: selectedPolicy.value?.groups,
+                    }
+                    selectedOwnersData.value = objOwner
+                    if (refOwners.value) {
+                        refOwners.value.setLocalValue(objOwner)
                     }
                 } else {
                     selectedOwnersData.value = {
@@ -551,6 +561,7 @@
                 canEdit,
                 selectedOwnersData,
                 handleOwnersChange,
+                refOwners,
             }
         },
     })

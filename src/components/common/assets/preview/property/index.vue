@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
+    <div class="flex flex-col w-full h-full px-5 py-4 overflow-auto gap-y-5">
         <div class="flex items-center justify-between">
             <span class="font-semibold text-gray-500">Properties</span>
         </div>
@@ -36,9 +36,7 @@
             <span class="mb-1 text-gray-500">Source created</span>
             <div class="flex flex-col">
                 <div class="flex mb-2" v-if="sourceCreatedBy(selectedAsset)">
-                    <UserPill
-                        :username="sourceCreatedBy(selectedAsset)"
-                    ></UserPill>
+                    {{ sourceCreatedBy(selectedAsset) }}
                 </div>
 
                 <span class="text-xs text-gray-700"
@@ -85,9 +83,9 @@
         </div>
 
         <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Last updated</span>
+            <span class="mb-1 text-gray-500">Last updated by</span>
             <div class="flex flex-col">
-                <div class="flex mb-2">
+                <div class="flex">
                     <PopOverUser :item="modifiedBy(selectedAsset)">
                         <UserPill
                             :username="modifiedBy(selectedAsset)"
@@ -95,8 +93,12 @@
                         ></UserPill
                     ></PopOverUser>
                 </div>
-
-                <span class="text-xs text-gray-700"
+            </div>
+        </div>
+        <div class="flex flex-col text-sm">
+            <span class="mb-1 text-gray-500">Last updated at</span>
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-700"
                     >{{ modifiedAt(selectedAsset, true) }} ({{
                         modifiedAt(selectedAsset, false)
                     }})</span
@@ -120,7 +122,7 @@
             <span class="mb-1 text-gray-500">Created</span>
 
             <div class="flex flex-col">
-                <div class="flex mb-2">
+                <div class="flex">
                     <PopOverUser :item="createdBy(selectedAsset)">
                         <UserPill
                             :username="createdBy(selectedAsset)"
@@ -128,7 +130,13 @@
                         ></UserPill
                     ></PopOverUser>
                 </div>
-                <span class="text-xs text-gray-700"
+            </div>
+        </div>
+        <div class="flex flex-col text-sm">
+            <span class="mb-1 text-gray-500">Created at</span>
+
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-700"
                     >{{ createdAt(selectedAsset, true) }} ({{
                         createdAt(selectedAsset, false)
                     }})</span

@@ -25,15 +25,16 @@
                     placeholder="Please select"
                     ref="treeSelectRef"
                 >
-                      <template #suffixIcon><AtlanIcon icon="Search" /></template>
-                      <template #title="item"><AtlanIcon :icon="icon(item.node)" /> {{item.title}}</template>
+                    <template #suffixIcon><AtlanIcon icon="Search" /></template>
+                    <template #title="item"
+                        ><AtlanIcon :icon="icon(item.node)" />
+                        {{ item.title }}</template
+                    >
                 </a-tree-select>
-                <div :class="$style.categoryWidget" id="categoryWidget">
-
-                </div>
+                <div :class="$style.categoryWidget" id="categoryWidget"></div>
             </template>
             <a-button
-                v-if="!readOnly"
+                v-if="editPermission"
                 shape="circle"
                 :disabled="disabled"
                 size="small"
@@ -58,7 +59,7 @@
                 </div>
             </template>
             <span
-                v-if="readOnly && checkedKeys?.length < 1"
+                v-if="!editPermission && checkedKeys?.length < 1"
                 class="-ml-1 text-gray-500"
                 >This term does not belong to any category</span
             >
@@ -74,14 +75,14 @@
         ref,
         toRefs,
         watch,
-        onMounted
+        onMounted,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { TreeSelect } from 'ant-design-vue';
+    import { TreeSelect } from 'ant-design-vue'
 
     import GlossaryTree from '~/components/glossary/index.vue'
-    import useCategoriesWidget from './useCategoriesWidget';
+    import useCategoriesWidget from './useCategoriesWidget'
 
     export default defineComponent({
         name: 'CategoriesWidget',
@@ -91,7 +92,7 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -117,10 +118,10 @@
             const checkedKeys = ref(
                 modelValue.value.map((category) => ({
                     label: category.attributes?.name,
-                    value: category.guid
+                    value: category.guid,
                 }))
             )
-            const SHOW_ALL = TreeSelect.SHOW_ALL;
+            const SHOW_ALL = TreeSelect.SHOW_ALL
 
             const hasBeenEdited = ref(false)
             const treeSelectRef = ref(null)
@@ -128,17 +129,22 @@
                 return document.getElementById('categoryWidget')
             }
 
-            const { initCategories, treeData, onLoadData } = useCategoriesWidget({parentGlossaryQf: selectedAsset.value.attributes.anchor.uniqueAttributes.qualifiedName ?? ''})
+            const { initCategories, treeData, onLoadData } =
+                useCategoriesWidget({
+                    parentGlossaryQf:
+                        selectedAsset.value.attributes.anchor.uniqueAttributes
+                            .qualifiedName ?? '',
+                })
 
             const onPopoverClose = (visible) => {
-                console.log(visible , localValue.value, checkedKeys.value)
+                console.log(visible, localValue.value, checkedKeys.value)
                 if (!visible) {
                     modelValue.value = checkedKeys.value.map((cat) => ({
                         guid: cat.value,
                         typeName: 'AtlasGlossaryCategory',
                         attributes: {
-                            name: cat.label
-                        }
+                            name: cat.label,
+                        },
                     }))
                     emit('change', localValue.value)
                     hasBeenEdited.value = false
@@ -183,7 +189,7 @@
                 localValue.value = modelValue.value
                 checkedKeys.value = modelValue.value.map((category) => ({
                     label: category.attributes.name,
-                    value: category.guid
+                    value: category.guid,
                 }))
             })
 
@@ -193,11 +199,12 @@
                 onPopoverClose,
                 localValue,
                 checkedKeys,
-
-                initCategories, treeData, onLoadData,
+                initCategories,
+                treeData,
+                onLoadData,
                 SHOW_ALL,
                 getContainer,
-                treeSelectRef
+                treeSelectRef,
             }
         },
     })
@@ -213,8 +220,8 @@
     .categoryWidget {
         max-height: 200px;
         min-height: 100px;
-        @apply  overflow-y-auto overflow-x-hidden;
-         
+        @apply overflow-y-auto overflow-x-hidden;
+
         div {
             position: static !important;
         }

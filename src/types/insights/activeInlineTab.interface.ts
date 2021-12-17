@@ -38,6 +38,7 @@ export interface activeInlineTabInterface {
     }
     favico: string | undefined
     playground: {
+        isVQB: Boolean
         editor: {
             context: connectorsWidgetInterface
             text: string

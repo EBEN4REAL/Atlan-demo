@@ -18,7 +18,8 @@
                     :is="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
-                    :readOnly="isScrubbed(asset)"
+                    :read-permission="isScrubbed(asset)"
+                    :edit-permission="selectedAssetUpdatePermission(asset)"
                     @preview="$emit('preview', $event)"
                 ></component>
             </a-tab-pane>
@@ -89,7 +90,11 @@
             provide('actions', actions)
             provide('selectedAsset', asset)
 
-            const { getProfileTabs, isScrubbed } = useAssetInfo()
+            const {
+                getProfileTabs,
+                isScrubbed,
+                selectedAssetUpdatePermission,
+            } = useAssetInfo()
 
             const activeKey = ref()
             const route = useRoute()
@@ -108,6 +113,7 @@
                 activeKey,
                 handleChangeTab,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             }
         },
     })

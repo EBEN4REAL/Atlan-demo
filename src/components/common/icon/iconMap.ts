@@ -170,7 +170,6 @@ import Teams from '~/assets/images/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
-import Flash from '~/assets/images/icons/flash.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
@@ -214,6 +213,8 @@ import Gdoc from '~/assets/images/integrations/gDoc.svg'
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
 import ResendInvite from '~/assets/images/icons/invite.svg'
+import Flash from '~/assets/images/icons/flash.svg'
+import FlashColor from '~/assets/images/icons/flash-color.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
 import ImpactedAssets from '~/assets/images/icons/impacted-assets.svg'
 
@@ -314,6 +315,7 @@ import QueryGrey from '~/assets/images/icons/query-grey.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 
 export default {
+    FlashColor,
     BuilderGroup,
     Trigger,
     LeftJoin,

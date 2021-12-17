@@ -1,17 +1,17 @@
 <template>
-    <div class="bg-gray-100">
+    <div class="bg-gray-100" style="z-index: 4">
         <div class="flex items-end overflow-x-auto">
             <div class="add-variable-btn">
                 <AtlanBtn
                     size="sm"
                     color="secondary"
                     padding="compact"
-                    class="flex items-center justify-between px-0 mx-3 my-3  add-btn group"
+                    class="flex items-center justify-between px-0 mx-3 my-3 add-btn group"
                     @click="onAddVariable"
                     style="min-width: 30px; height: 30px"
                 >
                     <div
-                        class="flex items-center px-2 text-gray-700 transition duration-150 rounded  group-hover:text-primary"
+                        class="flex items-center px-2 text-gray-700 transition duration-150 rounded group-hover:text-primary"
                     >
                         <AtlanIcon icon="Add"></AtlanIcon>
                         <p
@@ -50,18 +50,13 @@
                 class="flex flex-col mx-1 my-3"
             >
                 <p
-                    class="
-                        mb-0.5
-                        text-sm text-gray-700
-                        bg-gray-100
-                        cursor-default
-                    "
+                    class="mb-0.5 text-sm text-gray-700 bg-gray-100 cursor-default"
                 >
                     {{ variable.name }}
                 </p>
 
                 <div
-                    class="relative flex items-center h-8 pr-1 bg-white rounded  group border-container"
+                    class="relative flex items-center h-8 pr-1 bg-white rounded group border-container"
                     style="width: 162px"
                 >
                     <a-input
@@ -80,7 +75,7 @@
                         >
                             <a-button
                                 @click="() => openSelectDropdown(variable)"
-                                class="flex items-center justify-between bg-white border-none shadow-none "
+                                class="flex items-center justify-between bg-white border-none shadow-none"
                                 style="width: 138px; height: 30px"
                                 ><span class="text-gray-500 truncate">{{
                                     variable.value.length
@@ -91,7 +86,7 @@
                             <template #overlay>
                                 <div
                                     @mouseleave="closeSelectDropdown"
-                                    class="z-10 flex flex-col text-gray-700 bg-white rounded shadow "
+                                    class="z-10 flex flex-col text-gray-700 bg-white rounded shadow"
                                     style="width: 162px"
                                 >
                                     <div
@@ -116,7 +111,7 @@
                                             <div
                                                 v-for="item in variable.options"
                                                 :key="item.label"
-                                                class="flex items-center justify-between px-4 pt-2 pb-2 "
+                                                class="flex items-center justify-between px-4 pt-2 pb-2"
                                             >
                                                 <a-checkbox :value="item.value"
                                                     ><span class="mb-0 ml-1">
@@ -148,7 +143,7 @@
                                                     :key="item.value"
                                                 >
                                                     <div
-                                                        class="flex items-center justify-between "
+                                                        class="flex items-center justify-between"
                                                     >
                                                         <span>{{
                                                             item.label
@@ -183,7 +178,7 @@
                         :trigger="['click']"
                     >
                         <div
-                            class="absolute right-0 z-10 p-1 rounded  hover:bg-gray-100"
+                            class="absolute right-0 z-10 p-1 rounded hover:bg-gray-100"
                         >
                             <AtlanIcon
                                 @click="() => openDropdown(variable)"
@@ -195,7 +190,7 @@
                             <a-menu>
                                 <div class="p-4" style="width: 215px">
                                     <div
-                                        class="flex items-center justify-between mb-3 "
+                                        class="flex items-center justify-between mb-3"
                                     >
                                         <span class="font-bold text-gray-700">{{
                                             variable.name
@@ -206,7 +201,7 @@
                                                     () =>
                                                         onCopyVariable(variable)
                                                 "
-                                                class="w-4 h-4 mr-4 text-gray-500 cursor-pointer "
+                                                class="w-4 h-4 mr-4 text-gray-500 cursor-pointer"
                                                 icon="CopyOutlined"
                                             />
                                             <AtlanIcon
@@ -216,7 +211,7 @@
                                                             variable
                                                         )
                                                 "
-                                                class="w-4 h-4 text-gray-500 cursor-pointer "
+                                                class="w-4 h-4 text-gray-500 cursor-pointer"
                                                 icon="Delete"
                                             />
                                         </div>
@@ -229,7 +224,7 @@
                                         >
                                             <a-form-item
                                                 label="Variable name"
-                                                class="mb-4 text-gray-700  tex-sm"
+                                                class="mb-4 text-gray-700 tex-sm"
                                                 name="name"
                                             >
                                                 <a-input
@@ -246,7 +241,7 @@
                                             </a-form-item>
                                             <a-form-item
                                                 label="Variable type"
-                                                class="mb-4 text-gray-700  tex-sm"
+                                                class="mb-4 text-gray-700 tex-sm"
                                                 name="type"
                                             >
                                                 <a-select
@@ -354,7 +349,7 @@
                                                     "
                                                 >
                                                     <span
-                                                        class="text-sm text-gray-700 "
+                                                        class="text-sm text-gray-700"
                                                     >
                                                         Allow multiple values
                                                     </span>
@@ -366,7 +361,7 @@
                                                 size="sm"
                                                 color="secondary"
                                                 padding="compact"
-                                                class="flex items-center justify-center mr-2 text-gray-700 transition duration-150 border rounded  hover:text-primary"
+                                                class="flex items-center justify-center mr-2 text-gray-700 transition duration-150 border rounded hover:text-primary"
                                                 style="width: 60px"
                                                 @click="
                                                     () => cancelEdit(variable)
@@ -381,7 +376,7 @@
                                                 size="sm"
                                                 color="primary"
                                                 padding="compact"
-                                                class="flex items-center justify-center rounded "
+                                                class="flex items-center justify-center rounded"
                                                 style="width: 60px"
                                                 @click="
                                                     () =>

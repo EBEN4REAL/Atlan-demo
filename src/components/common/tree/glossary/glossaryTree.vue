@@ -43,6 +43,7 @@
         :checkable="checkable"
         :checkStrictly="false"
         @check="onCheck"
+        :blockNode="true"
     >
         <template #switcherIcon>
             <AtlanIcon icon="CaretRight" class="my-auto" />
@@ -216,14 +217,14 @@
                     props.checkable &&
                     event?.node?.typeName === 'AtlasGlossaryTerm'
                 ) {
-                    const found = checkedKeys.value.find(
-                        (el) => el === event?.node?.key
-                    )
-                    onCheck(event, {
-                        checkedNodes: event.selectedNodes,
-                        checked: !found,
-                        node: event.node,
-                    })
+                    // const found = checkedKeys.value.find(
+                    //     (el) => el === event?.node?.key
+                    // )
+                    // onCheck(event, {
+                    //     checkedNodes: event.selectedNodes,
+                    //     checked: !found,
+                    //     node: event.node,
+                    // })
                 } else selectNode(selected, event)
             }
             const handleAddSelectedKey = (key) => {

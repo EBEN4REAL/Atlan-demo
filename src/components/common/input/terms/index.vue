@@ -15,7 +15,7 @@
                 />
             </template>
             <a-button
-                v-if="!readOnly"
+                v-if="editPermission"
                 shape="circle"
                 :disabled="disabled"
                 size="small"
@@ -29,13 +29,13 @@
                 <TermPill
                     :term="term"
                     :allow-delete="
-                        allowDelete === null ? !readOnly : allowDelete
+                        allowDelete === null ? editPermission : allowDelete
                     "
                     @delete="handleDeleteTerm"
                 />
             </template>
             <span
-                v-if="readOnly && list?.length < 1"
+                v-if="!editPermission && list?.length < 1"
                 class="-ml-1 text-gray-500"
                 >No linked terms</span
             >
@@ -66,7 +66,7 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -165,7 +165,7 @@
                 localValue,
                 checkedGuids,
                 onSearchItemCheck,
-                handleDeleteTerm
+                handleDeleteTerm,
             }
         },
     })

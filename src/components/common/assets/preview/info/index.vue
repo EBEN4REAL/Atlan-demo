@@ -31,7 +31,7 @@
                 shortcut-key="n"
                 action="set name"
                 placement="left"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -44,7 +44,7 @@
                 ref="nameRef"
                 v-model="localName"
                 class="mx-4"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
                 @change="handleChangeName"
             />
         </div>
@@ -195,7 +195,7 @@
                 shortcut-key="d"
                 action="set description"
                 placement="left"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -216,7 +216,7 @@
                 v-model="localDescription"
                 class="mx-4"
                 :selected-asset="selectedAsset"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
                 @change="handleChangeDescription"
             />
         </div>
@@ -231,7 +231,7 @@
                 shortcut-key="o"
                 action="set owners"
                 placement="left"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -244,7 +244,7 @@
                 v-model="localOwners"
                 class="px-5"
                 :selected-asset="selectedAsset"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
                 @change="handleOwnersChange"
             />
         </div>
@@ -263,7 +263,7 @@
                 shortcut-key="t"
                 action="set classification"
                 placement="left"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -275,7 +275,7 @@
             <Classification
                 v-model="localClassifications"
                 :guid="selectedAsset.guid"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
                 class="px-5"
                 @change="handleClassificationChange"
             >
@@ -302,7 +302,7 @@
                 v-model="localMeanings"
                 :selected-asset="selectedAsset"
                 class="px-5"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
                 @change="handleMeaningsUpdate"
             >
             </Terms>
@@ -313,7 +313,7 @@
                 shortcut-key="c"
                 action="set certificate"
                 placement="left"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -326,7 +326,7 @@
                 v-model="localCertificate"
                 class="px-5"
                 :selected-asset="selectedAsset"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
                 @change="handleChangeCertificate"
             />
         </div>
@@ -344,7 +344,7 @@
                 v-model="localCategories"
                 :selected-asset="selectedAsset"
                 class="px-5"
-                :read-only="readOnly"
+                :edit-permission="editPermission"
                 @change="handleCategoriesUpdate"
             >
             </Categories>
@@ -417,7 +417,12 @@
                 required: false,
                 default: false,
             },
-            readOnly: {
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            readPermission: {
                 type: Boolean,
                 required: false,
                 default: false,

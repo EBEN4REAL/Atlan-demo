@@ -270,7 +270,10 @@
                         <AtlanIcon icon="Share" class="mb-0.5" />
                     </a-button>
                 </ShareMenu>
-                <AssetMenu :asset="item" :read-only="isScrubbed(item)">
+                <AssetMenu
+                    :asset="item"
+                    :edit-permission="selectedAssetUpdatePermission(item)"
+                >
                     <a-button block class="flex items-center justify-center">
                         <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
                     </a-button>
@@ -335,6 +338,7 @@
                 certificateStatusMessage,
                 getAssetQueryPath,
                 isScrubbed,
+                selectedAssetUpdatePermission,
                 isGTC,
             } = useAssetInfo()
 
@@ -393,6 +397,7 @@
                 back,
                 goToInsights,
                 isScrubbed,
+                selectedAssetUpdatePermission,
                 assetTypeLabel,
                 isGTC,
             }

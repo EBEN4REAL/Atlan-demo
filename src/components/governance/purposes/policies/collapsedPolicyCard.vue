@@ -195,53 +195,6 @@
                 </div>
             </div>
             <!-- </div> -->
-            <a-popover
-                v-model:visible="visibleDelete"
-                trigger="click"
-                placement="topRight"
-                @onMouseleave="() => (visibleDelete = false)"
-            >
-                <template #content>
-                    <div class="popover-delete">
-                        <span>
-                            Are you sure you want to delete
-                            <strong>{{ policy?.name }}</strong> ?
-                        </span>
-                        <div class="btn-wrapper">
-                            <AtlanBtn
-                                padding="compact"
-                                color="minimal"
-                                data-test-id="cancel"
-                                class="btn-asset"
-                                size="sm"
-                                @click="() => (visibleDelete = false)"
-                            >
-                                Cancel
-                            </AtlanBtn>
-                            <AtlanBtn
-                                padding="compact"
-                                data-test-id="save"
-                                class="btn-asset"
-                                size="sm"
-                                color="danger"
-                                @click="removePolicy"
-                            >
-                                Save
-                            </AtlanBtn>
-                        </div>
-                    </div>
-                </template>
-                <AtlanBtn
-                    class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
-                    size="sm"
-                    color="secondary"
-                    data-test-id="policy-delete"
-                    padding="compact"
-                    @click="() => (visibleDelete = true)"
-                >
-                    <AtlanIcon icon="Delete" class="" />
-                </AtlanBtn>
-            </a-popover>
             <!-- <a-popconfirm
                 placement="leftTop"
                 :title="getPopoverContent(policy)"
@@ -262,6 +215,51 @@
                 </AtlanBtn>
             </a-popconfirm> -->
         </div>
+        <a-popover
+            v-model:visible="visibleDelete"
+            trigger="click"
+            placement="topRight"
+            @onMouseleave="() => (visibleDelete = false)"
+        >
+            <template #content>
+                <div class="popover-delete">
+                    <span>
+                        Are you sure you want to delete
+                        <strong>{{ policy?.name }}</strong> ?
+                    </span>
+                    <div class="btn-wrapper">
+                        <AtlanBtn
+                            padding="compact"
+                            color="minimal"
+                            class="btn-asset"
+                            size="sm"
+                            @click="() => (visibleDelete = false)"
+                        >
+                            Cancel
+                        </AtlanBtn>
+                        <AtlanBtn
+                            padding="compact"
+                            class="btn-asset"
+                            size="sm"
+                            color="danger"
+                            @click="removePolicy"
+                        >
+                            Delete
+                        </AtlanBtn>
+                    </div>
+                </div>
+            </template>
+            <AtlanBtn
+                class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
+                size="sm"
+                color="secondary"
+                data-test-id="policy-delete"
+                padding="compact"
+                @click="() => (visibleDelete = true)"
+            >
+                <AtlanIcon icon="Delete" class="" />
+            </AtlanBtn>
+        </a-popover>
     </div>
 </template>
 

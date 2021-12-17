@@ -43,7 +43,7 @@
                         <div
                             v-for="(item, i) in scope.scopes"
                             :key="i"
-                            class="desc"
+                            class="text-gray-500 desc"
                         >
                             {{ item.desc }}
                             <a-tooltip

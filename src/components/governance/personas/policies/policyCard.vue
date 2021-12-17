@@ -207,7 +207,7 @@
                             color="danger"
                             @click="removePolicy"
                         >
-                            Save
+                            Delete
                         </AtlanBtn>
                     </div>
                 </div>

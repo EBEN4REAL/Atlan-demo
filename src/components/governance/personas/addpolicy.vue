@@ -391,7 +391,9 @@
         watch,
         toRefs,
         computed,
+        onMounted
     } from 'vue'
+    import { useMagicKeys } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
     import Connector from './policies/connector.vue'
     import { selectedPersonaDirty } from './composables/useEditPersona'
@@ -469,7 +471,6 @@
             const policy = ref({})
             const connectionStore = useConnectionStore()
             const isAddAll = ref(false)
-
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -688,6 +689,13 @@
                     policy?.value?.connectionId
                 )
             )
+            onMounted(() => {
+               window.addEventListener('keydown', (keyDown) => {
+                   if(keyDown.keyCode === 27){
+                       handleClose()
+                   }
+               })
+            })
             return {
                 selectedPersonaDirty,
                 rules,

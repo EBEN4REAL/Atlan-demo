@@ -4,7 +4,8 @@ import { useAsyncState } from '@vueuse/core'
 import { UserModule } from '~/types'
 import { APIFn } from '~/services/api/common'
 
-const heartbeatTimeout = 60 * 1000
+// it should run atleast 10mins
+const heartbeatTimeout = 10 * 60 * 1000
 
 interface useSSEParams {
     path: APIFn

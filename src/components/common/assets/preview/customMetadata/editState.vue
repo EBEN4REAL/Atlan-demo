@@ -88,7 +88,7 @@
         <!-- <a-select
             v-else-if="typeName === 'users'"
             v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
+            class="flex-grow shadow-none border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'users' : 'a user'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -116,7 +116,7 @@
         <a-select
             v-else-if="typeName === 'groups'"
             v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
+            class="flex-grow shadow-none border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'groups' : 'a group'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -144,7 +144,7 @@
         <a-select
             v-else-if="typeName === 'enum'"
             v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
+            class="flex-grow shadow-none border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -267,8 +267,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .center-arrow:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

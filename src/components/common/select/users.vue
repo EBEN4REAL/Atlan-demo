@@ -2,7 +2,7 @@
     <a-select
         v-model:value="localValue"
         placeholder="Users"
-        class="w-full center-arrow"
+        class="w-full"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
@@ -174,8 +174,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .center-arrow:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

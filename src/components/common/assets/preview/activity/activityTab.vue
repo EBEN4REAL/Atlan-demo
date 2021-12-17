@@ -28,6 +28,41 @@
                         ></div>
                     </template>
                     <div>
+                        <!-- {{ getAuditEventComponent(log) }}
+                        <ActivityType :data="getAuditEventComponent(log)" /> -->
+
+                        <template
+                            v-if="getDetailsForEntityAuditEvent(log)?.component"
+                        >
+                            <ActivityType
+                                :data="getDetailsForEntityAuditEvent(log)"
+                            />
+                        </template>
+                        <template v-else>
+                            <div class="mb-3">
+                                {{ getEventByAction(log)?.label || 'Event' }}
+                            </div>
+                        </template>
+                    </div>
+                    <div class="flex items-center mt-2 text-gray-500">
+                        <div class="flex items-center">
+                            <AtlanIcon icon="User" class="mr-1"></AtlanIcon>
+                            {{ getActionUser(log.user) }}
+                        </div>
+                        <div class="mx-3 timeline-name-time-separator"></div>
+                        <div>{{ timeAgo(log.created) }}</div>
+                    </div>
+                </a-timeline-item>
+            </a-timeline>
+
+            <!-- <a-timeline class="mx-5">
+                <a-timeline-item v-for="(log, index) in audits" :key="index">
+                    <template #dot>
+                        <div
+                            class="border ant-timeline-item-dot border-primary"
+                        ></div>
+                    </template>
+                    <div>
                         <template
                             v-if="getDetailsForEntityAuditEvent(log)?.component"
                         >
@@ -49,7 +84,7 @@
                         <div>{{ timeAgo(log.timestamp) }}</div>
                     </div>
                 </a-timeline-item>
-            </a-timeline>
+            </a-timeline> -->
             <div
                 v-if="!checkAuditsCount && !isAllLogsFetched"
                 class="flex justify-center mb-8 text-center"
@@ -105,10 +140,11 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import ActivityType from './activityType.vue'
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'ActivityTab',
-        components: { ActivityType, EmptyScreen },
+        components: { ActivityType, EmptyScreen, AtlanIcon },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -123,16 +159,23 @@
             const limit = ref(10)
             const offset = ref(0)
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
-
             const dependentKey = ref('audit')
+            const facets = ref({
+                entityId: item.value.guid,
+            })
+            const preference = ref({
+                sort: 'timestamp-desc',
+            })
 
-            const { data } = useAssetAuditSearch({
+            const { data, list: auditList } = useAssetAuditSearch({
                 guid: item.value.guid,
                 isCache: true,
                 dependentKey,
                 queryText: '',
                 limit,
                 offset,
+                facets,
+                preference,
             })
 
             const {
@@ -142,6 +185,7 @@
                 isLoading,
                 getEventByAction,
                 getDetailsForEntityAuditEvent,
+                getAuditEventComponent,
                 getActionUser,
                 fetchMoreAudits,
                 isFetchingMore,
@@ -192,6 +236,10 @@
                 emptyScreen,
                 limit,
                 offset,
+                preference,
+                facets,
+                auditList,
+                getAuditEventComponent,
             }
         },
     })

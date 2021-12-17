@@ -229,13 +229,7 @@
         },
     })
 </script>
-<style lang="less">
-    .delete-persona-modal {
-        .ant-modal-confirm-body-wrapper {
-            @apply p-5;
-        }
-    }
-</style>
+<style lang="less"></style>
 <style lang="less" scoped>
     .clean-input {
         @apply block bg-transparent border-0 shadow-none outline-none;

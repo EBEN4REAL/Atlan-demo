@@ -114,7 +114,7 @@
                     $and: [{ username: item.value }],
                 },
             }
-            const { userList, isLoading, getUserList } = useUsers(params, '')
+            const { userList, isLoading, getUserList } = useUsers(params, false)
             const selectedUser = computed(() =>
                 userList && userList.value && userList.value.length
                     ? userList.value[0]
@@ -131,11 +131,20 @@
                     getUserList()
                 }
             }
-
-            const { getUserProfiles } = useUserPopover('user', item.value)
-            const userProfiles = computed(() => {
-                return getUserProfiles(selectedUser?.value) || {}
-            })
+            const getUserProfiles = (user: any) => {
+                const profile = user?.attributes?.profiles
+                let profileObj = {}
+                if (profile && profile.length) {
+                    const profileJsonStr = profile[0]
+                    try {
+                        profileObj = JSON.parse(profileJsonStr)[0]
+                        console.log('profileObj', profileObj)
+                    } catch (error) {
+                        console.error('error parsing user profile json', error)
+                    }
+                }
+                return profileObj
+            }
 
             return {
                 selectedUser,
@@ -143,7 +152,7 @@
                 handleClickViewUser,
                 handleVisibleChange,
                 getUserList,
-                userProfiles,
+                getUserProfiles,
             }
         },
     }

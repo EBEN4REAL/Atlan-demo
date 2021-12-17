@@ -82,7 +82,7 @@
                         class="mb-6"
                         :class="isEdit ? 'edit-connector' : ''"
                         :disabled="isEdit"
-                        @change="handleConnectorChange"
+                        @changeConnector="handleConnectorChange"
                         @blur="
                             () => {
                                 if (!connectorData.attributeValue)
@@ -542,11 +542,7 @@
                     },
                 }
                 if (isEdit.value) {
-                    const newArray = []
-                    selectedPolicy.value.assets.forEach((el) =>
-                        newArray.push(el)
-                    )
-                    policy.value = { ...selectedPolicy.value, assets: newArray }
+                    policy.value = selectedPolicy.value
                     policyType.value = selectedPolicy.value.type
                 } else {
                     policyType.value = type.value
@@ -577,13 +573,10 @@
                 }
             }
             initPolicy()
-            watch(showDrawer, () => {
+            watch([showDrawer, selectedPolicy], () => {
                 if (showDrawer.value) {
                     initPolicy()
                 }
-            })
-            watch(selectedPolicy, () => {
-                initPolicy()
             })
             const handleAddAsset = () => {
                 if (connectorData.value?.attributeValue) {

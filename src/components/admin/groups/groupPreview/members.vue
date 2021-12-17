@@ -495,13 +495,7 @@
         height: calc(100vh - 10rem) !important;
     }
 </style>
-<style lang="less">
-    .remove-member-modal {
-        .ant-modal-confirm-body-wrapper {
-            @apply p-5;
-        }
-    }
-</style>
+<style lang="less"></style>
 <style lang="less" module>
     .ownerPopover {
         :global(.ant-popover-inner-content) {

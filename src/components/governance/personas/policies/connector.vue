@@ -99,7 +99,7 @@
                 default: '',
             },
         },
-        emits: ['change', 'update:data', 'blur'],
+        emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
             const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
@@ -294,6 +294,7 @@
 
                 emit('update:data', payload)
                 emit('change')
+                emit('changeConnector')
             }
 
             const onBlur = () => {

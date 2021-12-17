@@ -1,13 +1,13 @@
 <template>
-    <div><b>Term </b>{{ data.displayValue }}</div>
-    <div class="my-3">
+    <div><b>Terms</b> was updated</div>
+    <!-- <div class="my-3">
         <Pill :label="data.value"
             ><template #prefix>
                 <AtlanIcon
                     icon="Term"
                     class="text-indigo-500 group-hover:text-white" /></template
         ></Pill>
-    </div>
+    </div> -->
 </template>
 
 <script lang="ts">

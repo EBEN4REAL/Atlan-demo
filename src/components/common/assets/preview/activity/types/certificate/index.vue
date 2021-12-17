@@ -1,12 +1,12 @@
 <template>
     <div v-if="newCertificate?.label" class="mb-3">
-        <b>Certification</b> changed to
+        <b>Certification</b> updated to
         <component
             :is="newCertificate.icon"
             class="inline-flex self-center w-auto h-4 mb-1"
         /><b>{{ ' ' }}{{ newCertificate.label }}</b>
 
-        <div v-if="data.value?.certificateStatusMessage" class="flex my-3">
+        <div v-if="data.value?.certificateStatusMessage" class="flex">
             <div class="w-1 mr-3 bg-gray-500 rounded-full min-h-6"></div>
             <div class="my-0.5 text-sm">
                 <div class="text-xs text-gray-500">Certification Message</div>
@@ -18,10 +18,10 @@
     </div>
     <div v-else>
         <div v-if="data.value?.certificateStatusMessage === ''">
-            <div class="mb-3"><b>Certification message</b> removed</div>
+            <div class="mb-3"><b>Certification message</b> was deleted</div>
         </div>
         <div v-else>
-            <div><b>Certification message</b> updated</div>
+            <div><b>Certification message</b> was updated</div>
             <div class="my-3 text-sm text-gray-500">
                 {{ data.value.certificateStatusMessage }}
             </div>

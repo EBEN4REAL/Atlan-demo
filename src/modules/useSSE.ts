@@ -4,6 +4,8 @@ import { useAsyncState } from '@vueuse/core'
 import { UserModule } from '~/types'
 import { APIFn } from '~/services/api/common'
 
+const heartbeatTimeout = 60 * 1000
+
 interface useSSEParams {
     path: APIFn
     includeAuthHeader: boolean
@@ -113,15 +115,25 @@ export function useSSE({
         }
     }
 
+    // setTimeout(() => {
+    //     // eventSource.close()
+    //     console.log('closed', eventSource)
+    // }, heartbeatTimeout)
+
     const URL: any = resolveUrl(path, pathVariables)
 
     const promise = new Promise<useSSEReturnObj>((resolve, reject) => {
         eventSource = new EventSourcePolyfill(URL, {
             headers: reqHeaders,
             withCredentials: cfg.withCredentials,
+            heartbeatTimeout: heartbeatTimeout,
         })
+        // setInterval(() => {
+
+        // }, 4000)
 
         eventSource.onerror = (e) => {
+            eventSource.close()
             console.log(e)
             reject(e)
         }
@@ -135,6 +147,7 @@ export function useSSE({
                 },
 
                 onError(handler) {
+                    eventSource.close()
                     eventSource.onerror = handler
                     return this
                 },

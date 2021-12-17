@@ -109,6 +109,7 @@
             provide('togglecmdK', () => {
                 isCmndKVisible.value = !isCmndKVisible.value
             })
+            provide('isCmndKVisible', isCmndKVisible)
 
             // watch for shortcut keys for command k
             whenever(keyK, () => {

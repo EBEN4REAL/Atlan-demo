@@ -550,8 +550,8 @@
             },
             itemIndex: {
                 type: Number,
-                require: true
-            }
+                require: true,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -563,7 +563,7 @@
                 showCheckBox,
                 bulkSelectMode,
                 enableSidebarDrawer,
-                itemIndex
+                itemIndex,
             } = toRefs(props)
 
             const showAssetSidebarDrawer = ref(false)
@@ -621,6 +621,7 @@
 
             const handleListUpdate = (asset) => {
                 emit('updateDrawer', asset)
+                selectedAssetDrawerData.value = asset
             }
 
             const isSelected = computed(() => {

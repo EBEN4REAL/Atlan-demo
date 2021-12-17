@@ -111,7 +111,6 @@
             const updateList = (asset) => {
                 localSelected.value = asset
                 handlePreview(asset)
-                glossaryStore.setSelectedGTC(asset)
                 updateTreeNode(asset)
             }
             watch(selectedGlossary, () => {

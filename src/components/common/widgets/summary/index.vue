@@ -24,7 +24,7 @@
                             ref="descriptionRef"
                             v-model="localDescription"
                             :selected-asset="asset"
-                            :read-only="readOnly"
+                            :edit-permission="editPermission"
                             :in-profile="true"
                             class="-ml-1"
                             @change="handleChangeDescription"
@@ -38,7 +38,7 @@
                         <Certificate
                             v-model="localCertificate"
                             :selected-asset="asset"
-                            :read-only="readOnly"
+                            :edit-permission="editPermission"
                             :in-profile="true"
                             @change="handleChangeCertificate"
                         />
@@ -49,7 +49,7 @@
                         <Owners
                             v-model="localOwners"
                             :selected-asset="asset"
-                            :read-only="readOnly"
+                            :edit-permission="editPermission"
                             :in-profile="true"
                             @change="handleOwnersChange"
                         />
@@ -107,7 +107,7 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,

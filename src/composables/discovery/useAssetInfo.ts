@@ -630,6 +630,14 @@ export default function useAssetInfo() {
         return glossaryStore.selectedGTC
     })
 
+    const authStore = useAuthStore()
+
+    const selectedAssetUpdatePermission = computed(() => {
+        return authStore?.evaluations.find(
+            (ev) => ev?.entityGuid === selectedAsset?.value?.guid
+        )?.allowed
+    })
+
     const isGTCByType = (typeName) => {
         if (
             [
@@ -986,6 +994,7 @@ export default function useAssetInfo() {
         getProfilePath,
         isGTCByType,
         getAnchorQualifiedName,
+        selectedAssetUpdatePermission,
         isNonBiAsset,
         getLineagePath,
         isUserDescription,

@@ -163,7 +163,8 @@
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
-                    :read-only="isScrubbed(selectedAsset)"
+                    :read-permission="isScrubbed(selectedAsset)"
+                    :edit-permission="selectedAssetUpdatePermission"
                     :data="tab.data"
                 ></component>
             </a-tab-pane>
@@ -290,6 +291,7 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -387,6 +389,7 @@
                 handleAction,
                 getProfilePath,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             }
         },
     })

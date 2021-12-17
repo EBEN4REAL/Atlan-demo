@@ -85,66 +85,16 @@
             :multiple="isMultivalued"
             @change="handleChange"
         />
-        <!-- <a-select
-            v-else-if="typeName === 'users'"
+        <GroupSelector
+            v-if="typeName === 'groups'"
             v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
-            :allow-clear="true"
-            :placeholder="`Select ${isMultivalued ? 'users' : 'a user'}`"
-            :mode="isMultivalued ? 'multiple' : null"
-            style="width: 100%"
-            :show-arrow="true"
-            @focus="userSearch"
+            :multiple="isMultivalued"
             @change="handleChange"
-        >
-            <template #suffixIcon>
-                <AtlanIcon
-                    v-if="uLoading"
-                    icon="CircleLoader"
-                    class="animate-spin"
-                />
-                <AtlanIcon v-else icon="CaretDown" />
-            </template> 
-            <a-select-option
-                v-for="(item, index) in userList"
-                :key="index"
-                :value="item.username"
-                :label="item.username"
-                >{{ item.username }}
-            </a-select-option>
-        </a-select> -->
-        <a-select
-            v-else-if="typeName === 'groups'"
-            v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
-            :allow-clear="true"
-            :placeholder="`Select ${isMultivalued ? 'groups' : 'a group'}`"
-            :mode="isMultivalued ? 'multiple' : null"
-            style="width: 100%"
-            :show-arrow="true"
-            @focus="groupSearch"
-            @change="handleChange"
-        >
-            <template #suffixIcon>
-                <AtlanIcon
-                    v-if="gLoading"
-                    icon="CircleLoader"
-                    class="animate-spin"
-                />
-                <AtlanIcon v-else icon="CaretDown" />
-            </template>
-            <a-select-option
-                v-for="(item, index) in groupList"
-                :key="index"
-                :value="item.alias"
-                :label="item.alias"
-                >{{ item.alias }}
-            </a-select-option>
-        </a-select>
+        />
         <a-select
             v-else-if="typeName === 'enum'"
             v-model:value="localValue"
-            class="flex-grow shadow-none center-arrow border-1"
+            class="flex-grow shadow-none border-1"
             :allow-clear="true"
             :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
             :mode="isMultivalued ? 'multiple' : null"
@@ -165,15 +115,14 @@
     import { useVModels } from '@vueuse/core'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
 
-    import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useFacetGroups from '~/composables/group/useFacetGroups'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import UserSelector from '@/common/select/users.vue'
+    import GroupSelector from '@/common/select/groups.vue'
 
     export default defineComponent({
         name: 'EditCustomMetadata',
-        components: { MultiInput, UserSelector },
+        components: { MultiInput, UserSelector, GroupSelector },
         props: {
             attribute: {
                 type: Object,
@@ -206,34 +155,6 @@
             if (typeName.value === 'date' && localValue.value)
                 localValue.value = localValue.value.toString()
 
-            const {
-                list: userList,
-                handleSearch: handleUserSearch,
-                isLoading: uLoading,
-                isReady: isUserReady,
-                error: userError,
-            } = useFacetUsers({
-                sort: 'username',
-                columns: ['username'],
-                immediate: false,
-            })
-
-            const userSearch = (val) => {
-                if (!isUserReady?.value || userError.value)
-                    handleUserSearch(val)
-            }
-
-            const {
-                list: groupList,
-                handleSearch: handleGroupSearch,
-                isLoading: gLoading,
-                isReady,
-                error,
-            } = useFacetGroups('alias', ['alias'], false)
-            const groupSearch = (val) => {
-                if (!isReady?.value || error.value) handleGroupSearch(val)
-            }
-
             const isMultivalued = ref(
                 props.attribute.options.multiValueSelect === 'true'
             )
@@ -256,19 +177,9 @@
                 localValue,
                 getEnumOptions,
                 handleChange,
-                userSearch,
-                userList,
-                groupSearch,
-                groupList,
-                gLoading,
-                uLoading,
             }
         },
     })
 </script>
 
-<style lang="less" scoped>
-    .center-arrow:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

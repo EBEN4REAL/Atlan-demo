@@ -21,7 +21,7 @@
                 {{ announcementUpdatedAt(selectedAsset, true) }}
             </div>
         </div>
-        <div v-if="editPermission(selectedAsset)">
+        <div v-if="selectedAssetUpdatePermission(selectedAsset)">
             <a-dropdown trigger="click" placement="bottomRight">
                 <a-button
                     class="px-2 bg-transparent border-none shadow-none hover:bg-white hover:shadow-sm"
@@ -75,7 +75,7 @@
                 announcementType,
                 announcementUpdatedAt,
                 announcementUpdatedBy,
-                editPermission,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const bgClass = computed(() => {
@@ -110,7 +110,7 @@
                 announcementType,
                 announcementUpdatedAt,
                 announcementUpdatedBy,
-                editPermission,
+                selectedAssetUpdatePermission,
                 bgClass,
                 icon,
             }

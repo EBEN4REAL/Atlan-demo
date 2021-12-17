@@ -634,7 +634,8 @@ export default function useAssetInfo() {
 
     const selectedAssetUpdatePermission = (asset: assetInterface) => {
         return authStore?.evaluations.find(
-            (ev) => ev?.entityGuid === asset?.guid
+            (ev) =>
+                ev?.entityGuid === asset?.guid && ev?.action === 'ENTITY_UPDATE'
         )?.allowed
     }
 

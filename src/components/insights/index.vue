@@ -142,6 +142,7 @@
     import { generateUUID } from '~/utils/helper/generator'
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { message } from 'ant-design-vue'
+    import useCollectionAccess from '~/components/insights/explorers/queries/composables/useCollectionAccess'
 
     export default defineComponent({
         components: {
@@ -220,6 +221,15 @@
                 activeInlineTab,
                 activeInlineTabKey
             )
+
+            const {
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+            } = useCollectionAccess(activeInlineTab)
+
+            watch(activeInlineTab, () => {})
+
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
                     ? assetSidebarPaneSize.value
@@ -271,6 +281,9 @@
                 outputPaneSize,
                 fullSreenState,
                 setEditorInstance,
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
             }
             useProvide(provideData)
             /*-------------------------------------*/

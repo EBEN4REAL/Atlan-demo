@@ -6,16 +6,16 @@
         <template #overlay>
             <a-menu>
                 <div
-                    class="menu-item"
                     key="1"
                     v-auth="map.UPDATE_BUSINESS_METADATA"
+                    class="menu-item"
                     @click="metadataModal.open()"
                 >
                     <AtlanIcon class="inline mr-2" icon="Edit" />Edit
                 </div>
                 <div
-                    class="menu-item"
                     key="3"
+                    class="menu-item"
                     @click.prevent.stop="
                         copyAPI(metadata.displayName, 'Name Copied!')
                     "
@@ -24,31 +24,42 @@
                     name
                 </div>
                 <div
-                    class="menu-item"
                     key="3"
+                    class="menu-item"
                     @click.prevent.stop="copyAPI(metadata.guid, 'GUID Copied!')"
                 >
                     <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy ID
                 </div>
-                <div
-                    class="menu-item"
-                    key="4"
-                    @click.prevent.stop="showDeleteConfirm"
+                <a-tooltip
+                    :title="
+                        !allowDelete
+                            ? `${assetCount} assets are linked with ${metadata.displayName}. You'll have to remove them before archiving.`
+                            : ''
+                    "
+                    :mouse-enter-delay="0"
+                    placement="left"
                 >
-                    <AtlanIcon
-                        class="inline mr-2 text-error"
-                        icon="Trash"
-                    />Delete
-                </div>
-                <!-- <a-menu-item
-                    key="2"
-                    v-auth="map.DELETE_BUSINESS_METADATA"
-                    class="text-red-500"
-                    @click="openDeleteModal = true"
-                >
-                    <AtlanIcon class="inline mr-2" icon="Trash" />
-                    Delete</a-menu-item
-                > -->
+                    <div
+                        key="4"
+                        v-auth="map.DELETE_BUSINESS_METADATA"
+                        class="menu-item"
+                        :class="
+                            !allowDelete
+                                ? 'text-gray-200 cursor-not-allowed'
+                                : ''
+                        "
+                        @click.prevent.stop="showDeleteConfirm"
+                    >
+                        <AtlanIcon
+                            class="inline mr-2"
+                            :class="
+                                !allowDelete ? 'text-red-200' : 'text-error'
+                            "
+                            icon="Trash"
+                        />
+                        Delete
+                    </div>
+                </a-tooltip>
             </a-menu>
         </template>
     </a-dropdown>
@@ -78,6 +89,14 @@
                 type: Object,
                 default: () => {},
             },
+            allowDelete: {
+                type: Boolean,
+                required: true,
+            },
+            assetCount: {
+                type: Number,
+                required: true,
+            },
         },
         setup(props) {
             const store = useTypedefStore()
@@ -106,6 +125,7 @@
                 }
             })
             const showDeleteConfirm = () => {
+                if (!props.allowDelete) return
                 Modal.confirm({
                     title: 'Delete metadata',
                     content: () =>
@@ -122,7 +142,7 @@
 
                             h('span', '?'),
                         ]),
-                    okText: 'Yes',
+                    okText: 'Delete',
                     okType: 'danger',
                     onOk() {
                         message.loading({

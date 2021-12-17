@@ -10,7 +10,7 @@ export default function useFacetGroups(
 ) {
     const params = ref(new URLSearchParams())
     params.value.set('sort', sort ?? 'name')
-    const limit = 5
+    const limit = 20
     let offset = 0
     params.value.append('limit', `${limit}`)
 

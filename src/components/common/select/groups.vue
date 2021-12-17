@@ -19,10 +19,7 @@
         <template #option="item">
             <div class="flex">
                 <div class="">
-                    <div>{{ item.alias || item.name }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ item.userCount }} total users
-                    </div>
+                    {{ item.alias || item.name }}
                 </div>
             </div>
         </template>

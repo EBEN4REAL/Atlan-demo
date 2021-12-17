@@ -10,7 +10,13 @@
                     <AtlanIcon :icon="icon" class="mr-1"></AtlanIcon>
                     {{ announcementTitle(selectedAsset) }}
                 </div>
-                <div class="text-gray-500">
+                <div
+                    class="text-gray-500 break-all"
+                    v-linkified="{
+                        className: 'text-primary',
+                        target: '_blank',
+                    }"
+                >
                     {{ announcementMessage(selectedAsset) }}
                 </div>
             </div>

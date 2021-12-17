@@ -240,11 +240,11 @@
                     >
                 </div>
             </div>
-            <PersonaUsersGroups
+            <!-- <PersonaUsersGroups
                 v-else-if="activeTabKey === 'users'"
                 v-model:persona="persona"
                 class="pt-6 pb-2"
-            />
+            /> -->
         </div>
     </template>
     <a-drawer

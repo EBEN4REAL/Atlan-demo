@@ -35,12 +35,12 @@
                         {{ persona.displayName }}</span
                     >
                 </div>
-                <!-- <div class="flex mb-0 text-sm text-gray-500">
+                <div class="flex mb-0 text-sm text-gray-500">
                     <span class="truncate" data-test-id="header-description">
                         {{ persona.description }}</span
                     >
-                </div> -->
-                <!-- <div class="flex" v-if="persona.updatedBy">
+                </div>
+                <div class="flex" v-if="persona.updatedBy">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"
@@ -48,9 +48,39 @@
                         placement="right"
                         >{{ timeStamp(persona.updatedAt) }}</a-tooltip
                     >
-                </div> -->
+                </div>
             </div>
-            <Dropdown class="ml-auto" :options="personaActions"></Dropdown>
+            <a-button-group>
+                <!-- Edit -->
+                <a-tooltip
+                    placement="bottom"
+                    class="mr-2"
+                    v-auth="map.UPDATE_PERSONA"
+                >
+                    <template #title>
+                        <span>Edit Persona</span>
+                    </template>
+                    <AtlanButton
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
+                        @click="isEditing = true"
+                    >
+                        <AtlanIcon icon="Edit"></AtlanIcon>
+                    </AtlanButton>
+                </a-tooltip>
+                <!-- Delete  -->
+                <a-tooltip placement="bottom" v-auth="map.DELETE_PERSONA">
+                    <template #title>
+                        <span>Delete Persona</span>
+                    </template>
+                    <AtlanButton
+                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow text-error"
+                        @click="deletePersona"
+                    >
+                        <AtlanIcon icon="Delete"></AtlanIcon>
+                    </AtlanButton>
+                </a-tooltip>
+            </a-button-group>
+            <!-- <Dropdown class="ml-auto" :options="personaActions"></Dropdown> -->
         </div>
     </div>
 </template>
@@ -72,6 +102,7 @@
     import { reFetchList } from './composables/usePersonaList'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'PersonaHeader',
@@ -192,6 +223,8 @@
                 discardPersona,
                 selectedPersonaDirty,
                 timeStamp,
+                map,
+                deletePersona,
             }
         },
     })

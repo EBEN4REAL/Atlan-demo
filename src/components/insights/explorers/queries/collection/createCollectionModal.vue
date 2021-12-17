@@ -3,12 +3,12 @@
         :visible="showCollectionModal"
         :closable="false"
         :footer="null"
-        width="584px"
+        width="489px"
         :destroyOnClose="true"
     >
         <div class="w-full py-4 text-gray-500 bg-white rounded">
             <div
-                class="flex items-center justify-between px-4 mb-6 text-gray-500 flex-nowrap"
+                class="flex items-center justify-between px-4 mb-4 text-gray-500 flex-nowrap"
             >
                 <span
                     v-if="isCreate"
@@ -18,7 +18,7 @@
                 <span
                     v-if="!isCreate"
                     class="flex-none text-base font-bold text-gray"
-                    >{{ isShare ? 'Invite to ' : 'Edit ' }}
+                    >{{ isShare ? 'Invite to' : 'Edit ' }}
                     <span
                         class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg"
                         >{{ item?.attributes?.name }}</span
@@ -32,14 +32,14 @@
                 </div> -->
             </div>
             <div class="px-4 mb-4" v-if="!isShare">
-                <span class="text-sm font-bold text-gray-700"
+                <span class="text-sm font-normal text-gray-700"
                     >Collection name</span
                 >
                 <a-input
                     :ref="titleBarRef"
                     v-model:value="title"
-                    class="w-full mt-1 text-gray-500 border-gray-300 rounded-lg placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
-                    placeholder="Collection name"
+                    class="w-full mt-1 text-gray-700 border-gray-300 rounded-lg placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
+                    placeholder="Name"
                 >
                     <template #prefix>
                         <div class="relative flex w-4 h-4 mr-1">
@@ -47,12 +47,15 @@
                                 @click="toggleEmojiPicker"
                                 class="flex items-center"
                             >
-                                <span v-if="selectedEmoji" class="mt-1">
+                                <span
+                                    v-if="selectedEmoji"
+                                    class="mt-1 cursor-pointer"
+                                >
                                     {{ selectedEmoji }}
                                 </span>
                                 <AtlanIcon
                                     v-else
-                                    class="w-4 h-4"
+                                    class="w-4 h-4 cursor-pointer"
                                     :icon="'NoAvatar'"
                                 ></AtlanIcon>
                             </div>
@@ -81,19 +84,19 @@
                     </template>
                 </a-input>
                 <div class="mt-4">
-                    <span class="text-sm font-bold text-gray-700"
+                    <span class="text-sm font-normal text-gray-700"
                         >Collection description</span
                     >
                     <a-textarea
                         v-model:value="description"
                         placeholder="Describe your collection"
                         style="min-height: 82px !important"
-                        class="w-full mt-1 text-sm text-gray-500 border-gray-300 rounded-lg text-area-padding placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
+                        class="w-full mt-1 text-sm text-gray-700 border-gray-300 rounded-lg text-area-padding placeholder-color focus:border-primary-focus focus:border-2 focus:outline-none"
                     />
                 </div>
             </div>
             <div class="px-4 mt-4">
-                <span class="text-sm font-bold text-gray-700"
+                <span class="text-sm font-normal text-gray-700"
                     >Collection type</span
                 >
                 <!-- {{ isShareable }} -->
@@ -111,10 +114,11 @@
                     </a-radio-group>
                 </div>
             </div>
-            <div class="px-4 mt-2" v-if="isShareable === 'true'">
-                <span class="text-sm font-bold text-gray-700"
-                    >Add members and groups</span
-                >
+            <div
+                class="p-3 mx-4 mt-2 font-normal border border-gray-300 rounded-lg"
+                v-if="isShareable === 'true'"
+            >
+                <span class="text-sm text-gray-700">Add users and groups</span>
 
                 <div class="flex items-center mb-1.5">
                     <!-- <UserList
@@ -170,21 +174,25 @@
                         v-model:visible="userDropdown"
                     >
                         <div
-                            class="flex items-center w-full h-8 pl-4 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-l-none cursor-pointer"
+                            class="flex items-center justify-center w-full h-8 pl-4 mt-2 text-gray-700 border border-gray-300 rounded-lg rounded-l-none cursor-pointer"
                             @click="showUserDropdown"
                         >
-                            <AtlanIcon
+                            <!-- <AtlanIcon
                                 icon="Search"
                                 class="w-4 h-4 text-gray-500"
-                            />
-                            <span class="px-2 text-gray-500">
-                                Search users and groups
+                            /> -->
+                            <span class="px-2 font-normal text-gray-700">
+                                Add users & groups
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="w-4 h-4 font-normal text-gray-700"
+                                />
                             </span>
                         </div>
 
                         <template #overlay>
                             <div
-                                style="width: 445px"
+                                style="width: 330px"
                                 class="px-2 py-2 pt-4 bg-white rounded-lg shadow-lg"
                             >
                                 <Owners
@@ -207,7 +215,7 @@
                 </span>
 
                 <div
-                    style="max-height: 180px"
+                    style="max-height: 120px"
                     class="mt-2 overflow-auto"
                     v-if="
                         userData['edit']['ownerUsers'].length ||
@@ -261,7 +269,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 py-1 ml-3 border-none hover:text-primary"
+                        class="flex items-center justify-between h-6 px-6 py-1 ml-3 border border-gray-300 hover:text-primary"
                         @click="closeModal"
                     >
                         <span>Cancel</span>
@@ -271,7 +279,7 @@
                         size="sm"
                         color="primary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 py-1 ml-2 border-none"
+                        class="flex items-center justify-between h-6 px-6 py-1 ml-4 border-none"
                         @click="saveOrUpdateCollection"
                     >
                         <div class="flex items-center text-white rounded">

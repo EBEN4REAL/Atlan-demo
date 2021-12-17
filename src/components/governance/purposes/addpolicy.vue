@@ -449,7 +449,7 @@
                     isShow.value = false
                     setTimeout(() => {
                         emit('close')
-                    }, 150)
+                    }, 180)
                 } else {
                     emit('close')
                 }

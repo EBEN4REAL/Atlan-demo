@@ -42,7 +42,6 @@
             const { term } = toRefs(props)
 
             const handleRemove = () => {
-                console.log(props.term, 'bruh yo')
                 emit('delete', props.term)
             }
 

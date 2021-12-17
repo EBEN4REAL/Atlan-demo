@@ -19,20 +19,21 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineProps, toRefs, watch } from 'vue'
+    import { computed, defineProps, toRefs, watch, ref } from 'vue'
     import getUserGroups from '~/composables/user/getUserGroups'
-    import Tags from "~/components/common/badge/tags/index.vue"
+    import Tags from '~/components/common/badge/tags/index.vue'
+    import { Users } from '~/services/service/users'
 
     export default {
         name: 'ViewGroups',
         components: {
-            Tags
+            Tags,
         },
         props: {
             user: {
                 type: Object,
-                required: true
-            }
+                required: true,
+            },
         },
         setup(props) {
             const { user } = toRefs(props)
@@ -45,28 +46,36 @@
                     sort: 'name',
                     filter: {},
                 },
-                immediate: true
+                immediate: true,
             }))
             const {
                 groupList,
+                totalGroupCount,
                 filteredGroupCount,
+                getUserGroupList,
                 error,
                 isLoading,
-                getUserGroupList
             } = getUserGroups(groupListAPIParams)
 
-            watch(userId, () => {
-                getUserGroupList()
-            })
+            watch(
+                userId,
+                () => {
+                    getUserGroupList()
+                },
+                { immediate: true }
+            )
 
-            const groups = computed(() => groupList.value.map((group) => group.name))
+            const groups = computed(() =>
+                groupList.value.map((group) => group.name)
+            )
 
             return {
                 groups,
                 error,
                 isLoading,
-                filteredGroupCount
+                filteredGroupCount,
+                totalGroupCount
             }
-        }
+        },
     }
 </script>

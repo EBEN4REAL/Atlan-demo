@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full">
+    <div :class="fullWidth ? 'w-full' : ''">
         <a-tabs
             v-if="dataList.length > 0"
             v-model:activeKey="selectedTab"
@@ -8,7 +8,11 @@
             :tab-bar-gutter="2"
             @change="onTabChange"
         >
-            <a-tab-pane v-for="item in dataList" :key="item.id">
+            <a-tab-pane
+                v-for="item in dataList"
+                :key="item.id"
+                :disabled="item.disabled"
+            >
                 <template #tab>
                     <div
                         :class="{ active: item.id === selectedTab }"
@@ -21,7 +25,7 @@
                         ></AtlanIcon>
 
                         <AtlanIcon
-                            v-if="item.label == 'All'"
+                            v-if="item.label == 'All' && !item.hideIcon"
                             icon="Globe"
                             class="self-center mr-1 mb-0.5"
                         ></AtlanIcon>
@@ -33,7 +37,7 @@
                             :class="$style.chip"
                             class="self-center text-xs font-bold tracking-wide text-gray-400 mt-0.5 ml-1"
                         >
-                            {{ getCountString(item.count) }}
+                            {{ getCountString(item.count, item.showZero) }}
                         </div>
                     </div>
                 </template>
@@ -79,6 +83,13 @@
                 required: false,
                 default() {
                     return false
+                },
+            },
+            fullWidth: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return true
                 },
             },
         },

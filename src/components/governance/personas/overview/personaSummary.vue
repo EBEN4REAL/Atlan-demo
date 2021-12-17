@@ -1,5 +1,5 @@
 <template>
-    <div class="p-3 bg-white rounded">
+    <div class="p-4 bg-white rounded">
         <div class="flex items-center justify-between mb-8">
             <div class="flex items-center">
                 <div class="px-2 py-1 rounded bg-primary-light text-primary">
@@ -76,21 +76,15 @@
             <div class="mr-3 info-widget" data-test-id="tab-users">
                 <div class="mb-1 text-gray-500">Users and Groups</div>
                 <div
-                    class="cursor-pointer text-primary"
-                    @click="$emit('setActiveTab', 'users')"
                     v-if="
                         persona.users?.length === 0 &&
                         persona.groups?.length === 0
                     "
                 >
-                    <AtlanIcon icon="Add" class="mb-0.5 mr-1"></AtlanIcon>
-                    Add users and groups
+                    <!-- <AtlanIcon icon="Add" class="mb-0.5 mr-1"></AtlanIcon> -->
+                    No users or groups
                 </div>
-                <div
-                    v-else
-                    class="cursor-pointer text-primary"
-                    @click="$emit('setActiveTab', 'users')"
-                >
+                <div v-else>
                     <div>
                         {{ persona.users?.length ?? 0 }}
                         Users, {{ persona.groups?.length ?? 0 }} Groups
@@ -98,14 +92,14 @@
                 </div>
             </div>
         </div>
-        <div>
+        <!-- <div>
             <div class="mb-1 text-gray-500">Description</div>
             <div>
                 <div data-test-id="header-description">
                     {{ persona.description || '-' }}
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 

@@ -117,7 +117,7 @@
                         </span>
                     </div>
                     <template v-if="policy.assets.length > 0">
-                        <div class="dot" />
+                        <div v-if="connectionQfName" class="dot" />
                         <AtlanIcon icon="Compass" />
                         <span class="flex-none text-sm">
                             {{ policy.assets.length }}
@@ -316,9 +316,6 @@
                 emit('cancel')
             }
             const connectionQfName = computed(() => {
-                if (policy.value.connectionName) {
-                    return policy.value.connectionName
-                }
                 const found = connStore.getList.find(
                     (conn) => conn.guid === policy.value.connectionId
                 )

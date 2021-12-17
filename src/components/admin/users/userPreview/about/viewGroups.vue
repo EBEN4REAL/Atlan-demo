@@ -38,10 +38,6 @@
         setup(props) {
             const { user } = toRefs(props)
             const userId = computed(() => user.value.id)
-            const groupListLoading = ref(false)
-            const groupList = ref([])
-            const filteredGroupCount = ref(0)
-            const groupListError = ref({})
             const groupListAPIParams = computed(() => ({
                 userId: userId.value,
                 params: {
@@ -52,43 +48,19 @@
                 },
                 immediate: true,
             }))
-            const fetchGroupList = () => {
-                const { data, isReady, error, isLoading } =
-                    Users.ListUserGroups(
-                        groupListAPIParams.value.params,
-                        groupListAPIParams.value.userId,
-                        {
-                            asyncOptions: {
-                                immediate: groupListAPIParams.value.immediate,
-                            },
-                        }
-                    )
-                watch(
-                    isLoading,
-                    () => {
-                        groupListLoading.value = isLoading.value
-                    },
-                    { immediate: true }
-                )
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        if (isReady && !error.value && !isLoading.value) {
-                            groupList.value = data?.value?.records ?? []
-                            filteredGroupCount.value =
-                                data?.value?.filteredRecord ?? []
-                        } else if (error && error.value) {
-                            groupListError.value = error.value
-                        }
-                    },
-                    { immediate: true }
-                )
-            }
+            const {
+                groupList,
+                totalGroupCount,
+                filteredGroupCount,
+                getUserGroupList,
+                error,
+                isLoading,
+            } = getUserGroups(groupListAPIParams)
 
             watch(
                 userId,
                 () => {
-                    fetchGroupList()
+                    getUserGroupList()
                 },
                 { immediate: true }
             )
@@ -99,9 +71,10 @@
 
             return {
                 groups,
-                groupListError,
-                groupListLoading,
+                error,
+                isLoading,
                 filteredGroupCount,
+                totalGroupCount
             }
         },
     }

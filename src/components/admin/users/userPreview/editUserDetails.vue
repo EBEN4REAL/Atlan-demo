@@ -1,14 +1,11 @@
 <template>
-    <div class="flex content-center items-center mb-4">
-        <p class="text-lg font-bold text-gray-500">Edit user info</p>
-    </div>
     <a-form
         ref="formRef"
         :model="formData"
         :rules="rules"
         layout="vertical"
     >
-        <div class="pb-6 border-solid border-b border-gray-200">
+        <div class="pb-3 border-solid border-b border-gray-200">
             <div class="flex justify-center">
                 <div class="relative flex items-center">
                     <Avatar
@@ -38,32 +35,47 @@
                     </div>
                 </div>
             </div>
-                <a-form-item label="First Name" prop="firstName">
-                    <a-input
-                        v-model:value="formData.firstName"
-                        placeholder="Please enter a first name"
-                        :loading="isRequestLoading"
-                    />
-                </a-form-item>
-                <a-form-item label="Last Name" prop="lastName">
-                    <a-input
-                        v-model:value="formData.lastName"
-                        placeholder="Please enter a last name"
-                        :loading="isRequestLoading"
-                    />
-                </a-form-item>
-                <a-form-item label="Designation" prop="designation">
-                    <a-input
-                        v-model:value="formData.designation"
-                        placeholder="Please enter a designation"
-                        :loading="isRequestLoading"
-                    />
-                </a-form-item>
-                <UpdateSkills :user="selectedUser" :allow-update="isCurrentUser" />
+            <a-form-item label="First Name" prop="firstName">
+                <a-input
+                    v-model:value="formData.firstName"
+                    placeholder="Please enter a first name"
+                    :loading="isRequestLoading"
+                />
+            </a-form-item>
+            <a-form-item label="Last Name" prop="lastName">
+                <a-input
+                    v-model:value="formData.lastName"
+                    placeholder="Please enter a last name"
+                    :loading="isRequestLoading"
+                />
+            </a-form-item>
+            <a-form-item label="Designation" prop="designation">
+                <a-input
+                    v-model:value="formData.designation"
+                    placeholder="Please enter a designation"
+                    :loading="isRequestLoading"
+                />
+            </a-form-item>
+            <a-form-item label="Skills" prop="skills">
+                <a-select
+                    v-model:value="formData.skills"
+                    placeholder="Please choose a skill or enter one"
+                    :loading="isRequestLoading"
+                    mode="tags"
+                >
+                    <a-select-option
+                        v-for="(skill, index) in formData.skills"
+                        :key="index"
+                        :value="skill"
+                    >
+                        {{ skill }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
         </div>
         <div class="pt-6">
             <p class="uppercase text-gray-500 text-sm">Contact Details</p>
-            <div class="mt-4">
+            <div class="mt-2">
                 <a-form-item
                     prop="slack"
                 >
@@ -162,7 +174,8 @@
                 firstName: selectedUser.value.firstName,
                 lastName: selectedUser.value.lastName,
                 designation: selectedUser.value?.attributes?.designation?.length > 0 ? selectedUser.value?.attributes?.designation[0] : "",
-                slack: ""
+                slack: "",
+                skills: selectedUser.value.attributes?.skills?.length > 0 ? selectedUser.value.attributes.skills : []
             })
 
             const rules = {
@@ -188,7 +201,8 @@
             const onSubmit = async () => {
                 await formRef.value?.validate()
                 const attributes = {
-                    designation: [formData.value.designation]
+                    designation: [formData.value.designation],
+                    skills: formData.value.skills
                 }
                 attributes.profiles = formData.value.slack.length > 0 ? [`[{"slack": "${formData.value.slack}"}]`] : []
                 requestPayload.value = {

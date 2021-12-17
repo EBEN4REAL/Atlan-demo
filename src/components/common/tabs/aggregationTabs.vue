@@ -1,5 +1,5 @@
 <template>
-    <div :class="fullWidth ? 'w-full' : 'w-full'">
+    <div :class="fullWidth ? 'w-full' : ''">
         <a-tabs
             v-if="dataList.length > 0"
             v-model:activeKey="selectedTab"

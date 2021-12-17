@@ -67,6 +67,7 @@
     import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
 
     import map from '~/constant/accessControl/map'
+    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         components: {
@@ -79,6 +80,7 @@
             },
         },
         setup(props) {
+            const store = useTypedefStore()
             const metadataModal = ref(null)
             const openDeleteModal = ref(false)
 
@@ -98,6 +100,7 @@
                         duration: 2,
                     } as any)
                     // reloadTable()
+                    store.removeCustomMetadataByName(props.metadata.name)
                 } else if (error && error.value) {
                     // ? error getting handled in the composable (useDeleteTypedefs)
                 }

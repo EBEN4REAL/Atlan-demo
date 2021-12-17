@@ -108,16 +108,28 @@
 
         <!-- START Empty state: no persona users and groups -->
         <EmptyView
-            v-if="!userList.length && !groupList.length"
+            v-else-if="!userList.length && !groupList.length"
             empty-screen="CreateGroups"
             headline="Add users and groups"
         >
         </EmptyView>
         <!-- END Empty state: no persona users and groups -->
 
+        <!-- START Loading state: no persona users and groups -->
+        <div
+            class="flex items-center justify-center loading-view"
+            v-else-if="isUsersLoading || isGroupsLoading"
+        >
+            <AtlanIcon
+                icon="Loader"
+                class="w-auto h-7 animate-spin"
+            ></AtlanIcon>
+        </div>
+        <!-- END Loading state: no persona users and groups -->
+
         <!-- START List -->
         <div
-            v-if="
+            v-else-if="
                 (userList.length || groupList.length) &&
                 !groupsError &&
                 !usersError
@@ -206,43 +218,91 @@
                                 {{ item.group_count_string }}
                             </div>
                             <div class="w-1/3">
-                                <a-button-group>
-                                    <a-tooltip placement="top">
-                                        <template #title>
-                                            <span>Remove User</span>
+                                <a-tooltip placement="bottom">
+                                    <template #title>
+                                        <span>Remove User</span>
+                                    </template>
+                                    <a-popover
+                                        placement="leftTop"
+                                        trigger="click"
+                                        :destroy-tooltip-on-hide="true"
+                                        :visible="
+                                            showRemoveUserPopover[item.id]
+                                        "
+                                    >
+                                        <template #content>
+                                            <div class="p-4">
+                                                <h3
+                                                    v-html="
+                                                        getPopoverContent(
+                                                            item,
+                                                            'remove',
+                                                            'user'
+                                                        )
+                                                    "
+                                                ></h3>
+                                                <div
+                                                    class="flex items-center justify-between mt-3 gap-x-3"
+                                                >
+                                                    <div
+                                                        class="flex-grow"
+                                                    ></div>
+                                                    <AtlanBtn
+                                                        color="minimal"
+                                                        size="sm"
+                                                        padding="compact"
+                                                        @click="
+                                                            showRemoveUserPopover[
+                                                                item.id
+                                                            ] = false
+                                                        "
+                                                        >Cancel
+                                                    </AtlanBtn>
+                                                    <AtlanBtn
+                                                        :color="'danger'"
+                                                        size="sm"
+                                                        padding="compact"
+                                                        :is-loading="
+                                                            addUsersLoading
+                                                        "
+                                                        :disabled="
+                                                            addUsersLoading
+                                                        "
+                                                        @click="
+                                                            confirmPopover(
+                                                                item,
+                                                                'user'
+                                                            )
+                                                        "
+                                                    >
+                                                        {{
+                                                            addUsersLoading
+                                                                ? 'Removing'
+                                                                : 'Remove'
+                                                        }}
+                                                    </AtlanBtn>
+                                                </div>
+                                            </div>
                                         </template>
-                                        <a-popconfirm
-                                            placement="leftTop"
-                                            overlay-class-name="popoverConfirm"
-                                            :title="
-                                                getPopoverContent(
-                                                    user,
-                                                    'remove',
-                                                    'user'
-                                                )
-                                            "
-                                            ok-text="Yes"
-                                            :ok-type="'default'"
-                                            cancel-text="Cancel"
-                                            :icon="false"
-                                            @confirm="
-                                                confirmPopover(user, 'user')
+                                        <AtlanBtn
+                                            size="sm"
+                                            color="secondary"
+                                            padding="compact"
+                                            class="text-gray-500 border-none w-26"
+                                            @click="
+                                                showRemoveUserPopover[
+                                                    item.id
+                                                ] = true
                                             "
                                         >
-                                            <a-button
-                                                size="small"
-                                                data-test-id="remove-user"
-                                                class="w-8 h-8 text-gray-500 border-none"
-                                            >
-                                                <AtlanIcon
-                                                    icon="RemoveUser"
-                                                    class="mr-1"
-                                                ></AtlanIcon>
-                                                Remove
-                                            </a-button>
-                                        </a-popconfirm>
-                                    </a-tooltip>
-                                </a-button-group>
+                                            <AtlanIcon
+                                                icon="RemoveUser"
+                                                class="mr-1"
+                                            ></AtlanIcon>
+                                            Remove
+                                        </AtlanBtn>
+                                    </a-popover>
+                                </a-tooltip>
                             </div>
                         </div>
 
@@ -279,38 +339,90 @@
                             </div>
                             <div class="w-1/3">
                                 <a-button-group>
-                                    <a-tooltip placement="top">
+                                    <a-tooltip placement="bottom">
                                         <template #title>
                                             <span>Remove group</span>
                                         </template>
-                                        <a-popconfirm
+                                        <a-popover
                                             placement="leftTop"
-                                            overlay-class-name="popoverConfirm"
-                                            :title="
-                                                getPopoverContent(
-                                                    group,
-                                                    'remove',
-                                                    'group'
-                                                )
-                                            "
-                                            ok-text="Remove"
-                                            :ok-type="'default'"
-                                            cancel-text="Cancel"
-                                            @confirm="
-                                                confirmPopover(group, 'group')
+                                            trigger="click"
+                                            :destroy-tooltip-on-hide="true"
+                                            :visible="
+                                                showRemoveUserPopover[item.id]
                                             "
                                         >
-                                            <a-button
-                                                size="small"
-                                                class="w-8 h-8 text-gray-500 border-none"
+                                            <template #content>
+                                                <div class="p-4">
+                                                    <h3
+                                                        v-html="
+                                                            getPopoverContent(
+                                                                item,
+                                                                'remove',
+                                                                'group'
+                                                            )
+                                                        "
+                                                    ></h3>
+                                                    <div
+                                                        class="flex items-center justify-between mt-3 gap-x-3"
+                                                    >
+                                                        <div
+                                                            class="flex-grow"
+                                                        ></div>
+                                                        <AtlanBtn
+                                                            color="minimal"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            @click="
+                                                                showRemoveUserPopover[
+                                                                    item.id
+                                                                ] = false
+                                                            "
+                                                            >Cancel
+                                                        </AtlanBtn>
+                                                        <AtlanBtn
+                                                            :color="'danger'"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            :is-loading="
+                                                                addUsersLoading
+                                                            "
+                                                            :disabled="
+                                                                addUsersLoading
+                                                            "
+                                                            @click="
+                                                                confirmPopover(
+                                                                    item,
+                                                                    'group'
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                addUsersLoading
+                                                                    ? 'Removing'
+                                                                    : 'Remove'
+                                                            }}
+                                                        </AtlanBtn>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <AtlanBtn
+                                                size="sm"
+                                                color="secondary"
+                                                padding="compact"
+                                                class="text-gray-500 border-none w-26"
+                                                @click="
+                                                    showRemoveUserPopover[
+                                                        item.id
+                                                    ] = true
+                                                "
                                             >
                                                 <AtlanIcon
                                                     icon="RemoveUser"
                                                     class="mr-1"
                                                 ></AtlanIcon>
-                                                Remove</a-button
-                                            ></a-popconfirm
-                                        >
+                                                Remove
+                                            </AtlanBtn>
+                                        </a-popover>
                                     </a-tooltip>
                                 </a-button-group>
                             </div>
@@ -324,25 +436,6 @@
                 desc="sorry, we couldn’t find the user you were looking for"
             >
             </EmptyView>
-
-            <!-- <div
-                v-else-if="listType === 'groups' && groupsError"
-                class="flex flex-col items-center h-full align-middle bg-white"
-            >
-                <ErrorView>
-                    <div class="mt-3">
-                        <a-button
-                            size="large"
-                            type="primary"
-                            data-test-id="try-again"
-                            ghost
-                            @click="getGroupList()"
-                        >
-                            <fa icon="fal sync" class="mr-2"></fa>Try again
-                        </a-button>
-                    </div>
-                </ErrorView>
-            </div> -->
         </div>
         <!-- END List -->
     </div>
@@ -358,7 +451,6 @@
         toRefs,
         watch,
     } from 'vue'
-    import { whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import EmptyView from '@common/empty/index.vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -372,17 +464,11 @@
     import usePersonaService from '../composables/usePersonaService'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import ErrorView from '@common/error/index.vue'
-    import { reFetchList } from '../composables/usePersonaList'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
-    import Pagination from '@/common/list/pagination.vue'
-    import { useDebounceFn } from '@vueuse/core'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-
-    import {
-        isEditing,
-        selectedPersonaDirty,
-    } from '../composables/useEditPersona'
+    import { selectedPersonaDirty } from '../composables/useEditPersona'
     import { IGroup, IUser } from '~/types/accessPolicies/personas'
+    import Loader from '@common/loaders/page.vue'
 
     export default defineComponent({
         name: 'PersonaUsersGroups',
@@ -392,9 +478,9 @@
             SearchAndFilter,
             OwnersSelector,
             ErrorView,
-            Pagination,
             EmptyView,
             AggregationTabs,
+            Loader,
         },
         props: {
             persona: {
@@ -402,10 +488,9 @@
                 required: true,
             },
         },
-        emits: ['delete'],
-        setup(props, { emit }) {
+        setup(props) {
+            const showRemoveUserPopover = ref({})
             const { persona } = toRefs(props)
-            console.log(persona, 'persona')
             const listType: Ref<'all' | 'users' | 'groups'> = ref('all')
             const enableTabs = computed(() => ['users', 'groups'])
 
@@ -418,7 +503,6 @@
             const { updateUsers } = usePersonaService()
             const {
                 getUserList,
-                userListAPIParams,
                 STATES: USER_STATES,
                 state: userState,
                 userList,
@@ -597,9 +681,9 @@
                 action: 'remove',
                 type: 'user' | 'group'
             ) => {
-                return `Are you sure you want to ${action} ${
-                    user?.name || user?.username || user?.email || ''
-                }?`
+                return `Are you sure you want to ${action} <b>${
+                    user.name || user.username || user.email || ''
+                }</b>?`
             }
 
             const confirmPopover = (
@@ -607,8 +691,6 @@
                 type: 'user' | 'group'
             ) => {
                 addUsersLoading.value = true
-
-                // console.log(persona.value, 'persona')
                 let updatedUsersIds = userGroupData.value.ownerUsers ?? []
                 let updatedGroupIds = userGroupData.value.ownerGroups ?? []
                 if (type === 'user') {
@@ -631,10 +713,10 @@
                     groups: updatedGroupIds,
                 })
                     .then(() => {
+                        showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
                         userGroupData.value.ownerUsers = updatedUsersIds
                         userGroupData.value.ownerGroups = updatedGroupIds
-
                         getUserList()
                         getGroupList()
                     })
@@ -650,35 +732,11 @@
                                 userOrGroup.alias,
                             ]
                         }
+                        showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
                         message.error('Failed to add users')
                         console.log('Failed to add users', e)
                     })
-            }
-
-            /* Users related functions */
-            const handleUsersTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
-                if (Object.keys(sorter).length) {
-                    let sortValue = 'firstName'
-                    if (sorter.order && sorter.column && sorter.column.sortKey)
-                        sortValue = `${sorter.order === 'descend' ? '-' : ''}${
-                            sorter.column.sortKey
-                        }`
-                    userListAPIParams.value.sort = sortValue
-                }
-                getUserList()
-            }
-            /* Group related functions */
-            const handleGroupsTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
-                getGroupList()
             }
 
             // BEGIN: GROUP PREVIEW
@@ -726,17 +784,15 @@
                 listType,
                 userColumns,
                 imageUrl,
-                handleGroupsTableChange,
                 showUserPreviewDrawer,
                 userGroupData,
                 groupColumns,
                 groupList,
-                /* Users */
-                handleUsersTableChange,
                 isGroupsLoading,
                 isUsersLoading,
                 usersError,
                 groupsError,
+                showRemoveUserPopover,
             }
         },
     })
@@ -744,5 +800,8 @@
 <style lang="less" scoped>
     .list-wrapper {
         max-height: calc(100vh - 30rem);
+    }
+    .loading-view {
+        min-height: 10rem;
     }
 </style>

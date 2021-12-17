@@ -62,6 +62,7 @@
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
     import useLineage from '~/composables/discovery/useLineage'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'LineagePreviewTab',
@@ -80,6 +81,13 @@
             const activeKeys = ref([])
 
             const assetTypesLengthMap = ref({})
+
+            const route = useRoute()
+
+            // const path = computed(() => {
+            //     console.log(route)
+            //     return route.path
+            // })
 
             const depth = ref(1)
             const query = ref('')

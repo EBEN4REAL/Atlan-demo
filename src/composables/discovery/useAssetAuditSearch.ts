@@ -96,18 +96,17 @@ export function useAssetAuditSearch({
 
     const list = ref([])
     watch(data, () => {
-        console.log(data)
-        // if (offset?.value > 0) {
-        //     if (data.value?.entities) {
-        //         list.value.push(...data.value?.entities)
-        //     }
-        // } else {
-        //     if (data.value?.entities) {
-        //         list.value = [...data?.value?.entities]
-        //     } else {
-        //         list.value = []
-        //     }
-        // }
+        if (offset?.value > 0) {
+            if (data.value?.entityAudits) {
+                list.value.push(...data.value?.entityAudits)
+            }
+        } else {
+            if (data.value?.entityAudits) {
+                list.value = [...data?.value?.entityAudits]
+            } else {
+                list.value = []
+            }
+        }
     })
 
     const cancelRequest = () => {

@@ -52,10 +52,13 @@ export default function useBusinessMetadata() {
   })
 
 
-  const selectedBm = computed(() =>
-    finalBusinessMetadataList.value?.find(
+  const selectedBm = computed(() => {
+    if (!selectedId.value)
+      return finalBusinessMetadataList.value?.length && finalBusinessMetadataList.value[0]
+    return finalBusinessMetadataList.value?.find(
       (cmObj) => cmObj.guid === selectedId.value
     )
+  }
   )
 
   const handleSelectBm = (item: any) => {

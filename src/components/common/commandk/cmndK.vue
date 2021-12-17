@@ -20,7 +20,7 @@
             </a-input>
         </div>
 
-        <div v-if="assetTypeAggregationList.length" class="w-full px-3">
+        <div v-if="assetTypeAggregationList.length" class="w-full px-2">
             <AggregationTabs
                 v-model="postFacets.typeName"
                 class="mt-3"
@@ -30,23 +30,6 @@
             </AggregationTabs>
         </div>
         <!-- body starts here -->
-        <div v-if="!assetCategoryFilter.length" class="flex flex-col">
-            <!-- TODO: Uncomment when bringing category filter in  -->
-            <!-- <div class="flex items-center px-4 pb-4 space-x-2">
-                    <template v-for="cat in assetCategoryList" :key="cat.id">
-                        <div
-                            @click="handleCategoryChipClicked(cat)"
-                            class="flex items-center px-3 py-1 capitalize border rounded cursor-pointer hover:bg-primary hover:text-white group"
-                        >
-                            <atlan-icon
-                                :icon="cat?.icon"
-                                class="h-4 mr-2 group-hover:text-white"
-                            />
-                            {{ cat.label }}
-                        </div>
-                    </template>
-                </div> -->
-        </div>
         <div class="relative flex flex-col pt-2 overflow-y-auto max-h-80">
             <div
                 v-if="!list?.length && queryText.length"

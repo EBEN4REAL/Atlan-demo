@@ -8,7 +8,7 @@
                 <div
                     key="1"
                     v-auth="map.UPDATE_BUSINESS_METADATA"
-                    class="menu-item"
+                    class="rounded-t menu-item"
                     @click="metadataModal.open()"
                 >
                     <AtlanIcon class="inline mb-1 mr-2" icon="Edit" />Edit
@@ -47,7 +47,7 @@
                     <div
                         key="4"
                         v-auth="map.DELETE_BUSINESS_METADATA"
-                        class="menu-item"
+                        class="rounded-b menu-item"
                         :class="
                             !allowDelete
                                 ? 'text-gray-200 cursor-not-allowed'

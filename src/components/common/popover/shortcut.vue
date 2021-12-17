@@ -6,12 +6,12 @@
     >
         <template v-if="editPermission" #content>
             <div class="flex items-center text-gray-3]500 gap-x-2">
-                <span class="text-sm capitalize">{{ action }}</span>
+                <span class="capitalize">{{ action }}</span>
 
                 <div
                     v-for="(key, index) in keys"
                     :key="index"
-                    class="flex px-1 font-bold text-center text-white capitalize rounded key gap-x-1"
+                    class="px-1 font-bold text-center text-white capitalize rounded key gap-x-1"
                 >
                     {{ key }}
                 </div>

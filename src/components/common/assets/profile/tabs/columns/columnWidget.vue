@@ -60,8 +60,7 @@
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                class="self-start"
-                :class="$style.columnTable"
+                class="self-start column-table"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">
@@ -534,30 +533,6 @@
     })
 </script>
 
-<style lang="less" module>
-    .columnTable {
-        .ant-table-container {
-            @apply text-gray-700 text-sm font-normal !important;
-        }
-        .ant-table-thead {
-            max-height: 40px !important;
-            height: 40px !important;
-        }
-        .ant-table-thead tr th {
-            @apply text-gray-700 text-sm font-normal py-0  !important;
-        }
-        .ant-table td {
-            @apply cursor-pointer !important;
-        }
-        .ant-table-container table > thead > tr:first-child th:first-child {
-            @apply border-r border-gray-light text-gray-500 !important;
-        }
-        .ant-table-tbody tr:not(.ant-table-measure-row) {
-            max-height: 32px !important;
-            height: 32px !important;
-        }
-    }
-</style>
 <style lang="less" scoped>
     @font-face {
         font-family: Hack;

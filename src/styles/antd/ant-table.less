@@ -55,3 +55,23 @@
         }
     }
 }
+
+.column-table {
+    .ant-table-thead {
+        max-height: 40px !important;
+        height: 40px !important;
+    }
+    .ant-table-thead tr th {
+        @apply text-gray-700 !important;
+    }
+    .ant-table td {
+        @apply cursor-pointer !important;
+    }
+    .ant-table-container table > thead > tr:first-child th:first-child {
+        @apply border-r border-gray-light text-gray-500 !important;
+    }
+    .ant-table-tbody tr:not(.ant-table-measure-row) {
+        max-height: 32px !important;
+        height: 32px !important;
+    }
+}

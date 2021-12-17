@@ -116,38 +116,45 @@
                 <!--                             :show-check-box="
                                 preference?.display?.includes('enableCheckbox')
                             " -->
-                <AssetList
+                <ListNavigator
                     v-else
-                    ref="assetlistRef"
                     :list="list"
-                    :selectedAsset="selectedAsset"
-                    :isLoadMore="isLoadMore"
-                    :isLoading="isValidating"
-                    @loadMore="handleLoadMore"
+                    @change="onKeyboardNavigate"
+                    :startIndex="selectedAssetIndex"
                 >
-                    <template v-slot:default="{ item, itemIndex }">
-                        <AssetItem
-                            :item="item"
-                            :itemIndex="itemIndex"
-                            :selectedGuid="selectedAsset.guid"
-                            @preview="handleClickAssetItem"
-                            @updateDrawer="updateCurrentList"
-                            :preference="preference"
-                            :show-check-box="showCheckBox"
-                            :bulk-select-mode="
-                                bulkSelectedAssets && bulkSelectedAssets.length
-                                    ? true
-                                    : false
-                            "
-                            :enableSidebarDrawer="enableSidebarDrawer"
-                            :is-checked="checkSelectedCriteriaFxn(item)"
-                            @listItem:check="
-                                (e, item) => updateBulkSelectedAssets(item)
-                            "
-                            :class="page !== 'admin' ? 'mx-3' : ''"
-                        ></AssetItem>
-                    </template>
-                </AssetList>
+                    <AssetList
+                        ref="assetlistRef"
+                        :list="list"
+                        :selectedAsset="selectedAsset"
+                        :isLoadMore="isLoadMore"
+                        :isLoading="isValidating"
+                        @loadMore="handleLoadMore"
+                    >
+                        <template v-slot:default="{ item, itemIndex }">
+                            <AssetItem
+                                :item="item"
+                                :itemIndex="itemIndex"
+                                :selectedGuid="selectedAsset.guid"
+                                @preview="handleClickAssetItem"
+                                @updateDrawer="updateCurrentList"
+                                :preference="preference"
+                                :show-check-box="showCheckBox"
+                                :bulk-select-mode="
+                                    bulkSelectedAssets &&
+                                    bulkSelectedAssets.length
+                                        ? true
+                                        : false
+                                "
+                                :enableSidebarDrawer="enableSidebarDrawer"
+                                :is-checked="checkSelectedCriteriaFxn(item)"
+                                @listItem:check="
+                                    (e, item) => updateBulkSelectedAssets(item)
+                                "
+                                :class="page !== 'admin' ? 'mx-3' : ''"
+                            ></AssetItem>
+                        </template>
+                    </AssetList>
+                </ListNavigator>
             </div>
         </div>
     </div>
@@ -167,6 +174,7 @@
     } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
+    import ListNavigator from '@common/keyboardShortcuts/listNavigator.vue'
 
     import { useDebounceFn, whenever, useMagicKeys } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
@@ -204,6 +212,7 @@
             ErrorView,
             AtlanIcon,
             AssetItem,
+            ListNavigator,
         },
         props: {
             showFilters: {
@@ -355,6 +364,16 @@
                 relationAttributes,
             })
 
+            const selectedAssetIndex = computed(() => {
+                // return 0
+                if (selectedAsset.value?.guid) {
+                    return list.value.findIndex(
+                        (asset) => asset.guid === selectedAsset.value?.guid
+                    )
+                }
+                return -1
+            })
+
             const handlePreview = inject('preview')
             const isCmndKVisible: Ref<boolean | undefined> =
                 inject('isCmndKVisible')
@@ -433,6 +452,16 @@
 
             const handleActiveKeyChange = () => {
                 discoveryStore.setActivePanel(activeKey.value)
+            }
+
+            const onKeyboardNavigate = (index, asset) => {
+                handleClickAssetItem(asset, index)
+                console.log('onKeyboardNavigate', {
+                    index,
+                    asset: asset.attributes.name,
+                    selectedAssetIndex: selectedAssetIndex.value,
+                    selectedAsset: selectedAsset.value?.attributes?.name,
+                })
             }
 
             const placeholder = computed(() => {
@@ -586,6 +615,8 @@
                 bulkSelectedAssets,
                 handleClickAssetItem,
                 searchBox,
+                onKeyboardNavigate,
+                selectedAssetIndex,
             }
         },
     })

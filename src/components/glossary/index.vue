@@ -286,8 +286,8 @@
             // Virtual List Height
             const glossaryBox = ref()
             const height = computed(() => {
-                if(props.checkable) return glossaryBox.value.clientHeight
-                
+                console.log(glossaryBox)
+                if(props.checkable) return glossaryBox?.value?.clientHeight ?? 500
                 if (glossaryBox.value) {
                     return glossaryBox.value.clientHeight - 150
                 }

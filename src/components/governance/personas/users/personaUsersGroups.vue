@@ -80,7 +80,7 @@
                 </a-popover>
             </div>
         </div>
-        <!-- Error State -->
+        <!-- START Error State -->
         <div
             v-if="usersError || groupsError"
             class="flex flex-col items-center h-full align-middle bg-white"
@@ -104,14 +104,18 @@
                 </div>
             </ErrorView>
         </div>
+        <!-- END Error State -->
 
-        <!-- Empty state: no persona users and groups -->
+        <!-- START Empty state: no persona users and groups -->
         <EmptyView
             v-if="!userList.length && !groupList.length"
             empty-screen="CreateGroups"
             headline="Add users and groups"
         >
         </EmptyView>
+        <!-- END Empty state: no persona users and groups -->
+
+        <!-- START List -->
         <div
             v-if="
                 (userList.length || groupList.length) &&
@@ -340,6 +344,7 @@
                 </ErrorView>
             </div> -->
         </div>
+        <!-- END List -->
     </div>
 </template>
 

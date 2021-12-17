@@ -11,7 +11,7 @@
                     class="menu-item"
                     @click="metadataModal.open()"
                 >
-                    <AtlanIcon class="inline mr-2" icon="Edit" />Edit
+                    <AtlanIcon class="inline mb-1 mr-2" icon="Edit" />Edit
                 </div>
                 <div
                     key="3"
@@ -20,15 +20,20 @@
                         copyAPI(metadata.displayName, 'Name Copied!')
                     "
                 >
-                    <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy
-                    name
+                    <AtlanIcon
+                        class="inline mb-1 mr-2"
+                        icon="CopyOutlined"
+                    />Copy name
                 </div>
                 <div
                     key="3"
                     class="menu-item"
                     @click.prevent.stop="copyAPI(metadata.guid, 'GUID Copied!')"
                 >
-                    <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy ID
+                    <AtlanIcon
+                        class="inline mb-1 mr-2"
+                        icon="CopyOutlined"
+                    />Copy ID
                 </div>
                 <a-tooltip
                     :title="
@@ -51,7 +56,7 @@
                         @click.prevent.stop="showDeleteConfirm"
                     >
                         <AtlanIcon
-                            class="inline mr-2"
+                            class="inline mb-1 mr-2"
                             :class="
                                 !allowDelete ? 'text-red-200' : 'text-error'
                             "

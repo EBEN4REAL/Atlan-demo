@@ -38,7 +38,7 @@
                 <a-tooltip
                     :title="
                         !allowDelete
-                            ? `${assetCount} assets are linked with ${metadata.displayName}. You'll have to remove them before archiving.`
+                            ? `${metadata.displayName} is linked with ${assetCount} assets. You'll have to remove them before archiving.`
                             : ''
                     "
                     :mouse-enter-delay="0"

@@ -150,12 +150,8 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-<<<<<<< HEAD
             const { selectedAsset, inProfile, editPermission } = toRefs(props)
 
-=======
-            const { selectedAsset, inProfile, readOnly } = toRefs(props)
->>>>>>> beta
             const localValue = ref(modelValue.value)
 
             const { ownerGroups, ownerUsers } = useAssetInfo()

@@ -18,18 +18,10 @@
     >
         <template #option="item">
             <div class="flex">
-                <Avatar
-                    avatar-shape="circle"
-                    :image-url="avatarUrl(item)"
-                    :allow-upload="false"
-                    :avatar-name="item.name || item.username || item.email"
-                    :avatar-size="25"
-                    class="mr-2"
-                />
                 <div class="">
-                    <div>{{ fullName(item) }}</div>
+                    <div>{{ item.alias || item.name }}</div>
                     <div class="text-xs text-gray-500">
-                        @{{ item.username }}
+                        {{ item.userCount }} total users
                     </div>
                 </div>
             </div>
@@ -46,11 +38,11 @@
                     />
                 </div>
                 <div class="flex items-end justify-between">
-                    <span v-if="userList?.length" class="text-xs text-gray-500">
-                        {{ userList?.length }} of {{ filterTotal }}
+                    <span v-if="list?.length" class="text-xs text-gray-500">
+                        {{ list?.length }} of {{ filterTotal }}
                     </span>
                     <span
-                        v-if="userList?.length < filterTotal"
+                        v-if="list?.length < filterTotal"
                         class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                         @mousedown="(e) => e.preventDefault()"
@@ -65,29 +57,16 @@
             <AtlanIcon icon="CaretDown" />
         </template>
     </a-select>
-
-    <a-select
-        v-model:value="localValue"
-        placeholder="Groups"
-        class="w-full"
-        :show-search="true"
-        :mode="multiple ? 'multiple' : null"
-        @change="handleChange"
-        @search="handleSearch"
-    >
-        <a-select-option v-for="(item, x) in list" :key="x" :value="item.alias">
-            {{ item.alias || item.name }}
-        </a-select-option>
-    </a-select>
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, ref, toRefs } from 'vue'
+    import { defineComponent, watch, ref, toRefs, computed } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetGroups from '~/composables/group/useFacetGroups'
 
     export default defineComponent({
         name: 'GroupsSelect',
+        components: { VNodes: (_, { attrs }) => attrs.vnodes },
         props: {
             queryText: {
                 type: String,
@@ -115,7 +94,16 @@
             // if (multiple.value && !localValue.value) localValue.value = []
             // else if (!localValue.value) localValue.value = ''
 
-            const { list, handleSearch, total } = useFacetGroups()
+            const {
+                list,
+                handleSearch,
+                total,
+                resetFilter,
+                mutate,
+                isLoading,
+                filterTotal,
+                loadMore,
+            } = useFacetGroups()
 
             watch(
                 () => props.queryText,
@@ -124,14 +112,28 @@
                 }
             )
 
+            const finalList = computed(() =>
+                (list?.value ?? []).map((g) => ({
+                    ...g,
+                    value: g.alias,
+                    key: g.name,
+                    label: g.name,
+                }))
+            )
+
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
             }
 
             return {
+                loadMore,
+                filterTotal,
+                isLoading,
+                mutate,
+                resetFilter,
                 list,
-
+                finalList,
                 handleSearch,
                 total,
                 localValue,

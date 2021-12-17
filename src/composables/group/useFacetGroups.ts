@@ -10,7 +10,7 @@ export default function useFacetGroups(
 ) {
     const params = ref(new URLSearchParams())
     params.value.set('sort', sort ?? 'name')
-    const limit = 20
+    const limit = 5
     let offset = 0
     params.value.append('limit', `${limit}`)
 
@@ -34,7 +34,7 @@ export default function useFacetGroups(
         mutate()
     }
 
-    const list = ref([])
+    const list = ref<groupInterface[]>([])
     watch(data, () => {
         if (data.value?.records) {
             if (offset > 0) list.value.push(...data.value.records)
@@ -55,7 +55,10 @@ export default function useFacetGroups(
 
     let debounce: any = null
     const resetFilter = () => {
-        params.value.delete('filter')
+        if (params.value.has('filter')) {
+            params.value.delete('filter')
+            mutate()
+        }
     }
 
     const handleSearch = (val: Event | string) => {

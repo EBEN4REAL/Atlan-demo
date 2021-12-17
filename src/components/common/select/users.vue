@@ -102,7 +102,6 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const open = ref(false)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
@@ -149,10 +148,6 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
-
-            onBeforeUnmount(() => {
-                open.value = false
-            })
 
             return {
                 resetFilter,

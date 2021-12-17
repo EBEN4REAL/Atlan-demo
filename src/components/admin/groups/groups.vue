@@ -472,13 +472,7 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .delete-group-modal {
-        :global(.ant-modal-confirm-body-wrapper) {
-            @apply p-5;
-        }
-    }
-</style>
+<style lang="less" scoped></style>
 <route lang="yaml">
 meta:
     layout: default

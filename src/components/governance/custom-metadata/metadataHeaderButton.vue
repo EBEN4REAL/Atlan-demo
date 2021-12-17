@@ -30,6 +30,16 @@
                 >
                     <AtlanIcon class="inline mr-2" icon="CopyOutlined" />Copy ID
                 </div>
+                <div
+                    class="menu-item"
+                    key="4"
+                    @click.prevent.stop="showDeleteConfirm"
+                >
+                    <AtlanIcon
+                        class="inline mr-2 text-error"
+                        icon="Trash"
+                    />Delete
+                </div>
                 <!-- <a-menu-item
                     key="2"
                     v-auth="map.DELETE_BUSINESS_METADATA"
@@ -47,26 +57,20 @@
         :metadata="metadata"
         :is-edit="true"
     />
-    <ArchiveMetadataModal
-        :visible="openDeleteModal"
-        :businessMetadata="metadata"
-        @close="openDeleteModal = false"
-    />
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, h } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import addMetadataModal from '~/components/governance/custom-metadata/metadataModal.vue'
     import { copyToClipboard } from '~/utils/clipboard'
-    import ArchiveMetadataModal from './archiveMetadataModal.vue'
+    import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
 
     import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {
             addMetadataModal,
-            ArchiveMetadataModal,
         },
         props: {
             metadata: {
@@ -78,30 +82,52 @@
             const metadataModal = ref(null)
             const openDeleteModal = ref(false)
 
-            const copyAPI = (text: string, theMessage: String) => {
+            const copyAPI = (text: string, theMessage) => {
                 copyToClipboard(text)
-                message.success({
-                    content: theMessage,
-                })
+                message.success(theMessage)
             }
+
+            const { data, isReady, error, isLoading, mutate } =
+                useDeleteTypedefs(props.metadata.name)
+
+            watch([data, isReady, error, isLoading], () => {
+                if (isReady && !error.value && !isLoading.value) {
+                    message.success({
+                        key: 'delete_cm',
+                        content: 'deleted.',
+                        duration: 2,
+                    } as any)
+                    // reloadTable()
+                } else if (error && error.value) {
+                    // ? error getting handled in the composable (useDeleteTypedefs)
+                }
+            })
             const showDeleteConfirm = () => {
                 Modal.confirm({
                     title: 'Delete metadata',
-                    content: `Are you sure you want delete ${props.metadata.name} ?`,
+                    content: () =>
+                        h('div', { class: [''] }, [
+                            'Are you sure you want to delete',
+                            h('span', [' ']),
+                            h(
+                                'span',
+                                {
+                                    class: ['font-bold'],
+                                },
+                                [`${props.metadata.displayName}`]
+                            ),
+
+                            h('span', '?'),
+                        ]),
                     okText: 'Yes',
                     okType: 'danger',
                     onOk() {
-                        // const { data, isReady, error, isLoading } =
-                        // watch([data, isReady, error, isLoading], () => {
-                        //     if (isReady && !error.value && !isLoading.value) {
-                        //         message.success('deleted.')
-                        //         reloadTable()
-                        //     } else if (error && error.value) {
-                        //         message.error(
-                        //             'Unable to revoke invite, please try again'
-                        //         )
-                        //     }
-                        // })
+                        message.loading({
+                            key: 'delete_cm',
+                            content: 'deleting...',
+                            duration: 2,
+                        } as any)
+                        mutate()
                     },
                 })
             }
@@ -125,3 +151,5 @@
         }
     }
 </style>
+
+<style lang="less"></style>

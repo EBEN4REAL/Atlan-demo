@@ -438,10 +438,4 @@
         height: calc(100vh - 12rem);
     }
 </style>
-<style lang="less">
-    .remove-from-group-modal {
-        .ant-modal-confirm-body-wrapper {
-            @apply p-5;
-        }
-    }
-</style>
+<style lang="less"></style>

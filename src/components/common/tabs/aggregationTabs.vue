@@ -8,34 +8,53 @@
             :tab-bar-gutter="2"
             @change="onTabChange"
         >
-            <a-tab-pane v-for="item in dataList" :key="item.id">
+            <a-tab-pane v-for="(item, index) in dataList" :key="item.id">
                 <template #tab>
-                    <div
-                        :class="{ active: item.id === selectedTab }"
-                        class="flex items-center"
+                    <Shortcut
+                        :shortcut-key="
+                            getKeyboardShortcutData(index)?.action ===
+                            'Previous'
+                                ? 'shift+tab'
+                                : 'tab'
+                        "
+                        :action="
+                            getKeyboardShortcutData(index)
+                                ? getKeyboardShortcutData(index)?.action
+                                : ''
+                        "
+                        placement="bottom"
+                        :edit-permission="
+                            shortcutEnabled && getKeyboardShortcutData(index)
+                        "
+                        :delay="1"
                     >
-                        <AtlanIcon
-                            v-if="icon"
-                            :icon="icon"
-                            class="self-center mr-1"
-                        ></AtlanIcon>
-
-                        <AtlanIcon
-                            v-if="item.label == 'All'"
-                            icon="Globe"
-                            class="self-center mr-1 mb-0.5"
-                        ></AtlanIcon>
-
-                        <div class="self-center text-sm">
-                            {{ item.label }}
-                        </div>
                         <div
-                            :class="$style.chip"
-                            class="self-center text-xs font-bold tracking-wide text-gray-400 mt-0.5 ml-1"
+                            :class="{ active: item.id === selectedTab }"
+                            class="flex items-center"
                         >
-                            {{ getCountString(item.count) }}
+                            <AtlanIcon
+                                v-if="icon"
+                                :icon="icon"
+                                class="self-center mr-1"
+                            ></AtlanIcon>
+
+                            <AtlanIcon
+                                v-if="item.label == 'All'"
+                                icon="Globe"
+                                class="self-center mr-1 mb-0.5"
+                            ></AtlanIcon>
+
+                            <div class="self-center text-sm">
+                                {{ item.label }}
+                            </div>
+                            <div
+                                :class="$style.chip"
+                                class="self-center text-xs font-bold tracking-wide text-gray-400 mt-0.5 ml-1"
+                            >
+                                {{ getCountString(item.count) }}
+                            </div>
                         </div>
-                    </div>
+                    </Shortcut>
                 </template>
             </a-tab-pane>
             <template #leftExtra>
@@ -49,9 +68,13 @@
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { getCountString } from '~/utils/number'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     export default defineComponent({
         name: 'AssetTypeTabs',
+        components: {
+            Shortcut,
+        },
         props: {
             modelValue: {
                 type: String,
@@ -75,6 +98,13 @@
                 },
             },
             noAll: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
+            shortcutEnabled: {
                 type: Boolean,
                 required: false,
                 default() {
@@ -135,6 +165,25 @@
                 }
             }
 
+            const getKeyboardShortcutData = (index) => {
+                const currentIndex = dataList.value.findIndex(
+                    (i) => i.id === selectedTab.value
+                )
+                if (currentIndex === index) {
+                    return null
+                }
+                if (index > currentIndex) {
+                    return {
+                        key: 'tab',
+                        action: 'Next',
+                    }
+                }
+                return {
+                    key: 'shift+tab',
+                    action: 'Previous',
+                }
+            }
+
             if (list.value.length) addAllToList()
 
             watch(list, (cur, prev) => {
@@ -143,6 +192,7 @@
 
             watch(modelValue, (cur) => {
                 selectedTab.value = cur
+                onTabChange()
                 // emit('change', selectedTab.value)
             })
 
@@ -152,6 +202,7 @@
                 getCountString,
                 onTabChange,
                 icon,
+                getKeyboardShortcutData,
             }
         },
     })

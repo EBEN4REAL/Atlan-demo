@@ -1,13 +1,18 @@
 <template>
-    <a-popover :overlayClassName="editPermission ? 'shortcutPopover' : ''">
+    <a-popover
+        :overlayClassName="editPermission ? 'shortcutPopover' : ''"
+        :mouseEnterDelay="delay"
+    >
         <template v-if="editPermission" #content>
             <div class="flex items-center text-gray-3]500 gap-x-2">
                 <span class="text-sm capitalize">{{ action }}</span>
 
                 <div
-                    class="w-5 h-5 font-bold text-center text-white capitalize rounded key-color"
+                    v-for="(key, index) in keys"
+                    :key="index"
+                    class="flex px-1 font-bold text-center text-white capitalize rounded key gap-x-1"
                 >
-                    {{ shortcutKey }}
+                    {{ key }}
                 </div>
             </div>
         </template>
@@ -36,13 +41,19 @@
                 required: false,
                 default: false,
             },
+            delay: {
+                type: Number,
+                default: 0,
+            },
         },
-        setup(props, { emit }) {
+        setup(props) {
             const { shortcutKey, action } = toRefs(props)
+            const keys = shortcutKey.value?.split('+')
 
             return {
                 shortcutKey,
                 action,
+                keys,
             }
         },
     })
@@ -54,7 +65,9 @@
             @apply px-2 py-1 !important;
         }
     }
-    .key-color {
+    .key {
         background-color: #9ea6b1;
+        height: 20px;
+        min-width: 20px;
     }
 </style>

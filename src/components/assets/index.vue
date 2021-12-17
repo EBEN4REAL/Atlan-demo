@@ -30,6 +30,7 @@
                         :class="page !== 'admin' ? 'px-6' : ''"
                         :placeholder="placeholder"
                         @change="handleSearchChange"
+                        ref="searchBox"
                     >
                         <template #filter>
                             <a-popover
@@ -75,6 +76,7 @@
                         class="mt-3"
                         :list="assetTypeAggregationList"
                         @change="handleAssetTypeChange"
+                        :shortcutEnabled="true"
                     >
                     </AggregationTabs>
                 </div>
@@ -163,11 +165,10 @@
         inject,
         watch,
     } from 'vue'
-
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
 
-    import { useDebounceFn } from '@vueuse/core'
+    import { useDebounceFn, whenever, useMagicKeys } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
@@ -287,6 +288,8 @@
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const searchBox: Ref<null | HTMLInputElement> = ref(null)
+
             const { initialFilters, page, projection } = toRefs(props)
             const discoveryStore = useAssetStore()
 
@@ -337,6 +340,7 @@
                 selectedAsset,
                 quickChange,
                 updateList,
+                rotateAggregateTab,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -352,6 +356,8 @@
             })
 
             const handlePreview = inject('preview')
+            const isCmndKVisible: Ref<boolean | undefined> =
+                inject('isCmndKVisible')
 
             const updateCurrentList = (asset) => {
                 updateList(asset)
@@ -392,6 +398,7 @@
             }
 
             const handleAssetTypeChange = (tabName) => {
+                console.log('handleAssetTypeChange called', tabName)
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActivePostFacet(postFacets.value)
@@ -438,6 +445,33 @@
                     return `Search ${found.label.toLowerCase()} assets`
                 }
                 return 'Search all assets'
+            })
+
+            const keys = useMagicKeys()
+            const { tab, shift_tab } = keys
+
+            const handleFocusOnInput = () => {
+                console.log('handleFocusOnInput', searchBox.value)
+                // sear.value?.focus()
+                searchBox?.value?.focusInput()
+            }
+
+            whenever(tab, () => {
+                if (shift_tab.value || isCmndKVisible.value) {
+                    // don't run if cmd k is on
+                    return
+                }
+                rotateAggregateTab(1, handleFocusOnInput)
+                console.log('go next aggregate', isCmndKVisible.value)
+            })
+
+            whenever(shift_tab, () => {
+                if (isCmndKVisible.value) {
+                    // don't run if cmd k is on
+                    return
+                }
+                console.log('go previous aggregate', isCmndKVisible.value)
+                rotateAggregateTab(-1, handleFocusOnInput)
             })
 
             /* BULK SELECTION */
@@ -551,6 +585,7 @@
                 updateBulkSelectedAssets,
                 bulkSelectedAssets,
                 handleClickAssetItem,
+                searchBox,
             }
         },
     })

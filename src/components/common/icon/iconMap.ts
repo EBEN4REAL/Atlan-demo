@@ -313,6 +313,7 @@ import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
+import SetContext from '~/assets/images/icons/setContext.svg'
 
 export default {
     FlashColor,
@@ -619,4 +620,5 @@ export default {
     NoSelectedAsset,
     QueryGrey,
     NoResultIllustration,
+    SetContext
 }

@@ -1,10 +1,9 @@
-import { Ref, ref, watch, ComputedRef, toRaw } from 'vue'
+import { Ref, ref, watch, ComputedRef, toRaw, computed } from 'vue'
 
 import { useAPI } from '~/services/api/useAPI'
 import { map } from '~/services/meta/search/key'
-import { QueryCollection } from '~/types/insights/savedQuery.interface'
 import whoami from '~/composables/user/whoami'
-import { message } from 'ant-design-vue'
+// import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
 const useCollectionAccess = (
@@ -13,13 +12,8 @@ const useCollectionAccess = (
     const { username: currentUser, groups: userGroups } = whoami()
 
     const selectedCollectionLoading = ref(false)
-    const selectedCollectionData: Ref<QueryCollection | undefined> = ref()
-    const selectedCollectionError: Ref<QueryCollection | undefined> = ref()
-
-    const ownerUsers = ref()
-    const ownerGroups = ref()
-    const viewerUsers = ref()
-    const viewerGroups = ref()
+    const selectedCollectionData = ref()
+    const selectedCollectionError = ref()
 
     const attributes = [
         'name',
@@ -51,28 +45,28 @@ const useCollectionAccess = (
     let body = ref({})
 
     const refreshBody = () => {
-
         body.value = {
-            dsl:  {
+            dsl: {
                 query: {
                     bool: {
                         must: [
                             {
                                 term: {
-                                    qualifiedName: activeInlineTab?.value?.explorer?.queries?.collection?.qualifiedName
-                                }
-                            }
-                        ]
-                    }
-                }
+                                    qualifiedName:
+                                        activeInlineTab?.value?.explorer
+                                            ?.queries?.collection
+                                            ?.qualifiedName,
+                                },
+                            },
+                        ],
+                    },
+                },
             },
             attributes,
         }
 
         console.log('coll body: ', body.value)
     }
-
-    
 
     const getSelectedCollectionData = () => {
         // refreshBody()
@@ -99,12 +93,8 @@ const useCollectionAccess = (
             if (isLoading.value === false) {
                 selectedCollectionLoading.value = false
                 if (error.value === undefined) {
-                    if (
-                        data?.value?.entities &&
-                        data?.value?.entities?.length > 0
-                    ) {
-                        selectedCollectionData.value = data?.value?.entities[0]
-                        
+                    if (data?.value) {
+                        selectedCollectionData.value = data?.value
                     } else {
                         selectedCollectionData.value = {}
                     }
@@ -119,80 +109,89 @@ const useCollectionAccess = (
             }
         })
     }
-    
 
-    const hasCollectionReadPermission = () => {
+    const hasCollectionReadPermission = computed(() => {
         // Viewer
 
-       
-    let viewerUsers =
-    toRaw(selectedCollectionData?.value?.attributes?.viewerUsers)
-    let viewerGroups =
-    toRaw(selectedCollectionData?.value?.attributes?.viewerGroups)
+        let viewerUsers = selectedCollectionData?.value?.entities[0].attributes
+            ?.viewerUsers
+            ? selectedCollectionData?.value?.entities[0].attributes?.viewerUsers
+            : []
+        let viewerGroups = selectedCollectionData?.value?.entities[0].attributes
+            ?.viewerGroups
+            ? selectedCollectionData?.value?.entities[0].attributes
+                  ?.viewerGroups
+            : []
 
         // console.log('permission: ',toRaw(viewerUsers))
+
         if (viewerUsers?.length) {
-            if (viewerUsers?.contains(currentUser?.value)) {
+            let v1 = viewerUsers.find((el) => el === currentUser.value)
+            if (v1) {
                 return true
             }
         }
+
         if (viewerGroups?.length) {
-            let filteredArray = viewerGroups?.filter((value) =>
+            let filteredArray = viewerGroups.filter((value) =>
                 userGroups.value.includes(value)
             )
             return filteredArray.length > 0
         }
         return false
-    }
+    })
 
-    const hasCollectionWritePermission = () => {
+    const hasCollectionWritePermission = computed(() => {
+        let ownerUsers = selectedCollectionData?.value?.entities[0].attributes
+            ?.ownerUsers
+            ? selectedCollectionData?.value?.entities[0].attributes?.ownerUsers
+            : []
+        let ownerGroups = selectedCollectionData.value?.entities[0].attributes
+            ?.ownerGroups
+            ? selectedCollectionData.value?.entities[0].attributes?.ownerGroups
+            : []
 
-        let ownerUsers =
-        toRaw(selectedCollectionData?.value?.attributes?.ownerUsers)
-    let ownerGroups =
-    toRaw(selectedCollectionData.value?.attributes?.ownerGroups)
-
-        console.log('permission: ',{
-            ownerUsers: ownerUsers,
-            ownerGroups: ownerGroups
-        })
         if (ownerUsers?.length) {
-            if (ownerUsers?.contains(currentUser.value)) {
+            let v1 = ownerUsers.find((el) => el === currentUser.value)
+            if (v1) {
                 return true
             }
         }
         if (ownerGroups?.length) {
-            let filteredArray = ownerGroups?.filter((value) =>
+            let filteredArray = ownerGroups.filter((value) =>
                 userGroups.value.includes(value)
             )
             return filteredArray.length > 0
         }
         return false
-    }
+    })
 
-    const isCollectionCreatedByCurrentUser = () => {
+    const isCollectionCreatedByCurrentUser = computed(() => {
         if (selectedCollectionData?.value) {
+            console.log('curr: ', {
+                currentUser: currentUser.value,
+                curr: selectedCollectionData?.value?.entities[0].attributes,
+            })
             return (
                 currentUser.value ===
-                selectedCollectionData?.value?.attributes?.__createdBy
+                selectedCollectionData?.value?.entities[0].attributes
+                    ?.__createdBy
             )
         } else {
             return false
         }
-    }
+    })
+    
 
-    watch(activeInlineTab,  async()=> {
-        console.log('activeInlineTab: ', activeInlineTab.value)
+    watch(
+        activeInlineTab,
+        async () => {
+            console.log('activeInlineTab: ', activeInlineTab.value)
 
-         await fetchSelectedCollectionData()
-
-
-        console.log('permissions:', {
-            isCollectionCreatedByCurrentUser: isCollectionCreatedByCurrentUser(),
-            hasCollectionReadPermission: hasCollectionReadPermission(),
-            hasCollectionWritePermission: hasCollectionWritePermission(),
-        } )
-    }, {immediate: true})
+            await fetchSelectedCollectionData()
+        },
+        { immediate: true }
+    )
 
     return {
         isCollectionCreatedByCurrentUser,

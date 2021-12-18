@@ -143,7 +143,7 @@
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { message } from 'ant-design-vue'
     import useCollectionAccess from '~/components/insights/explorers/queries/composables/useCollectionAccess'
-
+    import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
     export default defineComponent({
         components: {
             Playground,
@@ -228,6 +228,12 @@
                 hasCollectionWritePermission,
             } = useCollectionAccess(activeInlineTab)
 
+            const {
+                isQueryCreatedByCurrentUser,
+                hasQueryReadPermission,
+                hasQueryWritePermission,
+            } = useActiveQueryAccess(activeInlineTab)
+
             watch(activeInlineTab, () => {})
 
             const sidebarPaneSize = computed(() =>
@@ -284,6 +290,9 @@
                 isCollectionCreatedByCurrentUser,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
+                isQueryCreatedByCurrentUser,
+                hasQueryReadPermission,
+                hasQueryWritePermission,
             }
             useProvide(provideData)
             /*-------------------------------------*/

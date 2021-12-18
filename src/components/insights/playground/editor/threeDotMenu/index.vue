@@ -462,15 +462,22 @@
                             </div>
                         </a-sub-menu>
 
-                        <a-menu-item @click="duplicateQuery" class="px-4 py-2"
+                        <a-menu-item
+                            @click="duplicateQuery"
+                            class="px-4 py-2"
+                            :class="
+                                readOnly
+                                    ? 'pointer-events-none bg-gray-100'
+                                    : ''
+                            "
                             >Duplicate query</a-menu-item
                         >
-                        <a-menu-item class="px-4 py-2"
+                        <!-- <a-menu-item class="px-4 py-2"
                             >Edit saved query</a-menu-item
                         >
                         <a-menu-item class="px-4 py-2 text-red-600"
                             >Delete query</a-menu-item
-                        >
+                        > -->
                         <hr />
                     </div>
                     <a-menu-item @click="openCommandPallete" class="px-4 py-2"
@@ -583,6 +590,26 @@
             const tabsArray = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryReadPermission = inject(
+                'hasQueryReadPermission'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
 
             const showVQB = computed(() => {
                 console.log(
@@ -741,6 +768,7 @@
                 isThisCursorActive,
                 capitalizeFirstLetter,
                 copyURL,
+                readOnly,
             }
         },
     })

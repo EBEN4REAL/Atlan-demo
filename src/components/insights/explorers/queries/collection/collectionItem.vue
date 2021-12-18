@@ -131,6 +131,16 @@
 
             const { username } = whoami()
 
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            )
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            )
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            )
+
             return {
                 item,
                 handleChange,
@@ -140,6 +150,10 @@
                 toggleShowCollectionModal,
                 username,
                 isCollectionPrivate,
+
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
             }
         },
     })

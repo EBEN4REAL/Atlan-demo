@@ -32,7 +32,7 @@
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                 >
-                                    <div class="pl-2">
+                                    <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
                                             icon="KebabMenu"
                                             class="w-4 h-4 my-auto"
@@ -142,12 +142,14 @@
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 right-6 margin-align-top group-hover:opacity-100"
-                                :class="
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                :class="[
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light via-gray-light'
-                                "
+                                        : 'bg-gradient-to-l from-gray-light via-gray-light',
+
+                                    hasWritePermission ? 'right-6' : 'right-0',
+                                ]"
                             >
                                 <div
                                     class="pl-2 ml-24"
@@ -179,7 +181,7 @@
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                 >
-                                    <div class="pl-2">
+                                    <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
                                             icon="KebabMenu"
                                             class="w-4 h-4 my-auto"
@@ -200,13 +202,6 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
-                                            <!-- <a-menu-item
-                                                key="public"
-                                                @click="
-                                                    showPublishPopover = true
-                                                "
-                                                >Make query public</a-menu-item
-                                            > -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -307,6 +302,7 @@
         toRaw,
         watch,
         ref,
+        computed,
     } from 'vue'
 
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
@@ -405,6 +401,23 @@
             )
             const savedQueryType = inject('savedQueryType') as Ref<object>
             const permissions = inject('permissions') as ComputedRef<any>
+
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            ) as ComputedRef
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            ) as ComputedRef
+
+            const hasWritePermission = computed(
+                () =>
+                    hasCollectionWritePermission.value ||
+                    isCollectionCreatedByCurrentUser.value
+            )
+
             const refetchParentNode = inject<
                 (
                     guid: string | 'root',
@@ -993,6 +1006,10 @@
                 isUpdating,
                 isDeleteLoading,
                 openSidebar,
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                hasWritePermission,
                 // input,
                 // newFolderName,
             }

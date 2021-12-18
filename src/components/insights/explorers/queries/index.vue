@@ -2,7 +2,6 @@
     <div
         class="flex flex-col items-center w-full h-full bg-white query-explorer"
     >
-        {{ queryCollectionsError }}
         <div
             v-if="
                 isValid(queryCollections) &&
@@ -36,6 +35,7 @@
                             <a-menu>
                                 <a-menu-item
                                     key="0"
+                                    v-if="hasWritePermission"
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
@@ -52,7 +52,11 @@
                                         <span>New Query</span>
                                     </div>
                                 </a-menu-item>
-                                <a-menu-item key="1" @click="createFolderInput">
+                                <a-menu-item
+                                    key="1"
+                                    @click="createFolderInput"
+                                    v-if="hasWritePermission"
+                                >
                                     <div class="flex items-center">
                                         <AtlanIcon
                                             color="#5277D7"
@@ -413,6 +417,27 @@
                         ?.attributeValue
                 )
             )
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            ) as ComputedRef
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            ) as ComputedRef
+
+            const hasWritePermission = computed(
+                () =>
+                    hasCollectionWritePermission.value ||
+                    isCollectionCreatedByCurrentUser.value
+            )
+
+            // console.log('collection permission: ', {
+            //     isCollectionCreatedByCurrentUser,
+            //     hasCollectionReadPermission,
+            //     hasCollectionWritePermission,
+            // })
 
             const selectedCollection = computed(() => {
                 // console.log(
@@ -1040,6 +1065,10 @@
                 selectedCollection,
                 toggleCollectionModal,
                 showCollectionModal,
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                hasWritePermission,
             }
         },
     })

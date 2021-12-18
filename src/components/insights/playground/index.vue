@@ -18,7 +18,7 @@
                 >
                     <template #rightExtra>
                         <div class="inline-flex items-center ml-1 mr-2">
-                            <a-dropdown>
+                            <a-dropdown :trigger="['click']">
                                 <span
                                     class="inline-flex items-center justify-center p-0.5 rounded-sm btn-add cross-hover mt-1"
                                 >
@@ -26,15 +26,11 @@
                                 </span>
                                 <template #overlay>
                                     <a-menu>
-                                        <a-menu-item>
-                                            <span @click="handleAdd(false)">
-                                                New Query
-                                            </span>
+                                        <a-menu-item @click="handleAdd(false)">
+                                            <span class="h-8"> New Query </span>
                                         </a-menu-item>
-                                        <a-menu-item>
-                                            <span @click="handleAdd(true)">
-                                                New VQB
-                                            </span>
+                                        <a-menu-item @click="handleAdd(true)">
+                                            <span class="h-8"> New VQB </span>
                                         </a-menu-item>
                                     </a-menu>
                                 </template>

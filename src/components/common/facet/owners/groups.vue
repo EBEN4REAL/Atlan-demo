@@ -46,10 +46,10 @@
                         />
                     </div>
                     <div
-                        class="flex justify-end cursor-pointer text-primary hover:underline"
+                        class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
                         @click="loadMore"
                     >
-                        load more
+                        load more...
                     </div>
                 </template>
             </div>

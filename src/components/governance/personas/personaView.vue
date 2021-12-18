@@ -64,7 +64,7 @@
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
             <div class="bg-white">
-                <PersonaHeader :persona="selectedPersona" />
+                <PersonaHeader :persona="selectedPersona" class="h-24" />
             </div>
             <PersonaBody
                 v-model:persona="selectedPersona"

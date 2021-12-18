@@ -50,7 +50,7 @@
         <div
             v-if="
                 !isGTC(selectedAsset) &&
-                !['Connection'].includes(selectedAsset.typeName)
+                !['Connection', 'Process'].includes(selectedAsset.typeName)
             "
             class="flex flex-col text-sm"
         >

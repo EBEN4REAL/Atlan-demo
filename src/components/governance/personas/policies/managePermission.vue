@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, ref, watch } from 'vue'
+    import { defineComponent, toRefs, ref, watch, onMounted } from 'vue'
     import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import AtlanBtn from '@/UI/button.vue'
 
@@ -90,6 +90,13 @@
                 if (visibleDrawer.value) {
                     actionsLocal.value = actions.value
                 }
+            })
+            onMounted(() => {
+                window.addEventListener('keydown', (keyDown) => {
+                    if (keyDown.keyCode === 27) {
+                        handleClose()
+                    }
+                })
             })
             return {
                 handleClose,

@@ -132,6 +132,10 @@
                 handleChange()
             }
 
+            function focusInput() {
+                searchBar.value?.focus()
+            }
+
             const { Escape /* keys you want to monitor */ } = useMagicKeys()
             watch(Escape, (v) => {
                 if (v) {
@@ -151,6 +155,7 @@
                 size,
                 getConnectorImageMap,
                 capitalizeFirstLetter,
+                focusInput,
             }
         },
     })

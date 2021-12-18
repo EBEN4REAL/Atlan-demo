@@ -82,7 +82,7 @@
                         class="mb-6"
                         :class="isEdit ? 'edit-connector' : ''"
                         :disabled="isEdit"
-                        @change="handleConnectorChange"
+                        @changeConnector="handleConnectorChange"
                         @blur="
                             () => {
                                 if (!connectorData.attributeValue)
@@ -391,7 +391,9 @@
         watch,
         toRefs,
         computed,
+        onMounted,
     } from 'vue'
+    import { useMagicKeys } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
     import Connector from './policies/connector.vue'
     import { selectedPersonaDirty } from './composables/useEditPersona'
@@ -469,7 +471,6 @@
             const policy = ref({})
             const connectionStore = useConnectionStore()
             const isAddAll = ref(false)
-
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -541,11 +542,7 @@
                     },
                 }
                 if (isEdit.value) {
-                    const newArray = []
-                    selectedPolicy.value.assets.forEach((el) =>
-                        newArray.push(el)
-                    )
-                    policy.value = { ...selectedPolicy.value, assets: newArray }
+                    policy.value = selectedPolicy.value
                     policyType.value = selectedPolicy.value.type
                 } else {
                     policyType.value = type.value
@@ -576,13 +573,10 @@
                 }
             }
             initPolicy()
-            watch(showDrawer, () => {
+            watch([showDrawer, selectedPolicy], () => {
                 if (showDrawer.value) {
                     initPolicy()
                 }
-            })
-            watch(selectedPolicy, () => {
-                initPolicy()
             })
             const handleAddAsset = () => {
                 if (connectorData.value?.attributeValue) {
@@ -618,7 +612,15 @@
                 isAddAll.value = false
             }
             const handleClose = () => {
-                emit('close')
+                if (assetSelectorVisible.value || isShow.value) {
+                    assetSelectorVisible.value = false
+                    isShow.value = false
+                    setTimeout(() => {
+                        emit('close')
+                    }, 180)
+                } else {
+                    emit('close')
+                }
             }
             const resetPolicy = () => {
                 initPolicy()
@@ -688,6 +690,13 @@
                     policy?.value?.connectionId
                 )
             )
+            onMounted(() => {
+                window.addEventListener('keydown', (keyDown) => {
+                    if (keyDown.keyCode === 27) {
+                        handleClose()
+                    }
+                })
+            })
             return {
                 selectedPersonaDirty,
                 rules,

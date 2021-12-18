@@ -13,7 +13,7 @@
                     v-model="localValue.certificateStatus"
                     :is-radio="true"
                 ></CertificateFacet>
-                <div class="px-3 mt-1">
+                <div class="px-3">
                     <p class="text-sm text-gray-500">Message</p>
                     <a-textarea
                         v-model:value="localValue.certificateStatusMessage"

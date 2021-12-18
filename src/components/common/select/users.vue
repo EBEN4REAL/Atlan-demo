@@ -2,7 +2,7 @@
     <a-select
         v-model:value="localValue"
         placeholder="Users"
-        class="w-full center-arrow"
+        class="w-full"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
@@ -102,7 +102,6 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const open = ref(false)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
@@ -150,10 +149,6 @@
                 emit('change')
             }
 
-            onBeforeUnmount(() => {
-                open.value = false
-            })
-
             return {
                 resetFilter,
                 mutate,
@@ -174,8 +169,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .center-arrow:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

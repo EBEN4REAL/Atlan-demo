@@ -1,52 +1,70 @@
 <template>
     <div
         v-if="announcementTitle(selectedAsset)"
-        class="flex justify-between px-3 py-2 border rounded"
+        class="flex flex-col px-3 py-2 border rounded"
         :class="bgClass"
     >
-        <div class="flex flex-col">
-            <div class="font-bold text-gray-700">
-                {{ announcementTitle(selectedAsset) }}
-            </div>
-            <div class="text-gray-500">
-                {{ announcementMessage(selectedAsset) }}
-            </div>
-            <div class="flex items-center mt-2 text-gray-500 gap-x-1">
-                <div class="flex text-sm">
-                    <AtlanIcon :icon="icon" class="mt-0.5"></AtlanIcon>
-                    <div class="ml-1">
-                        {{ announcementUpdatedBy(selectedAsset) }},
-                    </div>
+        <div class="flex justify-between">
+            <div>
+                <div class="flex items-center font-bold text-gray-700">
+                    <AtlanIcon :icon="icon" class="mr-1"></AtlanIcon>
+                    {{ announcementTitle(selectedAsset) }}
                 </div>
-                {{ announcementUpdatedAt(selectedAsset, true) }}
+                <div
+                    class="text-gray-500 break-all"
+                    v-linkified="{
+                        className: 'text-primary',
+                        target: '_blank',
+                    }"
+                >
+                    {{ announcementMessage(selectedAsset) }}
+                </div>
+            </div>
+            <div v-if="selectedAssetUpdatePermission(selectedAsset)">
+                <a-dropdown trigger="click" placement="bottomRight">
+                    <div>
+                        <AtlanIcon
+                            icon="KebabMenu"
+                            class="h-4 m-0 hover:text-primary"
+                        />
+                    </div>
+                    <!-- <a-button
+                        class="px-2 bg-transparent border-none shadow-none hover:bg-white hover:shadow-sm"
+                    >
+                    </a-button> -->
+
+                    <template #overlay>
+                        <a-menu mode="vertical">
+                            <a-menu-item key="edit">
+                                <AnnouncementModal :asset="selectedAsset"
+                                    ><template #trigger>
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                icon="Edit"
+                                                class="h-4 mr-2"
+                                            />
+                                            Edit
+                                        </div></template
+                                    ></AnnouncementModal
+                                >
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
             </div>
         </div>
-        <div v-if="selectedAssetUpdatePermission(selectedAsset)">
-            <a-dropdown trigger="click" placement="bottomRight">
-                <a-button
-                    class="px-2 bg-transparent border-none shadow-none hover:bg-white hover:shadow-sm"
-                >
-                    <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
-                </a-button>
-
-                <template #overlay>
-                    <a-menu mode="vertical">
-                        <a-menu-item key="edit">
-                            <AnnouncementModal :asset="selectedAsset"
-                                ><template #trigger>
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Edit"
-                                            class="h-4 mr-2"
-                                        />
-                                        Edit
-                                    </div></template
-                                ></AnnouncementModal
-                            >
-                        </a-menu-item>
-                    </a-menu>
-                </template>
-            </a-dropdown>
+        <div
+            class="flex items-center justify-between mt-2 text-gray-500 gap-x-1"
+        >
+            <div class="flex text-sm">
+                <UserAvatar
+                    :username="announcementUpdatedBy(selectedAsset)"
+                    :show-username="true"
+                ></UserAvatar>
+            </div>
+            <span class="text-xs">{{
+                announcementUpdatedAt(selectedAsset, true)
+            }}</span>
         </div>
     </div>
 </template>
@@ -56,10 +74,11 @@
     import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import UserAvatar from '@common/avatar/user.vue'
 
     export default defineComponent({
         name: 'AnnouncementWidget',
-        components: { AnnouncementModal },
+        components: { AnnouncementModal, UserAvatar },
 
         props: {
             selectedAsset: {

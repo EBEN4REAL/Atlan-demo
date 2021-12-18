@@ -20,7 +20,7 @@
             </a-input>
         </div>
 
-        <div v-if="assetTypeAggregationList.length" class="w-full px-3">
+        <div v-if="assetTypeAggregationList.length" class="w-full px-2">
             <AggregationTabs
                 v-model="postFacets.typeName"
                 class="mt-3"
@@ -30,23 +30,6 @@
             </AggregationTabs>
         </div>
         <!-- body starts here -->
-        <div v-if="!assetCategoryFilter.length" class="flex flex-col">
-            <!-- TODO: Uncomment when bringing category filter in  -->
-            <!-- <div class="flex items-center px-4 pb-4 space-x-2">
-                    <template v-for="cat in assetCategoryList" :key="cat.id">
-                        <div
-                            @click="handleCategoryChipClicked(cat)"
-                            class="flex items-center px-3 py-1 capitalize border rounded cursor-pointer hover:bg-primary hover:text-white group"
-                        >
-                            <atlan-icon
-                                :icon="cat?.icon"
-                                class="h-4 mr-2 group-hover:text-white"
-                            />
-                            {{ cat.label }}
-                        </div>
-                    </template>
-                </div> -->
-        </div>
         <div class="relative flex flex-col pt-2 overflow-y-auto max-h-80">
             <div
                 v-if="!list?.length && queryText.length"
@@ -199,19 +182,23 @@
             ])
 
             const assetCategoryFilter = ref([])
-            const { list, assetTypeAggregationList, quickChange } =
-                useDiscoverList({
-                    isCache: true,
-                    dependentKey,
-                    queryText,
-                    facets,
-                    postFacets,
-                    aggregations,
-                    limit,
-                    offset,
-                    attributes: defaultAttributes,
-                    relationAttributes,
-                })
+            const {
+                list,
+                assetTypeAggregationList,
+                quickChange,
+                rotateAggregateTab,
+            } = useDiscoverList({
+                isCache: true,
+                dependentKey,
+                queryText,
+                facets,
+                postFacets,
+                aggregations,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
             const placeholder = computed(() => {
                 const found = assetTypeAggregationList.value.find(
                     (item) => item.id === postFacets.value.typeName
@@ -272,37 +259,6 @@
                 { deep: true }
             )
 
-            const rotateAggregateTab = (increment) => {
-                const currentTab = postFacets.value.typeName
-                const currentIndex = assetTypeAggregationList.value.findIndex(
-                    (tab) => tab.id === currentTab
-                )
-                if (currentIndex === -1) {
-                    return
-                }
-                if (currentIndex + increment < 0) {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[
-                            assetTypeAggregationList.value.length - 1
-                        ].id
-                } else if (
-                    currentIndex + increment >=
-                    assetTypeAggregationList.value.length
-                ) {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[0].id
-                } else {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[
-                            currentIndex + increment
-                        ].id
-                }
-                setTimeout(() => {
-                    handleFocusOnInput()
-                })
-                console.log('currentIndex', currentIndex)
-            }
-
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
 
@@ -310,13 +266,13 @@
                 if (shift_tab.value) {
                     return
                 }
-                rotateAggregateTab(1)
+                rotateAggregateTab(1, handleFocusOnInput)
                 console.log('go next aggregate', assetTypeAggregationList.value)
             })
 
             whenever(shift_tab, () => {
                 console.log('go previous aggregate')
-                rotateAggregateTab(-1)
+                rotateAggregateTab(-1, handleFocusOnInput)
             })
 
             const handleAssetTypeChange = () => {

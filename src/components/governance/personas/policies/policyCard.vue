@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative pt-1 pb-1 border-b border-gray-300 container-policy-card last:border-0"
+        class="relative pt-1 pb-1 mb-2 border-b border-gray-300 container-policy-card last:border-0"
     >
         <div
             class="flex flex-col p-3 text-gray-500 rounded cursor-pointer group hover:bg-primary-light card-policy"
@@ -117,7 +117,7 @@
                         </span>
                     </div>
                     <template v-if="policy.assets.length > 0">
-                        <div class="dot" />
+                        <div v-if="connectionQfName" class="dot" />
                         <AtlanIcon icon="Compass" />
                         <span class="flex-none text-sm">
                             {{ policy.assets.length }}
@@ -207,7 +207,7 @@
                             color="danger"
                             @click="removePolicy"
                         >
-                            Save
+                            Delete
                         </AtlanBtn>
                     </div>
                 </div>
@@ -316,9 +316,6 @@
                 emit('cancel')
             }
             const connectionQfName = computed(() => {
-                if (policy.value.connectionName) {
-                    return policy.value.connectionName
-                }
                 const found = connStore.getList.find(
                     (conn) => conn.guid === policy.value.connectionId
                 )

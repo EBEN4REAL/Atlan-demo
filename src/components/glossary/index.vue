@@ -280,7 +280,7 @@
                 ...facets.value,
                 ...initialFilters.value,
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-                glossary: props.checkable ? '' : selectedGlossaryQf,
+                glossary: props.checkable ? '' : selectedGlossaryQf, // no concept of selected glossaries in term filter and widget
             }
 
             // Virtual List Height
@@ -299,15 +299,6 @@
                 }
                 return 'AtlasGlossary'
             })
-
-            const handleSelectGlossary = (val) => {
-                if (val !== '') {
-                    router.push(`/glossary/${getGlossaryByQF(val)?.guid}`)
-                    glossaryStore.setSelectedGTC(getGlossaryByQF(val))
-                }
-                selectedGlossaryQf.value = val
-                glossaryStore.setActiveGlossaryQualifiedName(val)
-            }
 
             const {
                 list,
@@ -334,6 +325,23 @@
 
             const { getAnchorQualifiedName } = useAssetInfo()
 
+            // handles selected glossary change
+            const handleSelectGlossary = (val) => {
+                // change profile to selected glossary
+                if (val !== '') {
+                    router.push(`/glossary/${getGlossaryByQF(val)?.guid}`)
+                    glossaryStore.setSelectedGTC(getGlossaryByQF(val))
+                }
+                selectedGlossaryQf.value = val
+                glossaryStore.setActiveGlossaryQualifiedName(val)
+
+                // serach list to show results for selectedGlossary
+                if (queryText.value?.length) {
+                    facets.value.glossary = selectedGlossaryQf
+                    quickChange()
+                }
+            }
+            // for sidebar
             const handlePreview = (item) => {
                 if (!props.checkable) router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
@@ -394,13 +402,11 @@
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryTerm') {
-                        console.log('added term')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryCategory') {
-                        console.log('added cat')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }

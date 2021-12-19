@@ -18,15 +18,9 @@ export const summaryVariants = [
         includes: ['AtlasGlossaryTerm'],
     },
     {
-        id: 'glossary',
-        label: 'Glossary',
-        components: ['TermsCount', 'CategoriesCount'],
-        includes: ['AtlasGlossary'],
-    },
-    {
         id: 'category',
         label: 'Category',
-        components: ['ParentGlossary', 'TermsCount'],
+        components: ['ParentGlossary'],
         includes: ['AtlasGlossaryCategory'],
     },
     {

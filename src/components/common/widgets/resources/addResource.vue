@@ -10,7 +10,7 @@
                 }}</span>
                 <AtlanIcon icon="ChevronRight" class="flex-none" />
                 <span class="flex-none text-sm font-bold text-gray"
-                    >New Resource</span
+                    >{{ updating ? 'Edit' : 'New' }} Resource</span
                 >
             </div></template
         >
@@ -26,9 +26,9 @@
                 <AtlanButton
                     color="primary"
                     :size="'sm'"
-                    @click="handleAdd"
                     :disabled="buttonDisabled"
-                    >Add</AtlanButton
+                    @click="handleAdd"
+                    >{{ updating ? 'Edit' : 'Add' }}</AtlanButton
                 >
             </div>
         </template>
@@ -36,12 +36,12 @@
             <span class="font-bold">Link</span>
             <a-input
                 ref="titleBar"
-                v-model:value="link"
+                v-model:value="linkURL"
                 placeholder="Paste resource link"
                 class="text-lg font-bold text-gray-700"
                 allow-clear
             />
-            <div v-if="link" class="mt-3">
+            <div v-if="linkURL" class="mt-3">
                 <span class="font-bold">Title</span>
                 <div class="flex items-center gap-x-2">
                     <a-input
@@ -117,6 +117,11 @@
                 required: false,
                 default: false,
             },
+            updating: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
             const visible = ref<boolean>(false)
@@ -124,18 +129,22 @@
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
-            const { asset, editPermission } = toRefs(props)
+            const { asset, editPermission, updating } = toRefs(props)
 
-            const { title } = useAssetInfo()
+            const { title, link } = useAssetInfo()
 
-            const { handleAddResource, localResource } =
+            const { handleAddResource, localResource, handleUpdateResource } =
                 updateAssetAttributes(asset)
 
-            const link = ref('')
-            const faviconLink = ref('')
+            const linkURL = ref(updating.value ? link(asset.value) : '')
+            const faviconLink = ref(
+                updating.value
+                    ? `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
+                    : ''
+            )
 
             // FIXME: Add a link meta parser for title
-            const linkTitle = ref('')
+            const linkTitle = ref(updating.value ? title(asset.value) : '')
 
             const showModal = async () => {
                 if (editPermission.value) {
@@ -147,16 +156,15 @@
 
             function handleCancel() {
                 visible.value = false
-                link.value = ''
+                linkURL.value = ''
                 linkTitle.value = ''
             }
 
             const buttonDisabled = computed(
-                () => !link.value || !isValidHttpUrl(link.value)
+                () => !linkURL.value || !isValidHttpUrl(linkURL.value)
             )
 
             function onImageError() {
-                console.log('image not found')
                 imageNotFound.value = true
             }
 
@@ -165,11 +173,15 @@
             }
 
             function handleAdd() {
-                localResource.value.link = link.value
+                localResource.value.link = linkURL.value
                 localResource.value.title = linkTitle.value
-                handleAddResource()
+                if (updating.value) {
+                    handleUpdateResource()
+                } else {
+                    handleAddResource()
+                }
                 visible.value = false
-                link.value = ''
+                linkURL.value = ''
                 linkTitle.value = ''
             }
 
@@ -193,17 +205,17 @@
                 return url.protocol === 'http:' || url.protocol === 'https:'
             }
 
-            watch(link, () => {
-                if (isValidHttpUrl(link.value)) {
+            watch(linkURL, () => {
+                if (isValidHttpUrl(linkURL.value)) {
                     console.log('fetching icon')
                     imageNotFound.value = false
-                    faviconLink.value = `https://www.google.com/s2/favicons?domain=${link.value}&sz=64`
+                    faviconLink.value = `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
                 }
             })
 
             return {
                 linkTitle,
-                link,
+                linkURL,
                 faviconLink,
                 title,
                 visible,

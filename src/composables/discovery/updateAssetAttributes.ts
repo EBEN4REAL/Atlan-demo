@@ -337,6 +337,18 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate()
     }
 
+    // Resource Update
+    const handleUpdateResource = () => {
+        entity.value.attributes.name = localResource.value?.title
+        entity.value.attributes.link = localResource.value?.link
+        entity.value.attributes.qualifiedName =
+            selectedAsset.value?.uniqueAttributes?.qualifiedName
+        body.value.entities = [entity.value]
+
+        currentMessage.value = `Resource ${title(selectedAsset.value)} updated`
+        mutate()
+    }
+
     // Resource Deletion
     const handleResourceDelete = (link) => {
         const { error, isLoading, isReady } = Entity.DeleteEntity(link?.guid)
@@ -540,6 +552,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleUpdateReadme,
         handleAnnouncementDelete,
         localReadmeContent,
+        handleUpdateResource,
         handleMeaningsUpdate,
         handleCategoriesUpdate,
         shouldDrawerUpdate,

@@ -42,6 +42,22 @@
 
                 <template #overlay>
                     <a-menu mode="vertical">
+                        <EditResource
+                            :asset="item"
+                            :edit-permission="editPermission"
+                            :updating="true"
+                            ><template #trigger>
+                                <a-menu-item key="edit">
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Edit"
+                                            class="h-4 mb-0.5 mr-1"
+                                        />
+                                        Edit
+                                    </div>
+                                </a-menu-item></template
+                            ></EditResource
+                        >
                         <DeleteResource
                             :asset="selectedAsset"
                             :item="item"
@@ -71,9 +87,10 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import DeleteResource from '../deleteResource.vue'
+    import EditResource from '../addResource.vue'
 
     export default defineComponent({
-        components: { DeleteResource },
+        components: { DeleteResource, EditResource },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,

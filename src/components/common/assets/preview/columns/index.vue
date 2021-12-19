@@ -233,19 +233,17 @@
                 quickChange()
             }
 
-            /* watch(list, () => {
+            watch(list, () => {
                 // For evaluations
                 body.value = {
-                    entities: [
-                        list.value.map((item) => ({
-                            typeName: item.typeName,
-                            entityGuid: item.guid,
-                            action: 'ENTITY_UPDATE',
-                        })),
-                    ],
+                    entities: list.value.map((item) => ({
+                        typeName: item.typeName,
+                        entityGuid: item.guid,
+                        action: 'ENTITY_UPDATE',
+                    })),
                 }
                 refresh()
-            }) */
+            })
 
             return {
                 isLoading,

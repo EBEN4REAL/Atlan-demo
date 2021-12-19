@@ -11,11 +11,11 @@
                     {{ announcementTitle(selectedAsset) }}
                 </div>
                 <div
-                    class="text-gray-500 break-all"
                     v-linkified="{
                         className: 'text-primary',
                         target: '_blank',
                     }"
+                    class="text-gray-500 break-all"
                 >
                     {{ announcementMessage(selectedAsset) }}
                 </div>
@@ -25,7 +25,7 @@
                     <div>
                         <AtlanIcon
                             icon="KebabMenu"
-                            class="h-4 m-0 hover:text-primary"
+                            class="h-4 m-0 cursor-pointer hover:text-primary"
                         />
                     </div>
                     <!-- <a-button
@@ -36,7 +36,13 @@
                     <template #overlay>
                         <a-menu mode="vertical">
                             <a-menu-item key="edit">
-                                <AnnouncementModal :asset="selectedAsset"
+                                <AnnouncementModal
+                                    :asset="selectedAsset"
+                                    :edit-permission="
+                                        selectedAssetUpdatePermission(
+                                            selectedAsset
+                                        )
+                                    "
                                     ><template #trigger>
                                         <div class="flex items-center">
                                             <AtlanIcon
@@ -72,9 +78,9 @@
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs } from 'vue'
     import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
+    import UserAvatar from '@common/avatar/user.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import UserAvatar from '@common/avatar/user.vue'
 
     export default defineComponent({
         name: 'AnnouncementWidget',

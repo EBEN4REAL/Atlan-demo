@@ -108,12 +108,6 @@
                 glossaryStore.setSelectedGTC(asset)
             }
 
-            const updateList = (asset) => {
-                localSelected.value = asset
-                handlePreview(asset)
-                glossaryStore.setSelectedGTC(asset)
-                updateTreeNode(asset)
-            }
             watch(selectedGlossary, () => {
                 localSelected.value = selectedGlossary.value
             })
@@ -130,16 +124,29 @@
                     `/glossary/${getGlossaryByQF(getFirstGlossaryQF())?.guid}`
                 )
             }
+
+            const updateList = (asset) => {
+                handlePreview(asset)
+                if (asset?.typeName === 'AtlasGlossary') {
+                    glossaryStore.updateGlossary(asset)
+                }
+                updateTreeNode(asset)
+            }
+
             // re-route on no id present in params
             const reRoute = () => {
                 if (selectedGlossaryQf.value?.length) {
+                    console.log('condition 1')
+                    updateList(getGlossaryByQF(selectedGlossaryQf.value))
                     router.push(
                         `/glossary/${
                             getGlossaryByQF(selectedGlossaryQf.value)?.guid
                         }/overview`
                     )
                 } else if (getFirstGlossaryQF()) {
-                    router.push(
+                    console.log('con 2')
+                    updateList(getGlossaryByQF(getFirstGlossaryQF()))
+                    router.replace(
                         `/glossary/${
                             getGlossaryByQF(getFirstGlossaryQF())?.guid
                         }/overview`
@@ -156,7 +163,6 @@
                     reRoute()
                 }
             })
-
             provide('updateList', updateList)
             provide('preview', handlePreview)
             provide('reInitTree', reInitTree)

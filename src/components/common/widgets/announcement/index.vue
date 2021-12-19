@@ -63,7 +63,9 @@
                                         )
                                     "
                                     ><template #trigger>
-                                        <div class="flex items-center">
+                                        <div
+                                            class="flex items-center text-red-500"
+                                        >
                                             <AtlanIcon
                                                 icon="Delete"
                                                 class="h-4 mr-2"

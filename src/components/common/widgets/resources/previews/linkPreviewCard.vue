@@ -33,26 +33,31 @@
         </div>
         <div>
             <a-dropdown trigger="click" placement="bottomRight">
-                <a-button
-                    class="px-2 bg-transparent border-none shadow-none hover:bg-white hover:shadow-sm"
-                >
-                    <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
-                </a-button>
+                <div>
+                    <AtlanIcon
+                        icon="KebabMenu"
+                        class="h-4 m-0 cursor-pointer hover:text-primary"
+                    />
+                </div>
 
                 <template #overlay>
                     <a-menu mode="vertical">
-                        <a-menu-item
-                            key="delete"
-                            @click="handleResourceDelete(item.guid)"
+                        <DeleteResource
+                            :asset="selectedAsset"
+                            :item="item"
+                            :edit-permission="editPermission"
+                            ><template #trigger>
+                                <a-menu-item key="delete">
+                                    <div class="flex items-center text-red-500">
+                                        <AtlanIcon
+                                            icon="Delete"
+                                            class="h-4 mb-0.5 mr-1"
+                                        />
+                                        Delete
+                                    </div>
+                                </a-menu-item></template
+                            ></DeleteResource
                         >
-                            <div class="flex items-center text-red-500">
-                                <AtlanIcon
-                                    icon="Delete"
-                                    class="h-4 mb-0.5 mr-1"
-                                />
-                                Delete
-                            </div>
-                        </a-menu-item>
                     </a-menu>
                 </template>
             </a-dropdown>
@@ -62,12 +67,13 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, PropType, toRefs, ref, inject } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import DeleteResource from '../deleteResource.vue'
 
     export default defineComponent({
+        components: { DeleteResource },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -78,10 +84,13 @@
                 required: false,
                 default: () => {},
             },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        setup(props) {
-            const { selectedAsset } = toRefs(props)
-
+        setup() {
             function openLink(url) {
                 if (!url) {
                     return
@@ -97,12 +106,8 @@
                 link,
             } = useAssetInfo()
 
-            const { handleResourceDelete } =
-                updateAssetAttributes(selectedAsset)
-
             return {
                 createdBy,
-                handleResourceDelete,
                 modifiedBy,
                 createdAt,
                 modifiedAt,

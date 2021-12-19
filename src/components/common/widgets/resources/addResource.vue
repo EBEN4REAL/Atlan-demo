@@ -2,12 +2,7 @@
     <div @click="showModal">
         <slot name="trigger" @click="showModal" />
     </div>
-    <a-modal
-        :closable="false"
-        :visible="visible"
-        :class="$style.input"
-        centered
-    >
+    <a-modal :closable="false" :visible="visible" :class="$style.input">
         <template #title>
             <div class="flex items-center text-gray-500 flex-nowrap">
                 <span class="overflow-hidden text-sm overflow-ellipsis">{{
@@ -117,6 +112,11 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
             const visible = ref<boolean>(false)
@@ -124,7 +124,7 @@
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
-            const { asset } = toRefs(props)
+            const { asset, editPermission } = toRefs(props)
 
             const { title } = useAssetInfo()
 
@@ -138,9 +138,11 @@
             const linkTitle = ref('')
 
             const showModal = async () => {
-                visible.value = true
-                await nextTick()
-                titleBar.value?.focus()
+                if (editPermission.value) {
+                    visible.value = true
+                    await nextTick()
+                    titleBar.value?.focus()
+                }
             }
 
             function handleCancel() {

@@ -338,8 +338,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     }
 
     // Resource Deletion
-    const handleResourceDelete = (guidToDelete: string) => {
-        const { error, isLoading, isReady } = Entity.DeleteEntity(guidToDelete)
+    const handleResourceDelete = (link) => {
+        const { error, isLoading, isReady } = Entity.DeleteEntity(link?.guid)
+
         whenever(error, () => {
             message.error(
                 `${error.value?.response?.data?.errorCode} ${
@@ -348,7 +349,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             )
         })
         whenever(isReady, () => {
-            message.success(`Resource "${title(selectedAsset.value)}" deleted`)
+            message.success(`Resource deleted`)
             guid.value = selectedAsset.value.guid
 
             mutateUpdate()

@@ -184,6 +184,7 @@
         toRefs,
         computed,
         provide,
+        onMounted,
     } from 'vue'
 
     import { useRoute, useRouter } from 'vue-router'
@@ -358,6 +359,19 @@
                         break
                 }
             }
+
+            /*  onMounted(() => {
+                body.value = {
+                    entities: [
+                        {
+                            typeName: selectedAsset.value.typeName,
+                            entityGuid: selectedAsset.value.guid,
+                            action: 'ENTITY_UPDATE',
+                        },
+                    ],
+                }
+                refresh()
+            }) */
 
             return {
                 title,

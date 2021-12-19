@@ -233,7 +233,7 @@
                 quickChange()
             }
 
-            watch(list, () => {
+            /* watch(list, () => {
                 // For evaluations
                 body.value = {
                     entities: [
@@ -245,7 +245,7 @@
                     ],
                 }
                 refresh()
-            })
+            }) */
 
             return {
                 isLoading,

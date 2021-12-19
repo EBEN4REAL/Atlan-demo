@@ -1,6 +1,7 @@
 <template>
     <teleport to="#overAssetSidebar">
         <a-drawer
+            :key="data?.guid"
             v-model:visible="visible"
             placement="right"
             :get-container="false"
@@ -10,12 +11,11 @@
             :style="{ position: 'absolute' }"
             :content-wrapper-style="{ width: '420px' }"
             :mask="showMask"
-            :key="data?.guid"
             @close="$emit('closeDrawer')"
         >
             <AssetPreview
                 :selected-asset="data"
-                :isDrawer="true"
+                :is-drawer="true"
                 @closeDrawer="$emit('closeDrawer')"
             ></AssetPreview> </a-drawer
     ></teleport>
@@ -24,6 +24,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, toRefs, provide } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
+    import useEvaluate from '~/composables/auth/useEvaluate'
 
     export default defineComponent({
         components: {
@@ -40,9 +41,7 @@
             showDrawer: {
                 type: Boolean,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: true,
             },
             showMask: {
                 type: Boolean,
@@ -53,9 +52,12 @@
         emits: ['closeDrawer', 'update'],
 
         setup(props, { emit }) {
-            const { showDrawer } = toRefs(props)
+            const { showDrawer, data } = toRefs(props)
 
             const visible = ref(false)
+
+            const body = ref({})
+            const { refresh } = useEvaluate(body, false)
 
             const updateDrawerList = (asset) => {
                 emit('update', asset)
@@ -65,6 +67,21 @@
 
             watch(showDrawer, () => {
                 visible.value = showDrawer.value
+            })
+
+            watch(visible, () => {
+                if (visible.value) {
+                    body.value = {
+                        entities: [
+                            {
+                                typeName: data.value?.typeName,
+                                entityGuid: data.value?.guid,
+                                action: 'ENTITY_UPDATE',
+                            },
+                        ],
+                    }
+                    refresh()
+                }
             })
 
             return { visible }

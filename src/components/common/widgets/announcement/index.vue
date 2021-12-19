@@ -36,7 +36,7 @@
                     <template #overlay>
                         <a-menu mode="vertical">
                             <a-menu-item key="edit">
-                                <AnnouncementModal
+                                <AddAnnouncementModal
                                     :asset="selectedAsset"
                                     :edit-permission="
                                         selectedAssetUpdatePermission(
@@ -51,9 +51,28 @@
                                             />
                                             Edit
                                         </div></template
-                                    ></AnnouncementModal
+                                    ></AddAnnouncementModal
                                 >
                             </a-menu-item>
+                            <a-menu-item key="delete">
+                                <DeleteAnnouncementModal
+                                    :asset="selectedAsset"
+                                    :edit-permission="
+                                        selectedAssetUpdatePermission(
+                                            selectedAsset
+                                        )
+                                    "
+                                    ><template #trigger>
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                icon="Delete"
+                                                class="h-4 mr-2"
+                                            />
+                                            Delete
+                                        </div></template
+                                    ></DeleteAnnouncementModal
+                                ></a-menu-item
+                            >
                         </a-menu>
                     </template>
                 </a-dropdown>
@@ -77,14 +96,19 @@
 
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs } from 'vue'
-    import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
+    import AddAnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
+    import DeleteAnnouncementModal from '@common/widgets/announcement/deleteAnnouncementModal.vue'
     import UserAvatar from '@common/avatar/user.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'AnnouncementWidget',
-        components: { AnnouncementModal, UserAvatar },
+        components: {
+            AddAnnouncementModal,
+            DeleteAnnouncementModal,
+            UserAvatar,
+        },
 
         props: {
             selectedAsset: {

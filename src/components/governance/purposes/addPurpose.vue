@@ -31,6 +31,7 @@
                 <Classification
                     v-model:modelValue="selectedClassifications"
                     @change="handleClassificationChange"
+                    :editPermission="true"
                 />
                 <span
                     class="ml-2 text-red-500"

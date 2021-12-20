@@ -74,7 +74,7 @@ TR
                         Your collection queries will appear here
                     </p>
                 </div>
-                <div v-if="hasWritePermission">
+                <div v-if="hasWritePermission" v-auth="[map.CREATE_COLLECTION]">
                     <a-button
                         @click="toggleCreateQueryModal"
                         class="flex items-center w-48 text-sm text-gray-700 border rounded hover:text-primary h-9"
@@ -155,6 +155,7 @@ TR
     import Loader from '@common/loaders/page.vue'
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {
@@ -300,6 +301,7 @@ TR
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
                 hasWritePermission,
+                map,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

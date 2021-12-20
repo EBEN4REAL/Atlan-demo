@@ -261,6 +261,9 @@
     import VQB from '~/components/insights/playground/editor/vqb/index.vue'
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
 
+    import { useAuthStore } from '~/store/auth'
+    import { storeToRefs } from 'pinia'
+
     export default defineComponent({
         components: {
             VQB,
@@ -282,7 +285,7 @@
             const router = useRouter()
             const route = useRoute()
             const vqbQueryRoute = ref(route.query?.vqb)
-            const permissions = inject('permissions') as ComputedRef<any>
+            // const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
             const { canUserUpdateQuery } = useAccess()
             const { getDatabaseName, getConnectionQualifiedName } =
@@ -340,6 +343,17 @@
                 inlineTabs,
                 activeInlineTab
             )
+
+            const authStore = useAuthStore()
+            const { permissions } = storeToRefs(authStore)
+            // console.log(
+            //     'editor permission: ',
+            //     permissions.value.indexOf('CREATE_COLLECTION')
+            // )
+
+            let userHasPermission = computed(() => {
+                permissions.value.indexOf('CREATE_COLLECTION') >= 0
+            })
 
             const isQueryCreatedByCurrentUser = inject(
                 'isQueryCreatedByCurrentUser'
@@ -506,6 +520,23 @@
                 }
             }
 
+            // let selectedQuery = computed(() => {
+            //     console.log('inside select: ')
+            //     if (
+            //         toRaw(editorInstance.value) &&
+            //         toRaw(editorInstance.value).getSelection()
+            //     ) {
+            //         return toRaw(editorInstance.value).getSelection()
+            //     } else {
+            //         return ''
+            //     }
+            // })
+
+            // watch(selectedQuery, () => {
+            //     if (toRaw(editorInstance.value))
+            //         console.log('selection happened: ', selectedQuery.value)
+            // })
+
             const setInstance = (
                 editorInstanceParam: editor.IStandaloneCodeEditor,
                 monacoInstanceParam?: any
@@ -613,7 +644,9 @@
             })
 
             const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
+                !userHasPermission.value
+                    ? true
+                    : activeInlineTab?.value?.qualifiedName?.length === 0
                     ? false
                     : isQueryCreatedByCurrentUser.value
                     ? false
@@ -713,7 +746,7 @@
                 toggleQueryPreviewPopover,
                 showQueryPreview,
                 showVQB,
-                permissions,
+                // permissions,
                 saveOrUpdate,
                 toggleExplorerPane,
                 editorConfig,

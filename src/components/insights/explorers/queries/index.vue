@@ -28,6 +28,7 @@
                         <div
                             class="flex items-center h-8 px-3 rounded-lg cursor-pointer"
                             :class="$style.filterButton"
+                            v-auth="[map.CREATE_COLLECTION]"
                         >
                             <span class="text-xs text-gray-700">New</span>
                         </div>
@@ -303,6 +304,7 @@
     import Loader from '@common/loaders/page.vue'
     import ErrorView from '@common/error/index.vue'
     import { isValid } from '~/utils/isValid'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'QueryExplorer',
@@ -1082,6 +1084,7 @@
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
                 hasWritePermission,
+                map,
             }
         },
     })

@@ -283,14 +283,14 @@
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import { filterMethod } from '~/utils/helper/search'
+    import { filterMethod, sortMethodArrOfObject } from '~/utils/helper/search'
     import Addpolicy from './addpolicy.vue'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
         newIdTag,
         selectedPersonaDirty,
-        addPolicy,
+        // addPolicy,
         updateSelectedPersona,
         deletePolicy,
         policyEditMap,
@@ -413,8 +413,11 @@
                     activeTabFilter.value === 'all Persona' ||
                     activeTabFilter.value === 'metaData'
                 ) {
-                    const deteMeta =
-                        selectedPersonaDirty?.value?.metadataPolicies || []
+                    const deteMeta = sortMethodArrOfObject(
+                        selectedPersonaDirty?.value?.metadataPolicies || [],
+                        'connectionId'
+                    )
+
                     return filterMethod(
                         deteMeta,
                         searchPersona.value || '',
@@ -429,8 +432,11 @@
                     activeTabFilter.value === 'all Persona' ||
                     activeTabFilter.value === 'data'
                 ) {
-                    const dataPolicy =
-                        selectedPersonaDirty?.value?.dataPolicies || []
+                    const dataPolicy = sortMethodArrOfObject(
+                        selectedPersonaDirty?.value?.dataPolicies || [],
+                        'connectionId'
+                    )
+
                     return filterMethod(
                         dataPolicy,
                         searchPersona.value || '',

@@ -74,6 +74,7 @@
                             }
                         "
                         v-model:modelValue="selectedOwnersData"
+                        :edit-permission="true"
                         class="mb-6"
                         :read-only="false"
                         :destroy-tooltip-on-hide="true"

@@ -28,11 +28,15 @@
                     return 0
                 },
             },
+            blocked: {
+                type: Boolean,
+                default: false,
+            },
         },
         emits: ['change'],
         setup(props, { emit }) {
             // props destructure
-            const { list, startIndex } = toRefs(props)
+            const { list, startIndex, blocked } = toRefs(props)
 
             // variables
             const selectedIndex = ref(startIndex.value)
@@ -55,12 +59,18 @@
             }
 
             const onKeyUp = () => {
+                if (blocked.value) {
+                    return
+                }
                 if (selectedIndex.value > 0) {
                     setSelectedIndex(selectedIndex.value - 1)
                 }
             }
 
             const onKeyDown = () => {
+                if (blocked.value) {
+                    return
+                }
                 if (selectedIndex.value < totalLength.value - 1) {
                     setSelectedIndex(selectedIndex.value + 1)
                 }

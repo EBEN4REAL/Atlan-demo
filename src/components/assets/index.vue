@@ -122,6 +122,7 @@
                     @change="onKeyboardNavigate"
                     :startIndex="selectedAssetIndex"
                     :blocked="isCmndKVisible"
+                    :htmlIdGetter="getAssetId"
                 >
                     <AssetList
                         ref="assetlistRef"
@@ -152,6 +153,7 @@
                                     (e, item) => updateBulkSelectedAssets(item)
                                 "
                                 :class="page !== 'admin' ? 'mx-3' : ''"
+                                :id="getAssetId(item)"
                             ></AssetItem>
                         </template>
                     </AssetList>
@@ -478,6 +480,10 @@
                 return 'Search all assets'
             })
 
+            const getAssetId = (item) => {
+                return item.guid
+            }
+
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
 
@@ -620,6 +626,7 @@
                 onKeyboardNavigate,
                 selectedAssetIndex,
                 isCmndKVisible,
+                getAssetId,
             }
         },
     })

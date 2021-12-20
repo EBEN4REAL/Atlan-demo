@@ -195,6 +195,7 @@
         AssetRelationAttributes,
         InternalAttributes,
         SQLAttributes,
+        GlossaryAttributes
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -275,7 +276,7 @@
             },
         },
         setup(props, { emit }) {
-            const { preference: preferenceProp, checkedCriteria } =
+            const { preference: preferenceProp, checkedCriteria, initialFilters, page, projection } =
                 toRefs(props)
             const limit = ref(20)
             const offset = ref(0)
@@ -297,13 +298,16 @@
                 ...SQLAttributes,
                 ...customMetadataProjections,
             ])
+            if(page.value === 'glossary') {
+                defaultAttributes.value.push(...GlossaryAttributes)
+            }
             const relationAttributes = ref([...AssetRelationAttributes])
+            
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchBox: Ref<null | HTMLInputElement> = ref(null)
 
-            const { initialFilters, page, projection } = toRefs(props)
             const discoveryStore = useAssetStore()
 
             if (discoveryStore.activeFacet && page.value === 'assets') {

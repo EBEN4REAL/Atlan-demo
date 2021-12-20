@@ -43,12 +43,12 @@
             </div>
             <div
                 v-else-if="!list.length && !queryText.length"
-                class="flex flex-col px-4 mb-6"
+                class="flex items-center justify-around px-4 mb-6 h-80"
             >
-                <!-- <span class="mb-2 text-xs text-gray-500">Recently Viewed</span> -->
-                <span class="text-xs text-gray-500 mb-"
-                    >You haven’t searched for anything just yet ...</span
-                >
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-10 animate-spin"
+                ></AtlanIcon>
             </div>
             <div
                 v-for="(item, index) in list"

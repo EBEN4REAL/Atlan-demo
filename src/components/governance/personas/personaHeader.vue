@@ -52,16 +52,12 @@
             </div>
             <a-button-group>
                 <!-- Edit -->
-                <a-tooltip
-                    placement="bottom"
-                    class="mr-2"
-                    v-auth="map.UPDATE_PERSONA"
-                >
+                <a-tooltip placement="bottom" v-auth="map.UPDATE_PERSONA">
                     <template #title>
                         <span>Edit Persona</span>
                     </template>
                     <AtlanButton
-                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow"
+                        class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
                         @click="isEditing = true"
                     >
                         <AtlanIcon icon="Edit"></AtlanIcon>
@@ -73,7 +69,7 @@
                         <span>Delete Persona</span>
                     </template>
                     <AtlanButton
-                        class="flex items-center justify-center w-8 h-8 border rounded cursor-pointer customShadow text-error"
+                        class="flex items-center justify-center h-8 px-5 border rounded rounded-l-none cursor-pointer customShadow text-error"
                         @click="deletePersona"
                     >
                         <AtlanIcon icon="Delete"></AtlanIcon>

@@ -442,10 +442,12 @@
                 emit('check', checkedNodes, { checkedKeys, checked })
             }
             const onSearchItemCheck = (checkedNode, checked) => {
-                if (!checkedGuids.value.includes(checkedNode.guid)) {
-                    checkedGuids.value.push(checkedNode.guid)
+                if(checkedNode.typeName === 'AtlasGlossaryTerm') {
+                    if (!checkedGuids.value.includes(checkedNode.guid)) {
+                        checkedGuids.value.push(checkedNode.guid)
+                    }
+                    emit('searchItemCheck', checkedNode, checked)
                 }
-                emit('searchItemCheck', checkedNode, checked)
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)

@@ -6,6 +6,7 @@
             <AddResources
                 v-if="links(selectedAsset)?.length > 0"
                 :asset="selectedAsset"
+                :edit-permission="editPermission"
                 ><template #trigger>
                     <a-button
                         class="text-gray-500 border border-transparent rounded shadow-none hover:border-gray-400"
@@ -22,6 +23,7 @@
                 <div v-for="(item, index) in links(selectedAsset)" :key="index">
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
+                        :edit-permission="editPermission"
                         :item="item"
                         :selected-asset="selectedAsset"
                         class=""
@@ -48,7 +50,9 @@
                 <p class="text-sm text-center text-gray-700">
                     Add URLs related to this asset
                 </p>
-                <AddResources :asset="selectedAsset"
+                <AddResources
+                    :asset="selectedAsset"
+                    :edit-permission="editPermission"
                     ><template #trigger>
                         <AtlanButton
                             size="lg"
@@ -109,6 +113,11 @@
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         setup(props) {

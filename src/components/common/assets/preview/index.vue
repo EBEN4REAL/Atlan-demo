@@ -337,7 +337,7 @@
             )
 
             provide('switchTab', (asset, tabName: string) => {
-                const idx = getPreviewTabs(asset).findIndex(
+                const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx

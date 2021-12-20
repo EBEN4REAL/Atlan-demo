@@ -4,11 +4,11 @@
         {{ name }}
         <div class="mb-1 font-bold">{{ data.value?.typeName }}</div>
         <div
-            v-for="(value, name, index) in data.value?.attributes"
+            v-for="(value, attributeName, index) in data.value?.attributes"
             :key="index"
         >
             <div>
-                <b>{{ name }}</b> set to
+                <b>{{ attributeName }}</b> set to
                 <b>{{ value }}</b>
             </div>
         </div>

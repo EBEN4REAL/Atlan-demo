@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 
     import ErrorView from '@common/error/discover.vue'
@@ -91,6 +91,7 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import useEvaluate from '~/composables/auth/useEvaluate'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -162,7 +163,6 @@
             const {
                 list,
                 isLoading,
-                assetTypeAggregationList,
                 isLoadMore,
                 fetch,
                 quickChange,
@@ -197,9 +197,12 @@
                 )
             )
 
+            const body = ref({})
+            const { refresh } = useEvaluate(body, false)
+
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
-                (prev, current) => {
+                (prev) => {
                     if (prev) {
                         updateFacet()
                         quickChange()
@@ -230,10 +233,21 @@
                 quickChange()
             }
 
+            watch(list, () => {
+                // For evaluations
+                body.value = {
+                    entities: list.value.map((item) => ({
+                        typeName: item.typeName,
+                        entityGuid: item.guid,
+                        action: 'ENTITY_UPDATE',
+                    })),
+                }
+                refresh()
+            })
+
             return {
                 isLoading,
                 queryText,
-                assetTypeAggregationList,
                 list,
                 facets,
                 isLoadMore,

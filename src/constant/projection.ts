@@ -14,7 +14,7 @@ export const SavedQueryAttributes = [
     'parentQualifiedName',
     'collectionQualifiedName',
     'visualBuilderSchemaBase64',
-    'isVisualQuery'
+    'isVisualQuery',
 ]
 
 export const InternalAttributes = [
@@ -77,7 +77,7 @@ export const AssetAttributes = [
     'allowQueryPreview',
     'parentQualifiedName',
     'collectionQualifiedName',
-    'parent'
+    'parent',
 ]
 
 export const SQLAttributes = [
@@ -120,6 +120,7 @@ export const AssetRelationAttributes = [
     'dataflow',
     'report',
     'page',
+    'qualifiedName',
     '__state',
     '__timestamp',
     '__modificationTimestamp',

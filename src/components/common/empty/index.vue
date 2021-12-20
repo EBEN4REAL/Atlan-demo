@@ -24,6 +24,7 @@
             color="primary"
             padding="compact"
             @click="handleClick"
+            v-auth="[map.CREATE_COLLECTION]"
         >
             {{ buttonText }}
             <AtlanIcon v-if="buttonIcon" :icon="buttonIcon" class="inline" />
@@ -34,6 +35,7 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
     import AtlanButton from '~/components/UI/button.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'EmptyPlaceholder',
@@ -87,6 +89,7 @@
             }
             return {
                 handleClick,
+                map,
             }
         },
     })

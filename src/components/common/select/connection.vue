@@ -75,45 +75,37 @@
 
             const { getConnectorImage } = useAssetInfo()
 
-            const filteredList = computed(() => {
-                if (connector.value) {
-                    return list
-                        .filter((item) => {
-                            if (queryText.value && connector.value) {
-                                return (
-                                    item.attributes?.connectorName?.toLowerCase() ===
-                                        connector.value.toLowerCase() &&
-                                    item.attributes.name
-                                        .toLowerCase()
-                                        .includes(queryText.value.toLowerCase())
-                                )
-                            }
-                            if (connector.value) {
-                                return (
-                                    item.attributes?.connectorName?.toLowerCase() ===
-                                    connector.value.toLowerCase()
-                                )
-                            }
-                            if (queryText.value) {
-                                return item.attributes.name
+            const filteredList = computed(() =>
+                list
+                    .filter((item) => {
+                        if (queryText.value && connector.value) {
+                            return (
+                                item.attributes?.connectorName?.toLowerCase() ===
+                                    connector.value.toLowerCase() &&
+                                item.attributes.name
                                     .toLowerCase()
                                     .includes(queryText.value.toLowerCase())
-                            }
-                            return true
-                        })
-                        .sort((a, b) => {
-                            if (a.assetCount > b.assetCount) return -1
-                            if (a.assetCount < b.assetCount) return 1
-                            return 0
-                        })
-                }
-                const temp = list.sort((a, b) => {
-                    if (a.assetCount > b.assetCount) return -1
-                    if (a.assetCount < b.assetCount) return 1
-                    return 0
-                })
-                return temp
-            })
+                            )
+                        }
+                        if (connector.value) {
+                            return (
+                                item.attributes?.connectorName?.toLowerCase() ===
+                                connector.value.toLowerCase()
+                            )
+                        }
+                        if (queryText.value) {
+                            return item.attributes.name
+                                .toLowerCase()
+                                .includes(queryText.value.toLowerCase())
+                        }
+                        return true
+                    })
+                    .sort((a, b) => {
+                        if (a.assetCount > b.assetCount) return -1
+                        if (a.assetCount < b.assetCount) return 1
+                        return 0
+                    })
+            )
 
             const selectedValue = ref(modelValue.value)
             const handleChange = (value) => {

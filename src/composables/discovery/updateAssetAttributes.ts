@@ -96,7 +96,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localCategories = ref(categories(selectedAsset.value))
 
     const localResource = ref({
-        link: '',
+        link: 'https://',
         title: '',
     })
     const localReadmeContent = ref(readmeContent(selectedAsset.value))
@@ -317,6 +317,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 qualifiedName: generateUUID(),
                 name: localResource.value.title,
                 link: localResource.value.link,
+                tenantId: 'default',
             },
             relationshipAttributes: {
                 asset: {
@@ -338,14 +339,23 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     }
 
     // Resource Update
-    const handleUpdateResource = () => {
-        entity.value.attributes.name = localResource.value?.title
-        entity.value.attributes.link = localResource.value?.link
-        entity.value.attributes.qualifiedName =
-            selectedAsset.value?.uniqueAttributes?.qualifiedName
-        body.value.entities = [entity.value]
+    const handleUpdateResource = (item) => {
+        const resourceEntity = ref<any>({
+            typeName: 'Link',
+            guid: item.value?.guid,
+            attributes: {
+                qualifiedName: item.value?.uniqueAttributes?.qualifiedName,
+                name: localResource.value?.title,
+                link: localResource.value?.link,
+                tenantId: 'default',
+            },
+        })
 
-        currentMessage.value = `Resource ${title(selectedAsset.value)} updated`
+        body.value.entities = [resourceEntity.value]
+
+        currentMessage.value = `Resource ${title(item.value)} of ${title(
+            selectedAsset.value
+        )} updated`
         mutate()
     }
 
@@ -376,6 +386,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 qualifiedName: `${selectedAsset.value?.guid}/readme`,
                 name: `${title(selectedAsset?.value)} Readme`,
                 description: localReadmeContent.value,
+                tenantId: 'default',
             },
             relationshipAttributes: {
                 asset: {

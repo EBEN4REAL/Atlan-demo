@@ -159,6 +159,11 @@ const keyMap = {
                 }),
             },
         },
+        collection: {
+            created: {
+                action: 'insights_collection_created',
+            },
+        },
         folder: {
             renamed: {
                 action: 'insights_folder_renamed',

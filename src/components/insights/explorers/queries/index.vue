@@ -867,11 +867,13 @@
                     // console.log('query data: ', data)
                     // console.log('query saveQueryData: ', saveQueryData)
                     if (data) {
-                        refetchNode(
-                            saveQueryData.parentGuid ??
-                                getRelevantTreeData().parentGuid.value,
-                            'query'
-                        )
+                        setTimeout(async () => {
+                            await refetchNode(
+                                saveQueryData.parentGuid ??
+                                    getRelevantTreeData().parentGuid.value,
+                                'query'
+                            )
+                        }, 1000)
                     }
                 })
             }
@@ -982,37 +984,48 @@
             )
 
             watch(reset, () => {
-                // console.log('queryTree query: ', reset.value)
+                console.log('queryTree query: ', reset.value)
                 if (reset.value) {
-                    // console.log('queryTree inside if')
-                    setTimeout(async () => {
-                        console.log('reset type: ', resetType.value)
-                        console.log('reset id: ', resetParentGuid.value)
+                    console.log(
+                        'queryTree inside if: ',
+                        resetParentGuid.value,
+                        resetType.value
+                    )
 
-                        if (Array.isArray(resetParentGuid.value)) {
-                            console.log(
-                                'reset parent guid: ',
-                                resetParentGuid.value
+                    if (Array.isArray(resetParentGuid.value)) {
+                        setTimeout(async () => {
+                            await refetchNode(
+                                resetParentGuid.value[0],
+                                resetType.value
                             )
-                            resetParentGuid.value.forEach(
-                                async (guid, index) => {
-                                    // console.log('reset: ', index)
+                        }, 1000)
 
-                                    await refetchNode(guid, resetType.value)
-                                }
+                        setTimeout(async () => {
+                            await refetchNode(
+                                resetParentGuid.value[1],
+                                resetType.value
                             )
-                        } else {
+                            props.resetQueryTree()
+                        }, 2000)
+                    } else {
+                        // console.log(
+                        //     'new refetch data: ',
+                        //     resetParentGuid.value,
+                        //     resetType.value
+                        // )
+                        setTimeout(async () => {
                             await refetchNode(
                                 resetParentGuid.value,
                                 resetType.value
                             )
-                        }
+                            props.resetQueryTree()
+                        }, 1000)
+                    }
 
-                        props.resetQueryTree()
-                    }, 750)
+                    // props.resetQueryTree()
                 }
             })
-            console.log(queryCollectionsError.value, 'queryCollectionsError')
+            // console.log(queryCollectionsError.value, 'queryCollectionsError')
 
             return {
                 isValid,

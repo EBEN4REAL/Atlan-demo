@@ -399,7 +399,7 @@
                 getConnectorName(connectorsData.value.attributeValue)
             )
             const connectionName = computed(() => {
-                console.log('store list: ', store.getList)
+                // console.log('store list: ', store.getList)
                 let data = getConnectionQualifiedName(
                     connectorsData.value.attributeValue
                 )

@@ -56,20 +56,27 @@
                 v-else
                 :key="item?.guid"
                 :class="{ 'bg-blue-50': item?.guid === activeAsset?.guid }"
+                @click="goToAsset(item)"
             >
-                <div
-                    v-if="
-                        [
-                            'AtlasGlossary',
-                            'AtlasGlossaryTerm',
-                            'AtlasGlossaryCategory',
-                        ].includes(item?.typeName)
-                    "
-                    @click="$emit('closeModal')"
-                >
-                    <GtcCard :item="item" class="px-5" />
-                </div>
-                <AssetCard v-else :item="item" Modal="$emit('closeModal')" />
+                <router-link :to="getProfilePath(item)">
+                    <div
+                        v-if="
+                            [
+                                'AtlasGlossary',
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ].includes(item?.typeName)
+                        "
+                        @click="$emit('closeModal')"
+                    >
+                        <GtcCard :item="item" class="px-5" />
+                    </div>
+                    <AssetCard
+                        v-else
+                        :item="item"
+                        Modal="$emit('closeModal')"
+                    />
+                </router-link>
             </div>
         </div>
     </div>
@@ -104,6 +111,7 @@
     // import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'CommandK',
@@ -136,6 +144,8 @@
                 typeName: '__all',
             })
             const router = useRouter()
+
+            const { getProfilePath } = useAssetInfo()
 
             const defaultAttributes = ref([
                 'anchor',
@@ -325,6 +335,7 @@
                 postFacets,
                 activeAsset,
                 placeholder,
+                getProfilePath,
             }
         },
     })

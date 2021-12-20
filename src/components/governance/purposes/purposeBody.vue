@@ -295,6 +295,7 @@
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
     import { selectedPersona } from './composables/usePurposeList'
     import AssetsWrapper from '@/assets/index.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -348,7 +349,12 @@
                 },
             ]
 
-            async function savePolicyUI(type: PolicyType, id: string) {
+            async function savePolicyUI(
+                type: PolicyType,
+                id: string,
+                isEditMode: boolean
+            ) {
+                console.log('savePolicyUI', { type, id, isEditMode })
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Saving policy',
@@ -371,6 +377,22 @@
                         key: messageKey,
                     })
                     loadingPolicy.value = false
+                    const eventName = isEditMode
+                        ? 'policy_updated'
+                        : 'policy_added'
+                    const eventProperties = {
+                        type,
+                        masking: id.mask ? id.mask : '',
+                        denied: !id.allow,
+                        user_count: id.users.length,
+                        group_count: id.groups.length,
+                    }
+                    useAddEvent(
+                        'governance',
+                        'purpose',
+                        eventName,
+                        eventProperties
+                    )
                 } catch (error) {
                     message.error({
                         content:

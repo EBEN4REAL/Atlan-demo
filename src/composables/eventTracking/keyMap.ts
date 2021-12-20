@@ -221,9 +221,23 @@ const keyMap = {
             },
             policy_added: {
                 action: 'governance_purpose_policy_added',
+                properties: (props) => ({
+                    type: props?.type,
+                    masking: props.masking,
+                    denied: !!props.denied,
+                    user_count: props.user_count,
+                    group_count: props.group_count,
+                }),
             },
             policy_updated: {
                 action: 'governance_purpose_policy_updated',
+                properties: (props) => ({
+                    type: props?.type,
+                    masking: props.masking,
+                    denied: !!props.denied,
+                    user_count: props.user_count,
+                    group_count: props.group_count,
+                }),
             },
             policy_deleted: {
                 action: 'governance_purpose_policy_deleted',

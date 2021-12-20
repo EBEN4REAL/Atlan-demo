@@ -65,6 +65,7 @@
     import { generateUUID } from '~/utils/helper/generator'
     import Classification from '@common/input/classification/index.vue'
     import usePurposeService from './composables/usePurposeService'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AddPurpose',
@@ -152,6 +153,7 @@
                         selectedPersonaId.value = newPurpose.id!
                         modalVisible.value = false
                     })
+                    useAddEvent('governance', 'purpose', 'created')
                 } catch (error) {
                     message.error({
                         content:

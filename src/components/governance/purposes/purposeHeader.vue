@@ -73,6 +73,7 @@
     import { reFetchList } from './composables/usePurposeList'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'Purpose Header',
@@ -119,6 +120,7 @@
                                 duration: 1.5,
                                 key: msgId,
                             })
+                            useAddEvent('governance', 'purpose', 'deleted')
                         } catch (error) {
                             message.error({
                                 content: 'Failed to delete purpose',

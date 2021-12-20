@@ -247,6 +247,9 @@ const keyMap = {
             created: {
                 action: 'governance_classification_created',
             },
+            updated: {
+                action: 'governance_classification_updated',
+            },
             deleted: {
                 action: 'governance_classification_deleted',
             },

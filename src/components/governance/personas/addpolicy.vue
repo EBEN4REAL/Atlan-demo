@@ -801,10 +801,8 @@
             color: #3e4359;
         }
         .ant-select-selector {
-            background: none !important;
             border: none !important;
             box-shadow: none !important;
-            padding-left: 0 !important;
             cursor: default;
         }
     }

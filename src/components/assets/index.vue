@@ -22,6 +22,7 @@
                 <div class="flex">
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
+                        ref="searchBox"
                         v-model="queryText"
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
@@ -30,7 +31,6 @@
                         :class="page !== 'admin' ? 'px-6' : ''"
                         :placeholder="placeholder"
                         @change="handleSearchChange"
-                        ref="searchBox"
                     >
                         <template #filter>
                             <a-popover
@@ -75,8 +75,8 @@
                         v-model="postFacets.typeName"
                         class="mt-3"
                         :list="assetTypeAggregationList"
+                        :shortcut-enabled="true"
                         @change="handleAssetTypeChange"
-                        :shortcutEnabled="true"
                     >
                     </AggregationTabs>
                 </div>
@@ -119,24 +119,22 @@
                 <ListNavigator
                     v-else
                     :list="list"
+                    :start-index="selectedAssetIndex"
                     @change="onKeyboardNavigate"
-                    :startIndex="selectedAssetIndex"
                 >
                     <AssetList
                         ref="assetlistRef"
                         :list="list"
-                        :selectedAsset="selectedAsset"
-                        :isLoadMore="isLoadMore"
-                        :isLoading="isValidating"
+                        :selected-asset="selectedAsset"
+                        :is-load-more="isLoadMore"
+                        :is-loading="isValidating"
                         @loadMore="handleLoadMore"
                     >
-                        <template v-slot:default="{ item, itemIndex }">
+                        <template #default="{ item, itemIndex }">
                             <AssetItem
                                 :item="item"
-                                :itemIndex="itemIndex"
-                                :selectedGuid="selectedAsset.guid"
-                                @preview="handleClickAssetItem"
-                                @updateDrawer="updateCurrentList"
+                                :item-index="itemIndex"
+                                :selected-guid="selectedAsset.guid"
                                 :preference="preference"
                                 :show-check-box="showCheckBox"
                                 :bulk-select-mode="
@@ -145,13 +143,15 @@
                                         ? true
                                         : false
                                 "
-                                :enableSidebarDrawer="enableSidebarDrawer"
+                                :enable-sidebar-drawer="enableSidebarDrawer"
                                 :is-checked="checkSelectedCriteriaFxn(item)"
+                                :class="page !== 'admin' ? 'mx-3' : ''"
+                                @preview="handleClickAssetItem"
+                                @updateDrawer="updateCurrentList"
                                 @listItem:check="
                                     (e, item) => updateBulkSelectedAssets(item)
                                 "
-                                :class="page !== 'admin' ? 'mx-3' : ''"
-                            ></AssetItem>
+                            />
                         </template>
                     </AssetList>
                 </ListNavigator>
@@ -177,6 +177,7 @@
     import ListNavigator from '@common/keyboardShortcuts/listNavigator.vue'
 
     import { useDebounceFn, whenever, useMagicKeys } from '@vueuse/core'
+    // import PopOverAsset from '@common/popover/assets/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
@@ -213,6 +214,7 @@
             AtlanIcon,
             AssetItem,
             ListNavigator,
+            // PopOverAsset,
         },
         props: {
             showFilters: {
@@ -228,12 +230,10 @@
             preference: {
                 type: Object as PropType<any>,
                 required: false,
-                default: () => {
-                    return {
-                        sort: 'default',
-                        display: [],
-                    }
-                },
+                default: () => ({
+                    sort: 'default',
+                    display: [],
+                }),
             },
             showAggrs: {
                 type: Boolean,
@@ -269,10 +269,17 @@
                 type: String,
                 default: '',
             },
+            allCheckboxAreaClick: {
+                type: Boolean,
+                default: false,
+            },
         },
         setup(props, { emit }) {
-            const { preference: preferenceProp, checkedCriteria } =
-                toRefs(props)
+            const {
+                preference: preferenceProp,
+                checkedCriteria,
+                allCheckboxAreaClick,
+            } = toRefs(props)
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -387,7 +394,6 @@
             }, 600)
 
             const sendFilterEvent = useDebounceFn((filterItem) => {
-                console.log('sendFilterEvent', filterItem)
                 if (filterItem && filterItem.analyticsKey) {
                     useAddEvent('discovery', 'filter', 'changed', {
                         type: filterItem.analyticsKey,
@@ -396,11 +402,15 @@
             }, 600)
 
             const handleClickAssetItem = (...args) => {
-                console.log('handleClickAssetItem', ...args)
+                if (allCheckboxAreaClick.value) {
+                    updateBulkSelectedAssets(...args)
+                }
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: args[1],
                 })
-                handlePreview(...args)
+                if (handlePreview) {
+                    handlePreview(...args)
+                }
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -417,7 +427,6 @@
             }
 
             const handleAssetTypeChange = (tabName) => {
-                console.log('handleAssetTypeChange called', tabName)
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActivePostFacet(postFacets.value)
@@ -470,7 +479,6 @@
                 )
 
                 if (found) {
-                    console.log(found)
                     return `Search ${found.label.toLowerCase()} assets`
                 }
                 return 'Search all assets'
@@ -480,7 +488,6 @@
             const { tab, shift_tab } = keys
 
             const handleFocusOnInput = () => {
-                console.log('handleFocusOnInput', searchBox.value)
                 // sear.value?.focus()
                 searchBox?.value?.focusInput()
             }
@@ -491,7 +498,6 @@
                     return
                 }
                 rotateAggregateTab(1, handleFocusOnInput)
-                console.log('go next aggregate', isCmndKVisible.value)
             })
 
             whenever(shift_tab, () => {
@@ -499,7 +505,6 @@
                     // don't run if cmd k is on
                     return
                 }
-                console.log('go previous aggregate', isCmndKVisible.value)
                 rotateAggregateTab(-1, handleFocusOnInput)
             })
 

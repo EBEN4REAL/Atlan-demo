@@ -168,16 +168,22 @@ const keyMap = {
             renamed: {
                 action: 'insights_folder_renamed',
             },
-            // folder made public/private
-            space_changed: {
-                action: 'insights_folder_space_changed',
-                properties: (props) => ({ finalSpace: props?.finalSPace }),
-            },
             created: {
                 action: 'insights_folder_created',
             },
             deleted: {
                 action: 'insights_folder_deleted',
+            },
+        },
+        tab: {
+            opened: {
+                action: 'insights_tab_opened',
+                properties: (props) => ({
+                    visual_query: !!props?.visual_query,
+                }),
+            },
+            closed: {
+                action: 'insights_tab_closed',
             },
         },
     },

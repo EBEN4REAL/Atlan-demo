@@ -51,15 +51,21 @@
                 >
             </div>
             <div
-                :id="`${item.guid}-asset`"
-                v-for="item in list"
+                v-for="(item, index) in list"
                 v-else
+                :id="`${item.guid}-asset`"
                 :key="item?.guid"
                 :class="{ 'bg-blue-50': item?.guid === activeAsset?.guid }"
-                @click="goToAsset(item)"
             >
                 <router-link :to="getProfilePath(item)">
-                    <div
+                    <div @click="$emit('closeModal')">
+                        <AssetItem
+                            :item="item"
+                            :itemIndex="index"
+                            class="cmd-k-asset-card"
+                        />
+                    </div>
+                    <!-- <div
                         v-if="
                             [
                                 'AtlasGlossary',
@@ -75,7 +81,7 @@
                         v-else
                         :item="item"
                         Modal="$emit('closeModal')"
-                    />
+                    /> -->
                 </router-link>
             </div>
         </div>
@@ -112,10 +118,11 @@
     import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import AssetItem from '@/common/assets/list/assetItem.vue'
 
     export default defineComponent({
         name: 'CommandK',
-        components: { AssetCard, GtcCard, AggregationTabs },
+        components: { AssetCard, GtcCard, AggregationTabs, AssetItem },
         props: {
             isCmndKVisible: {
                 type: Boolean,
@@ -380,6 +387,11 @@
         }
         .ant-input:focus {
             border: none !important;
+        }
+    }
+    .cmd-k-asset-card {
+        &.my-1 {
+            margin: 0px !important;
         }
     }
 </style>

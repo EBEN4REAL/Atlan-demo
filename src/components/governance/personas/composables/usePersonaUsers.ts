@@ -1,7 +1,6 @@
 import { computed, ComputedRef, Ref, watch, reactive, ref } from 'vue'
-import { getFormattedUser } from '~/composables/user/useUsers'
+import { getFormattedUser , useUsers } from '~/composables/user/useUsers'
 import { IPersona, IUser } from '~/types/accessPolicies/personas'
-import { useUsers } from '~/composables/user/useUsers'
 
 function usePersonaUserList(persona: Ref<IPersona>) {
     const userListAPIParams: any = {
@@ -27,7 +26,7 @@ function usePersonaUserList(persona: Ref<IPersona>) {
         data,
         () => {
             userList.value = []
-            let data: IUser[] = []
+            const data: IUser[] = []
             list.value.forEach((t) => {
                 persona.value.users?.forEach((userIds) => {
                     if (t.id === userIds) {
@@ -35,8 +34,6 @@ function usePersonaUserList(persona: Ref<IPersona>) {
                     }
                 })
             })
-            console.log(data, 'personaUser', persona, list)
-
             userList.value = data
         },
         { immediate: true }

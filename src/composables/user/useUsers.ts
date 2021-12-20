@@ -1,6 +1,8 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+import axios from 'axios'
+import { mutate } from 'swrv'
 import swrvState from '~/utils/swrvState'
 
 import { pluralizeString } from '~/utils/string'
@@ -9,8 +11,6 @@ import { roleMap } from '~/constant/role'
 import { Users } from '~/services/service/users'
 import { LIST_USERS } from '~/services/service/users/key'
 import { useOptions } from '~/services/api/common'
-import axios from 'axios'
-import { mutate } from 'swrv'
 
 export const getUserName = (user: any) => {
     const { firstName } = user
@@ -156,7 +156,6 @@ export const useUsers = (userListAPIParams, immediate = true) => {
     const userList: Ref<any[]> = ref([])
 
     watch(data, () => {
-        console.log('changed')
 
         if (data?.value?.records) {
             const escapedData = data?.value?.records

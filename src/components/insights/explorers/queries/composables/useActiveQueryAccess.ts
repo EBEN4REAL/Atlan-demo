@@ -88,30 +88,32 @@ const useActiveQueryAccess = (
 
     const fetchSelectedCollectionData = () => {
         refreshBody()
-        const { data, error, isLoading } = getSelectedCollectionData()
-        selectedCollectionLoading.value = true
-
-        watch([data, error, isLoading], () => {
+        if (activeInlineTab?.value?.qualifiedName?.length) {
+            const { data, error, isLoading } = getSelectedCollectionData()
             selectedCollectionLoading.value = true
 
-            if (isLoading.value === false) {
-                selectedCollectionLoading.value = false
-                if (error.value === undefined) {
-                    if (data?.value) {
-                        selectedCollectionData.value = data?.value
-                    } else {
-                        selectedCollectionData.value = {}
-                    }
-                    selectedCollectionError.value = undefined
-                    // message.success('collection fetched')
-                } else {
-                    selectedCollectionLoading.value = false
-                    selectedCollectionError.value = error.value
+            watch([data, error, isLoading], () => {
+                selectedCollectionLoading.value = true
 
-                    // message.error('Error in fetching collection data')
+                if (isLoading.value === false) {
+                    selectedCollectionLoading.value = false
+                    if (error.value === undefined) {
+                        if (data?.value) {
+                            selectedCollectionData.value = data?.value
+                        } else {
+                            selectedCollectionData.value = {}
+                        }
+                        selectedCollectionError.value = undefined
+                        // message.success('collection fetched')
+                    } else {
+                        selectedCollectionLoading.value = false
+                        selectedCollectionError.value = error.value
+
+                        // message.error('Error in fetching collection data')
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     const hasQueryReadPermission = computed(() => {
@@ -204,7 +206,10 @@ const useActiveQueryAccess = (
                 ? selectedCollectionData?.value?.entities[0]?.attributes
                       ?.__createdBy
                 : ''
-            console.log('creator: ', {creator, currentUser: currentUser.value})
+            console.log('creator: ', {
+                creator,
+                currentUser: currentUser.value,
+            })
 
             if (creator == currentUser.value) {
                 return true

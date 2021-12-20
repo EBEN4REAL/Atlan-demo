@@ -467,7 +467,7 @@
                 markAsDefaultLoading,
                 deleteGroupLoading,
                 showActionsDropdown,
-                map,
+                map
             }
         },
     })

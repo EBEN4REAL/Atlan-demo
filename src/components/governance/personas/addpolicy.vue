@@ -640,7 +640,7 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', policyType.value, policy.value)
+                    emit('save', policyType.value, policy.value, isEdit.value)
                 }
             }
             const selectedPermition = computed(() => {

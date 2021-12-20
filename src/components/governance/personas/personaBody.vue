@@ -285,6 +285,7 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { filterMethod, sortMethodArrOfObject } from '~/utils/helper/search'
     import Addpolicy from './addpolicy.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
@@ -355,7 +356,12 @@
                 activeTabFilter.value = ''
                 addpolicyVisible.value = false
             })
-            async function savePolicyUI(type: PolicyType, dataPolicy: Object) {
+            async function savePolicyUI(
+                type: PolicyType,
+                dataPolicy: Object,
+                isEdit: boolean
+            ) {
+                console.log('savePolicyUI', { dataPolicy, isEdit, type })
                 const messageKey = Date.now()
                 loadingPolicy.value = true
                 message.loading({
@@ -374,6 +380,19 @@
                         key: messageKey,
                     })
                     loadingPolicy.value = false
+                    const eventName = isEdit ? 'policy_updated' : 'policy_added'
+                    const eventProperties = {
+                        type,
+                        masking: dataPolicy.maskType ? dataPolicy.maskType : '',
+                        denied: !dataPolicy.allow,
+                        asset_count: dataPolicy.assets.length,
+                    }
+                    useAddEvent(
+                        'governance',
+                        'persona',
+                        eventName,
+                        eventProperties
+                    )
                 } catch (error: any) {
                     message.error({
                         content: error?.response?.data?.message,
@@ -399,6 +418,7 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+                    useAddEvent('governance', 'persona', 'policy_deleted')
                 } catch (error) {
                     message.error({
                         content: 'Failed to delete policy',

@@ -103,6 +103,7 @@
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
     import map from '~/constant/accessControl/map'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'PersonaHeader',
@@ -149,6 +150,7 @@
                                 duration: 1.5,
                                 key: msgId,
                             })
+                            useAddEvent('governance', 'persona', 'deleted')
                         } catch (error) {
                             message.error({
                                 content: 'Failed to delete persona',

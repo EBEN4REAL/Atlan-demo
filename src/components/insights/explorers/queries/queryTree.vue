@@ -2,7 +2,7 @@ TR
 <template>
     <div class="h-full max-h-screen" :class="$style.queryTreeStyles">
         <div class="h-full overflow-x-hidden query-tree-root-div">
-            <div v-if="!isQueriesLoading && treeData?.length">
+            <div v-if="!isLoading && treeData?.length">
                 <a-tree
                     :expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
@@ -153,11 +153,13 @@ TR
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import Loader from '@common/loaders/page.vue'
+    import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
 
     export default defineComponent({
         components: {
             Loader,
+            LoadingView,
             AtlanIcon,
             AtlanBtn,
             StatusBadge,

@@ -9,11 +9,11 @@
             </div>
             <div>
                 <a-switch
+                    v-model:checked="persona.enabled"
                     class="ml-auto"
                     data-test-id="toggle-switch"
                     style="width: 40px !important"
                     :class="persona.enabled ? 'btn-checked' : 'btn-unchecked'"
-                    v-model:checked="persona.enabled"
                     :loading="enableDisableLoading"
                     @change="handleEnableDisablePersona"
                 />
@@ -105,16 +105,17 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs, h } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
+    import { message, Modal } from 'ant-design-vue'
     import { enablePersona } from '../composables/useEditPersona'
     import Avatar from '~/components/common/avatar/index.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { formatDateTime } from '~/utils/date'
-    import { useTimeAgo } from '@vueuse/core'
-    import { message, Modal } from 'ant-design-vue'
+
     export default defineComponent({
-        components: { Avatar, PopOverUser },
         name: 'PersonaSummary',
+        components: { Avatar, PopOverUser },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,
@@ -147,6 +148,7 @@
                 })
                 try {
                     await enablePersona(persona.value.id, val)
+                    persona.value.enabled = val
                     message.success({
                         content: `${val ? 'Enabled' : 'Disabled'} persona ${
                             persona.value.displayName
@@ -168,13 +170,14 @@
             }
 
             const handleEnableDisablePersona = (val) => {
-                if (val) enableDisablePersona(val)
+                persona.value.enabled = !val
+                if (!persona.value.enabled) enableDisablePersona(val)
                 else
                     Modal.confirm({
                         title: 'Disable persona',
                         class: 'disable-persona-modal',
-                        content: () => {
-                            return h('div', [
+                        content: () =>
+                            h('div', [
                                 'Are you sure you want to disable persona',
                                 h('span', [' ']),
                                 h(
@@ -185,8 +188,7 @@
                                     [`${persona.value.displayName}`]
                                 ),
                                 h('span', '?'),
-                            ])
-                        },
+                            ]),
                         okType: 'danger',
                         autoFocusButton: null,
                         okButtonProps: {

@@ -35,11 +35,8 @@ const getAPIKeyValidityStringRelative = (apikey) => {
     return ''
 }
 const getAPIKeyValidityString = (apikey) => {
-    // console.log(getAPIKeyValidity(apikey).format())
-    // return ''
     if (getAPIKeyValidity(apikey)) {
         return formatDateTime(getAPIKeyValidity(apikey).format())
-        return 'test'
     }
     return ''
 }

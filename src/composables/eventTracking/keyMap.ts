@@ -137,12 +137,14 @@ const keyMap = {
                 action: 'insights_query_saved',
                 properties: (props) => ({
                     variables_count: props?.variables_count,
+                    visual_query: !!props?.visual_query,
                 }),
             },
             updated: {
                 action: 'insights_query_updated',
                 properties: (props) => ({
                     variables_count: props?.variables_count,
+                    visual_query: !!props?.visual_query,
                 }),
             },
             link_copied: {

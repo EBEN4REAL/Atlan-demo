@@ -644,9 +644,7 @@
             })
 
             const readOnly = computed(() =>
-                !userHasPermission.value
-                    ? true
-                    : activeInlineTab?.value?.qualifiedName?.length === 0
+                activeInlineTab?.value?.qualifiedName?.length === 0
                     ? false
                     : isQueryCreatedByCurrentUser.value
                     ? false

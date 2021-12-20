@@ -26,6 +26,7 @@
                 class="mt-3"
                 :list="assetTypeAggregationList"
                 @change="handleAssetTypeChange"
+                :shortcutEnabled="true"
             >
             </AggregationTabs>
         </div>

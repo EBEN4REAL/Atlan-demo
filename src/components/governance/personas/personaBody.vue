@@ -370,6 +370,16 @@
                     key: messageKey,
                 })
                 try {
+                    await savePolicy(type, dataPolicy)
+                    updateSelectedPersona()
+                    addpolicyVisible.value = false
+                    // savePolicyLocally(type, id)
+                    message.success({
+                        content: 'Policy saved',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                    loadingPolicy.value = false
                     const eventName = isEdit ? 'policy_updated' : 'policy_added'
                     const eventProperties = {
                         type,
@@ -383,16 +393,6 @@
                         eventName,
                         eventProperties
                     )
-                    await savePolicy(type, dataPolicy)
-                    updateSelectedPersona()
-                    addpolicyVisible.value = false
-                    // savePolicyLocally(type, id)
-                    message.success({
-                        content: 'Policy saved',
-                        duration: 1.5,
-                        key: messageKey,
-                    })
-                    loadingPolicy.value = false
                 } catch (error: any) {
                     message.error({
                         content: error?.response?.data?.message,

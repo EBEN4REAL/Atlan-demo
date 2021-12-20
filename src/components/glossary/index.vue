@@ -118,29 +118,33 @@
                 @event="handleResetEvent"
             ></EmptyView>
         </div>
-
-        <AssetList
+        <div 
             v-else-if="queryText"
-            ref="assetlistRef"
-            :list="list"
-            :selectedAsset="selectedGlossary"
-            :preference="preference"
-            :isLoadMore="isLoadMore"
-            :isLoading="isValidating"
-            @loadMore="handleLoadMore"
-            class="mt-3"
-        >
-            <template v-slot:default="{ item }">
-                <GlossaryItem
-                    :item="item"
-                    :selectedGuid="selectedGlossary?.guid"
-                    :checkable="checkable"
-                    :checked="checkedGuids?.includes(item.guid)"
-                    @preview="handlePreview"
-                    @check="onSearchItemCheck"
-                ></GlossaryItem>
-            </template>
-        </AssetList>
+            :class="$style.searchResults
+        ">
+            <AssetList
+                
+                ref="assetlistRef"
+                :list="list"
+                :selectedAsset="selectedGlossary"
+                :preference="preference"
+                :isLoadMore="isLoadMore"
+                :isLoading="isValidating"
+                @loadMore="handleLoadMore"
+                class="mt-3"
+            >
+                <template v-slot:default="{ item }">
+                    <GlossaryItem
+                        :item="item"
+                        :selectedGuid="selectedGlossary?.guid"
+                        :checkable="checkable"
+                        :checked="checkedGuids?.includes(item.guid)"
+                        @preview="handlePreview"
+                        @check="onSearchItemCheck"
+                    ></GlossaryItem>
+                </template>
+            </AssetList>
+        </div>
     </div>
 </template>
 
@@ -505,7 +509,15 @@
         max-width: 200px;
         min-width: 200px;
     }
+    .searchResults {
+        @apply overflow-y-auto bg-white;
+    }
+
     .checkableTree {
+        .searchResults {
+            max-height: 500px;
+        }
+
         :global(.glossaryTreeWrapper) {
             @apply overflow-y-auto;
             max-height: 300px;

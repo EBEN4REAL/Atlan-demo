@@ -1,7 +1,9 @@
-import { invoke, until } from '@vueuse/core'
+// import { invoke, until } from '@vueuse/core'
 import { ref, computed, watch } from 'vue'
+// import { useRoute } from 'vue-router'
 import usePersonaService from './usePersonaService'
 import { safeArray } from '~/utils/array'
+
 
 // Main Persona List, fetched from API
 const { listPersonas } = usePersonaService()
@@ -67,8 +69,8 @@ export const filteredPersonas = computed(() => {
     })
 })
 
-invoke(async () => {
-    await until(isPersonaListReady).toBe(true)
-    if (personaList.value?.length)
-        selectedPersonaId.value = personaList.value[0].id!
-})
+// invoke(async () => {
+//     await until(isPersonaListReady).toBe(true)
+//     if (personaList.value?.length)
+//         selectedPersonaId.value = personaList.value[0].id!
+// })

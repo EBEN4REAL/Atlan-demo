@@ -37,9 +37,9 @@
                 <AtlanIcon class="w-4 h-4 text-gray-500" icon="Flash" />
                 <p class="text-sm text-gray-500 ml-0.5 my-3 mx-3 pb-0.5">
                     Create variables to make values interactive.
-                    <span class="underline cursor-pointer text-primary"
+                    <!-- <span class="underline cursor-pointer text-primary"
                         >Learn more</span
-                    >
+                    > -->
                 </p>
             </div>
             <div

@@ -176,5 +176,6 @@
             @apply px-0 py-3 !important;
             width: 350px !important;
         }
+            max-height: 500px !important;
     }
 </style>

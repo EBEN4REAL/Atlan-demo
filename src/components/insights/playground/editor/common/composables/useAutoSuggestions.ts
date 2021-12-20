@@ -91,11 +91,11 @@ function generateMarkdown(
         descriptionHTML = `</p> Owned by:</br>${description}</p>`
         guid = entity.guid
     } else {
-
-        description = entity.attributes.userDescription || entity.attributes.description
+        description =
+            entity.attributes.userDescription || entity.attributes.description
         ownerString = entity.attributes.ownerUsers.join(', ')
         ownersHTML = `</p style-"font-weight:500"> Owned by:</br>${ownerString}</p>`
-        descriptionHTML = `</p> Owned by:</br>${description}</p>`
+        descriptionHTML = `</p> Description:</br>${description}</p>`
         guid = entity.guid
     }
 
@@ -105,11 +105,11 @@ function generateMarkdown(
         ${description ? descriptionHTML : ''}
         ${ownerString ? ownersHTML : ''}
         <div>
-        <div style="display:flex">
-  ${rowCountHTML}
+        <div>
+        </div>
+        <div style="display:flex; color: red">
+            ${rowCountHTML}
          <div>
-         <div>Guid:</div>
-         <p> ${guid}</p>
          </div>
         </div>
         </div>
@@ -149,7 +149,8 @@ export function entitiesToEditorKeyword(
                         let insertText = entities[i].attributes.name
                         let label = entities[i].attributes.name
 
-                        let qualifiedName = entities[i].attributes.qualifiedName.split('/')
+                        let qualifiedName =
+                            entities[i].attributes.qualifiedName.split('/')
                         let tableQN = `${qualifiedName[3]}.${qualifiedName[4]}.${qualifiedName[5]}`
 
                         // if (!connectorsInfo.schemaName) {
@@ -167,20 +168,19 @@ export function entitiesToEditorKeyword(
                         //     insertText = tableQN as string
                         //     entityType = `${type}: ${insertText}`
                         // }
-                        
-                        if(connectorsInfo.schemaName) {
-                                var spilltedVal = tableQN.split('.')
-                                insertText = spilltedVal[2] as string
-                                entityType = `${type}: ${spilltedVal[1]}`
-                                
+
+                        if (connectorsInfo.schemaName) {
+                            var spilltedVal = tableQN.split('.')
+                            insertText = spilltedVal[2] as string
+                            entityType = `${type}: ${spilltedVal[1]}`
+
                             // }
                         } else {
-                            if(connectorsInfo.databaseName) {
+                            if (connectorsInfo.databaseName) {
                                 insertText = tableQN as string
                                 var spilltedVal = tableQN.split('.')
                                 insertText = `${spilltedVal[1]}.${spilltedVal[2]}`
                                 entityType = `${type}: ${insertText}`
-                                
                             } else {
                                 insertText = tableQN as string
                                 entityType = `${type}: ${insertText}`
@@ -202,12 +202,13 @@ export function entitiesToEditorKeyword(
                         }
                         // console.log('su push cn: ', words.length )
                         words.push(keyword)
-                        break;
+                        break
                     }
                     case 'COLUMN': {
                         // console.log('su type: ', 'col')
-                        let qualifiedName = entities[i].attributes.qualifiedName.split('/')
-                        let tableName = qualifiedName[qualifiedName.length-2];
+                        let qualifiedName =
+                            entities[i].attributes.qualifiedName.split('/')
+                        let tableName = qualifiedName[qualifiedName.length - 2]
 
                         keyword = {
                             label: entities[i].attributes.name,
@@ -273,26 +274,26 @@ export function getLastMappedKeyword(
 }
 
 const attributes = [
-    "name",
-    "displayName",
-    "typeName",
-    "dataType",
-    "description",
-    "userDescription",
-    "ownerUsers",
-    "ownerGroups",
+    'name',
+    'displayName',
+    'typeName',
+    'dataType',
+    'description',
+    'userDescription',
+    'ownerUsers',
+    'ownerGroups',
 
-    "connectorName",
-    "connectionId",
-    "connectionQualifiedName",
-    "parentQualifiedName",
-    "defaultSchemaQualifiedName",
-    "rowCount",
-    "columnCount",
-    "tableCount",
-    "__guid",
-    "qualifiedName",
-    "connectionName",
+    'connectorName',
+    'connectionId',
+    'connectionQualifiedName',
+    'parentQualifiedName',
+    'defaultSchemaQualifiedName',
+    'rowCount',
+    'columnCount',
+    'tableCount',
+    '__guid',
+    'qualifiedName',
+    'connectionName',
 ]
 const body = ref()
 
@@ -303,24 +304,22 @@ const refreshBody = () => {
             size: 100,
             sort: [
                 {
-                    "name.keyword": {
-                        order: "asc"
-                    }
-                }
+                    'name.keyword': {
+                        order: 'asc',
+                    },
+                },
             ],
             query: {
                 bool: {
                     filter: {
                         bool: {
-                            must: [
-                               
-                            ]
-                        }
-                    }
-                }
-            }
+                            must: [],
+                        },
+                    },
+                },
+            },
         },
-        attributes
+        attributes,
     }
 }
 async function getSuggestionsUsingType(
@@ -335,65 +334,53 @@ async function getSuggestionsUsingType(
     cancelTokenSource: Ref<any>
 ) {
     refreshBody()
-    if(connectorsInfo.schemaName) {
-        body.value.dsl.query.bool.filter.bool.must.push(
-            {
-                term: {
-                    "schemaQualifiedName": `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}`
-                }
-            }
-        )
-    } else if(connectorsInfo.databaseName) {
-        body.value.dsl.query.bool.filter.bool.must.push(
-            {
-                term: {
-                    "databaseQualifiedName": `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}`
-                }
-            }
-        )
+    if (connectorsInfo.schemaName) {
+        body.value.dsl.query.bool.filter.bool.must.push({
+            term: {
+                schemaQualifiedName: `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}`,
+            },
+        })
+    } else if (connectorsInfo.databaseName) {
+        body.value.dsl.query.bool.filter.bool.must.push({
+            term: {
+                databaseQualifiedName: `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}`,
+            },
+        })
     } else {
-        body.value.dsl.query.bool.filter.bool.must.push(
-            {
-                term: {
-                    "connectionQualifiedName": `${connectorsInfo.connectionQualifiedName}`
-                }
-            }
-        )
+        body.value.dsl.query.bool.filter.bool.must.push({
+            term: {
+                connectionQualifiedName: `${connectorsInfo.connectionQualifiedName}`,
+            },
+        })
     }
-    
-    body.value.dsl.query.bool.filter.bool.must.push(
-        {
-            regexp: {
-                "name.keyword": `${currentWord}.*`
-            }
-        }
-    )
 
-    switch(type) {
+    body.value.dsl.query.bool.filter.bool.must.push({
+        regexp: {
+            'name.keyword': `${currentWord}.*`,
+        },
+    })
+
+    switch (type) {
         case 'TABLE': {
-            
-            body.value.dsl.query.bool.filter.bool.must.push(
-                {
-                    terms: {
-                        "__typeName.keyword": [
-                            "Table",
-                            "View"
-                        ]
-                    }
-                }
-            )
-            
+            body.value.dsl.query.bool.filter.bool.must.push({
+                terms: {
+                    '__typeName.keyword': ['Table', 'View'],
+                },
+            })
+
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }
             /* Current Word Should be greater than 1char */
-            if (currentWord.length > 1 && connectorsInfo.connectionQualifiedName) {
+            if (
+                currentWord.length > 1 &&
+                connectorsInfo.connectionQualifiedName
+            ) {
                 cancelTokenSource.value = axios.CancelToken.source()
-                const entitiesResponsPromise =
-                    Insights.GetAutoSuggestions(
-                        body,
-                        cancelTokenSource
-                    )
+                const entitiesResponsPromise = Insights.GetAutoSuggestions(
+                    body,
+                    cancelTokenSource
+                )
 
                 let suggestionsPromise = entitiesToEditorKeyword(
                     entitiesResponsPromise,
@@ -409,26 +396,24 @@ async function getSuggestionsUsingType(
             return getLocalSQLSugggestions(currentWord)
         }
         case 'COLUMN': {
-            body.value.dsl.query.bool.filter.bool.must.push(
-                {
-                    terms: {
-                        "__typeName.keyword": [
-                            "Column"
-                        ]
-                    }
-                }
-            )
+            body.value.dsl.query.bool.filter.bool.must.push({
+                terms: {
+                    '__typeName.keyword': ['Column'],
+                },
+            })
 
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }
-            if (currentWord.length > 1 && connectorsInfo.connectionQualifiedName) {
+            if (
+                currentWord.length > 1 &&
+                connectorsInfo.connectionQualifiedName
+            ) {
                 cancelTokenSource.value = axios.CancelToken.source()
-                const entitiesResponsPromise =
-                    Insights.GetAutoSuggestions(
-                        body,
-                        cancelTokenSource
-                    )
+                const entitiesResponsPromise = Insights.GetAutoSuggestions(
+                    body,
+                    cancelTokenSource
+                )
                 let suggestionsPromise = entitiesToEditorKeyword(
                     entitiesResponsPromise,
                     type,

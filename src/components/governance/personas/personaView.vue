@@ -126,9 +126,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed } from 'vue'
+    import { defineComponent, ref, watch } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
+    import { useRoute, useRouter } from 'vue-router'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -144,6 +145,8 @@
         selectedPersonaId,
         isPersonaLoading,
         isPersonaError,
+        isPersonaListReady,
+        personaList,
     } from './composables/usePersonaList'
     import { isEditing } from './composables/useEditPersona'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
@@ -164,6 +167,8 @@
             DetailPolicy,
         },
         setup() {
+            const router = useRouter()
+            const route = useRoute()
             const modalVisible = ref(false)
             const modalDetailPolicyVisible = ref(false)
             const selectedPolicy = ref({})
@@ -178,6 +183,28 @@
                 modalDetailPolicyVisible.value = true
             }
             const whitelistedConnectionIds = ref([])
+            watch(isPersonaListReady, () => {
+                if (personaList.value?.length) {
+                    if (route.params.id) {
+                        const find = personaList.value.find(
+                            (el) => el.id === route.params.id
+                        )
+                        if (find) {
+                            selectedPersonaId.value = route.params.id
+                        } else {
+                            selectedPersonaId.value =
+                                filteredPersonas.value[0].id!
+                        }
+                    } else {
+                        selectedPersonaId.value = filteredPersonas.value[0].id!
+                    }
+                }
+            })
+            watch(selectedPersonaId, () => {
+                router.replace(
+                    `/governance/personas/${selectedPersonaId.value}`
+                )
+            })
             watch(
                 roles,
                 () => {

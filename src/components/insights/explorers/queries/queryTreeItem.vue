@@ -504,9 +504,6 @@
                 // })
                 // watch([isLoading], () => {
                 //     if (isLoading.value == false && !error.value) {
-                //         useAddEvent('insights', 'folder', 'space_changed', {
-                //             finalSpace: 'public',
-                //         })
                 //         message.success({
                 //             content: `${item.value?.attributes?.name} was made public!`,
                 //         })
@@ -515,7 +512,6 @@
                 // })
             }
             const renameFolder = () => {
-                useAddEvent('insights', 'folder', 'renamed', undefined)
                 const orignalName = item.value.attributes.name
                 const parentNode = document.getElementsByClassName(
                     `${item.value.qualifiedName}`
@@ -587,6 +583,12 @@
                                                     : 'Folder'
                                             } renamed successfully`,
                                         })
+                                        useAddEvent(
+                                            'insights',
+                                            'folder',
+                                            'renamed',
+                                            undefined
+                                        )
                                     } else {
                                         item.value.attributes.name = orignalName
 
@@ -684,7 +686,6 @@
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
-                        useAddEvent('insights', 'folder', 'deleted', undefined)
                         showDeletePopover.value = false
 
                         inlineTabRemove(
@@ -704,6 +705,7 @@
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         })
+                        useAddEvent('insights', 'folder', 'deleted', undefined)
                         // refetchParentNode(
                         //     props.item.guid,
                         //     type === 'Query' ? 'query' : 'queryFolder',

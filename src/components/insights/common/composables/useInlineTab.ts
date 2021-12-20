@@ -3,6 +3,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useLocalStorageSync } from './useLocalStorageSync'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
 import { QueryCollection } from '~/types/insights/savedQuery.interface'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export function useInlineTab(
     treeSelectedKeys?: Ref<string[]>,
@@ -119,6 +120,7 @@ export function useInlineTab(
         console.log(activeInlineTabKey.value)
         // syncying inline tabarray in localstorage
         syncInlineTabsInLocalStorage(tabsArray.value)
+        useAddEvent('insights', 'tab', 'closed')
     }
 
     const modifyActiveInlineTab = (
@@ -204,6 +206,9 @@ export function useInlineTab(
     ) => {
         tabsArray.value.push(inlineTab)
         activeInlineTabKey.value = inlineTab.key
+        useAddEvent('insights', 'tab', 'opened', {
+            visual_query: !!inlineTab.playground.isVQB,
+        })
     }
     const isTwoInlineTabsEqual = (
         obj1: activeInlineTabInterface,
@@ -248,7 +253,6 @@ export function useInlineTab(
         // isVQB: boolean = false,
         localStorageSync: boolean = true
     ) => {
-        
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
@@ -274,6 +278,6 @@ export function useInlineTab(
         setActiveTabKey,
         overwriteInlineTab,
         changeInlineTabeKey,
-        setVQBInInlineTab
+        setVQBInInlineTab,
     }
 }

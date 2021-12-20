@@ -682,7 +682,18 @@
             }
             const splitName = (name) => {
                 const splited = name.split('/')
-                const sliced = splited.slice(2, splited.length)
+                if (splited && splited.length === 3) {
+                    // connection is selected
+                    const found = connectionStore.getList.find(
+                        (conn) => conn?.attributes?.qualifiedName === name
+                    )
+                    return (
+                        found?.attributes?.name ||
+                        found?.attributes?.qualifiedName ||
+                        ''
+                    )
+                }
+                const sliced = splited.slice(3, splited.length)
                 return sliced.join('/')
             }
             const canEdit = computed(() =>

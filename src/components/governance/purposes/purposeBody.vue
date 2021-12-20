@@ -420,6 +420,7 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+                    useAddEvent('governance', 'purpose', 'policy_deleted')
                 } catch (error) {
                     message.error({
                         content: 'Failed to delete policy',

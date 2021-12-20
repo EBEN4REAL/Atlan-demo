@@ -418,6 +418,7 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+                    useAddEvent('governance', 'persona', 'policy_deleted')
                 } catch (error) {
                     message.error({
                         content: 'Failed to delete policy',

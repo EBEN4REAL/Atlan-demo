@@ -10,7 +10,7 @@
             <a-input
                 id="name-input"
                 v-model:value="form.displayName"
-                placeholder="Name the metadata"
+                placeholder="Name"
                 class="p-0 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
             ></a-input>
             <a-textarea
@@ -38,6 +38,7 @@
     import { defineComponent, ref, watch } from 'vue'
     import { message } from 'ant-design-vue'
     import { Types } from '~/services/meta/types'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     // store
     import { useTypedefStore } from '~/store/typedef'
@@ -94,6 +95,9 @@
                     message.success('Metadata created')
                     emit('update:selected', serviceResponse[0].guid)
                 }
+                console.log('analytics props.isEdit', props.isEdit)
+                const eventName = props.isEdit ? 'updated' : 'created'
+                useAddEvent('governance', 'custom_metadata', eventName)
             }
 
             const handleUpdateBMResponse = (apiResponse: Ref) => {

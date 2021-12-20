@@ -258,14 +258,27 @@ const keyMap = {
             created: {
                 action: 'governance_custom_metadata_created',
             },
+            updated: {
+                action: 'governance_custom_metadata_updated',
+            },
             deleted: {
                 action: 'governance_custom_metadata_deleted',
             },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
+                properties: (props) => ({
+                    data_type: props.data_type,
+                    multi_value: !!props.multi_value,
+                    allow_filtering: !!props.allow_filtering,
+                }),
             },
             property_updated: {
                 action: 'governance_custom_metadata_property_updated',
+                properties: (props) => ({
+                    data_type: props.data_type,
+                    multi_value: !!props.multi_value,
+                    allow_filtering: !!props.allow_filtering,
+                }),
             },
             property_reordered: {
                 action: 'governance_custom_metadata_property_reordered',

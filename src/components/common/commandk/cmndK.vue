@@ -20,7 +20,7 @@
             </a-input>
         </div>
 
-        <div v-if="assetTypeAggregationList.length" class="w-full px-2">
+        <div v-if="assetTypeAggregationList.length" class="w-full px-3">
             <AggregationTabs
                 v-model="postFacets.typeName"
                 class="mt-3"
@@ -62,7 +62,7 @@
                         <AssetItem
                             :item="item"
                             :itemIndex="index"
-                            class="cmd-k-asset-card"
+                            class="px-2 cmd-k-asset-card"
                         />
                     </div>
                     <!-- <div

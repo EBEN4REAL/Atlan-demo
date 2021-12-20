@@ -96,7 +96,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localCategories = ref(categories(selectedAsset.value))
 
     const localResource = ref({
-        link: '',
+        link: 'https://',
         title: '',
     })
     const localReadmeContent = ref(readmeContent(selectedAsset.value))

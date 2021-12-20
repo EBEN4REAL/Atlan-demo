@@ -40,11 +40,14 @@
         <div class="px-4 pt-0 pb-4">
             <span class="font-bold">Link</span>
             <a-input
+                id="linkURL"
                 ref="titleBar"
                 v-model:value="linkURL"
+                type="url"
                 placeholder="Paste resource link"
                 class="text-lg font-bold text-gray-700"
                 allow-clear
+                @change="handleUrlChange"
             />
             <div v-if="linkURL" class="mt-3">
                 <span class="font-bold">Title</span>
@@ -136,7 +139,7 @@
         setup(props) {
             const visible = ref<boolean>(false)
             const imageNotFound = ref(false)
-
+            const isValidUrl = ref(false)
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
             const { asset, editPermission, updating, item } = toRefs(props)
@@ -146,7 +149,7 @@
             const { handleAddResource, localResource, handleUpdateResource } =
                 updateAssetAttributes(asset)
 
-            const linkURL = ref(updating.value ? link(item.value) : '')
+            const linkURL = ref(updating.value ? link(item.value) : 'https://')
             const faviconLink = ref(
                 updating.value
                     ? `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
@@ -166,12 +169,12 @@
 
             function handleCancel() {
                 visible.value = false
-                linkURL.value = updating.value ? link(item.value) : ''
+                linkURL.value = updating.value ? link(item.value) : 'https://'
                 linkTitle.value = updating.value ? title(item.value) : ''
             }
 
             const buttonDisabled = computed(
-                () => !linkURL.value || !isValidHttpUrl(linkURL.value)
+                () => !linkURL.value || !isValidUrl.value
             )
 
             function onImageError() {
@@ -191,7 +194,7 @@
                     handleAddResource()
                 }
                 visible.value = false
-                linkURL.value = ''
+                linkURL.value = 'https://'
                 linkTitle.value = ''
             }
 
@@ -203,28 +206,23 @@
                 // popOverVisible.value = false
             }
 
-            function isValidHttpUrl(string) {
-                let url
-
-                try {
-                    url = new URL(string)
-                } catch (_) {
-                    return false
+            const handleUrlChange = (e) => {
+                if (e.target.checkValidity()) {
+                    isValidUrl.value = true
+                } else {
+                    isValidUrl.value = false
                 }
-
-                return url.protocol === 'http:' || url.protocol === 'https:'
             }
 
             watch(linkURL, () => {
-                if (isValidHttpUrl(linkURL.value)) {
-                    console.log('fetching icon')
+                if (isValidUrl.value) {
                     imageNotFound.value = false
                     faviconLink.value = `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
                 }
             })
 
             watch(item, () => {
-                linkURL.value = updating.value ? link(item.value) : ''
+                linkURL.value = updating.value ? link(item.value) : 'https://'
                 linkTitle.value = updating.value ? title(item.value) : ''
             })
 
@@ -243,6 +241,7 @@
                 onImageLoad,
                 emojiIndex,
                 handleEmojiSelect,
+                handleUrlChange,
             }
         },
     })

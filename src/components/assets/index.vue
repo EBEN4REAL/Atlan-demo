@@ -30,6 +30,7 @@
                         :class="page !== 'admin' ? 'px-6' : ''"
                         :placeholder="placeholder"
                         @change="handleSearchChange"
+                        ref="searchBox"
                     >
                         <template #filter>
                             <a-popover
@@ -75,6 +76,7 @@
                         class="mt-3"
                         :list="assetTypeAggregationList"
                         @change="handleAssetTypeChange"
+                        :shortcutEnabled="true"
                     >
                     </AggregationTabs>
                 </div>
@@ -114,38 +116,48 @@
                 <!--                             :show-check-box="
                                 preference?.display?.includes('enableCheckbox')
                             " -->
-                <AssetList
+                <ListNavigator
                     v-else
-                    ref="assetlistRef"
                     :list="list"
-                    :selectedAsset="selectedAsset"
-                    :isLoadMore="isLoadMore"
-                    :isLoading="isValidating"
-                    @loadMore="handleLoadMore"
+                    @change="onKeyboardNavigate"
+                    :startIndex="selectedAssetIndex"
+                    :blocked="isCmndKVisible"
+                    :htmlIdGetter="getAssetId"
                 >
-                    <template v-slot:default="{ item, itemIndex }">
-                        <AssetItem
-                            :item="item"
-                            :itemIndex="itemIndex"
-                            :selectedGuid="selectedAsset.guid"
-                            @preview="handleClickAssetItem"
-                            @updateDrawer="updateCurrentList"
-                            :preference="preference"
-                            :show-check-box="showCheckBox"
-                            :bulk-select-mode="
-                                bulkSelectedAssets && bulkSelectedAssets.length
-                                    ? true
-                                    : false
-                            "
-                            :enableSidebarDrawer="enableSidebarDrawer"
-                            :is-checked="checkSelectedCriteriaFxn(item)"
-                            @listItem:check="
-                                (e, item) => updateBulkSelectedAssets(item)
-                            "
-                            :class="page !== 'admin' ? 'mx-3' : ''"
-                        ></AssetItem>
-                    </template>
-                </AssetList>
+                    <AssetList
+                        ref="assetlistRef"
+                        :list="list"
+                        :selectedAsset="selectedAsset"
+                        :isLoadMore="isLoadMore"
+                        :isLoading="isValidating"
+                        @loadMore="handleLoadMore"
+                    >
+                        <template v-slot:default="{ item, itemIndex }">
+                            <AssetItem
+                                :item="item"
+                                :itemIndex="itemIndex"
+                                :selectedGuid="selectedAsset.guid"
+                                @preview="handleClickAssetItem"
+                                @updateDrawer="updateCurrentList"
+                                :preference="preference"
+                                :show-check-box="showCheckBox"
+                                :bulk-select-mode="
+                                    bulkSelectedAssets &&
+                                    bulkSelectedAssets.length
+                                        ? true
+                                        : false
+                                "
+                                :enableSidebarDrawer="enableSidebarDrawer"
+                                :is-checked="checkSelectedCriteriaFxn(item)"
+                                @listItem:check="
+                                    (e, item) => updateBulkSelectedAssets(item)
+                                "
+                                :class="page !== 'admin' ? 'mx-3' : ''"
+                                :id="getAssetId(item)"
+                            ></AssetItem>
+                        </template>
+                    </AssetList>
+                </ListNavigator>
             </div>
         </div>
     </div>
@@ -162,12 +174,13 @@
         computed,
         inject,
         watch,
+        ComputedRef,
     } from 'vue'
-
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
+    import ListNavigator from '@common/keyboardShortcuts/listNavigator.vue'
 
-    import { useDebounceFn } from '@vueuse/core'
+    import { useDebounceFn, whenever, useMagicKeys } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
@@ -203,6 +216,7 @@
             ErrorView,
             AtlanIcon,
             AssetItem,
+            ListNavigator,
         },
         props: {
             showFilters: {
@@ -287,6 +301,8 @@
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const searchBox: Ref<null | HTMLInputElement> = ref(null)
+
             const { initialFilters, page, projection } = toRefs(props)
             const discoveryStore = useAssetStore()
 
@@ -337,6 +353,7 @@
                 selectedAsset,
                 quickChange,
                 updateList,
+                rotateAggregateTab,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -351,7 +368,19 @@
                 relationAttributes,
             })
 
+            const selectedAssetIndex = computed(() => {
+                // return 0
+                if (selectedAsset.value?.guid) {
+                    return list.value.findIndex(
+                        (asset) => asset.guid === selectedAsset.value?.guid
+                    )
+                }
+                return -1
+            })
+
             const handlePreview = inject('preview')
+            const isCmndKVisible: ComputedRef<boolean | undefined> =
+                inject('isCmndKVisible')
 
             const updateCurrentList = (asset) => {
                 updateList(asset)
@@ -392,6 +421,7 @@
             }
 
             const handleAssetTypeChange = (tabName) => {
+                console.log('handleAssetTypeChange called', tabName)
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActivePostFacet(postFacets.value)
@@ -428,6 +458,16 @@
                 discoveryStore.setActivePanel(activeKey.value)
             }
 
+            const onKeyboardNavigate = (index, asset) => {
+                handleClickAssetItem(asset, index)
+                console.log('onKeyboardNavigate', {
+                    index,
+                    asset: asset.attributes.name,
+                    selectedAssetIndex: selectedAssetIndex.value,
+                    selectedAsset: selectedAsset.value?.attributes?.name,
+                })
+            }
+
             const placeholder = computed(() => {
                 const found = assetTypeAggregationList.value.find(
                     (item) => item.id === postFacets.value.typeName
@@ -438,6 +478,37 @@
                     return `Search ${found.label.toLowerCase()} assets`
                 }
                 return 'Search all assets'
+            })
+
+            const getAssetId = (item) => {
+                return item.guid
+            }
+
+            const keys = useMagicKeys()
+            const { tab, shift_tab } = keys
+
+            const handleFocusOnInput = () => {
+                console.log('handleFocusOnInput', searchBox.value)
+                // sear.value?.focus()
+                searchBox?.value?.focusInput()
+            }
+
+            whenever(tab, () => {
+                if (shift_tab.value || isCmndKVisible.value) {
+                    // don't run if cmd k is on
+                    return
+                }
+                rotateAggregateTab(1, handleFocusOnInput)
+                console.log('go next aggregate', isCmndKVisible.value)
+            })
+
+            whenever(shift_tab, () => {
+                if (isCmndKVisible.value) {
+                    // don't run if cmd k is on
+                    return
+                }
+                console.log('go previous aggregate', isCmndKVisible.value)
+                rotateAggregateTab(-1, handleFocusOnInput)
             })
 
             /* BULK SELECTION */
@@ -551,6 +622,11 @@
                 updateBulkSelectedAssets,
                 bulkSelectedAssets,
                 handleClickAssetItem,
+                searchBox,
+                onKeyboardNavigate,
+                selectedAssetIndex,
+                isCmndKVisible,
+                getAssetId,
             }
         },
     })

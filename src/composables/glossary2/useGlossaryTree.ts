@@ -496,6 +496,19 @@ const useGlossaryTree = ({
                 if (action === 'delete') {
                     node?.children?.forEach((element) => {
                         if (
+                            (asset?.typeName === 'AtlasGlossaryCategory' ||
+                                asset?.value?.typeName ===
+                                    'AtlasGlossaryCategory') &&
+                            (element?.guid === asset?.guid ||
+                                element?.guid === asset?.value?.guid)
+                        ) {
+                            if (element?.children?.length)
+                                element?.children?.forEach((el) => {
+                                    if (el?.typeName !== 'cta')
+                                        updatedChildren.push(el)
+                                })
+                        }
+                        if (
                             element?.typeName !== 'cta' &&
                             element?.guid !== asset?.guid &&
                             element?.guid !== asset?.value?.guid

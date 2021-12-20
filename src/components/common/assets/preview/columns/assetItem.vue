@@ -31,7 +31,7 @@
                         <a-tooltip placement="right"
                             ><template #title>Limited Access</template>
                             <AtlanIcon
-                                v-if="selectedAssetUpdatePermission(item)"
+                                v-if="isScrubbed(item)"
                                 icon="Lock"
                                 class="h-3.5 ml-1 mb-0.5"
                             ></AtlanIcon
@@ -96,10 +96,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed, watch } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        watch,
+        defineAsyncComponent,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
-    import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import Description from '@/common/input/description/index.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -111,10 +117,12 @@
         name: 'ColumnListItem',
         components: {
             CertificateBadge,
-            AssetDrawer,
             Description,
             ClassificationPill,
             PopoverClassification,
+            AssetDrawer: defineAsyncComponent(
+                () => import('@/common/assets/preview/drawer.vue')
+            ),
         },
         props: {
             item: {
@@ -146,6 +154,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 selectedAssetUpdatePermission,
+                isScrubbed,
             } = useAssetInfo()
 
             const { item } = toRefs(props)
@@ -217,6 +226,7 @@
                 descriptionRef,
                 isPropagated,
                 selectedAssetUpdatePermission,
+                isScrubbed,
                 list,
             }
         },

@@ -56,11 +56,11 @@
                 v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 342 }"
+                :scroll="{ y: 342, x: true }"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                class="self-start column-table"
+                class="self-start overflow-hidden column-table"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">

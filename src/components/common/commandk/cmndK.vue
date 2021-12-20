@@ -20,12 +20,13 @@
             </a-input>
         </div>
 
-        <div v-if="assetTypeAggregationList.length" class="w-full px-2">
+        <div v-if="assetTypeAggregationList.length" class="w-full px-3">
             <AggregationTabs
                 v-model="postFacets.typeName"
                 class="mt-3"
                 :list="assetTypeAggregationList"
                 @change="handleAssetTypeChange"
+                :shortcutEnabled="true"
             >
             </AggregationTabs>
         </div>
@@ -43,33 +44,46 @@
             </div>
             <div
                 v-else-if="!list.length && !queryText.length"
-                class="flex flex-col px-4 mb-6"
+                class="flex items-center justify-around px-4 mb-6 h-80"
             >
-                <!-- <span class="mb-2 text-xs text-gray-500">Recently Viewed</span> -->
-                <span class="text-xs text-gray-500 mb-"
-                    >You haven’t searched for anything just yet ...</span
-                >
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-10 animate-spin"
+                ></AtlanIcon>
             </div>
             <div
-                :id="`${item.guid}-asset`"
-                v-for="item in list"
+                v-for="(item, index) in list"
                 v-else
+                :id="`${item.guid}-asset`"
                 :key="item?.guid"
                 :class="{ 'bg-blue-50': item?.guid === activeAsset?.guid }"
             >
-                <div
-                    v-if="
-                        [
-                            'AtlasGlossary',
-                            'AtlasGlossaryTerm',
-                            'AtlasGlossaryCategory',
-                        ].includes(item?.typeName)
-                    "
-                    @click="$emit('closeModal')"
-                >
-                    <GtcCard :item="item" class="px-5" />
-                </div>
-                <AssetCard v-else :item="item" Modal="$emit('closeModal')" />
+                <router-link :to="getProfilePath(item)">
+                    <div @click="$emit('closeModal')">
+                        <AssetItem
+                            :item="item"
+                            :itemIndex="index"
+                            class="px-2 cmd-k-asset-card"
+                        />
+                    </div>
+                    <!-- <div
+                        v-if="
+                            [
+                                'AtlasGlossary',
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ].includes(item?.typeName)
+                        "
+                        @click="$emit('closeModal')"
+                    >
+                        <GtcCard :item="item" class="px-5" />
+                    </div>
+                    <AssetCard
+                        v-else
+                        :item="item"
+                        Modal="$emit('closeModal')"
+                    /> -->
+                </router-link>
             </div>
         </div>
     </div>
@@ -104,10 +118,12 @@
     // import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import AssetItem from '@/common/assets/list/assetItem.vue'
 
     export default defineComponent({
         name: 'CommandK',
-        components: { AssetCard, GtcCard, AggregationTabs },
+        components: { AssetCard, GtcCard, AggregationTabs, AssetItem },
         props: {
             isCmndKVisible: {
                 type: Boolean,
@@ -136,6 +152,8 @@
                 typeName: '__all',
             })
             const router = useRouter()
+
+            const { getProfilePath } = useAssetInfo()
 
             const defaultAttributes = ref([
                 'anchor',
@@ -182,19 +200,23 @@
             ])
 
             const assetCategoryFilter = ref([])
-            const { list, assetTypeAggregationList, quickChange } =
-                useDiscoverList({
-                    isCache: true,
-                    dependentKey,
-                    queryText,
-                    facets,
-                    postFacets,
-                    aggregations,
-                    limit,
-                    offset,
-                    attributes: defaultAttributes,
-                    relationAttributes,
-                })
+            const {
+                list,
+                assetTypeAggregationList,
+                quickChange,
+                rotateAggregateTab,
+            } = useDiscoverList({
+                isCache: true,
+                dependentKey,
+                queryText,
+                facets,
+                postFacets,
+                aggregations,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
             const placeholder = computed(() => {
                 const found = assetTypeAggregationList.value.find(
                     (item) => item.id === postFacets.value.typeName
@@ -255,37 +277,6 @@
                 { deep: true }
             )
 
-            const rotateAggregateTab = (increment) => {
-                const currentTab = postFacets.value.typeName
-                const currentIndex = assetTypeAggregationList.value.findIndex(
-                    (tab) => tab.id === currentTab
-                )
-                if (currentIndex === -1) {
-                    return
-                }
-                if (currentIndex + increment < 0) {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[
-                            assetTypeAggregationList.value.length - 1
-                        ].id
-                } else if (
-                    currentIndex + increment >=
-                    assetTypeAggregationList.value.length
-                ) {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[0].id
-                } else {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[
-                            currentIndex + increment
-                        ].id
-                }
-                setTimeout(() => {
-                    handleFocusOnInput()
-                })
-                console.log('currentIndex', currentIndex)
-            }
-
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
 
@@ -293,13 +284,13 @@
                 if (shift_tab.value) {
                     return
                 }
-                rotateAggregateTab(1)
+                rotateAggregateTab(1, handleFocusOnInput)
                 console.log('go next aggregate', assetTypeAggregationList.value)
             })
 
             whenever(shift_tab, () => {
                 console.log('go previous aggregate')
-                rotateAggregateTab(-1)
+                rotateAggregateTab(-1, handleFocusOnInput)
             })
 
             const handleAssetTypeChange = () => {
@@ -352,6 +343,7 @@
                 postFacets,
                 activeAsset,
                 placeholder,
+                getProfilePath,
             }
         },
     })
@@ -396,6 +388,11 @@
         }
         .ant-input:focus {
             border: none !important;
+        }
+    }
+    .cmd-k-asset-card {
+        &.my-1 {
+            margin: 0px !important;
         }
     }
 </style>

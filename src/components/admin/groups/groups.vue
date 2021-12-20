@@ -72,7 +72,7 @@
             <a-table
                 id="groupList"
                 class="overflow-hidden border rounded-lg users-groups-table"
-                :scroll="{ y: 'calc(100vh - 20rem)' }"
+                :scroll="{ y: 'calc(100vh - 20rem)', x: true }"
                 :pagination="false"
                 :data-source="groupList"
                 :columns="columns"

@@ -71,11 +71,10 @@ TR
                     <p
                         class="my-2 mb-0 mb-6 text-base text-gray-700 max-width-text"
                     >
-                        Your {{ savedQueryType?.displayName }} queries will
-                        appear here
+                        Your collection queries will appear here
                     </p>
                 </div>
-                <div>
+                <div v-if="hasWritePermission">
                     <a-button
                         @click="toggleCreateQueryModal"
                         class="flex items-center w-48 text-sm text-gray-700 border rounded hover:text-primary h-9"
@@ -135,6 +134,7 @@ TR
         ComputedRef,
         ref,
         watch,
+        computed,
     } from 'vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
@@ -241,6 +241,22 @@ TR
                 'activeInlineTabKey'
             ) as Ref<string>
 
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            ) as ComputedRef
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            ) as ComputedRef
+
+            const hasWritePermission = computed(
+                () =>
+                    hasCollectionWritePermission.value ||
+                    isCollectionCreatedByCurrentUser.value
+            )
+
             const { openSavedQueryInNewTab } = useSavedQuery(
                 inlineTabs,
                 activeInlineTab,
@@ -278,6 +294,10 @@ TR
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
                 connector,
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                hasWritePermission,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

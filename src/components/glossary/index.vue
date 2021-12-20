@@ -76,7 +76,7 @@
         </div>
         <div
             v-if="!queryText"
-            class="flex flex-col items-stretch flex-1 h-full mt-2"
+            class="flex flex-col items-stretch flex-1 h-full mt-2 glossaryTreeWrapper"
         >
             <GlossaryTree
                 ref="glossaryTree"
@@ -286,6 +286,7 @@
             // Virtual List Height
             const glossaryBox = ref()
             const height = computed(() => {
+                if(props.checkable) return glossaryTree?.value?.clientHeight
                 if (glossaryBox.value) {
                     return glossaryBox.value.clientHeight - 150
                 }
@@ -503,7 +504,11 @@
         min-width: 200px;
     }
     .checkableTree {
-        max-height: 364px;
+        :global(.glossaryTreeWrapper) {
+            @apply overflow-y-auto;
+            max-height: 300px;
+        }
+    
         :global(.ant-tree-checkbox) {
             @apply my-auto mr-1 mt-2;
             position: absolute;

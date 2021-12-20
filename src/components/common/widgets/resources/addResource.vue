@@ -2,7 +2,12 @@
     <div @click="showModal">
         <slot name="trigger" @click="showModal" />
     </div>
-    <a-modal :closable="false" :visible="visible" :class="$style.input">
+    <a-modal
+        :closable="false"
+        :visible="visible"
+        :class="$style.input"
+        :destroy-on-close="true"
+    >
         <template #title>
             <div class="flex items-center text-gray-500 flex-nowrap">
                 <span class="overflow-hidden text-sm overflow-ellipsis">{{
@@ -161,8 +166,8 @@
 
             function handleCancel() {
                 visible.value = false
-                linkURL.value = ''
-                linkTitle.value = ''
+                linkURL.value = updating.value ? link(item.value) : ''
+                linkTitle.value = updating.value ? title(item.value) : ''
             }
 
             const buttonDisabled = computed(
@@ -216,6 +221,11 @@
                     imageNotFound.value = false
                     faviconLink.value = `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
                 }
+            })
+
+            watch(item, () => {
+                linkURL.value = updating.value ? link(item.value) : ''
+                linkTitle.value = updating.value ? title(item.value) : ''
             })
 
             return {

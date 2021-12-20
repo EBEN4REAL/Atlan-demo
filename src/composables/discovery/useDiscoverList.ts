@@ -160,6 +160,36 @@ export function useDiscoverList({
         getAggregationList(assetTypeAggregationName, assetTypeList, false)
     )
 
+    const rotateAggregateTab = (increment, handleFocusOnInput) => {
+        const currentTab = postFacets?.value.typeName
+        const currentIndex = assetTypeAggregationList.value.findIndex(
+            (tab) => tab.id === currentTab
+        )
+        console.log('rotateAggregateTab currentIndex', currentIndex)
+        if (currentIndex === -1) {
+            return
+        }
+        if (currentIndex + increment < 0) {
+            postFacets.value.typeName =
+                assetTypeAggregationList.value[
+                    assetTypeAggregationList.value.length - 1
+                ].id
+        } else if (
+            currentIndex + increment >=
+            assetTypeAggregationList.value.length
+        ) {
+            postFacets.value.typeName = assetTypeAggregationList.value[0].id
+        } else {
+            postFacets.value.typeName =
+                assetTypeAggregationList.value[currentIndex + increment].id
+        }
+        setTimeout(() => {
+            if (handleFocusOnInput) {
+                handleFocusOnInput()
+            }
+        })
+    }
+
     const glossaryStore = useGlossaryStore()
     const glossaryAggreationList = computed(() =>
         getAggregationList(glossaryAggregationName, glossaryStore.list, false)
@@ -244,5 +274,6 @@ export function useDiscoverList({
         selectedGlossary,
         error,
         updateList,
+        rotateAggregateTab,
     }
 }

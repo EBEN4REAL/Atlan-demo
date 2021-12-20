@@ -341,6 +341,20 @@
                 activeInlineTab
             )
 
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryReadPermission = inject(
+                'hasQueryReadPermission'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            // toRaw(editorInstance.value).updateOptions({
+            //     readOnly: hasQueryWritePermission ? false : true,
+            // })
+
             const queryFolderNamespace = inject<Ref<Folder>>(
                 'queryFolderNamespace',
                 ref({}) as Ref<Folder>
@@ -593,11 +607,38 @@
             /*-------------------------------------*/
 
             watch(editorInstance, () => {
+                // console.log('editorInstance: ', toRaw(editorInstance.value))
                 if (toRaw(editorInstance.value)) {
                     const pos = toRaw(editorInstance.value).getPosition()
                     editorPos.value.column = pos.column
                     editorPos.value.lineNumber = pos.lineNumber
                     console.log(pos)
+                }
+            })
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
+            //editor readonly state
+            watch([activeInlineTab, editorInstance, readOnly], () => {
+                // console.log('change tab permission: ', {
+                //     isQueryCreatedByCurrentUser:
+                //         isQueryCreatedByCurrentUser.value,
+                //     hasQueryWritePermission: hasQueryWritePermission.value,
+                //     hasQueryReadPermission: hasQueryReadPermission.value,
+                // })
+                // console.log('change tab: ', readOnly.value)
+                if (toRaw(editorInstance.value)) {
+                    toRaw(editorInstance.value).updateOptions({
+                        readOnly: readOnly.value,
+                    })
                 }
             })
 

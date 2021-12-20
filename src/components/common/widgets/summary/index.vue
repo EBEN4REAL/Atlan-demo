@@ -8,7 +8,10 @@
         </div>
         <div class="flex flex-col gap-y-10">
             <div class="flex flex-col gap-y-3">
-                <div class="flex gap-x-16">
+                <div
+                    v-if="getSummaryVariants(asset)?.components?.length"
+                    class="flex gap-x-16"
+                >
                     <div
                         v-for="(component, index) in getSummaryVariants(asset)
                             ?.components"

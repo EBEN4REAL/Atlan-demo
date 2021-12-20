@@ -182,19 +182,23 @@
             ])
 
             const assetCategoryFilter = ref([])
-            const { list, assetTypeAggregationList, quickChange } =
-                useDiscoverList({
-                    isCache: true,
-                    dependentKey,
-                    queryText,
-                    facets,
-                    postFacets,
-                    aggregations,
-                    limit,
-                    offset,
-                    attributes: defaultAttributes,
-                    relationAttributes,
-                })
+            const {
+                list,
+                assetTypeAggregationList,
+                quickChange,
+                rotateAggregateTab,
+            } = useDiscoverList({
+                isCache: true,
+                dependentKey,
+                queryText,
+                facets,
+                postFacets,
+                aggregations,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+            })
             const placeholder = computed(() => {
                 const found = assetTypeAggregationList.value.find(
                     (item) => item.id === postFacets.value.typeName
@@ -255,37 +259,6 @@
                 { deep: true }
             )
 
-            const rotateAggregateTab = (increment) => {
-                const currentTab = postFacets.value.typeName
-                const currentIndex = assetTypeAggregationList.value.findIndex(
-                    (tab) => tab.id === currentTab
-                )
-                if (currentIndex === -1) {
-                    return
-                }
-                if (currentIndex + increment < 0) {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[
-                            assetTypeAggregationList.value.length - 1
-                        ].id
-                } else if (
-                    currentIndex + increment >=
-                    assetTypeAggregationList.value.length
-                ) {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[0].id
-                } else {
-                    postFacets.value.typeName =
-                        assetTypeAggregationList.value[
-                            currentIndex + increment
-                        ].id
-                }
-                setTimeout(() => {
-                    handleFocusOnInput()
-                })
-                console.log('currentIndex', currentIndex)
-            }
-
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
 
@@ -293,13 +266,13 @@
                 if (shift_tab.value) {
                     return
                 }
-                rotateAggregateTab(1)
+                rotateAggregateTab(1, handleFocusOnInput)
                 console.log('go next aggregate', assetTypeAggregationList.value)
             })
 
             whenever(shift_tab, () => {
                 console.log('go previous aggregate')
-                rotateAggregateTab(-1)
+                rotateAggregateTab(-1, handleFocusOnInput)
             })
 
             const handleAssetTypeChange = () => {

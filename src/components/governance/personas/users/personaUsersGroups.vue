@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 bg-white rounded">
+    <div class="p-4 bg-white rounded user-group-wrapper">
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center">
                 <div class="px-2 py-1 rounded bg-primary-light text-primary">
@@ -433,7 +433,7 @@
             <EmptyView
                 v-else-if="!filteredList.length"
                 empty-screen="NoResultIllustration"
-                desc="sorry, we couldn’t find the user you were looking for"
+                desc="Sorry, we couldn’t find the user you were looking for"
             >
             </EmptyView>
         </div>
@@ -803,5 +803,8 @@
     }
     .loading-view {
         min-height: 10rem;
+    }
+    .user-group-wrapper {
+        min-height: 20rem;
     }
 </style>

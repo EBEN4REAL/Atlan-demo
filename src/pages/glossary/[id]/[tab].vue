@@ -50,6 +50,7 @@
                 guid: id.value,
             })
             if (selectedAsset.value?.guid === id.value) {
+                console.log(selectedAsset.value)
                 localSelected.value = selectedAsset.value
                 handlePreview(localSelected.value)
             }
@@ -82,7 +83,6 @@
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
-
                     handlePreview(list.value[0])
                 }
             })
@@ -91,6 +91,7 @@
                     dependentKey.value = fetchKey.value
                     facets.value.guid = id.value
                     quickChange()
+                    console.log('called')
                 }
             })
             watch(selectedAsset, () => {

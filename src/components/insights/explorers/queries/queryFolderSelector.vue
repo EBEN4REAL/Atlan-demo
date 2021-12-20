@@ -13,15 +13,15 @@
         >
             <AtlanIcon icon="FolderClosed"></AtlanIcon>
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
-                {{ selectedFolder ? selectedFolder : 'Folder' }}
+                {{ selectedFolder ? selectedFolder : 'Collection' }}
             </span>
         </AtlanBtn>
 
         <template #overlay>
-            <div class="popover-container">
+            <div class="popover-container" @mouseleave="closeDropdown">
                 <div
                     class="h-full pt-0 pb-4 mx-4 overflow-y-hidden w-9/11"
-                    @mouseleave="closeDropdown"
+                    v-if="queryCollections?.length"
                 >
                     <div class="flex w-full mt-4">
                         <AtlanIcon
@@ -66,7 +66,7 @@
                                 :loaded-keys="loadedKeys"
                                 :selected-keys="selectedKeys"
                                 :expanded-keys="expandedKeys"
-                                v-if="treeData.length"
+                                v-if="newTreeData.length"
                                 :selectedNewFolder="selectedFolderContext"
                             />
                             <div
@@ -83,9 +83,26 @@
                         </div>
                     </div>
                 </div>
+                <div
+                    class="h-full pt-0 pb-4 mx-5 overflow-y-hidden w-9/11"
+                    v-else
+                >
+                    <EmptyView
+                        empty-screen="EmptyCollections"
+                        headline="Collections"
+                        desc="Organise queries relevant for your project or team into collections and  share it with others. "
+                        button-text="Create Collection"
+                        @event="toggleCollectionModal"
+                    />
+                </div>
             </div>
         </template>
     </a-dropdown>
+    <CreateCollectionModal
+        v-if="showCollectionModal"
+        v-model:showCollectionModal="showCollectionModal"
+        :is-create="true"
+    />
 </template>
 
 <script lang="ts">
@@ -112,6 +129,8 @@
     import { useRouter, useRoute } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
+    import EmptyView from '@common/empty/index.vue'
+    import CreateCollectionModal from '~/components/insights/explorers/queries/collection/createCollectionModal.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import {
         Folder,
@@ -124,6 +143,8 @@
         components: {
             QueryTreeList,
             AtlanBtn,
+            CreateCollectionModal,
+            EmptyView,
         },
         props: {
             parentFolder: {
@@ -325,6 +346,14 @@
                 collection: selectedCollection,
             })
 
+            const newTreeData = computed(() => {
+                let data = treeData?.value?.filter(
+                    (el) => el.typeName !== 'Query'
+                )
+                // console.log('new tree: ', data)
+                return data
+            })
+
             const folderOpened = ref(true)
             const toggleFolder = () => {
                 folderOpened.value = !folderOpened.value
@@ -334,6 +363,13 @@
                     onSelect('root', 'root')
                 }
             })
+
+            const showCollectionModal = ref(false)
+            const toggleCollectionModal = () => {
+                closeDropdown()
+                showCollectionModal.value = !showCollectionModal.value
+            }
+
             return {
                 onSelect,
                 selectedFolder,
@@ -360,6 +396,10 @@
                 selectedFolderContext,
                 queryFolderNamespace,
                 selectedCollection,
+                newTreeData,
+                queryCollections,
+                showCollectionModal,
+                toggleCollectionModal,
             }
         },
     })

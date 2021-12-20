@@ -3,21 +3,21 @@
         <!-- <div @click="popUpClose()"></div> -->
         <div class="mb-6">
             <!-- <div > -->
-                <p class="mb-2 text-base font-bold text-gray-700">
-                    You have unsaved changes
-                    <a-button
-                        type="text"
-                        class="float-right w-1 h-auto bg-transparent"
-                        @click="popUpClose"
-                        ><AtlanIcon
-                            icon="Cancel"
-                            class="h-3 text-gray-400"
-                        ></AtlanIcon
-                    ></a-button>
-                </p>
-                
+            <p class="mb-2 text-base font-bold text-gray-700">
+                You have unsaved changes
+                <a-button
+                    type="text"
+                    class="float-right w-1 h-auto bg-transparent"
+                    @click="popUpClose"
+                    ><AtlanIcon
+                        icon="Cancel"
+                        class="h-3 text-gray-400"
+                    ></AtlanIcon
+                ></a-button>
+            </p>
+
             <!-- </div> -->
-            
+
             <p class="mb-0 text-black">
                 Do you want to save your changes before closing the tab?
             </p>
@@ -37,6 +37,7 @@
                 type="primary"
                 :loading="isSaving"
                 @click="save"
+                v-auth="[map.CREATE_COLLECTION]"
                 >Save</a-button
             >
         </div>
@@ -46,6 +47,7 @@
 <script lang="ts">
     import { defineComponent, Ref, inject, PropType, toRefs } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {},
@@ -76,7 +78,7 @@
             }
 
             const popUpClose = () => {
-                emit('closePopup');
+                emit('closePopup')
             }
             return {
                 isSaving,
@@ -85,6 +87,7 @@
                 unsavedPopover,
                 popUpClose,
                 activeInlineTab,
+                map,
             }
         },
     })

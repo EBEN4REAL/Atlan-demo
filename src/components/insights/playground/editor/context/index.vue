@@ -20,12 +20,7 @@
             >
                 Read Only
             </span>
-            <span
-                v-if="!userHasPermission"
-                class="px-1 py-0.5 bg-primary-light text-xs text-gray-500 border rounded border-gray-300 mx-2"
-            >
-                Guest user
-            </span>
+
             <span v-else>
                 <AtlanBtn
                     size="sm"
@@ -401,9 +396,7 @@
             ) as ComputedRef
 
             const readOnly = computed(() =>
-                !userHasPermission.value
-                    ? true
-                    : activeInlineTab?.value?.qualifiedName?.length === 0
+                activeInlineTab?.value?.qualifiedName?.length === 0
                     ? false
                     : isQueryCreatedByCurrentUser.value
                     ? false

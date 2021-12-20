@@ -1,9 +1,10 @@
 <template>
     <div class="flex flex-col p-6 gap-y-4">
-        <BulkUploadProgress
+        <!-- hidden for GA -->
+        <!-- <BulkUploadProgress
             v-if="selectedAsset?.typeName === 'AtlasGlossary'"
             :entity="selectedAsset"
-        />
+        /> -->
         <AnnouncementWidget
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>

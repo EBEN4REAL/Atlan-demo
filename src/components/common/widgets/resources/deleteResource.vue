@@ -20,10 +20,7 @@
 
         <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
             <a-button @click="handleCancel">Cancel</a-button>
-            <a-button
-                type="danger"
-                :loading="isLoading"
-                @click="handleResourceDelete(item)"
+            <a-button type="danger" :loading="isLoading" @click="handleDelete"
                 >Delete</a-button
             >
         </div>
@@ -54,7 +51,7 @@
             },
         },
         setup(props) {
-            const { asset, editPermission } = toRefs(props)
+            const { asset, editPermission, item } = toRefs(props)
             const { title } = useAssetInfo()
 
             const visible = ref<boolean>(false)
@@ -63,6 +60,11 @@
                 updateAssetAttributes(asset)
 
             const handleCancel = () => {
+                visible.value = false
+            }
+
+            const handleDelete = () => {
+                handleResourceDelete(item.value)
                 visible.value = false
             }
 
@@ -79,6 +81,7 @@
                 isLoading,
                 handleCancel,
                 visible,
+                handleDelete,
             }
         },
     })

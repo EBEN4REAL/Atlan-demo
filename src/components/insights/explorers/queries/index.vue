@@ -644,12 +644,6 @@
                             )
                             watch(data, async (newData) => {
                                 if (newData) {
-                                    useAddEvent(
-                                        'insights',
-                                        'folder',
-                                        'created',
-                                        newFolderName.value
-                                    )
                                     newFolderName.value = ''
                                     setTimeout(async () => {
                                         await refetchNode(

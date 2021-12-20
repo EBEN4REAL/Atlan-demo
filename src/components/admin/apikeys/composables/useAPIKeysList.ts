@@ -20,8 +20,9 @@ const getAPIKeyValidity = (apikey) => {
         apikey?.attributes?.createdAt &&
         apikey.attributes['accessTokenLifespan']
     ) {
+        // createdAt is unix timestamp in ms
         const validityUnixEpoch =
-            dayjs(apikey?.attributes?.createdAt).unix() +
+            parseInt(apikey?.attributes?.createdAt) / 1000 +
             parseInt(apikey.attributes['accessTokenLifespan'])
         // getting dayjs obj from the calculated unix epoch to pass in datepicker
         return dayjs.unix(validityUnixEpoch)

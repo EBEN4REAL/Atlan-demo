@@ -640,7 +640,7 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', policyType.value, policy.value)
+                    emit('save', policyType.value, policy.value, isEdit.value)
                 }
             }
             const selectedPermition = computed(() => {
@@ -801,10 +801,8 @@
             color: #3e4359;
         }
         .ant-select-selector {
-            background: none !important;
             border: none !important;
             box-shadow: none !important;
-            padding-left: 0 !important;
             cursor: default;
         }
     }

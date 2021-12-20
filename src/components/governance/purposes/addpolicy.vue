@@ -74,6 +74,7 @@
                             }
                         "
                         v-model:modelValue="selectedOwnersData"
+                        :edit-permission="true"
                         class="mb-6"
                         :read-only="false"
                         :destroy-tooltip-on-hide="true"
@@ -472,7 +473,7 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', policyType.value, policy.value)
+                    emit('save', policyType.value, policy.value, isEdit.value)
                 }
             }
             const selectedPermition = computed(() => {

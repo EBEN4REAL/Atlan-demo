@@ -768,6 +768,7 @@ export function useSavedQuery(
                     message.success({
                         content: `Folder ${name} created!`,
                     })
+                    useAddEvent('insights', 'folder', 'created')
                 } else {
                     console.log(error.value.toString())
                     message.error({

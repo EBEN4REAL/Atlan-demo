@@ -35,6 +35,7 @@
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     import {
         reFetchList,
@@ -105,6 +106,7 @@
                         selectedPersonaId.value = newPersona.id!
                         modalVisible.value = false
                     })
+                    useAddEvent('governance', 'persona', 'created')
                 } catch (error: any) {
                     message.error({
                         content:

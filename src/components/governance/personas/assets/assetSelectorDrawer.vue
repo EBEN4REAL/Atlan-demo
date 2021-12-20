@@ -52,7 +52,7 @@
                 </div>
 
                 <div
-                    class="absolute w-full h-full bg-white"
+                    class="absolute w-full h-full bg-white assets-wrapper"
                     :class="
                         activeTab === 'list' ? 'front-z-index' : 'rear-z-index'
                     "
@@ -71,6 +71,7 @@
                         :preference="preference"
                         class="asset-list-height"
                         page="personas"
+                        :all-checkbox-area-click="true"
                     />
                 </div>
 
@@ -114,8 +115,7 @@
                     @click="saveAssets"
                 >
                     Save
-                </AtlanBtn
-                >
+                </AtlanBtn>
             </div>
         </div>
     </a-drawer>
@@ -163,7 +163,7 @@
             getContainer: {
                 type: Boolean,
                 default: () => false,
-            }
+            },
         },
         emits: ['update:visible', 'update:assets'],
         setup(props, { emit }) {
@@ -207,11 +207,9 @@
             }
 
             /* Adds /* to pathname */
-            const addSufffix = (qualifiedNames: string[]) => (
-                    qualifiedNames?.map(
-                        (qualifiedName) => `${qualifiedName}/*`
-                    ) ?? []
-                )
+            const addSufffix = (qualifiedNames: string[]) =>
+                qualifiedNames?.map((qualifiedName) => `${qualifiedName}/*`) ??
+                []
 
             function saveAssets() {
                 // TODO: Optional* Change this implementation
@@ -342,15 +340,21 @@
 </style>
 
 <style lang="less">
-    .tab-select-asset{
-        .tab-btn{
+    .assets-wrapper {
+        .asset-card {
+            padding-left: 0px !important;
+            cursor: pointer !important;
+        }
+    }
+    .tab-select-asset {
+        .tab-btn {
             flex: 1;
         }
     }
-    .btn-asset{
+    .btn-asset {
         min-width: 80px;
     }
-    .btn-add-assets{
+    .btn-add-assets {
         transform: rotate(180deg);
     }
 </style>

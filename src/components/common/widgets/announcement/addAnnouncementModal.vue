@@ -16,7 +16,7 @@
                     }}</span>
                     <AtlanIcon icon="ChevronRight" class="flex-none" />
                     <span class="flex-none text-sm font-bold text-gray"
-                        >New Announcement</span
+                        >{{ updating ? 'Edit' : 'New' }} Announcement</span
                     >
                 </div>
                 <a-dropdown
@@ -58,7 +58,7 @@
                     type="primary"
                     :loading="isLoading"
                     @click="handleUpdate"
-                    >Update</a-button
+                    >{{ updating ? 'Update' : 'Add' }}</a-button
                 >
             </div>
         </template>
@@ -106,10 +106,20 @@
                 required: false,
                 default: false,
             },
+            updating: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
             const { asset, editPermission } = toRefs(props)
-            const { title } = useAssetInfo()
+            const {
+                title,
+                announcementMessage,
+                announcementType,
+                announcementTitle,
+            } = useAssetInfo()
 
             const visible = ref<boolean>(false)
 
@@ -125,9 +135,12 @@
             }
 
             const resetInput = () => {
-                localAnnouncement.value.announcementTitle = ''
-                localAnnouncement.value.announcementMessage = ''
-                localAnnouncement.value.announcementType = 'information'
+                localAnnouncement.value.announcementTitle =
+                    announcementTitle(asset.value) || ''
+                localAnnouncement.value.announcementMessage =
+                    announcementMessage(asset.value) || ''
+                localAnnouncement.value.announcementType =
+                    announcementType(asset.value) || 'information'
             }
 
             const icon = computed(() => {

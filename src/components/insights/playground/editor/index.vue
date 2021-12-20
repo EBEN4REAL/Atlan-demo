@@ -454,8 +454,6 @@
                     }
 
                     console.log('query selected: ', selectedText)
-
-                    useAddEvent('insights', 'query', 'run', undefined)
                     queryRun(
                         activeInlineTab,
                         getData,
@@ -494,8 +492,6 @@
                                 toRaw(editorInstance.value).getSelection()
                             )
                     }
-
-                    useAddEvent('insights', 'query', 'run', undefined)
                     queryRun(
                         activeInlineTab,
                         getData,

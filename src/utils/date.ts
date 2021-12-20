@@ -21,11 +21,32 @@ export const formatDateTime = (
         dateStyle: 'medium',
         timeStyle: 'medium',
     },
-    locale = 'en-US'
+    locale = 'en-US',
+    isUnixTimestamp = false
 ) => {
-    if (typeof date === 'string' && date)
-        return new Intl.DateTimeFormat(locale, config).format(new Date(date))
-    return new Intl.DateTimeFormat(locale, config).format(date)
+    if (!date) {
+        return
+    }
+    console.log('formatDateTime', { date })
+    if (isUnixTimestamp) {
+        date = Number(date)
+    }
+    let formattedDate = ''
+    try {
+        if ((typeof date === 'string' || typeof date === 'number') && date) {
+            formattedDate = new Intl.DateTimeFormat(locale, config).format(
+                new Date(date)
+            )
+            console.log('formatDateTime', { formattedDate })
+            // formattedDate = new Date(date)
+        } else {
+            // formattedDate = new Intl.DateTimeFormat(locale, config).format(date)
+            formattedDate = date
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    return formattedDate
 }
 
 /**

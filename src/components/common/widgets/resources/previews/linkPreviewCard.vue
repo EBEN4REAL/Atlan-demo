@@ -43,8 +43,9 @@
                 <template #overlay>
                     <a-menu mode="vertical">
                         <EditResource
-                            :asset="item"
+                            :asset="selectedAsset"
                             :edit-permission="editPermission"
+                            :item="item"
                             :updating="true"
                             ><template #trigger>
                                 <a-menu-item key="edit">

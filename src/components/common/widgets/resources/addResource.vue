@@ -28,7 +28,7 @@
                     :size="'sm'"
                     :disabled="buttonDisabled"
                     @click="handleAdd"
-                    >{{ updating ? 'Edit' : 'Add' }}</AtlanButton
+                    >{{ updating ? 'Update' : 'Add' }}</AtlanButton
                 >
             </div>
         </template>
@@ -112,6 +112,11 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            item: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
             editPermission: {
                 type: Boolean,
                 required: false,
@@ -129,14 +134,14 @@
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
-            const { asset, editPermission, updating } = toRefs(props)
+            const { asset, editPermission, updating, item } = toRefs(props)
 
             const { title, link } = useAssetInfo()
 
             const { handleAddResource, localResource, handleUpdateResource } =
                 updateAssetAttributes(asset)
 
-            const linkURL = ref(updating.value ? link(asset.value) : '')
+            const linkURL = ref(updating.value ? link(item.value) : '')
             const faviconLink = ref(
                 updating.value
                     ? `https://www.google.com/s2/favicons?domain=${linkURL.value}&sz=64`
@@ -144,7 +149,7 @@
             )
 
             // FIXME: Add a link meta parser for title
-            const linkTitle = ref(updating.value ? title(asset.value) : '')
+            const linkTitle = ref(updating.value ? title(item.value) : '')
 
             const showModal = async () => {
                 if (editPermission.value) {
@@ -176,7 +181,7 @@
                 localResource.value.link = linkURL.value
                 localResource.value.title = linkTitle.value
                 if (updating.value) {
-                    handleUpdateResource()
+                    handleUpdateResource(item)
                 } else {
                     handleAddResource()
                 }

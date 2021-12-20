@@ -136,13 +136,13 @@ const keyMap = {
             saved: {
                 action: 'insights_query_saved',
                 properties: (props) => ({
-                    num_variables: props?.num_variables,
+                    variables_count: props?.variables_count,
                 }),
             },
             updated: {
                 action: 'insights_query_updated',
                 properties: (props) => ({
-                    num_variables: props?.num_variables,
+                    variables_count: props?.variables_count,
                 }),
             },
             link_copied: {

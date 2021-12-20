@@ -92,6 +92,7 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
+
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
@@ -112,11 +113,16 @@ export default function useProject() {
             ?.findMatches(';')
 
         if (semiColonMatchs?.length === 0) {
+            console.log('no semi colon')
             if (showVQB.value) {
                 queryText = selectedText
                 activeInlineTab.value.playground.editor.text = queryText
             } else {
-                queryText = activeInlineTab.value.playground.editor.text
+                if(selectedText && selectedText !== '') {
+                    queryText = selectedText
+                } else {
+                    queryText = activeInlineTab.value.playground.editor.text
+                }
             }
         } else if (selectedText && selectedText !== '') {
             if (showVQB.value) {

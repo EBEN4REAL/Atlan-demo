@@ -20,6 +20,12 @@
             >
                 Read Only
             </span>
+            <span
+                v-if="!userHasPermission"
+                class="px-1 py-0.5 bg-primary-light text-xs text-gray-500 border rounded border-gray-300 mx-2"
+            >
+                Guest user
+            </span>
             <span v-else>
                 <AtlanBtn
                     size="sm"
@@ -229,7 +235,7 @@
             </a-popover>
             <div class="flex items-center ml-2">
                 <div class="flex text-sm">
-                    <div class="flex" v-if="permissions.runQuery">
+                    <div class="flex">
                         <AtlanBtn
                             class="flex items-center h-6 px-3 button-shadow"
                             size="sm"
@@ -325,6 +331,10 @@
     import { useConnectionStore } from '~/store/connection'
     import { storeToRefs } from 'pinia'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import map from '~/constant/accessControl/map'
+
+    import { useAuthStore } from '~/store/auth'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'EditorContext',
@@ -364,7 +374,7 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const permissions = inject('permissions') as ComputedRef<any>
+            // const permissions = inject('permissions') as ComputedRef<any>
 
             const connectorsData: Ref<connectorsWidgetInterface> = ref(
                 activeInlineTab.value?.playground?.editor?.context ?? {
@@ -372,6 +382,13 @@
                     attributeValue: undefined,
                 }
             )
+
+            const authStore = useAuthStore()
+            const { permissions } = storeToRefs(authStore)
+
+            let userHasPermission = computed(() => {
+                permissions.value.indexOf('CREATE_COLLECTION') >= 0
+            })
 
             const isQueryCreatedByCurrentUser = inject(
                 'isQueryCreatedByCurrentUser'
@@ -384,7 +401,9 @@
             ) as ComputedRef
 
             const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
+                !userHasPermission.value
+                    ? true
+                    : activeInlineTab?.value?.qualifiedName?.length === 0
                     ? false
                     : isQueryCreatedByCurrentUser.value
                     ? false
@@ -473,12 +492,14 @@
                 activeInlineTab,
                 getEntityStatusIcon,
                 useTimeAgo,
-                permissions,
+                // permissions,
 
                 isQueryCreatedByCurrentUser,
                 hasQueryWritePermission,
                 hasQueryReadPermission,
                 readOnly,
+                map,
+                userHasPermission,
             }
         },
     })

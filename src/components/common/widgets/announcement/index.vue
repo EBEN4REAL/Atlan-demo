@@ -43,6 +43,7 @@
                                             selectedAsset
                                         )
                                     "
+                                    :updating="true"
                                     ><template #trigger>
                                         <div class="flex items-center">
                                             <AtlanIcon

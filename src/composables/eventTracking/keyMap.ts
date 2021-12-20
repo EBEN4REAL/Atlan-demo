@@ -297,5 +297,24 @@ const keyMap = {
             },
         },
     },
+    admin: {
+        api_key: {
+            created: {
+                action: 'admin_api_key_created',
+                properties: (props) => ({
+                    persona_count: props.persona_count,
+                }),
+            },
+            updated: {
+                action: 'admin_api_key_updated',
+                properties: (props) => ({
+                    persona_count: props.persona_count,
+                }),
+            },
+            deleted: {
+                action: 'admin_api_key_deleted',
+            },
+        },
+    },
 }
 export default keyMap

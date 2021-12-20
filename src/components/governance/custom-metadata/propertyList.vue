@@ -168,6 +168,7 @@
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         props: {
@@ -339,6 +340,11 @@
                             data.value.businessMetadataDefs[0]
                         )
                         store.tickForceRevalidate()
+                        useAddEvent(
+                            'governance',
+                            'custom_metadata',
+                            'property_reordered'
+                        )
                     } else if (error && error.value) {
                         isSorting.value = false
                         message.error('Unable to save order, please try again')

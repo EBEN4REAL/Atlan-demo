@@ -331,6 +331,7 @@ export function useSavedQuery(
                 if (error.value === undefined) {
                     useAddEvent('insights', 'query', 'updated', {
                         variables_count: getVariableCount(),
+                        visual_query: !!activeInlineTab.playground.isVQB,
                     })
                     message.success({
                         content: `${name} query saved!`,
@@ -470,6 +471,7 @@ export function useSavedQuery(
                 if (error.value === undefined) {
                     useAddEvent('insights', 'query', 'saved', {
                         variables_count: getVariableCount(),
+                        visual_query: !!activeInlineTab.playground.isVQB,
                     })
                     showSaveQueryModal.value = false
                     message.success({
@@ -911,6 +913,7 @@ export function useSavedQuery(
 
                     useAddEvent('insights', 'query', 'saved', {
                         variables_count: getVariableCount(),
+                        visual_query: !!activeInlineTab.playground.isVQB,
                     })
                     showSaveQueryModal.value = false
                     message.success({

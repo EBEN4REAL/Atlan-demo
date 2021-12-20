@@ -139,7 +139,6 @@
         setup(props) {
             const visible = ref<boolean>(false)
             const imageNotFound = ref(false)
-            const isValidUrl = ref(false)
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
             const { asset, editPermission, updating, item } = toRefs(props)
@@ -148,6 +147,8 @@
 
             const { handleAddResource, localResource, handleUpdateResource } =
                 updateAssetAttributes(asset)
+
+            const isValidUrl = ref(updating.value)
 
             const linkURL = ref(updating.value ? link(item.value) : 'https://')
             const faviconLink = ref(

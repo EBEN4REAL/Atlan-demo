@@ -9,10 +9,10 @@
             </div>
             <div>
                 <a-popover
-                    placement="left"
                     v-model:visible="popoverVisible"
+                    placement="left"
                     trigger="click"
-                    :destroyTooltipOnHide="true"
+                    :destroy-tooltip-on-hide="true"
                 >
                     <AtlanBtn
                         color="primary"
@@ -36,33 +36,33 @@
                             @change="handleUsersChange"
                         /> -->
                             <OwnersSelector
-                                :showNone="false"
-                                :enableTabs="enableTabs"
-                                selectGroupKey="id"
-                                selectUserKey="id"
-                                :hideDisabledTabs="true"
                                 v-model:modelValue="userGroupData"
+                                :show-none="false"
+                                :enable-tabs="enableTabs"
+                                select-group-key="id"
+                                select-user-key="id"
+                                :hide-disabled-tabs="true"
                             />
                             <div class="w-full">
                                 <div class="flex justify-around">
                                     <AtlanBtn
                                         size="sm"
-                                        @click="handleCancel"
                                         color="secondary"
                                         padding="compact"
                                         class="w-26"
                                         style="width: 80px"
                                         data-test-id="cancel-owners"
+                                        @click="handleCancel"
                                         >Cancel</AtlanBtn
                                     >
                                     <AtlanBtn
-                                        @click="handleUpdate"
                                         size="sm"
                                         :disabled="addUsersLoading"
                                         class="flex items-center"
                                         color="primary"
                                         padding="compact"
                                         style="width: 80px"
+                                        @click="handleUpdate"
                                     >
                                         <AtlanIcon
                                             v-if="addUsersLoading"
@@ -82,7 +82,7 @@
         </div>
         <!-- START Error State -->
         <div
-            v-if="usersError || groupsError"
+            v-if="errorUsersGroups"
             class="flex flex-col items-center h-full align-middle bg-white"
         >
             <ErrorView>
@@ -117,8 +117,8 @@
 
         <!-- START Loading state: no persona users and groups -->
         <div
-            class="flex items-center justify-center loading-view"
             v-else-if="isUsersLoading || isGroupsLoading"
+            class="flex items-center justify-center loading-view"
         >
             <AtlanIcon
                 icon="Loader"
@@ -162,7 +162,7 @@
                 >
                     <div class="py-2 border-b">
                         <!--user-->
-                        <div class="flex items-center" v-if="item.username">
+                        <div v-if="item.username" class="flex items-center">
                             <div class="w-2/3">
                                 <div
                                     class="flex items-center align-middle"
@@ -307,7 +307,7 @@
                         </div>
 
                         <!--group-->
-                        <div class="flex items-center" v-if="item.alias">
+                        <div v-if="item.alias" class="flex items-center">
                             <div class="w-2/3">
                                 <div
                                     class="flex items-center align-middle"
@@ -453,9 +453,11 @@
     } from 'vue'
     import { message } from 'ant-design-vue'
     import EmptyView from '@common/empty/index.vue'
+    import OwnersSelector from '@common/facet/owners/index.vue'
+    import ErrorView from '@common/error/index.vue'
+    import Loader from '@common/loaders/page.vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import OwnersSelector from '@common/facet/owners/index.vue'
 
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -463,12 +465,10 @@
     import usePersonaGroups from '../composables/usePersonaGroups'
     import usePersonaService from '../composables/usePersonaService'
     import Avatar from '~/components/common/avatar/avatar.vue'
-    import ErrorView from '@common/error/index.vue'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { selectedPersonaDirty } from '../composables/useEditPersona'
     import { IGroup, IUser } from '~/types/accessPolicies/personas'
-    import Loader from '@common/loaders/page.vue'
 
     export default defineComponent({
         name: 'PersonaUsersGroups',
@@ -556,7 +556,7 @@
                                 : 0
                         )
 
-                    //return collated list
+                    // return collated list
                     return [...filteredGroupsList, ...filteredUsersList] || []
                 }
                 if (listType.value === 'users') {
@@ -578,33 +578,31 @@
                 }
                 return []
             })
-            const tabConfig = computed(() => {
-                return [
-                    {
-                        id: 'all',
-                        label: 'All',
-                        hideIcon: true,
-                        showZero: true,
-                        count:
-                            (userList?.value?.length || 0) +
-                                (groupList?.value?.length || 0) ?? 0,
-                    },
-                    {
-                        id: 'users',
-                        label: 'Users',
-                        showZero: true,
-                        disabled: !userList?.value?.length,
-                        count: userList?.value?.length ?? 0,
-                    },
-                    {
-                        id: 'groups',
-                        label: 'Groups',
-                        showZero: true,
-                        disabled: !groupList?.value?.length,
-                        count: groupList?.value?.length ?? 0,
-                    },
-                ]
-            })
+            const tabConfig = computed(() => [
+                {
+                    id: 'all',
+                    label: 'All',
+                    hideIcon: true,
+                    showZero: true,
+                    count:
+                        (userList?.value?.length || 0) +
+                            (groupList?.value?.length || 0) ?? 0,
+                },
+                {
+                    id: 'users',
+                    label: 'Users',
+                    showZero: true,
+                    disabled: !userList?.value?.length,
+                    count: userList?.value?.length ?? 0,
+                },
+                {
+                    id: 'groups',
+                    label: 'Groups',
+                    showZero: true,
+                    disabled: !groupList?.value?.length,
+                    count: groupList?.value?.length ?? 0,
+                },
+            ])
             const placeholder = computed(() => {
                 if (listType.value !== 'all')
                     return `Search from ${
@@ -612,14 +610,14 @@
                             ? userList.value.length
                             : groupList.value.length
                     } ${listType.value}`
-                else {
-                    if (userList.value.length && groupList.value.length)
-                        return `Search from ${userList.value.length} users and ${groupList.value.length} groups`
-                    else if (userList.value.length)
-                        return `Search from ${userList.value.length} users`
-                    else if (groupList.value.length)
-                        return `Search from ${groupList.value.length} groups`
-                }
+
+                if (userList.value.length && groupList.value.length)
+                    return `Search from ${userList.value.length} users and ${groupList.value.length} groups`
+                if (userList.value.length)
+                    return `Search from ${userList.value.length} users`
+                if (groupList.value.length)
+                    return `Search from ${groupList.value.length} groups`
+
                 return ''
             })
 
@@ -680,11 +678,10 @@
                 user: any,
                 action: 'remove',
                 type: 'user' | 'group'
-            ) => {
-                return `Are you sure you want to ${action} <b>${
+            ) =>
+                `Are you sure you want to ${action} <b>${
                     user.name || user.username || user.email || ''
                 }</b>?`
-            }
 
             const confirmPopover = (
                 userOrGroup: any,
@@ -760,6 +757,20 @@
                 userGroupData.value.ownerGroups = persona.value.groups ?? []
             })
 
+            const errorUsersGroups = computed(() => {
+                if (usersError.value) {
+                    if (usersError.value.message.includes('cancel')) {
+                        return false
+                    }
+                }
+                if (groupsError.value) {
+                    if (groupsError.value.message.includes('cancel')) {
+                        return false
+                    }
+                }
+                return usersError.value || groupsError.value
+            })
+
             return {
                 handleCancel,
                 userState,
@@ -793,6 +804,7 @@
                 usersError,
                 groupsError,
                 showRemoveUserPopover,
+                errorUsersGroups,
             }
         },
     })

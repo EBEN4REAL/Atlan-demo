@@ -177,7 +177,7 @@
 
 <script lang="ts">
     import { message } from 'ant-design-vue'
-    import { ref, reactive, defineComponent, computed, watch, h } from 'vue'
+    import { ref, reactive, defineComponent, computed, watch, h, toRefs } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { useDebounceFn } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'
@@ -218,6 +218,7 @@
         },
         emits: ['refreshTable'],
         setup(props, context) {
+            const { selectedGroup } = toRefs(props)
             const showGroupMembers = ref(true)
             const showUsersPopover = ref(false)
             const searchText = ref('')
@@ -225,15 +226,18 @@
             const addMemberLoading = ref(false)
             const removeMemberLoading = ref({})
             const selectedUserIds = ref({ ownerUsers: [] })
-            const memberListParams = reactive({
-                groupId: props.selectedGroup.id,
+            const limit = ref(10)
+            const offset = ref(0)
+            const filter = ref({})
+            const memberListParams = computed(() => ({
+                groupId: selectedGroup.value.id,
                 params: {
-                    limit: 10,
-                    offset: 0,
+                    limit: limit.value,
+                    offset: offset.value,
                     sort: 'firstName',
-                    filter: {},
+                    filter: filter.value,
                 },
-            })
+            }))
             const {
                 memberList,
                 totalMembersCount,
@@ -246,7 +250,7 @@
             } = useGroupMembers(memberListParams)
 
             const handleSearch = useDebounceFn(() => {
-                memberListParams.params.filter = searchText.value
+                filter.value = searchText.value
                     ? {
                           $or: [
                               {
@@ -263,13 +267,13 @@
                           ],
                       }
                     : {}
-                memberListParams.params.offset = 0
+                offset.value = 0
                 getGroupMembersList()
             }, 600)
             const handleLoadMore = () => {
-                memberListParams.params.offset =
-                    memberListParams.params.offset +
-                    memberListParams.params.limit
+                offset.value =
+                    offset.value +
+                    limit.value
                 getGroupMembersList()
             }
 
@@ -277,7 +281,7 @@
                 () => props.selectedGroup.id,
                 (v) => {
                     console.log(v)
-                    memberListParams.groupId = v
+                    selectedGroup.value.id = v
                     getGroupMembersList()
                 }
             )
@@ -285,8 +289,8 @@
                 getIsLoadMore(
                     // TODO: check if there's a better way access memberList and not use ref in a ref
                     memberList.value.length,
-                    memberListParams.params.offset,
-                    memberListParams.params.limit,
+                    offset.value,
+                    limit.value,
                     searchText.value
                         ? filteredMembersCount.value
                         : totalMembersCount.value
@@ -307,7 +311,7 @@
                     () => {
                         addMemberLoading.value = isLoading.value
                         if (isReady && !error.value && !isLoading.value) {
-                            memberListParams.params.offset = 0
+                            offset.value = 0
                             getGroupMembersList()
                             context.emit('refreshTable')
                             message.success(
@@ -394,7 +398,7 @@
                                     !error.value &&
                                     !isLoading.value
                                 ) {
-                                    memberListParams.params.offset = 0
+                                    offset.value = 0
                                     getGroupMembersList()
                                     context.emit('refreshTable')
                                     message.success({

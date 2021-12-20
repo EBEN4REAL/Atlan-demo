@@ -63,7 +63,7 @@ export function useSavedQuery(
         // if (!Array.isArray(decodedVariables)) decodedVariables = []
 
         /* --------NOTE- TEMPERORY FIX-------*/
-        
+
         const defaultSchemaQualifiedName =
             savedQuery?.attributes?.defaultSchemaQualifiedName
         const connectionQualifiedName =
@@ -82,13 +82,11 @@ export function useSavedQuery(
         console.log(connectors, 'connectors')
         console.log('saved query: ', savedQuery)
 
-        const visualBuilderSchemaBase64 = savedQuery?.attributes?.visualBuilderSchemaBase64
+        const visualBuilderSchemaBase64 =
+            savedQuery?.attributes?.visualBuilderSchemaBase64
         const isVisualQuery = savedQuery?.attributes?.isVisualQuery
 
-        let decodedVQB = decodeBase64Data(
-            visualBuilderSchemaBase64
-        )
-
+        let decodedVQB = decodeBase64Data(visualBuilderSchemaBase64)
 
         const newTab: activeInlineTabInterface = {
             attributes: savedQuery.attributes,
@@ -132,23 +130,25 @@ export function useSavedQuery(
             },
             playground: {
                 isVQB: isVisualQuery ? true : false,
-                vqb: isVisualQuery ? decodedVQB : {
-                    panels: [
-                        {
-                            order: 1,
-                            id: 'columns',
-                            hide: true,
-                            subpanels: [
-                                {
-                                    id: '1',
-                                    tableQualifiedName: undefined,
-                                    columns: [],
-                                    columnsData: [],
-                                },
-                            ],
-                        },
-                    ],
-                },
+                vqb: isVisualQuery
+                    ? decodedVQB
+                    : {
+                          panels: [
+                              {
+                                  order: 1,
+                                  id: 'columns',
+                                  hide: true,
+                                  subpanels: [
+                                      {
+                                          id: '1',
+                                          tableQualifiedName: undefined,
+                                          columns: [],
+                                          columnsData: [],
+                                      },
+                                  ],
+                              },
+                          ],
+                      },
                 editor: {
                     text: savedQuery.attributes.rawQuery,
                     dataList: [],
@@ -242,11 +242,11 @@ export function useSavedQuery(
 
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
-        if(isVQB) {
+        if (isVQB) {
             visualBuilderSchemaBase64 = serializeQuery(
                 activeInlineTabCopy?.playground.vqb
             )
-            isVisualQuery = true 
+            isVisualQuery = true
         }
 
         const attributeValue =
@@ -330,7 +330,8 @@ export function useSavedQuery(
                 isUpdating.value = false
                 if (error.value === undefined) {
                     useAddEvent('insights', 'query', 'updated', {
-                        num_variables: undefined,
+                        variables_count: getVariableCount(),
+                        visual_query: !!activeInlineTab.playground.isVQB,
                     })
                     message.success({
                         content: `${name} query saved!`,
@@ -381,11 +382,11 @@ export function useSavedQuery(
 
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
-        if(isVQB) {
+        if (isVQB) {
             visualBuilderSchemaBase64 = serializeQuery(
                 activeInlineTab?.playground.vqb
             )
-            isVisualQuery = true 
+            isVisualQuery = true
         }
 
         // {{collectionQname}}/query/{username}/random-uuid
@@ -469,7 +470,8 @@ export function useSavedQuery(
                 saveQueryLoading.value = false
                 if (error.value === undefined) {
                     useAddEvent('insights', 'query', 'saved', {
-                        num_variables: undefined,
+                        variables_count: getVariableCount(),
+                        visual_query: !!activeInlineTab.playground.isVQB,
                     })
                     showSaveQueryModal.value = false
                     message.success({
@@ -817,7 +819,6 @@ export function useSavedQuery(
         const { description } = saveQueryData
         const { certificateStatus } = saveQueryData
         const { isSQLSnippet } = saveQueryData
-        
 
         const defaultSchemaQualifiedName =
             getSchemaQualifiedName(attributeValue) ?? undefined
@@ -833,14 +834,12 @@ export function useSavedQuery(
 
         const rawQuery = activeInlineTab?.playground?.editor?.text
 
-        if(activeInlineTabCopy.playground.isVQB) {
+        if (activeInlineTabCopy.playground.isVQB) {
             visualBuilderSchemaBase64 = serializeQuery(
                 activeInlineTabCopy?.playground.vqb
             )
-            isVisualQuery = true 
+            isVisualQuery = true
         }
-
-        
 
         const collectionQualifiedName =
             activeInlineTab.explorer.queries.collection.qualifiedName
@@ -942,7 +941,8 @@ export function useSavedQuery(
                     // console.log('checked terms: ', assetTerms.value)
 
                     useAddEvent('insights', 'query', 'saved', {
-                        num_variables: undefined,
+                        variables_count: getVariableCount(),
+                        visual_query: !!activeInlineTab.playground.isVQB,
                     })
                     showSaveQueryModal.value = false
                     message.success({
@@ -1008,6 +1008,14 @@ export function useSavedQuery(
                 }
             }
         })
+    }
+
+    const getVariableCount = () => {
+        const variables = activeInlineTab.value.playground.editor.variables
+        if (!variables || !variables.length) {
+            return 0
+        }
+        return variables.length
     }
 
     return {

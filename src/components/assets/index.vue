@@ -121,6 +121,8 @@
                     :list="list"
                     @change="onKeyboardNavigate"
                     :startIndex="selectedAssetIndex"
+                    :blocked="isCmndKVisible"
+                    :htmlIdGetter="getAssetId"
                 >
                     <AssetList
                         ref="assetlistRef"
@@ -151,6 +153,7 @@
                                     (e, item) => updateBulkSelectedAssets(item)
                                 "
                                 :class="page !== 'admin' ? 'mx-3' : ''"
+                                :id="getAssetId(item)"
                             ></AssetItem>
                         </template>
                     </AssetList>
@@ -171,6 +174,7 @@
         computed,
         inject,
         watch,
+        ComputedRef,
     } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
@@ -375,7 +379,7 @@
             })
 
             const handlePreview = inject('preview')
-            const isCmndKVisible: Ref<boolean | undefined> =
+            const isCmndKVisible: ComputedRef<boolean | undefined> =
                 inject('isCmndKVisible')
 
             const updateCurrentList = (asset) => {
@@ -475,6 +479,10 @@
                 }
                 return 'Search all assets'
             })
+
+            const getAssetId = (item) => {
+                return item.guid
+            }
 
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
@@ -617,6 +625,8 @@
                 searchBox,
                 onKeyboardNavigate,
                 selectedAssetIndex,
+                isCmndKVisible,
+                getAssetId,
             }
         },
     })

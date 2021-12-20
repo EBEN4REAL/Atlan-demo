@@ -20,12 +20,13 @@
             </a-input>
         </div>
 
-        <div v-if="assetTypeAggregationList.length" class="w-full px-2">
+        <div v-if="assetTypeAggregationList.length" class="w-full px-3">
             <AggregationTabs
                 v-model="postFacets.typeName"
                 class="mt-3"
                 :list="assetTypeAggregationList"
                 @change="handleAssetTypeChange"
+                :shortcutEnabled="true"
             >
             </AggregationTabs>
         </div>
@@ -43,33 +44,46 @@
             </div>
             <div
                 v-else-if="!list.length && !queryText.length"
-                class="flex flex-col px-4 mb-6"
+                class="flex items-center justify-around px-4 mb-6 h-80"
             >
-                <!-- <span class="mb-2 text-xs text-gray-500">Recently Viewed</span> -->
-                <span class="text-xs text-gray-500 mb-"
-                    >You haven’t searched for anything just yet ...</span
-                >
+                <AtlanIcon
+                    icon="Loader"
+                    class="w-auto h-10 animate-spin"
+                ></AtlanIcon>
             </div>
             <div
-                :id="`${item.guid}-asset`"
-                v-for="item in list"
+                v-for="(item, index) in list"
                 v-else
+                :id="`${item.guid}-asset`"
                 :key="item?.guid"
                 :class="{ 'bg-blue-50': item?.guid === activeAsset?.guid }"
             >
-                <div
-                    v-if="
-                        [
-                            'AtlasGlossary',
-                            'AtlasGlossaryTerm',
-                            'AtlasGlossaryCategory',
-                        ].includes(item?.typeName)
-                    "
-                    @click="$emit('closeModal')"
-                >
-                    <GtcCard :item="item" class="px-5" />
-                </div>
-                <AssetCard v-else :item="item" Modal="$emit('closeModal')" />
+                <router-link :to="getProfilePath(item)">
+                    <div @click="$emit('closeModal')">
+                        <AssetItem
+                            :item="item"
+                            :itemIndex="index"
+                            class="px-2 cmd-k-asset-card"
+                        />
+                    </div>
+                    <!-- <div
+                        v-if="
+                            [
+                                'AtlasGlossary',
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ].includes(item?.typeName)
+                        "
+                        @click="$emit('closeModal')"
+                    >
+                        <GtcCard :item="item" class="px-5" />
+                    </div>
+                    <AssetCard
+                        v-else
+                        :item="item"
+                        Modal="$emit('closeModal')"
+                    /> -->
+                </router-link>
             </div>
         </div>
     </div>
@@ -104,10 +118,12 @@
     // import AssetCategoryFilter from '@/common/facets/assetCategory.vue'
     import GtcCard from '@/common/commandk/gtcCard.vue'
     import { assetCategoryList } from '~/constant/assetCategory'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import AssetItem from '@/common/assets/list/assetItem.vue'
 
     export default defineComponent({
         name: 'CommandK',
-        components: { AssetCard, GtcCard, AggregationTabs },
+        components: { AssetCard, GtcCard, AggregationTabs, AssetItem },
         props: {
             isCmndKVisible: {
                 type: Boolean,
@@ -136,6 +152,8 @@
                 typeName: '__all',
             })
             const router = useRouter()
+
+            const { getProfilePath } = useAssetInfo()
 
             const defaultAttributes = ref([
                 'anchor',
@@ -325,6 +343,7 @@
                 postFacets,
                 activeAsset,
                 placeholder,
+                getProfilePath,
             }
         },
     })
@@ -369,6 +388,11 @@
         }
         .ant-input:focus {
             border: none !important;
+        }
+    }
+    .cmd-k-asset-card {
+        &.my-1 {
+            margin: 0px !important;
         }
     }
 </style>

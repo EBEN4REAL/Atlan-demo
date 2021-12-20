@@ -35,8 +35,6 @@ const getAPIKeyValidityStringRelative = (apikey) => {
     return ''
 }
 const getAPIKeyValidityString = (apikey) => {
-    // console.log(getAPIKeyValidity(apikey).format())
-    // return ''
     if (getAPIKeyValidity(apikey)) {
         return formatDateTime(getAPIKeyValidity(apikey).format())
     }
@@ -88,9 +86,14 @@ export default function useAPIKeysList(
                 attributes: {
                     ...apikey.attributes,
                     createdAtFormatted:
-                        formatDateTime(apikey?.attributes?.createdAt || '', {
-                            dateStyle: 'medium',
-                        }) || '',
+                        formatDateTime(
+                            apikey?.attributes?.createdAt || '',
+                            {
+                                dateStyle: 'medium',
+                            },
+                            'en-US',
+                            true
+                        ) || '',
                     validity: getAPIKeyValidity(apikey),
                     validityStringRelative:
                         getAPIKeyValidityStringRelative(apikey),

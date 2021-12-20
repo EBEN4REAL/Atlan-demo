@@ -136,14 +136,15 @@ const keyMap = {
             saved: {
                 action: 'insights_query_saved',
                 properties: (props) => ({
-                    num_variables: props?.num_variables,
+                    variables_count: props?.variables_count,
+                    visual_query: !!props?.visual_query,
                 }),
             },
-
             updated: {
                 action: 'insights_query_updated',
                 properties: (props) => ({
-                    num_variables: props?.num_variables,
+                    variables_count: props?.variables_count,
+                    visual_query: !!props?.visual_query,
                 }),
             },
             link_copied: {
@@ -151,6 +152,11 @@ const keyMap = {
             },
             run: {
                 action: 'insights_query_run',
+                properties: (props) => ({
+                    saved_query: !!props?.saved_query,
+                    visual_query: !!props?.visual_query,
+                    limit_100: !!props.limit_100,
+                }),
             },
         },
         folder: {

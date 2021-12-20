@@ -68,8 +68,8 @@
             </div>
             <PersonaBody
                 v-model:persona="selectedPersona"
+                :whitelisted-connection-ids="whitelistedConnectionIds"
                 @selectPolicy="handleSelectPolicy"
-                :whitelistedConnectionIds="whitelistedConnectionIds"
             />
         </template>
         <div
@@ -128,6 +128,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, computed } from 'vue'
     import ErrorView from '@common/error/index.vue'
+    import { storeToRefs } from 'pinia'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -148,7 +149,6 @@
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
     import DetailPolicy from './overview/detailPolicy.vue'
     import { useAuthStore } from '~/store/auth'
-    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -170,9 +170,6 @@
             const authStore = useAuthStore()
             const { roles } = storeToRefs(authStore)
 
-            watch(searchTerm, () => {
-                console.log(searchTerm.value, 'searched')
-            })
             const handleCloseModalDetailPolicy = () => {
                 modalDetailPolicyVisible.value = false
             }
@@ -184,9 +181,9 @@
             watch(
                 roles,
                 () => {
-                    const filteredRoles = (roles.value || []).filter((role) => {
-                        return role.name.startsWith('connection_admins_')
-                    })
+                    const filteredRoles = (roles.value || []).filter((role) =>
+                        role.name.startsWith('connection_admins_')
+                    )
                     whitelistedConnectionIds.value = filteredRoles.map(
                         (role) => {
                             if (role && role.name)
@@ -200,7 +197,6 @@
                     deep: true,
                 }
             )
-
             return {
                 reFetchList,
                 filteredPersonas,

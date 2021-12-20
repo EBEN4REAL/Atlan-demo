@@ -139,7 +139,6 @@ const keyMap = {
                     num_variables: props?.num_variables,
                 }),
             },
-
             updated: {
                 action: 'insights_query_updated',
                 properties: (props) => ({
@@ -151,6 +150,11 @@ const keyMap = {
             },
             run: {
                 action: 'insights_query_run',
+                properties: (props) => ({
+                    saved_query: !!props?.saved_query,
+                    visual_query: !!props?.visual_query,
+                    limit_100: !!props.limit_100,
+                }),
             },
         },
         folder: {

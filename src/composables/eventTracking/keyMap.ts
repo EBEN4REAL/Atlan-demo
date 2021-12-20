@@ -136,14 +136,15 @@ const keyMap = {
             saved: {
                 action: 'insights_query_saved',
                 properties: (props) => ({
-                    num_variables: props?.num_variables,
+                    variables_count: props?.variables_count,
+                    visual_query: !!props?.visual_query,
                 }),
             },
-
             updated: {
                 action: 'insights_query_updated',
                 properties: (props) => ({
-                    num_variables: props?.num_variables,
+                    variables_count: props?.variables_count,
+                    visual_query: !!props?.visual_query,
                 }),
             },
             link_copied: {
@@ -151,22 +152,38 @@ const keyMap = {
             },
             run: {
                 action: 'insights_query_run',
+                properties: (props) => ({
+                    saved_query: !!props?.saved_query,
+                    visual_query: !!props?.visual_query,
+                    limit_100: !!props.limit_100,
+                }),
+            },
+        },
+        collection: {
+            created: {
+                action: 'insights_collection_created',
             },
         },
         folder: {
             renamed: {
                 action: 'insights_folder_renamed',
             },
-            // folder made public/private
-            space_changed: {
-                action: 'insights_folder_space_changed',
-                properties: (props) => ({ finalSpace: props?.finalSPace }),
-            },
             created: {
                 action: 'insights_folder_created',
             },
             deleted: {
                 action: 'insights_folder_deleted',
+            },
+        },
+        tab: {
+            opened: {
+                action: 'insights_tab_opened',
+                properties: (props) => ({
+                    visual_query: !!props?.visual_query,
+                }),
+            },
+            closed: {
+                action: 'insights_tab_closed',
             },
         },
     },

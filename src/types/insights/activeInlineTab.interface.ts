@@ -20,7 +20,7 @@ export interface activeInlineTabInterface {
     parentQualifiedName: string
     isSQLSnippet: boolean
     savedQueryParentFolderTitle: string | undefined
-    collectionQulaifiedName: string
+    collectionQualifiedName: string
     explorer: {
         schema: {
             connectors: connectorsWidgetInterface

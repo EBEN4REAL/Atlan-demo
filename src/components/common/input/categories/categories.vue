@@ -227,6 +227,7 @@
         }
         :global(.ant-select-dropdown) {
             box-shadow: none;
+            width: 100% !important;
         }
     }
 </style>

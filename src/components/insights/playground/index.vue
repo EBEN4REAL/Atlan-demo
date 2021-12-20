@@ -273,7 +273,7 @@
                     parentQualifiedName: '',
                     isSQLSnippet: false,
                     savedQueryParentFolderTitle: undefined,
-                    collectionQulaifiedName: '',
+                    collectionQualifiedName: '',
                     explorer: {
                         schema: {
                             connectors: {

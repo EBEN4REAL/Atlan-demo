@@ -84,30 +84,35 @@ const useCollectionAccess = (
 
     const fetchSelectedCollectionData = () => {
         refreshBody()
-        const { data, error, isLoading } = getSelectedCollectionData()
-        selectedCollectionLoading.value = true
-
-        watch([data, error, isLoading], () => {
+        if (
+            activeInlineTab?.value?.explorer?.queries?.collection?.qualifiedName
+                ?.length
+        ) {
+            const { data, error, isLoading } = getSelectedCollectionData()
             selectedCollectionLoading.value = true
 
-            if (isLoading.value === false) {
-                selectedCollectionLoading.value = false
-                if (error.value === undefined) {
-                    if (data?.value) {
-                        selectedCollectionData.value = data?.value
-                    } else {
-                        selectedCollectionData.value = {}
-                    }
-                    selectedCollectionError.value = undefined
-                    // message.success('collection fetched')
-                } else {
-                    selectedCollectionLoading.value = false
-                    selectedCollectionError.value = error.value
+            watch([data, error, isLoading], () => {
+                selectedCollectionLoading.value = true
 
-                    // message.error('Error in fetching collection data')
+                if (isLoading.value === false) {
+                    selectedCollectionLoading.value = false
+                    if (error.value === undefined) {
+                        if (data?.value) {
+                            selectedCollectionData.value = data?.value
+                        } else {
+                            selectedCollectionData.value = {}
+                        }
+                        selectedCollectionError.value = undefined
+                        // message.success('collection fetched')
+                    } else {
+                        selectedCollectionLoading.value = false
+                        selectedCollectionError.value = error.value
+
+                        // message.error('Error in fetching collection data')
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     const hasCollectionReadPermission = computed(() => {
@@ -181,7 +186,6 @@ const useCollectionAccess = (
             return false
         }
     })
-    
 
     watch(
         activeInlineTab,

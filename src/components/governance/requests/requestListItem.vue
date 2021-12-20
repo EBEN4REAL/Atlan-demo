@@ -128,6 +128,7 @@
     import UserPiece from './pieces/user.vue'
     import DatePiece from './pieces/date.vue'
     import TermPiece from './pieces/term.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import {
@@ -186,6 +187,9 @@
                     request.value.status = 'approved'
                     emit('action', request.value)
                     message.success('Request approved')
+                    useAddEvent('governance', 'requests', 'resolved', {
+                        action: 'approve',
+                    })
                 } catch (error) {
                     raiseErrorMessage()
                 }
@@ -200,6 +204,9 @@
                     request.value.status = 'rejected'
                     emit('action', request.value)
                     message.success('Request declined')
+                    useAddEvent('governance', 'requests', 'resolved', {
+                        action: 'decline',
+                    })
                 } catch (error) {
                     raiseErrorMessage()
                 }

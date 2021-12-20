@@ -284,6 +284,18 @@ const keyMap = {
                 action: 'governance_custom_metadata_property_reordered',
             },
         },
+        requests: {
+            searched: {
+                action: 'governance_requests_searched',
+            },
+            resolved: {
+                action: 'governance_requests_resolved',
+                properties: (props) => ({
+                    // approve/decline
+                    action: props.action,
+                }),
+            },
+        },
     },
 }
 export default keyMap

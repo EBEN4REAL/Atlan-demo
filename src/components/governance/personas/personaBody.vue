@@ -285,6 +285,7 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { filterMethod, sortMethodArrOfObject } from '~/utils/helper/search'
     import Addpolicy from './addpolicy.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
@@ -355,7 +356,12 @@
                 activeTabFilter.value = ''
                 addpolicyVisible.value = false
             })
-            async function savePolicyUI(type: PolicyType, dataPolicy: Object) {
+            async function savePolicyUI(
+                type: PolicyType,
+                dataPolicy: Object,
+                isEdit: boolean
+            ) {
+                console.log('savePolicyUI', { dataPolicy, isEdit, type })
                 const messageKey = Date.now()
                 loadingPolicy.value = true
                 message.loading({
@@ -364,6 +370,19 @@
                     key: messageKey,
                 })
                 try {
+                    const eventName = isEdit ? 'policy_updated' : 'policy_added'
+                    const eventProperties = {
+                        type,
+                        masking: dataPolicy.maskType ? dataPolicy.maskType : '',
+                        denied: !dataPolicy.allow,
+                        asset_count: dataPolicy.assets.length,
+                    }
+                    useAddEvent(
+                        'governance',
+                        'persona',
+                        eventName,
+                        eventProperties
+                    )
                     await savePolicy(type, dataPolicy)
                     updateSelectedPersona()
                     addpolicyVisible.value = false

@@ -16,7 +16,7 @@
                     }}</span>
                     <AtlanIcon icon="ChevronRight" class="flex-none" />
                     <span class="flex-none text-sm font-bold text-gray"
-                        >{{ updating ? 'New' : 'Edit' }} Announcement</span
+                        >{{ updating ? 'Edit' : 'New' }} Announcement</span
                     >
                 </div>
                 <a-dropdown

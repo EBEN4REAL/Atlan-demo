@@ -3,11 +3,31 @@
         class="relative bg-white border border-gray-300 rounded container-policy-card"
     >
         <div
-            class="flex flex-col px-3 py-2 rounded cursor-pointer group hover:bg-gray-100 card-policy"
+            class="flex flex-col px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
             :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"
             @click="handleClickPlicyCard"
         >
-            <div class="flex mb-1 gap-x-3">
+            <div class="flex items-center mb-1">
+                <AtlanIcon
+                    icon="Settings"
+                    v-if="type === 'meta'"
+                    class="-mt-0.5"
+                />
+                <AtlanIcon
+                    icon="QueryGrey"
+                    v-if="type === 'data'"
+                    class="-mt-0.5"
+                />
+                <span
+                    class="ml-1 tracking-wider text-gray-500 uppercase"
+                    data-test-id="policy-type"
+                    >{{
+                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
+                    }}</span
+                >
+            </div>
+
+            <!-- <div class="flex mb-1 gap-x-3">
                 <div class="text-gray-700">
                     <AtlanIcon
                         icon="Settings"
@@ -21,22 +41,20 @@
                     />
 
                     <span class="ml-1">{{ policy?.name }}</span>
-
-                    (<span class="" data-test-id="policy-type">{{
-                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                    }}</span
-                    >)
                 </div>
                 <div>
                     {{ policy.createdBy }}
                 </div>
-            </div>
+            </div> -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-x-3">
+                    <div class="text-gray-700">
+                        <span class="ml-1">{{ policy?.name }}</span>
+                    </div>
                     <div class="flex items-center">
                         <img
                             :src="getImage(connectionQfName?.split('/')[1])"
-                            class="w-auto h-4 pr-1 rounded-tl rounded-bl"
+                            class="w-auto h-4 pr-1 -mt-1 rounded-tl rounded-bl"
                         />
                         <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>

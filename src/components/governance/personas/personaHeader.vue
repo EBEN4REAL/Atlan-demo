@@ -28,19 +28,29 @@
                 />
             </div>
         </CreationModal>
-        <div class="flex mb-0 bg-white pt-7 gap-x-2">
+        <div class="flex px-3 pt-6 mb-0 bg-white gap-x-2">
             <div style="width: 90%">
-                <div class="mb-0 text-xl text-gray-700 truncate">
-                    <span class="font-bold truncate" data-test-id="header-name">
-                        {{ persona.displayName }}</span
+                <div class="flex items-center mb-0 text-sm text-gray-500">
+                    <div class="mb-0 text-xl text-gray-700 truncate">
+                        <span
+                            class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate"
+                            data-test-id="header-name"
+                        >
+                            {{ persona.displayName }}</span
+                        >
+                    </div>
+                    <a-tooltip
+                        tabindex="-1"
+                        :title="persona.description"
+                        v-if="persona.description"
+                        placement="right"
                     >
+                        <span
+                            ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                        ></span>
+                    </a-tooltip>
                 </div>
-                <div class="flex mb-0 text-sm text-gray-500">
-                    <span class="truncate" data-test-id="header-description">
-                        {{ persona.description }}</span
-                    >
-                </div>
-                <div class="flex" v-if="persona.updatedBy">
+                <div class="flex text-gray-500" v-if="persona.updatedBy">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"

@@ -1,6 +1,6 @@
 <template>
     <template v-if="selectedPersonaDirty">
-        <div class="bg-white">
+        <div class="px-3 bg-white">
             <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
                 <template #label="t">
                     <div class="flex items-center overflow-hidden">
@@ -57,7 +57,7 @@
             :class="
                 activeTabKey === 'policies' || activeTabKey === 'users'
                     ? 'bg-white pt-0 pb-0 pr-3 pl-3'
-                    : 'px-5'
+                    : 'p-6'
             "
         >
             <div>
@@ -65,7 +65,7 @@
             </div>
             <PersonaMeta
                 v-if="activeTabKey === 'details'"
-                class="pt-3 pb-0"
+                class="pb-0"
                 :persona="persona"
             />
             <div v-else-if="activeTabKey === 'policies'">

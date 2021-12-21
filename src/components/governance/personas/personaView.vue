@@ -1,34 +1,32 @@
 <template>
     <ExplorerLayout
         title="Persona"
-        sub-title=""
         :sidebar-visibility="Boolean(selectedPersonaId)"
     >
-        <template #action>
-            <AtlanBtn
-                :disabled="isEditing"
-                class="flex-none"
-                size="sm"
-                color="primary"
-                padding="compact"
-                data-test-id="add-persona"
-                @click="() => (modalVisible = true)"
-            >
-                <AtlanIcon icon="Add" class="mr-1 -mx-1 text-white"></AtlanIcon>
-                New
-            </AtlanBtn>
-        </template>
+        <template #action> </template>
         <template #sidebar>
-            <div class="px-4">
+            <div class="flex items-center px-4 mb-3">
                 <SearchAndFilter
                     v-model:value="searchTerm"
-                    :placeholder="`Search from ${
+                    :placeholder="`Search ${
                         filteredPersonas?.length ?? 0
                     } personas`"
-                    class="my-3 bg-white"
+                    class="mt-0 bg-white"
                     :autofocus="true"
                     size="minimal"
-                />
+                >
+                </SearchAndFilter>
+                <AtlanBtn
+                    :disabled="isEditing"
+                    class="flex-none ml-4"
+                    size="sm"
+                    color="primary"
+                    padding="compact"
+                    data-test-id="add-persona"
+                    @click="() => (modalVisible = true)"
+                >
+                    New
+                </AtlanBtn>
             </div>
 
             <ExplorerList
@@ -54,6 +52,16 @@
                         >
                             {{ item.displayName }}
                         </span>
+                        <a-tooltip
+                            tabindex="-1"
+                            :title="item.description"
+                            v-if="item.description"
+                            placement="right"
+                        >
+                            <span
+                                ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                            ></span>
+                        </a-tooltip>
                         <!-- <div class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'active' : 'inActive'"/> -->
                     </div>
                 </template>
@@ -64,7 +72,7 @@
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
             <div class="bg-white">
-                <PersonaHeader :persona="selectedPersona" class="h-24" />
+                <PersonaHeader :persona="selectedPersona" />
             </div>
             <PersonaBody
                 v-model:persona="selectedPersona"

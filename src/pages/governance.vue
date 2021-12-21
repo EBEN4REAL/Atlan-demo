@@ -1,11 +1,11 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col w-1/5 h-full overflow-hidden bg-white border-r"
+            class="flex flex-col w-1/6 h-full overflow-hidden bg-white border-r"
         >
             <div class="flex items-center px-6 mt-6 font-semibold">
                 <AtlanIcon icon="GovernanceCenter" class="mr-2 -mt-0.5" />
-                <span>Governance Center</span>
+                <span class="text-base">Governance Center</span>
             </div>
 
             <div class="flex flex-grow w-full px-6 mt-4 mb-2 overflow-y-auto">
@@ -52,7 +52,7 @@
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen overflow-y-auto">
+        <div class="w-5/6 max-h-screen overflow-y-auto">
             <router-view></router-view>
         </div>
     </div>

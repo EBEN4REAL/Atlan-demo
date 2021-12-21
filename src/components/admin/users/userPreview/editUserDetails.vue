@@ -258,6 +258,7 @@
                                 selectedUser.value.attributes.profiles = []
                             }
                             message.success('The details have been updated')
+                            emit('updatedUser')
                             emit('toggleEdit')
                         } else if (error && error.value) {
                             updateError.value =

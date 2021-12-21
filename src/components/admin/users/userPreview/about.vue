@@ -8,6 +8,7 @@
                 @toggle-edit="toggleEdit"
                 @success="$emit('success')"
                 @image-updated="handleImageUpdate"
+                @updated-user="$emit('updatedUser')"
             />
             <ViewUser
                 v-else

@@ -12,7 +12,10 @@
         @change="(p, f, s) => emit('change', p, f, s)"
     >
         <template #name="{ text: user }">
-            <div class="flex items-center align-middle">
+            <div
+                class="flex items-center align-middle"
+                :style="{ maxWidth: userColumns.filter((column) => column?.key === 'user')[0].width + 'px' }"
+            >
                 <Avatar
                     :image-url="imageUrl(user.username)"
                     :allow-upload="isCurrentUser(user.username)"
@@ -22,7 +25,7 @@
                     class="mr-2"
                 />
                 <div
-                    class="truncate"
+                    class="truncate max-w-full"
                     :class="!user.emailVerified ? '' : 'cursor-pointer'"
                     @click="
                         () => {

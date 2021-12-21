@@ -277,6 +277,7 @@
                 setUserUniqueAttribute,
                 closePreview,
                 userId,
+                userUpdated
             } = useUserPreview()
             const showUserPreviewDrawer = (user: any) => {
                 if (userId.value === user.id && showPreview.value) {
@@ -332,8 +333,13 @@
                     invitationComponentRef.value.getInvitationList()
             }
 
-            watch(showPreview, () => {
-                if (!showPreview.value) reloadTable()
+            // If any user has been updated, then reload the table, and
+            // set the userUpdated flag to false.
+            watch(userUpdated, () => {
+                if (userUpdated.value) {
+                    reloadTable()
+                    userUpdated.value = false
+                }
             })
 
             const closeInviteUserModal = () => {

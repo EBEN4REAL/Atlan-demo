@@ -393,7 +393,6 @@
         computed,
         onMounted,
     } from 'vue'
-    import { useMagicKeys } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
     import Connector from './policies/connector.vue'
     import { selectedPersonaDirty } from './composables/useEditPersona'
@@ -576,6 +575,8 @@
             watch([showDrawer, selectedPolicy], () => {
                 if (showDrawer.value) {
                     initPolicy()
+                } else {
+                    handleClose()
                 }
             })
             const handleAddAsset = () => {
@@ -739,13 +740,13 @@
 </script>
 
 <style lang="less">
-    .drawerAddAsset{
+    .drawerAddAsset {
         .container-schema-tree {
             max-height: max-content !important;
         }
         .wrapper-asset-tree {
             height: calc(100vh - 14rem) !important;
-            padding-bottom: 30px!important
+            padding-bottom: 30px !important;
         }
     }
     .add-policy-container {

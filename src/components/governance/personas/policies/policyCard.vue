@@ -1,181 +1,58 @@
 <template>
     <div
-        class="relative pt-1 pb-1 mb-2 border-b border-gray-300 container-policy-card last:border-0"
+        class="relative bg-white border border-gray-300 rounded container-policy-card"
     >
         <div
-            class="flex flex-col p-3 text-gray-500 rounded cursor-pointer group hover:bg-primary-light card-policy"
-            :class="
-                selectedPolicy.id === policy.id
-                    ? 'outline-primary bg-primary-light'
-                    : ''
-            "
+            class="flex flex-col px-3 py-2 rounded cursor-pointer group hover:bg-gray-100 card-policy"
+            :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"
             @click="handleClickPlicyCard"
         >
-            <div class="flex items-center gap-x-3">
-                <span
-                    class="text-base font-bold text-gray"
-                    data-test-id="policy-name"
-                    >{{ policy.name }}</span
-                >
-                <AtlanIcon
-                    icon="ShieldBlank"
-                    :class="policy.allow ? 'allow-icon' : ''"
-                />
-                <!-- <div class="flex items-center border rounded bg-gray-light">
-                    <img
-                        :src="getImage(connectionQfName?.split('/')[1])"
-                        class="w-auto h-6 p-1 bg-white rounded-tl rounded-bl"
-                    />
-                    <span class="px-1 text-sm text-gray-700">
-                        {{ connectionQfName?.split('/')?.slice(-1)[0] }}
-                    </span>
-                </div> -->
-                <span v-if="!policy.allow" class="denied-policy-pill">
-                    {{
-                        type === 'meta' ? 'Denied Permissions' : 'Denied Query'
-                    }}
-                </span>
-                <!-- <span
-                    v-if="type === 'data'"
-                    class="ml-auto data-policy-pill"
-                    data-test-id="policy-type"
-                    >Data Policy</span
-                > -->
-                <span
-                    class="p-1 ml-auto text-xs bg-gray-200 rounded"
-                    data-test-id="policy-type"
-                    >{{
-                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                    }}</span
-                >
-            </div>
-            <!-- <span class="flex-none text-sm" v-if="policy.assets.length > 0">
-                    <b class="text-gray-700">{{ policy.assets.length }}</b> assets
-                    selected
-                </span> -->
-            <!-- <span class="flex-none text-sm" v-else> No assets selected </span> -->
-            <!-- <div
-                    v-if="type === 'meta'"
-                    class="flex items-center overflow-hidden gap-x-1"
-                >
-                    <AtlanIcon class="flex-none -mt-1 text-gray-500" icon="Lock" />
-                    <div class="flex items-center">
-                        <div
-                            class="flex items-center"
-                            v-if="actions[0].action.length > 0"
-                        >
-                            <span>{{ actions[0].label }}: &nbsp;</span>
-                            <span>{{ actions[0].action.join(', ') }}</span>
-                        </div>
-                        <div
-                            class="w-1 h-1 mx-1 bg-gray-300 rounded-full"
-                            v-if="actions[1].action.length > 0"
-                        ></div>
-                        <div
-                            class="flex items-center"
-                            v-if="actions[1].action.length > 0"
-                        >
-                            <span>{{ actions[1].label }}: &nbsp;</span>
-                            <span>{{ actions[1].action.join(', ') }}</span>
-                        </div>
-                        <div
-                            class="w-1 h-1 mx-1 bg-gray-300 rounded-full"
-                            v-if="actions[1].action.length > 0"
-                        ></div>
-                        <div
-                            class="flex items-center mr-1.5"
-                            v-if="actions[2].action.length > 0"
-                        >
-                            <span>{{ actions[2].label }}: &nbsp;</span>
-                            <span>{{ actions[2].action.join(', ') }}</span>
-                        </div>
-                    </div>
-                </div> -->
-            <!-- <div
-                    v-if="type === 'data' && policy.maskType !== 'null'"
-                    class="flex items-center overflow-hidden gap-x-1"
-                >
-                    <AtlanIcon
-                        class="flex-none -mt-1.5 text-gray-500"
-                        icon="Hash"
-                    />
-                    <div class="flex items-center mt-0.5">
-                        <span>{{ policy.maskType }}</span>
-                    </div>
-                </div> -->
-            <div class="flex flex-wrap items-center gap-y-1.5">
-                <div
-                    class="flex items-center gap-y-1.5 gap-x-1 flex-1 flex-wrap"
-                >
+            <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-x-3">
                     <div class="flex items-center">
                         <img
                             :src="getImage(connectionQfName?.split('/')[1])"
                             class="w-auto h-6 p-1 rounded-tl rounded-bl"
                         />
-                        <span class="px-1 text-sm text-gray-700">
-                            {{ connectionName }}
-                        </span>
+                        <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>
-                    <template v-if="policy.assets.length > 0">
-                        <div v-if="connectionQfName" class="dot" />
-                        <AtlanIcon icon="Compass" />
+                    <div v-if="policy.assets.length > 0">
+                        <AtlanIcon icon="Compass" class="mr-1" />
                         <span class="flex-none text-sm">
                             {{ policy.assets.length }}
                             {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
                         </span>
-                    </template>
-                    <!-- <template v-for="item in splitAssets.a" :key="item.label">
-                        <div
-                            class="flex items-center justify-center px-3 text-sm text-gray-700"
-                            style="padding-top: 4px; padding-bottom: 4px"
-                        >
-                            {{ item.label }}
-                        </div>
-                    </template>
-                    <template v-for="item in splitAssets.b" :key="item.label">
-                        <div
-                            v-if="showAll"
-                            class="flex items-center justify-center px-3 text-sm text-gray-700 border border-gray-300 rounded-full"
-                            style="padding-top: 4px; padding-bottom: 4px"
-                        >
-                            {{ item.label }}
-                        </div>
-                    </template> -->
-                    <!-- <div
-                        class="font-bold text-gray-500 cursor-pointer"
-                        @click="
-                            () => {
-                                showAll = !showAll
-                            }
-                        "
-                    >
-                        <span v-if="!showAll && splitAssets.b.length > 0"
-                            >Show {{ splitAssets.b.length }} more</span
-                        >
-                        <span v-else-if="showAll">Show less</span>
-                    </div> -->
+                    </div>
                 </div>
-                <!-- <div
-                    class="flex items-stretch border border-gray-300 rounded opacity-0 group-hover:opacity-100 text-gray hover:text-primary"
-                >
-                    <AtlanBtn
-                        class="flex-none px-2 border-l border-gray-300 border-none hover:text-primary"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                        @click.prevent="$emit('edit')"
-                        data-test-id="policy-edit"
-                    >
-                        <AtlanIcon icon="Pencil" class="" />
-                    </AtlanBtn>
-                    <div
-                        class="h-full bg-gray-300"
-                        style="width: 1px; height: 30px !important"
-                    ></div>
-    
-                </div> -->
+                <span v-if="!policy.allow" class="denied-policy-pill">
+                    {{
+                        type === 'meta' ? 'Denied Permissions' : 'Denied Query'
+                    }}
+                </span>
+            </div>
+            <div class="flex gap-x-3">
+                <div class="text-gray-500">
+                    <AtlanIcon
+                        icon="Settings"
+                        v-if="type === 'meta'"
+                        class="-mt-0.5"
+                    />
+                    <AtlanIcon
+                        icon="QueryGrey"
+                        v-if="type === 'data'"
+                        class="-mt-0.5"
+                    />
+                    <span class="ml-1" data-test-id="policy-type">{{
+                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
+                    }}</span>
+                    ({{ policy?.name }})
+                </div>
+                <div>
+                    {{ policy.createdBy }}
+                </div>
             </div>
         </div>
+
         <a-popover
             v-model:visible="visibleDelete"
             trigger="click"
@@ -327,6 +204,14 @@
                 )
                 return found?.attributes?.name || ''
             })
+
+            const connectorName = computed(() => {
+                const found = connStore.getList.find(
+                    (conn) => conn.guid === policy.value.connectionId
+                )
+
+                return found?.attributes?.connectorName || ''
+            })
             const getPopoverContent = (policy: any) =>
                 `Are you sure you want to delete ${policy?.name}?`
             const handleClickPlicyCard = () => {
@@ -345,6 +230,7 @@
                 actions,
                 connectionQfName,
                 connectionName,
+                connectorName,
                 assetsIcons,
                 showAll,
                 splitAssets,

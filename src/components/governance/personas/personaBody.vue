@@ -53,11 +53,11 @@
         </div>
 
         <div
-            class="overflow-y-auto content-wrapper"
+            class="content-wrapper"
             :class="
                 activeTabKey === 'policies' || activeTabKey === 'users'
-                    ? 'bg-white pt-0 pb-0 pr-3 pl-3'
-                    : 'p-6'
+                    ? 'px-6 pt-3'
+                    : 'p-6 overflow-y-auto'
             "
         >
             <div>
@@ -68,35 +68,33 @@
                 class="pb-0"
                 :persona="persona"
             />
-            <div v-else-if="activeTabKey === 'policies'">
-                <div class="sticky top-0 z-10 bg-white">
-                    <div class="flex items-center pt-3 pr-4">
-                        <SearchAndFilter
-                            v-model:value="searchPersona"
-                            :placeholder="`Search from ${totalPolicy} policies`"
-                            class="bg-white"
-                            :autofocus="true"
-                            size="minimal"
-                        />
+
+            <div
+                class="flex flex-col"
+                v-else-if="activeTabKey === 'policies'"
+                style="height: calc(100% - 160px)"
+            >
+                <div class="">
+                    <div class="flex items-center justify-between">
+                        <div class="w-1/2 pr-3">
+                            <SearchAndFilter
+                                v-model:value="searchPersona"
+                                :placeholder="`Search from ${totalPolicy} policies`"
+                                :autofocus="true"
+                                size="minimal"
+                            />
+                        </div>
                         <a-dropdown trigger="click">
-                            <AtlanBtn
-                                class="flex-none mx-auto ml-5"
-                                color="primary"
-                                padding="compact"
-                                size="sm"
-                                @click.prevent
-                            >
-                                <template #prefix>
-                                    <AtlanIcon icon="Add" />
-                                </template>
-                                Add new policy
-                                <template #suffix>
+                            <a-button type="primary">
+                                <div class="flex items-center gap-x-1">
+                                    New Policy
+
                                     <AtlanIcon
                                         icon="ChevronDown"
                                         class="text-white"
                                     />
-                                </template>
-                            </AtlanBtn>
+                                </div>
+                            </a-button>
 
                             <template #overlay>
                                 <a-menu>
@@ -124,7 +122,7 @@
                     </div>
                     <div
                         v-if="totalPolicy !== 0"
-                        class="px-3 pt-4 pb-3 bg-white container-tabs"
+                        class="px-1 pt-2 pb-3 container-tabs"
                     >
                         <AggregationTabs
                             v-model="activeTabFilter"
@@ -133,9 +131,13 @@
                         />
                     </div>
                 </div>
-                <template v-for="(policy, idx) in metaDataComputed" :key="idx">
-                    <!-- Render it if the policy is being edited -->
-                    <!-- <MetadataPolicy
+                <div class="flex flex-col flex-grow overflow-y-auto gap-y-3">
+                    <template
+                        v-for="(policy, idx) in metaDataComputed"
+                        :key="idx"
+                    >
+                        <!-- Render it if the policy is being edited -->
+                        <!-- <MetadataPolicy
                         v-if="policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
                         :policy="policy"
@@ -144,23 +146,25 @@
                         @cancel="discardPolicy('meta', policy.id!)"
                     /> -->
 
-                    <PolicyCard
-                        :policy="policy"
-                        type="meta"
-                        :selected-policy="selectedPolicy"
-                        :whitelisted-connection-ids="whitelistedConnectionIds"
-                        @edit="setEditFlag('meta', policy.id!)"
-                        @delete="deletePolicyUI('meta', policy.id!)"
-                        @cancel="discardPolicy('meta', policy.id!)"
-                        @clickCard="handleSelectPolicy"
-                    />
-                </template>
-                <template
-                    v-for="(policy, idx) in dataPolicyComputed"
-                    :key="idx"
-                >
-                    <!-- Render it if the policy is being edited -->
-                    <!-- <DataPolicy
+                        <PolicyCard
+                            :policy="policy"
+                            type="meta"
+                            :selected-policy="selectedPolicy"
+                            :whitelisted-connection-ids="
+                                whitelistedConnectionIds
+                            "
+                            @edit="setEditFlag('meta', policy.id!)"
+                            @delete="deletePolicyUI('meta', policy.id!)"
+                            @cancel="discardPolicy('meta', policy.id!)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
+                    <template
+                        v-for="(policy, idx) in dataPolicyComputed"
+                        :key="idx"
+                    >
+                        <!-- Render it if the policy is being edited -->
+                        <!-- <DataPolicy
                         v-if="policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
                         :policy="policy"
@@ -168,18 +172,21 @@
                         @save="savePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                     /> -->
-                    <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
-                    <PolicyCard
-                        :policy="policy"
-                        type="data"
-                        :selected-policy="selectedPolicy"
-                        :whitelisted-connection-ids="whitelistedConnectionIds"
-                        @edit="setEditFlag('data', policy.id!)"
-                        @delete="deletePolicyUI('data', policy.id!)"
-                        @cancel="discardPolicy('data', policy.id!)"
-                        @clickCard="handleSelectPolicy"
-                    />
-                </template>
+                        <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
+                        <PolicyCard
+                            :policy="policy"
+                            type="data"
+                            :selected-policy="selectedPolicy"
+                            :whitelisted-connection-ids="
+                                whitelistedConnectionIds
+                            "
+                            @edit="setEditFlag('data', policy.id!)"
+                            @delete="deletePolicyUI('data', policy.id!)"
+                            @cancel="discardPolicy('data', policy.id!)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
+                </div>
                 <div
                     v-if="
                         metaDataComputed.length === 0 &&
@@ -240,6 +247,7 @@
                     >
                 </div>
             </div>
+
             <!-- <PersonaUsersGroups
                 v-else-if="activeTabKey === 'users'"
                 v-model:persona="persona"

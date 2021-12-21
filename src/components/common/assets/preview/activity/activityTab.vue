@@ -54,12 +54,6 @@
                 </a-timeline-item>
             </a-timeline>
 
-            {{ isLoadMore }}
-
-            {{ totalCount }}
-
-            {{ auditList.length }}
-
             <!-- <a-timeline class="mx-5">
                 <a-timeline-item v-for="(log, index) in audits" :key="index">
                     <template #dot>

@@ -78,6 +78,7 @@
                         class="mb-6"
                         :read-only="false"
                         :destroy-tooltip-on-hide="true"
+                        :edit-permission="true"
                         @change="handleOwnersChange"
                     />
                     <div
@@ -166,6 +167,7 @@
                     <DataMaskingSelector
                         v-model:maskType="policy.mask"
                         class="mb-6 w-80"
+                        :type="'purpose'"
                     />
                 </div>
 

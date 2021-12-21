@@ -66,6 +66,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
+    if(['Query'].includes(entity.value.typeName)) {
+        entity.value.attributes = {
+            ...entity.value.attributes,
+            parentQualifiedName: attributes(selectedAsset?.value)?.parentQualifiedName,
+            parent: attributes(selectedAsset?.value)?.parent,
+            collectionQualifiedName: attributes(selectedAsset?.value)?.collectionQualifiedName
+        }
+    }
+
     const body = ref({
         entities: [],
     })
@@ -121,31 +130,31 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
-    const addParentQualifiedName = (entity) => {
-        entity.attributes = {
-            ...entity.attributes,
-            parentQualifiedName: attributes(selectedAsset?.value)
-                ?.parentQualifiedName,
-        }
-        return entity
-    }
+    // const addParentQualifiedName = (entity) => {
+    //     entity.attributes = {
+    //         ...entity.attributes,
+    //         parentQualifiedName: attributes(selectedAsset?.value)
+    //             ?.parentQualifiedName,
+    //     }
+    //     return entity
+    // }
 
-    const addParent = (entity) => {
-        entity.attributes = {
-            ...entity.attributes,
-            parent: attributes(selectedAsset?.value)?.parent,
-        }
-        return entity
-    }
+    // const addParent = (entity) => {
+    //     entity.attributes = {
+    //         ...entity.attributes,
+    //         parent: attributes(selectedAsset?.value)?.parent,
+    //     }
+    //     return entity
+    // }
 
-    const addCollectionQualifiedName = (entity) => {
-        entity.attributes = {
-            ...entity.attributes,
-            collectionQualifiedName: attributes(selectedAsset?.value)
-                ?.collectionQualifiedName,
-        }
-        return entity
-    }
+    // const addCollectionQualifiedName = (entity) => {
+    //     entity.attributes = {
+    //         ...entity.attributes,
+    //         collectionQualifiedName: attributes(selectedAsset?.value)
+    //             ?.collectionQualifiedName,
+    //     }
+    //     return entity
+    // }
 
     // Description Change
     const handleChangeDescription = () => {
@@ -153,12 +162,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         if (description(selectedAsset?.value) !== localDescription.value) {
             entity.value.attributes.userDescription = localDescription.value
             body.value.entities = [entity.value]
-
-            if (assetType(selectedAsset?.value) === 'Query') {
-                entity.value = addParentQualifiedName(entity.value)
-                entity.value = addCollectionQualifiedName(entity.value)
-                entity.value = addParent(entity.value)
-            }
 
             console.log('new entity: ', entity.value)
             currentMessage.value = 'Description has been updated'
@@ -192,12 +195,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         if (isChanged) {
             body.value.entities = [entity.value]
 
-            if (assetType(selectedAsset?.value) === 'Query') {
-                entity.value = addParentQualifiedName(entity.value)
-                entity.value = addCollectionQualifiedName(entity.value)
-                entity.value = addParent(entity.value)
-            }
-
             currentMessage.value = 'Owners has been updated'
             mutate()
         }
@@ -224,12 +221,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 localCertificate.value.certificateStatusMessage
             body.value.entities = [entity.value]
 
-            if (assetType(selectedAsset?.value) === 'Query') {
-                entity.value = addParentQualifiedName(entity.value)
-                entity.value = addCollectionQualifiedName(entity.value)
-                entity.value = addParent(entity.value)
-            }
-
             currentMessage.value = 'Certificate has been updated'
             mutate()
         }
@@ -245,12 +236,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             localAnnouncement.value.announcementType
         body.value.entities = [entity.value]
 
-        if (assetType(selectedAsset?.value) === 'Query') {
-            entity.value = addParentQualifiedName(entity.value)
-            entity.value = addCollectionQualifiedName(entity.value)
-            entity.value = addParent(entity.value)
-        }
-
         currentMessage.value = 'Announcement has been updated'
         mutate()
     }
@@ -260,12 +245,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         entity.value.attributes.announcementMessage = null
         entity.value.attributes.announcementType = null
         body.value.entities = [entity.value]
-
-        if (assetType(selectedAsset?.value) === 'Query') {
-            entity.value = addParentQualifiedName(entity.value)
-            entity.value = addCollectionQualifiedName(entity.value)
-            entity.value = addParent(entity.value)
-        }
 
         currentMessage.value = 'Announcement has been deleted'
         mutate()
@@ -282,12 +261,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             },
         }
         body.value.entities = [entity.value]
-
-        if (assetType(selectedAsset?.value) === 'Query') {
-            entity.value = addParentQualifiedName(entity.value)
-            entity.value = addCollectionQualifiedName(entity.value)
-            entity.value = addParent(entity.value)
-        }
 
         currentMessage.value = 'Terms have been updated'
         mutate()
@@ -327,12 +300,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             },
         })
         body.value.entities = [resourceEntity.value]
-
-        if (assetType(selectedAsset?.value) === 'Query') {
-            entity.value = addParentQualifiedName(entity.value)
-            entity.value = addCollectionQualifiedName(entity.value)
-            entity.value = addParent(entity.value)
-        }
 
         currentMessage.value = 'A new resource has been added'
         mutate()
@@ -397,12 +364,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
         if (readmeContent(selectedAsset.value) !== localReadmeContent.value) {
             body.value.entities = [readmeEntity.value]
-
-            if (assetType(selectedAsset?.value) === 'Query') {
-                entity.value = addParentQualifiedName(entity.value)
-                entity.value = addCollectionQualifiedName(entity.value)
-                entity.value = addParent(entity.value)
-            }
 
             currentMessage.value = 'Readme has been updated'
             mutate()

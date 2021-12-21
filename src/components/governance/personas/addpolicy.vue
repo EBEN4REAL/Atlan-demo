@@ -141,7 +141,7 @@
                     </div>
 
                     <div
-                        class="flex flex-wrap h-auto p-2 mt-1 overflow-auto border border-dashed rounded border-bottom border-slate-300 max-h-32"
+                        class="flex flex-wrap h-auto gap-1 p-2 mt-1 overflow-auto border border-dashed rounded border-bottom border-slate-300 max-h-32"
                     >
                         <div
                             v-for="asset in policy.assets"
@@ -184,7 +184,7 @@
                             <a-button
                                 @click="handleAddAsset"
                                 size="small"
-                                v-if="!isAddAll"
+                                v-if="!isAddAll && policy.assets.length === 0"
                             >
                                 <span class="text-primary"> Add</span>
                                 <AtlanIcon
@@ -397,7 +397,7 @@
                     !connectorData.attributeValue ||
                     !policy.name ||
                     !policy?.assets?.length ||
-                    (policyType === 'meta' && !selectedPermition.length)
+                    (policyType === 'meta' && !selectedPermission.length)
                 "
                 class="btn-submit"
                 @click="handleSave"

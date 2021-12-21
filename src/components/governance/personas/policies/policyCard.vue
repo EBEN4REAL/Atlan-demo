@@ -41,9 +41,12 @@
                         <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>
                     <div v-if="policy.assets.length > 0">
-                        <span class="flex-none text-sm">
+                        <span class="flex-none text-sm" v-if="!isAddAll">
                             {{ policy.assets.length }}
                             {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
+                        </span>
+                        <span class="flex-none text-sm" v-if="isAddAll">
+                            All assets
                         </span>
                     </div>
                 </div>
@@ -200,6 +203,16 @@
                 )
                 return found?.attributes?.qualifiedName
             })
+
+            const isAddAll = computed(() => {
+                if (policy.value.assets.length === 1) {
+                    if (policy.value.assets[0] === connectionQfName.value) {
+                        return true
+                    }
+                }
+                return false
+            })
+
             const connectionName = computed(() => {
                 const found = connStore.getList.find(
                     (conn) => conn.guid === policy.value.connectionId
@@ -239,6 +252,7 @@
                 handleClickPlicyCard,
                 canDelete,
                 visibleDelete,
+                isAddAll,
             }
         },
     })

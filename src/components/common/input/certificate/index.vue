@@ -45,6 +45,9 @@
         >
             <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
         ></a-button>
+        <span v-else-if="showMessage" class="text-sm text-gray-500">{{
+            certificateStatusMessage(selectedAsset)
+        }}</span>
         <span v-else class="text-sm text-gray-500">No certification</span>
     </div>
 </template>
@@ -101,6 +104,13 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            showMessage: {
+                type: Boolean,
+                required: false,
+                default: () => {
+                    return false
+                },
             },
         },
         emits: ['change', 'update:modelValue'],

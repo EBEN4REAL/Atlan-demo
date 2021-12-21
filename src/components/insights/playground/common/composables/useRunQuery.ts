@@ -9,6 +9,7 @@ import { generateQueryStringParamsFromObj } from '~/utils/queryString'
 // import HEKA_SERVICE_API from '~/services/heka/index'
 import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export default function useProject() {
     const {
@@ -91,6 +92,7 @@ export default function useProject() {
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false)
     ) => {
+
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
@@ -111,11 +113,16 @@ export default function useProject() {
             ?.findMatches(';')
 
         if (semiColonMatchs?.length === 0) {
+            console.log('no semi colon')
             if (showVQB.value) {
                 queryText = selectedText
                 activeInlineTab.value.playground.editor.text = queryText
             } else {
-                queryText = activeInlineTab.value.playground.editor.text
+                if(selectedText && selectedText !== '') {
+                    queryText = selectedText
+                } else {
+                    queryText = activeInlineTab.value.playground.editor.text
+                }
             }
         } else if (selectedText && selectedText !== '') {
             if (showVQB.value) {
@@ -197,8 +204,15 @@ export default function useProject() {
             params.savedQueryId = activeInlineTab.value?.queryId
         }
         /* Adding a limit param if limit rows is checked and limit is passed*/
-        if (limitRows?.value && limitRows?.value?.checked)
+        if (limitRows?.value && limitRows?.value?.checked) {
             params['limit'] = limitRows.value.rowsCount
+        }
+
+        useAddEvent('insights', 'query', 'run', {
+            saved_query: !!params.savedQueryId,
+            visual_query: activeInlineTab.value.playground.isVQB,
+            limit_100: !!params.limit,
+        })
 
         let search_prms = generateQueryStringParamsFromObj(params)
 

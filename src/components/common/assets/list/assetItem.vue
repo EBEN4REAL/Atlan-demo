@@ -14,7 +14,7 @@
                 bulkSelectMode && isChecked ? 'bg-primary-light' : '',
             ]"
         >
-            <div class="flex items-start flex-1 px-3 py-3">
+            <div class="flex items-start flex-1 px-3 py-3 asset-card">
                 <a-checkbox
                     v-if="showCheckBox"
                     :checked="isChecked"

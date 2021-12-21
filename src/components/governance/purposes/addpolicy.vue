@@ -74,6 +74,7 @@
                             }
                         "
                         v-model:modelValue="selectedOwnersData"
+                        :edit-permission="true"
                         class="mb-6"
                         :read-only="false"
                         :destroy-tooltip-on-hide="true"
@@ -165,6 +166,7 @@
                     <DataMaskingSelector
                         v-model:maskType="policy.mask"
                         class="mb-6 w-80"
+                        :type="'purpose'"
                     />
                 </div>
 
@@ -472,7 +474,7 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', policyType.value, policy.value)
+                    emit('save', policyType.value, policy.value, isEdit.value)
                 }
             }
             const selectedPermition = computed(() => {

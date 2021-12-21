@@ -90,13 +90,19 @@
                     :disabled="!editPermission"
                     @click="closeMenu"
                     ><AnnouncementModal
-                        :editPermission="editPermission"
+                        :updating="announcementTitle(asset) ? true : false"
+                        :edit-permission="editPermission"
                         :asset="asset"
                         ><template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon icon="Megaphone" />
                                 <span class="pl-2 text-sm"
-                                    >Add Announcement</span
+                                    >{{
+                                        announcementTitle(asset)
+                                            ? 'Edit'
+                                            : 'Add'
+                                    }}
+                                    Announcement</span
                                 >
                             </div></template
                         ></AnnouncementModal
@@ -164,12 +170,13 @@
         setup(props) {
             // data
             const isVisible = ref(false)
-            const { isGTC } = useAssetInfo()
+            const { isGTC, announcementTitle } = useAssetInfo()
             const closeMenu = () => {
                 isVisible.value = false
             }
             return {
                 isVisible,
+                announcementTitle,
                 closeMenu,
                 isGTC,
             }

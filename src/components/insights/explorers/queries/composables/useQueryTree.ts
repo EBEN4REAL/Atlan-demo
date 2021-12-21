@@ -390,7 +390,7 @@ const useQueryTree = ({
         refetchEntityType?: 'query' | 'queryFolder'
     ) => {
         // if the root level of the tree needs a refetch
-        console.log('refetch: ', {
+        console.log('new refetch: ', {
             guid,
             refetchEntityType,
         })
@@ -406,7 +406,7 @@ const useQueryTree = ({
                 queryResponse = await getQueries()
             }
 
-            console.log('parent update final api: ', {
+            console.log('collection parent update final api: ', {
                 guid,
                 folderResponse,
                 queryResponse,

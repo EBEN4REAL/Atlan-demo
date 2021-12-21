@@ -1,146 +1,52 @@
-/* eslint-disable import/prefer-default-export */
-import { computed, watch, ref } from 'vue'
+import { computed, watch, ref, Ref } from 'vue'
+import { smtp_form, default_model } from '~/constant/smtp'
 
 import { Tenant } from '~/services/service/tenant'
 import useTenantData from '~/composables/tenant/useTenantData'
+import { isString } from '~/utils/checkType'
+
+interface SmtpFormModel {
+    "auth": boolean,
+    "from": string,
+    "fromDisplayName": string
+    "host": string,
+    "password": string,
+    "port": number,
+    "replyTo": string,
+    "replyToDisplayName": string,
+    "ssl": boolean,
+    "starttls": boolean,
+    "user": string
+}
 
 export function useSmtp() {
-    const { smtpServer, updateSMTPConfig } = useTenantData()
+    const { smtpServer, tenantRaw, setSMTPConfig } = useTenantData()
 
     const formRef = ref()
     const userFieldRef = ref()
-    const rules = {
-        host: [
-            {
-                required: true,
-                message: 'Host is required',
-                trigger: 'blur',
-            },
-        ],
-        from: [
-            {
-                required: true,
-                message: 'From email address is required.',
-                trigger: 'blur',
-            },
-            {
-                type: 'email',
-                message: 'Please enter a valid email address',
-                trigger: 'blur',
-            },
-        ],
-        replyTo: [
-            {
-                type: 'email',
-                message: 'Please enter a valid email address',
-                trigger: 'blur',
-            },
-        ],
+    const password = ref("")
+
+
+    const parseSmtpServer = (c) => {
+        const config = { ...default_model, ...c }
+        Object.keys(config).forEach(k => {
+            const type = smtp_form.find(f => f.id === k)?.type
+            if (type && ['integer', 'switch', 'number'].includes(type) && isString(config[k]))
+                config[k] = JSON.parse(config[k])
+
+        })
+        return config
     }
-
-    const smtpConfig = [
-        {
-            id: 'host',
-            type: 'text',
-            label: 'Host',
-            required: true,
-        },
-        {
-            id: 'port',
-            type: 'text',
-            label: 'Port',
-            placeholder: 'Defaults to 25',
-        },
-        {
-            id: 'fromDisplayName',
-            type: 'text',
-            label: 'From Display Name',
-        },
-        {
-            id: 'from',
-            label: 'From Email',
-            required: true,
-        },
-        {
-            id: 'replyToDisplayName',
-            type: 'text',
-            label: 'Reply To Display Name ',
-        },
-        {
-            id: 'replyTo',
-            label: 'Reply To',
-        },
-        {
-            id: 'ssl',
-            type: 'switch',
-            label: 'Enable SSL',
-        },
-        {
-            id: 'starttls',
-            type: 'switch',
-            label: 'Enable Start TLS',
-        },
-        {
-            id: 'auth',
-            type: 'switch',
-            label: 'Enable Authentication',
-        },
-    ]
-    const testSmtpConfigState = ref('')
-    const testSmtpConfigError = ref('')
-    const saveSmtpConfigState = ref('')
-    const saveSmtpConfigError = ref('')
-    const passwordReentered = ref(false)
-
-    const timerMessage = (
-        ref: any,
-        value: string = '',
-        milliseconds: number = 4000
-    ) => {
-        setTimeout(() => {
-            ref.value = value
-        }, milliseconds)
-    }
-
-    const finalTestSmtpConfigError = computed(() =>
-        testSmtpConfigError.value && testSmtpConfigError.value.length < 40
-            ? testSmtpConfigError.value
-            : 'SMTP config are incorrect'
+    const smtpFormModal = ref<SmtpFormModel>(
+        { ...parseSmtpServer(smtpServer.value) }
     )
 
-    const updateSmtpProperty = (key: string, value: string) => {
-        if (key === 'password') passwordReentered.value = true
-
-        const payload = {
-            ...smtpServer.value,
-            [key]: value,
-        }
-        updateSMTPConfig(payload)
-    }
-
     const testSmtpConfig = () => {
-        // if (passwordReentered.value) {
-        //     testSmtpConfigState.value = 'INVALID'
-        //     testSmtpConfigError.value = 'Please re-enter password to test'
-        //     timerMessage(testSmtpConfigState)
-        //     timerMessage(testSmtpConfigError)
-
-        //     return
-        // }
         const testErrorMessage = ref('')
         testErrorMessage.value = ''
 
-        const params = computed(() => ({
-            host: smtpServer.value.host,
-            port: parseInt(smtpServer.value.port, 10),
-            username: smtpServer.value.user,
-            password: smtpServer.value.password,
-            sslEnabled: smtpServer.value.ssl === 'true',
-            tlsEnabled: smtpServer.value.startTls === 'true',
-        }))
-
         const { data, isLoading, error, isReady, mutate } =
-            Tenant.TestSmtpConfig(params, { asyncOptions: { immediate: false } })
+            Tenant.TestSmtpConfig(smtpFormModal, { asyncOptions: { immediate: false } })
 
 
 
@@ -148,7 +54,7 @@ export function useSmtp() {
             if (isLoading.value)
                 testErrorMessage.value = ''
             if (error?.value) {
-                const errorMessage = e.response?.data?.message
+                const errorMessage = error?.value.response?.data?.message
                 testErrorMessage.value = errorMessage
             }
         })
@@ -162,49 +68,55 @@ export function useSmtp() {
         refName.value.onFieldBlur()
     }
 
+    const objtoString = (o) => {
+        const config = { ...o }
+        Object.keys(config).forEach(k => {
+            config[k] = config[k]?.toString() ?? ''
+        })
+        return config
+    }
+    const body = computed(() => ({
+        ...tenantRaw.value,
+        smtpServer: objtoString(smtpFormModal.value)
+    }))
+
+    const { data, isLoading, error, isReady, mutate } = Tenant.UpdateTenant(body, { asyncOptions: { immediate: false } })
+    const errorMessage = ref('')
+
     const saveSmtpConfig = async () => {
         formRef.value
             .validate()
-            .then(() => {
-                saveSmtpConfigState.value = 'SAVING'
-                const {
-                    data: saveSmtpConfigReqData,
-                    error: saveSmtpConfigReqError,
-                    isLoading,
-                } = Tenant.UpdateSmtpConfig({ smtpServer: smtpServer.value })
-                watch([isLoading], () => {
-                    if (!saveSmtpConfigReqError.value) {
-                        saveSmtpConfigState.value = 'SUCCESS'
-                        timerMessage(saveSmtpConfigState)
-                    } else {
-                        const errorMessage = ''
-                        saveSmtpConfigState.value = 'ERROR'
-                        saveSmtpConfigError.value = `${errorMessage}`
-                        timerMessage(saveSmtpConfigState)
+            .then(async () => {
+                await mutate()
+                watch([error, data], () => {
+                    if (data.value)
+                        errorMessage.value = ''
+                    setSMTPConfig(objtoString(smtpFormModal.value))
+                    if (error?.value) {
+                        const msg = error?.value.response?.data?.message
+                        errorMessage.value = msg
                     }
                 })
             })
-            .catch((error: any) => {
-                saveSmtpConfigState.value = 'ERROR'
-                timerMessage(saveSmtpConfigState)
-            })
+    }
+
+    const setPassword = () => {
+        // if password previously saved then  == ********** else == ""
+        smtpFormModal.value.password = password.value || "**********"
     }
 
     return {
+        setPassword,
+        data, isLoading, error, isReady,
+        smtpFormModal,
         formRef,
-        rules,
+        tenantRaw,
         userFieldRef,
-        smtpConfig,
-        testSmtpConfigState,
-        testSmtpConfigError,
-        saveSmtpConfigState,
-        saveSmtpConfigError,
-        passwordReentered,
-        updateSmtpProperty,
         testSmtpConfig,
         saveSmtpConfig,
         smtpServer,
-        finalTestSmtpConfigError,
+        errorMessage,
         triggerBlur,
+        password
     }
 }

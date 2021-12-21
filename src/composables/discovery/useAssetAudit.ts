@@ -5,40 +5,6 @@ import { eventMap } from '~/constant/events'
 import { Entity } from '~/services/meta/entity'
 
 const useAssetAudit = (params: any, guid: string) => {
-    const response = reactive({
-        audits: [] as any,
-        error: null as any,
-        isLoading: ref(false),
-        isFetchingMore: ref(false),
-        isAllLogsFetched: true,
-    })
-
-    const fetchAudits = (p: any, g: string) => {
-        const { data, error, isLoading } = Entity.fetchAudits(p, g)
-        response.audits = data
-        response.error = error
-        response.isLoading = isLoading
-        // @ts-ignore
-        response.isAllLogsFetched = data?.value?.length < params.count
-    }
-
-    const fetchMoreAudits = (fetchmoreParams: any) => {
-        const { data, isLoading, error } = Entity.fetchMoreAudits(
-            fetchmoreParams,
-            guid
-        )
-
-        response.isFetchingMore = isLoading
-
-        watch(data, () => {
-            if (data.value?.length && !error.value) {
-                response.audits = ref([...response.audits, ...data.value])
-                response.isAllLogsFetched =
-                    data?.value?.length < fetchmoreParams.count
-            }
-        })
-    }
-
     const getEventByAction = (asset: any) =>
         eventMap.find((event: any) => event.id === asset.action)
 
@@ -93,9 +59,19 @@ const useAssetAudit = (params: any, guid: string) => {
                 'certificateStatus' in attributes ||
                 'certificateStatusMessage' in attributes
             ) {
-                data.value = attributes
+                data.value = logs
                 data.displayValue = 'certificate'
                 data.component = 'Certificate'
+                return data
+            }
+            if (
+                'announcementType' in attributes ||
+                'announcementTitle' in attributes ||
+                'announcementMessage' in attributes
+            ) {
+                data.value = logs
+                data.displayValue = 'announcement'
+                data.component = 'Announcement'
                 return data
             }
         }
@@ -463,14 +439,10 @@ const useAssetAudit = (params: any, guid: string) => {
         return `${user}`
     }
 
-    fetchAudits(params, guid)
     return {
-        ...toRefs(response),
-        fetchAudits,
         getEventByAction,
         getDetailsForEntityAuditEvent,
         getActionUser,
-        fetchMoreAudits,
         getAuditEventComponent,
     }
 }

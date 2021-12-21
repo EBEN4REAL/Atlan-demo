@@ -36,17 +36,26 @@
         @change="handleInputChange"
     ></a-input>
     <a-input
-        v-else-if="dataType === 'string'"
+        v-else-if="['string', 'text'].includes(dataType)"
         v-model:value="localValue"
         :maxlength="max || 50"
         @change="handleInputChange"
     ></a-input>
     <a-input-number
-        v-else-if="['int', 'long'].includes(dataType.toLowerCase())"
+        v-else-if="
+            ['int', 'long', 'integer', 'number'].includes(
+                dataType.toLowerCase()
+            )
+        "
         v-model:value="localValue"
         :precision="0"
         @change="handleInputChange"
     ></a-input-number>
+    <a-switch
+        v-else-if="dataType === 'switch'"
+        v-model:checked="localValue"
+        @change="handleInputChange"
+    />
     <a-input-number
         v-else-if="['double', 'float'].includes(dataType.toLowerCase())"
         v-model:value="localValue"

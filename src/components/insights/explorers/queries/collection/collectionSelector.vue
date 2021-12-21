@@ -68,6 +68,7 @@
                 <div
                     class="flex flex-row-reverse items-center pr-4 mt-auto border-t border-gray-300 cursor-pointer h-9"
                     @click="emit('toggleCollectionModal')"
+                    v-auth="[map.CREATE_COLLECTION]"
                 >
                     <AtlanIcon
                         icon="ArrowRight"
@@ -141,6 +142,7 @@
     import { useAuthStore } from '~/store/auth'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import CollectionItem from './collectionItem.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'CollectionSelector',
@@ -271,6 +273,7 @@
                 sharedCollections,
                 privateCollections,
                 emit,
+                map,
             }
         },
     })

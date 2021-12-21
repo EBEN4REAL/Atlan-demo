@@ -32,6 +32,9 @@
             BusinessMetadata: defineAsyncComponent(
                 () => import('./types/businessMetadata/index.vue')
             ),
+            Announcement: defineAsyncComponent(
+                () => import('./types/announcement/index.vue')
+            ),
         },
         props: {
             data: {

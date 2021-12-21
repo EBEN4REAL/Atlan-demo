@@ -118,29 +118,29 @@
                 @event="handleResetEvent"
             ></EmptyView>
         </div>
-
-        <AssetList
-            v-else-if="queryText"
-            ref="assetlistRef"
-            :list="list"
-            :selectedAsset="selectedGlossary"
-            :preference="preference"
-            :isLoadMore="isLoadMore"
-            :isLoading="isValidating"
-            @loadMore="handleLoadMore"
-            class="mt-3"
-        >
-            <template v-slot:default="{ item }">
-                <GlossaryItem
-                    :item="item"
-                    :selectedGuid="selectedGlossary?.guid"
-                    :checkable="checkable"
-                    :checked="checkedGuids?.includes(item.guid)"
-                    @preview="handlePreview"
-                    @check="onSearchItemCheck"
-                ></GlossaryItem>
-            </template>
-        </AssetList>
+        <div v-else-if="queryText" :class="$style.searchResults">
+            <AssetList
+                ref="assetlistRef"
+                :list="list"
+                :selectedAsset="selectedGlossary"
+                :preference="preference"
+                :isLoadMore="isLoadMore"
+                :isLoading="isValidating"
+                @loadMore="handleLoadMore"
+                class="mt-3"
+            >
+                <template v-slot:default="{ item }">
+                    <GlossaryItem
+                        :item="item"
+                        :selectedGuid="selectedGlossary?.guid"
+                        :checkable="checkable"
+                        :checked="checkedGuids?.includes(item.guid)"
+                        @preview="handlePreview"
+                        @check="onSearchItemCheck"
+                    ></GlossaryItem>
+                </template>
+            </AssetList>
+        </div>
     </div>
 </template>
 
@@ -189,9 +189,10 @@
     import { glossaryFilters } from '~/constant/filters/discoveryFilters'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
-        name: 'AssetDiscovery',
+        name: 'GlossaryExplorer',
         components: {
             AssetList,
             AggregationTabs,
@@ -286,7 +287,7 @@
             // Virtual List Height
             const glossaryBox = ref()
             const height = computed(() => {
-                if(props.checkable) return glossaryTree?.value?.clientHeight
+                if (props.checkable) return glossaryTree?.value?.clientHeight
                 if (glossaryBox.value) {
                     return glossaryBox.value.clientHeight - 150
                 }
@@ -345,11 +346,28 @@
             const handlePreview = (item) => {
                 if (!props.checkable) router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
+                sendSearchClickeEvent()
+            }
+
+            // analytics only to be sent for glossary page and not for filters
+            const sendSearchAnalyticsEvent = useDebounceFn(() => {
+                if (window.location.pathname.includes('/glossary')) {
+                    console.log('glossary tree search')
+                    useAddEvent('gtc', 'tree', 'searched')
+                }
+            }, 600)
+
+            const sendSearchClickeEvent = () => {
+                if (window.location.pathname.includes('/glossary')) {
+                    console.log('glossary tree result clicked')
+                    useAddEvent('gtc', 'tree', 'search_result_clicked')
+                }
             }
 
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 quickChange()
+                sendSearchAnalyticsEvent()
             }, 150)
 
             const handleFilterChange = () => {
@@ -442,10 +460,12 @@
                 emit('check', checkedNodes, { checkedKeys, checked })
             }
             const onSearchItemCheck = (checkedNode, checked) => {
-                if (!checkedGuids.value.includes(checkedNode.guid)) {
-                    checkedGuids.value.push(checkedNode.guid)
+                if (checkedNode.typeName === 'AtlasGlossaryTerm') {
+                    if (!checkedGuids.value.includes(checkedNode.guid)) {
+                        checkedGuids.value.push(checkedNode.guid)
+                    }
+                    emit('searchItemCheck', checkedNode, checked)
                 }
-                emit('searchItemCheck', checkedNode, checked)
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
@@ -503,12 +523,20 @@
         max-width: 200px;
         min-width: 200px;
     }
+    .searchResults {
+        @apply overflow-y-auto bg-white;
+    }
+
     .checkableTree {
+        .searchResults {
+            max-height: 500px;
+        }
+
         :global(.glossaryTreeWrapper) {
             @apply overflow-y-auto;
             max-height: 300px;
         }
-    
+
         :global(.ant-tree-checkbox) {
             @apply my-auto mr-1 mt-2;
             position: absolute;

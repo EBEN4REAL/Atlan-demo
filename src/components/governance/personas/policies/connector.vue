@@ -395,9 +395,9 @@
         .ant-select-switcher-icon {
             font-weight: normal !important;
         }
-        .ant-select-tree-treenode-leaf-last {
+        .ant-select-tree-treenode.ant-select-tree-treenode-disabled.ant-select-tree-treenode-switcher-close.ant-select-tree-treenode-leaf-last {
             .ant-select-tree-switcher-noop {
-                display: none;
+                display: none; // hides extra left side space for info node
             }
         }
     }

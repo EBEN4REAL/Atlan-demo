@@ -63,7 +63,7 @@
 
                 <div
                     class="flex items-center justify-center w-full px-4"
-                    style="height: 110px"
+                    style="height: 80px"
                     v-else
                 >
                     <a-spin></a-spin>

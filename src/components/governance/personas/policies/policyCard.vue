@@ -113,7 +113,7 @@
                             class="w-auto h-6 p-1 rounded-tl rounded-bl"
                         />
                         <span class="px-1 text-sm text-gray-700">
-                            {{ connectionQfName?.split('/')?.slice(-1)[0] }}
+                            {{ connectionName }}
                         </span>
                     </div>
                     <template v-if="policy.assets.length > 0">
@@ -321,6 +321,12 @@
                 )
                 return found?.attributes?.qualifiedName
             })
+            const connectionName = computed(() => {
+                const found = connStore.getList.find(
+                    (conn) => conn.guid === policy.value.connectionId
+                )
+                return found?.attributes?.name || ''
+            })
             const getPopoverContent = (policy: any) =>
                 `Are you sure you want to delete ${policy?.name}?`
             const handleClickPlicyCard = () => {
@@ -338,6 +344,7 @@
                 getImage,
                 actions,
                 connectionQfName,
+                connectionName,
                 assetsIcons,
                 showAll,
                 splitAssets,

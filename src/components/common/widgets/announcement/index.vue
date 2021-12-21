@@ -20,7 +20,9 @@
                     {{ announcementMessage(selectedAsset) }}
                 </div>
             </div>
-            <div v-if="selectedAssetUpdatePermission(selectedAsset)">
+            <div
+                v-if="selectedAssetUpdatePermission(selectedAsset) && allowEdit"
+            >
                 <a-dropdown trigger="click" placement="bottomRight">
                     <div>
                         <AtlanIcon
@@ -43,6 +45,7 @@
                                             selectedAsset
                                         )
                                     "
+                                    :updating="true"
                                     ><template #trigger>
                                         <div class="flex items-center">
                                             <AtlanIcon
@@ -82,6 +85,7 @@
         </div>
         <div
             class="flex items-center justify-between mt-2 text-gray-500 gap-x-1"
+            v-if="announcementUpdatedBy(selectedAsset)"
         >
             <div class="flex text-sm">
                 <UserAvatar
@@ -117,9 +121,15 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            allowEdit: {
+                type: Boolean,
+                default() {
+                    return true
+                },
+            },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, allowEdit } = toRefs(props)
             const {
                 announcementTitle,
                 announcementMessage,
@@ -164,6 +174,7 @@
                 selectedAssetUpdatePermission,
                 bgClass,
                 icon,
+                allowEdit,
             }
         },
     })

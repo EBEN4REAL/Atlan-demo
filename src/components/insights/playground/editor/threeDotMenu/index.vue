@@ -481,7 +481,7 @@
                         <hr />
                     </div>
                     <a-menu-item @click="openCommandPallete" class="px-4 py-2"
-                        >Open command pallete</a-menu-item
+                        >Open command palette</a-menu-item
                     >
                     <a-menu-item
                         @click="toggleVQB"

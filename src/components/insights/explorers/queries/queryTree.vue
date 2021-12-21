@@ -2,7 +2,7 @@ TR
 <template>
     <div class="h-full max-h-screen" :class="$style.queryTreeStyles">
         <div class="h-full overflow-x-hidden query-tree-root-div">
-            <div v-if="!isQueriesLoading && treeData?.length">
+            <div v-if="!isLoading && treeData?.length">
                 <a-tree
                     :expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
@@ -74,7 +74,7 @@ TR
                         Your collection queries will appear here
                     </p>
                 </div>
-                <div v-if="hasWritePermission">
+                <div v-if="hasWritePermission" v-auth="[map.CREATE_COLLECTION]">
                     <a-button
                         @click="toggleCreateQueryModal"
                         class="flex items-center w-48 text-sm text-gray-700 border rounded hover:text-primary h-9"
@@ -153,11 +153,14 @@ TR
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import Loader from '@common/loaders/page.vue'
+    import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         components: {
             Loader,
+            LoadingView,
             AtlanIcon,
             AtlanBtn,
             StatusBadge,
@@ -298,6 +301,7 @@ TR
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
                 hasWritePermission,
+                map,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

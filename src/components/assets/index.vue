@@ -150,8 +150,7 @@
                                     bulkSelectedAssets &&
                                     bulkSelectedAssets.length
                                         ? true
-                                        : false
-                                '
+                                        : false'
                                 :enableSidebarDrawer='enableSidebarDrawer'
                                 :is-checked='checkSelectedCriteriaFxn(item)'
                                 @listItem:check='
@@ -186,6 +185,7 @@
     import ListNavigator from '@common/keyboardShortcuts/listNavigator.vue'
 
     import { useDebounceFn, whenever, useMagicKeys } from '@vueuse/core'
+    // import PopOverAsset from '@common/popover/assets/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
@@ -200,6 +200,7 @@
         AssetRelationAttributes,
         InternalAttributes,
         SQLAttributes,
+        GlossaryAttributes
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -222,6 +223,7 @@
             AtlanIcon,
             AssetItem,
             ListNavigator,
+            // PopOverAsset,
         },
         props: {
             showFilters: {
@@ -238,12 +240,10 @@
             preference: {
                 type: Object as PropType<any>,
                 required: false,
-                default: () => {
-                    return {
-                        sort: 'default',
-                        display: [],
-                    }
-                },
+                default: () => ({
+                    sort: 'default',
+                    display: [],
+                }),
             },
             showAggrs: {
                 type: Boolean,
@@ -279,10 +279,15 @@
                 type: String,
                 default: '',
             },
+            allCheckboxAreaClick: {
+                type: Boolean,
+                default: false,
+            },
         },
         setup(props, { emit }) {
-            const { preference: preferenceProp, checkedCriteria } =
+            const { preference: preferenceProp, checkedCriteria, initialFilters, page, projection, allCheckboxAreaClick } =
                 toRefs(props)
+                
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -303,13 +308,16 @@
                 ...SQLAttributes,
                 ...customMetadataProjections,
             ])
+            if(page.value === 'glossary') {
+                defaultAttributes.value.push(...GlossaryAttributes)
+            }
             const relationAttributes = ref([...AssetRelationAttributes])
+            
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchBox: Ref<null | HTMLInputElement> = ref(null)
 
-            const { initialFilters, page, projection } = toRefs(props)
             const discoveryStore = useAssetStore()
 
             if (discoveryStore.activeFacet && page.value === 'assets') {
@@ -397,7 +405,6 @@
             }, 600)
 
             const sendFilterEvent = useDebounceFn((filterItem) => {
-                console.log('sendFilterEvent', filterItem)
                 if (filterItem && filterItem.analyticsKey) {
                     useAddEvent('discovery', 'filter', 'changed', {
                         type: filterItem.analyticsKey,
@@ -406,11 +413,15 @@
             }, 600)
 
             const handleClickAssetItem = (...args) => {
-                console.log('handleClickAssetItem', ...args)
+                if (allCheckboxAreaClick.value) {
+                    updateBulkSelectedAssets(...args)
+                }
                 useAddEvent('discovery', 'asset_card', 'clicked', {
                     click_index: args[1],
                 })
-                handlePreview(...args)
+                if (handlePreview) {
+                    handlePreview(...args)
+                }
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -427,7 +438,6 @@
             }
 
             const handleAssetTypeChange = (tabName) => {
-                console.log('handleAssetTypeChange called', tabName)
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActivePostFacet(postFacets.value)
@@ -480,7 +490,6 @@
                 )
 
                 if (found) {
-                    console.log(found)
                     return `Search ${found.label.toLowerCase()} assets`
                 }
                 return 'Search all assets'
@@ -494,7 +503,6 @@
             const { tab, shift_tab } = keys
 
             const handleFocusOnInput = () => {
-                console.log('handleFocusOnInput', searchBox.value)
                 // sear.value?.focus()
                 searchBox?.value?.focusInput()
             }
@@ -505,7 +513,6 @@
                     return
                 }
                 rotateAggregateTab(1, handleFocusOnInput)
-                console.log('go next aggregate', isCmndKVisible.value)
             })
 
             whenever(shift_tab, () => {
@@ -513,7 +520,6 @@
                     // don't run if cmd k is on
                     return
                 }
-                console.log('go previous aggregate', isCmndKVisible.value)
                 rotateAggregateTab(-1, handleFocusOnInput)
             })
 

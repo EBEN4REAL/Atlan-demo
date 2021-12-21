@@ -136,7 +136,6 @@
             // re-route on no id present in params
             const reRoute = () => {
                 if (selectedGlossaryQf.value?.length) {
-                    console.log('condition 1')
                     updateList(getGlossaryByQF(selectedGlossaryQf.value))
                     router.push(
                         `/glossary/${
@@ -144,7 +143,6 @@
                         }/overview`
                     )
                 } else if (getFirstGlossaryQF()) {
-                    console.log('con 2')
                     updateList(getGlossaryByQF(getFirstGlossaryQF()))
                     router.replace(
                         `/glossary/${

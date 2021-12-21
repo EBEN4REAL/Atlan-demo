@@ -5,7 +5,7 @@
                 <a-menu
                     v-model:selectedKeys="current"
                     mode="vertical"
-                    style="width: 100%"
+                    style="width: inherit"
                     class="admin-sidebar"
                     @click="handleClick"
                 >
@@ -52,7 +52,7 @@
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen overflow-y-auto">
+        <div class="w-4/5 max-h-screen overflow-y-auto pl-0 pr-6">
             <router-view></router-view>
         </div>
     </div>

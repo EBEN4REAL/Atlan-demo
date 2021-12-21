@@ -7,7 +7,31 @@
             :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"
             @click="handleClickPlicyCard"
         >
-            <div class="flex items-center justify-between mb-1">
+            <div class="flex mb-1 gap-x-3">
+                <div class="text-gray-700">
+                    <AtlanIcon
+                        icon="Settings"
+                        v-if="type === 'meta'"
+                        class="-mt-0.5"
+                    />
+                    <AtlanIcon
+                        icon="QueryGrey"
+                        v-if="type === 'data'"
+                        class="-mt-0.5"
+                    />
+
+                    <span class="ml-1">{{ policy?.name }}</span>
+
+                    (<span class="" data-test-id="policy-type">{{
+                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
+                    }}</span
+                    >)
+                </div>
+                <div>
+                    {{ policy.createdBy }}
+                </div>
+            </div>
+            <div class="flex items-center justify-between">
                 <div class="flex items-center gap-x-3">
                     <div class="flex items-center">
                         <img
@@ -17,7 +41,6 @@
                         <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>
                     <div v-if="policy.assets.length > 0">
-                        <AtlanIcon icon="Compass" class="mr-1" />
                         <span class="flex-none text-sm">
                             {{ policy.assets.length }}
                             {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
@@ -29,27 +52,6 @@
                         type === 'meta' ? 'Denied Permissions' : 'Denied Query'
                     }}
                 </span>
-            </div>
-            <div class="flex gap-x-3">
-                <div class="text-gray-500">
-                    <AtlanIcon
-                        icon="Settings"
-                        v-if="type === 'meta'"
-                        class="-mt-0.5"
-                    />
-                    <AtlanIcon
-                        icon="QueryGrey"
-                        v-if="type === 'data'"
-                        class="-mt-0.5"
-                    />
-                    <span class="ml-1" data-test-id="policy-type">{{
-                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                    }}</span>
-                    ({{ policy?.name }})
-                </div>
-                <div>
-                    {{ policy.createdBy }}
-                </div>
             </div>
         </div>
 

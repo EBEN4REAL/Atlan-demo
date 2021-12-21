@@ -1,5 +1,55 @@
 <template>
-    <a-popover :mouseEnterDelay="0.2" :mouseLeaveDelay="0.2">
+    <a-popover
+        :mouseEnterDelay="0.2"
+        :mouseLeaveDelay="0.2"
+        @visibleChange="handleVisibleChange"
+        placement="left"
+    >
+        <template #content>
+            <div class="groups-popover">
+                <div
+                    class="flex flex-col"
+                    v-if="!isLoading && selectedGroup.alias === item"
+                >
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center gap-3 mt-2">
+                                <div>
+                                    <div
+                                        class="flex items-center text-sm font-semibold capitalize"
+                                    >
+                                        <span>{{ selectedGroup?.name }}</span>
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        @{{ item }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
+                        >
+                            <div class="mr-1">
+                                {{ selectedGroup?.memberCount }}
+                            </div>
+                            Users
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="flex items-center justify-center w-full px-4"
+                    style="height: 110px"
+                    v-else
+                >
+                    <a-spin></a-spin>
+                </div>
+                <a-button class="mt-3" block @click="handleClickGroup">
+                    View Profile
+                    <AtlanIcon icon="Enter" class="ml-1 mb-0.5" />
+                </a-button>
+            </div>
+        </template>
         <slot></slot>
     </a-popover>
 </template>
@@ -27,51 +77,47 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
+
             const params = {
                 limit: 1,
                 offset: 0,
-                filter: [{ name: item.value }],
-            }
-            const { groupList } = useGroup(params, item.value)
-            const groupData = computed(() => groupList.value[0] || {})
-            const bussinesCountRef = ref(0)
-            const assetCountRef = ref(0)
-            const memberListParams = {
-                groupId: groupList.value[0]?.id,
-                params: {
-                    limit: 10,
-                    offset: 0,
-                    sort: 'firstName',
-                    filter: {},
+                filter: {
+                    $and: [{ name: item.value }],
                 },
             }
-            const { memberList } = useGroupMembers(memberListParams)
-            watch(memberList, () => {
-                const arrUserName = memberList.value.map((el) => el.username)
-                const { bussinesCount, assetCount } = useUserPopover(
-                    'group',
-                    arrUserName
-                )
-                watch(
-                    [assetCount, bussinesCount],
-                    ([newAssetCount, newBussinesCount]) => {
-                        assetCountRef.value = newAssetCount
-                        bussinesCountRef.value = newBussinesCount
-                    }
-                )
-            })
+
+            const { groupList, isLoading, getGroupList } = useGroup(
+                params,
+                false
+            )
+
+            const selectedGroup = computed(() =>
+                groupList && groupList.value && groupList.value.length
+                    ? groupList.value[0]
+                    : {}
+            )
+
             const { showGroupPreview, setGroupUniqueAttribute } =
                 useGroupPreview()
+
             const handleClickGroup = () => {
                 setGroupUniqueAttribute(item.value, 'groupAlias')
                 showGroupPreview({ allowed: ['about', 'assets', 'members'] })
             }
 
+            const handleVisibleChange = (state) => {
+                if (state) {
+                    getGroupList()
+                }
+            }
+
             return {
-                groupData,
-                bussinesCount: bussinesCountRef,
-                assetCount: assetCountRef,
+                selectedGroup,
+
                 handleClickGroup,
+                isLoading,
+                handleVisibleChange,
+                getGroupList,
             }
         },
     }
@@ -80,18 +126,5 @@
     .groups-popover {
         width: 370px;
         padding: 16px;
-    }
-    .icon-blue-color {
-        path {
-            stroke: #5277d7;
-        }
-    }
-
-    .dot {
-        background: #c4c4c4;
-        height: 4px;
-        width: 4px;
-        border-radius: 50%;
-        margin: 0 5px;
     }
 </style>

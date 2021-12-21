@@ -37,6 +37,7 @@
                 :disabled="isEditing"
                 :list="filteredPersonas"
                 data-key="id"
+                @select="handleSelectItem"
             >
                 <template #default="{ item, isSelected }">
                     <div
@@ -200,11 +201,11 @@
                     }
                 }
             })
-            watch(selectedPersonaId, () => {
+            const handleSelectItem = (item) => {
                 router.replace(
-                    `/governance/personas/${selectedPersonaId.value}`
+                    `/governance/personas/${item.id}`
                 )
-            })
+            }
             watch(
                 roles,
                 () => {
@@ -242,6 +243,7 @@
                 selectedPolicy,
                 whitelistedConnectionIds,
                 roles,
+                handleSelectItem
             }
         },
     })

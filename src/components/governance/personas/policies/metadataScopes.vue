@@ -104,7 +104,7 @@
 <style lang="less" module>
     .checkbox_custom {
         :global(.ant-checkbox-group-item) {
-            @apply my-1  !important;
+            // @apply my-1  !important;
         }
     }
 </style>
@@ -115,11 +115,15 @@
         }
     }
     .meta-data-scope {
+        .ant-checkbox {
+            @apply mt-1;
+            // padding-top: 2px;
+            // @apply pt-2;
+        }
         display: flex;
         .ant-checkbox-wrapper {
             display: flex;
             .ant-checkbox {
-                margin-top: 5px;
                 margin-right: 7px;
                 height: fit-content;
             }
@@ -128,16 +132,17 @@
             flex: 1;
         }
         .desc {
-            margin-top: 0.25rem;
-            margin-bottom: 0.25rem;
+            // margin-top: 0.25rem;
+            // margin-bottom: 0.25rem;
+            // @apply mt-1;
         }
         .wrapper-checkbox {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            height: auto;
+            // display: flex;
+            // flex-direction: column;
+            // flex: 1;
+            // height: auto;
             .ant-checkbox-wrapper {
-                height: 40px;
+                // height: 40px;
             }
             // justify-content: space-between;
         }

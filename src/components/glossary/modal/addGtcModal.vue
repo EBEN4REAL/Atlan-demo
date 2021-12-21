@@ -135,6 +135,7 @@
     import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
 
     import GTCSelect from '@/common/popover/gtcSelect/index.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AddGtcModal',
@@ -324,8 +325,26 @@
                     if (!isCreateMore.value) {
                         visible.value = false
                     }
+                    let eventCategory
+                    let properties = {}
+                    if (localEntityType.value === 'AtlasGlossaryCategory') {
+                        eventCategory = 'category'
+                        properties = {
+                            create_more: isCreateMore.value,
+                        }
+                    } else if (localEntityType.value === 'AtlasGlossaryTerm') {
+                        eventCategory = 'term'
+                        properties = {
+                            create_more: isCreateMore.value,
+                        }
+                    } else {
+                        eventCategory = 'glossary'
+                    }
+                    useAddEvent('gtc', eventCategory, 'created', properties)
                     resetInput()
                     message.success(`${typeNameTitle.value} created`)
+                    // isCreateMore
+                    // localEntityType: "AtlasGlossaryCategory", "AtlasGlossaryTerm", "AtlasGlossary"
                     // resetInput()
 
                     if (guidCreatedMaps.value?.length > 0) {

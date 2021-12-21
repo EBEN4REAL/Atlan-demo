@@ -1,32 +1,79 @@
 export function useError() {
-   
+    // msg: null meaning take msg from error Object from Heka
+    // data: true means we have to user extra data coming from heka
+
+    const LINE_ERROR_NAMES = ['VALIDATION_ERROR', 'QUERY_PARSING_ERROR']
+    const SOURCE_ACCESS_ERROR_NAMES = ['FORBIDDEN']
+
     const hekaErrorMap = {
         '400': {
-            '001': 'Bad request',
-            '002': 'Missing information in the request',
-            '003': 'Missing a mandatory attribute in the request body/parameter',
-            '004': 'Operation not supported'
+            '001': {
+                action: null,
+                msg: 'Bad request',
+            },
+            '002': {
+                action: null,
+                msg: 'Missing information in the request',
+            },
+            '003': {
+                action: null,
+                msg: 'Missing a mandatory attribute in the request body/parameter',
+            },
+            '004': {
+                action: null,
+                msg: null,
+            },
         },
         '401': {
-            '001': 'User Unauthorized'
+            '001': {
+                action: null,
+                msg: 'User Unauthorized',
+            },
         },
         '403': {
-            '001': 'User not allowed to perform an action'
+            '001': {
+                action: null,
+                msg: 'User is not allowed to access the asset',
+                data: true,
+            },
         },
         '500': {
-            '001':'Something went wrong with the system',
-            '002':'Errors while query execution at source',
-            '003':'Error validating the assets in the query',
-            '004':'Error occurred while parsing the query'
+            '001': {
+                action: null,
+                msg: 'Something went wrong with the system',
+            },
+            '002': {
+                action: null,
+                msg: 'Errors while query execution at source',
+            },
+            '003': {
+                action: null,
+                msg: null,
+                data: true,
+            },
+            '004': {
+                action: null,
+                msg: null,
+                data: true,
+            },
         },
         '503': {
-            '001': 'Dependency service unavailable',
-            '002':'Dependency service unavailable',
-            '003': 'Dependency service unavailable'
-        }
+            '001': {
+                action: null,
+                msg: 'Something went wrong with the system',
+            },
+            '002': {
+                action: null,
+                msg: 'Something went wrong with the system',
+            },
+            '003': {
+                action: null,
+                msg: 'Something went wrong with the system',
+            },
+        },
     }
 
-    const hekaHttpErrorCode = (errorCode) => {
+    const httpErrorCode = (errorCode) => {
         let code = errorCode.split('-')
         return code[1]
     }
@@ -36,16 +83,42 @@ export function useError() {
         return code[3]
     }
 
-    const errorMessage = (errorCode) => {
-        let http = hekaHttpErrorCode(errorCode)
-        let code = hekaErrorCode(errorCode)
+    const hasErrorAction = (queryErrorObj) => {
+        let http = httpErrorCode(queryErrorObj?.errorCode)
+        let heka = hekaErrorCode(queryErrorObj?.errorCode)
 
-        return hekaErrorMap[http][code]
+        let errorData = hekaErrorMap[http][heka]
+
+        return errorData?.action // return action string or null
     }
+
+    const hasErrorData = (queryErrorObj) => {
+        let http = httpErrorCode(queryErrorObj?.errorCode)
+        let heka = hekaErrorCode(queryErrorObj?.errorCode)
+
+        let errorData = hekaErrorMap[http][heka]
+
+        return errorData?.data ? true : false // return if we have data
+    }
+
+    const errorMessage = (queryErrorObj) => {
+        let http = httpErrorCode(queryErrorObj?.errorCode)
+        let heka = hekaErrorCode(queryErrorObj?.errorCode)
+
+        let errorData = hekaErrorMap[http][heka]
+
+        return errorData?.msg ? errorData?.msg : queryErrorObj?.errorMessage
+    }
+
     return {
         hekaErrorMap,
-        hekaHttpErrorCode,
+        httpErrorCode,
         hekaErrorCode,
-        errorMessage
+        errorMessage,
+        hasErrorData,
+        hasErrorAction,
+        LINE_ERROR_NAMES,
+        SOURCE_ACCESS_ERROR_NAMES
+
     }
 }

@@ -44,12 +44,7 @@
                     Your results will appear here
                 </p>
             </div>
-            <!-- 
-                                v-if="
-                    isQueryRunning === 'success' &&
-                    LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
-                "
-            -->
+
             <QueryError
                 v-else-if="
                     isQueryRunning === 'error' &&
@@ -114,11 +109,12 @@
     import Loading from './loading.vue'
     import ResultPaneFooter from './resultPaneFooter.vue'
     import LineError from './lineError.vue'
-    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+    // import { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } from '~/components/insights/common/constants'
     import AtlanBtn from '~/components/UI/button.vue'
     import AtlanTable from '~/components/UI/table.vue'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import { useError } from '~/components/insights/playground/common/composables/UseError'
 
     export default defineComponent({
         components: {
@@ -179,6 +175,7 @@
                 activeInlineTab.value?.playground?.resultsPane?.result
                     ?.errorDecorations
 
+            const { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } = useError()
             // let isQueryAborted = ref(false)
 
             const abortRunningQuery = () => {
@@ -194,6 +191,7 @@
             return {
                 errorDecorations,
                 LINE_ERROR_NAMES,
+                SOURCE_ACCESS_ERROR_NAMES,
                 isQueryRunning,
                 queryErrorObj,
                 rowCountErrObj,

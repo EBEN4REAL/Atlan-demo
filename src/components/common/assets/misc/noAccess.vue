@@ -1,6 +1,6 @@
 <template>
-    <div class="flex justify-center h-screen">
-        <div class="flex flex-col m-auto">
+    <div class="flex items-center justify-center h-full">
+        <div class="flex flex-col">
             <AtlanIcon icon="NoAccess" class="h-32" />
             <div class="leading-4 text-center text-gray-500 text">
                 Oops, looks like you don't have access to view this asset!

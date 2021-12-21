@@ -16,7 +16,7 @@
                     }}</span>
                     <AtlanIcon icon="ChevronRight" class="flex-none" />
                     <span class="flex-none text-sm font-bold text-gray"
-                        >New Announcement</span
+                        >{{ updating ? 'Edit' : 'New' }} Announcement</span
                     >
                 </div>
                 <a-dropdown
@@ -58,7 +58,7 @@
                     type="primary"
                     :loading="isLoading"
                     @click="handleUpdate"
-                    >Update</a-button
+                    >{{ updating ? 'Update' : 'Add' }}</a-button
                 >
             </div>
         </template>
@@ -67,7 +67,7 @@
                 ref="titleBar"
                 v-model:value="localAnnouncement.announcementTitle"
                 placeholder="Add Announcement Header..."
-                class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+                class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
             />
             <a-textarea
                 v-model:value="localAnnouncement.announcementMessage"
@@ -101,15 +101,25 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            readOnly: {
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            updating: {
                 type: Boolean,
                 required: false,
                 default: false,
             },
         },
         setup(props) {
-            const { asset, readOnly } = toRefs(props)
-            const { title } = useAssetInfo()
+            const { asset, editPermission } = toRefs(props)
+            const {
+                title,
+                announcementMessage,
+                announcementType,
+                announcementTitle,
+            } = useAssetInfo()
 
             const visible = ref<boolean>(false)
 
@@ -125,9 +135,12 @@
             }
 
             const resetInput = () => {
-                localAnnouncement.value.announcementTitle = ''
-                localAnnouncement.value.announcementMessage = ''
-                localAnnouncement.value.announcementType = 'information'
+                localAnnouncement.value.announcementTitle =
+                    announcementTitle(asset.value) || ''
+                localAnnouncement.value.announcementMessage =
+                    announcementMessage(asset.value) || ''
+                localAnnouncement.value.announcementType =
+                    announcementType(asset.value) || 'information'
             }
 
             const icon = computed(() => {
@@ -149,7 +162,7 @@
             }
 
             const showModal = async () => {
-                if (!readOnly?.value) {
+                if (editPermission?.value) {
                     visible.value = true
                     await nextTick()
                     titleBar.value?.focus()

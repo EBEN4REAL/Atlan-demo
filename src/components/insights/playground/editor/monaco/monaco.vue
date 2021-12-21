@@ -78,6 +78,19 @@
             const currentPosition: Ref<any> = ref({})
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
+
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            )
+            const hasQueryReadPermission = inject('hasQueryReadPermission')
+            const hasQueryWritePermission = inject('hasQueryWritePermission')
+
+            // console.log('editor permisisons: ', {
+            //     isQueryCreatedByCurrentUser,
+            //     hasQueryReadPermission,
+            //     hasQueryWritePermission,
+            // })
+
             const {
                 clearMoustacheTemplateColor,
                 setErrorDecorations,
@@ -408,7 +421,28 @@
             })
 
             /*Watcher for changing the content of the editor on activeInlineTab Change*/
+
+            // watch(
+            //     hasQueryWritePermission,
+            //     () => {
+            //         console.log(
+            //             'hasQueryWritePermission: ',
+            //             hasQueryWritePermission
+            //         )
+            //         editor?.updateOptions({
+            //             readOnly: hasQueryWritePermission ? false : true,
+            //         })
+            //     }
+            //     // { immediate: true }
+            // )
+
             watch(activeInlineTab, () => {
+                // console.log('editor permisisons: ', {
+                //     isQueryCreatedByCurrentUser,
+                //     hasQueryReadPermission,
+                //     hasQueryWritePermission,
+                // })
+
                 if (activeInlineTab.value) {
                     editor?.setModel(null)
                     const model = monaco.editor.createModel(

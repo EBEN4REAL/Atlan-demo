@@ -1,14 +1,14 @@
 <template>
     <div class="w-full">
         <a-tree-select
-            v-model:treeExpandedKeys="expandedKeys"
-            :value="selectedValue"
-            style="width: 100%"
             :ref="
                 (el) => {
                     treeSelectRef = el
                 }
             "
+            v-model:treeExpandedKeys="expandedKeys"
+            :value="selectedValue"
+            style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             :class="$style.connector"
@@ -24,7 +24,7 @@
             <template #title="node">
                 <div
                     v-if="node.node.nodeType !== 'info-node'"
-                    class="flex items-center truncate"
+                    class="flex items-center truncate selected-connetor"
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
@@ -99,7 +99,7 @@
                 default: '',
             },
         },
-        emits: ['change', 'update:data', 'blur'],
+        emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
             const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
@@ -209,9 +209,7 @@
                         children,
                     }
                     if (props.showEmptyParents) tree.push(treeNodeObj)
-                    else {
-                        if (children && children.length) tree.push(treeNodeObj)
-                    }
+                    else if (children && children.length) tree.push(treeNodeObj)
                 })
                 if (props.footerNodeContent)
                     tree.push({
@@ -296,6 +294,7 @@
 
                 emit('update:data', payload)
                 emit('change')
+                emit('changeConnector')
             }
 
             const onBlur = () => {
@@ -396,9 +395,9 @@
         .ant-select-switcher-icon {
             font-weight: normal !important;
         }
-        .ant-select-tree-treenode-leaf-last {
+        .ant-select-tree-treenode.ant-select-tree-treenode-disabled.ant-select-tree-treenode-switcher-close.ant-select-tree-treenode-leaf-last {
             .ant-select-tree-switcher-noop {
-                display: none;
+                display: none; // hides extra left side space for info node
             }
         }
     }

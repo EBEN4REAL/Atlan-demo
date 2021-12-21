@@ -22,7 +22,7 @@
                 </div>
             </template>
             <a-button
-                v-if="!readOnly"
+                v-if="editPermission"
                 shape="circle"
                 :disabled="disabled"
                 size="small"
@@ -39,14 +39,16 @@
                     :display-name="classification?.displayName"
                     :is-propagated="isPropagated(classification)"
                     :allow-delete="
-                        allowDelete === null ? !readOnly : allowDelete
+                        allowDelete === null ? editPermission : allowDelete
                     "
                     :color="classification.options?.color"
                     @delete="handleDeleteClassification"
                 />
             </Popover>
         </template>
-        <span class="-ml-1 text-gray-500" v-if="readOnly && list?.length < 1"
+        <span
+            class="-ml-1 text-gray-500"
+            v-if="!editPermission && list?.length < 1"
             >No linked classifications</span
         >
     </div>
@@ -98,7 +100,7 @@
                 required: false,
                 default: true,
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -113,7 +115,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const { guid, readOnly } = toRefs(props)
+            const { guid, editPermission } = toRefs(props)
             const localValue = ref(modelValue.value)
             const selectedValue = ref({
                 classifications: modelValue.value.map((i) => i.typeName),
@@ -206,7 +208,7 @@
                         'true'
             )
             const { t, Escape } = useMagicKeys()
-            whenever(and(t, notUsingInput, !readOnly.value), () => {
+            whenever(and(t, notUsingInput, editPermission.value), () => {
                 if (!isEdit.value) {
                     isEdit.value = true
                 }

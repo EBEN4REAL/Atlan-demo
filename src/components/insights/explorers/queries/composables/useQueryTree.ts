@@ -330,6 +330,7 @@ const useQueryTree = ({
         currentSelectedNode.value = event.node
 
         if (item.typeName === 'Query') {
+            console.log('query item: ', item)
             immediateParentFolderQF.value = item.attributes.parentQualifiedName
             immediateParentGuid.value = nodeToParentKeyMap[item.guid]
 
@@ -337,7 +338,7 @@ const useQueryTree = ({
 
             selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {
-                pushGuidToURL(item.guid)
+                pushGuidToURL(item)
             }
         } else if (item.typeName === 'QueryFolder') {
             immediateParentFolderQF.value = item.attributes.qualifiedName
@@ -389,7 +390,7 @@ const useQueryTree = ({
         refetchEntityType?: 'query' | 'queryFolder'
     ) => {
         // if the root level of the tree needs a refetch
-        console.log('refetch: ', {
+        console.log('new refetch: ', {
             guid,
             refetchEntityType,
         })
@@ -405,7 +406,7 @@ const useQueryTree = ({
                 queryResponse = await getQueries()
             }
 
-            console.log('parent update final api: ', {
+            console.log('collection parent update final api: ', {
                 guid,
                 folderResponse,
                 queryResponse,

@@ -1,7 +1,7 @@
 <template>
     <a-select
         placeholder="Select a connection"
-        :v-model:value="selectedValue"
+        v-model:value="selectedValue"
         :allowClear="true"
         :showSearch="true"
         :filterOption="false"
@@ -9,28 +9,28 @@
         @change="handleChange"
         :get-popup-container="(target) => target.parentNode"
         notFoundContent="No connection found"
-        class="selector"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="mb-1" />
         </template>
-        <a-select-option
-            :value="item.attributes?.qualifiedName"
+        <template
             v-for="item in filteredList"
-            :key="item.guid"
+            :key="item.attributes?.qualifiedName"
         >
-            <div class="flex flex-col">
-                <div class="flex items-center">
-                    <img
-                        :src="getConnectorImage(item)"
-                        class="h-3 mr-1 mb-0.5"
-                    />{{ item.attributes.name }}
+            <a-select-option :value="item.attributes?.qualifiedName">
+                <div class="flex flex-col">
+                    <div class="flex items-center">
+                        <img
+                            :src="getConnectorImage(item)"
+                            class="h-3 mr-1 mb-0.5"
+                        />{{ item.attributes.name }}
+                    </div>
+                    <span class="text-xs text-gray-500" v-if="showCount"
+                        >{{ item.assetCount }} assets</span
+                    >
                 </div>
-                <span class="text-xs text-gray-500" v-if="showCount"
-                    >{{ item.assetCount }} assets</span
-                >
-            </div>
-        </a-select-option>
+            </a-select-option>
+        </template>
     </a-select>
 </template>
 
@@ -70,53 +70,47 @@
             const { connector, showCount } = toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
+            const selectedValue = ref(modelValue.value)
 
             const { list } = useConnectionData()
             const queryText = ref('')
 
             const { getConnectorImage } = useAssetInfo()
 
-            const filteredList = computed(() => {
-                if (connector.value) {
-                    return list
-                        .filter((item) => {
-                            if (queryText.value && connector.value) {
-                                return (
-                                    item.attributes?.connectorName?.toLowerCase() ===
-                                        connector.value.toLowerCase() &&
-                                    item.attributes.name
-                                        .toLowerCase()
-                                        .includes(queryText.value.toLowerCase())
-                                )
-                            }
-                            if (connector.value) {
-                                return (
-                                    item.attributes?.connectorName?.toLowerCase() ===
-                                    connector.value.toLowerCase()
-                                )
-                            }
-                            if (queryText.value) {
-                                return item.attributes.name
+            const filteredList = computed(() =>
+                list
+                    .filter((item) => {
+                        if (queryText.value && connector.value) {
+                            return (
+                                item.attributes?.connectorName?.toLowerCase() ===
+                                    connector.value.toLowerCase() &&
+                                item.attributes.name
                                     .toLowerCase()
                                     .includes(queryText.value.toLowerCase())
-                            }
-                            return true
-                        })
-                        .sort((a, b) => {
-                            if (a.assetCount > b.assetCount) return -1
-                            if (a.assetCount < b.assetCount) return 1
-                            return 0
-                        })
-                }
-                const temp = list.sort((a, b) => {
-                    if (a.assetCount > b.assetCount) return -1
-                    if (a.assetCount < b.assetCount) return 1
-                    return 0
-                })
-                return temp
-            })
+                            )
+                        }
+                        if (connector.value) {
+                            return (
+                                item.attributes?.connectorName?.toLowerCase() ===
+                                connector.value.toLowerCase()
+                            )
+                        }
+                        if (queryText.value) {
+                            return item.attributes.name
+                                .toLowerCase()
+                                .includes(queryText.value.toLowerCase())
+                        }
+                        return true
+                    })
+                    .sort((a, b) => {
+                        if (a.assetCount > b.assetCount) return -1
+                        if (a.assetCount < b.assetCount) return 1
+                        return 0
+                    })
+            )
 
-            const selectedValue = ref(modelValue.value)
+            // console.log(filteredList.value)
+
             const handleChange = (value) => {
                 modelValue.value = value
                 emit('change')
@@ -139,8 +133,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .selector:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="px-3 pt-3 bg-white">
+    <div class="h-full p-6 pt-6">
         <div class="bg-white rounded">
             <Assets
                 :show-filters="false"

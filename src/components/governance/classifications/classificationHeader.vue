@@ -80,154 +80,165 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, PropType, toRefs, watch, h } from 'vue'
-import { Modal } from 'ant-design-vue'
-import { whenever } from '@vueuse/core'
-import { useRouter } from 'vue-router'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        PropType,
+        toRefs,
+        watch,
+        h,
+    } from 'vue'
+    import { Modal } from 'ant-design-vue'
+    import { whenever } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
 
-// import { useUserPreview } from '~/composables/user/showUserPreview'
-import Dropdown from '@/UI/dropdown.vue'
-import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
-import AtlanBtn from '~/components/UI/button.vue'
-import ClassificationColorSelector from '@/governance/classifications/classificationColorSelector.vue'
-import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
+    // import { useUserPreview } from '~/composables/user/showUserPreview'
+    import Dropdown from '@/UI/dropdown.vue'
+    import AddClassificationModal from '@/governance/classifications/addClassificationModal.vue'
+    import AtlanBtn from '~/components/UI/button.vue'
+    import ClassificationColorSelector from '@/governance/classifications/classificationColorSelector.vue'
+    import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
 
-import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
-import { ClassificationInterface } from '~/types/classifications/classification.interface'
+    import useDeleteTypedefs from '~/composables/typedefs/useDeleteTypedefs'
+    import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
-import useEditTypedefs from '~/composables/typedefs/useEditTypedefs'
-import { useTypedefStore } from '~/store/typedef'
-import map from '~/constant/accessControl/map'
+    import useEditTypedefs from '~/composables/typedefs/useEditTypedefs'
+    import { useTypedefStore } from '~/store/typedef'
+    import map from '~/constant/accessControl/map'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-export default defineComponent({
-    name: 'ClassificationHeader',
-    components: {
-        Dropdown,
-        AddClassificationModal,
-        AtlanBtn,
-        ClassificationColorSelector,
-        ClassificationIcon,
-    },
-    props: {
-        classification: {
-            type: Object as PropType<ClassificationInterface>,
-            required: true,
+    export default defineComponent({
+        name: 'ClassificationHeader',
+        components: {
+            Dropdown,
+            AddClassificationModal,
+            AtlanBtn,
+            ClassificationColorSelector,
+            ClassificationIcon,
         },
-    },
-    setup(props) {
-        const isDeleteClassificationModalOpen = ref(false)
-        const isEditClassificationModalOpen = ref(false)
-        const typedefStore = useTypedefStore()
+        props: {
+            classification: {
+                type: Object as PropType<ClassificationInterface>,
+                required: true,
+            },
+        },
+        setup(props) {
+            const isDeleteClassificationModalOpen = ref(false)
+            const isEditClassificationModalOpen = ref(false)
+            const typedefStore = useTypedefStore()
 
-        const { classification: selectedClassification } = toRefs(props)
+            const { classification: selectedClassification } = toRefs(props)
 
-        const classificationColor = ref(
-            selectedClassification?.value?.options?.color ?? 'Blue'
-        )
+            const classificationColor = ref(
+                selectedClassification?.value?.options?.color ?? 'Blue'
+            )
 
-        const router = useRouter()
+            const router = useRouter()
 
-        const body = ref({})
-        const { mutate: mutateEdit } = useEditTypedefs(body)
+            const body = ref({})
+            const { mutate: mutateEdit } = useEditTypedefs(body)
 
-        const displayName = computed(
-            () => selectedClassification.value.displayName
-        )
+            const displayName = computed(
+                () => selectedClassification.value.displayName
+            )
 
-        const deleteClassification = () => {
-            Modal.confirm({
-                title: 'Delete Classification',
-                class: 'delete-classification-modal',
-                content: () => {
-                    return h('div', [
-                        'Are you sure you want to delete classification',
-                        h('span', [' ']),
-                        h(
-                            'span',
-                            {
-                                class: ['font-bold'],
-                            },
-                            [`${displayName.value}`]
-                        ),
-                        h('span', '?'),
-                    ])
-                },
-                okType: 'danger',
-                autoFocusButton: null,
-                okButtonProps: {
-                    type: 'primary',
-                },
-                okText: 'Delete',
-                cancelText: 'Cancel',
-                async onOk() {
-                    const {
-                        error: deleteError,
-                        mutate: mutateDelete,
-                        isReady: isDeleteReady,
-                    } = useDeleteTypedefs(selectedClassification.value.name)
-
-                    mutateDelete()
-                    whenever(isDeleteReady, () => {
-                        if (typedefStore.classificationList.length) {
-                            const name = typedefStore.classificationList[0].name
-                            router.push(`/governance/classifications/${name}`)
-                        } else {
-                            router.push('/governance/classifications')
-                        }
-                    })
-                },
-            })
-        }
-        const editClassification = () => {
-            isEditClassificationModalOpen.value = true
-        }
-        const closeEditClassificationModal = () => {
-            isEditClassificationModalOpen.value = false
-        }
-        const closeDeleteClassificationModal = () => {
-            isDeleteClassificationModalOpen.value = false
-        }
-
-        watch(classificationColor, (newClassificationColor) => {
-            body.value = {
-                classificationDefs: [
-                    {
-                        ...selectedClassification.value,
-                        options: {
-                            ...selectedClassification.value?.options,
-                            color: newClassificationColor,
-                        },
+            const deleteClassification = () => {
+                Modal.confirm({
+                    title: 'Delete Classification',
+                    class: 'delete-classification-modal',
+                    content: () => {
+                        return h('div', [
+                            'Are you sure you want to delete classification',
+                            h('span', [' ']),
+                            h(
+                                'span',
+                                {
+                                    class: ['font-bold'],
+                                },
+                                [`${displayName.value}`]
+                            ),
+                            h('span', '?'),
+                        ])
                     },
-                ],
-            }
-            mutateEdit()
-        })
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        const {
+                            error: deleteError,
+                            mutate: mutateDelete,
+                            isReady: isDeleteReady,
+                        } = useDeleteTypedefs(selectedClassification.value.name)
 
-        // user preview drawer
-        // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-        // const handleClickUser = (username: string) => {
-        //     setUserUniqueAttribute(username, 'username')
-        //     showUserPreview({ allowed: ['about'] })
-        // }
-        return {
-            isDeleteClassificationModalOpen,
-            closeDeleteClassificationModal,
-            closeEditClassificationModal,
-            isEditClassificationModalOpen,
-            deleteClassification,
-            selectedClassification,
-            displayName,
-            editClassification,
-            classificationColor,
-            map,
-        }
-    },
-})
+                        mutateDelete()
+                        whenever(isDeleteReady, () => {
+                            if (typedefStore.classificationList.length) {
+                                const name =
+                                    typedefStore.classificationList[0].name
+                                router.push(
+                                    `/governance/classifications/${name}`
+                                )
+                            } else {
+                                router.push('/governance/classifications')
+                            }
+                            useAddEvent(
+                                'governance',
+                                'classification',
+                                'deleted'
+                            )
+                        })
+                    },
+                })
+            }
+            const editClassification = () => {
+                isEditClassificationModalOpen.value = true
+            }
+            const closeEditClassificationModal = () => {
+                isEditClassificationModalOpen.value = false
+            }
+            const closeDeleteClassificationModal = () => {
+                isDeleteClassificationModalOpen.value = false
+            }
+
+            watch(classificationColor, (newClassificationColor) => {
+                body.value = {
+                    classificationDefs: [
+                        {
+                            ...selectedClassification.value,
+                            options: {
+                                ...selectedClassification.value?.options,
+                                color: newClassificationColor,
+                            },
+                        },
+                    ],
+                }
+                mutateEdit()
+            })
+
+            // user preview drawer
+            // const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            // const handleClickUser = (username: string) => {
+            //     setUserUniqueAttribute(username, 'username')
+            //     showUserPreview({ allowed: ['about'] })
+            // }
+            return {
+                isDeleteClassificationModalOpen,
+                closeDeleteClassificationModal,
+                closeEditClassificationModal,
+                isEditClassificationModalOpen,
+                deleteClassification,
+                selectedClassification,
+                displayName,
+                editClassification,
+                classificationColor,
+                map,
+            }
+        },
+    })
 </script>
-<style lang="less">
-.delete-classification-modal {
-    .ant-modal-confirm-body-wrapper {
-        @apply p-5;
-    }
-}
-</style>
+<style lang="less"></style>

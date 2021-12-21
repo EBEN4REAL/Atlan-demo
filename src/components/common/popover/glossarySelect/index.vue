@@ -10,7 +10,7 @@
             <template #content>
                 <div class="px-3 py-1 border-b">
                     <div
-                        class="flex items-center p-1 cursor-pointer  hover:bg-primary-light grou"
+                        class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
                         @click="handleSelect('')"
                     >
                         <AtlanIcon
@@ -28,39 +28,51 @@
                         class="px-2 py-2"
                     >
                         <div
-                            class="flex items-center p-1 cursor-pointer  hover:bg-primary-light grou"
+                            class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
                             v-for="item in filteredList"
                             :key="item.guid"
                             @click="
                                 handleSelect(item.attributes?.qualifiedName)
                             "
                         >
-                            <AtlanIcon
-                                icon="Glossary"
-                                class="self-center pr-1"
-                            ></AtlanIcon>
-                            <div
-                                class=" overflow-ellipsis group-hover:text-primary"
-                            >
-                                {{
+                            <div class="w-4 mr-1">
+                                <AtlanIcon
+                                    icon="Glossary"
+                                    class="self-center"
+                                ></AtlanIcon>
+                            </div>
+                            <Tooltip
+                                :tooltip-text="`${
                                     item?.attributes.displayName ||
                                     item.attributes.name
-                                }}
-                            </div>
+                                }`"
+                                :classes="'w-full '"
+                            />
                         </div>
                     </div>
                 </div>
             </template>
-            <div class="flex items-center cursor-pointer hover:text-primary">
-                <AtlanIcon
-                    icon="Glossary"
-                    class="self-center h-4 mr-1"
-                ></AtlanIcon>
-                <p class="text-sm truncate">{{ displayText }}</p>
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="self-center h-3 ml-1 text-primary"
-                ></AtlanIcon>
+            <div
+                class="flex items-center cursor-pointer hover:text-primary"
+                style="max-width: 80%"
+            >
+                <div class="w-4 mr-1">
+                    <AtlanIcon
+                        icon="Glossary"
+                        class="self-center h-4 mr-1"
+                    ></AtlanIcon>
+                </div>
+                <Tooltip
+                    :tooltip-text="`${displayText}`"
+                    :classes="'w-full '"
+                />
+
+                <div class="w-4 mr-1">
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="self-center h-3 ml-1 text-primary"
+                    ></AtlanIcon>
+                </div>
             </div>
         </a-popover>
     </div>
@@ -77,12 +89,13 @@
         watch,
     } from 'vue'
     import useGlossaryData from '~/composables/glossary/useGlossaryData'
-
+    import Tooltip from '@/common/ellipsis/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
     export default defineComponent({
         components: {
             SearchAdvanced,
+            Tooltip,
         },
         props: {
             modelValue: {

@@ -32,7 +32,7 @@
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                 >
-                                    <div class="pl-2">
+                                    <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
                                             icon="KebabMenu"
                                             class="w-4 h-4 my-auto"
@@ -142,12 +142,14 @@
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 right-6 margin-align-top group-hover:opacity-100"
-                                :class="
+                                class="absolute flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                :class="[
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light via-gray-light'
-                                "
+                                        : 'bg-gradient-to-l from-gray-light via-gray-light',
+
+                                    hasWritePermission ? 'right-6' : 'right-0',
+                                ]"
                             >
                                 <div
                                     class="pl-2 ml-24"
@@ -179,7 +181,7 @@
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                 >
-                                    <div class="pl-2">
+                                    <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
                                             icon="KebabMenu"
                                             class="w-4 h-4 my-auto"
@@ -200,13 +202,6 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
-                                            <!-- <a-menu-item
-                                                key="public"
-                                                @click="
-                                                    showPublishPopover = true
-                                                "
-                                                >Make query public</a-menu-item
-                                            > -->
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="text-red-600"
@@ -230,7 +225,7 @@
             <TreeDeletePopover
                 :item="item"
                 @cancel="showDeletePopover = false"
-                @delete="() => delteItem(item.typeName)"
+                @delete="() => delteItem(item?.typeName)"
                 :isSaving="isDeleteLoading"
             />
         </template>
@@ -307,6 +302,7 @@
         toRaw,
         watch,
         ref,
+        computed,
     } from 'vue'
 
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
@@ -405,6 +401,23 @@
             )
             const savedQueryType = inject('savedQueryType') as Ref<object>
             const permissions = inject('permissions') as ComputedRef<any>
+
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            ) as ComputedRef
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            ) as ComputedRef
+
+            const hasWritePermission = computed(
+                () =>
+                    hasCollectionWritePermission.value ||
+                    isCollectionCreatedByCurrentUser.value
+            )
+
             const refetchParentNode = inject<
                 (
                     guid: string | 'root',
@@ -491,9 +504,6 @@
                 // })
                 // watch([isLoading], () => {
                 //     if (isLoading.value == false && !error.value) {
-                //         useAddEvent('insights', 'folder', 'space_changed', {
-                //             finalSpace: 'public',
-                //         })
                 //         message.success({
                 //             content: `${item.value?.attributes?.name} was made public!`,
                 //         })
@@ -502,7 +512,6 @@
                 // })
             }
             const renameFolder = () => {
-                useAddEvent('insights', 'folder', 'renamed', undefined)
                 const orignalName = item.value.attributes.name
                 const parentNode = document.getElementsByClassName(
                     `${item.value.qualifiedName}`
@@ -574,6 +583,12 @@
                                                     : 'Folder'
                                             } renamed successfully`,
                                         })
+                                        useAddEvent(
+                                            'insights',
+                                            'folder',
+                                            'renamed',
+                                            undefined
+                                        )
                                     } else {
                                         item.value.attributes.name = orignalName
 
@@ -659,6 +674,8 @@
 
             const delteItem = (type: 'Query' | 'QueryFolder') => {
                 let key = item.value.guid
+                let parentGuid = item?.value?.attributes?.parent?.guid
+                console.log('delete item: ', item)
                 const { data, error, isLoading } = Insights.DeleteEntity(
                     item.value.guid,
                     {}
@@ -669,7 +686,6 @@
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
-                        useAddEvent('insights', 'folder', 'deleted', undefined)
                         showDeletePopover.value = false
 
                         inlineTabRemove(
@@ -680,16 +696,16 @@
                         )
 
                         setTimeout(() => {
-                            refetchParentNode(
-                                props.item.guid,
-                                type === 'Query' ? 'query' : 'queryFolder',
-                                savedQueryType.value
+                            refetchNode(
+                                parentGuid,
+                                type === 'Query' ? 'query' : 'queryFolder'
                             )
-                        }, 500)
+                        }, 1000)
 
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         })
+                        useAddEvent('insights', 'folder', 'deleted', undefined)
                         // refetchParentNode(
                         //     props.item.guid,
                         //     type === 'Query' ? 'query' : 'queryFolder',
@@ -805,19 +821,20 @@
             const isUpdating = ref(false)
 
             const changeFolder = (item: any) => {
+                console.log('item to move: ', item)
                 let previousParentGuId = item.attributes.parent.guid
                 let selectedParentGuid = selectedFolder?.value?.guid
 
                 // console.log('entity item parent: ', previousParentGuId)
                 // console.log('entity selected folder: ', selectedParentGuid)
 
+                console.log('selected folder:', selectedFolder.value)
+
                 if (selectedFolder.value) {
                     const newEntity = { ...item, relationshipAttributes: {} }
                     delete newEntity.entity
 
-                    if (
-                        selectedFolder.value.typeName === 'QueryFolderNamespace'
-                    ) {
+                    if (selectedFolder.value.typeName === 'QueryCollection') {
                         newEntity.relationshipAttributes = {
                             parent: {
                                 guid: selectedParentGuid,
@@ -880,24 +897,23 @@
                                 isUpdating.value = false
                                 if (error.value == undefined) {
                                     // props.refetchTreeData()
-                                    message.success({
-                                        content: `Folder moved successfully`,
-                                    })
 
-                                    setTimeout(() => {
-                                        refetchNode(
+                                    setTimeout(async () => {
+                                        await refetchNode(
                                             previousParentGuId,
                                             'queryFolder'
                                         )
-                                        refetchNode(
+                                    }, 1000)
+                                    setTimeout(async () => {
+                                        await refetchNode(
                                             selectedParentGuid,
                                             'queryFolder'
                                         )
-                                    }, 750)
+                                    }, 2000)
+
+                                    message.success(`Folder moved successfully`)
                                 } else {
-                                    message.success({
-                                        content: `Folder move failed`,
-                                    })
+                                    message.success(`Folder move failed`)
                                 }
                             }
                             showPublishPopover.value = false
@@ -917,34 +933,22 @@
                             if (isLoading.value == false) {
                                 isUpdating.value = false
                                 if (error.value == undefined) {
-                                    // props.refetchTreeData()
-                                    message.success({
-                                        content: `Query moved successfully`,
-                                    })
-                                    // props.refreshQueryTree(
-                                    //     selectedFolder.value.guid,
-                                    //     'query'
-                                    // )
-                                    // props.refreshQueryTree(
-                                    //     item.attributes.parent.guid,
-                                    //     'query'
-                                    // )
-                                    // props.refreshQueryTree(
-                                    //     [
-                                    //         previousParentGuId,
-                                    //         selectedParentGuid,
-                                    //     ],
-                                    //     'query'
-                                    // )
+                                    setTimeout(async () => {
+                                        await refetchNode(
+                                            previousParentGuId,
+                                            'query'
+                                        )
+                                    }, 1000)
+                                    setTimeout(async () => {
+                                        await refetchNode(
+                                            selectedParentGuid,
+                                            'query'
+                                        )
+                                    }, 2000)
 
-                                    setTimeout(() => {
-                                        refetchNode(previousParentGuId, 'query')
-                                        refetchNode(selectedParentGuid, 'query')
-                                    }, 750)
+                                    message.success('Query moved successfully')
                                 } else {
-                                    message.success({
-                                        content: `Query move failed`,
-                                    })
+                                    message.success(`Query move failed`)
                                 }
                             }
                             showFolderPopover.value = false
@@ -993,6 +997,10 @@
                 isUpdating,
                 isDeleteLoading,
                 openSidebar,
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
+                hasWritePermission,
                 // input,
                 // newFolderName,
             }

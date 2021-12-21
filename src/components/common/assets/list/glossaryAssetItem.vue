@@ -1,135 +1,87 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="mx-3 my-1 transition-all duration-300 hover:bg-primary-light"
+        class="mx-3 transition-all duration-300 hover:bg-primary-light"
         :class="isSelected ? 'outline-primary bg-primary-light shadow-sm' : ''"
         @click="onListItemClick(item)"
     >
         <div class="flex flex-col">
-            <div class="flex items-start flex-1 px-3 py-3" :class="checkable ? 'justify-between items-center' : '' ">
-                <div
-                    class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
-                >
+            <div
+                class="flex items-start px-3 py-2"
+                :class="checkable ? 'justify-between items-center' : ''"
+            >
+                <div class="flex items-center w-full">
                     <!-- Line 1: G or T or C -->
-                    <div class="flex flex-col">
-                        <div class="flex items-center">
-                            <AtlanIcon
-                                icon="Category"
-                                class="h-4 mb-1 mr-1"
-                                v-if="
-                                    ['atlasglossarycategory'].includes(
-                                        item.typeName?.toLowerCase()
-                                    )
-                                "
-                            ></AtlanIcon>
-                            <AtlanIcon
-                                icon="Term"
-                                class="h-4 mb-1 mr-1"
-                                v-if="
-                                    ['atlasglossaryterm'].includes(
-                                        item.typeName?.toLowerCase()
-                                    )
-                                "
-                            ></AtlanIcon>
-
+                    <AtlanIcon
+                        v-if="
+                            ['atlasglossarycategory'].includes(
+                                item.typeName?.toLowerCase()
+                            )
+                        "
+                        icon="Category"
+                        class="w-4 h-5 mb-1 mr-1"
+                    ></AtlanIcon>
+                    <AtlanIcon
+                        v-if="
+                            ['atlasglossaryterm'].includes(
+                                item.typeName?.toLowerCase()
+                            )
+                        "
+                        icon="Term"
+                        class="w-4 h-5 mb-1 mr-1"
+                    ></AtlanIcon>
+                    <div class="flex flex-col w-full ml-1">
+                        <!-- <div class="flex items-center w-full">
                             <router-link
                                 :to="assetURL(item)"
-                                class="flex-shrink mb-0 mr-1 overflow-hidden font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
-                                :class="checkable ? 'text-sm' : 'text-base'"
+                                class="w-full mb-0 mr-1 font-bold cursor-pointer text-primary hover:underline"
                             >
-                                {{ title(item) }}
+                                <Tooltip
+                                    :tooltip-text="`${title(item)}`"
+                                    :classes="'w-full '"
+                                />
                             </router-link>
-                        </div>
-                        <!-- Line 2: Description -->
-                        <div class="flex mt-0" v-if="description(item)">
-                            <span class="text-gray-700"
-                                :class="checkable ? 'text-xs' : 'text-sm '"
-                        
-                            >{{
-                                description(item)
-                            }}</span>
-                        </div>
-                         <!-- Line 3:  -->
-                         <!-- TODO: to show dsecription and other detail in popver, as category is already a tab filter, so commenting the code for now, as it breaks for UI-->
-                        <div class="flex items-center mt-1">
-                            <!--div
-                                class="flex items-center mr-3 text-gray-500  gap-x-1"
-                                :class="checkable ? 'text-xs' : 'text-sm'"
-                                v-if="categories(item)?.length > 0"
-                            >
-                                in 
-                                                                    <AtlanIcon
-                                        icon="Category"
-                                        class="h-4 mt-0.5 mr-1 align-text-bottom"
-                                    ></AtlanIcon>
-                                <div
-                                    v-for="(cat, index) in categories(item)"
-                                    class="flex"
-                                    :key="cat.guid"
-                                    v-if="
-                                        ['atlasglossaryterm'].includes(
-                                            item.typeName?.toLowerCase()
-                                        )
-                                    "
-                                >
-
-                                    {{ cat.attributes?.name }}
-                                    <span
-                                        v-if="
-                                            index ===
-                                                categories(item).length - 2 &&
-                                            categories(item).length > 1
-                                        "
-                                        class="ml-1"
-                                    >
-                                        and
-                                    </span>
-                                    <span
-                                        v-else-if="
-                                            index !==
-                                            categories(item).length - 1
-                                        "
-                                        >,</span
-                                    >
-                                </div>
+                            <CertificateBadge
+                                v-if="certificateStatus(item)"
+                                :status="certificateStatus(item)"
+                                :username="certificateUpdatedBy(item)"
+                                :timestamp="certificateUpdatedAt(item)"
+                                class="mb-1 ml-1"
+                            ></CertificateBadge>
+                        </div> -->
+                        <div
+                            class="flex items-center py-0 pr-2 font-bold cursor-pointer"
+                            style="max-width: 80%"
+                        >
+                            <Tooltip
+                                :tooltip-text="`${title(item)}`"
+                                :classes="'text-primary'"
+                                @click="handleClick"
+                            />
+                            <div class="w-4">
+                                <CertificateBadge
+                                    v-if="certificateStatus(item)"
+                                    :status="certificateStatus(item)"
+                                    :username="certificateUpdatedBy(item)"
+                                    :timestamp="certificateUpdatedAt(item)"
+                                    class="mb-1 ml-1"
+                                ></CertificateBadge>
                             </div>
+                        </div>
+
+                        <div class="flex items-center">
                             <div
-                                class="flex items-center mr-3 text-gray-500  gap-x-1"
-                                :class="checkable ? 'text-xs' : 'text-sm'"
-                                v-if="parentCategory(item)"
+                                class="flex items-center text-xs text-gray-500"
                             >
-                                in
-                                <div
-                                    class="flex"
-                                    :key="parentCategory(item).guid"
-                                    v-if="
-                                        ['atlasglossarycategory'].includes(
-                                            item.typeName?.toLowerCase()
-                                        )
-                                    "
-                                >
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="h-4 mt-0.5 mr-1 align-text-bottom"
-                                    ></AtlanIcon>
-                                    {{ parentCategory(item).attributes?.name }}
-                                </div>
-                            </div-->
-                            <!-- Glossary -->
-                            <div
-                                class="flex items-center text-gray-500"
-                                :class="checkable ? 'text-xs' : 'text-sm'"
-                            >
-                                <AtlanIcon
-                                    icon="Glossary"
-                                    class="h-4 mr-1 align-text-bottom"
-                                ></AtlanIcon>
                                 {{ getAnchorName(item) }}
                             </div>
                         </div>
                     </div>
                 </div>
-                <a-checkbox v-if="checkable && item.typeName === 'AtlasGlossaryTerm'" :checked="isChecked" />
+                <a-checkbox
+                    v-if="checkable && item.typeName === 'AtlasGlossaryTerm'"
+                    :checked="isChecked"
+                />
             </div>
         </div>
     </div>
@@ -139,11 +91,14 @@
     import { defineComponent, PropType, toRefs, computed, ref } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
             CertificateBadge,
+            Tooltip,
         },
         props: {
             item: {
@@ -181,25 +136,25 @@
                 type: Boolean,
                 required: false,
                 default: false,
-            }
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'check'],
         setup(props, { emit }) {
             const { preference, selectedGuid, item, checkable } = toRefs(props)
             const isChecked = ref(props.checked)
 
+            const router = useRouter()
             const handlePreview = (item: any) => {
                 emit('preview', item)
             }
 
             const onListItemClick = (item) => {
-                if(checkable) {
+                if (checkable.value) {
                     isChecked.value = !isChecked.value
                     emit('check', item, isChecked.value)
-                } 
+                }
                 handlePreview(item)
             }
-
             const isSelected = computed(() => {
                 if (selectedGuid.value === item?.value?.guid) {
                     return true
@@ -208,9 +163,12 @@
             })
 
             const assetURL = (asset) => ({
-                path: `/glossary/${asset.guid}`,
+                path: `/glossary/${asset.guid}/overview`,
             })
-
+            const handleClick = () => {
+                if (!props.checkable) router.push(assetUrl)
+                console.log('clicked')
+            }
             const {
                 title,
                 assetType,
@@ -222,6 +180,7 @@
                 description,
                 categories,
                 parentCategory,
+                getEntityStatusIcon,
             } = useAssetInfo()
 
             return {
@@ -243,7 +202,9 @@
                 categories,
                 parentCategory,
                 onListItemClick,
-                isChecked
+                isChecked,
+                getEntityStatusIcon,
+                handleClick,
             }
         },
     })

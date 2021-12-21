@@ -31,16 +31,16 @@
         <div class="flex mb-0 bg-white pt-7 gap-x-2">
             <div style="width: 90%">
                 <div class="mb-0 text-xl text-gray-700 truncate">
-                    <span class="truncate font-bold" data-test-id="header-name">
+                    <span class="font-bold truncate" data-test-id="header-name">
                         {{ persona.displayName }}</span
                     >
                 </div>
-                <!-- <div class="flex mb-0 text-sm text-gray-500">
+                <div class="flex mb-0 text-sm text-gray-500">
                     <span class="truncate" data-test-id="header-description">
                         {{ persona.description }}</span
                     >
-                </div> -->
-                <!-- <div class="flex" v-if="persona.updatedBy">
+                </div>
+                <div class="flex" v-if="persona.updatedBy">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"
@@ -48,167 +48,192 @@
                         placement="right"
                         >{{ timeStamp(persona.updatedAt) }}</a-tooltip
                     >
-                </div> -->
+                </div>
             </div>
-            <Dropdown class="ml-auto" :options="personaActions"></Dropdown>
+            <a-button-group>
+                <!-- Edit -->
+                <a-tooltip placement="bottom" v-auth="map.UPDATE_PERSONA">
+                    <template #title>
+                        <span>Edit Persona</span>
+                    </template>
+                    <AtlanButton
+                        class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
+                        @click="isEditing = true"
+                    >
+                        <AtlanIcon icon="Edit"></AtlanIcon>
+                    </AtlanButton>
+                </a-tooltip>
+                <!-- Delete  -->
+                <a-tooltip placement="bottom" v-auth="map.DELETE_PERSONA">
+                    <template #title>
+                        <span>Delete Persona</span>
+                    </template>
+                    <AtlanButton
+                        class="flex items-center justify-center h-8 px-5 border rounded rounded-l-none cursor-pointer customShadow text-error"
+                        @click="deletePersona"
+                    >
+                        <AtlanIcon icon="Delete"></AtlanIcon>
+                    </AtlanButton>
+                </a-tooltip>
+            </a-button-group>
+            <!-- <Dropdown class="ml-auto" :options="personaActions"></Dropdown> -->
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed, toRefs, h } from 'vue'
-import { message, Modal } from 'ant-design-vue'
-import CreationModal from '@/admin/common/addModal.vue'
-import { IPersona } from '~/types/accessPolicies/personas'
-import {
-    isEditing,
-    savePersona,
-    discardPersona,
-    selectedPersonaDirty,
-    deletePersonaById,
-} from './composables/useEditPersona'
+    import { defineComponent, PropType, computed, toRefs, h } from 'vue'
+    import { message, Modal } from 'ant-design-vue'
+    import CreationModal from '@/admin/common/addModal.vue'
+    import { IPersona } from '~/types/accessPolicies/personas'
+    import {
+        isEditing,
+        savePersona,
+        discardPersona,
+        selectedPersonaDirty,
+        deletePersonaById,
+    } from './composables/useEditPersona'
 
-import Dropdown from '@/UI/dropdown.vue'
-import { reFetchList } from './composables/usePersonaList'
-import { formatDateTime } from '~/utils/date'
-import { useTimeAgo } from '@vueuse/core'
+    import Dropdown from '@/UI/dropdown.vue'
+    import { reFetchList } from './composables/usePersonaList'
+    import { formatDateTime } from '~/utils/date'
+    import { useTimeAgo } from '@vueuse/core'
+    import map from '~/constant/accessControl/map'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-export default defineComponent({
-    name: 'PersonaHeader',
-    components: { Dropdown, CreationModal },
-    props: {
-        persona: {
-            type: Object as PropType<IPersona>,
-            required: true,
+    export default defineComponent({
+        name: 'PersonaHeader',
+        components: { Dropdown, CreationModal },
+        props: {
+            persona: {
+                type: Object as PropType<IPersona>,
+                required: true,
+            },
         },
-    },
-    setup(props, { emit }) {
-        const { persona } = toRefs(props)
-        const deletePersona = () => {
-            Modal.confirm({
-                title: `Delete persona`,
-                class: 'delete-persona-modal',
-                content: () => {
-                    return h('div', [
-                        'Are you sure you want to delete persona',
-                        h('span', [' ']),
-                        h(
-                            'span',
-                            {
-                                class: ['font-bold'],
-                            },
-                            [`${persona.value.displayName}`]
-                        ),
-                        h('span','?')
-                    ])
-                },
-                okType: 'danger',
-                autoFocusButton: null,
-                okButtonProps: {
-                    type: 'primary',
-                },
-                okText: 'Delete',
-                cancelText: 'Cancel',
-                async onOk() {
-                    const msgId = Date.now()
-                    try {
-                        await deletePersonaById(persona.value.id!)
-                        message.success({
-                            content: 'Persona deleted',
-                            duration: 1.5,
-                            key: msgId,
-                        })
-                    } catch (error) {
-                        message.error({
-                            content: 'Failed to delete persona',
-                            duration: 1.5,
-                            key: msgId,
-                        })
-                    }
-                },
-            })
-        }
-        const personaActions = computed(() => [
-            {
-                title: 'Edit',
-                icon: 'Edit',
-                handleClick: () => {
-                    isEditing.value = true
-                },
-            },
-            {
-                title: 'Delete',
-                icon: 'Trash',
-                class: 'text-red-700',
-                handleClick: deletePersona,
-            },
-        ])
-
-        async function saveEditedPersona() {
-            const messageKey = Date.now()
-            message.loading({
-                content: 'Working on it...',
-                duration: 0,
-                key: messageKey,
-            })
-
-            try {
-                await savePersona({
-                    ...persona.value,
-                    displayName: selectedPersonaDirty.value?.displayName,
-                    description: selectedPersonaDirty.value?.description,
+        setup(props, { emit }) {
+            const { persona } = toRefs(props)
+            const deletePersona = () => {
+                Modal.confirm({
+                    title: `Delete persona`,
+                    class: 'delete-persona-modal',
+                    content: () => {
+                        return h('div', [
+                            'Are you sure you want to delete persona',
+                            h('span', [' ']),
+                            h(
+                                'span',
+                                {
+                                    class: ['font-bold'],
+                                },
+                                [`${persona.value.displayName}`]
+                            ),
+                            h('span', '?'),
+                        ])
+                    },
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        const msgId = Date.now()
+                        try {
+                            await deletePersonaById(persona.value.id!)
+                            message.success({
+                                content: 'Persona deleted',
+                                duration: 1.5,
+                                key: msgId,
+                            })
+                            useAddEvent('governance', 'persona', 'deleted')
+                        } catch (error) {
+                            message.error({
+                                content: 'Failed to delete persona',
+                                duration: 1.5,
+                                key: msgId,
+                            })
+                        }
+                    },
                 })
+            }
+            const personaActions = computed(() => [
+                {
+                    title: 'Edit',
+                    icon: 'Edit',
+                    handleClick: () => {
+                        isEditing.value = true
+                    },
+                },
+                {
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
+                    handleClick: deletePersona,
+                },
+            ])
 
-                message.success({
-                    content: `${persona.value?.displayName} persona updated`,
-                    duration: 1.5,
+            async function saveEditedPersona() {
+                const messageKey = Date.now()
+                message.loading({
+                    content: 'Working on it...',
+                    duration: 0,
                     key: messageKey,
                 })
 
-                isEditing.value = false
-                reFetchList()
-            } catch (error) {
-                message.error({
-                    content: 'Failed to update persona',
-                    duration: 1.5,
-                    key: messageKey,
-                })
-            }
-        }
+                try {
+                    await savePersona({
+                        ...persona.value,
+                        displayName: selectedPersonaDirty.value?.displayName,
+                        description: selectedPersonaDirty.value?.description,
+                    })
 
-        const timeStamp = (time, raw: boolean = false) => {
-            if (time) {
-                return raw
-                    ? formatDateTime(time) || 'N/A'
-                    : useTimeAgo(time).value
-            }
-            return ''
-        }
+                    message.success({
+                        content: `${persona.value?.displayName} persona updated`,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
 
-        return {
-            personaActions,
-            isEditing,
-            saveEditedPersona,
-            discardPersona,
-            selectedPersonaDirty,
-            timeStamp,
-        }
-    },
-})
+                    isEditing.value = false
+                    reFetchList()
+                } catch (error) {
+                    message.error({
+                        content: 'Failed to update persona',
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                }
+            }
+
+            const timeStamp = (time, raw: boolean = false) => {
+                if (time) {
+                    return raw
+                        ? formatDateTime(time) || 'N/A'
+                        : useTimeAgo(time).value
+                }
+                return ''
+            }
+
+            return {
+                personaActions,
+                isEditing,
+                saveEditedPersona,
+                discardPersona,
+                selectedPersonaDirty,
+                timeStamp,
+                map,
+                deletePersona,
+            }
+        },
+    })
 </script>
-<style lang="less">
-.delete-persona-modal {
-    .ant-modal-confirm-body-wrapper {
-        @apply p-5;
-    }
-}
-</style>
+<style lang="less"></style>
 <style lang="less" scoped>
-.clean-input {
-    @apply block bg-transparent border-0 shadow-none outline-none;
+    .clean-input {
+        @apply block bg-transparent border-0 shadow-none outline-none;
 
-    &:focus {
-        @apply outline-none;
+        &:focus {
+            @apply outline-none;
+        }
     }
-}
 </style>

@@ -16,6 +16,7 @@ import { Insights } from '~/services/meta/insights/index'
 import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
 import useBody from './useBody'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 const useQueryCollection = () => {
     const { modifyActiveInlineTab } = useInlineTab()
@@ -108,6 +109,7 @@ const useQueryCollection = () => {
                     message.success({
                         content: `Collection ${name} created!`,
                     })
+                    useAddEvent('insights', 'collection', 'created')
                 } else {
                     // console.log(error.value.toString())
                     message.error({

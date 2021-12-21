@@ -125,25 +125,21 @@ const keyMap = {
     },
     insights: {
         query: {
-            // query made public/private
-            space_changed: {
-                action: 'insights_query_space_changed',
-                properties: (props) => ({ finalSpace: props?.finalSPace }),
-            },
             deleted: {
                 action: 'inights_query_deleted',
             },
             saved: {
                 action: 'insights_query_saved',
                 properties: (props) => ({
-                    num_variables: props?.num_variables,
+                    variables_count: props?.variables_count,
+                    visual_query: !!props?.visual_query,
                 }),
             },
-
             updated: {
                 action: 'insights_query_updated',
                 properties: (props) => ({
-                    num_variables: props?.num_variables,
+                    variables_count: props?.variables_count,
+                    visual_query: !!props?.visual_query,
                 }),
             },
             link_copied: {
@@ -151,22 +147,172 @@ const keyMap = {
             },
             run: {
                 action: 'insights_query_run',
+                properties: (props) => ({
+                    saved_query: !!props?.saved_query,
+                    visual_query: !!props?.visual_query,
+                    limit_100: !!props.limit_100,
+                }),
+            },
+        },
+        collection: {
+            created: {
+                action: 'insights_collection_created',
             },
         },
         folder: {
             renamed: {
                 action: 'insights_folder_renamed',
             },
-            // folder made public/private
-            space_changed: {
-                action: 'insights_folder_space_changed',
-                properties: (props) => ({ finalSpace: props?.finalSPace }),
-            },
             created: {
                 action: 'insights_folder_created',
             },
             deleted: {
                 action: 'insights_folder_deleted',
+            },
+        },
+        tab: {
+            opened: {
+                action: 'insights_tab_opened',
+                properties: (props) => ({
+                    visual_query: !!props?.visual_query,
+                }),
+            },
+            closed: {
+                action: 'insights_tab_closed',
+            },
+        },
+    },
+    governance: {
+        persona: {
+            created: {
+                action: 'governance_persona_created',
+            },
+            deleted: {
+                action: 'governance_persona_deleted',
+            },
+            policy_added: {
+                action: 'governance_persona_policy_added',
+                properties: (props) => ({
+                    type: props?.type,
+                    masking: props.masking,
+                    denied: !!props.denied,
+                    asset_count: props.asset_count,
+                }),
+            },
+            policy_updated: {
+                action: 'governance_persona_policy_updated',
+                properties: (props) => ({
+                    type: props?.type,
+                    masking: props.masking,
+                    denied: !!props.denied,
+                    asset_count: props.asset_count,
+                }),
+            },
+            policy_deleted: {
+                action: 'governance_persona_policy_deleted',
+            },
+        },
+        purpose: {
+            created: {
+                action: 'governance_purpose_created',
+            },
+            deleted: {
+                action: 'governance_purpose_deleted',
+            },
+            policy_added: {
+                action: 'governance_purpose_policy_added',
+                properties: (props) => ({
+                    type: props?.type,
+                    masking: props.masking,
+                    denied: !!props.denied,
+                    user_count: props.user_count,
+                    group_count: props.group_count,
+                }),
+            },
+            policy_updated: {
+                action: 'governance_purpose_policy_updated',
+                properties: (props) => ({
+                    type: props?.type,
+                    masking: props.masking,
+                    denied: !!props.denied,
+                    user_count: props.user_count,
+                    group_count: props.group_count,
+                }),
+            },
+            policy_deleted: {
+                action: 'governance_purpose_policy_deleted',
+            },
+        },
+        classification: {
+            created: {
+                action: 'governance_classification_created',
+            },
+            updated: {
+                action: 'governance_classification_updated',
+            },
+            deleted: {
+                action: 'governance_classification_deleted',
+            },
+        },
+        custom_metadata: {
+            created: {
+                action: 'governance_custom_metadata_created',
+            },
+            updated: {
+                action: 'governance_custom_metadata_updated',
+            },
+            deleted: {
+                action: 'governance_custom_metadata_deleted',
+            },
+            property_added: {
+                action: 'governance_custom_metadata_property_added',
+                properties: (props) => ({
+                    data_type: props.data_type,
+                    multi_value: !!props.multi_value,
+                    allow_filtering: !!props.allow_filtering,
+                }),
+            },
+            property_updated: {
+                action: 'governance_custom_metadata_property_updated',
+                properties: (props) => ({
+                    data_type: props.data_type,
+                    multi_value: !!props.multi_value,
+                    allow_filtering: !!props.allow_filtering,
+                }),
+            },
+            property_reordered: {
+                action: 'governance_custom_metadata_property_reordered',
+            },
+        },
+        requests: {
+            searched: {
+                action: 'governance_requests_searched',
+            },
+            resolved: {
+                action: 'governance_requests_resolved',
+                properties: (props) => ({
+                    // approve/decline
+                    action: props.action,
+                }),
+            },
+        },
+    },
+    admin: {
+        api_key: {
+            created: {
+                action: 'admin_api_key_created',
+                properties: (props) => ({
+                    persona_count: props.persona_count,
+                }),
+            },
+            updated: {
+                action: 'admin_api_key_updated',
+                properties: (props) => ({
+                    persona_count: props.persona_count,
+                }),
+            },
+            deleted: {
+                action: 'admin_api_key_deleted',
             },
         },
     },

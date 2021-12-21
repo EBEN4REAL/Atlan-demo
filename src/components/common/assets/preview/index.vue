@@ -163,7 +163,10 @@
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
-                    :read-only="isScrubbed(selectedAsset)"
+                    :read-permission="isScrubbed(selectedAsset)"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(selectedAsset)
+                    "
                     :data="tab.data"
                 ></component>
             </a-tab-pane>
@@ -290,6 +293,7 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -333,7 +337,7 @@
             )
 
             provide('switchTab', (asset, tabName: string) => {
-                const idx = getPreviewTabs(asset).findIndex(
+                const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
@@ -387,6 +391,7 @@
                 handleAction,
                 getProfilePath,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             }
         },
     })

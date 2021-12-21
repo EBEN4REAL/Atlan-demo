@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isAccess">
+    <div v-if="isAccess" class="h-full">
         <div v-auth="map.LIST_BUSINESS_METADATA" class="h-full">
             <div v-if="isLoading" class="flex items-center justify-center h-64">
                 <a-spin size="large" />
@@ -68,12 +68,15 @@
                     }"
                 >
                     <template #description>
-                        <p class="text-2xl font-bold">
+                        <p v-if="checkAccess(map.CREATE_BUSINESS_METADATA)" class="text-2xl font-bold">
                             Start adding custom metadata
+                        </p>
+                         <p  class="text-2xl font-bold">
+                            No custom metadata is present
                         </p>
                     </template>
 
-                    <a-button type="primary" @click="addMetaDataModal.open()"
+                    <a-button v-auth="map.CREATE_BUSINESS_METADATA" type="primary" @click="addMetaDataModal.open()"
                         ><AtlanIcon icon="Add" class="inline" /> Create new metadata
                     </a-button>
                 </a-empty>
@@ -133,7 +136,7 @@
                 finalBusinessMetadataList,
                 sortedSearchedBM,
             } = useBusinessMetadata()
-            const { isAccess } = useAuth()
+            const { isAccess, checkAccess } = useAuth()
             return {
                 selectedId,
                 error,
@@ -147,13 +150,15 @@
                 handleSelectBm,
                 sortedSearchedBM,
                 map,
-                isAccess
+                isAccess,
+                 checkAccess
             }
         },
         data() {
             return {
                 noMetadataImage,
-                EmptyBusinessMetadata,
+                EmptyBusinessMetadata
+               
             }
         },
     })

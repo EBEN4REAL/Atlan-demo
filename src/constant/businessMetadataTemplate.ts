@@ -38,15 +38,21 @@ export const DEFAULT_ATTRIBUTE: CMA = {
     options: {
         /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas hold this here: [JSON.stringify(applicableEntityTypes)] */
         applicableEntityTypes: JSON.stringify(['Asset']),
-        customApplicableEntityTypes: applicableEntityTypesOptions.reduce((acc, item) => [...acc, ...(item?.children?.map(v => v.value) ?? [])], []),
+        customApplicableEntityTypes: applicableEntityTypesOptions.reduce(
+            (acc, item) => [
+                ...acc,
+                ...(item?.children?.map((v) => v.value) ?? []),
+            ],
+            []
+        ),
         maxStrLength: '100000000',
         isEnum: false,
         enumType: '',
         // new options
         multiValueSelect: false,
         allowFiltering: true,
-        allowSearch: true,
-        primitiveType: 'string'
+        allowSearch: false,
+        primitiveType: 'string',
         // customType:'url' // added on submit for user, link or group
     },
     typeName: 'string',

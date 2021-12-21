@@ -9,7 +9,7 @@ export default function useFacetUsers(
     config: {
         sort?: string,
         columns?: string[],
-        immediate?: true
+        immediate?: boolean
     } = { immediate: true }
 ) {
     const params = ref(new URLSearchParams())
@@ -91,6 +91,14 @@ export default function useFacetUsers(
     }
 
     let debounce: any = null
+
+    const resetFilter = () => {
+        if (params.value.has('filter')) {
+            params.value.delete('filter')
+            mutate()
+        }
+    }
+
     const handleSearch = (val: Event | string) => {
         queryText.value = val as string
         offset = 0
@@ -136,5 +144,6 @@ export default function useFacetUsers(
         handleSearch,
         setLimit,
         filterTotal,
+        resetFilter,
     }
 }

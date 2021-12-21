@@ -48,9 +48,10 @@
                 @change="handleSearchChange"
                 placeholder="Search terms & categories..."
             >
-                <template #filter>
+                <template v-if="showCollapseAll" #filter>
                     <a-tooltip>
                         <template #title>Collapse all </template>
+
                         <atlan-icon
                             v-if="!queryText"
                             icon="TreeCollapseAll"
@@ -73,7 +74,10 @@
             >
             </AggregationTabs>
         </div>
-        <div v-if="!queryText" class="mt-2">
+        <div
+            v-if="!queryText"
+            class="flex flex-col items-stretch flex-1 h-full mt-2 glossaryTreeWrapper"
+        >
             <GlossaryTree
                 ref="glossaryTree"
                 :height="height"
@@ -114,28 +118,33 @@
                 @event="handleResetEvent"
             ></EmptyView>
         </div>
-
-        <AssetList
+        <div 
             v-else-if="queryText"
-            ref="assetlistRef"
-            :list="list"
-            :selectedAsset="selectedGlossary"
-            :preference="preference"
-            :isLoadMore="isLoadMore"
-            :isLoading="isValidating"
-            @loadMore="handleLoadMore"
-        >
-            <template v-slot:default="{ item }">
-                <GlossaryItem
-                    :item="item"
-                    :selectedGuid="selectedGlossary?.guid"
-                    :checkable="checkable"
-                    :checked="checkedGuids?.includes(item.guid)"
-                    @preview="handlePreview"
-                    @check="onSearchItemCheck"
-                ></GlossaryItem>
-            </template>
-        </AssetList>
+            :class="$style.searchResults
+        ">
+            <AssetList
+                
+                ref="assetlistRef"
+                :list="list"
+                :selectedAsset="selectedGlossary"
+                :preference="preference"
+                :isLoadMore="isLoadMore"
+                :isLoading="isValidating"
+                @loadMore="handleLoadMore"
+                class="mt-3"
+            >
+                <template v-slot:default="{ item }">
+                    <GlossaryItem
+                        :item="item"
+                        :selectedGuid="selectedGlossary?.guid"
+                        :checkable="checkable"
+                        :checked="checkedGuids?.includes(item.guid)"
+                        @preview="handlePreview"
+                        @check="onSearchItemCheck"
+                    ></GlossaryItem>
+                </template>
+            </AssetList>
+        </div>
     </div>
 </template>
 
@@ -231,6 +240,10 @@
             const router = useRouter()
             const { getGlossaryByQF } = useGlossaryData()
             const searchBar = ref(null)
+            const glossaryTree = ref(null)
+            const showCollapseAll = computed(
+                () => glossaryTree.value?.expandedKeys?.length > 0
+            )
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -271,12 +284,13 @@
                 ...facets.value,
                 ...initialFilters.value,
                 typeNames: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
-                glossary: props.checkable ? '' : selectedGlossaryQf,
+                glossary: props.checkable ? '' : selectedGlossaryQf, // no concept of selected glossaries in term filter and widget
             }
 
             // Virtual List Height
             const glossaryBox = ref()
             const height = computed(() => {
+                if(props.checkable) return glossaryTree?.value?.clientHeight
                 if (glossaryBox.value) {
                     return glossaryBox.value.clientHeight - 150
                 }
@@ -289,15 +303,6 @@
                 }
                 return 'AtlasGlossary'
             })
-
-            const handleSelectGlossary = (val) => {
-                if (val !== '') {
-                    router.push(`/glossary/${getGlossaryByQF(val)?.guid}`)
-                    glossaryStore.setSelectedGTC(getGlossaryByQF(val))
-                }
-                selectedGlossaryQf.value = val
-                glossaryStore.setActiveGlossaryQualifiedName(val)
-            }
 
             const {
                 list,
@@ -324,6 +329,23 @@
 
             const { getAnchorQualifiedName } = useAssetInfo()
 
+            // handles selected glossary change
+            const handleSelectGlossary = (val) => {
+                // change profile to selected glossary
+                if (val !== '') {
+                    router.push(`/glossary/${getGlossaryByQF(val)?.guid}`)
+                    glossaryStore.setSelectedGTC(getGlossaryByQF(val))
+                }
+                selectedGlossaryQf.value = val
+                glossaryStore.setActiveGlossaryQualifiedName(val)
+
+                // serach list to show results for selectedGlossary
+                if (queryText.value?.length) {
+                    facets.value.glossary = selectedGlossaryQf
+                    quickChange()
+                }
+            }
+            // for sidebar
             const handlePreview = (item) => {
                 if (!props.checkable) router.push(`/glossary/${item.guid}`)
                 handleSelectedGlossary(item)
@@ -374,7 +396,6 @@
                 glossaryStore.setActivePanel(activeKey.value)
             }
 
-            const glossaryTree = ref(null)
             const handleAddGTC = (asset) => {
                 if (asset) {
                     if (asset.typeName === 'AtlasGlossary') {
@@ -385,13 +406,11 @@
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryTerm') {
-                        console.log('added term')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }
                     }
                     if (asset.typeName === 'AtlasGlossaryCategory') {
-                        console.log('added cat')
                         if (glossaryTree.value) {
                             glossaryTree.value.addGlossary(asset)
                         }
@@ -427,10 +446,12 @@
                 emit('check', checkedNodes, { checkedKeys, checked })
             }
             const onSearchItemCheck = (checkedNode, checked) => {
-                if (!checkedGuids.value.includes(checkedNode.guid)) {
-                    checkedGuids.value.push(checkedNode.guid)
+                if(checkedNode.typeName === 'AtlasGlossaryTerm') {
+                    if (!checkedGuids.value.includes(checkedNode.guid)) {
+                        checkedGuids.value.push(checkedNode.guid)
+                    }
+                    emit('searchItemCheck', checkedNode, checked)
                 }
-                emit('searchItemCheck', checkedNode, checked)
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)
@@ -477,6 +498,7 @@
                 updateTreeNode,
                 searchBar,
                 onSearchItemCheck,
+                showCollapseAll,
             }
         },
     })
@@ -487,8 +509,20 @@
         max-width: 200px;
         min-width: 200px;
     }
+    .searchResults {
+        @apply overflow-y-auto bg-white;
+    }
+
     .checkableTree {
-        max-height: 364px;
+        .searchResults {
+            max-height: 500px;
+        }
+
+        :global(.glossaryTreeWrapper) {
+            @apply overflow-y-auto;
+            max-height: 300px;
+        }
+    
         :global(.ant-tree-checkbox) {
             @apply my-auto mr-1 mt-2;
             position: absolute;

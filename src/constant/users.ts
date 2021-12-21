@@ -92,7 +92,6 @@ export const userColumns = [
     },
     {
         title: 'Actions',
-        width: 200,
         slots: { customRender: 'actions' },
     },
 ]

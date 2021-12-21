@@ -18,16 +18,23 @@
                 >
                     <template #rightExtra>
                         <div class="inline-flex items-center ml-1 mr-2">
-                            <a-tooltip placement="top">
-                                <template #title>New query</template>
+                            <a-dropdown :trigger="['click']">
                                 <span
                                     class="inline-flex items-center justify-center p-0.5 rounded-sm btn-add cross-hover mt-1"
-                                    @click="handleAdd"
                                 >
-                                    <!-- <fa icon="fal plus" class="text-gray-700" /> -->
                                     <AtlanIcon icon="Add" />
                                 </span>
-                            </a-tooltip>
+                                <template #overlay>
+                                    <a-menu>
+                                        <a-menu-item @click="handleAdd(false)">
+                                            <span class="h-8"> New Query </span>
+                                        </a-menu-item>
+                                        <a-menu-item @click="handleAdd(true)">
+                                            <span class="h-8"> New VQB </span>
+                                        </a-menu-item>
+                                    </a-menu>
+                                </template>
+                            </a-dropdown>
                         </div>
                     </template>
 
@@ -136,7 +143,7 @@
             </splitpanes>
         </div>
         <ResultPaneFooter v-if="activeInlineTabKey" />
-        <NoActiveInlineTab @handleAdd="handleAdd" v-else />
+        <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else />
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"
@@ -249,7 +256,7 @@
                 return max_number
             }
 
-            const handleAdd = () => {
+            const handleAdd = (isVQB) => {
                 // const key = String(new Date().getTime())
                 const key = generateUUID()
                 const inlineTabData: activeInlineTabInterface = {
@@ -266,7 +273,7 @@
                     parentQualifiedName: '',
                     isSQLSnippet: false,
                     savedQueryParentFolderTitle: undefined,
-                    collectionQulaifiedName: '',
+                    collectionQualifiedName: '',
                     explorer: {
                         schema: {
                             connectors: {
@@ -298,6 +305,7 @@
                     },
 
                     playground: {
+                        isVQB: isVQB,
                         vqb: {
                             panels: [
                                 {
@@ -371,12 +379,18 @@
 
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 const queryParams = {}
-                if (route?.query?.vqb) queryParams.vqb = true
+                // if (route?.query?.vqb) queryParams.vqb = true
+                if (isVQB) queryParams.vqb = true
+
                 router.push({ path: `insights`, query: queryParams })
             }
+
             const pushGuidToURL = (guid: string | undefined) => {
                 const queryParams = {}
-                if (route?.query?.vqb) queryParams.vqb = true
+                let isVQB = activeInlineTab.value.playground.isVQB
+                if (isVQB) queryParams.vqb = true
+                // if (route?.query?.vqb) queryParams.vqb = true
+
                 if (guid) {
                     queryParams.id = guid
                     router.push({ path: `insights`, query: queryParams })
@@ -390,7 +404,7 @@
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {
-                    handleAdd()
+                    handleAdd(false)
                 } else {
                     /* For closing the tab */
                     console.log(targetKey)

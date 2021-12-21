@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { ref, Ref } from 'vue'
+import { computed, ComputedRef, Ref } from 'vue'
 import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
 
@@ -8,8 +8,19 @@ import { useOptions } from '~/services/api/common'
 const List = (params: any, options?: useOptions) =>
     useAPI(map.LIST_USERS, 'GET', { params }, options || {})
 
-const ListUserGroups = (params: any, id: string, options?: useOptions) =>
-    useAPI(map.GET_USER_GROUPS, 'GET', { params, pathVariables: { id } }, options || {})
+const ListUserGroups = (
+    params: any,
+    id: ComputedRef<string>,
+    options?: useOptions
+) => {
+    const pathVariables = computed(() => ({ id: id.value }))
+    return useAPI(
+        map.GET_USER_GROUPS,
+        'GET',
+        { params, pathVariables },
+        options || {}
+    )
+}
 
 const GetUserSessions = (pathVariables, params?: any, options?: useOptions) =>
     useAPI(

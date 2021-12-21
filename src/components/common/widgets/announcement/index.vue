@@ -1,81 +1,142 @@
 <template>
     <div
         v-if="announcementTitle(selectedAsset)"
-        class="flex justify-between px-3 py-2 border rounded"
+        class="flex flex-col px-3 py-2 border rounded"
         :class="bgClass"
     >
-        <div class="flex flex-col">
-            <div class="font-bold text-gray-700">
-                {{ announcementTitle(selectedAsset) }}
-            </div>
-            <div class="text-gray-500">
-                {{ announcementMessage(selectedAsset) }}
-            </div>
-            <div class="flex items-center mt-2 text-gray-500 gap-x-1">
-                <div class="flex text-sm">
-                    <AtlanIcon :icon="icon" class="mt-0.5"></AtlanIcon>
-                    <div class="ml-1">
-                        {{ announcementUpdatedBy(selectedAsset) }},
-                    </div>
+        <div class="flex justify-between">
+            <div>
+                <div class="flex items-center font-bold text-gray-700">
+                    <AtlanIcon :icon="icon" class="mr-1"></AtlanIcon>
+                    {{ announcementTitle(selectedAsset) }}
                 </div>
-                {{ announcementUpdatedAt(selectedAsset, true) }}
+                <div
+                    v-linkified="{
+                        className: 'text-primary',
+                        target: '_blank',
+                    }"
+                    class="text-gray-500 break-all"
+                >
+                    {{ announcementMessage(selectedAsset) }}
+                </div>
+            </div>
+            <div
+                v-if="selectedAssetUpdatePermission(selectedAsset) && allowEdit"
+            >
+                <a-dropdown trigger="click" placement="bottomRight">
+                    <div>
+                        <AtlanIcon
+                            icon="KebabMenu"
+                            class="h-4 m-0 cursor-pointer hover:text-primary"
+                        />
+                    </div>
+                    <!-- <a-button
+                        class="px-2 bg-transparent border-none shadow-none hover:bg-white hover:shadow-sm"
+                    >
+                    </a-button> -->
+
+                    <template #overlay>
+                        <a-menu mode="vertical">
+                            <a-menu-item key="edit">
+                                <AddAnnouncementModal
+                                    :asset="selectedAsset"
+                                    :edit-permission="
+                                        selectedAssetUpdatePermission(
+                                            selectedAsset
+                                        )
+                                    "
+                                    :updating="true"
+                                    ><template #trigger>
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                icon="Edit"
+                                                class="h-4 mr-2"
+                                            />
+                                            Edit
+                                        </div></template
+                                    ></AddAnnouncementModal
+                                >
+                            </a-menu-item>
+                            <a-menu-item key="delete">
+                                <DeleteAnnouncementModal
+                                    :asset="selectedAsset"
+                                    :edit-permission="
+                                        selectedAssetUpdatePermission(
+                                            selectedAsset
+                                        )
+                                    "
+                                    ><template #trigger>
+                                        <div
+                                            class="flex items-center text-red-500"
+                                        >
+                                            <AtlanIcon
+                                                icon="Delete"
+                                                class="h-4 mr-2"
+                                            />
+                                            Delete
+                                        </div></template
+                                    ></DeleteAnnouncementModal
+                                ></a-menu-item
+                            >
+                        </a-menu>
+                    </template>
+                </a-dropdown>
             </div>
         </div>
-        <div v-if="!isScrubbed(selectedAsset)">
-            <a-dropdown trigger="click" placement="bottomRight">
-                <a-button
-                    class="px-2 bg-transparent border-none shadow-none hover:bg-white hover:shadow-sm"
-                >
-                    <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
-                </a-button>
-
-                <template #overlay>
-                    <a-menu mode="vertical">
-                        <a-menu-item key="edit">
-                            <AnnouncementModal :asset="selectedAsset"
-                                ><template #trigger>
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Edit"
-                                            class="h-4 mr-2"
-                                        />
-                                        Edit
-                                    </div></template
-                                ></AnnouncementModal
-                            >
-                        </a-menu-item>
-                    </a-menu>
-                </template>
-            </a-dropdown>
+        <div
+            class="flex items-center justify-between mt-2 text-gray-500 gap-x-1"
+            v-if="announcementUpdatedBy(selectedAsset)"
+        >
+            <div class="flex text-sm">
+                <UserAvatar
+                    :username="announcementUpdatedBy(selectedAsset)"
+                    :show-username="true"
+                ></UserAvatar>
+            </div>
+            <span class="text-xs">{{
+                announcementUpdatedAt(selectedAsset, true)
+            }}</span>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs } from 'vue'
-    import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
+    import AddAnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
+    import DeleteAnnouncementModal from '@common/widgets/announcement/deleteAnnouncementModal.vue'
+    import UserAvatar from '@common/avatar/user.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'AnnouncementWidget',
-        components: { AnnouncementModal },
+        components: {
+            AddAnnouncementModal,
+            DeleteAnnouncementModal,
+            UserAvatar,
+        },
 
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            allowEdit: {
+                type: Boolean,
+                default() {
+                    return true
+                },
+            },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, allowEdit } = toRefs(props)
             const {
                 announcementTitle,
                 announcementMessage,
                 announcementType,
                 announcementUpdatedAt,
                 announcementUpdatedBy,
-                isScrubbed,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const bgClass = computed(() => {
@@ -110,9 +171,10 @@
                 announcementType,
                 announcementUpdatedAt,
                 announcementUpdatedBy,
-                isScrubbed,
+                selectedAssetUpdatePermission,
                 bgClass,
                 icon,
+                allowEdit,
             }
         },
     })

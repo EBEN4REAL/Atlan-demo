@@ -9,6 +9,7 @@ import { generateQueryStringParamsFromObj } from '~/utils/queryString'
 // import HEKA_SERVICE_API from '~/services/heka/index'
 import { Insights } from '~/services/sql/query'
 import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export default function useProject() {
     const {
@@ -88,8 +89,10 @@ export default function useProject() {
         onQueryIdGeneration?: Function,
         selectedText?: string,
         editorInstance: Ref<any>,
-        monacoInstance: Ref<any>
+        monacoInstance: Ref<any>,
+        showVQB: Ref<Boolean> = ref(false)
     ) => {
+
         resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         // console.log('inside run query: ', activeInlineTab.value)
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
@@ -105,56 +108,53 @@ export default function useProject() {
                 undefined
         }
 
-        // console.log('selected text: ', selectedText)
-        /* Checking If any text is selected */
-
         let semiColonMatchs = toRaw(editorInstance.value)
             ?.getModel()
             ?.findMatches(';')
+
         if (semiColonMatchs?.length === 0) {
-            queryText = activeInlineTab.value.playground.editor.text
+            console.log('no semi colon')
+            if (showVQB.value) {
+                queryText = selectedText
+                activeInlineTab.value.playground.editor.text = queryText
+            } else {
+                if(selectedText && selectedText !== '') {
+                    queryText = selectedText
+                } else {
+                    queryText = activeInlineTab.value.playground.editor.text
+                }
+            }
         } else if (selectedText && selectedText !== '') {
-            queryText = getParsedQuery(
-                activeInlineTab.value.playground.editor.variables,
-                selectedText
-            )
-            var count = 0
-            let text = queryText
+            if (showVQB.value) {
+                queryText = selectedText
+            } else {
+                queryText = getParsedQuery(
+                    activeInlineTab.value.playground.editor.variables,
+                    selectedText
+                )
+                var count = 0
+                let text = queryText
 
-            console.log('selected query text1: ', { queryText })
+                console.log('selected query text1: ', { queryText })
 
-            while (text.startsWith('\n')) {
-                text = text.slice(1)
-                console.log('selected query text: ', { text })
-                count++
+                while (text.startsWith('\n')) {
+                    text = text.slice(1)
+                    console.log('selected query text: ', { text })
+                    count++
+                }
+
+                let selection = toRaw(editorInstance.value)?.getSelection()
+                console.log('selected query text3: ', selection)
+
+                for (
+                    var i = 0;
+                    i < count + selection?.startLineNumber - 1;
+                    i++
+                ) {
+                    queryText = '\n' + queryText
+                }
             }
-
-            let selection = toRaw(editorInstance.value)?.getSelection()
-            console.log('selected query text3: ', selection)
-
-            // if(selection==null) {
-
-            // } else {
-
-            // }
-
-            for (var i = 0; i < count + selection?.startLineNumber - 1; i++) {
-                queryText = '\n' + queryText
-            }
-            // console.log('selected query text2: ', {queryText})
-            // console.log('selected query text2: ', {text, count})
-            // console.log('query selected text1: ', queryText)
-
-            // console.log('selected query text: ', toRaw(editorInstance.value).getSelection())
         } else if (activeInlineTab.value.playground.editor.text !== '') {
-            // queryText = getParsedQuery(
-            //     activeInlineTab.value.playground.editor.variables,
-            //     activeInlineTab.value.playground.editor.text
-            // )
-            // console.log('query: ', queryText)
-
-            // no semicolon support
-
             let queryData = getParsedQueryCursor(
                 activeInlineTab.value.playground.editor.variables,
                 activeInlineTab.value.playground.editor.text,
@@ -162,11 +162,6 @@ export default function useProject() {
                 editorInstance.value,
                 monacoInstance.value
             )
-            // const selectedQuery = toRaw(editorInstance.value)
-            //     .getModel()
-            //     .getValueInRange(
-            //         toRaw(editorInstance.value).getSelection()
-            //     )
 
             let selectedQuery = queryData.rawQuery.replace(/^\s+|\s+$/g, '')
             let newLines = '\n'.repeat(queryData.range.startLineNumber - 1)
@@ -192,11 +187,6 @@ export default function useProject() {
 
         dataList.value = []
         const query = encodeURIComponent(btoa(queryText))
-        // console.log('selected query encoded: ', query)
-        /* -------- NOTE -----------
-        Here defaultSchema -  'ATLAN_TRIAL.PUBLIC' instead of 'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC'
-        dataSourceName -  connectionQualifiedName
-        */
 
         const params = {
             sql: query,
@@ -214,8 +204,15 @@ export default function useProject() {
             params.savedQueryId = activeInlineTab.value?.queryId
         }
         /* Adding a limit param if limit rows is checked and limit is passed*/
-        if (limitRows?.value && limitRows?.value?.checked)
+        if (limitRows?.value && limitRows?.value?.checked) {
             params['limit'] = limitRows.value.rowsCount
+        }
+
+        useAddEvent('insights', 'query', 'run', {
+            saved_query: !!params.savedQueryId,
+            visual_query: activeInlineTab.value.playground.isVQB,
+            limit_100: !!params.limit,
+        })
 
         let search_prms = generateQueryStringParamsFromObj(params)
 

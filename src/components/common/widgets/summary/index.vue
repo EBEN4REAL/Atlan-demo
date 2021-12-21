@@ -8,7 +8,10 @@
         </div>
         <div class="flex flex-col gap-y-10">
             <div class="flex flex-col gap-y-3">
-                <div class="flex gap-x-16">
+                <div
+                    v-if="getSummaryVariants(asset)?.components?.length"
+                    class="flex gap-x-16"
+                >
                     <div
                         v-for="(component, index) in getSummaryVariants(asset)
                             ?.components"
@@ -24,7 +27,7 @@
                             ref="descriptionRef"
                             v-model="localDescription"
                             :selected-asset="asset"
-                            :read-only="readOnly"
+                            :edit-permission="editPermission"
                             :in-profile="true"
                             class="-ml-1"
                             @change="handleChangeDescription"
@@ -38,7 +41,7 @@
                         <Certificate
                             v-model="localCertificate"
                             :selected-asset="asset"
-                            :read-only="readOnly"
+                            :edit-permission="editPermission"
                             :in-profile="true"
                             @change="handleChangeCertificate"
                         />
@@ -49,7 +52,7 @@
                         <Owners
                             v-model="localOwners"
                             :selected-asset="asset"
-                            :read-only="readOnly"
+                            :edit-permission="editPermission"
                             :in-profile="true"
                             @change="handleOwnersChange"
                         />
@@ -107,7 +110,7 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,

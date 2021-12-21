@@ -1,5 +1,5 @@
 <template>
-    <div class="wrapper-manage-permition">
+    <div class="relative wrapper-manage-permition">
         <div class="flex p-4 pb-0">
             <AtlanBtn
                 class="border-none btn-back"
@@ -25,36 +25,36 @@
                 class="mb-6"
                 type="persona"
             />
-            <div
-                class="flex items-center justify-end p-3 mt-auto border border-solid gap-x-2 border-slate-300"
+        </div>
+        <div
+            class="fixed flex items-center justify-end p-3 mt-auto border-t border-solid gap-x-2 border-slate-300 btn-wrapper-manage"
+        >
+            <span class="mr-auto text-gray-500"
+                >{{ actionsLocal.length || 'No' }} items updated</span
             >
-                <span class="mr-auto text-gray-500"
-                    >{{ actionsLocal.length || 'No' }} items updated</span
-                >
-                <AtlanBtn
-                    padding="compact"
-                    color="secondary"
-                    data-test-id="cancel"
-                    class="btn-asset"
-                    @click="handleClose"
-                >
-                    Cancel
-                </AtlanBtn>
-                <AtlanBtn
-                    padding="compact"
-                    data-test-id="save"
-                    class="btn-asset"
-                    @click="handleSave"
-                >
-                    Save
-                </AtlanBtn>
-            </div>
+            <AtlanBtn
+                padding="compact"
+                color="secondary"
+                data-test-id="cancel"
+                class="btn-asset"
+                @click="handleClose"
+            >
+                Cancel
+            </AtlanBtn>
+            <AtlanBtn
+                padding="compact"
+                data-test-id="save"
+                class="btn-asset"
+                @click="handleSave"
+            >
+                Save
+            </AtlanBtn>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, ref, watch } from 'vue'
+    import { defineComponent, toRefs, ref, watch, onMounted } from 'vue'
     import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import AtlanBtn from '@/UI/button.vue'
 
@@ -91,6 +91,13 @@
                     actionsLocal.value = actions.value
                 }
             })
+            onMounted(() => {
+                window.addEventListener('keydown', (keyDown) => {
+                    if (keyDown.keyCode === 27) {
+                        handleClose()
+                    }
+                })
+            })
             return {
                 handleClose,
                 handleSave,
@@ -104,7 +111,6 @@
         transform: rotate(180deg);
     }
     .container-content {
-        height: inherit;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -116,5 +122,10 @@
     }
     .wrapper-manage-permition {
         height: 86vh;
+    }
+    .btn-wrapper-manage {
+        width: -webkit-fill-available;
+        bottom: 0;
+        background: white;
     }
 </style>

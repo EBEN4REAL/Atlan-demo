@@ -2,26 +2,19 @@
     <a-select
         v-model:value="localValue"
         placeholder="Users"
-        class="w-full center-arrow"
+        class="w-full"
         :show-search="true"
         :mode="multiple ? 'multiple' : null"
         :options="finalList"
-        :open="open"
         :filter-option="() => true"
         @change="handleChange"
-        @search="
-            (v) => {
-                open = true
-                handleSearch(v)
-            }
-        "
-        @click="open = !open"
-        @select="open = false"
-        @blur="
+        @click="
             () => {
-                if (!isLoading) open = false
+                if (finalList.length < 2) mutate()
             }
         "
+        @select="resetFilter"
+        @search="handleSearch"
     >
         <template #option="item">
             <div class="flex">
@@ -58,10 +51,11 @@
                     </span>
                     <span
                         v-if="userList?.length < filterTotal"
-                        class="cursor-pointer text-primary hover:underline"
+                        class="flex items-center text-xs justify-center py-0.5 cursor-pointer text-primary hover:underline"
                         @click="loadMore"
+                        @mousedown="(e) => e.preventDefault()"
                     >
-                        load more
+                        load more...
                     </span>
                 </div>
             </div>
@@ -84,7 +78,6 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
-    import useUserData from '~/composables/user/useUserData'
     import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
@@ -109,7 +102,6 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const open = ref(false)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
@@ -120,7 +112,9 @@
                 isLoading,
                 filterTotal,
                 loadMore,
-            } = useFacetUsers()
+                mutate,
+                resetFilter,
+            } = useFacetUsers({ immediate: false })
 
             watch(
                 () => props.queryText,
@@ -155,11 +149,9 @@
                 emit('change')
             }
 
-            onBeforeUnmount(() => {
-                open.value = false
-            })
-
             return {
+                resetFilter,
+                mutate,
                 open,
                 finalList,
                 loadMore,
@@ -177,8 +169,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .center-arrow:deep(.ant-select-arrow) {
-        @apply flex items-center;
-    }
-</style>
+<style lang="less" scoped></style>

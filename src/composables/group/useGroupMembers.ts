@@ -4,26 +4,28 @@ import { ref, onMounted, watch, computed, Ref, ComputedRef } from 'vue'
 import swrvState from '~/utils/swrvState'
 import { Groups } from '~/services/service/groups/index'
 
-export default function useGroupsMembers(memberListParams: {
-    groupId: string
-    params: { limit: number; offset: number; filter: any; sort: string }
-}) {
+export default function useGroupsMembers(
+    memberListParams: ComputedRef<{
+        groupId: string
+        params: { limit: number; offset: number; filter: any; sort: string }
+    }>
+) {
     const localMembersList: Ref<any[]> = ref([])
-
-    const pV = computed(() => ({ id: memberListParams.groupId }))
+    const groupId = computed(() => ({ id: memberListParams.value.groupId }))
+    const params = computed(() => memberListParams.value.params)
     const {
         data,
         error,
         mutate: getGroupMembersList,
         isValidating,
         isLoading,
-    } = Groups.getGroupMembers(pV, memberListParams.params, {
+    } = Groups.getGroupMembers(groupId, params, {
         revalidateOnFocus: false,
         dedupingInterval: 1,
     })
 
     watch(data, () => {
-        if (memberListParams.params.offset > 0) {
+        if (memberListParams.value.params.offset > 0) {
             localMembersList.value = [
                 ...localMembersList.value,
                 ...(data?.value?.records ?? []),

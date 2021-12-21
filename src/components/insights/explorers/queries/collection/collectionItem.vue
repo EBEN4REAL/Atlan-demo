@@ -8,7 +8,7 @@
         @click="handleChange(item.guid)"
     >
         <div class="flex items-center overflow-x-hidden">
-            <span class="w-4 h-4 -mt-0.5 mr-2.5">{{
+            <span class="w-5 h-5 -mt-1 mr-2.5 text-lg">{{
                 item?.attributes?.icon ? item?.attributes?.icon : '🗃'
             }}</span>
 
@@ -51,14 +51,21 @@
                 </template>
             </a-dropdown>
         </div>
-        <ShareCollectionModal
+        <!-- <ShareCollectionModal
             v-model:showShareModal="showShareQueryModal"
             :item="item"
-        />
+        /> -->
         <CreateCollectionModal
             v-if="showCollectionModal"
             v-model:showCollectionModal="showCollectionModal"
             :is-create="false"
+            :item="item"
+        />
+        <CreateCollectionModal
+            v-if="showShareQueryModal"
+            v-model:showCollectionModal="showShareQueryModal"
+            :is-create="false"
+            :is-share="true"
             :item="item"
         />
     </div>
@@ -124,6 +131,16 @@
 
             const { username } = whoami()
 
+            const isCollectionCreatedByCurrentUser = inject(
+                'isCollectionCreatedByCurrentUser'
+            )
+            const hasCollectionReadPermission = inject(
+                'hasCollectionReadPermission'
+            )
+            const hasCollectionWritePermission = inject(
+                'hasCollectionWritePermission'
+            )
+
             return {
                 item,
                 handleChange,
@@ -133,6 +150,10 @@
                 toggleShowCollectionModal,
                 username,
                 isCollectionPrivate,
+
+                isCollectionCreatedByCurrentUser,
+                hasCollectionReadPermission,
+                hasCollectionWritePermission,
             }
         },
     })

@@ -49,33 +49,29 @@
                             :image-required="false"
                             class="mr-2 text-xs"
                         />
-                        <HierarchyBar :selected-asset="item" class="text-xs" />
-                        <span style="color: #c4c4c4"> • </span>
-                        <div class="flex items-center gap-x-3">
-                            <!-- Column dataType -->
-                            <div
-                                v-if="item.typeName.toLowerCase() === 'column'"
-                                class="flex items-center space-x-2"
-                            >
-                                <div class="flex items-center">
-                                    <component
-                                        :is="dataTypeCategoryImage(item)"
-                                        class="w-auto h-4 text-gray-500 mb-0.5"
-                                    ></component>
-                                    <span class="ml-1 text-xs text-gray-500">{{
-                                        dataType(item)
-                                    }}</span>
-                                </div>
-                                <div
-                                    v-if="item.attributes?.isPrimary"
-                                    class="flex"
-                                >
-                                    <AtlanIcon icon="PrimaryKey" />
-                                </div>
+                        <!-- Column dataType -->
+                        <div
+                            v-if="item.typeName.toLowerCase() === 'column'"
+                            class="flex items-center space-x-2"
+                        >
+                            <span style="color: #c4c4c4"> • </span>
+                            <div class="flex items-center">
+                                <component
+                                    :is="dataTypeCategoryImage(item)"
+                                    class="w-auto h-4 text-gray-500 mb-0.5"
+                                ></component>
+                                <span class="ml-1 text-xs text-gray-500">{{
+                                    dataType(item)
+                                }}</span>
                             </div>
-
+                            <div v-if="item.attributes?.isPrimary" class="flex">
+                                <AtlanIcon icon="PrimaryKey" />
+                            </div>
+                        </div>
+                        <HierarchyBar :selected-asset="item" class="text-xs" />
+                        <div class="flex items-center gap-x-3">
                             <!-- Row/Col bar -->
-                            <div
+                            <!-- <div
                                 v-if="
                                     [
                                         'table',
@@ -86,7 +82,7 @@
                                 class="flex text-xs text-gray-500"
                             >
                                 <RowsColumnCount :item="item" />
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>

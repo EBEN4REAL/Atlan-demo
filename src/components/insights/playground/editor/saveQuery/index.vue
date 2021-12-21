@@ -135,6 +135,7 @@
         PropType,
         toRefs,
         watch,
+        toRaw,
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { List } from '~/constant/status'
@@ -148,7 +149,7 @@
 
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-
+    import { message } from 'ant-design-vue'
     // import AddTerms from './addTerms.vue'
 
     export default defineComponent({
@@ -239,19 +240,28 @@
             }
 
             const createSaveQuery = () => {
-                const saveQueryData = {
-                    title:
-                        title.value !== ''
-                            ? title.value
-                            : `Untitled ${getLastUntitledNumber()}`,
-                    description: description.value,
-                    isSQLSnippet: isSQLSnippet.value,
-                    certificateStatus: currentStatus.value,
-                    parentQF:
-                        selectedParentFolder.value?.attributes?.qualifiedName,
-                    parentGuid: selectedParentFolder.value?.guid,
+                // console.log(
+                //     'selectedParentFolder: ',
+                //     Object.keys(toRaw(selectedParentFolder.value)).length
+                // )
+                if (Object.keys(toRaw(selectedParentFolder.value)).length) {
+                    const saveQueryData = {
+                        title:
+                            title.value !== ''
+                                ? title.value
+                                : `Untitled ${getLastUntitledNumber()}`,
+                        description: description.value,
+                        isSQLSnippet: isSQLSnippet.value,
+                        certificateStatus: currentStatus.value,
+                        parentQF:
+                            selectedParentFolder.value?.attributes
+                                ?.qualifiedName,
+                        parentGuid: selectedParentFolder.value?.guid,
+                    }
+                    emit('onSaveQuery', saveQueryData, assetTerms)
+                } else {
+                    message.error('No collection selected')
                 }
-                emit('onSaveQuery', saveQueryData, assetTerms)
             }
             onMounted(async () => {
                 await nextTick()

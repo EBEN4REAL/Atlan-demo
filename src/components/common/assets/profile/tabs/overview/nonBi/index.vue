@@ -3,7 +3,7 @@
         <AnnouncementWidget
             :selected-asset="selectedAsset"
         ></AnnouncementWidget>
-        <Summary :asset="selectedAsset" :readOnly="readOnly">
+        <Summary :asset="selectedAsset" :editPermission="editPermission">
             <div class="flex flex-col w-full">
                 <!-- Preview Selector-->
                 <a-tooltip
@@ -29,9 +29,9 @@
             </div>
         </Summary>
         <Readme
-            v-if="readmeContent(selectedAsset) || !readOnly"
+            v-if="readmeContent(selectedAsset) || editPermission"
             :asset="selectedAsset"
-            :isEdit="!readOnly"
+            :isEdit="editPermission"
         />
     </div>
 </template>
@@ -73,7 +73,7 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            readOnly: {
+            editPermission: {
                 type: Boolean,
                 required: false,
                 default: false,

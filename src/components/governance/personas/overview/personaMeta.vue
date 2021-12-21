@@ -1,6 +1,7 @@
 <template>
     <div>
         <PersonaSummary :persona="persona" @setActiveTab="setActiveTab" />
+        <PersonaUsersGroups v-model:persona="persona" class="mt-3" />
         <!-- <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             <div v-if="persona.createdBy" class="flex items-center text-sm">
@@ -133,10 +134,16 @@
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
     import PersonaSummary from './personaSummary.vue'
+    import PersonaUsersGroups from '@/governance/personas/users/personaUsersGroups.vue'
 
     export default defineComponent({
         name: 'PersonaMeta',
-        components: { PopOverUser, UserPill, PersonaSummary },
+        components: {
+            PopOverUser,
+            UserPill,
+            PersonaSummary,
+            PersonaUsersGroups,
+        },
         props: {
             persona: {
                 type: Object as PropType<IPersona>,

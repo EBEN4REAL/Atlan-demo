@@ -14,71 +14,85 @@
             <span class="mt-1 mr-1 text-base text-gray-700">{{
                 activeInlineTab.label
             }}</span>
-            <AtlanBtn
-                size="sm"
-                color="secondary"
-                padding="compact"
-                v-if="activeInlineTab.queryId && !activeInlineTab.isSaved"
-                class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
-                :class="isUpdating ? 'px-4.5' : 'px-2'"
-                :disabled="activeInlineTab.isSaved && activeInlineTab.queryId"
-                @click="$emit('onClickSaveQuery')"
+            <span
+                v-if="readOnly"
+                class="px-1 py-0.5 bg-primary-light text-xs text-gray-500 border rounded border-gray-300 mx-2"
             >
+                Read Only
+            </span>
+
+            <span v-else>
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    v-if="activeInlineTab.queryId && !activeInlineTab.isSaved"
+                    class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
+                    :class="isUpdating ? 'px-4.5' : 'px-2'"
+                    :disabled="
+                        activeInlineTab.isSaved && activeInlineTab.queryId
+                    "
+                    @click="$emit('onClickSaveQuery')"
+                >
+                    <div
+                        class="flex items-center transition duration-150 rounded group-hover:text-primary"
+                    >
+                        <AtlanIcon
+                            v-if="!isUpdating"
+                            style="margin-right: 2.5px"
+                            icon="Save"
+                        ></AtlanIcon>
+                        <AtlanIcon
+                            v-else
+                            icon="CircleLoader"
+                            style="margin-right: 2.5px"
+                            class="w-4 h-4 animate-spin"
+                        ></AtlanIcon>
+
+                        <span>Update</span>
+                    </div>
+                </AtlanBtn>
+
                 <div
-                    class="flex items-center transition duration-150 rounded group-hover:text-primary"
+                    v-else-if="
+                        activeInlineTab.queryId && activeInlineTab.isSaved
+                    "
+                    class="transition duration-150 hover:text-primary"
                 >
-                    <AtlanIcon
-                        v-if="!isUpdating"
-                        style="margin-right: 2.5px"
-                        icon="Save"
-                    ></AtlanIcon>
-                    <AtlanIcon
-                        v-else
-                        icon="CircleLoader"
-                        style="margin-right: 2.5px"
-                        class="w-4 h-4 animate-spin"
-                    ></AtlanIcon>
-
-                    <span>Update</span>
+                    <a-tooltip
+                        color="#363636"
+                        class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
+                    >
+                        <template #title>
+                            {{ useTimeAgo(activeInlineTab?.updateTime) }}
+                            by {{ activeInlineTab.updatedBy }}
+                        </template>
+                        <AtlanIcon class="mr-1" icon="Check" />Saved
+                    </a-tooltip>
                 </div>
-            </AtlanBtn>
 
-            <div
-                v-else-if="activeInlineTab.queryId && activeInlineTab.isSaved"
-                class="transition duration-150 hover:text-primary"
-            >
-                <a-tooltip
-                    color="#363636"
-                    class="flex items-center h-6 px-3 ml-2 border-none cursor-pointer opacity-70 button-shadow"
+                <AtlanBtn
+                    v-else
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
+                    @click="$emit('onClickSaveQuery')"
                 >
-                    <template #title>
-                        {{ useTimeAgo(activeInlineTab?.updateTime) }}
-                        by {{ activeInlineTab.updatedBy }}
-                    </template>
-                    <AtlanIcon class="mr-1" icon="Check" />Saved
-                </a-tooltip>
-            </div>
+                    <div
+                        class="flex items-center transition duration-150 group-hover:text-primary"
+                    >
+                        <AtlanIcon
+                            style="margin-right: 2.5px"
+                            icon="Save"
+                        ></AtlanIcon>
 
-            <AtlanBtn
-                v-else
-                size="sm"
-                color="secondary"
-                padding="compact"
-                class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
-                @click="$emit('onClickSaveQuery')"
-            >
-                <div
-                    class="flex items-center transition duration-150 group-hover:text-primary"
-                >
-                    <AtlanIcon
-                        style="margin-right: 2.5px"
-                        icon="Save"
-                    ></AtlanIcon>
-
-                    <span>Save</span>
-                </div>
-            </AtlanBtn>
+                        <span>Save</span>
+                    </div>
+                </AtlanBtn>
+            </span>
         </div>
+
         <div class="flex items-center">
             <a-popover
                 trigger="click"
@@ -120,9 +134,19 @@
                 </template>
                 <div
                     class="flex items-center text-gray-500 border border-white rounded cursor-pointer hover:bg-gray-light p-0.5"
-                    :class="popoverVisible ? 'bg-gray-light' : ''"
+                    :class="[
+                        popoverVisible ? 'bg-gray-light' : '',
+                        readOnly
+                            ? 'pointer-events-none bg-gray-100 rounded px-1 '
+                            : '',
+                    ]"
                 >
                     <div class="flex items-center">
+                        <AtlanIcon
+                            icon="Lock"
+                            class="w-4 h-4 mr-1"
+                            v-if="readOnly"
+                        />
                         <img
                             v-if="connectionName"
                             :src="connectorAsset?.image"
@@ -206,7 +230,7 @@
             </a-popover>
             <div class="flex items-center ml-2">
                 <div class="flex text-sm">
-                    <div class="flex" v-if="permissions.runQuery">
+                    <div class="flex">
                         <AtlanBtn
                             class="flex items-center h-6 px-3 button-shadow"
                             size="sm"
@@ -277,7 +301,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ref, watch, computed } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        ref,
+        watch,
+        computed,
+        ComputedRef,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import StatusBadge from '@common/badge/status/index.vue'
     import { SourceList } from '~/constant/source'
@@ -293,10 +325,21 @@
     import { useTimeAgo } from '@vueuse/core'
     import { useConnectionStore } from '~/store/connection'
     import { storeToRefs } from 'pinia'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import map from '~/constant/accessControl/map'
+
+    import { useAuthStore } from '~/store/auth'
+    import { storeToRefs } from 'pinia'
 
     export default defineComponent({
         name: 'EditorContext',
-        components: { StatusBadge, Connector, AtlanBtn, ThreeDotMenu },
+        components: {
+            StatusBadge,
+            Connector,
+            AtlanBtn,
+            ThreeDotMenu,
+            AtlanIcon,
+        },
         props: {
             isUpdating: {
                 type: Boolean,
@@ -326,7 +369,7 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const permissions = inject('permissions') as ComputedRef<any>
+            // const permissions = inject('permissions') as ComputedRef<any>
 
             const connectorsData: Ref<connectorsWidgetInterface> = ref(
                 activeInlineTab.value?.playground?.editor?.context ?? {
@@ -335,13 +378,40 @@
                 }
             )
 
+            const authStore = useAuthStore()
+            const { permissions } = storeToRefs(authStore)
+
+            let userHasPermission = computed(() => {
+                permissions.value.indexOf('CREATE_COLLECTION') >= 0
+            })
+
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryReadPermission = inject(
+                'hasQueryReadPermission'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             const store = useConnectionStore()
 
             const connectorName = computed(() =>
                 getConnectorName(connectorsData.value.attributeValue)
             )
             const connectionName = computed(() => {
-                console.log('store list: ', store.getList)
+                // console.log('store list: ', store.getList)
                 let data = getConnectionQualifiedName(
                     connectorsData.value.attributeValue
                 )
@@ -415,7 +485,14 @@
                 activeInlineTab,
                 getEntityStatusIcon,
                 useTimeAgo,
-                permissions,
+                // permissions,
+
+                isQueryCreatedByCurrentUser,
+                hasQueryWritePermission,
+                hasQueryReadPermission,
+                readOnly,
+                map,
+                userHasPermission,
             }
         },
     })

@@ -10,6 +10,7 @@ export interface Actions extends State {
     setActiveFacet(value: any): void
     setActivePostFacet(value: any): void
     addGlossary(value: any): void
+    updateGlossary(value: any): void
     setActiveGlossaryQualifiedName(value: any): void
 }
 
@@ -26,6 +27,13 @@ export const actions: Actions = {
     },
     addGlossary(value) {
         this.list.unshift(value)
+    },
+    updateGlossary(value) {
+        this.list.forEach((el, idx) => {
+            if (el?.guid === value?.guid) {
+                this.list[idx] = value
+            }
+        })
     },
     setTermsCount(buckets) {
         this.list.forEach((element, index) => {

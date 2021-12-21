@@ -462,19 +462,26 @@
                             </div>
                         </a-sub-menu>
 
-                        <a-menu-item @click="duplicateQuery" class="px-4 py-2"
+                        <a-menu-item
+                            @click="duplicateQuery"
+                            class="px-4 py-2"
+                            :class="
+                                readOnly
+                                    ? 'pointer-events-none bg-gray-100'
+                                    : ''
+                            "
                             >Duplicate query</a-menu-item
                         >
-                        <a-menu-item class="px-4 py-2"
+                        <!-- <a-menu-item class="px-4 py-2"
                             >Edit saved query</a-menu-item
                         >
                         <a-menu-item class="px-4 py-2 text-red-600"
                             >Delete query</a-menu-item
-                        >
+                        > -->
                         <hr />
                     </div>
                     <a-menu-item @click="openCommandPallete" class="px-4 py-2"
-                        >Open command pallete</a-menu-item
+                        >Open command palette</a-menu-item
                     >
                     <a-menu-item
                         @click="toggleVQB"
@@ -518,9 +525,7 @@
     export default defineComponent({
         components: {},
         props: {},
-        emits: ['toggleVQB'],
         setup(props, { emit }) {
-            const showVQB = ref(false)
             const router = useRouter()
             const {
                 setEditorTheme,
@@ -531,7 +536,7 @@
             } = useEditorPreference()
 
             const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
-            const { inlineTabAdd } = useInlineTab()
+            const { inlineTabAdd, setVQBInInlineTab } = useInlineTab()
 
             themes.sort(function (a: object, b: object) {
                 return a.label - b.label
@@ -568,10 +573,14 @@
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const editorInstance = inject('editorInstance') as Ref<any>
             const route = useRoute()
-            const vqbQueryRoute = ref(route.query?.vqb)
-            const t = computed(() => {
-                console.log(vqbQueryRoute.value)
-            })
+            // const vqbQueryRoute = ref(route.query?.vqb)
+            // const t = computed(() => {
+            //     console.log(vqbQueryRoute.value)
+            //     return vqbQueryRoute
+            // })
+
+            const vqbQueryRoute = computed(() => route.query?.vqb)
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -581,6 +590,34 @@
             const tabsArray = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryReadPermission = inject(
+                'hasQueryReadPermission'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
+            const showVQB = computed(() => {
+                console.log(
+                    'showVQB: ',
+                    activeInlineTab?.value?.playground?.isVQB
+                )
+                return activeInlineTab?.value?.playground?.isVQB
+            })
 
             const isActive = ref(false)
             const toggleButtonState = () => {
@@ -678,8 +715,24 @@
                 )
             }
             const toggleVQB = () => {
-                showVQB.value = !showVQB.value
-                emit('toggleVQB', showVQB.value)
+                // showVQB.value = !showVQB.value
+                // activeInlineTab.value.playground.isVQB =
+                //     !activeInlineTab?.value?.playground?.isVQB
+
+                // console.log('show vqb: ', showVQB.value)
+                console.log('route: ', route.query?.vqb)
+                console.log('route: ', vqbQueryRoute.value)
+                // console.log('route: ', vqbRoute.value)
+
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+
+                activeInlineTabCopy.playground.isVQB =
+                    !activeInlineTabCopy?.playground?.isVQB
+
+                setVQBInInlineTab(activeInlineTabCopy, tabsArray, true)
+
+                // emit('toggleVQB', showVQB.value)
             }
             const copyURL = () => {
                 const URL = window.location.href
@@ -715,6 +768,7 @@
                 isThisCursorActive,
                 capitalizeFirstLetter,
                 copyURL,
+                readOnly,
             }
         },
     })

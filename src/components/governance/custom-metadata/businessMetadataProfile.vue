@@ -15,7 +15,11 @@
                 </div>
             </div>
             <div class="flex items-center">
-                <MetadataHeaderButton :metadata="localBm" />
+                <MetadataHeaderButton
+                    :metadata="localBm"
+                    :allow-delete="allowDelete"
+                    :assetCount="assetCount"
+                />
             </div>
         </div>
         <div
@@ -60,6 +64,7 @@
                         </div>
                     </div>
                     <a-button
+                        v-auth="map.UPDATE_BUSINESS_METADATA"
                         class=""
                         type="primary"
                         @click="addPropertyDrawer.open(null, false)"
@@ -82,7 +87,7 @@
                     "
                 />
             </div>
-            <div v-else>
+            <div v-else class="flex items-center justify-center h-full">
                 <a-empty
                     :image="noPropertyImage"
                     :image-style="{
@@ -92,10 +97,17 @@
                     }"
                 >
                     <template #description>
-                        <p class="font-bold">Start adding properties</p>
+                        <p
+                            v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
+                            class="font-bold"
+                        >
+                            Start adding properties
+                        </p>
+                        <p v-else>This custom metadata has no properties</p>
                     </template>
 
                     <a-button
+                        v-auth="map.UPDATE_BUSINESS_METADATA"
                         type="primary"
                         @click="addPropertyDrawer.open(undefinded, false)"
                         ><AtlanIcon icon="Add" class="inline" /> Add property
@@ -121,8 +133,12 @@
     import PropertyList from './propertyList.vue'
     import AvatarUpdate from './avatarUpdate.vue'
 
+    import getAssetCount from '@/governance/custom-metadata/composables/getAssetCount'
+
     // ? Store
     import { useTypedefStore } from '~/store/typedef'
+    import map from '~/constant/accessControl/map'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         components: {
@@ -141,6 +157,7 @@
         emits: ['update'],
         setup(props, context) {
             const store = useTypedefStore()
+            const { checkAccess } = useAuth()
             // * Data
             const localBm = computed({
                 get: () => props.selectedBm,
@@ -233,7 +250,22 @@
                 localBm.value.attributeDefs = $event
             }
 
+            const {
+                count: assetCount,
+                mutate,
+                isReady,
+            } = getAssetCount(localBm.value)
+
+            if (localBm.value.attributeDefs?.length) mutate()
+
+            const allowDelete = computed(() => {
+                if (!localBm.value.attributeDefs?.length) return true
+                return !assetCount.value
+            })
+
             return {
+                allowDelete,
+                assetCount,
                 attrsearchText,
                 error,
                 handleRemoveAttribute,
@@ -248,6 +280,8 @@
                 addPropertyDrawer,
                 searchedAttributeList,
                 handlePropertyUpdate,
+                map,
+                checkAccess,
             }
         },
         data() {

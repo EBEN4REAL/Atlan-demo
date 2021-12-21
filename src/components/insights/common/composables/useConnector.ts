@@ -2,8 +2,10 @@ import { Ref, ref, ComputedRef } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+import { useConnectionStore } from '~/store/connection'
 
 export function useConnector() {
+    const connStore = useConnectionStore()
     const { modifyActiveInlineTab } = useInlineTab()
 
     const setConnectorsDataInInlineTab = (
@@ -52,12 +54,8 @@ export function useConnector() {
             //     tabs,
             //     activeInlineTabCopy.isSaved
             // )
-            
-            modifyActiveInlineTab(
-                activeInlineTabCopy,
-                tabs,
-                false
-            )
+
+            modifyActiveInlineTab(activeInlineTabCopy, tabs, false)
             console.log(contextData, 'Context Data')
         }
     }
@@ -94,16 +92,20 @@ export function useConnector() {
         return connectionQualifiedName
     }
     const getConnectionName = (attributeValue) => {
-        let attributeValues: string[]
-        let connectionQualifiedName: string | undefined
-        if (attributeValue) {
-            attributeValues = attributeValue?.split('/')
-            if (attributeValues.length > 2) {
-                connectionQualifiedName = `${attributeValues[2]}`
-            }
-        }
+        const found = connStore.getList.find(
+            (conn) => conn.attributes.qualifiedName === attributeValue
+        )
+        return found?.attributes?.name || ''
+        // let attributeValues: string[]
+        // let connectionQualifiedName: string | undefined
+        // if (attributeValue) {
+        //     attributeValues = attributeValue?.split('/')
+        //     if (attributeValues.length > 2) {
+        //         connectionQualifiedName = `${attributeValues[2]}`
+        //     }
+        // }
 
-        return connectionQualifiedName
+        // return connectionQualifiedName
     }
 
     const getDatabaseQualifiedName = (attributeValue) => {
@@ -179,7 +181,7 @@ export function useConnector() {
             attributeValue: undefined,
         }
 
-        if (defaultSchemaQualifiedName && defaultSchemaQualifiedName!=='') {
+        if (defaultSchemaQualifiedName && defaultSchemaQualifiedName !== '') {
             connectors.attributeName = 'defaultSchemaQualifiedName'
             connectors.attributeValue = defaultSchemaQualifiedName
         } else if (connectionQualifiedName !== '') {
@@ -198,10 +200,16 @@ export function useConnector() {
             attributeValue: undefined,
         }
 
-        if (defaultSchemaQualifiedName && defaultSchemaQualifiedName.length!==0) {
+        if (
+            defaultSchemaQualifiedName &&
+            defaultSchemaQualifiedName.length !== 0
+        ) {
             connectors.attributeName = 'defaultSchemaQualifiedName'
             connectors.attributeValue = defaultSchemaQualifiedName
-        } else if (defaultDatabaseQualifiedName && defaultDatabaseQualifiedName.length!==0) {
+        } else if (
+            defaultDatabaseQualifiedName &&
+            defaultDatabaseQualifiedName.length !== 0
+        ) {
             connectors.attributeName = 'defaultDatabaseQualifiedName'
             connectors.attributeValue = defaultDatabaseQualifiedName
         } else if (connectionQualifiedName !== '') {
@@ -223,6 +231,6 @@ export function useConnector() {
         setContextDataInInlineTab,
         setConnectorsDataInInlineTab,
         getConnectorsDataFromQualifiedNames,
-        getConnectorsDataFromQualifiedNamesAll
+        getConnectorsDataFromQualifiedNamesAll,
     }
 }

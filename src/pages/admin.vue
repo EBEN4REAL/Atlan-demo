@@ -6,7 +6,8 @@
                     v-model:selectedKeys="current"
                     mode="vertical"
                     style="width: inherit"
-                    class="admin-sidebar"
+                    class="adminSidebar"
+                    inlineIndent="4"
                     @click="handleClick"
                 >
                     <a-menu-item-group title="Workspace">
@@ -52,7 +53,7 @@
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen overflow-y-auto pl-0 pr-6">
+        <div class="w-4/5 max-h-screen pl-0 pr-6 overflow-y-auto">
             <router-view></router-view>
         </div>
     </div>

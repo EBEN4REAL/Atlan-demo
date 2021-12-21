@@ -2,76 +2,133 @@
     <a-popover
         @visibleChange="handleVisibleChange"
         placement="left"
-        :mouseEnterDelay="0.2"
-        :mouseLeaveDelay="0.2"
+        :mouseEnterDelay="0.4"
     >
         <template #content>
-            <div class="user-popover">
+            <div class="relative p-4 user-popover">
+                <div class="absolute top-0 left-0 right-0 z-0 user-cover"></div>
                 <div
-                    class="flex flex-col"
+                    class="z-10 flex flex-col"
                     v-if="!isLoading && selectedUser.username === item"
                 >
-                    <div class="flex items-center justify-between w-full">
+                    <div class="z-10 flex items-center justify-between w-full">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3 mt-2">
+                            <div class="flex items-center gap-2">
                                 <UserAvatar
                                     :username="item"
-                                    style-class="mr-1 border-none bg-primary-light "
+                                    style-class="mr-1 border-none bg-primary-light"
+                                    className="mb-auto"
                                     :avatarSize="40"
                                 ></UserAvatar>
-                                <div>
-                                    <div
-                                        class="flex items-center text-sm font-semibold capitalize"
-                                    >
-                                        <span>{{ selectedUser?.name }}</span>
-                                        <span
-                                            v-if="userProfiles?.slack"
-                                            class="ml-2 text-sm font-semibold"
+
+                                <div class="flex flex-col">
+                                    <!-- name & basic details -->
+                                    <div>
+                                        <div
+                                            class="flex items-center text-sm font-semibold capitalize"
                                         >
-                                            <SlackMessageCta
-                                                :slackLink="userProfiles.slack"
-                                            />
-                                        </span>
-                                    </div>
-                                    <div class="text-xs text-gray-500">
-                                        @{{ item }}
+                                            <span>{{
+                                                selectedUser?.name
+                                            }}</span>
+                                            <span
+                                                v-if="userProfiles?.slack"
+                                                class="ml-1 text-sm font-semibold"
+                                            >
+                                                <SlackMessageCta
+                                                    :slackLink="
+                                                        userProfiles.slack
+                                                    "
+                                                />
+                                            </span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">
+                                            @{{ item }}
+                                            <span class="text-gray-400">•</span>
+                                            {{ selectedUser?.workspaceRole }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div
+                        <!-- <div
                             class="px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
                         >
                             {{ selectedUser?.workspaceRole }}
+                        </div> -->
+                        <div class="mb-auto">
+                            <AtlanBtn
+                                class="flex-none px-0"
+                                size="sm"
+                                color="minimal"
+                                padding="compact"
+                                style="height: fit-content"
+                                @click="handleClickViewUser"
+                            >
+                                <span class="text-primary whitespace-nowrap">
+                                    View Profile</span
+                                >
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="text-primary"
+                                />
+                            </AtlanBtn>
                         </div>
                     </div>
+
                     <div
+                        class="flex gap-2"
                         v-if="selectedUser?.personaList?.length > 0"
-                        class="mt-3"
+                    >
+                        <div class="" style="visibility: hidden">
+                            <UserAvatar
+                                :username="item"
+                                style-class="mr-1 border-none bg-primary-light"
+                                className="mb-auto"
+                                :avatarSize="40"
+                            ></UserAvatar>
+                        </div>
+                        <div class="z-10 mt-5">
+                            <div class="text-sm text-gray-500">Personas</div>
+                            <div class="flex flex-wrap gap-2">
+                                <span
+                                    v-for="persona in selectedUser?.personaList"
+                                    :key="persona"
+                                    class="flex px-2 tracking-wide text-gray-500 border rounded-full"
+                                    >{{ persona }}</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div
+                        v-if="selectedUser?.personaList?.length > 0"
+                        class="z-10 mt-3"
                     >
                         <div class="text-xs text-gray-500">Personas</div>
                         <div class="flex flex-wrap gap-2 mt-2">
                             <span
                                 v-for="persona in selectedUser?.personaList"
                                 :key="persona"
-                                class="flex px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
+                                class="flex px-2 py-1 tracking-wide text-gray-500 border rounded-full"
                                 >{{ persona }}</span
                             >
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div
                     class="flex items-center justify-center w-full px-4"
-                    style="height: 80px"
                     v-else
                 >
-                    <a-spin></a-spin>
+                    <AtlanIcon
+                        v-if="isLoading"
+                        icon="Loader"
+                        class="w-auto h-8 animate-spin"
+                    ></AtlanIcon>
                 </div>
-                <a-button class="mt-3" block @click="handleClickViewUser">
+                <!-- <a-button class="mt-3" block @click="handleClickViewUser">
                     View Profile
-                    <AtlanIcon icon="Enter" class="ml-1 mb-0.5" />
-                </a-button>
+                    <AtlanIcon icon="ArrowRight" class="ml-1 mb-0.5" />
+                </a-button> -->
             </div>
         </template>
         <slot></slot>
@@ -86,10 +143,11 @@
     import useUserPopover from './composables/useUserPopover'
     import SlackMessageCta from './slackMessageCta.vue'
     import UserAvatar from '@/common/avatar/user.vue'
+    import AtlanBtn from '@/UI/button.vue'
 
     export default {
         name: 'PopoverUser',
-        components: { AtlanIcon, SlackMessageCta, UserAvatar },
+        components: { AtlanIcon, SlackMessageCta, UserAvatar, AtlanBtn },
         props: {
             item: {
                 type: String,
@@ -106,7 +164,8 @@
         setup(props) {
             const { item } = toRefs(props)
 
-            const { setUserUniqueAttribute, showUserPreview } = useUserPreview()
+            const { setUserUniqueAttribute, showUserPreview, getUserProfiles } =
+                useUserPreview()
             const params = {
                 limit: 1,
                 offset: 0,
@@ -131,20 +190,10 @@
                     getUserList()
                 }
             }
-            const getUserProfiles = (user: any) => {
-                const profile = user?.attributes?.profiles
-                let profileObj = {}
-                if (profile && profile.length) {
-                    const profileJsonStr = profile[0]
-                    try {
-                        profileObj = JSON.parse(profileJsonStr)[0]
-                        console.log('profileObj', profileObj)
-                    } catch (error) {
-                        console.error('error parsing user profile json', error)
-                    }
-                }
-                return profileObj
-            }
+
+            const userProfiles = computed(() => {
+                return getUserProfiles(selectedUser.value)
+            })
 
             return {
                 selectedUser,
@@ -153,6 +202,7 @@
                 handleVisibleChange,
                 getUserList,
                 getUserProfiles,
+                userProfiles,
             }
         },
     }
@@ -160,6 +210,26 @@
 <style lang="less" scoped>
     .user-popover {
         width: 370px;
-        padding: 16px;
+    }
+    .user-cover {
+        opacity: 0.6;
+        // curved lines
+        background: url('https://storage.googleapis.com/subtlepatterns-production/designers/subtlepatterns/uploads/round.png');
+
+        // gray lines
+        // background: url(https://storage.googleapis.com/subtlepatterns-production/designers/subtlepatterns/uploads/memphis-mini.png);
+
+        // dark blue
+        // background: url("https://storage.googleapis.com/subtlepatterns-production/designers/subtlepatterns/uploads/circle-blues.png");
+
+        // dark blue 2
+        // background: url("https://storage.googleapis.com/subtlepatterns-production/designers/subtlepatterns/uploads/dark-paths.png");
+
+        // black
+        // background: url("https://storage.googleapis.com/subtlepatterns-production/designers/subtlepatterns/uploads/fancy-cushion.png");
+
+        background-repeat: no-repeat;
+        background-size: cover;
+        height: 4rem;
     }
 </style>

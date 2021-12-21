@@ -173,8 +173,8 @@
                     ) {
                         localValue.value.push({
                             entityGuid: guid.value,
-                            propagate: false,
-                            removePropagationsOnEntityDelete: false,
+                            propagate: true,
+                            removePropagationsOnEntityDelete: true,
                             typeName: i,
                         })
                     }

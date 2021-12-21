@@ -1,7 +1,15 @@
 <template>
-    <div>
-        <PersonaSummary :persona="persona" @setActiveTab="setActiveTab" />
-        <PersonaUsersGroups v-model:persona="persona" class="mt-3" />
+    <div class="flex flex-col gap-y-3">
+        <PersonaUsersGroups
+            v-model:persona="persona"
+            class="border border-gray-200"
+        />
+        <PersonaSummary
+            :persona="persona"
+            @setActiveTab="setActiveTab"
+            class="border border-gray-200"
+        />
+
         <!-- <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             <div v-if="persona.createdBy" class="flex items-center text-sm">

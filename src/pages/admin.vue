@@ -1,12 +1,13 @@
 <template>
     <div class="flex w-full h-full">
-        <div class="flex flex-col w-1/5 h-full overflow-hidden bg-white">
+        <div class="flex flex-col w-1/6 h-full overflow-hidden bg-white">
             <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
                 <a-menu
                     v-model:selectedKeys="current"
                     mode="vertical"
                     style="width: inherit"
-                    class="admin-sidebar"
+                    class="adminSidebar"
+                    inlineIndent="4"
                     @click="handleClick"
                 >
                     <a-menu-item-group title="Workspace">
@@ -52,7 +53,7 @@
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen overflow-y-auto pl-0 pr-6">
+        <div class="w-5/6 max-h-screen pl-0 pr-6 overflow-y-auto">
             <router-view></router-view>
         </div>
     </div>

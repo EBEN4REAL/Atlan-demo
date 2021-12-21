@@ -5,7 +5,7 @@
                 <div class="px-2 py-1 rounded bg-primary-light text-primary">
                     <AtlanIcon icon="Overview"></AtlanIcon>
                 </div>
-                <div class="ml-2 font-bold">Summary</div>
+                <div class="ml-2 font-bold">Details</div>
             </div>
             <div>
                 <a-switch

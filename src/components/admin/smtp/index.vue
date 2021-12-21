@@ -9,19 +9,19 @@
                 :label-col="{ span: 6 }"
                 :wrapper-col="{ span: 18, offset: 4 }"
             >
-                <a-form-item
-                    v-for="config in smtp_form"
-                    :key="config.id"
-                    :required="config.required"
-                    :label="config.label"
-                    :name="config.id"
-                    class="w-full text-gray"
-                >
-                    <DynamicInput
-                        v-model="smtpFormModal[config.id]"
-                        :data-type="config.type"
-                    />
-                </a-form-item>
+                <template v-for="config in smtp_form" :key="config.id">
+                    <a-form-item
+                        :required="config.required"
+                        :label="config.label"
+                        :name="config.id"
+                        class="w-full text-gray"
+                    >
+                        <DynamicInput
+                            v-model="smtpFormModal[config.id]"
+                            :data-type="config.type"
+                        />
+                    </a-form-item>
+                </template>
 
                 <div v-if="smtpFormModal.auth">
                     <a-form-item
@@ -41,7 +41,15 @@
                         />
                     </a-form-item>
 
-                    <a-form-item label="Password" name="password">
+                    <a-form-item name="password">
+                        <template #label>
+                            Password
+                            <a-tooltip
+                                title="If this field is left blank, the previously saved password will be used."
+                            >
+                                <AtlanIcon icon="Info" class="h-3 ml-1" />
+                            </a-tooltip>
+                        </template>
                         <a-input-password
                             v-model:value="password"
                             @change="setPassword"
@@ -49,7 +57,7 @@
                     </a-form-item>
                 </div>
 
-                <div class="flex justify-between mt-8">
+                <div class="flex items-center justify-between h-24">
                     <div class="flex items-center">
                         <a-button
                             variant="sm"

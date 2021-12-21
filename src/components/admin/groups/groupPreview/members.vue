@@ -6,50 +6,20 @@
                 class="flex items-center justify-between mb-3"
             >
                 <div class="text-base font-bold text-gray-500">Members</div>
-                <a-popover
-                    v-model:visible="showUsersPopover"
-                    placement="bottom"
-                    :trigger="['click']"
-                    :destroy-tooltip-on-hide="true"
-                    :overlay-class-name="$style.ownerPopover"
-                >
-                    <template #content>
-                        <div class="">
-                            <OwnerFacets
-                                v-model:modelValue="selectedUserIds"
-                                :show-none="false"
-                                :enableTabs="['users']"
-                                :hideDisabledTabs="true"
-                                selectUserKey="id"
-                            ></OwnerFacets>
-                        </div>
-                        <div class="flex justify-end mr-3">
-                            <AtlanButton
-                                :is-loading="addMemberLoading"
-                                type="primary"
-                                size="sm"
-                                padding="compact"
-                                :disabled="addMemberLoading"
-                                @click="addMembersToGroup"
-                            >
-                                <div class="flex items-center">
-                                    <div v-if="!addMemberLoading">Save</div>
-                                    <div v-else>Saving</div>
-                                </div>
-                            </AtlanButton>
-                        </div>
+                <MemberPopover :selected-group='selectedGroup' @members-added='addMembersToGroup'>
+                    <template #label>
+                        <AtlanButton
+                            size='sm'
+                            padding='compact'
+                            class='text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary'
+                        >
+                            <div class='flex items-center'>
+                                <AtlanIcon icon='Add' class='h-3 mr-2'></AtlanIcon>
+                                <div>Add Member</div>
+                            </div>
+                        </AtlanButton>
                     </template>
-                    <AtlanButton
-                        size="sm"
-                        padding="compact"
-                        class="text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
-                            <div>Add Member</div>
-                        </div></AtlanButton
-                    >
-                </a-popover>
+                </MemberPopover>
             </div>
             <div class="flex flex-row items-center justify-between gap-x-1">
                 <SearchAndFilter
@@ -198,10 +168,12 @@
     import OwnerFacets from '@/common/facet/owners/index.vue'
     import AtlanButton from '@/UI/button.vue'
     import EmptyState from '@/common/empty/index.vue'
+    import MemberPopover from '@/admin/groups/groupPreview/memberPopover.vue'
 
     export default defineComponent({
         name: 'GroupMembers',
         components: {
+            MemberPopover,
             SearchAndFilter,
             UserCard,
             ErrorView,
@@ -297,41 +269,9 @@
                 )
             )
             const addMembersToGroup = () => {
-                const userIds = [...selectedUserIds.value.ownerUsers]
-                const requestPayload = ref()
-                requestPayload.value = {
-                    users: userIds,
-                }
-                const { data, isReady, error, isLoading } = Groups.AddMembers(
-                    props.selectedGroup.id,
-                    requestPayload
-                )
-                watch(
-                    [data, isReady, error, isLoading],
-                    () => {
-                        addMemberLoading.value = isLoading.value
-                        if (isReady && !error.value && !isLoading.value) {
-                            offset.value = 0
-                            getGroupMembersList()
-                            context.emit('refreshTable')
-                            message.success(
-                                `${pluralizeString(
-                                    'Member',
-                                    userIds.length,
-                                    false
-                                )} added`
-                            )
-                            showUsersPopover.value = false
-                            selectedUserIds.value.ownerUsers = []
-                        } else if (error && error.value) {
-                            message.error(
-                                'Unable to add members, please try again.'
-                            )
-                            showUsersPopover.value = false
-                        }
-                    },
-                    { immediate: true }
-                )
+                offset.value = 0
+                getGroupMembersList()
+                context.emit('refreshTable')
             }
             const removeUserFromGroup = async (user: any) => {
                 Modal.confirm({

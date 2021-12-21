@@ -1,147 +1,147 @@
 <template>
     <div
-        id="invite-user-modal-content"
-        class="relative flex flex-col py-8 px-9"
+        id='invite-user-modal-content'
+        class='relative flex flex-col py-8 px-9'
     >
-        <h1 class="mb-4 text-xl font-bold">
+        <h1 class='mb-4 text-xl font-bold'>
             Invite users {{ tenantName ? 'to ' + capitalize(tenantName) : '' }}
         </h1>
         <div
-            v-if="groupList?.length"
-            class="flex items-center px-2 py-4 rounded bg-blue-50 mb-7"
+            v-if='groupList?.length'
+            class='flex items-center px-2 py-4 rounded bg-blue-50 mb-7'
         >
-            <AtlanIcon icon="Info" class="mr-2 text-xs text-gray-500" />
+            <AtlanIcon icon='Info' class='mr-2 text-xs text-gray-500' />
             <span>
                 Invited users will be added to default groups.
 
                 <AtlanIcon
-                    v-if="[STATES.PENDING].includes(state)"
-                    icon="CircleLoader"
-                    class="h-3 ml-2 animate-spin"
+                    v-if='[STATES.PENDING].includes(state)'
+                    icon='CircleLoader'
+                    class='h-3 ml-2 animate-spin'
                 />
                 <span
-                    v-else-if="groupList?.length"
-                    class="text-blue-500 underline cursor-pointer"
-                    @click="showDefaultGroups = true"
+                    v-else-if='groupList?.length'
+                    class='text-blue-500 underline cursor-pointer'
+                    @click='showDefaultGroups = true'
                 >
                     View default groups
                 </span>
             </span>
         </div>
-        <div class="mb-7">
+        <div class='mb-7'>
             <div
-                v-for="(email, index) in emails"
-                :key="index"
-                class="relative items-center mb-4 group"
+                v-for='(email, index) in emails'
+                :key='index'
+                class='relative items-center mb-4 group'
             >
-                <div class="relative">
+                <div class='relative'>
                     <a-input
-                        :id="`email-${index}`"
-                        v-model:value="email.value"
-                        class="inputHeight"
-                        placeholder="Email"
-                        @keyup.enter="onAddNewUser"
+                        :id='`email-${index}`'
+                        v-model:value='email.value'
+                        class='inputHeight'
+                        placeholder='Email'
+                        @keyup.enter='onAddNewUser'
                     >
                     </a-input>
                     <a-select
-                        v-model:value="email.role"
-                        tabindex="-1"
-                        class="absolute"
-                        dropdown-class-name="border-0 transparent outline-none"
+                        v-model:value='email.role'
+                        tabindex='-1'
+                        class='absolute'
+                        dropdown-class-name='border-0 transparent outline-none'
                     >
                         <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" />
+                            <AtlanIcon icon='CaretDown' />
                         </template>
                         <a-select-option
-                            v-for="role in roleList"
-                            :key="role.id"
-                            :value="role.name"
+                            v-for='role in roleList'
+                            :key='role.id'
+                            :value='role.name'
                         >
-                            <span class="capitalize">{{ role.name }}</span>
+                            <span class='capitalize'>{{ role.name }}</span>
                         </a-select-option>
                     </a-select>
                 </div>
                 <div
-                    v-if="emails.length > 1"
-                    class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-1 -right-5 group-hover:opacity-100"
-                    @click="deleteUserInput(index)"
+                    v-if='emails.length > 1'
+                    class='absolute bg-transparent border-0 opacity-0 cursor-pointer top-1 -right-5 group-hover:opacity-100'
+                    @click='deleteUserInput(index)'
                 >
                     <AtlanIcon
-                        icon="Cross"
-                        class="text-lg text-gray-400 hover:text-blue-500"
+                        icon='Cross'
+                        class='text-lg text-gray-400 hover:text-blue-500'
                     />
                 </div>
             </div>
-            <div id="add-email-button" class="relative items-center group">
-                <div class="relative w-100">
+            <div id='add-email-button' class='relative items-center group'>
+                <div class='relative w-100'>
                     <a-input
-                        class="inputHeight"
-                        placeholder="Email"
-                        @focus="onAddNewUser"
+                        class='inputHeight'
+                        placeholder='Email'
+                        @focus='onAddNewUser'
                     >
                     </a-input>
                     <a-select
-                        v-model:value="defaultRoleOnAdd"
-                        class="absolute"
-                        dropdown-class-name="border-0 outline-none"
+                        v-model:value='defaultRoleOnAdd'
+                        class='absolute'
+                        dropdown-class-name='border-0 outline-none'
                     >
                         <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" />
+                            <AtlanIcon icon='CaretDown' />
                         </template>
                         <a-select-option
-                            v-for="role in roleList"
-                            :key="role.id"
-                            :value="role.name"
+                            v-for='role in roleList'
+                            :key='role.id'
+                            :value='role.name'
                         >
-                            <span class="capitalize">{{ role.name }}</span>
+                            <span class='capitalize'>{{ role.name }}</span>
                         </a-select-option>
                     </a-select>
                 </div>
             </div>
         </div>
 
-        <div class="flex justify-end">
+        <div class='flex justify-end'>
             <div>
-                <a-button class="mr-3 border-0" @click="$emit('close')"
-                    >Cancel
+                <a-button class='mr-3 border-0' @click="$emit('close')"
+                >Cancel
                 </a-button>
                 <a-button
-                    type="primary"
-                    html-type="submit"
-                    :disabled="isSubmitInvites"
-                    :loading="loading"
-                    @click="handleSubmit"
+                    type='primary'
+                    html-type='submit'
+                    :disabled='isSubmitInvites'
+                    :loading='loading'
+                    @click='handleSubmit'
                 >
                     Send Invite
                 </a-button>
             </div>
         </div>
         <div
-            v-if="showDefaultGroups"
-            class="absolute w-56 bg-white rounded top-12"
-            style="right: -14.5rem"
+            v-if='showDefaultGroups'
+            class='absolute w-56 bg-white rounded top-12'
+            style='right: -14.5rem'
         >
             <AtlanIcon
-                icon="Cross"
-                class="absolute h-3.5 cursor-pointer top-1.5 right-1.5"
-                @click="showDefaultGroups = false"
+                icon='Cross'
+                class='absolute h-3.5 cursor-pointer top-1.5 right-1.5'
+                @click='showDefaultGroups = false'
             />
-            <template v-if="groupList.length">
-                <div class="p-4">
-                    <h3 class="text-xs text-gray-500">Default groups</h3>
+            <template v-if='groupList.length'>
+                <div class='p-4'>
+                    <h3 class='text-xs text-gray-500'>Default groups</h3>
                 </div>
-                <ul class="px-4">
+                <ul class='px-4'>
                     <li
-                        v-for="(item, index) in groupList"
-                        :key="index"
-                        class="mb-4 text-sm"
+                        v-for='(item, index) in groupList'
+                        :key='index'
+                        class='mb-4 text-sm'
                     >
                         <p>{{ item.name }}</p>
-                        <p class="text-xs truncate">
-                            <span class="text-gray-500">@{{ item.alias }}</span>
+                        <p class='text-xs truncate'>
+                            <span class='text-gray-500'>@{{ item.alias }}</span>
                             |
-                            <span class="text-gray-500"
-                                >{{ item.memberCount }} member{{
+                            <span class='text-gray-500'
+                            >{{ item.memberCount }} member{{
                                     item.memberCount ? 's' : ''
                                 }}</span
                             >
@@ -149,14 +149,15 @@
                     </li>
                 </ul>
             </template>
-            <div v-else class="flex flex-col px-2 py-3 gap-y-1">
-                <h2 class="text-sm text-gray-700">
+            <div v-else class='flex flex-col px-2 py-3 gap-y-1'>
+                <h2 class='text-sm text-gray-700'>
                     No default groups available!
                 </h2>
-                <div class="text-xs">
+                <div class='text-xs'>
                     Visit the
-                    <router-link to="/admin/groups" class="text-blue-500"
-                        >groups</router-link
+                    <router-link to='/admin/groups' class='text-blue-500'
+                    >groups
+                    </router-link
                     >
                     page, to mark a group as default.
                 </div>
@@ -164,7 +165,7 @@
         </div>
     </div>
 </template>
-<script lang="ts">
+<script lang='ts'>
     import {
         defineComponent,
         ref,
@@ -209,7 +210,7 @@
             } = useGroups(groupListAPIParams)
             onMounted(() => {
                 const newInput = document.getElementById(
-                    `email-${emails?.value?.length - 1}`
+                    `email-${emails?.value?.length - 1}`,
                 )
                 if (newInput) newInput.focus()
             })
@@ -232,20 +233,20 @@
                     if (newVal.length !== oldVal.length)
                         nextTick(() => {
                             const newInput = document.getElementById(
-                                `email-${emails?.value?.length - 1}`
+                                `email-${emails?.value?.length - 1}`,
                             )
                             if (newInput) newInput.focus()
                         })
                 },
-                { deep: true }
+                { deep: true },
             )
             const getRoleId = (email) => {
                 console.log(email)
                 const roleObj =
                     roleList.value && roleList.value.length
                         ? roleList.value.find(
-                              (role) => role.name === email.role
-                          )
+                            (role) => role.name === email.role,
+                        )
                         : {}
                 return roleObj.id || ''
             }
@@ -267,7 +268,7 @@
             }
             const validateEmails = () => {
                 const invalidFields = emails.value.filter(
-                    (x) => !validateEmail(x.value)
+                    (x) => !validateEmail(x.value),
                 )
                 emails.value.forEach((x, index) => {
                     const isEmail = validateEmail(x.value)
@@ -279,7 +280,7 @@
                     message.error(
                         `${invalidFields?.length} invalid email input field${
                             invalidFields?.length ? 's' : ''
-                        }`
+                        }`,
                     )
                 return !invalidFields.length
             }
@@ -304,11 +305,16 @@
                             context.emit('handleInviteSent')
                             message.success('Invites sent')
                         } else if (error && error.value) {
-                            message.error('Failed to send invites, try again')
+                            // Since there might be errors associated with more
+                            // than one email address, we display all of them.
+                            const keys = Object.keys(error.value.response.data ?? {})
+                            for (let i = 0; i < keys.length; i += 1) {
+                                message.error(`${keys[i]}: ${error.value.response.data[keys[i]]}`)
+                            }
                             context.emit('close')
                         }
                     },
-                    { immediate: true }
+                    { immediate: true },
                 )
             }
             const capitalize = (string) =>
@@ -337,15 +343,17 @@
     })
 </script>
 
-<style lang="less">
+<style lang='less'>
     #invite-user-modal-content {
         .ant-select {
             top: 3px;
             right: 4px;
         }
+
         .ant-select-arrow {
             top: 43% !important;
         }
+
         .ant-select-selector {
             border: none !important;
             outline: none !important;

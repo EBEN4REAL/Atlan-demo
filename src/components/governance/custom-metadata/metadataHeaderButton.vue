@@ -84,6 +84,7 @@
 
     import map from '~/constant/accessControl/map'
     import { useTypedefStore } from '~/store/typedef'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -123,6 +124,7 @@
                         content: 'deleted.',
                         duration: 2,
                     } as any)
+                    useAddEvent('governance', 'custom_metadata', 'deleted')
                     // reloadTable()
                     store.removeCustomMetadataByName(props.metadata.name)
                 } else if (error && error.value) {

@@ -88,6 +88,9 @@ const keyMap = {
                     create_more: !!props.create_more,
                 }),
             },
+            deleted: {
+                action: 'gtc_term_deleted',
+            },
         },
         category: {
             created: {
@@ -96,10 +99,16 @@ const keyMap = {
                     create_more: !!props.create_more,
                 }),
             },
+            deleted: {
+                action: 'gtc_category_deleted',
+            },
         },
         glossary: {
             created: {
                 action: 'gtc_glossary_created',
+            },
+            deleted: {
+                action: 'gtc_glossary_deleted',
             },
         },
         tree: {

@@ -43,7 +43,7 @@
                             :data-test-id="item.displayName"
                         >
                             <span
-                                class="text-sm truncate"
+                                class="text-sm capitalize truncate"
                                 :class="
                                     isSelected
                                         ? 'text-primary'

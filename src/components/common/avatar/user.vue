@@ -5,6 +5,7 @@
             :allow-upload="false"
             :avatar-size="avatarSize"
             :avatar-shape="'circle'"
+            :isGroup="isGroup"
             class="mr-1"
         >
         </avatar>
@@ -42,6 +43,10 @@
             className: {
                 type: String,
                 default: '',
+            },
+            isGroup: {
+                type: Boolean,
+                default: false,
             },
         },
         components: { Avatar },

@@ -7,6 +7,8 @@ export interface MetadataPolicies {
     connectionId: string
     allow: boolean
     isNew?: boolean
+    createdBy: string
+    createdAt: number
 }
 
 export interface DataPolicies {
@@ -28,6 +30,8 @@ export interface DataPolicies {
         | 'MASK_DATE_SHOW_YEAR'
     name: string
     isNew?: boolean
+    createdBy: string
+    createdAt: number
 }
 
 export interface IPersona {
@@ -42,9 +46,9 @@ export interface IPersona {
     metadataPolicies?: MetadataPolicies[]
     // Will be camel cased from BE
     dataPolicies?: DataPolicies[]
-    updatedAt?: string
+    updatedAt?: number
     updatedBy?: string
-    createdAt?: string
+    createdAt?: number
     createdBy?: string
 }
 

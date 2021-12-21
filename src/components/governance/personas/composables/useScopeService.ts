@@ -141,7 +141,7 @@ const personaScopeList = [
             {
                 value: 'entity-update-business-metadata',
                 label: 'update: Custom Metadata',
-                desc: 'Update classifications for selected assets'
+                desc: 'Update values for BM attributes for selected assets'
             },
             // {
             //     value: 'entity-add-classification',
@@ -154,7 +154,7 @@ const personaScopeList = [
             {
                 value: 'entity-update-classification',
                 label: 'update: Classifications',
-                desc: 'Update values for BM attributes for selected assets'
+                desc: ' Update classifications for selected assets'
             },
 
             {

@@ -2,6 +2,7 @@ import { getRequests, actOnRequest } from '~/services/service/requests'
 import { Ref, computed, watch, ref } from 'vue'
 import { RequestStatus } from '~/types/atlas/requests'
 import { useDebounceFn } from '@vueuse/core'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export interface RequestListFilters {
     status: RequestStatus
@@ -34,17 +35,15 @@ export function useRequestList(
     let params = computed(() => ({
         limit: pagination.value.limit,
         offset: pagination.value.offset,
-        filter: generateRequestListFilters(searchTerm.value, filters.value)
-    })
-
-    )
+        filter: generateRequestListFilters(searchTerm.value, filters.value),
+    }))
     // const { response, error, mutate, isLoading } = getRequests(params)
-    const { data, mutate, error, isLoading, isValidating } =
-        getRequests(params)
+    const { data, mutate, error, isLoading, isValidating } = getRequests(params)
 
     const debouncedMutation = useDebounceFn(() => {
         console.log(searchTerm)
         mutate()
+        useAddEvent('governance', 'requests', 'searched')
     }, 400)
 
     watch([filters, searchTerm], debouncedMutation, {

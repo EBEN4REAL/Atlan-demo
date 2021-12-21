@@ -43,7 +43,7 @@
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Browse from your assets</span
                     >
-                    <div class="h-full p-4 overflow-y-auto">
+                    <div class="h-full p-4 overflow-y-auto wrapper-asset-tree">
                         <AssetBrowserTree
                             v-model:assets="checkedKeys"
                             :connection-qf-name="connectionQfName"
@@ -114,8 +114,7 @@
                     @click="saveAssets"
                 >
                     Save
-                </AtlanBtn
-                >
+                </AtlanBtn>
             </div>
         </div>
     </a-drawer>
@@ -163,7 +162,7 @@
             getContainer: {
                 type: Boolean,
                 default: () => false,
-            }
+            },
         },
         emits: ['update:visible', 'update:assets'],
         setup(props, { emit }) {
@@ -207,11 +206,9 @@
             }
 
             /* Adds /* to pathname */
-            const addSufffix = (qualifiedNames: string[]) => (
-                    qualifiedNames?.map(
-                        (qualifiedName) => `${qualifiedName}/*`
-                    ) ?? []
-                )
+            const addSufffix = (qualifiedNames: string[]) =>
+                qualifiedNames?.map((qualifiedName) => `${qualifiedName}/*`) ??
+                []
 
             function saveAssets() {
                 // TODO: Optional* Change this implementation
@@ -342,15 +339,15 @@
 </style>
 
 <style lang="less">
-    .tab-select-asset{
-        .tab-btn{
+    .tab-select-asset {
+        .tab-btn {
             flex: 1;
         }
     }
-    .btn-asset{
+    .btn-asset {
         min-width: 80px;
     }
-    .btn-add-assets{
+    .btn-add-assets {
         transform: rotate(180deg);
     }
 </style>

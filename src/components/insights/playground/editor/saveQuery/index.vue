@@ -1,126 +1,97 @@
 <template>
-    <a-modal
-        :visible="showSaveQueryModal"
-        :closable="false"
-        :class="$style.input"
-        :footer="null"
-        width="632px"
-        :destroyOnClose="true"
+    <AtlanModal
+        :modal-visible="showSaveQueryModal"
+        v-model:title="title"
+        v-model:description="description"
+        :title-placeholder="`Untitled ${getLastUntitledNumber()}`"
+        description-placeholder="Add Description"
+        :descriptionWordLimit="140"
+        :show-description-limit="true"
     >
-        <div class="w-full p-4 text-gray-500 bg-white rounded">
-            <div class="flex w-full text-xs">
-                <div class="flex items-center justify-between flex-1">
-                    <div class="flex items-center mr-1">
-                        <!-- {{ currentConnector }} -->
-                        <QueryFolderSelector
-                            :connector="currentConnector"
-                            :savedQueryType="queryType"
-                            :parentFolder="parentFolder"
-                            @folderChange="setSelectedFolder"
-                        />
-                    </div>
-                    <div>
-                        <a-dropdown
-                            placement="bottomLeft"
-                            :trigger="['click']"
-                            @click.stop="() => {}"
-                        >
-                            <template #overlay>
-                                <a-menu>
-                                    <a-menu-item
-                                        v-for="item in List"
-                                        :key="item.id"
-                                        @click="handleMenuClick(item)"
-                                    >
-                                        <div
-                                            class="flex items-center space-x-2"
-                                        >
-                                            <component
-                                                :is="item.icon"
-                                                class="w-auto h-4 ml-1 mr-2 pushtop"
-                                            />
-                                            {{ item.label }}
-                                        </div>
-                                    </a-menu-item>
-                                </a-menu>
-                            </template>
-                            <div
-                                class="flex flex-row-reverse"
-                                style="width: 140px"
-                            >
-                                <AtlanIcon
-                                    icon="CaretDown"
-                                    class="w-4 h-4 ml-1"
-                                ></AtlanIcon>
-                                <StatusBadge
-                                    :status-id="currentStatus"
-                                    :show-chip-style-status="false"
-                                    :show-no-status="true"
-                                    :show-label="true"
-                                    :is-tree="false"
-                                    class="p-0 cursor-pointer"
-                                ></StatusBadge>
-                            </div>
-                        </a-dropdown>
-                    </div>
-                </div>
-            </div>
-            <div class="my-2">
-                <div class>
-                    <a-input
-                        :ref="titleBarRef"
-                        v-model:value="title"
-                        :placeholder="`Untitled ${getLastUntitledNumber()}`"
-                        class="text-lg font-bold text-gray-500 border-0 shadow-none outline-none"
-                    />
-                </div>
-                <a-textarea
-                    v-model:value="description"
-                    placeholder="Add Description"
-                    class="text-sm text-gray-500 border-0 shadow-none outline-none"
-                    :rows="3"
-                    show-count
-                    :maxlength="140"
+        <template #leftHeader>
+            <div class="flex items-center mr-1">
+                <QueryFolderSelector
+                    :connector="currentConnector"
+                    :savedQueryType="queryType"
+                    :parentFolder="parentFolder"
+                    @folderChange="setSelectedFolder"
                 />
             </div>
-            <div class="flex items-center w-full">
-                <!-- <AddTerms @saveTerms="saveTerms" /> -->
+        </template>
 
-                <div
-                    class="flex items-center justify-end flex-1 mb-1 text-gray-700 cursor-pointer"
+        <template #rightHeader>
+            <div class="text-xs">
+                <a-dropdown
+                    placement="bottomLeft"
+                    :trigger="['click']"
+                    @click.stop="() => {}"
                 >
-                    <AtlanBtn
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                        class="flex items-center justify-between h-6 py-1 ml-3 border-none hover:text-primary"
-                        @click="closeModal"
-                    >
-                        <span>Cancel</span>
-                    </AtlanBtn>
-
-                    <AtlanBtn
-                        size="sm"
-                        color="primary"
-                        padding="compact"
-                        class="flex items-center justify-between h-6 py-1 ml-2 border-none"
-                        @click="createSaveQuery"
-                    >
-                        <div class="flex items-center text-white rounded">
-                            <AtlanIcon
-                                v-if="saveQueryLoading"
-                                icon="CircleLoader"
-                                style="margin-right: 4px"
-                                class="w-4 h-4 text-white animate-spin"
-                            ></AtlanIcon>
-
-                            <span>Create</span>
-                        </div>
-                    </AtlanBtn>
-                </div>
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="item in List"
+                                :key="item.id"
+                                @click="handleMenuClick(item)"
+                            >
+                                <div class="flex items-center space-x-2">
+                                    <component
+                                        :is="item.icon"
+                                        class="w-auto h-4 ml-1 mr-2 pushtop"
+                                    />
+                                    {{ item.label }}
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                    <div class="flex flex-row-reverse" style="width: 140px">
+                        <AtlanIcon
+                            icon="CaretDown"
+                            class="w-4 h-4 ml-1"
+                        ></AtlanIcon>
+                        <StatusBadge
+                            :status-id="currentStatus"
+                            :show-chip-style-status="false"
+                            :show-no-status="true"
+                            :show-label="true"
+                            :is-tree="false"
+                            class="p-0 cursor-pointer"
+                        ></StatusBadge>
+                    </div>
+                </a-dropdown>
             </div>
-        </div>
-    </a-modal>
+        </template>
+
+        <template #actionButtons>
+            <AtlanBtn
+                size="sm"
+                color="secondary"
+                padding="compact"
+                class="flex items-center justify-between h-6 py-1 ml-3 border-none hover:text-primary"
+                @click="closeModal"
+            >
+                <span>Cancel</span>
+            </AtlanBtn>
+
+            <AtlanBtn
+                size="sm"
+                color="primary"
+                padding="compact"
+                class="flex items-center justify-between h-6 py-1 ml-2 border-none"
+                @click="createSaveQuery"
+            >
+                <div class="flex items-center text-white rounded">
+                    <AtlanIcon
+                        v-if="saveQueryLoading"
+                        icon="CircleLoader"
+                        style="margin-right: 4px"
+                        class="w-4 h-4 text-white animate-spin"
+                    ></AtlanIcon>
+
+                    <span>Create</span>
+                </div>
+            </AtlanBtn>
+        </template>
+    </AtlanModal>
 </template>
 
 <script lang="ts">
@@ -142,19 +113,20 @@
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
     import {
         Folder,
-        QueryCollection,
+        // QueryCollection,
     } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'
 
-    import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    // import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
+    // import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { message } from 'ant-design-vue'
+    import AtlanModal from '~/components/common/modal/modal.vue'
     // import AddTerms from './addTerms.vue'
 
     export default defineComponent({
         name: 'SavedQueryModal',
-        components: { StatusBadge, QueryFolderSelector, AtlanBtn },
+        components: { StatusBadge, QueryFolderSelector, AtlanBtn, AtlanModal },
         props: {
             showSaveQueryModal: {
                 type: Boolean as PropType<boolean>,
@@ -316,17 +288,17 @@
     }
 </style>
 <style lang="less" module>
-    .input {
-        :global(.ant-input:focus
-                .ant-input:hover
-                .ant-input::selection
-                .focus-visible) {
-            @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
-        }
-        :global(.ant-input) {
-            @apply shadow-none outline-none border-0 px-0 !important;
-        }
-    }
+    // .input {
+    //     :global(.ant-input:focus
+    //             .ant-input:hover
+    //             .ant-input::selection
+    //             .focus-visible) {
+    //         @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
+    //     }
+    //     :global(.ant-input) {
+    //         @apply shadow-none outline-none border-0 px-0 !important;
+    //     }
+    // }
 </style>
 
 <route lang="yaml">

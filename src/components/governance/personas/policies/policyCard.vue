@@ -12,7 +12,7 @@
                     <div class="flex items-center">
                         <img
                             :src="getImage(connectionQfName?.split('/')[1])"
-                            class="w-auto h-6 p-1 rounded-tl rounded-bl"
+                            class="w-auto h-4 pr-1 rounded-tl rounded-bl"
                         />
                         <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>
@@ -250,9 +250,6 @@
     }
 </style>
 <style lang="less" scoped>
-    .card-policy {
-        min-height: 70px;
-    }
     .container-policy-card {
         .button-hide {
             opacity: 0;

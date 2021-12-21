@@ -112,9 +112,10 @@
                         :group="group"
                         :mark-as-default-loading="markAsDefaultLoading"
                         :delete-group-loading="deleteGroupLoading"
-                        @addMembers="handleAddMembers(group)"
-                        @deleteGroup="handleDeleteGroup(group)"
-                        @toggleDefault="handleToggleDefault(group)"
+                        @add-members="handleAddMembers(group)"
+                        @delete-group="handleDeleteGroup(group)"
+                        @toggle-default="handleToggleDefault(group)"
+                        @members-added='refreshTable'
                     />
                 </template>
             </a-table>
@@ -293,6 +294,11 @@
                 showGroupPreviewDrawer(group, 'members')
             }
 
+            const refreshTable = () => {
+                groupListAPIParams.offset = 0
+                getGroupList()
+            }
+
             const handleGroupClick = (group: any) => {
                 showGroupPreviewDrawer(group)
             }
@@ -467,7 +473,8 @@
                 markAsDefaultLoading,
                 deleteGroupLoading,
                 showActionsDropdown,
-                map
+                map,
+                refreshTable
             }
         },
     })

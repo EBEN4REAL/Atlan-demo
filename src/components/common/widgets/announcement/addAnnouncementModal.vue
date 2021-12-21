@@ -2,23 +2,29 @@
     <div @click="showModal">
         <slot name="trigger" @click="showModal" />
     </div>
-    <a-modal
-        :class="$style.input"
-        width="800px"
-        :closable="false"
-        :visible="visible"
+    <AtlanModal
+        :modal-visible="visible"
+        v-model:title="localAnnouncement.announcementTitle"
+        v-model:description="localAnnouncement.announcementMessage"
+        title-placeholder="Add Announcement Header..."
+        description-placeholder="Add description..."
+        :descriptionWordLimit="280"
+        :show-description-limit="true"
     >
-        <template #title>
-            <div class="flex items-center justify-between w-full">
-                <div class="flex items-center text-gray-500 flex-nowrap">
-                    <span class="overflow-hidden text-sm overflow-ellipsis">{{
-                        title(asset)
-                    }}</span>
-                    <AtlanIcon icon="ChevronRight" class="flex-none" />
-                    <span class="flex-none text-sm font-bold text-gray"
-                        >{{ updating ? 'Edit' : 'New' }} Announcement</span
-                    >
-                </div>
+        <template #leftHeader>
+            <div class="flex items-center text-gray-500 flex-nowrap">
+                <span class="overflow-hidden text-sm overflow-ellipsis">{{
+                    title(asset)
+                }}</span>
+                <AtlanIcon icon="ChevronRight" class="flex-none" />
+                <span class="flex-none text-sm font-bold text-gray"
+                    >{{ updating ? 'Edit' : 'New' }} Announcement</span
+                >
+            </div>
+        </template>
+
+        <template #rightHeader>
+            <div>
                 <a-dropdown
                     placement="bottomLeft"
                     :trigger="['click']"
@@ -42,41 +48,33 @@
                             </a-menu-item>
                         </a-menu>
                     </template>
-                    <div class="flex items-center mr-2 cursor-pointer">
-                        <AtlanIcon :icon="icon" class="w-auto h-4 mr-1" /><span
-                            class="text-sm capitalize"
-                            >{{ localAnnouncement.announcementType }}</span
-                        >
+                    <div
+                        class="flex flex-row-reverse items-center cursor-pointer"
+                        style="width: 120px"
+                    >
+                        <AtlanIcon
+                            icon="CaretDown"
+                            class="w-4 h-4 ml-1"
+                        ></AtlanIcon>
+                        <span class="text-sm capitalize">{{
+                            localAnnouncement.announcementType
+                        }}</span
+                        ><AtlanIcon :icon="icon" class="w-auto h-4 mr-1" />
                     </div>
                 </a-dropdown>
             </div>
         </template>
-        <template #footer>
-            <div class="flex items-center justify-end w-full space-x-3">
-                <a-button @click="handleCancel">Cancel</a-button>
-                <a-button
-                    type="primary"
-                    :loading="isLoading"
-                    @click="handleUpdate"
-                    >{{ updating ? 'Update' : 'Add' }}</a-button
-                >
-            </div>
+
+        <template #actionButtons>
+            <a-button @click="handleCancel">Cancel</a-button>
+            <a-button
+                type="primary"
+                :loading="isLoading"
+                @click="handleUpdate"
+                >{{ updating ? 'Update' : 'Add' }}</a-button
+            >
         </template>
-        <div class="px-4 pt-0 pb-4">
-            <a-input
-                ref="titleBar"
-                v-model:value="localAnnouncement.announcementTitle"
-                placeholder="Add Announcement Header..."
-                class="mt-1 text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
-            />
-            <a-textarea
-                v-model:value="localAnnouncement.announcementMessage"
-                placeholder="Add description..."
-                class="text-gray-500 border-0 shadow-none outline-none"
-                :maxlength="280"
-            />
-        </div>
-    </a-modal>
+    </AtlanModal>
 </template>
 
 <script lang="ts">
@@ -93,9 +91,11 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import AnnouncementList from '~/constant/announcement'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import AtlanModal from '~/components/common/modal/modal.vue'
 
     export default defineComponent({
         name: 'AnnouncementModal',
+        components: { AtlanModal },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,

@@ -739,6 +739,15 @@
 </script>
 
 <style lang="less">
+    .drawerAddAsset{
+        .container-schema-tree {
+            max-height: max-content !important;
+        }
+        .wrapper-asset-tree {
+            height: calc(100vh - 14rem) !important;
+            padding-bottom: 30px!important
+        }
+    }
     .add-policy-container {
         height: 100vh;
         display: flex;

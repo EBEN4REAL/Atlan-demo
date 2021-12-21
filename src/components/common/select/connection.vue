@@ -1,7 +1,7 @@
 <template>
     <a-select
         placeholder="Select a connection"
-        :v-model:value="selectedValue"
+        v-model:value="selectedValue"
         :allowClear="true"
         :showSearch="true"
         :filterOption="false"
@@ -13,23 +13,24 @@
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="mb-1" />
         </template>
-        <a-select-option
-            :value="item.attributes?.qualifiedName"
+        <template
             v-for="item in filteredList"
-            :key="item.guid"
+            :key="item.attributes?.qualifiedName"
         >
-            <div class="flex flex-col">
-                <div class="flex items-center">
-                    <img
-                        :src="getConnectorImage(item)"
-                        class="h-3 mr-1 mb-0.5"
-                    />{{ item.attributes.name }}
+            <a-select-option :value="item.attributes?.qualifiedName">
+                <div class="flex flex-col">
+                    <div class="flex items-center">
+                        <img
+                            :src="getConnectorImage(item)"
+                            class="h-3 mr-1 mb-0.5"
+                        />{{ item.attributes.name }}
+                    </div>
+                    <span class="text-xs text-gray-500" v-if="showCount"
+                        >{{ item.assetCount }} assets</span
+                    >
                 </div>
-                <span class="text-xs text-gray-500" v-if="showCount"
-                    >{{ item.assetCount }} assets</span
-                >
-            </div>
-        </a-select-option>
+            </a-select-option>
+        </template>
     </a-select>
 </template>
 
@@ -69,6 +70,7 @@
             const { connector, showCount } = toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
+            const selectedValue = ref(modelValue.value)
 
             const { list } = useConnectionData()
             const queryText = ref('')
@@ -107,7 +109,8 @@
                     })
             )
 
-            const selectedValue = ref(modelValue.value)
+            // console.log(filteredList.value)
+
             const handleChange = (value) => {
                 modelValue.value = value
                 emit('change')

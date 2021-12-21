@@ -406,6 +406,7 @@
     import NewEnumForm from './newEnumForm.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -489,6 +490,21 @@
                 return null
             }
 
+            const getAnalyticsProperties = (tempForm) => {
+                let dataType = tempForm?.typeName
+                if (tempForm?.options.isEnum) {
+                    dataType = 'enum'
+                } else if (tempForm?.options.customType) {
+                    dataType = tempForm?.options.customType
+                }
+                const properties = {
+                    data_type: dataType,
+                    multi_value: tempForm?.options.multiValueSelect,
+                    allow_filtering: tempForm?.options.allowFiltering,
+                }
+                return properties
+            }
+
             const handleUpdateProperty = async () => {
                 // before create or update, check if is in newEnumMode, first create enum then enum will continue property flow if successful
                 if (newEnumMode.value === true) {
@@ -542,10 +558,6 @@
                             const returnSome = (oldData) => {
                                 console.log(oldData)
                                 return { ...oldData }
-                                // return {
-                                //     ...user,
-                                //     name: 'Sergio',
-                                // }
                             }
                             // mutate('DEFAULT_TYPEDEFS', {})
                             emit(
@@ -553,6 +565,12 @@
                                 data.value.businessMetadataDefs[0].attributeDefs
                             )
                             visible.value = false
+                            useAddEvent(
+                                'governance',
+                                'custom_metadata',
+                                'property_updated',
+                                getAnalyticsProperties(tempForm)
+                            )
                         }
                         if (newError) {
                             handleUpdateError(newError)
@@ -582,6 +600,13 @@
                                 data.value.businessMetadataDefs[0].attributeDefs
                             )
                             visible.value = false
+                            console.log('CM create', tempForm)
+                            useAddEvent(
+                                'governance',
+                                'custom_metadata',
+                                'property_added',
+                                getAnalyticsProperties(tempForm)
+                            )
                         }
                         if (newError) {
                             handleUpdateError(newError)

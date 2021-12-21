@@ -1,21 +1,21 @@
 <template>
-    <div class="max-h-screen">
+    <div class="max-h-screen container-schema-tree">
         <div class="h-full overflow-x-hidden" :class="$style.schemaTreeStyles">
             <div v-if="treeData.length">
                 <a-tree
-                    v-bind="$attrs"
                     v-model:expandedKeys="expandedKeys"
-                    :selectedKeys="selectedKeys"
-                    :checkedKeys="checkedKeys"
-                    :loadedKeys="loadedKeys"
+                    v-bind="$attrs"
+                    :selected-keys="selectedKeys"
+                    :checked-keys="checkedKeys"
+                    :loaded-keys="loadedKeys"
                     :tree-data="treeData"
                     :load-data="onLoadData"
                     :draggable="false"
                     data-test-id="tree"
                     :block-node="true"
                     :auto-expand-parent="false"
-                    @select="selectNode"
                     :class="$style.tree"
+                    @select="selectNode"
                     @expand="expandNode"
                 >
                     <template #switcherIcon>
@@ -23,13 +23,13 @@
                     </template>
                     <template #title="item">
                         <SchemaTreeItem
-                            :item="item"
-                            :hoverActions="hoverActions"
                             v-if="item.title !== 'Load more'"
+                            :item="item"
+                            :hover-actions="hoverActions"
                         />
                         <div
-                            :data-test-id="'loadMore'"
                             v-else
+                            :data-test-id="'loadMore'"
                             class="flex flex-row w-full text-sm font-bold leading-5 text-primary h-7"
                             @click="item.click()"
                         >
@@ -65,11 +65,11 @@
                     </p>
                 </div>
                 <div
-                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
                     v-else-if="
                         activeInlineTab?.explorer?.schema?.connectors
                             ?.attributeName === 'databaseQualifiedName'
                     "
+                    class="flex flex-col items-center justify-center text-base leading-6 text-center text-gray-500 mt-14"
                 >
                     <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                     <p class="mt-6 mb-0 text-base text-gray-700">
@@ -86,6 +86,7 @@
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
     // components
     import LoadingView from '@common/loaders/section.vue'
+    import { useVModels } from '@vueuse/core'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import OwnerInfoCard from '@/common/hovercards/ownerInfo.vue'
     import SchemaTreeItem from './schemaTreeItem.vue'
@@ -93,7 +94,6 @@
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
-    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         components: {

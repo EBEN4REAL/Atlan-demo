@@ -106,6 +106,7 @@
     import useEditTypedefs from '~/composables/typedefs/useEditTypedefs'
     import { useTypedefStore } from '~/store/typedef'
     import map from '~/constant/accessControl/map'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'ClassificationHeader',
@@ -185,6 +186,11 @@
                             } else {
                                 router.push('/governance/classifications')
                             }
+                            useAddEvent(
+                                'governance',
+                                'classification',
+                                'deleted'
+                            )
                         })
                     },
                 })

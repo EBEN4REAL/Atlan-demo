@@ -640,7 +640,7 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', policyType.value, policy.value)
+                    emit('save', policyType.value, policy.value, isEdit.value)
                 }
             }
             const selectedPermition = computed(() => {
@@ -682,7 +682,18 @@
             }
             const splitName = (name) => {
                 const splited = name.split('/')
-                const sliced = splited.slice(2, splited.length)
+                if (splited && splited.length === 3) {
+                    // connection is selected
+                    const found = connectionStore.getList.find(
+                        (conn) => conn?.attributes?.qualifiedName === name
+                    )
+                    return (
+                        found?.attributes?.name ||
+                        found?.attributes?.qualifiedName ||
+                        ''
+                    )
+                }
+                const sliced = splited.slice(3, splited.length)
                 return sliced.join('/')
             }
             const canEdit = computed(() =>
@@ -728,6 +739,15 @@
 </script>
 
 <style lang="less">
+    .drawerAddAsset{
+        .container-schema-tree {
+            max-height: max-content !important;
+        }
+        .wrapper-asset-tree {
+            height: calc(100vh - 14rem) !important;
+            padding-bottom: 30px!important
+        }
+    }
     .add-policy-container {
         height: 100vh;
         display: flex;

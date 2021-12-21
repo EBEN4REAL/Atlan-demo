@@ -43,7 +43,7 @@
                     <span class="mx-4 mt-2 text-base font-bold text-gray-500"
                         >Browse from your assets</span
                     >
-                    <div class="h-full p-4 overflow-y-auto">
+                    <div class="h-full p-4 overflow-y-auto wrapper-asset-tree">
                         <AssetBrowserTree
                             v-model:assets="checkedKeys"
                             :connection-qf-name="connectionQfName"

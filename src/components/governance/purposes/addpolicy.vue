@@ -415,7 +415,7 @@
                     if (type.value === 'data') {
                         policy.value = {
                             actions: ['select'],
-                            mask: '',
+                            mask: 'null',
                             allow: true,
                             name: '',
                             description: '',

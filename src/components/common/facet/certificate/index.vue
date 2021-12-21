@@ -8,8 +8,8 @@
         <div class="flex flex-col w-full">
             <template v-for="item in certificateList" :key="item.id">
                 <a-checkbox
-                    :value="item.id"
-                    class="inline-flex flex-row-reverse items-center w-full mb-1  atlan-reverse"
+                    :value="item.value"
+                    class="inline-flex flex-row-reverse items-center w-full mb-1 atlan-reverse"
                 >
                     <component
                         :is="item.icon"
@@ -32,8 +32,8 @@
         <div class="flex flex-col w-full">
             <template v-for="item in certificateList" :key="item.id">
                 <a-radio
-                    :value="item.id"
-                    class="inline-flex flex-row-reverse items-center w-full mb-1  atlan-reverse"
+                    :value="item.value"
+                    class="inline-flex flex-row-reverse items-center w-full mb-1 atlan-reverse"
                 >
                     <component
                         :is="item.icon"

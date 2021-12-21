@@ -143,13 +143,13 @@
                                 :selected-guid="selectedAsset.guid"
                                 :preference="preference"
                                 :show-check-box="showCheckBox"
+                                :id="getAssetId(item)"
                                 :bulk-select-mode="
                                     bulkSelectedAssets &&
                                     bulkSelectedAssets.length
                                         ? true
                                         : false
                                 "
-                                :id="getAssetId(item)"
                                 :enable-sidebar-drawer="enableSidebarDrawer"
                                 :is-checked="checkSelectedCriteriaFxn(item)"
                                 :class="page !== 'admin' ? 'mx-3' : ''"

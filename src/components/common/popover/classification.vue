@@ -1,5 +1,5 @@
 <template>
-    <a-popover placement="left">
+    <a-popover placement="left" trigger="click">
         <template #content>
             <div class="flex flex-col p-4 text-gray-700 w-96">
                 <div class="flex justify-between mb-2 text-sm">

@@ -78,7 +78,6 @@
                         class="mb-6"
                         :read-only="false"
                         :destroy-tooltip-on-hide="true"
-                        :edit-permission="true"
                         @change="handleOwnersChange"
                     />
                     <div

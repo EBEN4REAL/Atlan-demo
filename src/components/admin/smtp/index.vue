@@ -5,45 +5,25 @@
                 ref="formRef"
                 label-align="left"
                 :rules="rules"
-                :model="smtpServer"
-                :labelCol="{ span: 6 }"
+                :model="smtpFormModal"
+                :label-col="{ span: 6 }"
                 :wrapper-col="{ span: 18, offset: 4 }"
             >
                 <a-form-item
-                    v-for="config in smtpConfig"
+                    v-for="config in smtp_form"
                     :key="config.id"
                     :required="config.required"
                     :label="config.label"
                     :name="config.id"
                     class="w-full text-gray"
                 >
-                    <a-switch
-                        v-if="config.type === 'switch'"
-                        :key="config.id"
-                        :checked="smtpServer[config.id] === 'true'"
-                        size="small"
-                        @change="
-                            (checked) =>
-                                updateSmtpProperty(
-                                    config.id,
-                                    checked.toString()
-                                )
-                        "
-                    />
-                    <a-input
-                        v-else
-                        :key="config.id"
-                        v-model:value="smtpServer[config.id]"
-                        :type="config.type"
-                        :placeholder="config.placeholder"
-                        :default-value="smtpServer[config.id]"
-                        @input="
-                            updateSmtpProperty(config.id, $event.target.value)
-                        "
+                    <DynamicInput
+                        v-model="smtpFormModal[config.id]"
+                        :data-type="config.type"
                     />
                 </a-form-item>
 
-                <div v-if="smtpServer.auth === 'true'">
+                <div v-if="smtpFormModal.auth">
                     <a-form-item
                         ref="userFieldRef"
                         name="user"
@@ -55,26 +35,16 @@
                         }"
                     >
                         <a-input
-                            v-model:value="smtpServer.user"
+                            v-model:value="smtpFormModal.user"
                             type="text"
                             @blur="triggerBlur(userFieldRef)"
-                            @input="
-                                updateSmtpProperty('user', $event.target.value)
-                            "
                         />
                     </a-form-item>
 
                     <a-form-item label="Password" name="password">
                         <a-input-password
-                            v-model:value="smtpServer.password"
-                            :default-value="smtpServer.password"
-                            :value="smtpServer.password"
-                            @input="
-                                updateSmtpProperty(
-                                    'password',
-                                    $event.target.value
-                                )
-                            "
+                            v-model:value="password"
+                            @change="setPassword"
                         />
                     </a-form-item>
                 </div>
@@ -84,17 +54,17 @@
                         <a-button
                             variant="sm"
                             class="mr-3 rounded-md ant-btn test-config-button"
-                            :loading="isLoading"
+                            :loading="testing"
                             @click="test"
                         >
-                            <span v-if="isLoading">Testing Config...</span>
+                            <span v-if="testing">Testing Config...</span>
                             <div v-else class="flex items-center">
                                 <AtlanIcon icon="Plug" class="mr-1" />
                                 Test SMTP Config
                             </div>
                         </a-button>
                         <span
-                            v-if="error"
+                            v-if="testError"
                             class="flex items-center text-red-600 font-size-sm"
                         >
                             <AtlanIcon
@@ -112,14 +82,14 @@
                                 </template>
 
                                 <AtlanIcon
-                                    icon="Info"
                                     v-if="testErrorMessage"
+                                    icon="Info"
                                     class="ml-2 mr-1 text-red-600"
                                 />
                             </a-popover>
                         </span>
                         <span
-                            v-else-if="isReady && !error && !isLoading"
+                            v-else-if="testDone && !testError && !testing"
                             class="w-11/12 font-size-sm"
                         >
                             <AtlanIcon
@@ -132,7 +102,7 @@
                     </div>
                     <div class="flex">
                         <div
-                            v-if="saveSmtpConfigState === 'SUCCESS'"
+                            v-if="isReady && !error && !isLoading"
                             class="flex items-center justify-center px-3 py-2 mr-3 rounded bg-blue-50"
                         >
                             <AtlanIcon
@@ -142,15 +112,15 @@
                             Config Saved
                         </div>
                         <div
-                            v-else-if="saveSmtpConfigState === 'ERROR'"
+                            v-else-if="error"
                             class="flex items-center px-3 py-2 mr-3 rounded bg-red-50"
                         >
                             <a-popover trigger="hover" placement="right">
                                 <template #content>
-                                    <div>{{ saveSmtpConfigError }}</div>
+                                    <div>{{ errorMessage }}</div>
                                 </template>
-                                <fa
-                                    icon="fal exclamation-circle"
+                                <AtlanIcon
+                                    icon="ExclainCircle"
                                     class="mr-2 text-red-600"
                                 />
                             </a-popover>
@@ -159,12 +129,10 @@
                         <a-button
                             style="width: 150px"
                             class="rounded-md ant-btn ant-btn-primary"
-                            :loading="saveSmtpConfigState === 'SAVING'"
+                            :loading="isLoading"
                             @click.prevent="saveSmtpConfig"
                         >
-                            <span v-if="saveSmtpConfigState === 'SAVING'"
-                                >Saving...</span
-                            >
+                            <span v-if="isLoading">Saving...</span>
                             <span v-else>Save</span>
                         </a-button>
                     </div>
@@ -178,58 +146,58 @@
     import { defineComponent } from 'vue'
     import DefaultLayout from '@/admin/layout.vue'
     import { useSmtp } from '@/admin/smtp/useSmtp'
+    import { smtp_form, rules } from '~/constant/smtp'
+    import DynamicInput from '@/common/input/dynamicInput2.vue'
 
     export default defineComponent({
         name: 'SmtpForm',
-        components: { DefaultLayout },
+        components: { DefaultLayout, DynamicInput },
         setup() {
-            const {
-                formRef,
-                userFieldRef,
-                rules,
-                smtpConfig,
-                testSmtpConfigState,
-                testSmtpConfigError,
-                saveSmtpConfigState,
-                saveSmtpConfigError,
-                passwordReentered,
-                updateSmtpProperty,
-                testSmtpConfig,
-                saveSmtpConfig,
-                smtpServer,
-                finalTestSmtpConfigError,
-                triggerBlur,
-            } = useSmtp()
-
             const {
                 data,
                 isLoading,
                 error,
+                errorMessage,
                 isReady,
+                smtpFormModal,
+                formRef,
+                userFieldRef,
+                testSmtpConfig,
+                saveSmtpConfig,
+                smtpServer,
+                triggerBlur,
+                setPassword,
+                password,
+            } = useSmtp()
+
+            const {
+                isLoading: testing,
+                error: testError,
+                isReady: testDone,
                 mutate: test,
                 testErrorMessage,
             } = testSmtpConfig()
 
             return {
+                testDone,
+                setPassword,
+                password,
+                smtpServer,
+                rules,
+                smtp_form,
+                smtpFormModal,
                 data,
                 testErrorMessage,
-                isLoading,
-                error,
+                testing,
+                testError,
                 isReady,
                 test,
                 formRef,
-                rules,
                 userFieldRef,
-                smtpConfig,
-                testSmtpConfigState,
-                testSmtpConfigError,
-                saveSmtpConfigState,
-                saveSmtpConfigError,
-                passwordReentered,
-                updateSmtpProperty,
+                isLoading,
+                error,
+                errorMessage,
                 saveSmtpConfig,
-                smtpServer,
-                finalTestSmtpConfigError,
                 triggerBlur,
             }
         },

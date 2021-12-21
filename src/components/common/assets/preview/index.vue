@@ -112,6 +112,7 @@
                         <template v-else>
                             <a-tooltip :title="action.label">
                                 <a-button
+                                    v-if="showCTA(action.id)"
                                     class="flex items-center justify-center"
                                     @click="handleAction(action.id)"
                                 >
@@ -359,6 +360,16 @@
                 }
             }
 
+            const showCTA = (action) => {
+                return route.path !== '/insights'
+                    ? true
+                    : selectedAsset.value.typeName === 'Query'
+                    ? false
+                    : action === 'query'
+                    ? false
+                    : true
+            }
+
             return {
                 title,
                 getConnectorImage,
@@ -392,6 +403,7 @@
                 getProfilePath,
                 isScrubbed,
                 selectedAssetUpdatePermission,
+                showCTA,
             }
         },
     })

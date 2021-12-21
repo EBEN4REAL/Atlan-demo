@@ -37,21 +37,49 @@
                 data-key="id"
             >
                 <template #default="{ item, isSelected }">
-                    <div
-                        class="flex items-center justify-between"
-                        :data-test-id="item.displayName"
-                    >
-                        <span
-                            style="width: 95%"
-                            class="text-sm truncate"
-                            :class="
-                                isSelected
-                                    ? 'text-primary'
-                                    : 'text-gray hover:text-primary'
-                            "
+                    <div class="flex items-center justify-between">
+                        <div
+                            class="flex flex-col"
+                            :data-test-id="item.displayName"
                         >
-                            {{ item.displayName }}
-                        </span>
+                            <span
+                                class="text-sm truncate"
+                                :class="
+                                    isSelected
+                                        ? 'text-primary'
+                                        : 'text-gray hover:text-primary'
+                                "
+                            >
+                                {{ item.displayName }}
+                            </span>
+                            <div class="flex gap-x-1">
+                                <span
+                                    class="text-xs text-gray-500"
+                                    v-if="item.users.length > 0"
+                                >
+                                    {{ item.users.length }} users</span
+                                >
+                                <span
+                                    class="text-xs text-gray-500"
+                                    v-if="item.groups.length > 0"
+                                >
+                                    {{ item.groups.length }} groups</span
+                                >
+                                <span
+                                    class="text-xs text-gray-500"
+                                    v-if="item.groups.length > 0"
+                                >
+                                    {{
+                                        item.metadataPolicies.length +
+                                        item.dataPolicies.length
+                                    }}
+                                    policies</span
+                                >
+                            </div>
+
+                            <!-- <div class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'active' : 'inActive'"/> -->
+                        </div>
+
                         <a-tooltip
                             tabindex="-1"
                             :title="item.description"
@@ -62,7 +90,6 @@
                                 ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
                             ></span>
                         </a-tooltip>
-                        <!-- <div class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'active' : 'inActive'"/> -->
                     </div>
                 </template>
             </ExplorerList>

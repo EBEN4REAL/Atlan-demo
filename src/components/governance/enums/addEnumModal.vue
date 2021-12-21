@@ -8,6 +8,7 @@
         destroy-on-close
     >
         <div class="p-4">
+            <div class="mb-2 font-bold text-gray-700">New Enum</div>
             <a-form layout="vertical">
                 <a-form-item label="Name">
                     <a-input

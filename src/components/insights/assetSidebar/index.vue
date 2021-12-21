@@ -25,12 +25,14 @@
         ref,
         watch,
         provide,
+        toRaw,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import AssetPreview from '~/components/common/assets/preview/index.vue'
     import useAssetStore from '~/store/asset'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
     export default defineComponent({
         components: { AssetPreview, AtlanIcon },
@@ -40,17 +42,118 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const { modifyActiveInlineTab } = useInlineTab()
+
+            // const { setConnectorsDataInInlineTab } = useConnector()
+
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const { closeAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
+            const { closeAssetSidebar, fetchAssetData } = useAssetSidebar(
+                tabs,
+                activeInlineTab
+            )
+
+            const assetLoading = ref(false)
+            const assetInfo = ref({})
+
             const selectedAsset: Ref<any> = computed(() => {
-                /* Setting in store */
+                // await fetchAsset()
+
+                // console.log('assetInfo3: ', assetInfo.value)
+
+                // if (Object.keys(assetInfo.value).length) {
+                //     console.log('assetInfo: ', assetInfo.value)
+                //     storeDiscovery.setSelectedAsset(assetInfo.value)
+
+                //     return assetInfo.value
+                // } else {
+                console.log(
+                    'assetInfo2: ',
+                    activeInlineTab.value?.assetSidebar?.assetInfo
+                )
+
                 storeDiscovery.setSelectedAsset(
                     activeInlineTab.value?.assetSidebar?.assetInfo
                 )
                 return activeInlineTab.value?.assetSidebar?.assetInfo
+                // }
             })
 
-            const updateList = (asset) => {}
+            // const fetchAsset = () => {
+            //     const activeInlineTabCopy: activeInlineTabInterface =
+            //         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+
+            //     const { data, isLoading, error } = fetchAssetData(
+            //         activeInlineTab.value?.assetSidebar?.assetInfo
+            //     )
+            //     assetLoading.value = true
+            //     watch([data, error, isLoading], () => {
+            //         assetLoading.value = true
+            //         if (isLoading.value === false) {
+            //             assetLoading.value = false
+            //             if (error.value === undefined) {
+            //                 if (
+            //                     data.value?.entities &&
+            //                     data.value?.entities?.length > 0
+            //                 ) {
+            //                     console.log('updated asset data: ', data.value)
+            //                     // assetInfo.value = data.value.entities[0]
+            //                     activeInlineTabCopy.assetSidebar.assetInfo =
+            //                         data.value.entities[0]
+
+            //                     modifyActiveInlineTab(
+            //                         activeInlineTabCopy,
+            //                         tabs,
+            //                         false,
+            //                         true
+            //                     )
+            //                 } else {
+            //                     assetInfo.value = {}
+            //                 }
+            //             } else {
+            //                 assetLoading.value = false
+            //             }
+            //         }
+            //     })
+            // }
+
+            // watch(activeInlineTab, () => {
+            //     console.log(
+            //         'tab update: ',
+            //         activeInlineTab.value.assetSidebar.assetInfo
+            //     )
+            //     // fetchAsset()
+            // })
+            // watch(activeInlineTab, () => {
+            //     console.log('sidebar update')
+            //     if (activeInlineTab.value?.assetSidebar?.assetInfo) {
+            //     }
+            // })
+            // const selectedAsset: Ref<any> = computed(() => {
+            //     /* Setting in store */
+            //     console.log(
+            //         'selected asset: ',
+            //         activeInlineTab.value?.assetSidebar?.assetInfo
+            //     )
+
+            //     return activeInlineTab.value?.assetSidebar?.assetInfo
+            // })
+
+            const updateList = (asset) => {
+                console.log('updated asset: ', asset)
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+
+                activeInlineTabCopy.assetSidebar.assetInfo = asset
+                modifyActiveInlineTab(activeInlineTabCopy, tabs, false, true)
+
+                // setConnectorsDataInInlineTab(
+                //     activeInlineTab,
+                //     tabs,
+                //     ref(activeInlineTab.value?.explorer?.schema?.connectors),
+                //     'schema'
+                // )
+            }
 
             provide('updateList', updateList)
 

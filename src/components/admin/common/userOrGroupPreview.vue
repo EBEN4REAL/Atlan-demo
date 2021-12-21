@@ -91,7 +91,9 @@
                         :is-current-user="isValidUser ? isCurrentUser : null"
                         :selected-user="isValidUser ? selectedUser : null"
                         :selected-group="isValidGroup ? selectedGroup : null"
-                        @updatedUser="handleUpdate"
+                        @updated-user="() => {
+                            userUpdated = true
+                        }"
                         @refreshTable="reload"
                         @success="reload"
                         @image-updated="handleImageUpdate"
@@ -174,6 +176,7 @@
                 tabs,
                 imageUrl,
                 activeKey,
+                userUpdated
             } = useUserOrGroupPreview(previewType.value)
             const isValidUser = computed(() =>
                 Boolean(
@@ -283,7 +286,8 @@
                 slackEnabled,
                 slackUrl,
                 handleImageUpdate,
-                updatedImageUrl
+                updatedImageUrl,
+                userUpdated
             }
         },
     })

@@ -1,5 +1,7 @@
 <template>
-    <div v-if="data.value === ''" class="mb-3"><b>Description</b> removed</div>
+    <div v-if="data.value === ''" class="mb-0">
+        <b>Description</b> was removed
+    </div>
     <div v-else>
         <b>Description</b> was updated
         <div class="text-sm text-gray-500 whitespace-pre-wrap">

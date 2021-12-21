@@ -81,46 +81,43 @@ const keyMap = {
         },
     },
     gtc: {
-        metadata: {
-            description_updated: {
-                action: 'gtc_metadata_description_updated',
-                properties: (props) => ({ gtc_type: props?.gtc_type }),
-            },
-            certification_updated: {
-                action: 'gtc_metadata_certification_updated',
-                properties: (props) => ({ gtc_type: props?.gtc_type }),
-            },
-            owners_updated: {
-                action: 'gtc_metadata_owners_updated',
-                properties: (props) => ({ gtc_type: props?.gtc_type }),
-            },
-            classifications_updated: {
-                action: 'gtc_metadata_classifications_updated',
-                properties: (props) => ({ gtc_type: props?.gtc_type }),
-            },
-        },
         term: {
             created: {
                 action: 'gtc_term_created',
+                properties: (props) => ({
+                    create_more: !!props.create_more,
+                }),
+            },
+            deleted: {
+                action: 'gtc_term_deleted',
             },
         },
         category: {
             created: {
                 action: 'gtc_category_created',
+                properties: (props) => ({
+                    create_more: !!props.create_more,
+                }),
+            },
+            deleted: {
+                action: 'gtc_category_deleted',
             },
         },
         glossary: {
             created: {
                 action: 'gtc_glossary_created',
             },
+            deleted: {
+                action: 'gtc_glossary_deleted',
+            },
         },
         tree: {
             searched: {
                 action: 'gtc_tree_searched',
             },
-        },
-        tree_search_result: {
-            action: 'gtc_search_result_clicked',
+            search_result_clicked: {
+                action: 'gtc_tree_search_result_clicked',
+            },
         },
     },
     insights: {

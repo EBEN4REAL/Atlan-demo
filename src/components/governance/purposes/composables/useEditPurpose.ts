@@ -170,12 +170,12 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
         if(dataPolicy.id){
             tempPersona.dataPolicies = tempPersona.dataPolicies.map((el) => {
                 if(el.id === dataPolicy.id){
-                    return dataPolicy
+                    return {...dataPolicy, type: 'masking'}
                 }
-                    return el
+                    return { ...el, type: 'masking'}
             })
         } else {
-            tempPersona.dataPolicies.push({...dataPolicy, type: 'data'})
+            tempPersona.dataPolicies.push({...dataPolicy, type: 'masking'})
         }
     }
     return savePersona(tempPersona)

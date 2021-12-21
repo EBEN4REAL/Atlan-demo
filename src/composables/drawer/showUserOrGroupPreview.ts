@@ -18,8 +18,14 @@ import useGroups from '~/composables/group/useGroups'
 export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
     if (previewType === 'user') {
         // Using the usePreview composable.
-        const { userId, uniqueAttribute, username, finalTabs, defaultTab } =
-            useUserPreview()
+        const {
+            userId,
+            uniqueAttribute,
+            username,
+            finalTabs,
+            defaultTab,
+            userUpdated,
+        } = useUserPreview()
         const userNameUser = userNameProp || username.value
 
         // Params for obtaining that one user.
@@ -70,7 +76,9 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
         const activeKey = ref(unref(defaultTab))
 
         const handleUserUpdate = async () => {
+            userUpdated.value = true
             await getUserList()
+            userUpdated.value = false
         }
 
         // If the user ID or the username changes, refresh the list.
@@ -90,6 +98,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             activeKey,
             tabs: finalTabs,
             handleUpdate: handleUserUpdate,
+            userUpdated,
         }
     }
     if (previewType === 'group') {

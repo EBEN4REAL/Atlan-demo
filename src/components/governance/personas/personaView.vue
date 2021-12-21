@@ -126,7 +126,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, onMounted } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
@@ -183,6 +183,13 @@
                 modalDetailPolicyVisible.value = true
             }
             const whitelistedConnectionIds = ref([])
+            onMounted(() => {
+                if (!route.params.id && filteredPersonas.value.length) {
+                    const id = filteredPersonas.value[0].id!
+                    selectedPersonaId.value = id
+                    router.replace(`/governance/personas/${id}`)
+                }
+            })
             watch(isPersonaListReady, () => {
                 if (personaList.value?.length) {
                     if (route.params.id) {
@@ -205,6 +212,7 @@
                     `/governance/personas/${selectedPersonaId.value}`
                 )
             })
+
             watch(
                 roles,
                 () => {

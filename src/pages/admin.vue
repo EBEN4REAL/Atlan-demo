@@ -1,13 +1,11 @@
 <template>
     <div class="flex w-full h-full">
-        <div
-            class="flex flex-col w-1/5 h-full overflow-hidden bg-white"
-        >
+        <div class="flex flex-col w-1/5 h-full overflow-hidden bg-white">
             <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
                 <a-menu
                     v-model:selectedKeys="current"
                     mode="vertical"
-                    style="width: 100%"
+                    style="width: inherit"
                     class="admin-sidebar"
                     @click="handleClick"
                 >
@@ -32,12 +30,12 @@
                         <a-menu-item key="smtp" v-auth="[map.UPDATE_SMTP]">
                             SMTP
                         </a-menu-item>
-                        <a-menu-item
+                        <!-- <a-menu-item
                             key="integration"
                             v-auth="[map.LIST_INTEGRATION]"
                         >
                             Integrations
-                        </a-menu-item>
+                        </a-menu-item> -->
                     </a-menu-item-group>
                     <a-menu-item-group title="Logs">
                         <a-menu-item
@@ -45,16 +43,16 @@
                             v-auth="[map.QUERY_SQL_LOGS]"
                             >Query Logs</a-menu-item
                         >
-                        <a-menu-item
+                        <!-- <a-menu-item
                             key="access-logs"
                             v-auth="[map.QUERY_ACCESS_LOGS]"
                             >Access Logs</a-menu-item
-                        >
+                        > -->
                     </a-menu-item-group>
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen overflow-y-auto">
+        <div class="w-4/5 max-h-screen overflow-y-auto pl-0 pr-6">
             <router-view></router-view>
         </div>
     </div>

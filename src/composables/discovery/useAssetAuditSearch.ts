@@ -96,6 +96,7 @@ export function useAssetAuditSearch({
 
     const list = ref([])
     watch(data, () => {
+        console.log(offset.value)
         if (offset?.value > 0) {
             if (data.value?.entityAudits) {
                 list.value.push(...data.value?.entityAudits)
@@ -187,14 +188,7 @@ export function useAssetAuditSearch({
     }
 
     const totalCount = computed(() => {
-        if (assetTypeAggregationList.value.length > 0) {
-            const type = postFacets?.value.typeName || '__all'
-            const typeName = assetTypeAggregationList.value.find(
-                (i) => i.id === type
-            )
-            return typeName?.count || approximateCount.value
-        }
-        return approximateCount.value
+        return data.value.totalCount
     })
 
     const isLoadMore = computed(() => {

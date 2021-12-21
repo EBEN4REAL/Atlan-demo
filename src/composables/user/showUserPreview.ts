@@ -14,6 +14,7 @@ const finalTabs = computed(() => {
         return allTabs.filter((tab) => allowedTabs.value.includes(tab.key))
     return allTabs.filter((tab) => !blacklistedTabs.value.includes(tab.key))
 })
+const userUpdated = ref(false)
 
 export function useUserPreview() {
     const showUserPreview = (config?: { allowed?: any; blacklisted?: any }) => {
@@ -67,5 +68,6 @@ export function useUserPreview() {
         closePreview,
         defaultTab,
         setDefaultTab,
+        userUpdated,
     }
 }

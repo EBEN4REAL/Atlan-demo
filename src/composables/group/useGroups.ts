@@ -8,24 +8,26 @@ import { getFormattedGroup } from '~/composables/group/formatGroup'
 
 import { Groups } from '~/services/service/groups'
 import { LIST_GROUPS, LIST_GROUP } from '~/services/service/groups/key'
+import axios from 'axios'
+import { useOptions } from '~/services/api/common'
 
-export const useGroup = (groupListAPIParams, cacheKeyProp = '') => {
-    const {
-        data,
-        error,
-        isValidating,
-        mutate: getGroup,
-    } = Groups.List(groupListAPIParams, {
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
-        },
-        cacheKey: cacheKeyProp || LIST_GROUP,
+export const useGroup = (groupListAPIParams, immediate = true) => {
+    const options: useOptions = {}
+    let cancel = axios.CancelToken.source()
+    options.options = ref({
+        cancelToken: cancel.token,
     })
 
-    const { state, STATES } = swrvState(data, error, isValidating)
+    options.asyncOptions = ref({
+        resetOnExecute: false,
+        immediate,
+    })
+
+    const { data, mutate, isLoading, isValidating, error } = Groups.List(
+        groupListAPIParams,
+        options
+    )
+
     const groupList = computed(() => {
         if (data.value && data?.value?.records)
             return data?.value.records.map((group: any) =>
@@ -36,14 +38,30 @@ export const useGroup = (groupListAPIParams, cacheKeyProp = '') => {
     const totalGroupCount = computed(() => data?.value?.totalRecord ?? 0)
     const filteredGroupCount = computed(() => data?.value?.filterRecord ?? 0)
 
+    const cancelRequest = () => {
+        if (cancel) {
+            cancel.cancel('operation cancelled')
+        }
+        cancel = axios.CancelToken.source()
+        options.options.value = {
+            cancelToken: cancel.token,
+        }
+    }
+
+    const getGroupList = () => {
+        cancelRequest()
+        mutate()
+    }
+
     return {
         groupList,
         totalGroupCount,
         filteredGroupCount,
         isValidating,
-        getGroup,
-        state,
-        STATES,
+        isLoading,
+        error,
+        getGroupList,
+        cancelRequest,
     }
 }
 const defaultCacheOption = {

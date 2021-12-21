@@ -13,7 +13,7 @@
                 <p
                     v-if="!isUpdate"
                     v-auth="map.UPDATE_GROUP"
-                    class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0  text-primary group-hover:opacity-100"
+                    class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0 text-primary group-hover:opacity-100"
                     @click="onUpdate"
                 >
                     edit
@@ -26,7 +26,7 @@
                     :disabled="updateLoading"
                     :auto-size="{ minRows: 1, maxRows: 3 }"
                 />
-                <div class="flex items-center justify-between max-w-full mt-1">
+                <div class="flex justify-between max-w-full mt-1">
                     <div>
                         <a-button
                             type="primary"
@@ -44,19 +44,19 @@
                             >cancel</a-button
                         >
                     </div>
-                    <div>
+                    <div class="flex">
                         <AtlanIcon
                             v-if="updateLoading"
                             icon="CircleLoader"
-                            class="h-4 animate-spin"
+                            class="flex h-4 animate-spin"
                         />
                         <a-popover
                             v-else-if="updateErrorMessage"
-                            placement="bottom"
+                            placement="top"
                         >
-                            <template #content>{{
-                                updateErrorMessage
-                            }}</template>
+                            <template #content>
+                                <div class="p-4">{{ updateErrorMessage }}</div>
+                            </template>
                             <AtlanIcon
                                 icon="ExclaimCircle"
                                 class="cursor-pointer text-error"

@@ -156,7 +156,6 @@ export const useUsers = (userListAPIParams, immediate = true) => {
     const userList: Ref<any[]> = ref([])
 
     watch(data, () => {
-
         if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>

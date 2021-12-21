@@ -38,7 +38,7 @@
             useHead({
                 title: 'Glossary',
             })
-
+            console.log('mounted-----------------------')
             const { selectedAsset } = toRefs(props)
             const localSelected = ref()
             const route = useRoute()
@@ -70,7 +70,7 @@
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
 
-            const { list, isLoading, quickChange } = useDiscoverList({
+            const { list, isLoading, fetch } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -81,17 +81,18 @@
             })
 
             watch(list, () => {
+                console.log('list changed')
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
                     handlePreview(list.value[0])
                 }
             })
             watch(id, () => {
-                if (id.value && selectedAsset.value.guid !== id.value) {
-                    dependentKey.value = fetchKey.value
+                if (id.value && selectedAsset.value?.guid !== id.value) {
+                    dependentKey.value = id.value
                     facets.value.guid = id.value
-                    quickChange()
-                    console.log('called')
+                    fetch()
+                    console.log('fetch gtc again on route chage')
                 }
             })
             watch(selectedAsset, () => {
@@ -102,6 +103,9 @@
                 fetchKey,
                 isLoading,
                 localSelected,
+                id,
+                facets,
+                dependentKey,
             }
         },
     })

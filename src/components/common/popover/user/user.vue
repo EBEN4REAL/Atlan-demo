@@ -50,11 +50,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div
-                            class="px-2 py-1 tracking-wide text-gray-500 bg-gray-100 border rounded"
-                        >
-                            {{ selectedUser?.workspaceRole }}
-                        </div> -->
                         <div class="mb-auto">
                             <AtlanBtn
                                 class="flex-none px-0"
@@ -82,7 +77,6 @@
                         <div class="" style="visibility: hidden">
                             <UserAvatar
                                 :username="item"
-                                style-class="mr-1 border-none bg-primary-light"
                                 className="mb-auto"
                                 :avatarSize="40"
                             ></UserAvatar>
@@ -99,20 +93,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div
-                        v-if="selectedUser?.personaList?.length > 0"
-                        class="z-10 mt-3"
-                    >
-                        <div class="text-xs text-gray-500">Personas</div>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            <span
-                                v-for="persona in selectedUser?.personaList"
-                                :key="persona"
-                                class="flex px-2 py-1 tracking-wide text-gray-500 border rounded-full"
-                                >{{ persona }}</span
-                            >
-                        </div>
-                    </div> -->
                 </div>
 
                 <div
@@ -125,10 +105,6 @@
                         class="w-auto h-8 animate-spin"
                     ></AtlanIcon>
                 </div>
-                <!-- <a-button class="mt-3" block @click="handleClickViewUser">
-                    View Profile
-                    <AtlanIcon icon="ArrowRight" class="ml-1 mb-0.5" />
-                </a-button> -->
             </div>
         </template>
         <slot></slot>

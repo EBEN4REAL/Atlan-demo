@@ -36,12 +36,63 @@
                     <a-checkbox-group
                         :value="groupedActions[idx].scopes"
                         :name="scope.type"
-                        :options="scope.scopes"
                         :class="['capitalize', $style.checkbox_custom]"
                         class="wrapper-checkbox"
                         @update:value="updateSelection(scope.type, $event)"
-                    ></a-checkbox-group>
-                    <div class="wrapper-desc">
+                    >
+                        <a-checkbox
+                            :checked="
+                                groupedActions[idx].scopes.includes(item.value)
+                            "
+                            class="mt-2"
+                            :value="item.value"
+                            v-for="(item, i) in scope.scopes"
+                            :key="i"
+                            @update:value="updateSelection(scope.type, $event)"
+                        >
+                            <div
+                                class="flex items-baseline justify-between w-100"
+                            >
+                                <div class="w-40">
+                                    {{ item.label }}
+                                </div>
+                                <div class="text-gray-500 wrapper-desc desc">
+                                    {{ item.desc }}
+                                    <a-tooltip
+                                        v-if="
+                                            item.label.toLowerCase() === 'read'
+                                        "
+                                        placement="right"
+                                        color="white"
+                                    >
+                                        <span
+                                            class="text-blue-600 pointer-events-auto"
+                                            >Learn more</span
+                                        >
+                                        <template #title>
+                                            <p class="m-3 text-gray">
+                                                Atlan opens up most
+                                                non-sensitive metadata
+                                                attributes to all product users
+                                                by default <br />
+                                                Sensitive information of assets
+                                                coming in from source like
+                                                source urls, formulas in
+                                                calculated fields, raw SQL QUERY
+                                                in views, queries, upstream
+                                                information around
+                                                tables/datasources and partition
+                                                information are only shown up
+                                                when read access is given to the
+                                                users.
+                                            </p>
+                                        </template>
+                                    </a-tooltip>
+                                </div>
+                            </div>
+                        </a-checkbox>
+                    </a-checkbox-group>
+                    <!-- <div class="wrapper-desc">
                         <div
                             v-for="(item, i) in scope.scopes"
                             :key="i"
@@ -73,7 +124,7 @@
                                 </template>
                             </a-tooltip>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </a-collapse-panel>
         </a-collapse>
@@ -157,7 +208,7 @@
 <style lang="less" module>
     .checkbox_custom {
         :global(.ant-checkbox-group-item) {
-            @apply my-1  !important;
+            // @apply my-1  !important;
         }
     }
 </style>
@@ -168,11 +219,15 @@
         }
     }
     .meta-data-scope {
+        .ant-checkbox {
+            @apply mt-1;
+            // padding-top: 2px;
+            // @apply pt-2;
+        }
         display: flex;
         .ant-checkbox-wrapper {
             display: flex;
             .ant-checkbox {
-                margin-top: 5px;
                 margin-right: 7px;
                 height: fit-content;
             }
@@ -181,16 +236,17 @@
             flex: 1;
         }
         .desc {
-            margin-top: 0.25rem;
-            margin-bottom: 0.25rem;
+            // margin-top: 0.25rem;
+            // margin-bottom: 0.25rem;
+            // @apply mt-1;
         }
         .wrapper-checkbox {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            height: auto;
+            // display: flex;
+            // flex-direction: column;
+            // flex: 1;
+            // height: auto;
             .ant-checkbox-wrapper {
-                height: 40px;
+                // height: 40px;
             }
             // justify-content: space-between;
         }

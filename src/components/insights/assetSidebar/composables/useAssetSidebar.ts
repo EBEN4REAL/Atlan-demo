@@ -8,6 +8,8 @@ import {
     AssetAttributes,
     InternalAttributes,
     SavedQueryAttributes,
+    SQLAttributes,
+    AssetRelationAttributes
 } from '~/constant/projection'
 
 import { useAPI } from '~/services/api/useAPI'
@@ -78,6 +80,8 @@ export function useAssetSidebar(
         ...AssetAttributes,
         ...InternalAttributes,
         ...SavedQueryAttributes,
+        ...SQLAttributes,
+        'links'
     ]
 
     const fetchAssetData = (asset) => {
@@ -85,10 +89,13 @@ export function useAssetSidebar(
         let body = ref({})
         body.value = {
             dsl,
-            attributes
+            attributes,
+            relationAttributes: [
+                ...AssetRelationAttributes
+            ]
         }
 
-        console.log('query: ', body.value)
+        // console.log('query: ', body.value)
 
         const { data, error, isLoading } = useAPI(
             map.INDEX_SEARCH,

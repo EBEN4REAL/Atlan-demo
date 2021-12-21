@@ -115,6 +115,7 @@
                                 color="minimal"
                                 padding="compact"
                                 @click="handleAddAsset"
+                                :disabled="!connectorData.attributeValue"
                             >
                                 <span class="text-primary"> Custom select</span>
                                 <AtlanIcon
@@ -134,6 +135,7 @@
                                 color="minimal"
                                 padding="compact"
                                 @click="addConnectionAsset"
+                                :disabled="!connectorData.attributeValue"
                             >
                                 <span class="text-primary"> Add All </span>
                                 <AtlanIcon
@@ -207,6 +209,7 @@
                             color="minimal"
                             padding="compact"
                             @click="handleToggleManage"
+                            :disabled="!connectorData.attributeValue"
                         >
                             <span class="text-primary"> Manage </span>
                             <AtlanIcon
@@ -364,7 +367,13 @@
             <AtlanBtn
                 size="sm"
                 padding="compact"
-                :disabled="isLoading"
+                :disabled="
+                    isLoading ||
+                    !connectorData.attributeValue ||
+                    !policy.name ||
+                    !policy?.assets?.length ||
+                    (policyType === 'meta' && !selectedPermition.length)
+                "
                 class="btn-submit"
                 @click="handleSave"
             >
@@ -376,7 +385,7 @@
                 <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
                 <div>
                     You can only edit policies for connections in which you're
-                    added as a owner.
+                    added as an owner.
                 </div>
             </div>
         </div>

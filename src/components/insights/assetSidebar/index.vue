@@ -2,7 +2,9 @@
     <div v-if="selectedAsset?.guid" class="z-20 flex flex-col bg-white">
         <AssetPreview
             :mutate-tooltip="true"
-            :selected-asset="selectedAsset"
+            :selected-asset="
+                Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
+            "
             page="discovery"
             @asset-mutation="() => {}"
         ></AssetPreview>
@@ -38,14 +40,12 @@
         components: { AssetPreview, AtlanIcon },
         props: {},
         setup(props, { emit }) {
-            const storeDiscovery = useAssetStore()
+            // const storeDiscovery = useAssetStore()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
 
             const { modifyActiveInlineTab } = useInlineTab()
-
-            // const { setConnectorsDataInInlineTab } = useConnector()
 
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { closeAssetSidebar, fetchAssetData } = useAssetSidebar(
@@ -57,121 +57,56 @@
             const assetInfo = ref({})
 
             const selectedAsset: Ref<any> = computed(() => {
-                // await fetchAsset()
-
-                // console.log('assetInfo3: ', assetInfo.value)
-
-                // if (Object.keys(assetInfo.value).length) {
-                //     console.log('assetInfo: ', assetInfo.value)
-                //     storeDiscovery.setSelectedAsset(assetInfo.value)
-
-                //     return assetInfo.value
-                // } else {
-                console.log(
-                    'assetInfo2: ',
-                    activeInlineTab.value?.assetSidebar?.assetInfo
-                )
-
-                storeDiscovery.setSelectedAsset(
-                    activeInlineTab.value?.assetSidebar?.assetInfo
-                )
                 return activeInlineTab.value?.assetSidebar?.assetInfo
-                // }
             })
 
-            // const fetchAsset = () => {
-            //     const activeInlineTabCopy: activeInlineTabInterface =
-            //         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+            const fetchAsset = () => {
+                const { data, isLoading, error } = fetchAssetData(
+                    activeInlineTab.value?.assetSidebar?.assetInfo
+                )
+                assetLoading.value = true
+                watch([data, error, isLoading], () => {
+                    assetLoading.value = true
+                    if (isLoading.value === false) {
+                        assetLoading.value = false
+                        if (error.value === undefined) {
+                            if (
+                                data.value?.entities &&
+                                data.value?.entities?.length > 0
+                            ) {
+                                // console.log('updated asset data: ', data.value)
+                                assetInfo.value = data.value.entities[0]
+                            } else {
+                                assetInfo.value = {}
+                            }
+                        } else {
+                            assetLoading.value = false
+                        }
+                    }
+                })
+            }
 
-            //     const { data, isLoading, error } = fetchAssetData(
-            //         activeInlineTab.value?.assetSidebar?.assetInfo
-            //     )
-            //     assetLoading.value = true
-            //     watch([data, error, isLoading], () => {
-            //         assetLoading.value = true
-            //         if (isLoading.value === false) {
-            //             assetLoading.value = false
-            //             if (error.value === undefined) {
-            //                 if (
-            //                     data.value?.entities &&
-            //                     data.value?.entities?.length > 0
-            //                 ) {
-            //                     console.log('updated asset data: ', data.value)
-            //                     // assetInfo.value = data.value.entities[0]
-            //                     activeInlineTabCopy.assetSidebar.assetInfo =
-            //                         data.value.entities[0]
-
-            //                     modifyActiveInlineTab(
-            //                         activeInlineTabCopy,
-            //                         tabs,
-            //                         false,
-            //                         true
-            //                     )
-            //                 } else {
-            //                     assetInfo.value = {}
-            //                 }
-            //             } else {
-            //                 assetLoading.value = false
-            //             }
-            //         }
-            //     })
-            // }
-
-            // watch(activeInlineTab, () => {
-            //     console.log(
-            //         'tab update: ',
-            //         activeInlineTab.value.assetSidebar.assetInfo
-            //     )
-            //     // fetchAsset()
-            // })
-            // watch(activeInlineTab, () => {
-            //     console.log('sidebar update')
-            //     if (activeInlineTab.value?.assetSidebar?.assetInfo) {
-            //     }
-            // })
-            // const selectedAsset: Ref<any> = computed(() => {
-            //     /* Setting in store */
-            //     console.log(
-            //         'selected asset: ',
-            //         activeInlineTab.value?.assetSidebar?.assetInfo
-            //     )
-
-            //     return activeInlineTab.value?.assetSidebar?.assetInfo
-            // })
+            watch(selectedAsset, () => {
+                assetInfo.value = {}
+                fetchAsset()
+            })
 
             const updateList = (asset) => {
-                console.log('updated asset: ', asset)
                 const activeInlineTabCopy: activeInlineTabInterface =
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
 
                 activeInlineTabCopy.assetSidebar.assetInfo = asset
                 modifyActiveInlineTab(activeInlineTabCopy, tabs, false, true)
-
-                // setConnectorsDataInInlineTab(
-                //     activeInlineTab,
-                //     tabs,
-                //     ref(activeInlineTab.value?.explorer?.schema?.connectors),
-                //     'schema'
-                // )
             }
 
             provide('updateList', updateList)
-
-            // watch(
-            //     activeInlineTab,
-            //     () => {
-            //         selectedAsset.value = {
-            //             ...activeInlineTab.value?.assetSidebar?.assetInfo,
-            //         }
-            //     },
-            //     { immediate: true }
-            // )
 
             return {
                 selectedAsset,
                 tabs,
                 activeInlineTab,
                 closeAssetSidebar,
+                assetInfo,
             }
         },
     })

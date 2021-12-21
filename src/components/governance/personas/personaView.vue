@@ -184,13 +184,10 @@
             }
             const whitelistedConnectionIds = ref([])
             onMounted(() => {
-                console.log(route.params.id, filteredPersonas.value, 'skjhdsjkdhskdhk')
-                if(!route.params.id && filteredPersonas.value.length){
+                if (!route.params.id && filteredPersonas.value.length) {
                     const id = filteredPersonas.value[0].id!
                     selectedPersonaId.value = id
-                    router.replace(
-                    `/governance/personas/${id}`
-                    )
+                    router.replace(`/governance/personas/${id}`)
                 }
             })
             watch(isPersonaListReady, () => {

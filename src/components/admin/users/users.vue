@@ -10,6 +10,7 @@
                         } users`"
                         class="mr-1"
                         size="minimal"
+                        :dot="!!statusFilter"
                         @change="handleSearch"
                     >
                         <template #filter>
@@ -92,15 +93,15 @@
                     @resendInvite="resendInvite"
                 />
                 <div
+                    v-if="pagination.total > 1 || isLoading"
                     v-auth="map.LIST_USERS"
                     class="flex justify-end max-w-full mt-4"
-                    v-if="pagination.total > 1 || isLoading"
                 >
                     <Pagination
+                        v-model:offset="userListAPIParams.offset"
                         :total-pages="pagination.total"
                         :loading="isLoading"
                         :page-size="pagination.pageSize"
-                        v-model:offset="userListAPIParams.offset"
                         @mutate="getUserList"
                     />
                 </div>

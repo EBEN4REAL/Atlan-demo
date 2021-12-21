@@ -113,7 +113,7 @@
         emits: ['refresh', 'closeDrawer'],
         setup(props, { emit }) {
             const router = useRouter()
-            let createGroupLoading = ref(false)
+            const createGroupLoading = ref(false)
             const isDefault = ref(false)
 
             const listPermission = true

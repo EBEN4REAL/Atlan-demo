@@ -574,7 +574,7 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     .add-policy-container {
         height: 100vh;
         display: flex;

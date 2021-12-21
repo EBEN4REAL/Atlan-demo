@@ -46,7 +46,8 @@
                 :src="updatedImageUrl"
             >
                 <template #icon>
-                    <AtlanIcon icon="User"></AtlanIcon>
+                    <AtlanIcon v-if="isGroup" icon="Group"></AtlanIcon>
+                    <AtlanIcon v-else icon="User"></AtlanIcon>
                 </template>
 
                 <!-- {{ getNameInitials(getNameInTitleCase(avatarName)) }} -->
@@ -86,6 +87,10 @@
             avatarBgClass: {
                 type: String,
                 default: 'bg-primary-light',
+            },
+            isGroup: {
+                type: Boolean,
+                default: false,
             },
         },
         setup(props, context) {

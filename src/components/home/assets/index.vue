@@ -45,20 +45,20 @@
                     v-else
                     ref="assetlistRef"
                     :list="list"
-                    :selectedAsset="selectedAsset"
-                    :isLoadMore="isLoadMore"
-                    :isLoading="isValidating"
-                    @loadMore="handleLoadMore"
+                    :selected-asset="selectedAsset"
+                    :is-load-more="isLoadMore"
+                    :is-loading="isValidating"
                     style="height: 350px"
+                    @loadMore="handleLoadMore"
                 >
-                    <template v-slot:default="{ item }">
+                    <template #default="{ item }">
                         <AssetItem
                             :item="item"
-                            @preview="handlePreview"
                             :preference="preference"
                             :show-check-box="showCheckBox"
-                            :enableSidebarDrawer="enableSidebarDrawer"
+                            :enable-sidebar-drawer="enableSidebarDrawer"
                             :class="page !== 'admin' ? '' : ''"
+                            @preview="handlePreview"
                         ></AssetItem>
                     </template>
                 </AssetList>
@@ -68,6 +68,7 @@
             :data="selectedAsset"
             :show-drawer="showDrawer"
             @closeDrawer="handleCloseDrawer"
+            @update="updateCurrentList"
         />
     </div>
 </template>
@@ -131,19 +132,15 @@
             initialFilters: {
                 type: Object,
                 required: false,
-                default: () => {
-                    return {}
-                },
+                default: () => ({}),
             },
             preference: {
                 type: Object as PropType<any>,
                 required: false,
-                default: () => {
-                    return {
-                        sort: 'default',
-                        display: [],
-                    }
-                },
+                default: () => ({
+                    sort: 'default',
+                    display: [],
+                }),
             },
             showAggrs: {
                 type: Boolean,
@@ -283,6 +280,7 @@
             }
 
             const updateCurrentList = (asset) => {
+                selectedAsset.value = asset
                 updateList(asset)
             }
 

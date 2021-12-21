@@ -110,7 +110,12 @@
                 <div class="mt-5" v-if="connectorData.attributeValue">
                     <div class="flex items-center justify-between">
                         <div class="text-gray-500">
-                            Select assets <span class="text-red-500">*</span>
+                            Select assets
+
+                            <span class="" v-if="policyType === 'data'"
+                                >to allow <b>Query</b>
+                            </span>
+                            <span class="text-red-500">*</span>
                         </div>
                         <div
                             v-if="isEdit ? canEdit : true"
@@ -271,7 +276,7 @@
                 <div
                     v-if="policyType === 'data' && connectorData.attributeValue"
                 >
-                    <div class="flex flex-col mt-7 gap-y-2">
+                    <!-- <div class="flex flex-col mt-7 gap-y-2">
                         <div class="flex gap-1">
                             <AtlanIcon class="text-gray-500" icon="Lock" />
                             <span class="text-sm text-gray-500"
@@ -288,9 +293,11 @@
                                 >Query access allowed by default</span
                             >
                         </div>
-                    </div>
-                    <div class="flex items-center mb-2 gap-x-1 mt-7">
-                        <span class="text-sm text-gray-500">Masking</span>
+                    </div> -->
+                    <div class="flex items-center mt-3 mb-2 gap-x-1">
+                        <span class="text-sm text-gray-500"
+                            >Masking(Optional)</span
+                        >
                     </div>
 
                     <DataMaskingSelector

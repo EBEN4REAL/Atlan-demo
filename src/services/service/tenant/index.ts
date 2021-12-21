@@ -26,20 +26,9 @@ const TestSmtpConfig = (body, options?: useOptions) =>
         options || {}
     )
 
-const UpdateSmtpConfig = (body?: Ref<any>, options?: useOptions) =>
-    useAPI(
-        map.POST_SMTP_CONFIG,
-        'POST',
-        {
-            body,
-        },
-        options || {}
-    )
-
 export const Tenant = {
     GetTenant,
     UpdateTenant,
     UploadLogo,
     TestSmtpConfig,
-    UpdateSmtpConfig,
 }

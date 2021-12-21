@@ -7,7 +7,10 @@
                 : title
         "
         :mouse-enter-delay="0.5"
-        ><div class="relative flex items-center justify-center w-full h-full">
+        ><div
+            class="flex items-center justify-center"
+            :class="displayMode ? '' : 'relative w-full h-full'"
+        >
             <AtlanIcon
                 v-if="icon"
                 :icon="isActive && activeIcon ? activeIcon : icon"
@@ -67,6 +70,12 @@
             isScrubbed: {
                 type: Boolean,
                 required: false,
+            },
+            displayMode: {
+                type: Boolean,
+                default: () => {
+                    return false
+                },
             },
         },
         setup(props, { emit }) {

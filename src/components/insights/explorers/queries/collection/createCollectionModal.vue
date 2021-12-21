@@ -32,9 +32,7 @@
                 </div> -->
             </div>
             <div class="px-4 mb-4" v-if="!isShare">
-                <span class="text-sm font-normal text-gray-700"
-                    >Collection name</span
-                >
+                <span class="text-sm font-normal text-gray-700">Name</span>
                 <a-input
                     :ref="titleBarRef"
                     v-model:value="title"
@@ -85,7 +83,7 @@
                 </a-input>
                 <div class="mt-4">
                     <span class="text-sm font-normal text-gray-700"
-                        >Collection description</span
+                        >Description</span
                     >
                     <a-textarea
                         v-model:value="description"
@@ -97,7 +95,7 @@
             </div>
             <div class="px-4 mt-4">
                 <span class="text-sm font-normal text-gray-700"
-                    >Collection type</span
+                    >Visibility</span
                 >
                 <!-- {{ isShareable }} -->
                 <div class="mt-2">
@@ -108,7 +106,7 @@
                         <a-radio value="false">
                             <span class="text-sm text-gray-700">Private</span>
                         </a-radio>
-                        <a-radio value="true" class="ml-8">
+                        <a-radio value="true" class="ml-3">
                             <span class="text-sm text-gray-700">Shared</span>
                         </a-radio>
                     </a-radio-group>

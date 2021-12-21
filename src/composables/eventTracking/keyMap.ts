@@ -284,6 +284,37 @@ const keyMap = {
                 action: 'governance_custom_metadata_property_reordered',
             },
         },
+        requests: {
+            searched: {
+                action: 'governance_requests_searched',
+            },
+            resolved: {
+                action: 'governance_requests_resolved',
+                properties: (props) => ({
+                    // approve/decline
+                    action: props.action,
+                }),
+            },
+        },
+    },
+    admin: {
+        api_key: {
+            created: {
+                action: 'admin_api_key_created',
+                properties: (props) => ({
+                    persona_count: props.persona_count,
+                }),
+            },
+            updated: {
+                action: 'admin_api_key_updated',
+                properties: (props) => ({
+                    persona_count: props.persona_count,
+                }),
+            },
+            deleted: {
+                action: 'admin_api_key_deleted',
+            },
+        },
     },
 }
 export default keyMap

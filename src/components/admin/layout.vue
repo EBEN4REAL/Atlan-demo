@@ -1,6 +1,6 @@
 <template>
     <div class="flex scroll-container">
-        <div class="flex flex-col w-full h-full px-4 pt-6 overflow-y-hidden">
+        <div class="flex flex-col w-full h-full pt-6 pl-4 overflow-y-hidden">
             <div class="inline-flex items-center">
                 <span v-if="title" class="mb-2 mr-2 text-2xl">{{ title }}</span>
                 <span

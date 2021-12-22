@@ -15,7 +15,7 @@ export const previewTabs = [
         icon: 'Columns',
         tooltip: 'Columns',
         scrubbed: false,
-        requiredInProfile: false,
+        requiredInProfile: true,
     },
     {
         name: 'Lineage',

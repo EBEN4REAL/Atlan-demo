@@ -25,6 +25,7 @@
     import { defineComponent, ref, watch, toRefs, provide } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
     import useEvaluate from '~/composables/auth/useEvaluate'
+    import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
 
     export default defineComponent({
         components: {
@@ -58,6 +59,7 @@
 
             const body = ref({})
             const { refresh } = useEvaluate(body, false)
+            const { getAssetEvaluationsBody } = useAssetEvaluate()
 
             const updateDrawerList = (asset) => {
                 emit('update', asset)
@@ -72,30 +74,7 @@
             watch(visible, () => {
                 if (visible.value) {
                     body.value = {
-                        entities: [
-                            {
-                                typeName: data.value?.typeName,
-                                entityGuid: data.value?.guid,
-                                action: 'ENTITY_UPDATE',
-                            },
-                            {
-                                typeName: data.value?.typeName,
-                                entityGuid: data.value?.guid,
-                                action: 'ENTITY_ADD_CLASSIFICATION',
-                                classification: '*',
-                            },
-                            {
-                                typeName: data.value?.typeName,
-                                entityGuid: data.value?.guid,
-                                action: 'ENTITY_REMOVE_CLASSIFICATION',
-                                classification: '*',
-                            },
-                            /*  {
-                                    typeName: data.value?.typeName,
-                                    entityGuid: data.value?.guid,
-                                    action: 'RELATIONSHIP_ADD',
-                                }, */
-                        ],
+                        entities: getAssetEvaluationsBody(data.value),
                     }
                     refresh()
                 }

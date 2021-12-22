@@ -549,7 +549,8 @@
                     modifyActiveInlineTab(
                         activeInlineTabCopy,
                         inlineTabs,
-                        activeInlineTabCopy.isSaved
+                        activeInlineTabCopy.isSaved,
+                        saveQueryDataInLocalStorage
                     )
                     // setSelection(
                     //     toRaw(editorInstanceRef.value),

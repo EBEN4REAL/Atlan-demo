@@ -1,5 +1,6 @@
 <template>
     <a-select
+        ref="inputRef"
         v-model:value="localValue"
         placeholder="Users"
         class="w-full center-arrow"
@@ -123,7 +124,15 @@
                 emit('change')
             }
 
+            const inputRef = ref()
+
+            const focus = () => {
+                inputRef.value.focus()
+            }
+
             return {
+                focus,
+                inputRef,
                 loadMore,
                 filterTotal,
                 isLoading,

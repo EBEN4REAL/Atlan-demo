@@ -6,26 +6,21 @@
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
             <div>
-                <div
-                    v-if="readOnly"
-                    class="text-sm font-bold cursor-pointer text-primary"
-                    @click="() => (readOnly = false)"
-                >
-                    Edit
-                </div>
-                <div v-else class="flex gap-x-2">
-                    <div
+                <a-button v-if="readOnly" @click="() => (readOnly = false)">
+                    <AtlanIcon icon="Edit" />
+                    <span class="ml-1 text-gray-700">Edit</span>
+                </a-button>
+                <div v-else class="flex items-center gap-x-2">
+                    <span
                         class="text-sm font-medium text-gray-500 cursor-pointer"
                         @click="handleCancel"
                     >
                         Cancel
-                    </div>
+                    </span>
                     <AtlanButton
                         :disabled="!isEdit"
                         size="sm"
-                        color="minimal"
-                        paddi="compact"
-                        class="w-5 h-5 pl-5 pr-0 mr-2 text-sm font-bold cursor-pointer text-primary"
+                        padding="compact"
                         @click="handleUpdate"
                     >
                         Update
@@ -60,6 +55,7 @@
                     <ReadOnly v-if="readOnly" :attribute="a" />
 
                     <EditState
+                        :index="x"
                         v-else-if="!readOnly"
                         v-model="a.value"
                         :attribute="a"

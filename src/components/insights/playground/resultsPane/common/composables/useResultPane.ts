@@ -24,10 +24,16 @@ export function useResultPane(tabsArray: Ref<activeInlineTabInterface[]>) {
         const errorName =
             activeInlineTab.value?.playground?.resultsPane?.result
                 ?.queryErrorObj?.errorName
-        return LINE_ERROR_NAMES.includes(errorName)
+        LINE_ERROR_NAMES.includes(errorName)
+    }
+    const haveLineNumber = (queryErrorObj) => {
+        /* Line number for error*/
+        if (queryErrorObj?.details?.line !== undefined) return true
+        return false
     }
 
     return {
+        haveLineNumber,
         isLineError,
         resultsPaneTabChange,
     }

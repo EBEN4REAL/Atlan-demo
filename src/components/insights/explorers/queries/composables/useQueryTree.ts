@@ -19,7 +19,6 @@ import store from '~/utils/storage'
 
 // composables
 import useLoadQueryData from './useLoadQueryData'
-import { message } from 'ant-design-vue'
 
 type CustomTreeDataItem =
     | (Omit<TreeDataItem, 'children'> &
@@ -207,31 +206,13 @@ const useQueryTree = ({
             treeNode.dataRef.children = []
         }
 
-        if (treeNode.dataRef.typeName === 'Folder') {
-            let subFoldersResponse, subQueriesResponse
-            try {
-                subFoldersResponse = await getSubFolders(
-                    treeNode.dataRef.qualifiedName
-                )
-                subQueriesResponse = await getFolderQueries(
-                    treeNode.dataRef.qualifiedName
-                )
-                // console.log('hello')
-                errorReq.value = undefined
-            } catch (error) {
-                const er = Object.getOwnPropertyDescriptor(error, 'message')
-                errorReq.value = er?.value
-                console.log('query tree error: ', errorReq.value)
-                isLoading.value = false
-                message.error('folder/query fetch went wrong')
-                return;
-            }
-            // const subFoldersResponse = await getSubFolders(
-            //     treeNode.dataRef.qualifiedName
-            // )
-            // const subQueriesResponse = await getFolderQueries(
-            //     treeNode.dataRef.qualifiedName
-            // )
+        if (treeNode.dataRef.typeName === 'QueryFolder') {
+            const subFoldersResponse = await getSubFolders(
+                treeNode.dataRef.qualifiedName
+            )
+            const subQueriesResponse = await getFolderQueries(
+                treeNode.dataRef.qualifiedName
+            )
             if (permissions?.readFolders) {
                 subFoldersResponse.entities?.forEach((folder) => {
                     if (!loadedKeys.value.find((key) => folder.guid === key)) {
@@ -292,7 +273,7 @@ const useQueryTree = ({
         //     immediateParentFolderQF.value = item.attributes.parentQualifiedName;
         //     immediateParentGuid.value = nodeToParentKeyMap[item.guid];
 
-        // } else if(item.typeName === 'Folder') {
+        // } else if(item.typeName === 'QueryFolder') {
         //     immediateParentFolderQF.value = item.attributes.qualifiedName;
         //     immediateParentGuid.value = item.guid;
         // }
@@ -313,6 +294,27 @@ const useQueryTree = ({
         }
         store.set(expandedCacheKey, expandedKeys.value)
     }
+
+    // let selectedNodeForFolder = ref(null)
+
+    // const addInputBox = () => {
+    //     if(selectedNodeForFolder.value) {
+    //         selectedNodeForFolder.value.children.unshift(
+    //             {
+    //                 class: 'addInput',
+    //                 key: String(new Date().getTime()),
+    //                 typeName: 'QueryFolder',
+    //             }
+    //         )
+    //     }
+    // }
+    // const removeInputBox = () => {
+    //     if(selectedNodeForFolder.value) {
+    //         if(selectedNodeForFolder.value.children.length && selectedNodeForFolder.value.children[0].class==='addInput') {
+    //             selectedNodeForFolder.value.children.shift()
+    //         }
+    //     }
+    // }
 
     const selectNode = (selected: any, event: any) => {
         console.log('select input: ', selected)
@@ -338,7 +340,7 @@ const useQueryTree = ({
             if (pushGuidToURL) {
                 pushGuidToURL(item)
             }
-        } else if (item.typeName === 'Folder') {
+        } else if (item.typeName === 'QueryFolder') {
             immediateParentFolderQF.value = item.attributes.qualifiedName
             immediateParentGuid.value = item.guid
 
@@ -385,7 +387,7 @@ const useQueryTree = ({
      */
     const refetchNode = async (
         guid: string,
-        refetchEntityType?: 'query' | 'Folder'
+        refetchEntityType?: 'query' | 'queryFolder'
     ) => {
         // if the root level of the tree needs a refetch
         console.log('new refetch: ', {
@@ -396,7 +398,7 @@ const useQueryTree = ({
             let folderResponse: IndexSearchResponse<Folder> | null = null
             let queryResponse: IndexSearchResponse<SavedQuery> | null = null
 
-            if (refetchEntityType === 'Folder' || !refetchEntityType) {
+            if (refetchEntityType === 'queryFolder' || !refetchEntityType) {
                 folderResponse = await getQueryFolders()
             }
 
@@ -412,7 +414,7 @@ const useQueryTree = ({
 
             const updatedFolders = checkAndAppendNewNodes(
                 folderResponse,
-                'Folder',
+                'QueryFolder',
                 true
             )
             const updatedQueries = checkAndAppendNewNodes(
@@ -447,7 +449,7 @@ const useQueryTree = ({
                         null
 
                     if (
-                        refetchEntityType === 'Folder' ||
+                        refetchEntityType === 'queryFolder' ||
                         !refetchEntityType
                     ) {
                         folderResponse = await getSubFolders(node.qualifiedName)
@@ -468,7 +470,7 @@ const useQueryTree = ({
 
                     const updatedFolders = checkAndAppendNewNodes(
                         folderResponse,
-                        'Folder',
+                        'QueryFolder',
                         false,
                         node
                     )
@@ -605,7 +607,7 @@ const useQueryTree = ({
 
     const checkAndAppendNewNodes = (
         response: IndexSearchResponse<SavedQuery | Folder> | null,
-        typeName: 'Query' | 'Folder',
+        typeName: 'Query' | 'QueryFolder',
         isRoot: boolean,
         node?: CustomTreeDataItem
     ) => {
@@ -664,7 +666,7 @@ const useQueryTree = ({
             treeNode.dataRef.children = []
         }
 
-        if (treeNode.dataRef.typeName === 'Folder') {
+        if (treeNode.dataRef.typeName === 'QueryFolder') {
             const subFoldersResponse = await getSubFolders(
                 treeNode.dataRef.qualifiedName
             )

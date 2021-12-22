@@ -139,7 +139,7 @@
             const shareCollection = () => {
                 console.log('item: ', item.value)
                 const entity = {
-                    typeName: 'Collection',
+                    typeName: 'QueryCollection',
                     attributes: {
                         ...item?.value?.attributes,
                         ownerUsers: editors.value.ownerUsers,

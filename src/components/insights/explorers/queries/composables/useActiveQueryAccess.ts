@@ -25,9 +25,6 @@ const useActiveQueryAccess = (
         'certificateStatus',
         'ownerUsers',
         'ownerGroups',
-        'adminUsers',
-        'adminGroups',
-        
         '__createdBy',
         '__state',
         '__guid',
@@ -167,14 +164,14 @@ const useActiveQueryAccess = (
             selectedCollectionData?.value &&
             activeInlineTab?.value?.qualifiedName?.length
         ) {
-            let adminUsers =
+            let ownerUsers =
                 selectedCollectionData?.value?.entities?.length &&
                 selectedCollectionData?.value?.entities[0]?.attributes
-                    ?.adminUsers
+                    ?.ownerUsers
                     ? selectedCollectionData?.value?.entities[0]?.attributes
-                          ?.adminUsers
+                          ?.ownerUsers
                     : []
-            let adminGroups =
+            let ownerGroups =
                 selectedCollectionData?.value?.entities?.length &&
                 selectedCollectionData?.value?.entities[0]?.attributes
                     ?.ownerGroups
@@ -182,14 +179,14 @@ const useActiveQueryAccess = (
                           ?.ownerGroups
                     : []
 
-            if (adminUsers?.length) {
-                let v1 = adminUsers.find((el) => el === currentUser.value)
+            if (ownerUsers?.length) {
+                let v1 = ownerUsers.find((el) => el === currentUser.value)
                 if (v1) {
                     return true
                 }
             }
-            if (adminGroups?.length) {
-                let filteredArray = adminGroups.filter((value) =>
+            if (ownerGroups?.length) {
+                let filteredArray = ownerGroups.filter((value) =>
                     userGroups.value.includes(value)
                 )
                 return filteredArray.length > 0

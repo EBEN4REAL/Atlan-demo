@@ -22,7 +22,7 @@ export const profileTabs = [
         component: 'lineage',
         excludes: [
             'Query',
-            'Folder',
+            'QueryFolder',
             'AtlasGlossary',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',

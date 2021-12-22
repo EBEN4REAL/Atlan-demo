@@ -18,7 +18,7 @@
                     : 'Owner'
             }}</b>
         </p>
-        <div class="flex flex-wrap gap-1">
+        <div class="flex flex-wrap gap-1 my-1">
             <template v-for="user in data.value.ownerUsers" :key="user">
                 <UserPill
                     :username="user"

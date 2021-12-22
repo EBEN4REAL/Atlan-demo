@@ -188,6 +188,10 @@
             }
         }
 
+        &:global(.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover) {
+            border-right-width: 0px !important;
+        }
+
         :global(.ant-input) {
             @apply bg-transparent;
         }

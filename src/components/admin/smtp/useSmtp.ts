@@ -41,13 +41,6 @@ export function useSmtp() {
         { ...parseSmtpServer(smtpServer.value) }
     )
 
-    // const finalTestSmtpConfigError = computed(() =>
-    //     testSmtpConfigError.value && testSmtpConfigError.value.length < 40
-    //         ? testSmtpConfigError.value
-    //         : 'SMTP config are incorrect'
-    // )
-
-
     const testSmtpConfig = () => {
         const testErrorMessage = ref('')
         testErrorMessage.value = ''
@@ -98,6 +91,7 @@ export function useSmtp() {
                 watch([error, data], () => {
                     if (data.value)
                         errorMessage.value = ''
+                    setSMTPConfig(objtoString(smtpFormModal.value))
                     if (error?.value) {
                         const msg = error?.value.response?.data?.message
                         errorMessage.value = msg

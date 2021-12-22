@@ -112,6 +112,7 @@
                         <template v-else>
                             <a-tooltip :title="action.label">
                                 <a-button
+                                    v-if="showCTA(action.id)"
                                     class="flex items-center justify-center"
                                     @click="handleAction(action.id)"
                                 >
@@ -156,10 +157,10 @@
                         :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
                 </template>
-
+                <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
                 <component
                     :is="tab.component"
-                    v-if="tab.component"
+                    v-else-if="tab.component"
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
@@ -196,6 +197,7 @@
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
+    import NoAccess from '@/common/assets/misc/noAccess.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -203,6 +205,7 @@
             PreviewTabsIcon,
             CertificateBadge,
             ShareMenu,
+            NoAccess,
             // Tooltip,
             // AssetLogo,
             // StatusBadge,
@@ -328,6 +331,23 @@
                                     entityGuid: selectedAsset.value.guid,
                                     action: 'ENTITY_UPDATE',
                                 },
+                                {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'ENTITY_ADD_CLASSIFICATION',
+                                    classification: '*',
+                                },
+                                {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'ENTITY_REMOVE_CLASSIFICATION',
+                                    classification: '*',
+                                },
+                                /*  {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'RELATIONSHIP_ADD',
+                                }, */
                             ],
                         }
                         refresh()
@@ -357,6 +377,16 @@
                     default:
                         break
                 }
+            }
+
+            const showCTA = (action) => {
+                return route.path !== '/insights'
+                    ? true
+                    : selectedAsset.value.typeName === 'Query'
+                    ? false
+                    : action === 'query'
+                    ? false
+                    : true
             }
 
             return {
@@ -392,6 +422,7 @@
                 getProfilePath,
                 isScrubbed,
                 selectedAssetUpdatePermission,
+                showCTA,
             }
         },
     })

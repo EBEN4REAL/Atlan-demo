@@ -1,7 +1,19 @@
-import { Ref, ComputedRef } from 'vue'
+import { Ref, ComputedRef, ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { tableInterface } from '~/types/insights/table.interface'
+import bodybuilder from 'bodybuilder'
+
+import {
+    AssetAttributes,
+    InternalAttributes,
+    SavedQueryAttributes,
+    SQLAttributes,
+    AssetRelationAttributes
+} from '~/constant/projection'
+
+import { useAPI } from '~/services/api/useAPI'
+import { map } from '~/services/meta/search/key'
 
 export function useAssetSidebar(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -56,8 +68,50 @@ export function useAssetSidebar(
         }
     }
 
+    const refreshBody = (asset) => {
+        const base = bodybuilder()
+        base.filter('term', '__typeName.keyword', asset.typeName)
+        base.filter('term','qualifiedName', asset.attributes.qualifiedName)
+
+        return base.build()
+    }
+
+    let attributes= [
+        ...AssetAttributes,
+        ...InternalAttributes,
+        ...SavedQueryAttributes,
+        ...SQLAttributes,
+        'links'
+    ]
+
+    const fetchAssetData = (asset) => {
+        const dsl = refreshBody(asset)
+        let body = ref({})
+        body.value = {
+            dsl,
+            attributes,
+            relationAttributes: [
+                ...AssetRelationAttributes
+            ]
+        }
+
+        // console.log('query: ', body.value)
+
+        const { data, error, isLoading } = useAPI(
+            map.INDEX_SEARCH,
+            'POST',
+            {
+                body,
+            },
+            {}
+        )
+
+        return {data, error, isLoading}
+    }
+
     return {
         closeAssetSidebar,
         openAssetSidebar,
+        fetchAssetData
     }
 }

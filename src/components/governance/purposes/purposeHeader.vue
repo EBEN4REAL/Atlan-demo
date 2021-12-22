@@ -4,7 +4,7 @@
             v-model:visible="isEditing"
             ok-text="Save"
             title="Edit Persona"
-            @cancel="discardPersona"
+            @cancel="handleCancel"
             @ok="saveEditedPersona"
         >
             <div class="flex flex-col items-stretch pb-4 gap-y-1">
@@ -28,19 +28,29 @@
                 />
             </div>
         </CreationModal>
-        <div class="flex bg-white gap-x-2 pt-7">
+        <div class="flex px-3 pt-6 mb-0 bg-white gap-x-2">
             <div style="width: 90%">
-                <div class="mb-1 text-xl text-gray-700 truncate">
-                    <span class="truncate" data-test-id="header-name">
-                        {{ persona.displayName }}</span
+                <div class="flex items-center mb-0 text-sm text-gray-500">
+                    <div class="mb-0 text-xl text-gray-700 truncate">
+                        <span
+                            class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 capitalize truncate"
+                            data-test-id="header-name"
+                        >
+                            {{ persona.displayName }}</span
+                        >
+                    </div>
+                    <a-tooltip
+                        tabindex="-1"
+                        :title="persona.description"
+                        v-if="persona.description"
+                        placement="right"
                     >
+                        <span
+                            ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                        ></span>
+                    </a-tooltip>
                 </div>
-                <div class="flex mb-0 text-sm text-gray-500">
-                    <span class="truncate" data-test-id="header-description">
-                        {{ persona.description }}</span
-                    >
-                </div>
-                <div class="flex" v-if="persona?.updatedBy">
+                <div class="flex text-gray-500" v-if="persona.updatedBy">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"
@@ -50,13 +60,39 @@
                     >
                 </div>
             </div>
-            <Dropdown class="ml-auto" :options="personaActions"></Dropdown>
+            <a-button-group>
+                <!-- Edit -->
+                <a-tooltip placement="bottom" v-auth="map.UPDATE_PURPOSE">
+                    <template #title>
+                        <span>Edit Purpose</span>
+                    </template>
+                    <AtlanButton
+                        class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
+                        @click="isEditing = true"
+                    >
+                        <AtlanIcon icon="Edit"></AtlanIcon>
+                    </AtlanButton>
+                </a-tooltip>
+                <!-- Delete  -->
+                <a-tooltip placement="bottom" v-auth="map.DELETE_PURPOSE">
+                    <template #title>
+                        <span>Delete Purpose</span>
+                    </template>
+                    <AtlanButton
+                        class="flex items-center justify-center h-8 px-5 border rounded rounded-l-none cursor-pointer customShadow text-error"
+                        @click="deletePurpose"
+                    >
+                        <AtlanIcon icon="Delete"></AtlanIcon>
+                    </AtlanButton>
+                </a-tooltip>
+            </a-button-group>
+            <!-- <Dropdown class="ml-auto" :options="personaActions"></Dropdown> -->
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, h } from 'vue'
+    import { defineComponent, PropType, computed, toRefs, h, watch } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import CreationModal from '@/admin/common/addModal.vue'
 
@@ -74,6 +110,8 @@
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useVModels } from '@vueuse/core'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'Purpose Header',
@@ -83,9 +121,15 @@
                 type: Object as PropType<IPurpose>,
                 required: true,
             },
+            openEditModal: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
         setup(props, { emit }) {
             const { persona } = toRefs(props)
+            const { openEditModal } = useVModels(props, emit)
             const deletePurpose = () => {
                 Modal.confirm({
                     title: `Delete purpose`,
@@ -170,12 +214,15 @@
 
                     isEditing.value = false
                     reFetchList()
+                    openEditModal.value = false
                 } catch (error) {
                     message.error({
                         content: 'Failed to update persona',
                         duration: 1.5,
                         key: messageKey,
                     })
+                    isEditing.value = false
+                    openEditModal.value = false
                 }
             }
 
@@ -187,6 +234,14 @@
                 }
                 return ''
             }
+            const handleCancel = () => {
+                discardPersona()
+                openEditModal.value = false
+            }
+
+            watch(openEditModal, () => {
+                if (openEditModal.value) isEditing.value = true
+            })
             return {
                 personaActions,
                 isEditing,
@@ -194,6 +249,9 @@
                 discardPersona,
                 selectedPersonaDirty,
                 timeStamp,
+                handleCancel,
+                map,
+                deletePurpose,
             }
         },
     })

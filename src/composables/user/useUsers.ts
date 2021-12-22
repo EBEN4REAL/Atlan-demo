@@ -154,14 +154,14 @@ export const useUsers = (userListAPIParams, immediate = true) => {
     const localUsersList: Ref<any[]> = ref([])
 
     const userList: Ref<any[]> = ref([])
+    const total = computed(() => data.value?.totalRecord)
 
     watch(data, () => {
-
         if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                      getFormattedUser(user)
-                  )
+                    getFormattedUser(user)
+                )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 
@@ -212,6 +212,7 @@ export const useUsers = (userListAPIParams, immediate = true) => {
     }
 
     return {
+        total,
         state,
         STATES,
         usersListConcatenated,

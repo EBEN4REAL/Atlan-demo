@@ -1261,9 +1261,14 @@
                             },
                             collection: {
                                 // copy from last tab
-                                guid: '',
-                                qualifiedName: undefined,
-                                parentQualifiedName: undefined,
+                                guid: activeInlineTab.value?.explorer?.queries
+                                    ?.collection?.guid,
+                                qualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.qualifiedName,
+                                parentQualifiedName:
+                                    activeInlineTab.value?.explorer?.queries
+                                        ?.collection?.guid,
                             },
                         },
                     },

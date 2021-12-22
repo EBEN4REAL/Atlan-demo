@@ -25,7 +25,7 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import Avatar from '~/components/common/avatar/index.vue'
+    import Avatar from '~/components/common/avatar/avatar.vue'
 
     export default defineComponent({
         name: 'UserCard',

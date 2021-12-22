@@ -1,14 +1,19 @@
 <template>
     <div class="flex w-full h-full">
         <div
-            class="flex flex-col w-1/5 h-full overflow-hidden bg-white"
+            class="flex flex-col w-1/6 h-full overflow-hidden bg-white border-r"
         >
+            <div class="flex items-center px-6 mt-6 font-semibold">
+                <AtlanIcon icon="Admin" class="mr-2 -mt-0.5" />
+                <span class="text-base">Admin Center</span>
+            </div>
             <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
                 <a-menu
                     v-model:selectedKeys="current"
                     mode="vertical"
-                    style="width: 100%"
-                    class="admin-sidebar"
+                    style="width: inherit"
+                    class="border-none admin-sidebar"
+                    :inlineIndent="1"
                     @click="handleClick"
                 >
                     <a-menu-item-group title="Workspace">
@@ -32,12 +37,12 @@
                         <a-menu-item key="smtp" v-auth="[map.UPDATE_SMTP]">
                             SMTP
                         </a-menu-item>
-                        <a-menu-item
+                        <!-- <a-menu-item
                             key="integration"
                             v-auth="[map.LIST_INTEGRATION]"
                         >
                             Integrations
-                        </a-menu-item>
+                        </a-menu-item> -->
                     </a-menu-item-group>
                     <a-menu-item-group title="Logs">
                         <a-menu-item
@@ -45,16 +50,16 @@
                             v-auth="[map.QUERY_SQL_LOGS]"
                             >Query Logs</a-menu-item
                         >
-                        <a-menu-item
+                        <!-- <a-menu-item
                             key="access-logs"
                             v-auth="[map.QUERY_ACCESS_LOGS]"
                             >Access Logs</a-menu-item
-                        >
+                        > -->
                     </a-menu-item-group>
                 </a-menu>
             </div>
         </div>
-        <div class="w-4/5 max-h-screen overflow-y-auto">
+        <div class="w-5/6 max-h-screen px-6 overflow-y-auto">
             <router-view></router-view>
         </div>
     </div>

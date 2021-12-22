@@ -123,15 +123,15 @@
                             v-else-if="error"
                             class="flex items-center px-3 py-2 mr-3 rounded bg-red-50"
                         >
-                            <a-popover trigger="hover" placement="right">
-                                <template #content>
-                                    <div>{{ errorMessage }}</div>
+                            <a-tooltip trigger="hover" placement="top">
+                                <template #title>
+                                    <div>Error: {{ errorMessage }}</div>
                                 </template>
                                 <AtlanIcon
-                                    icon="ExclainCircle"
+                                    icon="Info"
                                     class="mr-2 text-red-600"
                                 />
-                            </a-popover>
+                            </a-tooltip>
                             <span>Something went wrong</span>
                         </div>
                         <a-button

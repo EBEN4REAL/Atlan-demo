@@ -1,7 +1,7 @@
 <template>
     <a-modal
         :visible="modalVisible"
-        width="50%"
+        width="40%"
         @cancel="closeModal"
         :class="$style.modal"
         :destroy-on-close="true"
@@ -15,7 +15,7 @@
                 <div
                     class="flex items-center justify-between w-full px-3 text-base leading-6"
                 >
-                    <div class="font-bold text-gray-700">
+                    <div class="font-bold text-gray-500">
                         New Classification
                     </div>
                 </div>

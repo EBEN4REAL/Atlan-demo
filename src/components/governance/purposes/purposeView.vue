@@ -4,32 +4,29 @@
         sub-title=""
         :sidebar-visibility="Boolean(selectedPersonaId)"
     >
-        <template #action>
-            <AtlanBtn
-                :disabled="isEditing"
-                class="flex-none"
-                size="sm"
-                color="primary"
-                padding="compact"
-                data-test-id="add-purpose"
-                @click="() => (modalVisible = true)"
-            >
-                <AtlanIcon icon="Add" class="mr-1 -mx-1 text-white"></AtlanIcon>
-                New
-            </AtlanBtn>
-        </template>
         <template #sidebar>
-            <div class="px-4">
+            <div class="flex items-center px-4 mb-3">
                 <SearchAndFilter
                     v-model:value="searchTerm"
-                    :placeholder="`Search from ${
+                    :placeholder="`Search ${
                         filteredPersonas?.length ?? 0
-                    } personas`"
-                    class="my-3 bg-white"
+                    } purposes`"
+                    class="mt-0 bg-white"
                     :autofocus="true"
                     size="minimal"
                 >
                 </SearchAndFilter>
+                <AtlanBtn
+                    :disabled="isEditing"
+                    class="flex-none ml-4"
+                    size="sm"
+                    color="primary"
+                    padding="compact"
+                    data-test-id="add-purpose"
+                    @click="() => (modalVisible = true)"
+                >
+                    New
+                </AtlanBtn>
             </div>
 
             <ExplorerList
@@ -40,22 +37,57 @@
                 data-key="id"
             >
                 <template #default="{ item, isSelected }">
-                    <div
-                        class="flex items-center justify-between"
-                        :data-test-id="item.displayName"
-                    >
-                        <span
-                            style="width: 95%"
-                            class="text-sm truncate"
-                            :class="
-                                isSelected
-                                    ? 'text-primary'
-                                    : 'text-gray hover:text-primary'
-                            "
+                    <div class="flex items-center justify-between">
+                        <div
+                            class="flex flex-col"
+                            :data-test-id="item.displayName"
                         >
-                            {{ item.displayName }}
-                        </span>
-                        <!-- <div class="w-1.5 h-1.5 rounded-full success"></div> -->
+                            <span
+                                class="text-sm capitalize truncate"
+                                :class="
+                                    isSelected
+                                        ? 'text-primary'
+                                        : 'text-gray hover:text-primary'
+                                "
+                            >
+                                {{ item.displayName }}
+                            </span>
+                            <div class="flex gap-x-1">
+                                <span
+                                    class="text-xs text-gray-500"
+                                    v-if="item.tags.length > 0"
+                                >
+                                    {{ item.tags.length }}
+                                    classifications</span
+                                >
+
+                                <span
+                                    class="text-xs text-gray-500"
+                                    v-if="
+                                        item.dataPolicies.length > 0 ||
+                                        item.metadataPolicies.length > 0
+                                    "
+                                >
+                                    {{
+                                        item.metadataPolicies.length +
+                                        item.dataPolicies.length
+                                    }}
+                                    policies</span
+                                >
+                            </div>
+
+                            <!-- <div class="w-1.5 h-1.5 rounded-full success"></div> -->
+                        </div>
+                        <a-tooltip
+                            tabindex="-1"
+                            :title="item.description"
+                            v-if="item.description"
+                            placement="right"
+                        >
+                            <span
+                                ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                            ></span>
+                        </a-tooltip>
                     </div>
                 </template>
             </ExplorerList>
@@ -69,11 +101,15 @@
 
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
-            <PurposeHeader :persona="selectedPersona" />
+            <PurposeHeader
+                :persona="selectedPersona"
+                v-model:openEditModal="openEditModal"
+            />
             <PurposeBody
                 v-model:persona="selectedPersona"
                 :whitelisted-connection-ids="whitelistedConnectionIds"
                 @selectPolicy="handleSelectPolicy"
+                @editDetails="openEditModal = true"
             />
         </template>
         <div
@@ -165,6 +201,7 @@
             const selectedPolicy = ref({})
             const authStore = useAuthStore()
             const { roles } = storeToRefs(authStore)
+            const openEditModal = ref(false)
             watch(searchTerm, () => {
                 console.log(searchTerm.value, 'searched')
             })
@@ -215,6 +252,7 @@
                 handleSelectPolicy,
                 selectedPolicy,
                 whitelistedConnectionIds,
+                openEditModal,
             }
         },
     })

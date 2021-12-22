@@ -10,7 +10,7 @@
                 />
                 <SearchAndFilter
                     v-model:value="searchText"
-                    placeholder="Search users"
+                    :placeholder="`Search ${total} users`"
                     class="mr-1"
                     size="minimal"
                     @change="handleSearch"
@@ -168,6 +168,7 @@
                 getUserList,
                 isLoading,
                 error,
+                total,
             } = useUsers(userListAPIParams, true)
 
             const handleSearch = useDebounceFn(() => {
@@ -228,6 +229,7 @@
             }
 
             return {
+                total,
                 searchText,
                 showLoadMore,
                 userList,

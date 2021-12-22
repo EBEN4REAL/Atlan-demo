@@ -48,7 +48,7 @@ specifiers:
   '@vue/server-renderer': ^3.2.26
   '@vueuse/core': ^7.4.0
   '@vueuse/head': ^0.7.4
-  ant-design-vue: ^3.0.0-alpha.15
+  ant-design-vue: ^3.0.0-alpha.16
   autoprefixer: ^10.4.0
   axios: ^0.24.0
   babel-loader: ^8.2.3
@@ -150,7 +150,7 @@ dependencies:
   '@tiptap/vue-3': 2.0.0-beta.81_41d0d12b493382181c3bf08e8b3d12f0
   '@vueuse/core': 7.4.0_vue@3.2.26
   '@vueuse/head': 0.7.4_vue@3.2.26
-  ant-design-vue: 3.0.0-alpha.15_ae87cbba5ec93a01f3fe1197df446ca3
+  ant-design-vue: 3.0.0-alpha.16_ae87cbba5ec93a01f3fe1197df446ca3
   axios: 0.24.0
   bodybuilder: 2.4.0
   chart.js: 3.6.2
@@ -2765,8 +2765,8 @@ packages:
       color-convert: 2.0.1
     dev: true
 
-  /ant-design-vue/3.0.0-alpha.15_ae87cbba5ec93a01f3fe1197df446ca3:
-    resolution: {integrity: sha512-stDsetOC6XE0SCMYqI3/07FN0eWoWCaRrA54guu3pt1rcpRKvoF78wShGEuAmjlZUdyYFBimSJ//85NbUZ2l/w==}
+  /ant-design-vue/3.0.0-alpha.16_ae87cbba5ec93a01f3fe1197df446ca3:
+    resolution: {integrity: sha512-EPWt3F6SOfPXe+HyhOJXdTywdabbuzyARpnXER/zHfq0pYXeFPhki1v5re0afnrS7k6MR/BHJ6cJ1BRBeFqXhQ==}
     peerDependencies:
       '@vue/compiler-sfc': '>=3.1.0'
       vue: '>=3.1.0'

@@ -9,7 +9,7 @@
             >
                 <div
                     v-if="!isReady && uploadStarted"
-                    class="hidden text-center bg-primary-light sm:block"
+                    class="hidden text-sm text-center bg-primary-light sm:block"
                     :style="{
                         width: avatarSize + 'px',
                         height: avatarSize + 'px',
@@ -26,7 +26,7 @@
                         :key="uploadKey"
                         :shape="avatarShape"
                         :size="avatarSize"
-                        class="hidden ant-tag-blue text-primary bg-primary-light sm:block"
+                        class="hidden text-sm ant-tag-blue text-primary bg-primary-light sm:block"
                         :src="updatedImageUrl"
                     >
                         {{ getNameInitials(getNameInTitleCase(avatarName)) }}
@@ -44,7 +44,7 @@
                 :key="uploadKey"
                 :shape="avatarShape"
                 :size="avatarSize"
-                class="hidden ant-tag-blue text-primary bg-primary-light sm:block"
+                class="hidden text-sm ant-tag-blue text-primary bg-primary-light sm:block"
                 :src="updatedImageUrl"
             >
                 {{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar

@@ -212,6 +212,16 @@ const useAssetAudit = (params: any, guid: string) => {
                         data.component = 'Classifications'
 
                         return data
+                    case 'PROPAGATED_CLASSIFICATION_ADD':
+                        data.value = eventDetail
+                        data.displayValue = 'added via propagation'
+                        data.component = 'Classifications'
+                        return data
+                    case 'PROPAGATED_CLASSIFICATION_DELETE':
+                        data.value = eventDetail
+                        data.displayValue = 'removed via propagation'
+                        data.component = 'Classifications'
+                        return data
                     // case 'CLASSIFICATION_DELETE':
                     //     try {
                     //         parsedDetails = JSON.parse(eventDetail[1].trim())

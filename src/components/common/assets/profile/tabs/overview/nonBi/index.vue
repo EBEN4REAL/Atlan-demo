@@ -1,10 +1,14 @@
 <template>
-    <div class="flex flex-col p-6 gap-y-4 max-profile-width">
-        <AnnouncementWidget
-            :selected-asset="selectedAsset"
-        ></AnnouncementWidget>
+    <div class="flex flex-col px-8 py-8 gap-y-4 max-profile-width">
         <Summary :asset="selectedAsset" :editPermission="editPermission">
-            <div class="flex flex-col w-full">
+            <template #announcement>
+                <AnnouncementWidget
+                    :selected-asset="selectedAsset"
+                    class="mb-3"
+                ></AnnouncementWidget>
+            </template>
+
+            <div class="flex flex-col w-full mt-4">
                 <!-- Preview Selector-->
                 <a-tooltip
                     placement="right"

@@ -6,13 +6,20 @@
             placement="right"
             :get-container="false"
             :class="$style.drawerStyles"
-            :closable="!showMask"
+            :closable="false"
             :mask-closable="showMask"
             :style="{ position: 'absolute' }"
-            :content-wrapper-style="{ width: '420px' }"
+            :width="420"
             :mask="showMask"
             @close="$emit('closeDrawer')"
         >
+            <div
+                v-if="!showMask && visible"
+                class="close-btn"
+                @click="() => $emit('closeDrawer')"
+            >
+                <AtlanIcon icon="Add" class="text-white" />
+            </div>
             <AssetPreview
                 :selected-asset="data"
                 :is-drawer="true"
@@ -94,5 +101,21 @@
         :global(.ant-drawer-content-wrapper) {
             width: 420px;
         }
+    }
+</style>
+
+<style lang="less" scoped>
+    .close-btn {
+        height: 32px;
+        width: 32px;
+        background: #3e4359cc;
+        position: fixed;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        transform: rotate(45deg);
+        left: -40px;
+        top: 60px;
+        cursor: pointer;
     }
 </style>

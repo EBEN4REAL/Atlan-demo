@@ -194,29 +194,34 @@ const useAssetAudit = (params: any, guid: string) => {
                     // case 'LABEL_DELETE':
                     //     data.displayValue = `Label <b>${eventDetail[1].trim()}</b> removed`
                     //     return data
-                    // case 'CLASSIFICATION_ADD':
-                    //     try {
-                    //         // This handles the case when classification is linked using Atlan Bot user
-                    //         // In this case, classification object comes in details
-                    //         parsedDetails = JSON.parse(eventDetail[1].trim())
+                    case 'CLASSIFICATION_UPDATE':
+                        data.value = eventDetail
+                        data.displayValue = 'updated'
+                        data.component = 'Classifications'
 
-                    //         if (parsedDetails.typeName) {
-                    //             data.value =
-                    //                 filterClassificationTypeNameDisplayName(
-                    //                     parsedDetails
-                    //                 )
-                    //             data.displayValue = 'added'
-                    //             data.component = 'Classifications'
+                        return data
+                    case 'CLASSIFICATION_ADD':
+                        data.value = eventDetail
+                        data.displayValue = 'added'
+                        data.component = 'Classifications'
 
-                    //             return data
-                    //         }
-                    //         return null
-                    //     } catch (error) {
-                    //         data.value = eventDetail[1].trim()
-                    //         data.displayValue = 'added'
-                    //         data.component = 'Classifications'
-                    //         return data
-                    //     }
+                        return data
+                    case 'CLASSIFICATION_DELETE':
+                        data.value = eventDetail
+                        data.displayValue = 'removed'
+                        data.component = 'Classifications'
+
+                        return data
+                    case 'PROPAGATED_CLASSIFICATION_ADD':
+                        data.value = eventDetail
+                        data.displayValue = 'added via propagation'
+                        data.component = 'Classifications'
+                        return data
+                    case 'PROPAGATED_CLASSIFICATION_DELETE':
+                        data.value = eventDetail
+                        data.displayValue = 'removed via propagation'
+                        data.component = 'Classifications'
+                        return data
                     // case 'CLASSIFICATION_DELETE':
                     //     try {
                     //         parsedDetails = JSON.parse(eventDetail[1].trim())

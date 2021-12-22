@@ -16,41 +16,20 @@
                 <AtlanIcon
                     icon="QueryGrey"
                     v-if="type === 'data'"
-                    class="-mt-0.5"
+                    class="-mt-1"
                 />
                 <span
-                    class="ml-1 tracking-wider text-gray-500 uppercase"
+                    class="ml-1 text-gray-500 uppercase"
                     data-test-id="policy-type"
                     >{{
                         type === 'meta' ? 'Metadata Policy' : 'Data Policy'
                     }}</span
                 >
+                <span class="text-gray-500">/{{ policy?.name }}</span>
+                <div class=""></div>
             </div>
-
-            <!-- <div class="flex mb-1 gap-x-3">
-                <div class="text-gray-700">
-                    <AtlanIcon
-                        icon="Settings"
-                        v-if="type === 'meta'"
-                        class="-mt-0.5"
-                    />
-                    <AtlanIcon
-                        icon="QueryGrey"
-                        v-if="type === 'data'"
-                        class="-mt-0.5"
-                    />
-
-                    <span class="ml-1">{{ policy?.name }}</span>
-                </div>
-                <div>
-                    {{ policy.createdBy }}
-                </div>
-            </div> -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-x-3">
-                    <div class="text-gray-700">
-                        <span class="ml-1">{{ policy?.name }}</span>
-                    </div>
                     <div class="flex items-center">
                         <img
                             :src="getImage(connectionQfName?.split('/')[1])"
@@ -66,6 +45,19 @@
                         <span class="flex-none text-sm" v-if="isAddAll">
                             All assets
                         </span>
+                    </div>
+                    <div v-if="policy.actions.length > 0 && type === 'meta'">
+                        <span class="flex-none text-sm">
+                            {{ policy.actions.length }}
+                            {{
+                                policy.actions.length > 1
+                                    ? 'permissions'
+                                    : 'permission'
+                            }}
+                        </span>
+                    </div>
+                    <div v-if="type === 'data'">
+                        <span class="flex-none text-sm"> Query Access </span>
                     </div>
                 </div>
                 <span v-if="!policy.allow" class="denied-policy-pill">
@@ -123,26 +115,6 @@
                 <AtlanIcon icon="Delete" class="" />
             </AtlanBtn>
         </a-popover>
-        <!-- <a-popconfirm
-            v-if="canDelete"
-            placement="leftTop"
-            :title="getPopoverContent(policy)"
-            ok-text="Yes"
-            :ok-type="'default'"
-            overlay-class-name="popoverConfirm"
-            cancel-text="Cancel"
-            @confirm="removePolicy"
-        >
-            <AtlanBtn
-                class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
-                size="sm"
-                color="secondary"
-                data-test-id="policy-delete"
-                padding="compact"
-            >
-                <AtlanIcon icon="Delete" class="" />
-            </AtlanBtn>
-        </a-popconfirm> -->
     </div>
 </template>
 

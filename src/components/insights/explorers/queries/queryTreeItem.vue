@@ -114,13 +114,26 @@
                     </template>
 
                     <template #button>
-                        <a-button class="mt-3" @click="openSidebar" block>
+                        <!-- <a-button class="mt-3" @click="openSidebar" block>
                             <div class="flex justify-center w-full">
                                 <div class="flex items-center cursor-pointer">
                                     Open preview sidebar
                                 </div>
                             </div>
-                        </a-button>
+                        </a-button> -->
+                        <AtlanBtn
+                            class="flex-none px-0"
+                            size="sm"
+                            color="minimal"
+                            padding="compact"
+                            style="height: fit-content"
+                            @click="openSidebar"
+                        >
+                            <span class="text-primary whitespace-nowrap">
+                                Show Preview</span
+                            >
+                            <AtlanIcon icon="ArrowRight" class="text-primary" />
+                        </AtlanBtn>
                     </template>
                     <div
                         class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -348,6 +361,7 @@
     import { useRoute, useRouter } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import AtlanBtn from '@/UI/button.vue'
 
     const {
         inlineTabRemove,
@@ -365,6 +379,7 @@
             PublishFolderPopover,
             QueryFolderSelector,
             PopoverAsset,
+            AtlanBtn,
         },
         props: {
             item: {

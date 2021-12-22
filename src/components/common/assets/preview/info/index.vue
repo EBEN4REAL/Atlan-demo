@@ -313,7 +313,18 @@
                 v-model="localMeanings"
                 :selected-asset="selectedAsset"
                 class="px-5"
-                :edit-permission="editPermission"
+                :edit-permission="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'RELATIONSHIP_ADD'
+                    )
+                "
+                :allowDelete="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'RELATIONSHIP_REMOVE'
+                    )
+                "
                 @change="handleMeaningsUpdate"
             >
             </Terms>

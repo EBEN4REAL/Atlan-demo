@@ -179,12 +179,17 @@
         inject,
         watch,
         ComputedRef,
+        onMounted,
     } from 'vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import ListNavigator from '@common/keyboardShortcuts/listNavigator.vue'
-
-    import { useDebounceFn, whenever, useMagicKeys } from '@vueuse/core'
+    import {
+        useDebounceFn,
+        whenever,
+        useMagicKeys,
+        watchOnce,
+    } from '@vueuse/core'
     // import PopOverAsset from '@common/popover/assets/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
@@ -331,9 +336,7 @@
             if (discoveryStore.activePostFacet && page.value === 'assets') {
                 postFacets.value = discoveryStore.activePostFacet
             }
-            if (discoveryStore.preferences) {
-                console.log(discoveryStore.preferences)
-
+            if (discoveryStore.preferences && page.value !== 'admin') {
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
                 preference.value.display =
@@ -601,6 +604,18 @@
                     }
                 }
             }
+
+            onMounted(() => {
+                console.log('onMounted')
+                watchOnce(isLoading, (v) => {
+                    if (!v && list.value?.length && page.value === 'assets') {
+                        const isNone =
+                            typeof selectedAsset.value === 'object' &&
+                            Object.keys(selectedAsset.value).length === 0
+                        if (isNone) handleClickAssetItem(list.value[0])
+                    }
+                })
+            })
 
             return {
                 checkSelectedCriteriaFxn,

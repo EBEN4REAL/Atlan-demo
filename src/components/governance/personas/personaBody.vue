@@ -53,10 +53,14 @@
         </div>
 
         <div class="p-6 overflow-y-auto" v-if="activeTabKey === 'details'">
-            <PersonaMeta class="pb-0" :persona="persona" />
+            <PersonaMeta
+                class="pb-0"
+                :persona="persona"
+                @editDetails="$emit('editDetails')"
+            />
         </div>
         <div
-            class="flex flex-col px-6 pt-3"
+            class="flex flex-col px-6 pt-6"
             v-if="activeTabKey === 'policies'"
             style="height: calc(100% - 155px)"
         >
@@ -65,7 +69,7 @@
                     <div class="w-1/2 pr-3">
                         <div
                             v-if="totalPolicy !== 0"
-                            class="px-1 pt-2 pb-3 container-tabs"
+                            class="px-1 container-tabs"
                         >
                             <a-radio-group
                                 v-model:value="activeTabFilter"

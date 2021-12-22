@@ -18,7 +18,7 @@
                 </SearchAndFilter>
                 <AtlanBtn
                     :disabled="isEditing"
-                    class="flex-none"
+                    class="flex-none ml-4"
                     size="sm"
                     color="primary"
                     padding="compact"
@@ -101,11 +101,15 @@
 
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
-            <PurposeHeader :persona="selectedPersona" />
+            <PurposeHeader
+                :persona="selectedPersona"
+                v-model:openEditModal="openEditModal"
+            />
             <PurposeBody
                 v-model:persona="selectedPersona"
                 :whitelisted-connection-ids="whitelistedConnectionIds"
                 @selectPolicy="handleSelectPolicy"
+                @editDetails="openEditModal = true"
             />
         </template>
         <div
@@ -197,6 +201,7 @@
             const selectedPolicy = ref({})
             const authStore = useAuthStore()
             const { roles } = storeToRefs(authStore)
+            const openEditModal = ref(false)
             watch(searchTerm, () => {
                 console.log(searchTerm.value, 'searched')
             })
@@ -247,6 +252,7 @@
                 handleSelectPolicy,
                 selectedPolicy,
                 whitelistedConnectionIds,
+                openEditModal,
             }
         },
     })

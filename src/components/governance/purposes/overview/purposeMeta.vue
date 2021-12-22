@@ -1,15 +1,36 @@
 <template>
-    <div class="pt-3 pb-0">
-        <PurposeSummary :purpose="persona" @setActiveTab="setActiveTab">
-            <template v-slot:classifications>
-                <div class="mb-1 text-gray-500">Classifications</div>
-                <Classification
-                    :allowDelete="selectedClassifications.length > 1"
-                    v-model:modelValue="selectedClassifications"
-                    @change="updateClassifications"
+    <div class="grid grid-cols-3 gap-x-3">
+        <div class="col-span-2 p-6 bg-white border border-gray-200 rounded">
+            <div class="mb-1 text-gray-500">Classifications</div>
+            <Classification
+                :allowDelete="selectedClassifications.length > 1"
+                v-model:modelValue="selectedClassifications"
+                @change="updateClassifications"
+                :editPermission="true"
+            />
+        </div>
+        <DetailsWidget
+            :item="persona"
+            @editDetails="$emit('editDetails')"
+            class="border border-gray-200"
+        >
+            <!-- <template #actionBtn>
+                <div class="hidden">
+                <a-switch
+                    class="ml-auto"
+                    data-test-id="toggle-switch"
+                    style="width: 40px !important"
+                    :class="purpose.enabled ? 'btn-checked' : 'btn-unchecked'"
+                    v-model:checked="purpose.enabled"
+                    :loading="enableDisableLoading"
+                    @change="handleEnableDisablePurpose"
                 />
-            </template>
-        </PurposeSummary>
+                <span class="ml-2 text-sm text-gray">Enable Purpose</span>
+            </div>
+            </template> -->
+        </DetailsWidget>
+        <!-- <PurposeSummary :purpose="persona" @setActiveTab="setActiveTab">
+        </PurposeSummary> -->
         <!-- <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>
             {{ persona.createdBy }}
@@ -100,8 +121,9 @@
         computed,
         toRaw,
         toRefs,
+        h,
     } from 'vue'
-    import { message } from 'ant-design-vue'
+    import { message, Modal } from 'ant-design-vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { enablePersona } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
@@ -117,11 +139,13 @@
     import UserPill from '@/common/pills/user.vue'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
-    import PurposeSummary from './PurposeSummary.vue'
+    // import PurposeSummary from './PurposeSummary.vue'
+    import DetailsWidget from '~/components/common/widgets/detailsWidget.vue'
+    import { enablePurpose } from '../composables/useEditPurpose'
 
     export default defineComponent({
         name: 'PurposeMeta',
-        components: { Classification, PopOverUser, UserPill, PurposeSummary },
+        components: { Classification, PopOverUser, UserPill, DetailsWidget },
         props: {
             persona: {
                 type: Object as PropType<IPurpose>,
@@ -132,7 +156,7 @@
         setup(props) {
             const { classificationList } = useTypedefData()
             const { persona } = toRefs(props)
-
+            const enableDisableLoading = ref(false)
             const enablePersonaCheck = ref(true)
 
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
@@ -207,7 +231,70 @@
                 }
                 return ''
             }
+            const enableDisablePurpose = async (val) => {
+                const messageKey = Date.now()
+                enableDisableLoading.value = true
+                message.loading({
+                    content: `${val ? 'Enabling' : 'Disabling'} purpose ${
+                        purpose.value.displayName
+                    }`,
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await enablePurpose(purpose.value.id, val)
+                    message.success({
+                        content: `${val ? 'Enabled' : 'Disabled'} purpose ${
+                            purpose.value.displayName
+                        }`,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                    enableDisableLoading.value = false
+                } catch (e) {
+                    message.error({
+                        content: `Failed to ${
+                            val ? 'enable' : 'disable'
+                        } purpose ${purpose.value.displayName}`,
+                        duration: 1.5,
+                        key,
+                    })
+                    enableDisableLoading.value = false
+                }
+            }
 
+            const handleEnableDisablePurpose = (val) => {
+                if (val) enableDisablePurpose(val)
+                else
+                    Modal.confirm({
+                        title: 'Disable purpose',
+                        class: 'disable-purpose-modal',
+                        content: () => {
+                            return h('div', [
+                                'Are you sure you want to disable purpose',
+                                h('span', [' ']),
+                                h(
+                                    'span',
+                                    {
+                                        class: ['font-bold'],
+                                    },
+                                    [`${purpose.value.displayName}`]
+                                ),
+                                h('span', '?'),
+                            ])
+                        },
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Disable',
+                        cancelText: 'Cancel',
+                        async onOk() {
+                            enableDisablePurpose(val)
+                        },
+                    })
+            }
             return {
                 timeStamp,
                 selectedPersona,
@@ -217,6 +304,8 @@
                 enablePersonaCheck,
                 enablePersona,
                 setActiveTab,
+                handleEnableDisablePurpose,
+                enableDisableLoading,
             }
         },
     })

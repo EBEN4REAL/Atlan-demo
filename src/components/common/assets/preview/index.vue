@@ -258,16 +258,23 @@
                 required: false,
                 default: false,
             },
+            page: {
+                type: String,
+                required: false,
+                default: 'assets',
+            },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const { selectedAsset, isDrawer } = toRefs(props)
-            const { getAllowedActions } = useAssetEvaluate()
+            const { selectedAsset, isDrawer, page } = toRefs(props)
+            const { getAllowedActions, getAssetEvaluationsBody } =
+                useAssetEvaluate()
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
             )
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
+            provide('sidebarPage', page)
 
             const {
                 title,
@@ -325,30 +332,9 @@
                 (prev) => {
                     if (prev) {
                         body.value = {
-                            entities: [
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_UPDATE',
-                                },
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_ADD_CLASSIFICATION',
-                                    classification: '*',
-                                },
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_REMOVE_CLASSIFICATION',
-                                    classification: '*',
-                                },
-                                /*  {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'RELATIONSHIP_ADD',
-                                }, */
-                            ],
+                            entities: getAssetEvaluationsBody(
+                                selectedAsset.value
+                            ),
                         }
                         refresh()
                     }

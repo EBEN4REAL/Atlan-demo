@@ -6,10 +6,11 @@
             :avatar-size="avatarSize"
             :avatar-shape="'circle'"
             :isGroup="isGroup"
+            :isAtlan="isAtlan"
             class="mr-1"
         >
         </avatar>
-        <div v-if="showUsername">{{ username }}</div>
+        <div v-if="showUsername">{{ getUserName() }}</div>
     </div>
 </template>
 
@@ -52,11 +53,21 @@
         components: { Avatar },
         setup(props, context) {
             const { username, styleClass } = toRefs(props)
-
-            const avatarURL = computed(
-                () =>
-                    `${window.location.origin}/api/service/avatars/${username.value}`
-            )
+            const isAtlan = computed(() => {
+                return username.value === 'service-account-atlan-argo'
+            })
+            const avatarURL = computed(() => {
+                if (username.value === 'service-account-atlan-argo') {
+                    return '~/assets/images/source/atlan-logo.jpeg'
+                }
+                return `${window.location.origin}/api/service/avatars/${username.value}`
+            })
+            const getUserName = () => {
+                if (username.value === 'service-account-atlan-argo') {
+                    return 'Atlan'
+                }
+                return username.value
+            }
 
             return {
                 avatarURL,
@@ -64,6 +75,8 @@
                 getNameInTitleCase,
                 styleClass,
                 username,
+                isAtlan,
+                getUserName,
             }
         },
     }

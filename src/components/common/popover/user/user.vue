@@ -2,7 +2,7 @@
     <a-popover
         @visibleChange="handleVisibleChange"
         placement="left"
-        :mouseEnterDelay="0.4"
+        :mouseEnterDelay="0.5"
     >
         <template #content>
             <div class="relative p-4 user-popover">

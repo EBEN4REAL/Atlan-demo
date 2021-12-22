@@ -14,7 +14,7 @@
             style-class="border border-primary bg-primary-light "
         ></UserAvatar>
         <div class="">
-            {{ username }}
+            {{ getUserName() }}
         </div>
         <div v-if="allowDelete" class="flex" @click.prevent.stop="handleDelete">
             <AtlanIcon
@@ -63,11 +63,18 @@
                 emit('delete', username.value)
             }
 
+            const getUserName = () => {
+                if (username.value === 'service-account-atlan-argo') {
+                    return 'Atlan'
+                }
+                return username.value
+            }
+
             /* const handleClick = () => {
                 emit('click', username.value)
             } */
 
-            return { username, handleDelete }
+            return { username, handleDelete, getUserName }
         },
     }
 </script>

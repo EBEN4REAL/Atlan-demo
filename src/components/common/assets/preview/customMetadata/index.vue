@@ -78,7 +78,7 @@
         defineAsyncComponent,
         Ref,
     } from 'vue'
-    import { whenever } from '@vueuse/core'
+    import { whenever, useMagicKeys, onKeyStroke } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
@@ -230,6 +230,8 @@
                 id: guid,
             })
 
+            const isEdit = ref(false)
+
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
 
@@ -247,7 +249,7 @@
                             'Some error occured...Please try again later.'
                         )
                         setAttributesList()
-                    } else if (isReady.value) {
+                    } else if (isReady?.value) {
                         loading.value = false
                         message.success(
                             `${data.value?.label} attributes for ${title(
@@ -258,6 +260,7 @@
 
                         mutateUpdate()
                     }
+                    isEdit.value = false
                 })
 
                 readOnly.value = true
@@ -271,7 +274,6 @@
 
                 readOnly.value = true
             }
-            const isEdit = ref(false)
             const handleChange = (index, value) => {
                 isEdit.value = true
                 applicableList.value[index].value = value
@@ -332,6 +334,12 @@
 
             const readOnlySort = (a, b) =>
                 hasValue(a) && !hasValue(b) ? -1 : 1
+
+            onKeyStroke(['Enter'], (e) => {
+                e.stopPropagation()
+                if ((e.ctrlKey || e.metaKey) && isEdit.value && !readOnly.value)
+                    handleUpdate()
+            })
 
             return {
                 readOnlySort,

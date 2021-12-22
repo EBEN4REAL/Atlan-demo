@@ -34,17 +34,17 @@
                             >
                         </div>
                     </div>
-                    <div v-if="classification.createdBy" class="flex gap-x-10">
-                        <div class="">
-                            <span class="mt-4 mb-1 text-xs text-gray-500">
-                                Created by
-                            </span>
-                            <div class="flex flex-wrap gap-3">
-                                <UserPill
+                    <div v-if="classification.createdBy" class="">
+                        <span class="text-xs text-gray-500"> Created by </span>
+                        <div class="flex flex-wrap gap-3">
+                            <!-- <UserPill
                                     :enable-hover="false"
                                     :username="classification.createdBy"
-                                ></UserPill>
-                            </div>
+                                ></UserPill> -->
+                            <UserAvatar
+                                :username="classification.createdBy"
+                                :show-username="true"
+                            />
                         </div>
                     </div>
                     <div class="flex gap-2 mt-3 text-xs text-gray-500">
@@ -81,11 +81,13 @@
     import { useTimeAgo } from '@vueuse/core'
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
     import UserPill from '@/common/pills/user.vue'
+    import UserAvatar from '@/common/avatar/user.vue'
 
     export default defineComponent({
         name: 'ClassificationInfoPopover',
         components: {
             UserPill,
+            UserAvatar,
         },
         props: {
             classification: {

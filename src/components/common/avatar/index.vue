@@ -43,10 +43,9 @@
                 :size="avatarSize"
                 class="hidden ant-tag-blue text-primary sm:block"
                 :class="avatarBgClass"
-                :src="updatedImageUrl"
+                :src="isAtlan ? atlanLogo : updatedImageUrl"
             >
                 <template #icon>
-                    <!-- <AtlanIcon v-if="isAtlan" icon="AtlanIcon"></AtlanIcon> -->
                     <AtlanIcon v-if="isGroup" icon="Group"></AtlanIcon>
                     <AtlanIcon v-else icon="User"></AtlanIcon>
                 </template>
@@ -61,6 +60,7 @@
     import { ref, watch, PropType } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import uploadAvatar from '~/composables/avatar/uploadAvatar'
+    import atlanLogo from '~/assets/images/source/atlan-logo.jpeg'
 
     export default {
         name: 'Avatar',
@@ -129,6 +129,7 @@
                 getNameInitials,
                 getNameInTitleCase,
                 refreshImage,
+                atlanLogo,
             }
         },
     }

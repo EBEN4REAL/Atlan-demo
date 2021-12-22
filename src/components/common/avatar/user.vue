@@ -10,7 +10,7 @@
             class="mr-1"
         >
         </avatar>
-        <div v-if="showUsername">{{ username }}</div>
+        <div v-if="showUsername">{{ getUserName() }}</div>
     </div>
 </template>
 
@@ -62,6 +62,12 @@
                 }
                 return `${window.location.origin}/api/service/avatars/${username.value}`
             })
+            const getUserName = () => {
+                if (username.value === 'service-account-atlan-argo') {
+                    return 'Atlan'
+                }
+                return username.value
+            }
 
             return {
                 avatarURL,
@@ -70,6 +76,7 @@
                 styleClass,
                 username,
                 isAtlan,
+                getUserName,
             }
         },
     }

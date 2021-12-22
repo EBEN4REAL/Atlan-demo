@@ -6,13 +6,20 @@
             placement="right"
             :get-container="false"
             :class="$style.drawerStyles"
-            :closable="!showMask"
+            :closable="false"
             :mask-closable="showMask"
             :style="{ position: 'absolute' }"
-            :content-wrapper-style="{ width: '420px' }"
+            :width="420"
             :mask="showMask"
             @close="$emit('closeDrawer')"
         >
+            <div
+                v-if="!showMask && visible"
+                class="close-btn"
+                @click="() => $emit('closeDrawer')"
+            >
+                <AtlanIcon icon="Add" class="text-white" />
+            </div>
             <AssetPreview
                 :selected-asset="data"
                 :is-drawer="true"
@@ -25,6 +32,7 @@
     import { defineComponent, ref, watch, toRefs, provide } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
     import useEvaluate from '~/composables/auth/useEvaluate'
+    import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
 
     export default defineComponent({
         components: {
@@ -58,6 +66,7 @@
 
             const body = ref({})
             const { refresh } = useEvaluate(body, false)
+            const { getAssetEvaluationsBody } = useAssetEvaluate()
 
             const updateDrawerList = (asset) => {
                 emit('update', asset)
@@ -72,30 +81,7 @@
             watch(visible, () => {
                 if (visible.value) {
                     body.value = {
-                        entities: [
-                            {
-                                typeName: data.value?.typeName,
-                                entityGuid: data.value?.guid,
-                                action: 'ENTITY_UPDATE',
-                            },
-                            {
-                                typeName: data.value?.typeName,
-                                entityGuid: data.value?.guid,
-                                action: 'ENTITY_ADD_CLASSIFICATION',
-                                classification: '*',
-                            },
-                            {
-                                typeName: data.value?.typeName,
-                                entityGuid: data.value?.guid,
-                                action: 'ENTITY_REMOVE_CLASSIFICATION',
-                                classification: '*',
-                            },
-                            /*  {
-                                    typeName: data.value?.typeName,
-                                    entityGuid: data.value?.guid,
-                                    action: 'RELATIONSHIP_ADD',
-                                }, */
-                        ],
+                        entities: getAssetEvaluationsBody(data.value),
                     }
                     refresh()
                 }
@@ -115,5 +101,21 @@
         :global(.ant-drawer-content-wrapper) {
             width: 420px;
         }
+    }
+</style>
+
+<style lang="less" scoped>
+    .close-btn {
+        height: 32px;
+        width: 32px;
+        background: #3e4359cc;
+        position: fixed;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        transform: rotate(45deg);
+        left: -40px;
+        top: 60px;
+        cursor: pointer;
     }
 </style>

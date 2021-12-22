@@ -12,6 +12,7 @@
                     'text',
                 ].includes(typeName.toLowerCase()) && isMultivalued
             "
+            ref="inputRef"
             v-model="localValue"
             class="flex-grow shadow-none"
             placeholder="Press Enter to add"
@@ -21,6 +22,7 @@
 
         <a-input
             v-else-if="typeName === 'number'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -30,6 +32,7 @@
         />
         <a-input
             v-else-if="typeName === 'float'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -42,6 +45,7 @@
         />
         <a-input
             v-else-if="typeName === 'url'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow border shadow-none"
@@ -51,6 +55,7 @@
         />
         <a-radio-group
             v-else-if="typeName === 'boolean'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow"
@@ -61,6 +66,7 @@
         </a-radio-group>
         <a-date-picker
             v-else-if="typeName === 'date'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             class="flex-grow w-100"
@@ -69,6 +75,7 @@
         />
         <a-textarea
             v-else-if="typeName === 'text'"
+            ref="inputRef"
             v-model:value="localValue"
             :allow-clear="true"
             :auto-size="true"
@@ -81,18 +88,21 @@
         />
         <UserSelector
             v-if="typeName === 'users'"
+            ref="inputRef"
             v-model:value="localValue"
             :multiple="isMultivalued"
             @change="handleChange"
         />
         <GroupSelector
             v-if="typeName === 'groups'"
+            ref="inputRef"
             v-model:value="localValue"
             :multiple="isMultivalued"
             @change="handleChange"
         />
         <a-select
             v-else-if="typeName === 'enum'"
+            ref="inputRef"
             v-model:value="localValue"
             class="flex-grow shadow-none border-1"
             :allow-clear="true"
@@ -111,7 +121,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        onMounted,
+        nextTick,
+    } from 'vue'
     import { useVModels } from '@vueuse/core'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
 
@@ -128,6 +145,10 @@
                 type: Object,
                 required: true,
             },
+            index: {
+                type: Number,
+                required: true,
+            },
             modelValue: {
                 type: String,
                 required: false,
@@ -138,7 +159,8 @@
         emits: ['change', 'update:modelValue'],
 
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, index } = useVModels(props, emit)
+            const inputRef = ref()
 
             const {
                 getDatatypeOfAttribute,
@@ -168,7 +190,15 @@
                 emit('change')
             }
 
+            onMounted(() => {
+                if (index.value === 0)
+                    nextTick(() => {
+                        inputRef.value.focus()
+                    })
+            })
+
             return {
+                inputRef,
                 typeName,
                 isMultivalued,
                 getDatatypeOfAttribute,

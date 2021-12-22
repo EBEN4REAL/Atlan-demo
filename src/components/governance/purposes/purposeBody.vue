@@ -37,7 +37,11 @@
         </div>
 
         <div class="p-6 overflow-y-auto" v-if="activeTabKey === 'details'">
-            <PurposeMeta class="flex flex-col" :persona="persona" />
+            <PurposeMeta
+                class="flex flex-col"
+                :persona="persona"
+                @editDetails="$emit('editDetails')"
+            />
         </div>
         <div
             class="flex flex-col px-6 pt-6"
@@ -175,6 +179,7 @@
                     :initial-filters="filterConfig"
                     :show-filters="false"
                     page="purposes"
+                    :enable-sidebar-drawer="true"
                 />
                 <!-- <LinkedTerms
                 v-else-if="activeTabKey === '2'"
@@ -513,5 +518,10 @@
 <style scoped lang="less">
     .content-wrapper {
         height: inherit;
+    }
+    .wrapper-height {
+        height: 660px;
+        overflow: auto;
+        padding-bottom: 20px;
     }
 </style>

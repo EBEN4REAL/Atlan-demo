@@ -637,7 +637,10 @@ export default function useAssetInfo() {
         action = 'ENTITY_UPDATE'
     ) => {
         return authStore?.evaluations.find(
-            (ev) => ev?.entityGuid === asset?.guid && ev?.action === action
+            (ev) =>
+                (ev?.entityGuid === asset?.guid ||
+                    ev?.entityGuidEnd2 === asset?.guid) &&
+                ev?.action === action
         )?.allowed
     }
 

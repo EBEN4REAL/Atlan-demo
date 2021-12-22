@@ -22,5 +22,48 @@ export default function useAssetEvaluate() {
             .map((i) => i.action)
     }
 
-    return { getAllowedActions, getEvaluations }
+    const getAssetEvaluationsBody = (asset: assetInterface) => {
+        return [
+            {
+                typeName: asset.typeName,
+                entityGuid: asset.guid,
+                action: 'ENTITY_UPDATE',
+            },
+            {
+                typeName: asset.typeName,
+                entityGuid: asset.guid,
+                action: 'ENTITY_ADD_CLASSIFICATION',
+                classification: '*',
+            },
+            {
+                typeName: asset.typeName,
+                entityGuid: asset.guid,
+                action: 'ENTITY_REMOVE_CLASSIFICATION',
+                classification: '*',
+            },
+            {
+                action: 'RELATIONSHIP_ADD',
+                relationShipTypeName: 'AtlasGlossarySemanticAssignment',
+                entityIdEnd1: '*',
+                entityTypeEnd1: 'AtlasGlossaryTerm',
+                entityGuidEnd2: asset.guid,
+                entityTypeEnd2: asset.typeName,
+            },
+            {
+                action: 'RELATIONSHIP_REMOVE',
+                relationShipTypeName: 'AtlasGlossarySemanticAssignment',
+                entityIdEnd1: '*',
+                entityTypeEnd1: 'AtlasGlossaryTerm',
+                entityGuidEnd2: asset.guid,
+                entityTypeEnd2: asset.typeName,
+            },
+            /*  {
+            typeName: asset.typeName,
+            entityGuid: asset.guid,
+            action: 'ENTITY_UPDATE_BUSINESS_METADATA',
+        }, */
+        ]
+    }
+
+    return { getAllowedActions, getEvaluations, getAssetEvaluationsBody }
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col px-5 bg-white pt-7">
+    <div class="flex flex-col px-5 bg-white py-7">
         <div class="flex items-center justify-between gap-x-2">
             <div class="flex items-center">
                 <ClassificationIcon

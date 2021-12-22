@@ -60,15 +60,28 @@
             v-if="activeTabKey === 'policies'"
             style="height: calc(100% - 155px)"
         >
-            <div class="">
+            <div class="mb-3">
                 <div class="flex items-center justify-between">
                     <div class="w-1/2 pr-3">
-                        <SearchAndFilter
-                            v-model:value="searchPersona"
-                            :placeholder="`Search from ${totalPolicy} policies`"
-                            :autofocus="true"
-                            size="minimal"
-                        />
+                        <div
+                            v-if="totalPolicy !== 0"
+                            class="px-1 pt-2 pb-3 container-tabs"
+                        >
+                            <a-radio-group
+                                v-model:value="activeTabFilter"
+                                class="flex flex-grow"
+                            >
+                                <a-radio-button value="all Persona"
+                                    >All</a-radio-button
+                                >
+                                <a-radio-button value="metaData"
+                                    >Metadata</a-radio-button
+                                >
+                                <a-radio-button value="data"
+                                    >Data</a-radio-button
+                                >
+                            </a-radio-group>
+                        </div>
                     </div>
                     <a-dropdown trigger="click">
                         <a-button type="primary">
@@ -105,16 +118,6 @@
                             </a-menu>
                         </template>
                     </a-dropdown>
-                </div>
-                <div
-                    v-if="totalPolicy !== 0"
-                    class="px-1 pt-2 pb-3 container-tabs"
-                >
-                    <AggregationTabs
-                        v-model="activeTabFilter"
-                        :list="tabFilterList"
-                        :no-all="true"
-                    />
                 </div>
             </div>
             <div class="flex flex-col flex-grow overflow-y-auto gap-y-3">

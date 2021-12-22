@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 bg-white rounded user-group-wrapper">
+    <div class="py-6 bg-white rounded user-group-wrapper">
         <!-- START Error State -->
         <div
             v-if="errorUsersGroups"
@@ -56,7 +56,7 @@
             "
             class="flex flex-col overflow-y-hidden"
         >
-            <div class="flex items-center justify-between w-full mb-2">
+            <div class="flex items-center justify-between w-full px-6 mb-2">
                 <div class="flex mr-4 gap-x-2">
                     <a-radio-group
                         v-model:value="listType"
@@ -144,24 +144,24 @@
                     </a-popover>
                 </div>
             </div>
-            <SearchAndFilter
-                v-model:value="queryText"
-                class="mt-3 mb-2 bg-white"
-                :placeholder="placeholder"
-                size="minimal"
-            />
+            <div class="px-6">
+                <SearchAndFilter
+                    v-model:value="queryText"
+                    class="mt-3 mb-2 bg-white"
+                    :placeholder="placeholder"
+                    size="minimal"
+                />
+            </div>
             <div
-                class="flex-grow overflow-y-auto"
+                class="flex-grow px-6 overflow-y-auto"
                 v-if="filteredList && filteredList.length"
             >
-                <div
-                    class="flex flex-col flex-grow mt-3 divide-y divide-gray-200 list-wrapper gap-y-2"
-                >
+                <div class="flex flex-col flex-grow mt-3 list-wrapper gap-y-2">
                     <div
                         v-for="item in filteredList"
                         :key="item.alias || item.username"
                     >
-                        <div class="px-3 py-2 rounded">
+                        <div class="py-2 rounded">
                             <!--user-->
                             <div
                                 v-if="item.username"

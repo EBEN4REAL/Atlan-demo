@@ -21,6 +21,7 @@ import { ATLAN_PUBLIC_QUERY_CLASSIFICATION } from '~/components/insights/common/
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import useLinkAssets from '~/components/composables/common/useLinkAssets'
 import { useTenantStore } from '~/store/tenant'
+import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -52,11 +53,13 @@ export function useSavedQuery(
         modifyActiveInlineTabEditor,
     } = useInlineTab(treeSelectedKeys)
 
+    const { queryRun } = useRunQuery()
+
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
         console.log('query entity2: ', savedQuery)
 
         let decodedVariables = decodeBase64Data(
-            savedQuery.attributes.variablesSchemaBase64
+            savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
         // debugger
         // console.log(decodedVariables, savedQuery)
@@ -217,6 +220,37 @@ export function useSavedQuery(
             overwriteInlineTab(newTab, tabsArray)
             activeInlineTabKey.value = key
         }
+    }
+
+    const openSavedQueryInNewTabAndRun = (
+        savedQuery,
+        getData: (rows: any[], columns: any[], executionTime: number) => void,
+        limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
+        editorInstance: Ref<any>,
+        monacoInstance: Ref<any>,
+    ) => {
+        openSavedQueryInNewTab({
+            ...savedQuery?.value,
+            parentTitle:
+                savedQuery?.value?.attributes?.parent?.attributes
+                    ?.name,
+        })
+        setTimeout(()=> {
+            queryRun(
+                activeInlineTab,
+                getData,
+                limitRows,
+                null,
+                null,
+                savedQuery.value?.attributes.rawQuery,
+                editorInstance,
+                monacoInstance,
+                activeInlineTab?.value?.playground?.isVQB
+            )
+        }, 250)
+
+        
+        
     }
 
     const getCollectionByQualifiedName = (qualifiedName: string) => {
@@ -1026,5 +1060,6 @@ export function useSavedQuery(
         openSavedQueryInNewTab,
         createFolder,
         saveQueryToDatabaseWithTerms,
+        openSavedQueryInNewTabAndRun
     }
 }

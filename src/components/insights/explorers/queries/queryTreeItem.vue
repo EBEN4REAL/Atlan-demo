@@ -152,7 +152,27 @@
                                 ]"
                             >
                                 <div
-                                    class="pl-2 ml-24"
+                                    :data-test-id="'run-saved-query'"
+                                    class="ml-24"
+                                    @click="() => actionClick('play', item)"
+                                >
+                                    <a-tooltip color="#363636" placement="top">
+                                        <template #title>Run Query</template>
+
+                                        <AtlanIcon
+                                            icon="Play"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
+                                </div>
+
+                                <div
+                                    class="pl-2"
                                     @click.stop="
                                         () => actionClick('info', item)
                                     "
@@ -326,8 +346,11 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useRoute, useRouter } from 'vue-router'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
 
-    const { inlineTabRemove } = useInlineTab()
+    const { inlineTabRemove, modifyActiveInlineTabEditor } = useInlineTab()
+    const { focusEditor, setSelection } = useEditor()
 
     import { message } from 'ant-design-vue'
 
@@ -438,6 +461,12 @@
                 'activeInlineTabKey'
             ) as Ref<string>
 
+            const { openSavedQueryInNewTabAndRun } = useSavedQuery(
+                inlineTabs,
+                activeInlineTab,
+                activeInlineTabKey
+            )
+
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 inlineTabs,
@@ -475,9 +504,49 @@
 
                         break
                     }
+                    case 'play': {
+                        openSavedQueryInNewTabAndRun(
+                            item,
+                            getData,
+                            limitRows,
+                            editorInstance,
+                            monacoInstance
+                        )
+                        break
+                    }
                     case 'bookmark': {
                         break
                     }
+                }
+            }
+
+            const limitRows = ref({
+                checked: true,
+                rowsCount: 100,
+            })
+            const editorInstance = inject('editorInstance') as Ref<any>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
+
+            const getData = (dataList, columnList) => {
+                if (activeInlineTab && inlineTabs?.value) {
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    activeInlineTabCopy.playground.editor.dataList = dataList
+
+                    activeInlineTabCopy.playground.editor.columnList =
+                        columnList
+                    const saveQueryDataInLocalStorage = false
+                    modifyActiveInlineTabEditor(
+                        activeInlineTabCopy,
+                        inlineTabs,
+                        saveQueryDataInLocalStorage
+                    )
+                    // setSelection(
+                    //     toRaw(editorInstanceRef.value),
+                    //     toRaw(monacoInstanceRef.value),
+                    //     selectionObject.value
+                    // )
+                    focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
 

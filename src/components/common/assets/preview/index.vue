@@ -346,7 +346,7 @@
                                 /*  {
                                     typeName: selectedAsset.value.typeName,
                                     entityGuid: selectedAsset.value.guid,
-                                    action: 'RELATIONSHIP_ADD',
+                                    action: 'ENTITY_UPDATE_BUSINESS_METADATA',
                                 }, */
                             ],
                         }

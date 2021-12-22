@@ -36,10 +36,15 @@
         <div
             class="flex flex-col flex-grow pr-5 overflow-auto gap-y-5 scrollheight"
         >
-            <template v-for="(a, x) in applicableList" :key="x">
-                <div class="">
+            <template
+                v-for="(a, x) in readOnly
+                    ? applicableList.filter((l) => hasValue(l))
+                    : applicableList"
+                :key="x"
+            >
+                <div>
                     <div class="mb-2 font-normal text-gray-500">
-                        <span>{{ a.displayName }}</span>
+                        <span class="">{{ a.displayName }}</span>
                         <a-tooltip>
                             <template #title>
                                 <span>{{ a.options.description }}</span>
@@ -55,7 +60,7 @@
                     <ReadOnly v-if="readOnly" :attribute="a" />
 
                     <EditState
-                        v-else
+                        v-else-if="!readOnly"
                         v-model="a.value"
                         :attribute="a"
                         @change="handleChange(x, a.value)"
@@ -299,7 +304,38 @@
 
             setAttributesList()
 
+            const hasValue = (a) => {
+                const isMultivalued =
+                    a.options.multiValueSelect === 'true' ||
+                    a.options.multiValueSelect === true
+                const dataType = getDatatypeOfAttribute(a)
+
+                if (
+                    [
+                        'url',
+                        'text',
+                        'int',
+                        'float',
+                        'number',
+                        'decimal',
+                        'users',
+                        'groups',
+                        'enum',
+                    ].includes(dataType) &&
+                    isMultivalued
+                )
+                    return !!a.value?.length
+                if (
+                    ['url', 'text', 'users', 'groups', 'enum'].includes(
+                        dataType
+                    )
+                )
+                    return !!a.value
+                return !!formatDisplayValue(a.value?.toString() || '', dataType)
+            }
+
             return {
+                hasValue,
                 isEdit,
                 getDatatypeOfAttribute,
                 isLink,

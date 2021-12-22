@@ -22,7 +22,7 @@ export const previewTabs = [
         component: 'lineage',
         excludes: [
             'Query',
-            'QueryFolder',
+            'Folder',
             'AtlasGlossary',
             'AtlasGlossaryTerm',
             'AtlasGlossaryCategory',
@@ -39,7 +39,7 @@ export const previewTabs = [
     {
         name: 'Activity',
         component: 'activity',
-        excludes: ['Query', 'QueryFolder'],
+        excludes: ['Query', 'Folder'],
         icon: 'ActivityLogs',
         tooltip: 'Activity',
         scrubbed: true,

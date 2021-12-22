@@ -90,7 +90,7 @@ const useLoadQueryData = ({
         body.value.dsl.query.bool.must.push(
             {
                 term: {
-                    "__typeName.keyword": "QueryFolder"
+                    "__typeName.keyword": "Folder"
                 }
             }
         )
@@ -137,7 +137,7 @@ const useLoadQueryData = ({
         body.value.dsl.query.bool.must.push(
             {
                 term: {
-                    "__typeName.keyword": "QueryFolder"
+                    "__typeName.keyword": "Folder"
                 }
             }
         )

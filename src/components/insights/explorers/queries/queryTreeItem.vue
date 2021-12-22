@@ -7,7 +7,7 @@
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
-                    v-if="item.typeName === 'QueryFolder'"
+                    v-if="item.typeName === 'Folder'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="parent-ellipsis-container py-1.5">
@@ -448,7 +448,7 @@
             const refetchParentNode = inject<
                 (
                     guid: string | 'root',
-                    type: 'query' | 'queryFolder',
+                    type: 'query' | 'Folder',
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchParentNode', () => {})
@@ -456,7 +456,7 @@
             const refetchNode = inject<
                 (
                     guid: string,
-                    type: 'query' | 'queryFolder',
+                    type: 'query' | 'Folder',
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchNode', () => {})
@@ -587,7 +587,7 @@
                 //         message.success({
                 //             content: `${item.value?.attributes?.name} was made public!`,
                 //         })
-                //         refetchParentNode(props.item.guid, 'queryFolder')
+                //         refetchParentNode(props.item.guid, 'Folder')
                 //     }
                 // })
             }
@@ -752,7 +752,7 @@
                 }
             }
 
-            const delteItem = (type: 'Query' | 'QueryFolder') => {
+            const delteItem = (type: 'Query' | 'Folder') => {
                 let key = item.value.guid
                 let parentGuid = item?.value?.attributes?.parent?.guid
                 console.log('delete item: ', item)
@@ -778,7 +778,7 @@
                         setTimeout(() => {
                             refetchNode(
                                 parentGuid,
-                                type === 'Query' ? 'query' : 'queryFolder'
+                                type === 'Query' ? 'query' : 'Folder'
                             )
                         }, 1000)
 
@@ -788,7 +788,7 @@
                         useAddEvent('insights', 'folder', 'deleted', undefined)
                         // refetchParentNode(
                         //     props.item.guid,
-                        //     type === 'Query' ? 'query' : 'queryFolder',
+                        //     type === 'Query' ? 'query' : 'Folder',
                         //     savedQueryType.value
                         // )
                     }
@@ -914,7 +914,7 @@
                     const newEntity = { ...item, relationshipAttributes: {} }
                     delete newEntity.entity
 
-                    if (selectedFolder.value.typeName === 'QueryCollection') {
+                    if (selectedFolder.value.typeName === 'Collection') {
                         newEntity.relationshipAttributes = {
                             parent: {
                                 guid: selectedParentGuid,
@@ -937,9 +937,7 @@
                         // } else {
                         //     newEntity.classifications = []
                         // }
-                    } else if (
-                        selectedFolder.value.typeName === 'QueryFolder'
-                    ) {
+                    } else if (selectedFolder.value.typeName === 'Folder') {
                         newEntity.relationshipAttributes = {
                             parent: {
                                 guid: selectedParentGuid,
@@ -962,7 +960,7 @@
 
                     isUpdating.value = true
 
-                    if (item.typeName == 'QueryFolder') {
+                    if (item.typeName == 'Folder') {
                         const { data, error, isLoading } =
                             Insights.UpdateSavedFolder(
                                 {
@@ -981,13 +979,13 @@
                                     setTimeout(async () => {
                                         await refetchNode(
                                             previousParentGuId,
-                                            'queryFolder'
+                                            'Folder'
                                         )
                                     }, 1000)
                                     setTimeout(async () => {
                                         await refetchNode(
                                             selectedParentGuid,
-                                            'queryFolder'
+                                            'Folder'
                                         )
                                     }, 2000)
 

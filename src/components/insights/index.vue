@@ -541,6 +541,10 @@
                     if (isLoading.value === false) {
                         queryCollectionsLoading.value = false
                         if (error.value === undefined) {
+                            console.log(
+                                'queryCollections: ',
+                                data.value.entities
+                            )
                             if (
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0

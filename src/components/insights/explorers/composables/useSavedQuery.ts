@@ -637,12 +637,12 @@ export function useSavedQuery(
         if (parentFolderQF.includes('/folder')) {
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid,
-                typeName: 'QueryFolder',
+                typeName: 'Folder',
             }
         } else {
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid,
-                typeName: 'QueryCollection',
+                typeName: 'Collection',
             }
         }
         // chaing loading to true
@@ -660,10 +660,12 @@ export function useSavedQuery(
 
                     // const guid = data.value.mutatedEntities.CREATE[0].guid
 
-                    const parentGuid = data.value.mutatedEntities.UPDATE[0].guid
+                    console.log()
+
+                    const parentGuid = parentFolderGuid
                     const parentQualifiedName =
-                        data.value.mutatedEntities.UPDATE[0].attributes
-                            .qualifiedName
+                        data.value.mutatedEntities.CREATE[0].attributes
+                            .parentQualifiedName
 
                     console.log(data.value, 'saved')
                     /* Not present in response */
@@ -753,7 +755,7 @@ export function useSavedQuery(
 
         const body = ref<Record<string, any>>({
             entity: {
-                typeName: 'QueryFolder',
+                typeName: 'Folder',
                 attributes: {
                     connectorName,
                     name,
@@ -779,13 +781,13 @@ export function useSavedQuery(
             // parent is folder
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid.value,
-                typeName: 'QueryFolder',
+                typeName: 'Folder',
             }
         } else {
             // parent is collection
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid.value,
-                typeName: 'QueryCollection',
+                typeName: 'Collection',
             }
         }
         // chaing loading to true
@@ -919,13 +921,13 @@ export function useSavedQuery(
             // folder is parent
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid,
-                typeName: 'QueryFolder',
+                typeName: 'Folder',
             }
         } else {
             // collection is parent
             body.value.entity.attributes.parent = {
                 guid: parentFolderGuid,
-                typeName: 'QueryCollection',
+                typeName: 'Collection',
             }
         }
         console.log('hola hola hola parentFolderQF', parentFolderQF)
@@ -986,10 +988,10 @@ export function useSavedQuery(
                     saveModalRef.value?.clearData()
                     const guid = data.value.mutatedEntities.CREATE[0].guid
 
-                    const parentGuid = data.value.mutatedEntities.UPDATE[0].guid
+                    const parentGuid = parentFolderGuid
                     const parentQualifiedName =
-                        data.value.mutatedEntities.UPDATE[0].attributes
-                            .qualifiedName
+                        data.value.mutatedEntities.CREATE[0].attributes
+                            .parentQualifiedName
 
                     console.log(data.value, 'saved')
                     /* Not present in response */

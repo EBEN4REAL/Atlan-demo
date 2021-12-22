@@ -66,10 +66,7 @@
                     </div>
                 </div>
                 <div>
-                    <span
-                        v-if="true || classification?.propagate"
-                        class="text-primary"
-                    >
+                    <span v-if="classification?.propagate" class="text-primary">
                         Propagated
                     </span>
                 </div>

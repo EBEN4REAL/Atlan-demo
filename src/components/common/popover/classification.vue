@@ -6,11 +6,12 @@
                     <AtlanIcon
                         icon="ShieldCheck"
                         :color="classification.options?.color"
-                        class="h-5 mb-1 mr-1"
+                        class="h-6 mb-1 mr-1"
+                        style="margin-top: 2px"
                     />
                 </div>
                 <div class="flex flex-col flex-1 text-gray-700">
-                    <span class="text-base font-bold">
+                    <span class="text-lg font-bold">
                         {{
                             classification?.displayName ||
                             classification?.typeName
@@ -65,10 +66,8 @@
                         </div>
                     </div>
                 </div>
-                <div>
-                    <span v-if="classification?.propagate" class="text-primary">
-                        Propagated
-                    </span>
+                <div v-if="classification?.propagate">
+                    <span class="text-primary"> Propagated </span>
                 </div>
             </div>
         </template>

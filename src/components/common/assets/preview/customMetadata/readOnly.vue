@@ -195,7 +195,8 @@
             }
 
             const isMultivalued = ref(
-                props.attribute.options.multiValueSelect === 'true'
+                props.attribute.options.multiValueSelect === 'true' ||
+                    props.attribute.options.multiValueSelect === true
             )
 
             return {

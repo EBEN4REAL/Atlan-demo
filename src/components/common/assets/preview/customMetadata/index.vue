@@ -6,26 +6,21 @@
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
             <div>
-                <div
-                    v-if="readOnly"
-                    class="text-sm font-bold cursor-pointer text-primary"
-                    @click="() => (readOnly = false)"
-                >
-                    Edit
-                </div>
-                <div v-else class="flex gap-x-2">
-                    <div
+                <a-button v-if="readOnly" @click="() => (readOnly = false)">
+                    <AtlanIcon icon="Edit" />
+                    <span class="ml-1 text-gray-700">Edit</span>
+                </a-button>
+                <div v-else class="flex items-center gap-x-2">
+                    <span
                         class="text-sm font-medium text-gray-500 cursor-pointer"
                         @click="handleCancel"
                     >
                         Cancel
-                    </div>
+                    </span>
                     <AtlanButton
                         :disabled="!isEdit"
                         size="sm"
-                        color="minimal"
-                        paddi="compact"
-                        class="w-5 h-5 pl-5 pr-0 mr-2 text-sm font-bold cursor-pointer text-primary"
+                        padding="compact"
                         @click="handleUpdate"
                     >
                         Update
@@ -38,7 +33,7 @@
         >
             <template
                 v-for="(a, x) in readOnly
-                    ? applicableList.filter((l) => hasValue(l))
+                    ? [...applicableList].sort(readOnlySort)
                     : applicableList"
                 :key="x"
             >
@@ -60,6 +55,7 @@
                     <ReadOnly v-if="readOnly" :attribute="a" />
 
                     <EditState
+                        :index="x"
                         v-else-if="!readOnly"
                         v-model="a.value"
                         :attribute="a"
@@ -82,7 +78,7 @@
         defineAsyncComponent,
         Ref,
     } from 'vue'
-    import { whenever } from '@vueuse/core'
+    import { whenever, useMagicKeys, onKeyStroke } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
@@ -158,7 +154,7 @@
                             if (data.value.id === ab.split('.')[0]) {
                                 const attribute = ab.split('.')[1]
 
-                                let value = selectedAsset.value.attributes[ab]
+                                const value = selectedAsset.value.attributes[ab]
                                 const attrIndex =
                                     applicableList.value.findIndex(
                                         (a) => a.name === attribute
@@ -234,6 +230,8 @@
                 id: guid,
             })
 
+            const isEdit = ref(false)
+
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
 
@@ -251,7 +249,7 @@
                             'Some error occured...Please try again later.'
                         )
                         setAttributesList()
-                    } else if (isReady.value) {
+                    } else if (isReady?.value) {
                         loading.value = false
                         message.success(
                             `${data.value?.label} attributes for ${title(
@@ -262,6 +260,7 @@
 
                         mutateUpdate()
                     }
+                    isEdit.value = false
                 })
 
                 readOnly.value = true
@@ -275,7 +274,6 @@
 
                 readOnly.value = true
             }
-            const isEdit = ref(false)
             const handleChange = (index, value) => {
                 isEdit.value = true
                 applicableList.value[index].value = value
@@ -334,7 +332,17 @@
                 return !!formatDisplayValue(a.value?.toString() || '', dataType)
             }
 
+            const readOnlySort = (a, b) =>
+                hasValue(a) && !hasValue(b) ? -1 : 1
+
+            onKeyStroke(['Enter'], (e) => {
+                e.stopPropagation()
+                if ((e.ctrlKey || e.metaKey) && isEdit.value && !readOnly.value)
+                    handleUpdate()
+            })
+
             return {
+                readOnlySort,
                 hasValue,
                 isEdit,
                 getDatatypeOfAttribute,
@@ -357,6 +365,6 @@
 </script>
 <style scoped>
     .scrollheight {
-        max-height: calc(100vh - 12rem);
+        max-height: calc(100vh - 7rem);
     }
 </style>

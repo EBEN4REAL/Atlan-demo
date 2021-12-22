@@ -64,6 +64,6 @@ export const map = {
         getAPIPath(BASE_PATH, `/runs/archived/${id}/logs?${params || ''}`),
 
     [WORKFLOW_TEMPLATE_INDEX]: () =>
-        getAPIPath(BASE_PATH, `/workflowtemplates/index`),
-    [WORKFLOW_RUN_INDEX]: () => getAPIPath(BASE_PATH, `/runs/index`),
+        getAPIPath(BASE_PATH, `/workflowtemplates/indexsearch`),
+    [WORKFLOW_RUN_INDEX]: () => getAPIPath(BASE_PATH, `/runs/indexsearch`),
 }

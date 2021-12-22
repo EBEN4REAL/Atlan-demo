@@ -157,10 +157,10 @@
                         :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
                 </template>
-
+                <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
                 <component
                     :is="tab.component"
-                    v-if="tab.component"
+                    v-else-if="tab.component"
                     :key="selectedAsset.guid"
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
@@ -197,6 +197,7 @@
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
+    import NoAccess from '@/common/assets/misc/noAccess.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -204,6 +205,7 @@
             PreviewTabsIcon,
             CertificateBadge,
             ShareMenu,
+            NoAccess,
             // Tooltip,
             // AssetLogo,
             // StatusBadge,
@@ -329,6 +331,23 @@
                                     entityGuid: selectedAsset.value.guid,
                                     action: 'ENTITY_UPDATE',
                                 },
+                                {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'ENTITY_ADD_CLASSIFICATION',
+                                    classification: '*',
+                                },
+                                {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'ENTITY_REMOVE_CLASSIFICATION',
+                                    classification: '*',
+                                },
+                                /*  {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'RELATIONSHIP_ADD',
+                                }, */
                             ],
                         }
                         refresh()

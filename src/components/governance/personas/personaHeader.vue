@@ -34,7 +34,7 @@
                 <div class="flex items-center mb-0 text-sm text-gray-500">
                     <div class="mb-0 text-xl text-gray-700 truncate">
                         <span
-                            class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 truncate"
+                            class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 capitalize truncate"
                             data-test-id="header-name"
                         >
                             {{ persona.displayName }}</span

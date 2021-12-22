@@ -1,6 +1,6 @@
 <template>
     <template v-if="selectedPersonaDirty">
-        <div class="bg-white">
+        <div class="px-3 bg-white">
             <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
                 <template #label="t">
                     <div class="flex items-center">
@@ -36,84 +36,65 @@
             </MinimalTab>
         </div>
 
+        <div class="p-6 overflow-y-auto" v-if="activeTabKey === 'details'">
+            <PurposeMeta class="flex flex-col" :persona="persona" />
+        </div>
         <div
-            class="overflow-y-auto content-wrapper"
-            :class="
-                activeTabKey === 'policies'
-                    ? 'bg-white pt-0 pb-0 pr-3 pl-3'
-                    : ''
-            "
+            class="flex flex-col px-6 pt-6"
+            v-if="activeTabKey === 'policies'"
+            style="height: calc(100% - 155px)"
         >
-            <PurposeMeta
-                v-if="activeTabKey === 'details'"
-                class="px-4 pb-2"
-                :persona="persona"
-            />
-            <div v-else-if="activeTabKey === 'policies'">
-                <div class="sticky top-0 z-10 bg-white">
-                    <div class="flex items-center pt-3 pr-4">
-                        <SearchAndFilter
-                            v-model:value="searchPersona"
-                            :placeholder="`Search from ${totalPolicy} policies`"
-                            class="bg-white"
-                            :autofocus="true"
-                            size="minimal"
-                        />
-                        <a-dropdown trigger="click">
-                            <AtlanBtn
-                                class="flex-none mx-auto ml-6"
-                                color="primary"
-                                padding="compact"
-                                size="sm"
-                                @click.prevent
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-1/2">
+                    <div class="container-tabs">
+                        <a-radio-group
+                            v-model:value="activeTabFilter"
+                            class="flex flex-grow"
+                        >
+                            <a-radio-button value="all Persona"
+                                >All</a-radio-button
                             >
-                                <template #prefix>
-                                    <AtlanIcon icon="Add" />
-                                </template>
-                                Add new policy
-                                <template #suffix>
-                                    <AtlanIcon
-                                        icon="ChevronDown"
-                                        class="text-white"
-                                    />
-                                </template>
-                            </AtlanBtn>
-
-                            <template #overlay>
-                                <a-menu>
-                                    <a-menu-item
-                                        v-for="(
-                                            option, index
-                                        ) in addPolicyDropdownConfig"
-                                        :key="index"
-                                        @click="option.handleClick()"
-                                    >
-                                        <div class="flex items-center">
-                                            <AtlanIcon
-                                                v-if="option.icon"
-                                                class="w-4 h-4 text-gray-600"
-                                                :icon="option.icon"
-                                            />
-                                            <span class="pl-2 text-sm">{{
-                                                option.title
-                                            }}</span>
-                                        </div>
-                                    </a-menu-item>
-                                </a-menu>
-                            </template>
-                        </a-dropdown>
-                    </div>
-                    <div
-                        v-if="totalPolicy !== 0"
-                        class="px-3 py-4 pb-3 bg-white container-tabs"
-                    >
-                        <AggregationTabs
-                            v-model="activeTabFilter"
-                            :list="tabFilterList"
-                            :no-all="true"
-                        />
+                            <a-radio-button value="metaData"
+                                >Metadata</a-radio-button
+                            >
+                            <a-radio-button value="data">Data</a-radio-button>
+                        </a-radio-group>
                     </div>
                 </div>
+                <a-dropdown trigger="click">
+                    <a-button type="primary">
+                        <div class="flex items-center gap-x-1">
+                            New Policy
+
+                            <AtlanIcon icon="ChevronDown" class="text-white" />
+                        </div>
+                    </a-button>
+
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="(
+                                    option, index
+                                ) in addPolicyDropdownConfig"
+                                :key="index"
+                                @click="option.handleClick()"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        v-if="option.icon"
+                                        class="w-4 h-4 text-gray-600"
+                                        :icon="option.icon"
+                                    />
+                                    <span class="pl-2 text-sm">{{
+                                        option.title
+                                    }}</span>
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
+            </div>
+            <div class="flex flex-col flex-grow overflow-y-auto gap-y-3">
                 <template v-for="(policy, idx) in metaDataComputed" :key="idx">
                     <!-- Render it if the policy is being edited -->
                     <!-- <MetadataPolicy
@@ -159,77 +140,46 @@
                         @clickCard="handleSelectPolicy"
                     />
                 </template>
-                <div
-                    v-if="
-                        metaDataComputed.length === 0 &&
-                        dataPolicyComputed.length === 0 &&
-                        searchPersona
-                    "
-                    class="flex flex-col items-center justify-center mt-8"
-                >
-                    <component :is="NoResultIllustration"></component>
-                    <span class="text-sm font-bold text-gray">
-                        Sorry, we couldn’t find the policy you were looking
-                        for</span
-                    >
-                </div>
-                <!-- For pusing the new edit policy to bottom -->
-                <!-- <template
-                    v-for="(
-                        policy, idx
-                    ) in selectedPersonaDirty.metadataPolicies"
-                    :key="idx"
-                >
-                    <MetadataPolicy
-                        v-if="policyEditMap.metadataPolicies[policy.id!] && policy?.id?.includes(newIdTag)"
-                        class="px-5 bg-white"
-                        :policy="policy"
-                        @save="savePolicyUI('meta', policy.id!)"
-                        @delete="deletePolicyUI('meta', policy.id!)"
-                        @cancel="discardPolicy('meta', policy.id!)"
-                    />
-                </template> -->
-
-                <!-- <template
-                    v-for="(policy, idx) in dataPolicyComputed"
-                    :key="idx"
-                >
-                    <DataPolicy
-                        v-if="policyEditMap.dataPolicies[policy.id!] &&  policy?.id?.includes(newIdTag)"
-                        class="px-5 bg-white"
-                        :policy="policy"
-                        @delete="deletePolicyUI('data', policy.id!)"
-                        @save="savePolicyUI('data', policy.id!)"
-                        @cancel="discardPolicy('data', policy.id!)"
-                    />
-                </template> -->
-
-                <!-- ------------------ -->
-                <div
-                    v-if="
-                        !selectedPersonaDirty.metadataPolicies?.length &&
-                        !selectedPersonaDirty.dataPolicies?.length
-                    "
-                    class="flex flex-col items-center justify-center mt-8"
-                >
-                    <component :is="NewPolicyIllustration"></component>
-                    <span class="text-2xl font-bold text-gray">
-                        Create Policies</span
-                    >
-                </div>
             </div>
-            <div v-else-if="activeTabKey === 'linked_assets'" class="bg-white">
-                <div class="wrapper-height">
-                    <AssetsWrapper
-                        :initial-filters="filterConfig"
-                        :show-filters="false"
-                        page="purposes"
-                    />
-                    <!-- <LinkedTerms
+            <div
+                v-if="
+                    metaDataComputed.length === 0 &&
+                    dataPolicyComputed.length === 0 &&
+                    searchPersona
+                "
+                class="flex flex-col items-center justify-center mt-8"
+            >
+                <component :is="NoResultIllustration"></component>
+                <span class="text-sm font-bold text-gray">
+                    Sorry, we couldn’t find the policy you were looking
+                    for</span
+                >
+            </div>
+            <div
+                v-if="
+                    !selectedPersonaDirty.metadataPolicies?.length &&
+                    !selectedPersonaDirty.dataPolicies?.length
+                "
+                class="flex flex-col items-center justify-center mt-8"
+            >
+                <component :is="NewPolicyIllustration"></component>
+                <span class="text-2xl font-bold text-gray">
+                    Create Policies</span
+                >
+            </div>
+        </div>
+
+        <div v-else-if="activeTabKey === 'linked_assets'" class="bg-white">
+            <div class="wrapper-height">
+                <AssetsWrapper
+                    :initial-filters="filterConfig"
+                    :show-filters="false"
+                    page="purposes"
+                />
+                <!-- <LinkedTerms
                 v-else-if="activeTabKey === '2'"
                 :selected-classification="selectedClassification?.name"
             /> -->
-                </div>
             </div>
         </div>
     </template>

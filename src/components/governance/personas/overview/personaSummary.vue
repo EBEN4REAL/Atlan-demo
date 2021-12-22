@@ -1,13 +1,10 @@
 <template>
-    <div class="p-4 bg-white rounded">
-        <div class="flex items-center justify-between mb-8">
+    <div class="p-6 bg-white rounded">
+        <div class="flex items-center justify-between mb-4">
             <div class="flex items-center">
-                <div class="px-2 py-1 rounded bg-primary-light text-primary">
-                    <AtlanIcon icon="Overview"></AtlanIcon>
-                </div>
-                <div class="ml-2 font-bold">Details</div>
+                <div class="font-semibold">Details</div>
             </div>
-            <div>
+            <div class="hidden">
                 <a-switch
                     v-model:checked="persona.enabled"
                     class="ml-auto"
@@ -20,76 +17,34 @@
                 <span class="ml-2 text-sm text-gray">Enable Persona</span>
             </div>
         </div>
-        <div class="flex mb-5">
-            <div class="mr-3 info-widget">
-                <div class="mb-1 text-gray-500">Created By</div>
+        <div class="flex flex-col gap-y-2">
+            <div class="">
+                <div class="mb-0 text-gray-500">Name</div>
+                {{ persona.displayName }}
+            </div>
+            <div class="">
+                <div class="mb-0 text-gray-500">Description</div>
+                <span v-if="persona.description">{{
+                    persona.description
+                }}</span>
+                <span v-else class="text-gray-500"
+                    >No description available</span
+                >
+            </div>
+            <div class="">
+                <div class="mb-0 text-gray-500">Created by</div>
                 <div>
-                    <PopOverUser
-                        :item="persona.createdBy"
-                        class="flex items-center"
-                    >
-                        <Avatar
-                            :image-url="imageUrl(persona.createdBy)"
-                            :allow-upload="false"
-                            :avatar-name="persona.createdBy"
-                            :avatar-size="16"
-                            :avatar-shape="'circle'"
-                            class="mr-1"
-                        />
-                        <div>{{ persona.createdBy }}</div>
-                    </PopOverUser>
+                    {{ persona.createdBy }}
                 </div>
             </div>
-            <div class="mr-3 info-widget">
-                <div class="mb-1 text-gray-500">Created</div>
+            <div class="">
+                <div class="mb-0 text-gray-500">Created at</div>
                 <a-tooltip
                     class="cursor-default"
                     :title="timeStamp(persona.createdAt, true)"
-                    placement="bottom"
+                    placement="left"
                     >{{ timeStamp(persona.createdAt) }}</a-tooltip
                 >
-            </div>
-            <div class="mr-3 info-widget" data-test-id="tab-policies">
-                <div class="mb-1 text-gray-500">Policies</div>
-                <div
-                    v-if="
-                        persona.dataPolicies?.length === 0 &&
-                        persona.metadataPolicies?.length === 0
-                    "
-                    class="cursor-pointer text-primary"
-                    @click="$emit('setActiveTab', 'policies')"
-                >
-                    <AtlanIcon icon="Add" class="mb-0.5 mr-1"></AtlanIcon>
-                    Add policies
-                </div>
-                <div
-                    v-else
-                    class="cursor-pointer text-primary"
-                    @click="$emit('setActiveTab', 'policies')"
-                >
-                    <div>
-                        {{ persona.metadataPolicies?.length ?? 0 }}
-                        Metadata, {{ persona.dataPolicies?.length ?? 0 }} Data
-                    </div>
-                </div>
-            </div>
-            <div class="mr-3 info-widget" data-test-id="tab-users">
-                <div class="mb-1 text-gray-500">Users and Groups</div>
-                <div
-                    v-if="
-                        persona.users?.length === 0 &&
-                        persona.groups?.length === 0
-                    "
-                >
-                    <!-- <AtlanIcon icon="Add" class="mb-0.5 mr-1"></AtlanIcon> -->
-                    No users or groups
-                </div>
-                <div v-else>
-                    <div>
-                        {{ persona.users?.length ?? 0 }}
-                        Users, {{ persona.groups?.length ?? 0 }} Groups
-                    </div>
-                </div>
             </div>
         </div>
         <!-- <div>

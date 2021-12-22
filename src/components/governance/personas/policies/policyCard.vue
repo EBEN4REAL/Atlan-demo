@@ -3,25 +3,61 @@
         class="relative bg-white border border-gray-300 rounded container-policy-card"
     >
         <div
-            class="flex flex-col px-3 py-2 rounded cursor-pointer group hover:bg-gray-100 card-policy"
+            class="flex flex-col px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
             :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"
             @click="handleClickPlicyCard"
         >
-            <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center mb-1">
+                <AtlanIcon
+                    icon="Settings"
+                    v-if="type === 'meta'"
+                    class="-mt-0.5"
+                />
+                <AtlanIcon
+                    icon="QueryGrey"
+                    v-if="type === 'data'"
+                    class="-mt-1"
+                />
+                <span
+                    class="ml-1 text-gray-500 uppercase"
+                    data-test-id="policy-type"
+                    >{{
+                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
+                    }}</span
+                >
+                <span class="text-gray-500">/{{ policy?.name }}</span>
+                <div class=""></div>
+            </div>
+            <div class="flex items-center justify-between">
                 <div class="flex items-center gap-x-3">
                     <div class="flex items-center">
                         <img
                             :src="getImage(connectionQfName?.split('/')[1])"
-                            class="w-auto h-4 pr-1 rounded-tl rounded-bl"
+                            class="w-auto h-4 pr-1 -mt-1 rounded-tl rounded-bl"
                         />
                         <span>{{ connectorName }}/{{ connectionName }}</span>
                     </div>
                     <div v-if="policy.assets.length > 0">
-                        <AtlanIcon icon="Compass" class="mr-1" />
-                        <span class="flex-none text-sm">
+                        <span class="flex-none text-sm" v-if="!isAddAll">
                             {{ policy.assets.length }}
                             {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
                         </span>
+                        <span class="flex-none text-sm" v-if="isAddAll">
+                            All assets
+                        </span>
+                    </div>
+                    <div v-if="policy.actions.length > 0 && type === 'meta'">
+                        <span class="flex-none text-sm">
+                            {{ policy.actions.length }}
+                            {{
+                                policy.actions.length > 1
+                                    ? 'permissions'
+                                    : 'permission'
+                            }}
+                        </span>
+                    </div>
+                    <div v-if="type === 'data'">
+                        <span class="flex-none text-sm"> Query Access </span>
                     </div>
                 </div>
                 <span v-if="!policy.allow" class="denied-policy-pill">
@@ -29,27 +65,6 @@
                         type === 'meta' ? 'Denied Permissions' : 'Denied Query'
                     }}
                 </span>
-            </div>
-            <div class="flex gap-x-3">
-                <div class="text-gray-500">
-                    <AtlanIcon
-                        icon="Settings"
-                        v-if="type === 'meta'"
-                        class="-mt-0.5"
-                    />
-                    <AtlanIcon
-                        icon="QueryGrey"
-                        v-if="type === 'data'"
-                        class="-mt-0.5"
-                    />
-                    <span class="ml-1" data-test-id="policy-type">{{
-                        type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                    }}</span>
-                    ({{ policy?.name }})
-                </div>
-                <div>
-                    {{ policy.createdBy }}
-                </div>
             </div>
         </div>
 
@@ -100,26 +115,6 @@
                 <AtlanIcon icon="Delete" class="" />
             </AtlanBtn>
         </a-popover>
-        <!-- <a-popconfirm
-            v-if="canDelete"
-            placement="leftTop"
-            :title="getPopoverContent(policy)"
-            ok-text="Yes"
-            :ok-type="'default'"
-            overlay-class-name="popoverConfirm"
-            cancel-text="Cancel"
-            @confirm="removePolicy"
-        >
-            <AtlanBtn
-                class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
-                size="sm"
-                color="secondary"
-                data-test-id="policy-delete"
-                padding="compact"
-            >
-                <AtlanIcon icon="Delete" class="" />
-            </AtlanBtn>
-        </a-popconfirm> -->
     </div>
 </template>
 
@@ -198,6 +193,16 @@
                 )
                 return found?.attributes?.qualifiedName
             })
+
+            const isAddAll = computed(() => {
+                if (policy.value.assets.length === 1) {
+                    if (policy.value.assets[0] === connectionQfName.value) {
+                        return true
+                    }
+                }
+                return false
+            })
+
             const connectionName = computed(() => {
                 const found = connStore.getList.find(
                     (conn) => conn.guid === policy.value.connectionId
@@ -237,6 +242,7 @@
                 handleClickPlicyCard,
                 canDelete,
                 visibleDelete,
+                isAddAll,
             }
         },
     })

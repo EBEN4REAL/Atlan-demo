@@ -28,7 +28,12 @@
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
-                    {{ node.title }}
+                    <div class="flex flex-col">
+                        {{ node.title }}
+                    </div>
+                    <span class="text-sm text-gray-500" v-if="node.node.count">
+                        ({{ node.node.count }} assets)</span
+                    >
                 </div>
                 <div
                     v-else
@@ -186,6 +191,8 @@
                                     connection?.attributes
                                 ),
                                 children: [],
+                                count: connection.assetCount,
+
                                 title:
                                     connection.attributes.name ||
                                     connection.attributes.qualifiedName,

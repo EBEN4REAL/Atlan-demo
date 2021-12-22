@@ -1,8 +1,8 @@
 <template>
-    <div class="flex flex-col gap-y-3">
+    <div class="grid grid-cols-3 gap-x-3">
         <PersonaUsersGroups
             v-model:persona="persona"
-            class="border border-gray-200"
+            class="col-span-2 border border-gray-200"
         />
         <PersonaSummary
             :persona="persona"

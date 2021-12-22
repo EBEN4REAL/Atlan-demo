@@ -175,6 +175,7 @@
                     :initial-filters="filterConfig"
                     :show-filters="false"
                     page="purposes"
+                    :enable-sidebar-drawer="true"
                 />
                 <!-- <LinkedTerms
                 v-else-if="activeTabKey === '2'"
@@ -513,5 +514,10 @@
 <style scoped lang="less">
     .content-wrapper {
         height: inherit;
+    }
+    .wrapper-height {
+        height: 660px;
+        overflow: auto;
+        padding-bottom: 20px;
     }
 </style>

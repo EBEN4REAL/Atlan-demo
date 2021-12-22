@@ -38,7 +38,7 @@
         >
             <template
                 v-for="(a, x) in readOnly
-                    ? applicableList.filter((l) => hasValue(l))
+                    ? [...applicableList].sort(readOnlySort)
                     : applicableList"
                 :key="x"
             >
@@ -158,7 +158,7 @@
                             if (data.value.id === ab.split('.')[0]) {
                                 const attribute = ab.split('.')[1]
 
-                                let value = selectedAsset.value.attributes[ab]
+                                const value = selectedAsset.value.attributes[ab]
                                 const attrIndex =
                                     applicableList.value.findIndex(
                                         (a) => a.name === attribute
@@ -334,7 +334,11 @@
                 return !!formatDisplayValue(a.value?.toString() || '', dataType)
             }
 
+            const readOnlySort = (a, b) =>
+                hasValue(a) && !hasValue(b) ? -1 : 1
+
             return {
+                readOnlySort,
                 hasValue,
                 isEdit,
                 getDatatypeOfAttribute,
@@ -357,6 +361,6 @@
 </script>
 <style scoped>
     .scrollheight {
-        max-height: calc(100vh - 12rem);
+        max-height: calc(100vh - 7rem);
     }
 </style>

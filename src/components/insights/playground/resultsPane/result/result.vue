@@ -47,15 +47,14 @@
 
             <QueryError
                 v-else-if="
-                    isQueryRunning === 'error' &&
-                    !LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
+                    isQueryRunning === 'error' && !haveLineNumber(queryErrorObj)
                 "
             />
+
             <LineError
                 :errorDecorations="errorDecorations"
                 v-else-if="
-                    isQueryRunning === 'error' &&
-                    LINE_ERROR_NAMES.includes(queryErrorObj.errorName)
+                    isQueryRunning === 'error' && haveLineNumber(queryErrorObj)
                 "
             />
 
@@ -115,6 +114,7 @@
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useError } from '~/components/insights/playground/common/composables/UseError'
+    import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
 
     export default defineComponent({
         components: {
@@ -150,6 +150,7 @@
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const editorInstance = inject('editorInstance') as Ref<any>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
+            const { haveLineNumber } = useResultPane(inlineTabs)
             const queryErrorObj = computed(
                 () =>
                     activeInlineTab.value?.playground?.resultsPane?.result
@@ -189,6 +190,7 @@
             }
 
             return {
+                haveLineNumber,
                 errorDecorations,
                 LINE_ERROR_NAMES,
                 SOURCE_ACCESS_ERROR_NAMES,

@@ -174,7 +174,7 @@
                     // console.log('folder select: ', event)
                     // console.log('selected item: ', item)
 
-                    if (item.typeName === 'Folder') {
+                    if (item.typeName === 'QueryFolder') {
                         if (
                             selectedNewFolder?.value.guid ===
                             event.node.dataRef.guid

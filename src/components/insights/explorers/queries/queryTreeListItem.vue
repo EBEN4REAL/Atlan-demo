@@ -14,7 +14,7 @@
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full m-0">
                 <div
-                    v-if="item.typeName === 'Folder'"
+                    v-if="item.typeName === 'QueryFolder'"
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="py-1 parent-ellipsis-container">

@@ -23,11 +23,8 @@ const useCollectionAccess = (
         'description',
         'userDescription',
         'certificateStatus',
-        
         'ownerUsers',
         'ownerGroups',
-        'adminUsers',
-        'adminGroups',
         '__createdBy',
         '__state',
         '__guid',
@@ -150,23 +147,23 @@ const useCollectionAccess = (
     })
 
     const hasCollectionWritePermission = computed(() => {
-        let adminUsers = selectedCollectionData?.value?.entities[0].attributes
-            ?.adminUsers
-            ? selectedCollectionData?.value?.entities[0].attributes?.adminUsers
+        let ownerUsers = selectedCollectionData?.value?.entities[0].attributes
+            ?.ownerUsers
+            ? selectedCollectionData?.value?.entities[0].attributes?.ownerUsers
             : []
-        let adminGroups = selectedCollectionData.value?.entities[0].attributes
-            ?.adminGroups
-            ? selectedCollectionData.value?.entities[0].attributes?.adminGroups
+        let ownerGroups = selectedCollectionData.value?.entities[0].attributes
+            ?.ownerGroups
+            ? selectedCollectionData.value?.entities[0].attributes?.ownerGroups
             : []
 
-        if (adminUsers?.length) {
-            let v1 = adminUsers.find((el) => el === currentUser.value)
+        if (ownerUsers?.length) {
+            let v1 = ownerUsers.find((el) => el === currentUser.value)
             if (v1) {
                 return true
             }
         }
-        if (adminGroups?.length) {
-            let filteredArray = adminGroups.filter((value) =>
+        if (ownerGroups?.length) {
+            let filteredArray = ownerGroups.filter((value) =>
                 userGroups.value.includes(value)
             )
             return filteredArray.length > 0

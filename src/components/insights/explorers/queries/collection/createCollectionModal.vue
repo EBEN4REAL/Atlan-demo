@@ -396,11 +396,11 @@
                 if (isCreate.value) {
                     return 'true'
                 } else {
-                    let x1 = item?.value?.attributes?.adminGroups
-                        ? item?.value?.attributes?.adminGroups
+                    let x1 = item?.value?.attributes?.ownerGroups
+                        ? item?.value?.attributes?.ownerGroups
                         : []
-                    let x2 = item?.value?.attributes?.adminUsers
-                        ? item?.value?.attributes?.adminUsers
+                    let x2 = item?.value?.attributes?.ownerUsers
+                        ? item?.value?.attributes?.ownerUsers
                         : []
                     let x3 = item?.value?.attributes?.viewerUsers
                         ? item?.value?.attributes?.viewerUsers
@@ -441,10 +441,10 @@
                 edit: {
                     ownerGroups: isCreate.value
                         ? []
-                        : item?.value?.attributes?.adminGroups,
+                        : item?.value?.attributes?.ownerGroups,
                     ownerUsers: isCreate.value
                         ? [username.value]
-                        : item?.value?.attributes?.adminUsers,
+                        : item?.value?.attributes?.ownerUsers,
                 },
                 view: {
                     ownerGroups: isCreate.value
@@ -517,14 +517,14 @@
                 let ownersData =
                     isShareable.value === 'true'
                         ? {
-                              adminUsers: userData.value['edit'].ownerUsers,
-                              adminGroups: userData.value['edit'].ownerGroups,
+                              ownerUsers: userData.value['edit'].ownerUsers,
+                              ownerGroups: userData.value['edit'].ownerGroups,
                               viewerUsers: userData.value['view'].ownerUsers,
                               viewerGroups: userData.value['view'].ownerGroups,
                           }
                         : {
-                              adminUsers: [],
-                              adminGroups: [],
+                              ownerUsers: [],
+                              ownerGroups: [],
                               viewerUsers: [],
                               viewerGroups: [],
                           }
@@ -569,20 +569,20 @@
                 let ownersData =
                     isShareable.value === 'true'
                         ? {
-                              adminUsers: userData.value['edit'].ownerUsers,
-                              adminGroups: userData.value['edit'].ownerGroups,
+                              ownerUsers: userData.value['edit'].ownerUsers,
+                              ownerGroups: userData.value['edit'].ownerGroups,
                               viewerUsers: userData.value['view'].ownerUsers,
                               viewerGroups: userData.value['view'].ownerGroups,
                           }
                         : {
-                              adminUsers: [],
-                              adminGroups: [],
+                              ownerUsers: [],
+                              ownerGroups: [],
                               viewerUsers: [],
                               viewerGroups: [],
                           }
 
                 const entity = {
-                    typeName: 'Collection',
+                    typeName: 'QueryCollection',
                     attributes: {
                         ...item?.value?.attributes,
                         ...ownersData,

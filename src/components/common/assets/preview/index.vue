@@ -262,7 +262,8 @@
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
             const { selectedAsset, isDrawer } = toRefs(props)
-            const { getAllowedActions } = useAssetEvaluate()
+            const { getAllowedActions, getAssetEvaluationsBody } =
+                useAssetEvaluate()
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
             )
@@ -325,30 +326,9 @@
                 (prev) => {
                     if (prev) {
                         body.value = {
-                            entities: [
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_UPDATE',
-                                },
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_ADD_CLASSIFICATION',
-                                    classification: '*',
-                                },
-                                {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_REMOVE_CLASSIFICATION',
-                                    classification: '*',
-                                },
-                                /*  {
-                                    typeName: selectedAsset.value.typeName,
-                                    entityGuid: selectedAsset.value.guid,
-                                    action: 'ENTITY_UPDATE_BUSINESS_METADATA',
-                                }, */
-                            ],
+                            entities: getAssetEvaluationsBody(
+                                selectedAsset.value
+                            ),
                         }
                         refresh()
                     }

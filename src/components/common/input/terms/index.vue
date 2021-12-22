@@ -28,9 +28,7 @@
             <template v-for="term in list" :key="term.guid">
                 <TermPill
                     :term="term"
-                    :allow-delete="
-                        allowDelete === null ? editPermission : allowDelete
-                    "
+                    :allow-delete="allowDelete"
                     @delete="handleDeleteTerm"
                 />
             </template>
@@ -176,6 +174,6 @@
             @apply px-0 py-3 !important;
             width: 350px !important;
         }
-            max-height: 500px !important;
+        max-height: 500px !important;
     }
 </style>

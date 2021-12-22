@@ -8,7 +8,9 @@
                 :static-use="false"
                 :show-aggrs="true"
                 class="asset-list"
-                :emptyViewText="
+                page="admin"
+                :preference="{ sort: 'default' }"
+                :empty-view-text="
                     selectedUser || selectedGroup
                         ? `Seems like ${
                               selectedUser

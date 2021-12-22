@@ -331,9 +331,7 @@
             if (discoveryStore.activePostFacet && page.value === 'assets') {
                 postFacets.value = discoveryStore.activePostFacet
             }
-            if (discoveryStore.preferences) {
-                console.log(discoveryStore.preferences)
-
+            if (discoveryStore.preferences && page.value !== 'admin') {
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
                 preference.value.display =

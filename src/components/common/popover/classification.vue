@@ -11,37 +11,12 @@
                         Propagated
                     </span>
                 </div>
-                <span class="mb-1 text-sm font-bold">
+                <span class="font-bold">
                     {{
                         classification?.displayName || classification?.typeName
                     }}
                 </span>
 
-                <div class="flex gap-2 mt-1 mb-1">
-                    <div
-                        v-if="classification.updateTime"
-                        class="text-xs text-gray-500"
-                    >
-                        Last updated
-
-                        <strong class="font-bold text-black">
-                            {{ useTimeAgo(classification.updateTime).value }}
-                        </strong>
-                    </div>
-
-                    <div
-                        v-if="classification.updatedBy"
-                        class="text-xs text-gray-500"
-                    >
-                        By
-                        <AtlanIcon icon="User" class="mr-1 text-xs" />
-                        <span class="font-bold text-black capitalize">{{
-                            classification.updatedBy
-                        }}</span>
-                    </div>
-                </div>
-
-                <span class="mt-1 mb-1 text-xs text-gray-500">Description</span>
                 <span v-if="classification.description" class="mb-3 text-sm">
                     {{ classification.description }}
                 </span>
@@ -75,6 +50,21 @@
                                 :username="classification.createdBy"
                             ></UserPill>
                         </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 mt-3 text-xs text-gray-500">
+                    <div v-if="classification.updateTime">
+                        Last updated
+
+                        <span class="font-bold text-gray-500">
+                            {{ useTimeAgo(classification.updateTime).value }}
+                        </span>
+                        <span v-if="classification.updatedBy">
+                            by
+                            <span class="font-bold text-gray-500 capitalize">{{
+                                classification.updatedBy
+                            }}</span>
+                        </span>
                     </div>
                 </div>
             </div>

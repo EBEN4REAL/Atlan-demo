@@ -46,6 +46,7 @@
                 :src="updatedImageUrl"
             >
                 <template #icon>
+                    <!-- <AtlanIcon v-if="isAtlan" icon="AtlanIcon"></AtlanIcon> -->
                     <AtlanIcon v-if="isGroup" icon="Group"></AtlanIcon>
                     <AtlanIcon v-else icon="User"></AtlanIcon>
                 </template>
@@ -89,6 +90,10 @@
                 default: 'bg-primary-light',
             },
             isGroup: {
+                type: Boolean,
+                default: false,
+            },
+            isAtlan: {
                 type: Boolean,
                 default: false,
             },

@@ -10,7 +10,7 @@
                         } users`"
                         class="mr-1"
                         size="minimal"
-                        :dot="!!statusFilter"
+                        :dot="!!statusFilter?.length"
                         @change="handleSearch"
                     >
                         <template #filter>
@@ -278,7 +278,7 @@
                 setUserUniqueAttribute,
                 closePreview,
                 userId,
-                userUpdated
+                userUpdated,
             } = useUserPreview()
             const showUserPreviewDrawer = (user: any) => {
                 if (userId.value === user.id && showPreview.value) {

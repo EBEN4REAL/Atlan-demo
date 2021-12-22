@@ -1,14 +1,15 @@
 <template>
-    <div class="pt-3 pb-0">
+    <div class="grid grid-cols-3 gap-x-3">
+        <div class="col-span-2 p-6 bg-white border border-gray-200 rounded">
+            <div class="mb-1 text-gray-500">Classifications</div>
+            <Classification
+                :allowDelete="selectedClassifications.length > 1"
+                v-model:modelValue="selectedClassifications"
+                @change="updateClassifications"
+                :editPermission="true"
+            />
+        </div>
         <PurposeSummary :purpose="persona" @setActiveTab="setActiveTab">
-            <template v-slot:classifications>
-                <div class="mb-1 text-gray-500">Classifications</div>
-                <Classification
-                    :allowDelete="selectedClassifications.length > 1"
-                    v-model:modelValue="selectedClassifications"
-                    @change="updateClassifications"
-                />
-            </template>
         </PurposeSummary>
         <!-- <div class="pt-6 details-section">
             <span class="text-sm text-gray-500">Created by</span>

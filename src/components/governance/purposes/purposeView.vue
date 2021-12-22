@@ -18,7 +18,7 @@
                 </SearchAndFilter>
                 <AtlanBtn
                     :disabled="isEditing"
-                    class="flex-none"
+                    class="flex-none ml-4"
                     size="sm"
                     color="primary"
                     padding="compact"

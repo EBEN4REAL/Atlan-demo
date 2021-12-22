@@ -51,8 +51,8 @@
                     ownerUsers: selectedUser.value?.username
                         ? [selectedUser.value.username]
                         : [],
-                    ownerGroups: selectedGroup.value?.name
-                        ? [selectedGroup.value.name]
+                    ownerGroups: selectedGroup.value?.alias
+                        ? [selectedGroup.value.alias]
                         : [],
                 },
             }))

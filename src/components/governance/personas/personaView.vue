@@ -99,12 +99,16 @@
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
         <template v-else-if="selectedPersona">
             <div class="bg-white">
-                <PersonaHeader :persona="selectedPersona" />
+                <PersonaHeader
+                    :persona="selectedPersona"
+                    v-model:openEditModal="openEditModal"
+                />
             </div>
             <PersonaBody
                 v-model:persona="selectedPersona"
                 :whitelisted-connection-ids="whitelistedConnectionIds"
                 @selectPolicy="handleSelectPolicy"
+                @editDetails="openEditModal = true"
             />
         </template>
         <div
@@ -209,7 +213,7 @@
             const selectedPolicy = ref({})
             const authStore = useAuthStore()
             const { roles } = storeToRefs(authStore)
-
+            const openEditModal = ref(false)
             const handleCloseModalDetailPolicy = () => {
                 modalDetailPolicyVisible.value = false
             }
@@ -285,6 +289,7 @@
                 selectedPolicy,
                 whitelistedConnectionIds,
                 roles,
+                openEditModal,
             }
         },
     })

@@ -2,6 +2,7 @@
     <a-select
         v-model:value="modelValue"
         mode="tags"
+        ref="inputRef"
         :placeholder="placeholder"
         :allow-clear="true"
         :open="dropdownOpen"
@@ -49,7 +50,6 @@
         )
             return
         const allowDecimal = ['double', 'float', 'decimal'].includes(
-
             dataType.value.toLowerCase()
         )
         const n = parseInt(v.key, 10)
@@ -57,6 +57,12 @@
             if (allowDecimal && v.key === '.') return
             v.preventDefault()
         }
+    }
+
+    const inputRef = ref()
+
+    const focus = () => {
+        inputRef.value.focus()
     }
 
     const change = (v) => {

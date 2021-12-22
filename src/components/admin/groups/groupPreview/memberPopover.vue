@@ -1,45 +1,45 @@
 <template>
     <a-popover
-        v-model:visible='showPopover'
-        placement='bottom'
+        v-model:visible="showPopover"
+        placement="bottom"
         :trigger="['click']"
-        :destroy-tooltip-on-hide='true'
-        :overlay-class-name='$style.ownerPopover'
+        :destroy-tooltip-on-hide="true"
+        :overlay-class-name="$style.ownerPopover"
     >
         <template #content>
-            <div class=''>
+            <div class="">
                 <OwnerFacets
-                    v-model:modelValue='selectedUserIds'
-                    :show-none='false'
+                    v-model:modelValue="selectedUserIds"
+                    :show-none="false"
                     :enable-tabs="['users']"
-                    :hide-disabled-tabs='true'
-                    select-user-key='id'
+                    :hide-disabled-tabs="true"
+                    select-user-key="id"
                 ></OwnerFacets>
             </div>
-            <div class='flex justify-end mr-3'>
+            <div class="flex justify-end mr-3">
                 <AtlanButton
-                    :is-loading='addMemberLoading'
-                    type='primary'
-                    size='sm'
-                    padding='compact'
-                    :disabled='addMemberLoading'
+                    :is-loading="addMemberLoading"
+                    type="primary"
+                    size="sm"
+                    padding="compact"
+                    :disabled="addMemberLoading"
                     @click="addMembersToGroup"
                 >
-                    <div class='flex items-center'>
-                        <div v-if='!addMemberLoading'>Save</div>
+                    <div class="flex items-center">
+                        <div v-if="!addMemberLoading">Save</div>
                         <div v-else>Saving</div>
                     </div>
                 </AtlanButton>
             </div>
         </template>
-        <slot name='label'>
+        <slot name="label">
             <AtlanButton
-                size='sm'
-                padding='compact'
-                class='text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary'
+                size="sm"
+                padding="compact"
+                class="text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
             >
-                <div class='flex items-center'>
-                    <AtlanIcon icon='Add' class='h-3 mr-2'></AtlanIcon>
+                <div class="flex items-center">
+                    <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
                     <div>Add Member</div>
                 </div>
             </AtlanButton>
@@ -53,19 +53,18 @@
     import OwnerFacets from '~/components/common/facet/owners/index.vue'
     import { Groups } from '~/services/service/groups'
     import { pluralizeString } from '~/utils/string'
+    import AtlanButton from '@/UI/button.vue'
 
     // Define props here.
     const props = defineProps({
         selectedGroup: {
             type: String,
-            default: ''
-        }
+            default: '',
+        },
     })
 
     // Define emits here.
-    const emit = defineEmits([
-        'membersAdded'
-    ])
+    const emit = defineEmits(['membersAdded'])
 
     // Show Popover or Not
     const showPopover = ref(false)
@@ -105,9 +104,7 @@
                     selectedUserIds.value.ownerUsers = []
                     emit('membersAdded')
                 } else if (error && error.value) {
-                    message.error(
-                        'Unable to add members, please try again.'
-                    )
+                    message.error('Unable to add members, please try again.')
                     showPopover.value = false
                 }
             },
@@ -116,10 +113,10 @@
     }
 </script>
 
-<style lang='less' module>
+<style lang="less" module>
     .ownerPopover {
         :global(.ant-popover-inner-content) {
-        @apply px-0 py-3 !important;
+            @apply px-0 py-3 !important;
             width: 250px !important;
         }
     }

@@ -1,16 +1,27 @@
 <template>
-    <div><b>Classification </b>{{ data.displayValue }}</div>
-    <div class="flex my-3">
-        <ClassificationPill
-            :name="classificationValue?.name"
-            :displayName="classificationValue?.displayName"
-            :color="classificationValue?.options?.color"
-        ></ClassificationPill>
+    <div><b>Classification </b> was {{ data.displayValue }}</div>
+
+    <div class="flex flex-wrap my-1">
+        <Popover :classification="classification">
+            <ClassificationPill
+                :name="classification?.name"
+                :displayName="classification?.displayName"
+                :color="classification?.options?.color"
+            ></ClassificationPill>
+        </Popover>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, onMounted, ref } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        onMounted,
+        ref,
+        computed,
+    } from 'vue'
+    import Popover from '@/common/popover/classification.vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
     import ClassificationPill from '@/common/pills/classification.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -18,7 +29,7 @@
     export default defineComponent({
         name: 'ClassificationActivity',
 
-        components: { ClassificationPill },
+        components: { ClassificationPill, Popover },
 
         props: {
             data: {
@@ -31,17 +42,15 @@
         setup(props) {
             const { data } = toRefs(props)
             const { classificationList } = useTypedefData()
-            const classificationValue = ref({})
 
-            onMounted(() => {
-                classificationList.value.map((classification) => {
-                    if (classification.name === data.value.value) {
-                        classificationValue.value = classification
-                    }
-                })
+            const classification = computed(() => {
+                console.log(classificationList.value)
+                return classificationList.value.find(
+                    (item) => item.name === data.value.value.typeName
+                )
             })
 
-            return { classificationValue }
+            return { classification }
         },
     })
 </script>

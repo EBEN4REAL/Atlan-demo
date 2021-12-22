@@ -53,7 +53,11 @@
         </div>
 
         <div class="p-6 overflow-y-auto" v-if="activeTabKey === 'details'">
-            <PersonaMeta class="pb-0" :persona="persona" />
+            <PersonaMeta
+                class="pb-0"
+                :persona="persona"
+                @editDetails="$emit('editDetails')"
+            />
         </div>
         <div
             class="flex flex-col px-6 pt-6"

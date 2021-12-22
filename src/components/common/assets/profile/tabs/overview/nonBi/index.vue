@@ -107,8 +107,4 @@
     })
 </script>
 
-<style lang="less" scoped>
-    .max-profile-width {
-        max-width: calc(100vw - 420px);
-    }
-</style>
+<style lang="less" scoped></style>

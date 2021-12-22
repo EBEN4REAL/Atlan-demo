@@ -4,7 +4,7 @@
             v-model:visible="isEditing"
             ok-text="Save"
             title="Edit Persona"
-            @cancel="discardPersona"
+            @cancel="handleCancel"
             @ok="saveEditedPersona"
         >
             <div class="flex flex-col items-stretch pb-4 gap-y-1">
@@ -93,7 +93,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, h } from 'vue'
+    import { defineComponent, PropType, computed, toRefs, h, watch } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import CreationModal from '@/admin/common/addModal.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
@@ -111,6 +111,7 @@
     import { useTimeAgo } from '@vueuse/core'
     import map from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PersonaHeader',
@@ -120,9 +121,16 @@
                 type: Object as PropType<IPersona>,
                 required: true,
             },
+            openEditModal: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
         setup(props, { emit }) {
             const { persona } = toRefs(props)
+            // const { openEditModal } = toRefs(props)
+            const { openEditModal } = useVModels(props, emit)
             const deletePersona = () => {
                 Modal.confirm({
                     title: `Delete persona`,
@@ -207,12 +215,15 @@
 
                     isEditing.value = false
                     reFetchList()
+                    openEditModal.value = false
                 } catch (error) {
                     message.error({
                         content: 'Failed to update persona',
                         duration: 1.5,
                         key: messageKey,
                     })
+                    isEditing.value = false
+                    openEditModal.value = false
                 }
             }
 
@@ -224,6 +235,14 @@
                 }
                 return ''
             }
+            const handleCancel = () => {
+                discardPersona()
+                openEditModal.value = false
+            }
+
+            watch(openEditModal, () => {
+                if (openEditModal.value) isEditing.value = true
+            })
 
             return {
                 personaActions,
@@ -234,6 +253,7 @@
                 timeStamp,
                 map,
                 deletePersona,
+                handleCancel,
             }
         },
     })

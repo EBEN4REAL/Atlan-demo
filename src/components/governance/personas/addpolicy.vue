@@ -236,7 +236,7 @@
                     </div>
 
                     <div
-                        class="flex items-center p-2 mt-1 border border-gray-200 border-dashed rounded border-bottom"
+                        class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
                     >
                         <span v-if="selectedPermission.length === 0">
                             <a-button
@@ -261,7 +261,9 @@
                                 <div class="text-gray-500 title-tag">
                                     {{ el.title }}
                                 </div>
-                                <div class="value-tag">{{ el.value }}</div>
+                                <div class="font-mono tracking-wide value-tag">
+                                    {{ el.value }}
+                                </div>
                             </div>
                         </div>
                     </div>

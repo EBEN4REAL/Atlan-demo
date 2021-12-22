@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 bg-white rounded user-group-wrapper">
+    <div class="py-6 bg-white rounded user-group-wrapper">
         <!-- START Error State -->
         <div
             v-if="errorUsersGroups"
@@ -54,15 +54,18 @@
                 !groupsError &&
                 !usersError
             "
+            class="flex flex-col overflow-y-hidden"
         >
-            <div class="flex items-center justify-between w-full mb-2">
-                <div class="mr-4 w-80">
-                    <SearchAndFilter
-                        v-model:value="queryText"
-                        class="bg-white"
-                        :placeholder="placeholder"
-                        size="minimal"
-                    />
+            <div class="flex items-center justify-between w-full px-6 mb-2">
+                <div class="flex mr-4 gap-x-2">
+                    <a-radio-group
+                        v-model:value="listType"
+                        class="flex flex-grow"
+                    >
+                        <a-radio-button value="all">All</a-radio-button>
+                        <a-radio-button value="users">Users</a-radio-button>
+                        <a-radio-button value="groups">Groups</a-radio-button>
+                    </a-radio-group>
                 </div>
                 <div>
                     <a-popover
@@ -141,269 +144,278 @@
                     </a-popover>
                 </div>
             </div>
-            <AggregationTabs
-                v-model="listType"
-                :list="tabConfig"
-                :no-all="true"
-                :full-width="false"
-                class="w-auto"
-            />
+            <div class="px-6">
+                <SearchAndFilter
+                    v-model:value="queryText"
+                    class="mt-3 mb-2 bg-white"
+                    :placeholder="placeholder"
+                    size="minimal"
+                />
+            </div>
             <div
+                class="flex-grow px-6 overflow-y-auto"
                 v-if="filteredList && filteredList.length"
-                class="flex flex-col mt-3 overflow-y-auto divide-y divide-gray-200 list-wrapper gap-y-2"
             >
-                <div
-                    v-for="item in filteredList"
-                    :key="item.alias || item.username"
-                >
-                    <div class="px-3 py-2 rounded">
-                        <!--user-->
-                        <div
-                            v-if="item.username"
-                            class="grid items-center w-full grid-cols-12"
-                        >
-                            <div class="col-span-6">
-                                <div class="flex items-center align-middle">
-                                    <avatar
-                                        :image-url="imageUrl(item.username)"
-                                        :allow-upload="false"
-                                        :avatar-name="
-                                            item.name ||
-                                            item.username ||
-                                            item.email ||
-                                            item.firstName + item.lastName
-                                        "
-                                        :avatar-size="32"
-                                        avatar-shape="circle"
-                                        class="mr-2"
-                                    />
-                                    <div
-                                        class="flex flex-col"
-                                        :data-test-id="item.username"
-                                    >
-                                        <div
-                                            class="truncate cursor-pointer"
-                                            @click="
-                                                () => {
-                                                    showUserPreviewDrawer(item)
-                                                }
-                                            "
-                                        >
-                                            <span class="text-primary">{{
+                <div class="flex flex-col flex-grow mt-3 list-wrapper gap-y-2">
+                    <div
+                        v-for="item in filteredList"
+                        :key="item.alias || item.username"
+                    >
+                        <div class="py-2 rounded">
+                            <!--user-->
+                            <div
+                                v-if="item.username"
+                                class="grid items-center w-full grid-cols-12"
+                            >
+                                <div class="col-span-6">
+                                    <div class="flex items-center align-middle">
+                                        <avatar
+                                            :image-url="imageUrl(item.username)"
+                                            :allow-upload="false"
+                                            :avatar-name="
                                                 item.name ||
                                                 item.username ||
                                                 item.email ||
-                                                '-'
-                                            }}</span>
-                                        </div>
-                                        <span class="text-xs text-gray-500">
-                                            {{ item.username }}</span
+                                                item.firstName + item.lastName
+                                            "
+                                            :avatar-size="38"
+                                            avatar-shape="circle"
+                                            class="mr-2"
+                                        />
+                                        <div
+                                            class="flex flex-col"
+                                            :data-test-id="item.username"
                                         >
+                                            <div
+                                                class="truncate cursor-pointer"
+                                                @click="
+                                                    () => {
+                                                        showUserPreviewDrawer(
+                                                            item
+                                                        )
+                                                    }
+                                                "
+                                            >
+                                                <span class="text-primary">{{
+                                                    item.name ||
+                                                    item.username ||
+                                                    item.email ||
+                                                    '-'
+                                                }}</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">
+                                                @{{ item.username }}</span
+                                            >
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-span-3">
-                                <span
-                                    v-if="item?.role_object?.name"
-                                    :data-test-id="item.role_object.name"
-                                    class="text-gray-500"
-                                >
-                                    <span>
-                                        {{ item.role_object.name || '-' }}
-                                    </span>
-                                </span>
-                            </div>
-                            <div class="col-span-3">
-                                <a-tooltip placement="bottom">
-                                    <template #title>
-                                        <span>Remove User</span>
-                                    </template>
-                                    <a-popover
-                                        placement="leftTop"
-                                        trigger="click"
-                                        :destroy-tooltip-on-hide="true"
-                                        :visible="
-                                            showRemoveUserPopover[item.id]
-                                        "
+                                <div class="col-span-3">
+                                    <span
+                                        v-if="item?.role_object?.name"
+                                        :data-test-id="item.role_object.name"
+                                        class="text-gray-500"
                                     >
-                                        <template #content>
-                                            <div class="p-4">
-                                                <h3
-                                                    v-html="
-                                                        getPopoverContent(
-                                                            item,
-                                                            'remove',
-                                                            'user'
-                                                        )
-                                                    "
-                                                ></h3>
-                                                <div
-                                                    class="flex items-center justify-between mt-3 gap-x-3"
-                                                >
-                                                    <div
-                                                        class="flex-grow"
-                                                    ></div>
-                                                    <AtlanBtn
-                                                        color="minimal"
-                                                        size="sm"
-                                                        padding="compact"
-                                                        @click="
-                                                            showRemoveUserPopover[
-                                                                item.id
-                                                            ] = false
-                                                        "
-                                                        >Cancel
-                                                    </AtlanBtn>
-                                                    <AtlanBtn
-                                                        :color="'danger'"
-                                                        size="sm"
-                                                        padding="compact"
-                                                        :is-loading="
-                                                            addUsersLoading
-                                                        "
-                                                        :disabled="
-                                                            addUsersLoading
-                                                        "
-                                                        @click="
-                                                            confirmPopover(
+                                        <span>
+                                            {{ item.role_object.name || '-' }}
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="col-span-3">
+                                    <a-tooltip placement="bottom">
+                                        <template #title>
+                                            <span>Remove User</span>
+                                        </template>
+                                        <a-popover
+                                            placement="leftTop"
+                                            trigger="click"
+                                            :destroy-tooltip-on-hide="true"
+                                            :visible="
+                                                showRemoveUserPopover[item.id]
+                                            "
+                                        >
+                                            <template #content>
+                                                <div class="p-4">
+                                                    <h3
+                                                        v-html="
+                                                            getPopoverContent(
                                                                 item,
+                                                                'remove',
                                                                 'user'
                                                             )
                                                         "
+                                                    ></h3>
+                                                    <div
+                                                        class="flex items-center justify-between mt-3 gap-x-3"
                                                     >
-                                                        {{
-                                                            addUsersLoading
-                                                                ? 'Removing'
-                                                                : 'Remove'
-                                                        }}
-                                                    </AtlanBtn>
+                                                        <div
+                                                            class="flex-grow"
+                                                        ></div>
+                                                        <AtlanBtn
+                                                            color="minimal"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            @click="
+                                                                showRemoveUserPopover[
+                                                                    item.id
+                                                                ] = false
+                                                            "
+                                                            >Cancel
+                                                        </AtlanBtn>
+                                                        <AtlanBtn
+                                                            :color="'danger'"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            :is-loading="
+                                                                addUsersLoading
+                                                            "
+                                                            :disabled="
+                                                                addUsersLoading
+                                                            "
+                                                            @click="
+                                                                confirmPopover(
+                                                                    item,
+                                                                    'user'
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                addUsersLoading
+                                                                    ? 'Removing'
+                                                                    : 'Remove'
+                                                            }}
+                                                        </AtlanBtn>
+                                                    </div>
                                                 </div>
+                                            </template>
+                                            <div
+                                                class="text-right text-red-500 cursor-pointer"
+                                            >
+                                                Remove
                                             </div>
-                                        </template>
-                                        <div
-                                            class="text-right text-red-500 cursor-pointer"
-                                        >
-                                            <AtlanIcon
-                                                icon="RemoveUser"
-                                            ></AtlanIcon>
-                                            Remove
-                                        </div>
-                                    </a-popover>
-                                </a-tooltip>
-                            </div>
-                        </div>
-
-                        <!--group-->
-                        <div
-                            v-if="item.alias"
-                            class="grid items-center w-full grid-cols-12"
-                        >
-                            <div class="col-span-6">
-                                <div
-                                    class="flex items-center align-middle"
-                                    :data-test-id="item.alias"
-                                >
-                                    <div
-                                        class="py-0.5 px-1 rounded-full bg-primary-light text-primary mr-2"
-                                    >
-                                        <AtlanIcon
-                                            icon="GroupStatic"
-                                        ></AtlanIcon>
-                                    </div>
-                                    <div
-                                        class="truncate cursor-pointer"
-                                        @click="
-                                            () => {
-                                                showGroupPreviewDrawer(item)
-                                            }
-                                        "
-                                    >
-                                        <span class="text-primary">{{
-                                            item.name || '-'
-                                        }}</span>
-                                    </div>
+                                        </a-popover>
+                                    </a-tooltip>
                                 </div>
                             </div>
-                            <div class="col-span-3">
-                                {{ item.memberCountString }}
-                            </div>
-                            <div class="col-span-3">
-                                <a-tooltip placement="bottom">
-                                    <template #title>
-                                        <span>Remove group</span>
-                                    </template>
-                                    <a-popover
-                                        placement="leftTop"
-                                        trigger="click"
-                                        :destroy-tooltip-on-hide="true"
-                                        :visible="
-                                            showRemoveUserPopover[item.id]
-                                        "
+
+                            <!--group-->
+                            <div
+                                v-if="item.alias"
+                                class="grid items-center w-full grid-cols-12"
+                            >
+                                <div class="col-span-6">
+                                    <div
+                                        class="flex items-center align-middle"
+                                        :data-test-id="item.alias"
                                     >
-                                        <template #content>
-                                            <div class="p-4">
-                                                <h3
-                                                    v-html="
-                                                        getPopoverContent(
-                                                            item,
-                                                            'remove',
-                                                            'group'
+                                        <div
+                                            class="flex items-center self-center justify-center mr-2 align-middle rounded-full bg-primary-light text-primary"
+                                            style="height: 38px; width: 38px"
+                                        >
+                                            <AtlanIcon
+                                                icon="GroupStatic"
+                                            ></AtlanIcon>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <div
+                                                class="truncate cursor-pointer"
+                                                @click="
+                                                    () => {
+                                                        showGroupPreviewDrawer(
+                                                            item
                                                         )
-                                                    "
-                                                ></h3>
-                                                <div
-                                                    class="flex items-center justify-between mt-3 gap-x-3"
-                                                >
-                                                    <div
-                                                        class="flex-grow"
-                                                    ></div>
-                                                    <AtlanBtn
-                                                        color="minimal"
-                                                        size="sm"
-                                                        padding="compact"
-                                                        @click="
-                                                            showRemoveUserPopover[
-                                                                item.id
-                                                            ] = false
-                                                        "
-                                                        >Cancel
-                                                    </AtlanBtn>
-                                                    <AtlanBtn
-                                                        :color="'danger'"
-                                                        size="sm"
-                                                        padding="compact"
-                                                        :is-loading="
-                                                            addUsersLoading
-                                                        "
-                                                        :disabled="
-                                                            addUsersLoading
-                                                        "
-                                                        @click="
-                                                            confirmPopover(
+                                                    }
+                                                "
+                                            >
+                                                <span class="text-primary">{{
+                                                    item.name || '-'
+                                                }}</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">
+                                                {{
+                                                    item.memberCountString
+                                                }}</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-3 text-gray-500">
+                                    Group
+                                </div>
+                                <div class="col-span-3">
+                                    <a-tooltip placement="bottom">
+                                        <template #title>
+                                            <span>Remove group</span>
+                                        </template>
+                                        <a-popover
+                                            placement="leftTop"
+                                            trigger="click"
+                                            :destroy-tooltip-on-hide="true"
+                                            :visible="
+                                                showRemoveUserPopover[item.id]
+                                            "
+                                        >
+                                            <template #content>
+                                                <div class="p-4">
+                                                    <h3
+                                                        v-html="
+                                                            getPopoverContent(
                                                                 item,
+                                                                'remove',
                                                                 'group'
                                                             )
                                                         "
+                                                    ></h3>
+                                                    <div
+                                                        class="flex items-center justify-between mt-3 gap-x-3"
                                                     >
-                                                        {{
-                                                            addUsersLoading
-                                                                ? 'Removing'
-                                                                : 'Remove'
-                                                        }}
-                                                    </AtlanBtn>
+                                                        <div
+                                                            class="flex-grow"
+                                                        ></div>
+                                                        <AtlanBtn
+                                                            color="minimal"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            @click="
+                                                                showRemoveUserPopover[
+                                                                    item.id
+                                                                ] = false
+                                                            "
+                                                            >Cancel
+                                                        </AtlanBtn>
+                                                        <AtlanBtn
+                                                            :color="'danger'"
+                                                            size="sm"
+                                                            padding="compact"
+                                                            :is-loading="
+                                                                addUsersLoading
+                                                            "
+                                                            :disabled="
+                                                                addUsersLoading
+                                                            "
+                                                            @click="
+                                                                confirmPopover(
+                                                                    item,
+                                                                    'group'
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                addUsersLoading
+                                                                    ? 'Removing'
+                                                                    : 'Remove'
+                                                            }}
+                                                        </AtlanBtn>
+                                                    </div>
                                                 </div>
+                                            </template>
+                                            <div
+                                                class="text-right text-red-500 cursor-pointer"
+                                            >
+                                                Remove
                                             </div>
-                                        </template>
-                                        <div
-                                            class="text-right text-red-500 cursor-pointer"
-                                        >
-                                            <AtlanIcon
-                                                icon="RemoveUser"
-                                            ></AtlanIcon>
-                                            Remove
-                                        </div>
-                                    </a-popover>
-                                </a-tooltip>
+                                        </a-popover>
+                                    </a-tooltip>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -506,12 +518,20 @@
                     if (queryText.value) {
                         filteredUsersList = userList.value.filter(
                             (usr) =>
-                                usr?.lastName?.toLowerCase().includes(qry) ||
-                                usr?.firstName?.toLowerCase().includes(qry) ||
-                                usr?.username?.toLowerCase().includes(qry)
+                                usr?.lastName
+                                    ?.toLowerCase()
+                                    .includes(qry.toLowerCase()) ||
+                                usr?.firstName
+                                    ?.toLowerCase()
+                                    .includes(qry.toLowerCase()) ||
+                                usr?.username
+                                    ?.toLowerCase()
+                                    .includes(qry.toLowerCase())
                         )
                         filteredGroupsList = groupList.value.filter((group) =>
-                            group?.name?.toLowerCase().includes(qry)
+                            group?.name
+                                ?.toLowerCase()
+                                .includes(qry.toLowerCase())
                         )
                     } else {
                         filteredUsersList = [...userList.value]
@@ -790,12 +810,12 @@
 </script>
 <style lang="less" scoped>
     .list-wrapper {
-        max-height: calc(100vh - 30rem);
+        height: 20rem;
     }
     .loading-view {
         min-height: 10rem;
     }
     .user-group-wrapper {
-        min-height: 24rem;
+        height: 30rem;
     }
 </style>

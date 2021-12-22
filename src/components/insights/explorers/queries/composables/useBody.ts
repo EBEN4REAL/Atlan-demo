@@ -25,7 +25,7 @@ export default function useBody({
             },
         },
     ])
-    base.filter('term', '__typeName.keyword', 'QueryCollection')
+    base.filter('term', '__typeName.keyword', 'Collection')
     base.filter('term', '__state', 'ACTIVE')
     if (searchText)
         base.query('wildcard', 'name.keyword', {
@@ -34,10 +34,10 @@ export default function useBody({
     if (createdBy) {
         base.orFilter('term', '__createdBy', createdBy)
         base.orFilter('terms', 'viewerUsers', [createdBy])
-        base.orFilter('terms', 'ownerUsers', [createdBy])
+        base.orFilter('terms', 'adminUsers', [createdBy])
     }
     if (groups?.length > 0) {
-        base.orFilter('terms', 'ownerGroups', groups)
+        base.orFilter('terms', 'adminGroups', groups)
         base.orFilter('terms', 'viewerGroups', groups)
     }
     base.filterMinimumShouldMatch(1)

@@ -34,14 +34,14 @@
                 {
                     id: 'glossary',
                     label: 'Glossary',
-                    desc: `Discover & enrich all data assets`,
+                    desc: `Discover & govern all your business terms and metrics`,
                     icon: 'GlossaryIcon',
                     path: '/glossary',
                 },
                 {
                     id: 'insights',
                     label: 'Insights',
-                    desc: `Discover & govern all your business terms and metrics`,
+                    desc: `Query datasets and derive business insights`,
                     icon: 'InsightsIcon',
                     path: '/insights',
                 },

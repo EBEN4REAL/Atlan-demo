@@ -6,7 +6,7 @@
             </div>
             <slot name="actionBtn">
                 <AtlanBtn
-                    class="bg-transparent border-none text-primary"
+                    class="px-0 bg-transparent border-none text-primary"
                     size="sm"
                     color="secondary"
                     padding="compact"

@@ -24,7 +24,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         announcementMessage,
         announcementType,
         attributes,
-        assetType,
         announcementTitle,
         readmeContent,
         meaningRelationships,
@@ -66,12 +65,14 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
-    if(['Query'].includes(entity.value.typeName)) {
+    if (['Query'].includes(entity.value.typeName)) {
         entity.value.attributes = {
             ...entity.value.attributes,
-            parentQualifiedName: attributes(selectedAsset?.value)?.parentQualifiedName,
+            parentQualifiedName: attributes(selectedAsset?.value)
+                ?.parentQualifiedName,
             parent: attributes(selectedAsset?.value)?.parent,
-            collectionQualifiedName: attributes(selectedAsset?.value)?.collectionQualifiedName
+            collectionQualifiedName: attributes(selectedAsset?.value)
+                ?.collectionQualifiedName,
         }
     }
 
@@ -178,24 +179,32 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             Object.keys(localOwners.value?.ownerUsers).length === 0
         ) {
             isChanged = false
-        } else if (
-            entity.value.attributes.ownerUsers?.sort().toString() !==
-            localOwners.value?.ownerUsers?.sort().toString()
-        ) {
-            entity.value.attributes.ownerUsers = localOwners.value?.ownerUsers
-            isChanged = true
-        } else if (
-            entity.value.attributes.ownerGroups?.sort().toString() !==
-            localOwners.value?.ownerGroups?.sort().toString()
-        ) {
-            entity.value.attributes.ownerGroups = localOwners.value?.ownerGroups
-            isChanged = true
+        } else {
+            // Users
+            if (
+                entity.value.attributes.ownerUsers?.sort().toString() !==
+                localOwners.value?.ownerUsers?.sort().toString()
+            ) {
+                entity.value.attributes.ownerUsers =
+                    localOwners.value?.ownerUsers
+                isChanged = true
+            }
+
+            // Groups
+            if (
+                entity.value.attributes.ownerGroups?.sort().toString() !==
+                localOwners.value?.ownerGroups?.sort().toString()
+            ) {
+                entity.value.attributes.ownerGroups =
+                    localOwners.value?.ownerGroups
+                isChanged = true
+            }
         }
 
         if (isChanged) {
             body.value.entities = [entity.value]
 
-            currentMessage.value = 'Owners has been updated'
+            currentMessage.value = 'Owners have been updated'
             mutate()
         }
     }
@@ -439,6 +448,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 updateDrawerList(asset.value)
             }
         }
+        isConfetti.value = false
     })
 
     const classificationBody = ref({

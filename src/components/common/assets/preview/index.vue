@@ -258,10 +258,15 @@
                 required: false,
                 default: false,
             },
+            page: {
+                type: String,
+                required: false,
+                default: 'assets',
+            },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
-            const { selectedAsset, isDrawer } = toRefs(props)
+            const { selectedAsset, isDrawer, page } = toRefs(props)
             const { getAllowedActions, getAssetEvaluationsBody } =
                 useAssetEvaluate()
             const actions = computed(() =>
@@ -269,6 +274,7 @@
             )
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
+            provide('sidebarPage', page)
 
             const {
                 title,

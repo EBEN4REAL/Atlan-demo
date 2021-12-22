@@ -1,12 +1,10 @@
 <template>
     <div v-if="selectedAsset?.guid" class="z-20 flex flex-col bg-white">
         <AssetPreview
-            :mutate-tooltip="true"
             :selected-asset="
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
             "
-            page="discovery"
-            @asset-mutation="() => {}"
+            page="insights"
         ></AssetPreview>
     </div>
     <div v-else class="flex flex-col items-center justify-center h-full -mt-12">

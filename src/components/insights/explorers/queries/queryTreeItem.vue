@@ -349,7 +349,11 @@
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
 
-    const { inlineTabRemove, modifyActiveInlineTabEditor } = useInlineTab()
+    const {
+        inlineTabRemove,
+        modifyActiveInlineTabEditor,
+        modifyActiveInlineTab,
+    } = useInlineTab()
     const { focusEditor, setSelection } = useEditor()
 
     import { message } from 'ant-design-vue'
@@ -536,10 +540,16 @@
                     activeInlineTabCopy.playground.editor.columnList =
                         columnList
                     const saveQueryDataInLocalStorage = false
-                    modifyActiveInlineTabEditor(
+                    // modifyActiveInlineTabEditor(
+                    //     activeInlineTabCopy,
+                    //     inlineTabs,
+                    //     saveQueryDataInLocalStorage
+                    // )
+
+                    modifyActiveInlineTab(
                         activeInlineTabCopy,
                         inlineTabs,
-                        saveQueryDataInLocalStorage
+                        activeInlineTabCopy.isSaved
                     )
                     // setSelection(
                     //     toRaw(editorInstanceRef.value),

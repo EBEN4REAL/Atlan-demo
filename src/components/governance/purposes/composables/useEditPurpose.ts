@@ -170,12 +170,12 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
         if(dataPolicy.id){
             tempPersona.dataPolicies = tempPersona.dataPolicies.map((el) => {
                 if(el.id === dataPolicy.id){
-                    return {...dataPolicy, type: 'masking'}
+                    return {...dataPolicy, type: dataPolicy.mask === "null" ? "access" : 'masking'}
                 }
-                    return { ...el, type: 'masking'}
-            })
+                    return { ...el, type: el.mask === "null" ? "access" :'masking'}
+            }) 
         } else {
-            tempPersona.dataPolicies.push({...dataPolicy, type: 'masking'})
+            tempPersona.dataPolicies.push({...dataPolicy, type: dataPolicy.mask === "null" ? "access" : 'masking'})
         }
     }
     return savePersona(tempPersona)

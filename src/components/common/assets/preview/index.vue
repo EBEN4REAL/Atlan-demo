@@ -331,6 +331,23 @@
                                     entityGuid: selectedAsset.value.guid,
                                     action: 'ENTITY_UPDATE',
                                 },
+                                {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'ENTITY_ADD_CLASSIFICATION',
+                                    classification: '*',
+                                },
+                                {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'ENTITY_REMOVE_CLASSIFICATION',
+                                    classification: '*',
+                                },
+                                /*  {
+                                    typeName: selectedAsset.value.typeName,
+                                    entityGuid: selectedAsset.value.guid,
+                                    action: 'RELATIONSHIP_ADD',
+                                }, */
                             ],
                         }
                         refresh()

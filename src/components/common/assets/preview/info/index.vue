@@ -275,7 +275,18 @@
             <Classification
                 v-model="localClassifications"
                 :guid="selectedAsset.guid"
-                :edit-permission="editPermission"
+                :edit-permission="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'ENTITY_ADD_CLASSIFICATION'
+                    )
+                "
+                :allowDelete="
+                    selectedAssetUpdatePermission(
+                        selectedAsset,
+                        'ENTITY_REMOVE_CLASSIFICATION'
+                    )
+                "
                 class="px-5"
                 @change="handleClassificationChange"
             >
@@ -458,6 +469,7 @@
                 assetTypeLabel,
                 isGTC,
                 isUserDescription,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const {
@@ -544,6 +556,7 @@
                 handleCategoriesUpdate,
                 isUserDescription,
                 localCategories,
+                selectedAssetUpdatePermission,
             }
         },
     })

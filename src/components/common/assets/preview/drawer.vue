@@ -78,6 +78,23 @@
                                 entityGuid: data.value?.guid,
                                 action: 'ENTITY_UPDATE',
                             },
+                            {
+                                typeName: data.value?.typeName,
+                                entityGuid: data.value?.guid,
+                                action: 'ENTITY_ADD_CLASSIFICATION',
+                                classification: '*',
+                            },
+                            {
+                                typeName: data.value?.typeName,
+                                entityGuid: data.value?.guid,
+                                action: 'ENTITY_REMOVE_CLASSIFICATION',
+                                classification: '*',
+                            },
+                            /*  {
+                                    typeName: data.value?.typeName,
+                                    entityGuid: data.value?.guid,
+                                    action: 'RELATIONSHIP_ADD',
+                                }, */
                         ],
                     }
                     refresh()

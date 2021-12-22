@@ -1,3 +1,5 @@
+import { isNumber } from '@vueuse/core'
+
 export function useError() {
     // msg: null meaning take msg from error Object from Heka
     // data: true means we have to user extra data coming from heka
@@ -6,6 +8,10 @@ export function useError() {
     const SOURCE_ACCESS_ERROR_NAMES = ['FORBIDDEN']
 
     const hekaErrorMap = {
+        '000': {
+            action: null,
+            msg: null,
+        },
         '400': {
             '001': {
                 action: null,
@@ -74,20 +80,30 @@ export function useError() {
     }
 
     const httpErrorCode = (errorCode) => {
-        let code = errorCode.split('-')
-        return code[1]
+        if (errorCode === undefined) {
+            return '000'
+        }
+        if (isNumber(errorCode)) {
+            return String(errorCode)
+        } else {
+            let code = errorCode.split('-')
+            return code[1]
+        }
     }
 
     const hekaErrorCode = (errorCode) => {
-        let code = errorCode.split('-')
-        return code[3]
+        let code = String(errorCode)?.split('-')
+        if (Array.isArray(code)) return code[3]
+        else return undefined
     }
 
     const hasErrorAction = (queryErrorObj) => {
         let http = httpErrorCode(queryErrorObj?.errorCode)
         let heka = hekaErrorCode(queryErrorObj?.errorCode)
-
-        let errorData = hekaErrorMap[http][heka]
+        let errorData
+        if (http !== undefined) {
+            if (heka !== undefined) errorData = hekaErrorMap[http][heka]
+        }
 
         return errorData?.action // return action string or null
     }
@@ -95,8 +111,10 @@ export function useError() {
     const hasErrorData = (queryErrorObj) => {
         let http = httpErrorCode(queryErrorObj?.errorCode)
         let heka = hekaErrorCode(queryErrorObj?.errorCode)
-
-        let errorData = hekaErrorMap[http][heka]
+        let errorData
+        if (http !== undefined) {
+            if (heka !== undefined) errorData = hekaErrorMap[http][heka]
+        }
 
         return errorData?.data ? true : false // return if we have data
     }
@@ -104,8 +122,10 @@ export function useError() {
     const errorMessage = (queryErrorObj) => {
         let http = httpErrorCode(queryErrorObj?.errorCode)
         let heka = hekaErrorCode(queryErrorObj?.errorCode)
-
-        let errorData = hekaErrorMap[http][heka]
+        let errorData
+        if (http !== undefined) {
+            if (heka !== undefined) errorData = hekaErrorMap[http][heka]
+        }
 
         return errorData?.msg ? errorData?.msg : queryErrorObj?.errorMessage
     }
@@ -118,7 +138,6 @@ export function useError() {
         hasErrorData,
         hasErrorAction,
         LINE_ERROR_NAMES,
-        SOURCE_ACCESS_ERROR_NAMES
-
+        SOURCE_ACCESS_ERROR_NAMES,
     }
 }

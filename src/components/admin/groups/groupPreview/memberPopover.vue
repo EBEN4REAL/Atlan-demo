@@ -14,7 +14,8 @@
                     :enable-tabs="['users']"
                     :hide-disabled-tabs='true'
                     select-user-key='id'
-                ></OwnerFacets>
+                    :group-id="selectedGroup.id"
+                />
             </div>
             <div class='flex justify-end mr-3'>
                 <AtlanButton
@@ -48,11 +49,12 @@
 </template>
 
 <script setup>
-    import { ref, watch } from 'vue'
+    import { computed, ref, watch } from 'vue'
     import { message } from 'ant-design-vue'
     import OwnerFacets from '~/components/common/facet/owners/index.vue'
     import { Groups } from '~/services/service/groups'
     import { pluralizeString } from '~/utils/string'
+    import useGroupMembers from '~/composables/group/useGroupMembers'
 
     // Define props here.
     const props = defineProps({

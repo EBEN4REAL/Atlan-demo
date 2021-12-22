@@ -10,7 +10,11 @@
         </div>
         <div class="flex flex-col w-full h-40 overflow-y-auto">
             <div class="w-full px-3">
-                <template v-for="item in userList" :key="item[selectUserKey]">
+                <div v-if="isEnriching" class="flex justify-center">
+                    <a-spin size="small"></a-spin>
+                </div>
+                <div v-else>
+                    <template v-for="item in userList" :key="item[selectUserKey]">
                     <a-checkbox
                         :checked="
                             map[item[selectUserKey]] ||
@@ -37,10 +41,11 @@
                         </div>
                     </a-checkbox>
                 </template>
+                </div>
             </div>
             <div
-                class="flex items-center justify-between px-4"
                 v-if="userList.length > 0"
+                class="flex items-center justify-between px-4"
             >
                 <p class="mt-1 text-xs text-gray-500">
                     {{ userList.length }} of {{ filterTotal }} users
@@ -94,11 +99,16 @@
                 type: Array,
                 required: false,
             },
+            groupId: {
+                type: String,
+                required: false,
+                default: ""
+            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue, disabledKeys } = useVModels(props, emit)
-            const { selectUserKey, queryText } = toRefs(props)
+            const { selectUserKey, queryText, groupId } = toRefs(props)
             const localValue = ref(modelValue.value)
 
             const map = computed(() => {
@@ -116,7 +126,23 @@
                 filterTotal,
                 loadMore,
                 isLoading,
-            } = useFacetUsers()
+                isEnriching,
+                limit,
+                offset
+            } = useFacetUsers({
+                groupId
+            })
+
+            // watch(userList, () => {
+            //     modelValue.value = [
+            //         ...modelValue.value,
+            //         ...userList.value
+            //             .slice(offset.value, offset.value + limit.value)
+            //             .filter((user) => user.isPartOfGroup)
+            //             .map((user) => user[selectUserKey.value])
+            //     ]
+            // })
+
             watch(
                 () => queryText.value,
                 () => {
@@ -129,7 +155,11 @@
                 disabledKeys?.value?.forEach((key) => {
                     data[key] = true
                 })
-
+                userList.value.forEach((user) => {
+                    if (user.isPartOfGroup) {
+                        data[user[selectUserKey.value]] = true
+                    }
+                })
                 // console.log('disabled keys: ', data)
                 return data
             })
@@ -161,6 +191,7 @@
                 filterTotal,
                 handleChange,
                 disabledKeyMap,
+                isEnriching
             }
         },
     })

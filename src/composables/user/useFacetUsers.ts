@@ -4,21 +4,25 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { userInterface } from '~/types/users/user.interface'
 import { Users } from '~/services/service/users'
 import useUserData from '~/composables/user/useUserData'
+import useGroupMembers from '~/composables/group/useGroupMembers'
+import group from '@common/pills/group.vue'
 
 export default function useFacetUsers(
     config: {
-        sort?: string,
-        columns?: string[],
+        sort?: string
+        columns?: string[]
         immediate?: boolean
+        groupId?: Ref<string>
     } = { immediate: true }
 ) {
     const params = ref(new URLSearchParams())
 
     const queryText = ref('')
+    const isEnriching = ref(false)
 
-    const limit = 20
-    let offset = 0
-    params.value.append('limit', `${limit}`)
+    const limit = ref(20)
+    const offset = ref(0)
+    params.value.append('limit', `${limit.value}`)
     if (config.columns?.length) {
         params.value.append('sort', config.sort ?? config.columns[0])
         config.columns.forEach((c) => {
@@ -44,37 +48,69 @@ export default function useFacetUsers(
     // myself
     const { username, firstName, lastName, id } = useUserData()
 
-
     const loadMore = () => {
-        offset += limit
-        params.value.set('offset', `${offset}`)
+        offset.value += limit.value
+        params.value.set('offset', `${offset.value}`)
         mutate()
     }
 
     const list: any = ref([])
+
+    /**
+     * Enrich the fetched records by adding another property: `isPartOfGroup`.
+     * If a group ID is provided, this will be an indicator of whether the
+     * user is part of the group or not.
+     */
+    const enrichRecords = () => {
+        if (config.groupId?.value !== '') {
+            isEnriching.value = true
+            // Accumulate the IDs of all users for the filter.
+            const userIds = list.value.map((user) => ({ id: user.id }))
+
+            // Fetch the groups with the user IDs as the filter.
+            const memberListParams = computed(() => ({
+                groupId: config.groupId?.value,
+                params: {
+                    filter: {
+                        $or: userIds,
+                    },
+                },
+            }))
+
+            const { memberList } = useGroupMembers(memberListParams)
+
+            // When the group list is ready, enrich the records.
+            watch(memberList, () => {
+                list.value = list.value.map((user) => ({
+                    ...user,
+                    isPartOfGroup:
+                        memberList.value.findIndex(
+                            (member) => member.id === user.id
+                        ) !== -1,
+                }))
+                isEnriching.value = false
+            })
+        }
+    }
+
     watch(data, () => {
         if (data?.value?.records) {
-            if (offset > 0) list.value.push(...data.value.records)
+            if (offset.value > 0) list.value.push(...data.value.records)
             else list.value = [...data.value.records]
-        } else
-            list.value = []
+        } else list.value = []
+        enrichRecords()
     })
-
-
 
     // final user list including myself
     const userList = computed(() => {
         if (queryText.value !== '') {
             return [...list.value]
         }
-        const tempList = list.value.filter(
-            (obj) => obj.username !== username
-        )
+        const tempList = list.value.filter((obj) => obj.username !== username)
+        const myIndex = list.value.findIndex((obj) => obj.username === username)
         return [
             {
-                username,
-                id,
-                firstName,
+                ...list.value[myIndex],
                 lastName: `${lastName} (me)`,
             },
             ...tempList,
@@ -87,6 +123,7 @@ export default function useFacetUsers(
     const total = computed(() => data.value?.totalRecord)
 
     function setLimit(l = 20) {
+        limit.value = l
         params.value.set('limit', `${l}`)
     }
 
@@ -101,8 +138,8 @@ export default function useFacetUsers(
 
     const handleSearch = (val: Event | string) => {
         queryText.value = val as string
-        offset = 0
-        params.value.set('offset', `${offset}`)
+        offset.value = 0
+        params.value.set('offset', `${offset.value}`)
         let value = ''
         if (typeof val !== 'string') {
             value = (<HTMLInputElement>val.target).value as string
@@ -145,5 +182,8 @@ export default function useFacetUsers(
         setLimit,
         filterTotal,
         resetFilter,
+        isEnriching,
+        limit,
+        offset,
     }
 }

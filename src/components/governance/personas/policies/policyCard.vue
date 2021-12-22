@@ -67,6 +67,19 @@
                             All assets
                         </span>
                     </div>
+                    <div v-if="policy.actions.length > 0 && type === 'meta'">
+                        <span class="flex-none text-sm">
+                            {{ policy.actions.length }}
+                            {{
+                                policy.actions.length > 1
+                                    ? 'permissions'
+                                    : 'permission'
+                            }}
+                        </span>
+                    </div>
+                    <div v-if="type === 'data'">
+                        <span class="flex-none text-sm"> Query Access </span>
+                    </div>
                 </div>
                 <span v-if="!policy.allow" class="denied-policy-pill">
                     {{

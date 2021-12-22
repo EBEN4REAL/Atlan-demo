@@ -47,15 +47,7 @@
                 <template #suffix>
                     <span
                         v-if="splittedTAndC.b.length > 0"
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            rounded
-                            text-primary
-                            mr-3
-                            cursor-pointer
-                        "
+                        class="px-1 py-0.5 text-sm rounded text-primary mr-3 cursor-pointer"
                         @click="() => toggleAllTAndC()"
                     >
                         {{
@@ -94,12 +86,7 @@
                         <AtlanIcon
                             v-else-if="item && item.type === 'group'"
                             icon="Group"
-                            class="
-                                h-4
-                                -ml-0.5
-                                text-primary
-                                group-hover:text-white
-                            "
+                            class="h-4 -ml-0.5 text-primary group-hover:text-white"
                         />
                     </template>
                     <!-- <template #popover="{ item }">
@@ -108,15 +95,7 @@
                     <template #suffix>
                         <span
                             v-if="splittedUsers.b.length > 0"
-                            class="
-                                px-1
-                                py-0.5
-                                text-sm
-                                rounded
-                                text-primary
-                                mr-3
-                                cursor-pointer
-                            "
+                            class="px-1 py-0.5 text-sm rounded text-primary mr-3 cursor-pointer"
                             @click="() => toggleAllUsers()"
                         >
                             {{

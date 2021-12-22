@@ -3,8 +3,8 @@
         <template #content>
             <div class="relation-ship">
                 <div class="flex justify-between">
-                    <div class="flex items-center">
-                        <img :src="logoTitle" class="h-3 mr-2" />
+                    <div class="flex items-center text-gray-500">
+                        <img :src="logoTitle" class="h-3 mr-1 mb-0.5" />
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(
@@ -44,7 +44,7 @@
                         {{ item.attributes?.dataType }}
                     </div>
                 </div>
-                <div class="mb-0.5 text-lg font-semibold truncate ...">
+                <div class="mb-0.5 font-semibold truncate ...">
                     {{ item?.displayText || item?.attributes?.name }}
                     <CertificateBadge
                         v-if="certificateStatus(item)"
@@ -139,18 +139,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-2 text-xs text-gray-500">Description</div>
-                <div
-                    :class="`mt-1 text-sm ${
-                        !item?.attributes?.description ? 'text-gray-500' : ''
-                    }`"
-                >
-                    {{
-                        item?.attributes?.description ||
-                        `This ${title} has no description added`
-                    }}
+                <div v-if="item?.attributes?.description" class="mt-1 text-sm">
+                    {{ item?.attributes?.description }}
                 </div>
-                <div v-if="list.length > 0" class="flex flex-wrap gap-1 mt-2">
+                <div v-if="list.length > 0" class="flex flex-wrap gap-1 mt-3">
                     <template
                         v-for="classification in list"
                         :key="classification.guid"
@@ -163,9 +155,12 @@
                         ></ClassificationPill>
                     </template>
                 </div>
-                <div v-if="item?.attributes?.ownerUsers.length > 0">
-                    <div class="mt-2 text-xs text-gray-500">Owned by</div>
-                    <div class="flex gap-1">
+                <div
+                    v-if="item?.attributes?.ownerUsers.length > 0"
+                    class="mt-3"
+                >
+                    <div class="text-xs text-gray-500">Owned by</div>
+                    <div class="flex flex-wrap gap-1">
                         <UserPill
                             v-for="(user, idx) in item?.attributes?.ownerUsers"
                             :key="idx"
@@ -173,21 +168,27 @@
                         />
                     </div>
                 </div>
-                <router-link v-if="!slots?.button" :to="path">
-                    <a-button class="mt-3" block>
-                        <strong>
-                            View
-                            {{
-                                title?.toLowerCase() === 'view'
-                                    ? ''
-                                    : title?.toLowerCase()
-                            }}
-                            profile
-                        </strong>
-                    </a-button>
-                </router-link>
-
-                <slot name="button"></slot>
+                <div class="flex mt-4">
+                    <slot name="button"></slot>
+                    <router-link
+                        v-if="!slots?.button"
+                        :to="path"
+                        class="ml-auto"
+                    >
+                        <AtlanBtn
+                            class="flex-none px-0"
+                            size="sm"
+                            color="minimal"
+                            padding="compact"
+                            style="height: fit-content"
+                        >
+                            <span class="text-primary whitespace-nowrap">
+                                View Profile</span
+                            >
+                            <AtlanIcon icon="ArrowRight" class="text-primary" />
+                        </AtlanBtn>
+                    </router-link>
+                </div>
             </div>
         </template>
         <slot></slot>
@@ -202,6 +203,7 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import UserPill from '@/common/pills/user.vue'
+    import AtlanBtn from '@/UI/button.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -209,6 +211,7 @@
             ClassificationPill,
             UserPill,
             CertificateBadge,
+            AtlanBtn,
         },
         props: {
             item: {

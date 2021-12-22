@@ -26,13 +26,6 @@
         </div>
         <!-- END Error State -->
 
-        <!-- START Empty state: no persona users and groups -->
-        <EmptyView
-            v-else-if="!userList.length && !groupList.length"
-            empty-screen="CreateGroups"
-            headline="Add users and groups"
-        >
-        </EmptyView>
         <!-- END Empty state: no persona users and groups -->
 
         <!-- START Loading state: no persona users and groups -->
@@ -49,12 +42,8 @@
 
         <!-- START List -->
         <div
-            v-else-if="
-                (userList.length || groupList.length) &&
-                !groupsError &&
-                !usersError
-            "
-            class="flex flex-col overflow-y-hidden"
+            v-else-if="!groupsError && !usersError"
+            class="flex flex-col h-full overflow-y-hidden"
         >
             <div class="flex items-center justify-between w-full px-6 mb-2">
                 <div class="flex mr-4 gap-x-2">
@@ -424,7 +413,7 @@
             <EmptyView
                 v-else-if="!filteredList.length"
                 empty-screen="NoResultIllustration"
-                desc="Sorry, we couldn’t find the user you were looking for"
+                desc="No results found"
             >
             </EmptyView>
         </div>

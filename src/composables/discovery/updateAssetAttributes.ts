@@ -448,6 +448,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 updateDrawerList(asset.value)
             }
         }
+        isConfetti.value = false
     })
 
     const classificationBody = ref({

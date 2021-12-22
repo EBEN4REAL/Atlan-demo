@@ -3,9 +3,9 @@
         <div class="flex items-center">
             <Avatar
                 avatar-shape="circle"
-                :image-url="imageUrl(user.user.username)"
+                :image-url="imageUrl(user.username)"
                 :allow-upload="false"
-                :avatar-name="user.name || user.user.username || user.user.email"
+                :avatar-name="user.name || user.username || user.email"
                 :avatar-size="minimal ? 30 : 40"
                 class="mr-2"
             />
@@ -15,7 +15,7 @@
                         {{ user.name }}
                     </div>
                     <div v-if="!minimal" class="mr-2 text-gray">
-                        {{ user.user.email }}
+                        {{ user.email }}
                     </div>
                 </div>
             </div>

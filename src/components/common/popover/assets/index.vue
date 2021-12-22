@@ -66,13 +66,14 @@
                             item.typeName?.toLowerCase() === 'column' &&
                             item.attributes?.dataType
                         "
-                        class="flex items-center px-1 text-gray-500 bg-gray-100 border border-gray-300 border-solid"
+                        class="flex items-center px-1 text-gray-500 bg-gray-100 border-gray-300 rounded"
                     >
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 text-gray-500"
+                            style="margin-bottom: 3px"
                         />
-                        {{ item.attributes?.dataType }}
+                        <span>{{ item.attributes?.dataType }}</span>
                     </div>
                 </div>
                 <div class="flex">

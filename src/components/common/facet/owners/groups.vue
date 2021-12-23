@@ -191,12 +191,14 @@
                         // console.log('enter pressed')
 
                         let id = list.value[0][selectGroupKey.value]
-                        if (map.value[id]) {
-                            delete map.value[id]
-                        } else {
-                            map.value[id] = true
+                        if (!disabledKeyMap.value[id]) {
+                            if (map.value[id]) {
+                                delete map.value[id]
+                            } else {
+                                map.value[id] = true
+                            }
+                            modelValue.value = [...Object.keys(map.value)]
                         }
-                        modelValue.value = [...Object.keys(map.value)]
                     }
                 }
             })

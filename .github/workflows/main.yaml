@@ -39,9 +39,9 @@ jobs:
         run: |
           repo_branch=${{ steps.get_branch.outputs.branch }}
           if [[ "$repo_branch" == "main" ]]; then
-            analytics_key= ${{ secrets.SEGMENT_PROD_KEY }}
+            analytics_key=${{ secrets.SEGMENT_PROD_KEY }}
           else 
-            analytics_key= ${{ secrets.SEGMENT_DEV_KEY }}
+            analytics_key=${{ secrets.SEGMENT_DEV_KEY }}
           fi
           echo "##[set-output name=analytics_keys;]$(echo $analytics_key)"
         shell: bash

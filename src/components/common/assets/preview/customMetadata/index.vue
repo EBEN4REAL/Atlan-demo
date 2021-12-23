@@ -55,9 +55,9 @@
                     <ReadOnly v-if="readOnly" :attribute="a" />
 
                     <EditState
-                        :index="x"
                         v-else-if="!readOnly"
                         v-model="a.value"
+                        :index="x"
                         :attribute="a"
                         @change="handleChange(x, a.value)"
                     />
@@ -65,6 +65,7 @@
             </template>
         </div>
     </div>
+    <!-- <Confirm @confirm="handleCancel" /> -->
 </template>
 
 <script lang="ts">
@@ -77,9 +78,16 @@
         inject,
         defineAsyncComponent,
         Ref,
+        h,
+        resolveComponent,
     } from 'vue'
-    import { whenever, useMagicKeys, onKeyStroke } from '@vueuse/core'
-    import { message } from 'ant-design-vue'
+    import {
+        whenever,
+        useMagicKeys,
+        onKeyStroke,
+        watchOnce,
+    } from '@vueuse/core'
+    import { message, Modal } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -88,6 +96,7 @@
     import useFacetGroups from '~/composables/group/useFacetGroups'
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
     import AtlanButton from '@/UI/button.vue'
+    import Confirm from '@/common/modal/confirm.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -266,16 +275,44 @@
                 readOnly.value = true
             }
 
-            const handleCancel = () => {
+            const cancel = () => {
                 applicableList.value.forEach((att) => {
+                    // eslint-disable-next-line no-param-reassign
                     att.value = ''
                 })
                 setAttributesList()
-
                 readOnly.value = true
+                isEdit.value = false
             }
+
+            const handleCancel = () => {
+                if (isEdit.value) {
+                    Modal.confirm({
+                        title: () =>
+                            h(
+                                'span',
+                                {
+                                    class: ['font-bold'],
+                                },
+                                'Discard'
+                            ),
+                        content: () =>
+                            h(Confirm, {
+                                title: data.value.label,
+                            }),
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Discard',
+                        onOk: cancel,
+                    })
+                } else cancel()
+            }
+
             const handleChange = (index, value) => {
-                isEdit.value = true
+                if (!isEdit.value) isEdit.value = true
                 applicableList.value[index].value = value
             }
 

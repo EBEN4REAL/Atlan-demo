@@ -19,16 +19,16 @@
                             </div>
                             <div
                                 class="flex items-center cursor-pointer text-primary"
+                                @click="
+                                    copyText(
+                                        getSamlAssertionUrl(ssoForm.alias)
+                                            .redirectUrl
+                                    )
+                                "
                             >
                                 <AtlanIcon
                                     icon="CopyOutlined"
                                     class="mb-0.5"
-                                    @click="
-                                        copyText(
-                                            getSamlAssertionUrl(ssoForm.alias)
-                                                .redirectUrl
-                                        )
-                                    "
                                 ></AtlanIcon>
                                 <div class="ml-1">Copy</div>
                             </div>
@@ -47,16 +47,16 @@
                             </div>
                             <div
                                 class="flex items-center cursor-pointer text-primary"
+                                @click="
+                                    copyText(
+                                        getSamlAssertionUrl(ssoForm.alias)
+                                            .audienceUrl
+                                    )
+                                "
                             >
                                 <AtlanIcon
                                     icon="CopyOutlined"
                                     class="mb-0.5"
-                                    @click="
-                                        copyText(
-                                            getSamlAssertionUrl(ssoForm.alias)
-                                                .audienceUrl
-                                        )
-                                    "
                                 ></AtlanIcon>
                                 <div class="ml-1">Copy</div>
                             </div>
@@ -231,7 +231,7 @@
         toRaw,
         watch,
     } from 'vue'
-    import { storeToRefs } from 'pinia'
+    import { storeToRefs, storeToRefs } from 'pinia'
     import { message } from 'ant-design-vue'
     import { useRouter } from 'vue-router'
     import emptySSOImage from '~/assets/images/emptyCreds.png'
@@ -252,7 +252,6 @@
 
     import { Identity } from '~/services/service/identity'
     import { Tenant } from '~/services/service/tenant'
-    import { storeToRefs } from 'pinia'
 
     interface FormState {
         alias: string
@@ -464,7 +463,6 @@
             const updateSSO = async () => {
                 try {
                     isLoading.value = true
-                    debugger
                     const data: any = toRaw(ssoProvider.value)
                     const config = {
                         ...data,
@@ -525,7 +523,6 @@
                 addNewMapper,
                 allowAddDeleteMappers,
                 mapperLists,
-                
             }
         },
     })

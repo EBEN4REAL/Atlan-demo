@@ -18,11 +18,11 @@
                         alt="provider"
                         class="w-4 mr-2"
                     />
-                    <fa
-                        v-else
-                        icon="fas key"
-                        class="p-1 mr-2 text-3xl bg-yellow-400 rounded"
-                    />
+                    <AtlanIcon
+                            v-else
+                            icon="PrimaryKey"
+                            class="self-center h-6 mr-1 text-alert"
+                        />
                     <span>{{ provider.title || 'SAML 2.0' }}</span>
                 </div>
                 <AtlanBtn

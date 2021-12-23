@@ -4,18 +4,11 @@
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
-                :placeholder="`Search ${totalCount} columns`"
+                :placeholder="`Search ${totalCount} queries`"
                 class=""
                 @change="handleSearchChange"
             />
         </div>
-
-        <AggregationTabs
-            v-model="postFacets.dataType"
-            class="px-3 mb-1"
-            :list="columnDataTypeAggregationList"
-            @change="handleDataTypeChange"
-        ></AggregationTabs>
 
         <div
             v-if="isLoading"
@@ -35,7 +28,7 @@
         <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
             <EmptyView
                 empty-screen="EmptyDiscover"
-                desc="No assets found"
+                desc="No queries found"
             ></EmptyView>
         </div>
         <!-- {{ list }} -->
@@ -61,7 +54,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { defineComponent, ref, toRefs, PropType } from 'vue'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 
     import ErrorView from '@common/error/discover.vue'
@@ -81,7 +74,7 @@
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import useEvaluate from '~/composables/auth/useEvaluate'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -96,23 +89,21 @@
         },
         props: {
             selectedAsset: {
-                type: Object,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
-            const aggregationAttributeName = 'dataType'
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({
-                typeName: 'Column',
+                typeName: 'Query',
             })
-            const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
-            const dependentKey = ref('DEFAULT_COLUMNS')
+            const dependentKey = ref('DEFAULT_QUERIES')
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
@@ -144,7 +135,6 @@
                 fetch,
                 quickChange,
                 totalCount,
-                getAggregationList,
                 error,
                 isValidating,
                 updateList,
@@ -154,7 +144,6 @@
                 queryText,
                 facets,
                 postFacets,
-                aggregations,
                 preference,
                 limit,
                 offset,
@@ -166,17 +155,6 @@
                 updateList(asset)
             }
 
-            const columnDataTypeAggregationList = computed(() =>
-                getAggregationList(
-                    `group_by_${aggregationAttributeName}`,
-                    [],
-                    true
-                )
-            )
-
-            const body = ref({})
-            const { refresh } = useEvaluate(body, false)
-
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
                 (prev) => {
@@ -187,12 +165,6 @@
                 },
                 { debounce: 100 }
             )
-
-            const handleDataTypeChange = () => {
-                console.log('change data type', facets.value)
-                offset.value = 0
-                quickChange()
-            }
 
             const handleLoadMore = () => {
                 if (isLoadMore.value) {
@@ -206,22 +178,6 @@
                 quickChange()
             }, 150)
 
-            const handleChangeSort = () => {
-                quickChange()
-            }
-
-            watch(list, () => {
-                // For evaluations
-                body.value = {
-                    entities: list.value.map((item) => ({
-                        typeName: item.typeName,
-                        entityGuid: item.guid,
-                        action: 'ENTITY_UPDATE',
-                    })),
-                }
-                refresh()
-            })
-
             return {
                 isLoading,
                 queryText,
@@ -229,15 +185,11 @@
                 facets,
                 isLoadMore,
                 postFacets,
-                columnDataTypeAggregationList,
                 fetch,
                 quickChange,
                 totalCount,
                 updateFacet,
-                handleDataTypeChange,
                 handleSearchChange,
-                preference,
-                handleChangeSort,
                 handleLoadMore,
                 error,
                 isValidating,

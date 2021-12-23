@@ -214,7 +214,7 @@
                             >
                                 <div
                                     :data-test-id="'insert-in-editor'"
-                                    class="pl-2 ml-24"
+                                    class="pl-2 ml-4"
                                     @click="() => actionClick('add', item)"
                                 >
                                     <a-tooltip color="#363636" placement="top">
@@ -351,7 +351,7 @@
                         "
                         @click.stop="() => {}"
                     >
-                        <div class="pl-2 ml-24">
+                        <div class="pl-2 ml-4">
                             <a-dropdown :trigger="['click']">
                                 <AtlanIcon
                                     icon="SetContext"

@@ -1,16 +1,28 @@
 <template>
     <div
-        class="flex items-center justify-between h-10"
+        class="flex items-center justify-between h-7"
+        style="margin-top: 3px; margin-bottom: 3px"
         v-for="(item, index) in dataArray"
         :key="item['user']"
     >
         <div class="flex items-center">
+            <a-avatar
+                v-if="item.type === 'ownerGroups'"
+                shape="circle"
+                :size="20"
+                class="mr-2 text-primary bg-primary-light"
+            >
+                <template #icon>
+                    <AtlanIcon icon="GroupStatic"></AtlanIcon>
+                </template>
+            </a-avatar>
             <Avatar
+                v-else
                 avatar-shape="circle"
                 :image-url="imageUrl(item['user'])"
                 :allow-upload="false"
                 :avatar-name="item['user']"
-                :avatar-size="24"
+                :avatar-size="20"
             />
             <div class="ml-2">
                 <div class="text-gray-700">
@@ -143,7 +155,7 @@
             const localValue = ref(userData.value)
 
             let dataArray = computed(() => {
-                console.log('change list data0: ', localValue.value)
+                // console.log('change list data0: ', localValue.value)
                 let data = []
                 localValue?.value?.edit?.ownerUsers?.forEach((el) => {
                     data.push({
@@ -174,7 +186,7 @@
                     })
                 })
 
-                console.log('change list data: ', data)
+                // console.log('change list data: ', data)
 
                 return data
             })

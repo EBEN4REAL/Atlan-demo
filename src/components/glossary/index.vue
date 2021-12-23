@@ -528,9 +528,8 @@
     }
 
     .checkableTree {
-        .searchResults {
-            max-height: 500px;
-        }
+        max-height: 300px;
+        min-height: 300px;
 
         :global(.glossaryTreeWrapper) {
             @apply overflow-y-auto;

@@ -135,6 +135,8 @@ export default function useAssetInfo() {
     }
     const link = (asset: assetInterface) => attributes(asset)?.link
 
+    const queries = (asset: assetInterface) => attributes(asset)?.queries
+
     const getTabs = (list, typeName: string) => {
         return list.filter((i) => {
             let flag = true
@@ -1022,5 +1024,6 @@ export default function useAssetInfo() {
         connectionRowLimit,
         allowQuery,
         allowQueryPreview,
+        queries,
     }
 }

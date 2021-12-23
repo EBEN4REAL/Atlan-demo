@@ -41,7 +41,12 @@ jobs:
       - name: Get segment analytics key based on branch name
         id: get_segment_analytics_key
         run: |
-          analytics_key=${{ secrets.SEGMENT_DEV_KEY }}
+          repo_branch=${{ steps.get_branch.outputs.branch }}
+          if [[ "$repo_branch" == "main" ]]; then
+            analytics_key=${{ secrets.SEGMENT_PROD_KEY }}
+          else 
+            analytics_key=${{ secrets.SEGMENT_DEV_KEY }}
+          fi
           echo "##[set-output name=analytics_key;]$(echo $analytics_key)"
         shell: bash
 

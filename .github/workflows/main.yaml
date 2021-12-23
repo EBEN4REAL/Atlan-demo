@@ -2,7 +2,11 @@ name: Atlan Product Workflow
 on:
   push:
     branches:
-      - feat/segment-env
+      - beta
+      - alpha
+      - development
+      - main
+      - staging
 jobs:
   deploy:
     name: Production Deployment
@@ -13,26 +17,26 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: get_branch
 
-      # - name: Get previous tag from charts repo
-      #   id: get_channel
-      #   run: |
-      #     repo_branch=${{ steps.get_branch.outputs.branch }}
-      #     if [[ "$repo_branch" == "main" ]]; then
-      #       channel="main"
-      #     elif [[ "$repo_branch" == "alpha" ]]; then
-      #       channel="alpha"
-      #     elif [[ "$repo_branch" == "beta" ]]; then
-      #       channel="beta"
-      #     elif [[ "$repo_branch" == "development" ]]; then
-      #       channel="development"
-      #     elif [[ "$repo_branch" == "staging" ]]; then
-      #       channel="staging"
-      #     else 
-      #       echo "Build not configured for current branch"
-      #       exit 1
-      #     fi
-      #     echo "##[set-output name=channel;]$(echo $channel)"
-      #   shell: bash
+      - name: Get previous tag from charts repo
+        id: get_channel
+        run: |
+          repo_branch=${{ steps.get_branch.outputs.branch }}
+          if [[ "$repo_branch" == "main" ]]; then
+            channel="main"
+          elif [[ "$repo_branch" == "alpha" ]]; then
+            channel="alpha"
+          elif [[ "$repo_branch" == "beta" ]]; then
+            channel="beta"
+          elif [[ "$repo_branch" == "development" ]]; then
+            channel="development"
+          elif [[ "$repo_branch" == "staging" ]]; then
+            channel="staging"
+          else 
+            echo "Build not configured for current branch"
+            exit 1
+          fi
+          echo "##[set-output name=channel;]$(echo $channel)"
+        shell: bash
 
       - name: Get segment analytics key based on branch name
         id: get_segment_analytics_key

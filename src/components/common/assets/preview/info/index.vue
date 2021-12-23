@@ -49,7 +49,10 @@
             />
         </div>
 
-        <Connection v-if="selectedAsset.typeName === 'Connection'"></Connection>
+        <Connection
+            v-if="selectedAsset.typeName === 'Connection'"
+            :edit-permission="editPermission"
+        ></Connection>
 
         <div v-if="webURL(selectedAsset)" class="px-5">
             <a-button

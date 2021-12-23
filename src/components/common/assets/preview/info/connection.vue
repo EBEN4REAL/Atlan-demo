@@ -10,7 +10,11 @@
         </div>
     </div>
 
-    <div class="flex flex-col">
+    <div
+        class="flex flex-col"
+        :class="{ 'cursor-pointer': editPermission }"
+        @click="handleOpenModal"
+    >
         <p
             class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
         >
@@ -77,9 +81,16 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, inject, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        inject,
+        toRefs,
+        ref,
+        PropType,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-
+    import { assetInterface } from '~/types/assets/asset.interface'
     import Owners from '@/common/input/owner/index.vue'
 
     export default defineComponent({
@@ -90,13 +101,18 @@
                 required: false,
                 default: false,
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
+            },
         },
         components: {
             Owners,
         },
         setup(props) {
-            const { editPermission } = toRefs(props)
-            const selectedAsset = inject('selectedAsset')
+            const { editPermission, selectedAsset } = toRefs(props)
+            const visible = ref(false)
 
             const { attributes } = useAssetInfo()
 
@@ -109,11 +125,18 @@
                 return {}
             })
 
+            const handleOpenModal = () => {
+                if (editPermission.value) {
+                    visible.value = true
+                }
+            }
+
             return {
                 selectedAsset,
                 attributes,
                 queryConfigJSON,
                 editPermission,
+                handleOpenModal,
             }
         },
     })

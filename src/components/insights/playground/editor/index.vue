@@ -43,9 +43,9 @@
                                 <template #title>Toggle sidebar</template>
                                 <div
                                     class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                                    @click="toggleExplorerPane"
                                 >
                                     <AtlanIcon
-                                        @click="toggleExplorerPane"
                                         icon="ExplorerTrigger"
                                         class="w-4 h-4"
                                     />
@@ -55,12 +55,10 @@
                             <div
                                 class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
                                 :class="fullSreenState ? 'bg-gray-300' : ''"
+                                @click="tFullScreen"
                             >
                                 <div class="items-center justify-center group">
-                                    <div
-                                        class="items-center justify-center"
-                                        @click="tFullScreen"
-                                    >
+                                    <div class="items-center justify-center">
                                         <a-tooltip
                                             color="#363636"
                                             v-if="fullSreenState"

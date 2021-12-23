@@ -3,13 +3,7 @@
         <template #header>
             <div class="flex items-center -mt-3 text-2xl text-gray">
                 <a-button
-                    class="
-                        px-0.5
-                        border-transparent
-                        shadow-none
-                        hover:border-gray-300 hover:px-1
-                        py-0.5
-                    "
+                    class="px-0.5 border-transparent shadow-none hover:border-gray-300 hover:px-1 py-0.5"
                     @click="$router.back()"
                 >
                     <atlan-icon
@@ -57,7 +51,7 @@
                         <AtlanBtn
                             padding="compact"
                             size="sm"
-                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none "
+                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none"
                             @click="showSSOScreen"
                             >Cancel</AtlanBtn
                         >
@@ -88,7 +82,7 @@
                                     }}
                                 </div>
                                 <div
-                                    class="flex items-center cursor-pointer  text-primary"
+                                    class="flex items-center cursor-pointer text-primary"
                                     @click="
                                         copyText(
                                             getSamlAssertionUrl(config.alias)
@@ -118,7 +112,7 @@
                                     }}
                                 </div>
                                 <div
-                                    class="flex items-center cursor-pointer  text-primary"
+                                    class="flex items-center cursor-pointer text-primary"
                                     @click="
                                         copyText(
                                             getSamlAssertionUrl(config.alias)
@@ -218,7 +212,7 @@
                                 Attribute Mapper
                             </div>
                             <div
-                                class="flex flex-row items-center justify-between w-full "
+                                class="flex flex-row items-center justify-between w-full"
                             >
                                 <div class="w-5/12 mb-2">IDP Attribute</div>
                                 <div class="w-5/12 mb-2">User Attribute</div>
@@ -227,7 +221,7 @@
                             <div
                                 v-for="(mapper, index) in mapperLists"
                                 :key="index"
-                                class="flex flex-row items-center justify-between w-full mb-8 "
+                                class="flex flex-row items-center justify-between w-full mb-8"
                             >
                                 <div class="w-5/12">
                                     <a-input
@@ -306,7 +300,7 @@
                         <AtlanBtn
                             padding="compact"
                             size="sm"
-                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none "
+                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none"
                             @click="showSSOScreen"
                             >Cancel</AtlanBtn
                         >
@@ -339,13 +333,14 @@
         UnwrapRef,
         onBeforeUnmount,
         computed,
+        watch,
     } from 'vue'
 
     import { message } from 'ant-design-vue'
     import { useRoute, useRouter } from 'vue-router'
+    import { storeToRefs } from 'pinia'
     import ImportMetadataFromXML from '../common/importMetadataFromXML.vue'
     import ImportText from '../common/importText.vue'
-
     import { useTenantStore } from '~/store/tenant'
 
     import {
@@ -394,9 +389,10 @@
             })
             const isLoading = ref(false)
             const tenantStore = useTenantStore()
-            const identityProviders = computed(
-                () => tenantStore.identityProviders
-            )
+            const { identityProviders } = storeToRefs(tenantStore)
+            // const identityProviders = computed(
+            //     () => tenantStore.identityProviders
+            // )
 
             const defaultMappers = mapperList
 
@@ -550,14 +546,27 @@
                 }
             }
             const checkAliasPresent = () => {
-                const alias = identityProviders.value.find(
+                const alias = identityProviders?.value?.find(
                     (provider) => provider.alias === ssoForm.alias
                 )
                 return !!alias
             }
-            const updateTenant = async () => {
-                const tenantResponse: any = await Tenant.GetTenant()
-                tenantStore.setTenant(tenantResponse)
+            const updateTenant = () => {
+                const { data, isReady, error, isLoading } = Tenant.GetTenant()
+                watch(
+                    [data, isReady, error, isLoading],
+                    () => {
+                        if (isReady && !error.value && !isLoading.value) {
+                            tenantStore.setTenant(data?.value)
+                            router.push('/admin/sso')
+                        } else if (error && error.value) {
+                            console.error(
+                                'Unable to update API Key. Please try again.'
+                            )
+                        }
+                    },
+                    { immediate: true }
+                )
             }
 
             const onSubmit = async () => {
@@ -594,13 +603,11 @@
                         )
                     })
                     await Promise.all([...mapperResponse])
-                    await updateTenant()
+                    updateTenant()
                     showConfigScreen()
                     message.success({
                         content: 'SSO added!',
                     })
-
-                    router.push('/admin/sso')
                 } catch (error) {
                     isLoading.value = false
                     console.error('Create IDP error::', error.message)

@@ -37,7 +37,7 @@
             :closable="false"
             :destroy-on-close="true"
         >
-            <div class="p-5">
+            <div class="p-5 enforce-sso-warning">
                 <div class="mb-4 text-lg">Enforce SSO</div>
                 <div class="mb-3 font-bold">
                     <span class="text-error"> Warning </span>
@@ -48,18 +48,20 @@
                     >
                 </div>
                 <div class="flex mb-2">
-                    <a-checkbox v-model:checked="verifiedSSO" />
-                    <div class="ml-2">
-                        I have verfied the SSO connection by loggin in and out
-                        successfully
-                    </div>
+                    <a-checkbox v-model:checked="verifiedSSO">
+                        <div>
+                            I have verfied the SSO connection by loggin in and
+                            out successfully
+                        </div>
+                    </a-checkbox>
                 </div>
                 <div class="flex">
-                    <a-checkbox v-model:checked="providedNotice" />
-                    <div class="ml-2">
-                        I have provided advanced notice and training for my
-                        company on new login procedures
-                    </div>
+                    <a-checkbox v-model:checked="providedNotice">
+                        <div>
+                            I have provided advanced notice and training for my
+                            company on new login procedures
+                        </div>
+                    </a-checkbox>
                 </div>
                 <div class="flex justify-end mt-3">
                     <AtlanBtn
@@ -281,6 +283,18 @@
         },
     })
 </script>
+<style lang="less">
+    .enforce-sso-warning {
+        .ant-checkbox-wrapper {
+            @apply flex;
+            @apply items-start;
+            @apply flex-1;
+        }
+        .ant-checkbox {
+            @apply mt-1;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .provider-wrapper {
         max-width: 38rem;

@@ -5,8 +5,12 @@
                 <span>Single Sign on</span>
             </div>
         </template>
-        <div v-if="Object.keys(ssoProvider).length">
-            <div class="flex items-center justify-between mb-5">
+        <div
+            v-if="Object.keys(ssoProvider).length"
+            style="height: calc(100% - 2rem)"
+            class="flex flex-col"
+        >
+            <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center text-lg">
                     <img
                         v-if="!provider.isCustomSaml"
@@ -32,13 +36,9 @@
                 </AtlanBtn>
             </div>
             <div class="sso-tabs">
-                <MinimalTab
-                    v-model:active="activeTabKey"
-                    :data="tabConfig"
-             
-                />
+                <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
             </div>
-           
+
             <keep-alive>
                 <UpdateSSOConfig
                     v-if="activeTabKey === 'configure'"
@@ -221,13 +221,13 @@
     })
 </script>
 <style lang="less">
-.sso-tabs {
-     .minimal-tab-bar{
-        .ant-tabs-tab:first-child {
-            margin-left: 0 !important;
+    .sso-tabs {
+        .minimal-tab-bar {
+            .ant-tabs-tab:first-child {
+                margin-left: 0 !important;
+            }
         }
-        }
-}
+    }
 </style>
 <route lang="yaml">
 meta:

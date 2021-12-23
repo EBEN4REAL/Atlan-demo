@@ -257,7 +257,6 @@
             watch(
                 decentralizedRole,
                 () => {
-                    debugger
                     const filteredRoles = (
                         decentralizedRole.value || []
                     ).filter(

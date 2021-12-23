@@ -22,10 +22,13 @@
                 </a-tooltip>
             </div>
         </div>
-        <div class="mb-3">
+        <div
+            v-if="selectedUser?.attributes?.designation?.length > 0 && selectedUser?.attributes?.designation[0]"
+            class="mb-3"
+        >
             <div class="flex-1 mr-4">
                 <p class="mb-0 text-gray-500">Designation</p>
-                <div class="text-gray">{{ selectedUser?.attributes?.designation?.length > 0 ? selectedUser?.attributes?.designation[0] : "-" }}</div>
+                <p class="text-gray">{{ selectedUser?.attributes?.designation[0] }}</p>
             </div>
         </div>
         <div class="mb-3">

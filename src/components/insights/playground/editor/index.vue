@@ -43,9 +43,9 @@
                                 <template #title>Toggle sidebar</template>
                                 <div
                                     class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                                    @click="toggleExplorerPane"
                                 >
                                     <AtlanIcon
-                                        @click="toggleExplorerPane"
                                         icon="ExplorerTrigger"
                                         class="w-4 h-4"
                                     />
@@ -55,12 +55,10 @@
                             <div
                                 class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
                                 :class="fullSreenState ? 'bg-gray-300' : ''"
+                                @click="tFullScreen"
                             >
                                 <div class="items-center justify-center group">
-                                    <div
-                                        class="items-center justify-center"
-                                        @click="tFullScreen"
-                                    >
+                                    <div class="items-center justify-center">
                                         <a-tooltip
                                             color="#363636"
                                             v-if="fullSreenState"
@@ -179,29 +177,32 @@
                             >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
                         > -->
                         <div class="flex items-center justify-center">
-                            <div class @click="togglePane">
-                                <a-tooltip color="#363636">
-                                    <template #title
-                                        >Toggle output pane ( ctrl + j
-                                        )</template
-                                    >
+                            <a-tooltip color="#363636" placement="topRight">
+                                <template #title
+                                    >Toggle output pane ( ctrl + j )</template
+                                >
+                                <div
+                                    @click="togglePane"
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                                >
                                     <AtlanIcon
                                         icon="OutputpaneTrigger"
                                         class="w-4 h-4 text-gray-500"
                                     />
-                                </a-tooltip>
-                            </div>
-                            <div class="ml-2" @click="toggleAssetPreview">
-                                <a-tooltip color="#363636">
-                                    <template #title
-                                        >Toggle asset preview</template
-                                    >
+                                </div>
+                            </a-tooltip>
+                            <a-tooltip color="#363636" placement="topRight">
+                                <template #title>Toggle asset preview</template>
+                                <div
+                                    @click="toggleAssetPreview"
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                                >
                                     <AtlanIcon
                                         icon="SidebarTrigger"
                                         class="w-4 h-4 text-gray-500"
                                     />
-                                </a-tooltip>
-                            </div>
+                                </div>
+                            </a-tooltip>
                         </div>
                     </div>
                 </div>

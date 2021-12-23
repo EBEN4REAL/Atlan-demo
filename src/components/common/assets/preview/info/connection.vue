@@ -76,19 +76,28 @@
                     </div>
                 </div>
             </div>
+            <a-modal
+                v-model:visible="visible"
+                title="SQL Query Update"
+                :destroyOnClose="true"
+                :maskClosable="false"
+            >
+                <p>Some contents...</p>
+                <p>Some contents...</p>
+                <p>Some contents...</p>
+                <template #footer>
+                    <a-button @click="handleCancel">Cancel</a-button>
+                    <a-button type="primary" @click="handleUpdate"
+                        >Update</a-button
+                    >
+                </template>
+            </a-modal>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        inject,
-        toRefs,
-        ref,
-        PropType,
-    } from 'vue'
+    import { computed, defineComponent, toRefs, ref, PropType } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Owners from '@/common/input/owner/index.vue'
@@ -131,12 +140,23 @@
                 }
             }
 
+            const handleUpdate = () => {
+                visible.value = false
+            }
+
+            const handleCancel = () => {
+                visible.value = false
+            }
+
             return {
                 selectedAsset,
                 attributes,
                 queryConfigJSON,
                 editPermission,
                 handleOpenModal,
+                visible,
+                handleCancel,
+                handleUpdate,
             }
         },
     })

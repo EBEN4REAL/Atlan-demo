@@ -52,12 +52,12 @@
             </MinimalTab>
         </div>
 
-        <div class="p-6 overflow-y-auto" v-if="activeTabKey === 'details'">
+        <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
             <PersonaMeta class="pb-0" :persona="persona" />
         </div>
         <div
-            class="flex flex-col px-6 pt-6"
             v-if="activeTabKey === 'policies'"
+            class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
             <div class="mb-3">
@@ -293,7 +293,6 @@
                 dataPolicy: Object,
                 isEdit: boolean
             ) {
-                console.log('savePolicyUI', { dataPolicy, isEdit, type })
                 const messageKey = Date.now()
                 loadingPolicy.value = true
                 message.loading({
@@ -431,7 +430,12 @@
                 })
                 return listFilter
             })
-            const handleSelectPolicy = (policy) => {
+            const handleSelectPolicy = (policy, type) => {
+                typeAddPolicy.value = type
+                if (type === 'data' && !policy.type) {
+                    policy.type = policy.maskType
+                    delete policy.maskType
+                }
                 selectedPolicy.value = policy
                 isEdit.value = true
                 addpolicyVisible.value = true

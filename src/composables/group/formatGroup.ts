@@ -9,7 +9,7 @@ export const getFormattedGroup = (group: any) => {
         alias: group.name,
         createdAt: group?.attributes?.createdAt?.[0] ?? '-',
         createdAtTimeAgo: group?.attributes?.createdAt?.[0]
-            ? useTimeAgo(group.attributes.createdAt?.[0]).value
+            ? useTimeAgo(parseInt(group.attributes.createdAt?.[0])).value
             : '',
         createdBy: group?.attributes?.createdBy?.[0] ?? '-',
         description: group?.attributes?.description?.[0] || '',

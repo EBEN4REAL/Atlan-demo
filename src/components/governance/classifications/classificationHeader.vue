@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col px-5 bg-white pt-7">
-        <div class="flex items-center justify-between mb-2 gap-x-2">
+        <div class="flex items-center justify-between gap-x-2">
             <div class="flex items-center">
                 <ClassificationIcon
                     :color="selectedClassification?.options?.color"
@@ -61,15 +61,6 @@
                     </a-menu>
                 </template>
             </a-dropdown>
-        </div>
-
-        <div class="flex mb-0 text-sm text-gray-500">
-            <span v-if="!selectedClassification?.description"
-                >Click to add description</span
-            >
-            <span v-else class="break-words">{{
-                selectedClassification?.description
-            }}</span>
         </div>
         <AddClassificationModal
             v-model:modalVisible="isEditClassificationModalOpen"

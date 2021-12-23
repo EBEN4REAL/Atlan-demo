@@ -2,7 +2,7 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanIcon icon="Loader" class="w-auto h-8 animate-spin" />
     </div>
-    <div v-else class="flex flex-col pl-5 mb-3">
+    <div v-else class="flex flex-col pl-5 mb-3" ref="target">
         <div class="flex items-center justify-between pr-3 mt-4 mb-3 mr-2">
             <div class="font-semibold text-gray-500">{{ data.label }}</div>
             <div>
@@ -86,6 +86,7 @@
         useMagicKeys,
         onKeyStroke,
         watchOnce,
+        onClickOutside,
     } from '@vueuse/core'
     import { message, Modal } from 'ant-design-vue'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'

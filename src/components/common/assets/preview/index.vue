@@ -129,7 +129,7 @@
         </div>
 
         <a-tabs
-            v-model:activeKey="activeKey"
+            :activeKey="activeKey"
             :class="$style.previewtab"
             :style="
                 isProfile
@@ -138,6 +138,7 @@
             "
             tab-position="left"
             :destroy-inactive-tab-pane="true"
+            @change="handleTabChange"
         >
             <a-tab-pane
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
@@ -169,6 +170,11 @@
                         selectedAssetUpdatePermission(selectedAsset)
                     "
                     :data="tab.data"
+                    :ref="
+                        (el) => {
+                            if (el) tabChildRef[index] = el
+                        }
+                    "
                 ></component>
             </a-tab-pane>
         </a-tabs>
@@ -369,7 +375,29 @@
                     : true
             }
 
+            const tabChildRef = ref([])
+
+            const handleTabChange = (k) => {
+                // if (
+                //     tabChildRef.value &&
+                //     tabChildRef.value[k]?.data?.analyticsKey ===
+                //         'custom_metadata' &&
+                //     tabChildRef.value[0].isEdit
+                // )
+                //     tabChildRef.value[0].handleCancel()
+                // else activeKey.value = k
+                console.log({
+                    LAST: tabChildRef.value[activeKey.value]?.isEdit,
+                })
+                if (tabChildRef.value[activeKey.value]?.isEdit)
+                    tabChildRef.value[activeKey.value]?.handleCancel()
+                else activeKey.value = k
+            }
+
             return {
+                tabChildRef,
+                activeKey,
+                handleTabChange,
                 title,
                 getConnectorImage,
                 assetType,
@@ -386,7 +414,7 @@
                 isDist,
                 isPartition,
                 isPrimary,
-                activeKey,
+
                 getPreviewTabs,
                 refresh,
                 certificateStatus,

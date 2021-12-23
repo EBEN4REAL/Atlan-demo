@@ -70,7 +70,8 @@ jobs:
       - name: Build
         run: NODE_OPTIONS=--max_old_space_size=8000 pnpm run build
         env:
-          VITE_SEGMENT_ANALYTICS_KEY: ${{ steps.get_segment_analytics_key.outputs.analytics_key }}
+          # VITE_SEGMENT_ANALYTICS_KEY: ${{ steps.get_segment_analytics_key.outputs.analytics_key }}
+          VITE_SEGMENT_ANALYTICS_KEY: ${{ secrets.SEGMENT_DEV_KEY }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

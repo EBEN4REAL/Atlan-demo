@@ -65,7 +65,6 @@
             </template>
         </div>
     </div>
-    <!-- <Confirm @confirm="handleCancel" /> -->
 </template>
 
 <script lang="ts">

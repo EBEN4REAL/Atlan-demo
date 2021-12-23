@@ -378,18 +378,10 @@
             const tabChildRef = ref([])
 
             const handleTabChange = (k) => {
-                // if (
-                //     tabChildRef.value &&
-                //     tabChildRef.value[k]?.data?.analyticsKey ===
-                //         'custom_metadata' &&
-                //     tabChildRef.value[0].isEdit
-                // )
-                //     tabChildRef.value[0].handleCancel()
-                // else activeKey.value = k
-                console.log({
-                    LAST: tabChildRef.value[activeKey.value]?.isEdit,
-                })
-                if (tabChildRef.value[activeKey.value]?.isEdit)
+                if (
+                    k !== activeKey.value &&
+                    tabChildRef.value[activeKey.value]?.isEdit
+                )
                     tabChildRef.value[activeKey.value]?.handleCancel()
                 else activeKey.value = k
             }

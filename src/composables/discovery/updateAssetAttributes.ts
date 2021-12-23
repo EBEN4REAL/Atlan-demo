@@ -15,6 +15,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         description,
         ownerGroups,
         ownerUsers,
+        adminGroups,
+        adminUsers,
         classifications,
         certificateStatus,
         certificateUpdatedAt,
@@ -93,6 +95,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localOwners = ref({
         ownerUsers: ownerUsers(selectedAsset.value),
         ownerGroups: ownerGroups(selectedAsset.value),
+    })
+
+    const localAdmins = ref({
+        adminUsers: adminUsers(selectedAsset.value),
+        adminGroups: adminGroups(selectedAsset.value),
     })
 
     const localAnnouncement = ref({
@@ -205,6 +212,45 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             body.value.entities = [entity.value]
 
             currentMessage.value = 'Owners have been updated'
+            mutate()
+        }
+    }
+
+    // Admins Change
+    const handleChangeAdmins = () => {
+        let isChanged = false
+
+        if (
+            !entity.value.attributes.adminUsers &&
+            Object.keys(localAdmins.value?.adminUsers).length === 0
+        ) {
+            isChanged = false
+        } else {
+            // Users
+            if (
+                entity.value.attributes.adminUsers?.sort().toString() !==
+                localAdmins.value?.adminUsers?.sort().toString()
+            ) {
+                entity.value.attributes.adminUsers =
+                    localAdmins.value?.adminUsers
+                isChanged = true
+            }
+
+            // Groups
+            if (
+                entity.value.attributes.adminGroups?.sort().toString() !==
+                localAdmins.value?.adminGroups?.sort().toString()
+            ) {
+                entity.value.attributes.adminGroups =
+                    localAdmins.value?.adminGroups
+                isChanged = true
+            }
+        }
+
+        if (isChanged) {
+            body.value.entities = [entity.value]
+
+            currentMessage.value = 'Admins have been updated'
             mutate()
         }
     }
@@ -521,6 +567,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
+        handleChangeAdmins,
         handleChangeCertificate,
         handleClassificationChange,
         handleAnnouncementUpdate,
@@ -539,5 +586,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         handleCategoriesUpdate,
         shouldDrawerUpdate,
         asset,
+        localAdmins,
     }
 }

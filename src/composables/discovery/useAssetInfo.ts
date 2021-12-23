@@ -547,6 +547,12 @@ export default function useAssetInfo() {
     const ownerUsers = (asset: assetInterface) =>
         attributes(asset)?.ownerUsers || []
 
+    const adminGroups = (asset: assetInterface) =>
+        attributes(asset)?.adminGroups || []
+
+    const adminUsers = (asset: assetInterface) =>
+        attributes(asset)?.adminUsers || []
+
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus
     }
@@ -1005,5 +1011,7 @@ export default function useAssetInfo() {
         getLineagePath,
         isUserDescription,
         isScrubbed,
+        adminGroups,
+        adminUsers,
     }
 }

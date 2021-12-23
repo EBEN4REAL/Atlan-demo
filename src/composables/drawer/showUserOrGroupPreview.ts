@@ -113,7 +113,7 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             // sort: "alias",
             filter:
                 uniqueAttribute.value === 'groupAlias'
-                    ? [{ name: groupAlias.value }]
+                    ? { $and: [{ name: groupAlias.value }] }
                     : { $and: [{ id: groupId.value }] },
         }))
 

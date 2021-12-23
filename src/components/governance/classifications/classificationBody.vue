@@ -1,26 +1,12 @@
 <template>
-    <div class="bg-white">
-        <MinimalTab v-model:active="activeTabKey" :data="tabConfig" />
+    <!-- <KeepAlive> -->
+    <div class="overflow-y-scroll wrapper-height">
+        <ClassificationOverview
+            class="px-5"
+            :classification="selectedClassification"
+        />
     </div>
-    <KeepAlive>
-        <div class="overflow-y-scroll wrapper-height">
-            <ClassificationOverview
-                v-if="activeTabKey === '1'"
-                class="px-5"
-                :classification="selectedClassification"
-                @openAssetsTab="activeTabKey = '2'"
-            />
-            <AssetsWrapper
-                v-if="activeTabKey === '2'"
-                :initial-filters="filterConfig"
-                :show-filters="false"
-                :static-use="true"
-                page="classifications"
-                class="bg-white"
-                :enable-sidebar-drawer="true"
-            />
-        </div>
-    </KeepAlive>
+    <!-- </KeepAlive> -->
 </template>
 
 <script lang="ts">
@@ -47,23 +33,14 @@
         setup(props) {
             const { classification: selectedClassification } = toRefs(props)
 
-            const activeTabKey = ref('1')
-            const tabConfig = [
-                { key: '1', label: 'Overview' },
-                { key: '2', label: 'Assets' },
-            ]
-
-            const filterConfig = computed(() => ({
-                __traitNames: {
-                    classifications: [selectedClassification.value.name],
-                },
-            }))
+            // const activeTabKey = ref('1')
+            // const tabConfig = [
+            //     { key: '1', label: 'Overview' },
+            //     { key: '2', label: 'Assets' },
+            // ]
 
             return {
                 selectedClassification,
-                filterConfig,
-                activeTabKey,
-                tabConfig,
             }
         },
     })

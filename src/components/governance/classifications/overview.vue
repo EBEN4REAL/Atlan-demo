@@ -23,29 +23,24 @@
                 ></UserPill>
             </div>
         </div>
-        <div class="flex py-2">
-            <div
-                class="flex p-4 bg-white border rounded cursor-pointer w-80"
-                @click="openAssetsTab"
-            >
-                <AtlanIcon icon="AssetIcon" class="h-11" />
+        <div
+            class="flex flex-col p-4 overflow-y-scroll bg-white rounded-md"
+            style="height: 600px"
+        >
+            <div class="flex items-center sticky-top">
+                <AtlanIcon icon="AssetIcon" class="h-8" />
                 <div class="mx-2">
-                    <span class="mb-1 text-sm font-bold">Assets</span>
-                    <div class="flex space-x-2 text-xs text-gray-500">
-                        <div>
-                            <span class="font-bold">{{ datasetCount }}</span>
-                            Datasets
-                        </div>
-                        <div>
-                            <span class="font-bold">{{ fieldCount }}</span>
-                            Fields
-                        </div>
-                        <div>
-                            <span class="font-bold">{{ termCount }}</span> Terms
-                        </div>
-                    </div>
+                    <span class="mb-1 text-base font-bold">Assets</span>
                 </div>
             </div>
+            <AssetsWrapper
+                :initial-filters="filterConfig"
+                :show-filters="false"
+                :static-use="true"
+                page="classifications"
+                class="bg-white"
+                :enable-sidebar-drawer="true"
+            />
         </div>
     </div>
 </template>
@@ -67,11 +62,13 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
+    import AssetsWrapper from '@/assets/index.vue'
 
     export default defineComponent({
         name: 'ClassificationOverviewTab',
         components: {
             UserPill,
+            AssetsWrapper,
         },
         emits: ['openAssetsTab'],
         props: {
@@ -89,10 +86,6 @@
                     'Do MMMM YYYY'
                 )
             )
-
-            const openAssetsTab = () => {
-                emit('openAssetsTab')
-            }
 
             const limit = ref(0)
             const offset = ref(0)
@@ -123,48 +116,12 @@
                     offset,
                 })
 
-            const datasetCount = computed(() => {
-                let count = 0
-                assetTypeAggregationList.value.forEach((item) => {
-                    if (
-                        [
-                            'Database',
-                            'Schema',
-                            'Schema',
-                            'Table',
-                            'TablePartition',
-                            'MaterialisedView',
-                        ].find((label) => label === item.label)
-                    ) {
-                        count += item.count
-                    }
-                })
-                return count
-            })
+            const filterConfig = computed(() => ({
+                __traitNames: {
+                    classifications: [selectedClassification.value.name],
+                },
+            }))
 
-            const fieldCount = computed(() => {
-                let count = 0
-                assetTypeAggregationList.value.forEach((item) => {
-                    if (['Column'].find((label) => label === item.label)) {
-                        count += item.count
-                    }
-                })
-                return count
-            })
-
-            const termCount = computed(() => {
-                let count = 0
-                assetTypeAggregationList.value.forEach((item) => {
-                    if (
-                        ['AtlasGlossaryTerm'].find(
-                            (label) => label === item.label
-                        )
-                    ) {
-                        count += item.count
-                    }
-                })
-                return count
-            })
             watch(selectedClassification, (classification) => {
                 timeAgo.value = classification.updateTime
                 facets.value.__traitNames.classifications = [
@@ -177,13 +134,9 @@
                 selectedClassification,
                 lastUpdatedAt,
                 createdOn,
-                openAssetsTab,
                 assetTypeAggregationList,
                 isLoading,
-
-                datasetCount,
-                fieldCount,
-                termCount,
+                filterConfig,
             }
         },
     })

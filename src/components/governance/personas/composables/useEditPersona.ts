@@ -136,9 +136,7 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
     if (dataPolicy?.isNew) {
         delete dataPolicy?.isNew
         delete dataPolicy?.id
-    } else {
-        delete dataPolicy?.type
-    }
+    } 
     if(dataPolicy.actions.includes('entity-update-classification')){
         dataPolicy.actions.push('entity-add-classification')
         dataPolicy.actions.push('entity-remove-classification')
@@ -161,12 +159,12 @@ export function savePolicy(type: PolicyType, dataPolicy: Object) {
         if(dataPolicy.id){
             tempPersona.dataPolicies = tempPersona.dataPolicies.map((el) => {
                 if(el.id === dataPolicy.id){
-                    return dataPolicy
+                    return {...dataPolicy, actions: ['select']}
                 }
-                    return el
+                    return {...el, actions: ['select']}
             })
         }else {
-            tempPersona.dataPolicies.push(dataPolicy)
+            tempPersona.dataPolicies.push({...dataPolicy, actions: ['select']})
         }
     }
     return savePersona(tempPersona)

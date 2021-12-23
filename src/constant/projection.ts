@@ -61,6 +61,8 @@ export const AssetAttributes = [
     'sourceUpdatedBy',
     'ownerUsers',
     'ownerGroups',
+    'adminUsers',
+    'adminGroups',
     'meanings',
     'readme',
     'rawQuery',

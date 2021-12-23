@@ -49,7 +49,13 @@
             />
         </div>
 
-        <Connection v-if="selectedAsset.typeName === 'Connection'"></Connection>
+        <Connection
+            v-if="selectedAsset.typeName === 'Connection'"
+            :selected-asset="selectedAsset"
+            v-model="localSQLQuery"
+            :edit-permission="editPermission"
+            @change="handleSQLQueryUpdate"
+        ></Connection>
 
         <div v-if="webURL(selectedAsset)" class="px-5">
             <a-button
@@ -530,6 +536,8 @@
                 nameRef,
                 descriptionRef,
                 animationPoint,
+                localSQLQuery,
+                handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
@@ -596,6 +604,8 @@
                 handleChangeAdmins,
                 localAdmins,
                 selectedAssetUpdatePermission,
+                localSQLQuery,
+                handleSQLQueryUpdate,
             }
         },
     })

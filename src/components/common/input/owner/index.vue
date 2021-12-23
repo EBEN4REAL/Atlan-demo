@@ -235,7 +235,6 @@
             }
 
             watch(selectedAsset, () => {
-                console.log(ownerGroups(selectedAsset.value))
                 localValue.value.ownerUsers = ownerUsers(selectedAsset.value)
                 localValue.value.ownerGroups = ownerGroups(selectedAsset.value)
             })

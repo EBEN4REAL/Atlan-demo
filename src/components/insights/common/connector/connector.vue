@@ -13,19 +13,14 @@
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
             :allowClear="false"
+            ref="treeRef"
             @change="onChange"
             :data-test-id="'conector'"
+            @click="handleOnClick"
             @select="selectNode"
         >
             <template #title="node">
-                <div
-                    class="flex items-center truncate"
-                    :class="
-                        node?.selectable === false
-                            ? 'cursor-not-allowed bg-white hover:bg-white'
-                            : ''
-                    "
-                >
+                <div class="flex items-center truncate">
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-2" />
                     <span class="parent-ellipsis-container-base"
                         >{{ node?.title }}
@@ -100,6 +95,7 @@
         },
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
+            const treeRef = ref()
             const { getConnectorName } = useAssetInfo()
             const { data, filterSourceIds, isLeafNodeSelectable } =
                 toRefs(props)
@@ -275,8 +271,21 @@
                 }
             }
 
+            const expandFolderNode = (event: any, node: any) => {
+                const { isLeaf } = node
+
+                if (isLeaf) {
+                    return
+                }
+
+                // Call internal rc-tree expand function
+                // https://github.com/ant-design/ant-design/issues/12567
+                treeRef.value.current!.onNodeExpand(event as any, node)
+            }
+
             const selectNode = (value, node?: any) => {
                 /* Checking if isLeafNodeSelectable by default it is selectable */
+                expandFolderNode(undefined, node)
 
                 console.log('node: ', node)
                 if (node?.children?.length > 0 && !isLeafNodeSelectable.value) {
@@ -337,8 +346,13 @@
                     }
                 }
             }
+            const handleOnClick = (x, y) => {
+                console.log(x, y)
+            }
 
             return {
+                handleOnClick,
+                treeRef,
                 onChange,
                 expandedKeys,
                 selectNode,
